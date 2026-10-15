@@ -3,19 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/base_paths.h"
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "components/cbor/cbor_buildflags.h"
-#include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace cbor {
@@ -46,11 +43,7 @@ std::optional<Value> ParseAndCompare(
   fill_config(rust_config, true, &rust_error);
   std::optional<Value> rust_cbor = Reader::Read(input, rust_config);
 
-  const auto format_cbor = [](const std::optional<Value>& cbor) {
-    return cbor.has_value() ? WriteDiagnostic(*cbor) : "std::nullopt";
-  };
-  EXPECT_EQ(rust_cbor, cpp_cbor) << "rust: " << format_cbor(rust_cbor)
-                                 << ", cpp: " << format_cbor(cpp_cbor);
+  EXPECT_EQ(rust_cbor, cpp_cbor);
   if (cpp_cbor.has_value() && rust_cbor.has_value()) {
     Writer::Config cpp_writer_config;
     cpp_writer_config.use_rust = false;
@@ -79,117 +72,73 @@ std::optional<Value> ParseAndCompare(
   }
   return cpp_cbor;
 }
-}  // namespace
 
-std::vector<std::tuple<std::vector<uint8_t>>> GetCborCorpus() {
-  static base::NoDestructor<std::vector<std::tuple<std::vector<uint8_t>>>>
-      seeds([] {
-        base::FilePath source_root;
-        // This should always be available in Chromium tests. If it fails,
-        // we want to crash rather than silently run the fuzzer with an empty
-        // corpus.
-        CHECK(
-            base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root))
-            << "Failed to get DIR_SRC_TEST_DATA_ROOT.";
+const std::vector<std::string>& GetCborCorpus() {
+  static const base::NoDestructor<std::vector<std::string>> seeds([] {
+    base::FilePath source_root;
+    // This should always be available in Chromium tests. If it fails,
+    // we want to crash rather than silently run the fuzzer with an empty
+    // corpus.
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root))
+        << "Failed to get DIR_SRC_TEST_DATA_ROOT.";
 
-        const auto seeds = base::ToVector(
-            fuzztest::ReadFilesFromDirectory(
-                source_root.AppendASCII("components")
-                    .AppendASCII("cbor")
-                    .AppendASCII("reader_fuzzer_corpus")
-                    .MaybeAsASCII()),
-            [](const auto& seed) {
-              return std::tuple{base::ToVector<uint8_t>(std::get<0>(seed))};
-            });
-        CHECK(!seeds.empty()) << "Seeds not found!";
-        return seeds;
-      }());
+    auto seeds = base::ToVector(fuzztest::ReadFilesFromDirectory(
+                                    source_root.AppendASCII("components")
+                                        .AppendASCII("cbor")
+                                        .AppendASCII("reader_fuzzer_corpus")
+                                        .MaybeAsASCII()),
+                                [](std::tuple<std::string>& seed) {
+                                  return std::move(std::get<0>(seed));
+                                });
+    CHECK(!seeds.empty()) << "Seeds not found!";
+    return seeds;
+  }());
   return *seeds;
 }
 
-std::vector<std::tuple<std::vector<uint8_t>, bool, int>>
-GetCborCorpusWithConfig() {
-  return base::ToVector(GetCborCorpus(), [](const auto& seed) {
-    // Provide default valid values for the config parameters alongside the
-    // seed.
-    return std::tuple(std::get<0>(seed), false,
-                      int{cbor::Reader::kCBORMaxDepth});
-  });
-}
-
-struct CborAST;
-using CborASTArray = std::vector<CborAST>;
-using CborASTMap = std::vector<std::pair<CborAST, CborAST>>;
-
-struct CborAST {
-  std::variant<int64_t,
-               std::string,
-               std::vector<uint8_t>,
-               CborASTArray,
-               CborASTMap>
-      val;
-};
-
-CborAST CborASTMapKey(std::variant<int64_t, std::string> v) {
-  return std::visit([](auto&& arg) { return CborAST{std::move(arg)}; },
-                    std::move(v));
-}
-
-// Generates a CborAST which represents a valid, randomized CBOR structure.
-// This is used by ParseStructuredCBORDoesNotCrash to test the parser against
-// deeply nested, complex, but structurally valid CBOR inputs.
+// Generates a valid, randomized CBOR Value to test the parser against deeply
+// nested, complex, but structurally valid CBOR inputs.
 // Constraints:
-// - Strings are limited to printable ASCII to avoid generating invalid UTF-8
-//   which would intentionally fail a DCHECK inside cbor::Value.
-// - Sizes for arrays and maps are constrained to min_size=1 and max_size=3.
-//   In testing various numbers, this was the best configuration to achieve a
-//   good distribution of both deep and shallow trees, natively hitting
-//   depths > 16 around 0.5% of the time without overflowing the C++ stack
-//   or getting stuck in very deep trees.
-fuzztest::Domain<CborAST> ArbitraryCborAST() {
+// - Strings are limited to valid UTF-8 to avoid failing a CHECK inside
+//   cbor::Value.
+// - Sizes for arrays and maps are constrained to max_size=3. In testing various
+//   numbers, this was the best configuration to achieve a good distribution of
+//   both deep and shallow trees without overflowing the C++ stack or getting
+//   stuck in very deep trees.
+fuzztest::Domain<Value> ArbitraryCborValue() {
   fuzztest::DomainBuilder builder;
-  builder.Set<CborAST>(
+  builder.Set<Value>(
       "value",
-      fuzztest::Map(
-          [](auto v) { return CborAST{std::move(v)}; },
-          fuzztest::VariantOf(
-              fuzztest::Arbitrary<int64_t>(), fuzztest::PrintableAsciiString(),
-              fuzztest::Arbitrary<std::vector<uint8_t>>(),
-              fuzztest::ContainerOf<CborASTArray>(builder.Get<CborAST>("value"))
-                  .WithMinSize(1)
-                  .WithMaxSize(3),
-              fuzztest::ContainerOf<CborASTMap>(
+      fuzztest::OneOf(
+          fuzztest::ConstructorOf<Value>(fuzztest::Arbitrary<int64_t>()),
+          fuzztest::ConstructorOf<Value>(fuzztest::Utf8String()),
+          fuzztest::ConstructorOf<Value>(
+              fuzztest::Arbitrary<Value::BinaryValue>()),
+          fuzztest::ConstructorOf<Value>(fuzztest::Arbitrary<bool>()),
+          fuzztest::ConstructorOf<Value>(fuzztest::Just(Value::null)),
+          fuzztest::ConstructorOf<Value>(fuzztest::Just(Value::undefined)),
+          fuzztest::ConstructorOf<Value>(
+              fuzztest::ContainerOf<Value::ArrayValue>(
+                  builder.Get<Value>("value"))
+                  .WithMaxSize(3)),
+          fuzztest::ConstructorOf<Value>(
+              fuzztest::ContainerOf<Value::MapValue>(
                   fuzztest::PairOf(
-                      fuzztest::Map(&CborASTMapKey,
-                                    fuzztest::VariantOf(
-                                        fuzztest::Arbitrary<int64_t>(),
-                                        fuzztest::PrintableAsciiString())),
-                      builder.Get<CborAST>("value")))
-                  .WithMinSize(1)
+                      fuzztest::OneOf(
+                          fuzztest::ConstructorOf<Value>(
+                              fuzztest::Arbitrary<int64_t>()),
+                          fuzztest::ConstructorOf<Value>(
+                              fuzztest::Utf8String()),
+                          fuzztest::ConstructorOf<Value>(
+                              fuzztest::Arbitrary<Value::BinaryValue>())),
+                      builder.Get<Value>("value")))
                   .WithMaxSize(3))));
-  return std::move(builder).Finalize<CborAST>("value");
+  return std::move(builder).Finalize<Value>("value");
 }
 
-cbor::Value ASTToCborValue(const CborAST& ast) {
-  return std::visit(
-      absl::Overload{[](const CborASTArray& v) {
-                       return cbor::Value(base::ToVector(v, ASTToCborValue));
-                     },
-                     [](const CborASTMap& v) {
-                       return cbor::Value(cbor::Value::MapValue(
-                           base::ToVector(v, [](const auto& pair) {
-                             return std::pair(ASTToCborValue(pair.first),
-                                              ASTToCborValue(pair.second));
-                           })));
-                     },
-                     [](const auto& v) { return cbor::Value(v); }},
-      ast.val);
-}
-
-std::vector<uint8_t> SerializeCborAST(const CborAST& ast) {
+std::vector<uint8_t> SerializeCborValue(ValueView val) {
   // Pass a large max_nesting_level (999) to ensure Writer doesn't arbitrarily
   // reject deep trees generated by the fuzzer that exceed the default 16.
-  Value val = ASTToCborValue(ast);
   Writer::Config cpp_config;
   cpp_config.max_nesting_level = 999;
   cpp_config.use_rust = false;
@@ -211,18 +160,18 @@ std::vector<uint8_t> SerializeCborAST(const CborAST& ast) {
 }
 
 fuzztest::Domain<std::vector<uint8_t>> ArbitrarySerializedCbor() {
-  return fuzztest::Map(&SerializeCborAST, ArbitraryCborAST());
+  return fuzztest::Map(&SerializeCborValue, ArbitraryCborValue());
 }
 
-void ReadAndWriteIsIdempotentAndDoesNotCrash(
-    const std::vector<uint8_t>& input) {
-  std::optional<Value> cbor = ParseAndCompare(input);
+void ReadAndWriteIsIdempotentAndDoesNotCrash(const std::string& input) {
+  const base::span<const uint8_t> input_bytes = base::as_byte_span(input);
+  std::optional<Value> cbor = ParseAndCompare(input_bytes);
   if (cbor) {
     std::optional<std::vector<uint8_t>> serialized_cbor = Writer::Write(*cbor);
     ASSERT_TRUE(serialized_cbor.has_value());
     // This can only be reached if the input was canonical, which means that it
     // must exactly match the re-serialized output.
-    EXPECT_EQ(*serialized_cbor, input);
+    EXPECT_EQ(*serialized_cbor, input_bytes);
   }
 }
 
@@ -230,12 +179,11 @@ void ReadAndWriteIsIdempotentAndDoesNotCrash(
 // safely rejects invalid/random bytes without crashing. This is fed by random
 // (but seeded) binary data.
 FUZZ_TEST(CBORReaderFuzzTest, ReadAndWriteIsIdempotentAndDoesNotCrash)
-    .WithDomains(fuzztest::Arbitrary<std::vector<uint8_t>>())
-    .WithSeeds(GetCborCorpus);
+    .WithDomains(fuzztest::Arbitrary<std::string>().WithSeeds(GetCborCorpus));
 
-void ReadWithConfigDoesNotCrash(const std::vector<uint8_t>& input,
-                                bool allow_invalid_utf8,
-                                int max_nesting_level) {
+void ReadWithConfig(base::span<const uint8_t> input,
+                    bool allow_invalid_utf8,
+                    int max_nesting_level) {
   Reader::Config config;
   config.allow_invalid_utf8 = allow_invalid_utf8;
   config.max_nesting_level = max_nesting_level;
@@ -243,21 +191,27 @@ void ReadWithConfigDoesNotCrash(const std::vector<uint8_t>& input,
   ParseAndCompare(input, &config);
 }
 
-// Similar to ParseDoesNotCrash, but explores the parser's resilience when
-// non-default configuration is set.
+void ReadWithConfigDoesNotCrash(const std::string& input,
+                                bool allow_invalid_utf8,
+                                int max_nesting_level) {
+  ReadWithConfig(base::as_byte_span(input), allow_invalid_utf8,
+                 max_nesting_level);
+}
+
+// Similar to ReadAndWriteIsIdempotentAndDoesNotCrash, but explores the parser's
+// resilience when non-default configuration is set.
 FUZZ_TEST(CBORReaderFuzzTest, ReadWithConfigDoesNotCrash)
-    .WithDomains(fuzztest::Arbitrary<std::vector<uint8_t>>(),
+    .WithDomains(fuzztest::Arbitrary<std::string>().WithSeeds(GetCborCorpus),
                  fuzztest::Arbitrary<bool>(),
-                 fuzztest::InRange(0, int{cbor::Reader::kCBORMaxDepth}))
-    .WithSeeds(GetCborCorpusWithConfig);
+                 fuzztest::InRange(0, int{cbor::Reader::kCBORMaxDepth}));
 
 void ReadValidCBORWithConfigDoesNotCrash(const std::vector<uint8_t>& input,
                                          bool allow_invalid_utf8,
                                          int max_nesting_level) {
-  ReadWithConfigDoesNotCrash(input, allow_invalid_utf8, max_nesting_level);
+  ReadWithConfig(input, allow_invalid_utf8, max_nesting_level);
 }
 
-// Similar to ParseWithConfigDoesNotCrash, but instead of mutating predefined
+// Similar to ReadWithConfigDoesNotCrash, but instead of mutating predefined
 // seeds feeds always valid CBOR.
 FUZZ_TEST(CBORReaderFuzzTest, ReadValidCBORWithConfigDoesNotCrash)
     .WithDomains(ArbitrarySerializedCbor(),
@@ -292,4 +246,5 @@ void ReadValidAndTruncatedCBORDoesNotCrash(const std::vector<uint8_t>& input,
 FUZZ_TEST(CBORReaderFuzzTest, ReadValidAndTruncatedCBORDoesNotCrash)
     .WithDomains(ArbitrarySerializedCbor(), fuzztest::Arbitrary<size_t>());
 
+}  // namespace
 }  // namespace cbor
