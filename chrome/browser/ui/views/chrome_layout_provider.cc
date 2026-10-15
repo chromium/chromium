@@ -367,6 +367,8 @@ int ChromeLayoutProvider::GetCornerRadiusMetric(views::ShapeContextToken token,
       return GetCornerRadiusMetric(GetShapeSysToken(token));
     case kRecentActivityFaviconContainerRadius:
       return 9;
+    case kActionAppMenuDividerAdjacentCornerRadius:
+      return 2;
   }
   NOTREACHED();
 }

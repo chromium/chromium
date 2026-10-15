@@ -131,8 +131,8 @@ class ActionAppMenu : public views::MenuDelegate,
   // within the action app menu or have a sub-menu.
   void ConfigureMenuItem(views::MenuItemView* menu_item,
                          actions::BaseAction* child_base,
-                         bool round_top_corners,
-                         bool round_bottom_corners,
+                         int top_radius,
+                         int bottom_radius,
                          bool add_top_padding,
                          bool add_bottom_padding);
 

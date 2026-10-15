@@ -98,6 +98,40 @@ bool ShouldRoundTopCorners(size_t index,
   return true;
 }
 
+bool IsAdjacentToDivider(size_t index,
+                         const actions::ActionListVector& items,
+                         bool preceding) {
+  const int step = preceding ? -1 : 1;
+  const int start = static_cast<int>(index) + step;
+  const int end = preceding ? -1 : static_cast<int>(items.size());
+  for (int i = start; i != end; i += step) {
+    if (!items[i]->GetActionItem()->GetVisible()) {
+      continue;
+    }
+    const auto display_type =
+        items[i]->GetProperty(AppMenuActionItem::kDisplayTypeKey);
+    return display_type == AppMenuActionItem::DisplayType::kDivider &&
+           items[i]->GetProperty(AppMenuActionItem::kSeparatorKey) !=
+               ui::MenuSeparatorType::SPACING_SEPARATOR;
+  }
+  return false;
+}
+
+int GetCornerRadius(size_t index,
+                    const actions::ActionListVector& items,
+                    bool is_top) {
+  const auto* provider = ChromeLayoutProvider::Get();
+  if (is_top ? ShouldRoundTopCorners(index, items)
+             : ShouldRoundBottomCorners(index, items)) {
+    return provider->GetCornerRadiusMetric(kActionAppMenuContainerCornerRadius);
+  }
+  if (IsAdjacentToDivider(index, items, /*preceding=*/is_top)) {
+    return provider->GetCornerRadiusMetric(
+        kActionAppMenuDividerAdjacentCornerRadius);
+  }
+  return 0;
+}
+
 bool SupportsVerticalPadding(const actions::BaseAction* item) {
   return item->GetProperty(AppMenuActionItem::kItemHeightKey) ==
          AppMenuActionItem::ItemHeight::kCompact;
@@ -272,8 +306,10 @@ void ActionAppMenu::UpdateMenuItem(actions::BaseAction* action,
   views::MenuItemView* new_item =
       AppendMenuItem(action, new_parent_menu, view_index);
   ConfigureMenuItem(new_item, action,
-                    ShouldRoundTopCorners(target_index, target_children),
-                    ShouldRoundBottomCorners(target_index, target_children),
+                    GetCornerRadius(target_index, target_children,
+                                    /*is_top=*/true),
+                    GetCornerRadius(target_index, target_children,
+                                    /*is_top=*/false),
                     ShouldAddTopPadding(target_index, target_children),
                     ShouldAddBottomPadding(target_index, target_children));
   if (!action->HasPopulateChildActionsCallback()) {
@@ -651,10 +687,11 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       PopulateMenu(view_parent, child_base);
     } else {
       auto* const menu_item = AppendMenuItem(child_base, view_parent);
-      ConfigureMenuItem(menu_item,
-                        child_base,
-                        ShouldRoundTopCorners(i, children_action_items),
-                        ShouldRoundBottomCorners(i, children_action_items),
+      ConfigureMenuItem(menu_item, child_base,
+                        GetCornerRadius(i, children_action_items,
+                                        /*is_top=*/true),
+                        GetCornerRadius(i, children_action_items,
+                                        /*is_top=*/false),
                         ShouldAddTopPadding(i, children_action_items),
                         ShouldAddBottomPadding(i, children_action_items));
       if (display_type == AppMenuActionItem::DisplayType::kCustom) {
@@ -735,8 +772,8 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
 
 void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                                       actions::BaseAction* child_base,
-                                      bool round_top_corners,
-                                      bool round_bottom_corners,
+                                      int top_radius,
+                                      int bottom_radius,
                                       bool add_top_padding,
                                       bool add_bottom_padding) {
   const auto* provider = ChromeLayoutProvider::Get();
@@ -789,14 +826,6 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   if (menu_item->GetParentMenuItem() == root_) {
     const ui::ColorId container_color =
         child_base->GetProperty(AppMenuActionItem::kContainerColorKey);
-    const int top_radius = round_top_corners
-                               ? provider->GetCornerRadiusMetric(
-                                     kActionAppMenuContainerCornerRadius)
-                               : 0;
-    const int bottom_radius = round_bottom_corners
-                                  ? provider->GetCornerRadiusMetric(
-                                        kActionAppMenuContainerCornerRadius)
-                                  : 0;
 
     views::MenuItemView::MenuItemBackground background(
         container_color, top_radius, bottom_radius,

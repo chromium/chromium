@@ -273,6 +273,8 @@ enum ChromeShapeContextTokens : views::ShapeContextToken {
   kActionAppMenuFooterButtonCornerRadius,
   // Rounded corner radius for a block entry button.
   kActionAppMenuBlockEntryCornerRadius,
+  // Corner radius for Action App Menu items adjacent to a divider.
+  kActionAppMenuDividerAdjacentCornerRadius,
   kExtensionsMenuButtonRadius,
   kFindBarViewRadius,
   kOmniboxExpandedRadius,

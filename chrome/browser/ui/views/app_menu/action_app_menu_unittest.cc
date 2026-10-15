@@ -284,14 +284,15 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
             container_margin);
 
   // Check corner radiuses for section cards (first item has top radius, last
-  // has bottom radius, middle items have neither).
+  // has bottom radius, middle items have neither, except profile bottom and
+  // passwords and autofill top which have 2px radius adjacent to divider).
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 12);
   EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
 #else
   EXPECT_EQ(profile_item->GetMenuItemBackground()->top_radius, 12);
-  EXPECT_EQ(profile_item->GetMenuItemBackground()->bottom_radius, 0);
-  EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 0);
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->bottom_radius, 2);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 2);
   EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
 #endif
   EXPECT_EQ(downloads_item->GetMenuItemBackground()->top_radius, 0);

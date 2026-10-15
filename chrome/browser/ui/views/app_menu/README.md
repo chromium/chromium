@@ -44,7 +44,7 @@ BrowserAppMenuButton
 * **`ActionAppMenu` (`action_app_menu.h`)**: Owns the `views::MenuRunner` and serves as the `views::MenuDelegate` and `AppMenuDragAndDropDelegate::Host`.
   * Recursively traverses the `BaseAction` hierarchy (`PopulateMenu()`) and translates each node into `views::MenuItemView` rows or embedded custom `views::View`s based on `AppMenuActionItem::DisplayType`.
   * Binds `MenuItemView` instances to their underlying `ActionItem` via `views::ActionViewController` so state updates (enabled, visible, checked, text, icon) sync reactively.
-  * Automatically computes rounded container backgrounds (`ShouldRoundTopCorners`, `ShouldRoundBottomCorners`) and vertical section padding for grouped rows sharing a `kContainerColorKey`.
+  * Automatically computes rounded container backgrounds (`GetCornerRadius`) and vertical section padding for grouped rows sharing a `kContainerColorKey`.
   * Defers populating dynamic submenus in the view tree until `WillShowMenu()` is triggered, while still allowing their action children to be indexed for search.
 
 ### 3. Dynamic Submenus (`*_dynamic_menu.h`)
