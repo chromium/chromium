@@ -19,6 +19,11 @@ const base::FeatureParam<int> kMaxNavigationCacheCapacity{
 
 // TODO(b/535078652): Register a histogram to see the usage of LRU cache to set
 // up an optimum value for max capacity.
+const base::FeatureParam<int> kMaxVisitToActionsCacheCapacity{
+    &kCriticalActionHistory, "max_visit_to_actions_cache_capacity", 200};
+
+// TODO(b/535078652): Register a histogram to see the usage of LRU cache to set
+// up an optimum value for max capacity.
 const base::FeatureParam<int> kMaxTaskToConversationCacheCapacity{
     &kCriticalActionHistory, "max_task_to_conversation_cache_capacity", 200};
 

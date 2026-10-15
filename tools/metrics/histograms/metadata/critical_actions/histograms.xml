@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:ActionSource) -->
 
+<!-- LINT.IfChange(CriticalActionRedirectType) -->
+
+<variants name="CriticalActionRedirectType">
+  <variant name="ClientRedirect"
+      summary="a client redirect (JavaScript or meta refresh)"/>
+  <variant name="ServerRedirect" summary="a server redirect"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:RedirectType) -->
+
 <histogram
     name="CriticalActions.ConversationIdDeferredResolutionOutcome.{ActionSource}"
     enum="CriticalActionConversationIdDeferredResolutionOutcome"
@@ -93,6 +103,22 @@ chromium-metrics-reviews@google.com.
     CriticalActionService::AddCriticalAction whenever a new critical action is
     added to the service to be persisted to the database by {ActionSource}.
   </summary>
+  <token key="ActionSource" variants="ActionSource"/>
+</histogram>
+
+<histogram
+    name="CriticalActions.EventLoggedInRedirect.{RedirectType}.{ActionSource}"
+    enum="CriticalActionType" expires_after="2027-04-11">
+  <owner>kutylbeky@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the ActionType category of a critical action triggered by
+    {ActionSource} whose visit is redirected to another visit by {RedirectType}.
+    Not recorded for actions on the final visit of a redirect chain. Compare
+    against CriticalActions.EventLogged.{ActionSource} to compute the share of
+    critical actions logged on redirected visits.
+  </summary>
+  <token key="RedirectType" variants="CriticalActionRedirectType"/>
   <token key="ActionSource" variants="ActionSource"/>
 </histogram>
 

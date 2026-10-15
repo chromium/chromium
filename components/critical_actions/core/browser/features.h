@@ -16,6 +16,10 @@ BASE_DECLARE_FEATURE(kCriticalActionHistory);
 // Maximum number of recent navigation entries retained in the LRU cache.
 extern const base::FeatureParam<int> kMaxNavigationCacheCapacity;
 
+// Maximum number of recent visit-to-critical-actions entries retained in the
+// LRU cache for redirect tracking.
+extern const base::FeatureParam<int> kMaxVisitToActionsCacheCapacity;
+
 // Maximum number of task-to-conversation entries retained in the LRU cache.
 extern const base::FeatureParam<int> kMaxTaskToConversationCacheCapacity;
 

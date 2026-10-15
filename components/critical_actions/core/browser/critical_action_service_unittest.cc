@@ -29,9 +29,29 @@
 #include "components/critical_actions/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace critical_actions {
+
+namespace {
+
+constexpr int kNewChain = ui::PAGE_TRANSITION_LINK |
+                          ui::PAGE_TRANSITION_CHAIN_START |
+                          ui::PAGE_TRANSITION_CHAIN_END;
+constexpr int kServerRedirectChainEnd = ui::PAGE_TRANSITION_LINK |
+                                        ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                        ui::PAGE_TRANSITION_CHAIN_END;
+constexpr int kClientRedirectChainEnd = ui::PAGE_TRANSITION_LINK |
+                                        ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+                                        ui::PAGE_TRANSITION_CHAIN_END;
+
+constexpr char kServerInRedirectActor[] =
+    "CriticalActions.EventLoggedInRedirect.ServerRedirect.Actor";
+constexpr char kClientInRedirectActor[] =
+    "CriticalActions.EventLoggedInRedirect.ClientRedirect.Actor";
+
+}  // namespace
 
 class CriticalActionServiceTest : public testing::Test {
  public:
@@ -66,6 +86,22 @@ class CriticalActionServiceTest : public testing::Test {
     entry.action_type = action_type;
     entry.action_source = source;
     return entry;
+  }
+
+  // Simulates History notifying a visit. The service only reads the visit row
+  // and navigation ID, so the URL is a placeholder.
+  void NotifyVisit(int64_t nav_id,
+                   int64_t visit_id,
+                   int transition,
+                   int64_t referring_visit = history::kInvalidVisitID) {
+    history::VisitRow row;
+    row.visit_id = visit_id;
+    row.referring_visit = referring_visit;
+    row.transition = ui::PageTransitionFromInt(transition);
+    service_->OnURLVisitedWithNavigationId(
+        nullptr, history::VisitedURLInfo(
+                     history::URLRow(GURL("https://example.com")), row,
+                     history::VisitResponseCodeCategory::kNot404, nav_id));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -889,6 +925,141 @@ TEST_F(CriticalActionServiceTest,
   histogram_tester.ExpectBucketCount(
       "CriticalActions.ConversationIdDeferredResolutionOutcome.Actor",
       ConversationIdDeferredResolutionOutcome::kEvictedCapacityExceeded, 1);
+}
+
+// History notifies each hop of a server-redirect chain separately, with the
+// same navigation ID. Actions resolved onto an intermediate hop (pending before
+// the first notification, or logged between hop notifications) are recorded
+// as server-redirected once the next hop referring to it is seen.
+TEST_F(CriticalActionServiceTest,
+       EventLoggedInRedirectServerChainRecordsActionsOnIntermediateHop) {
+  base::HistogramTester histogram_tester;
+  constexpr int64_t kNavId = 1;
+
+  // Logged before History notifies: stays pending, then is flushed onto hop 1.
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kFormFill), kNavId);
+  NotifyVisit(kNavId, /*visit_id=*/10,
+              ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START);
+
+  // Logged between the hop notifications: resolves to hop 1 as well.
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kFederatedLogin), kNavId);
+  histogram_tester.ExpectTotalCount(kServerInRedirectActor, 0);
+
+  NotifyVisit(kNavId, /*visit_id=*/11, kServerRedirectChainEnd,
+              /*referring_visit=*/10);
+
+  // Logged after hop 2: resolves to the chain end and is not recorded.
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kSettingChange), kNavId);
+
+  histogram_tester.ExpectTotalCount(kServerInRedirectActor, 2);
+  histogram_tester.ExpectBucketCount(kServerInRedirectActor,
+                                     ActionType::kFormFill, 1);
+  histogram_tester.ExpectBucketCount(kServerInRedirectActor,
+                                     ActionType::kFederatedLogin, 1);
+  histogram_tester.ExpectTotalCount(kClientInRedirectActor, 0);
+}
+
+// V1 -> V2 -> V3 via client redirects, each a separate navigation. Actions on
+// V1 and V2 are recorded per action source; actions on V3 are not.
+TEST_F(CriticalActionServiceTest,
+       EventLoggedInRedirectClientChainRecordsRedirectedVisitsOnly) {
+  base::HistogramTester histogram_tester;
+
+  NotifyVisit(/*nav_id=*/1, /*visit_id=*/10, kNewChain);
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kFormFill, ActionSource::kAutofill),
+      /*navigation_id=*/1);
+
+  // One V2 action is pending when V2 resolves, the other is logged after.
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kFederatedLogin), /*navigation_id=*/2);
+  NotifyVisit(/*nav_id=*/2, /*visit_id=*/11, kClientRedirectChainEnd,
+              /*referring_visit=*/10);
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kGooglePasswordManager,
+                         ActionSource::kPasswordManager),
+      /*navigation_id=*/2);
+
+  NotifyVisit(/*nav_id=*/3, /*visit_id=*/12, kClientRedirectChainEnd,
+              /*referring_visit=*/11);
+  service_->AddCriticalActionWithNavigationId(
+      CreateDefaultEntry(ActionType::kSettingChange), /*navigation_id=*/3);
+
+  // A second redirect hop from V2 must not record its actions again.
+  NotifyVisit(/*nav_id=*/4, /*visit_id=*/13, kClientRedirectChainEnd,
+              /*referring_visit=*/11);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.EventLoggedInRedirect.ClientRedirect.Autofill",
+      ActionType::kFormFill, 1);
+  histogram_tester.ExpectUniqueSample(kClientInRedirectActor,
+                                      ActionType::kFederatedLogin, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.EventLoggedInRedirect.ClientRedirect.PasswordManager",
+      ActionType::kGooglePasswordManager, 1);
+  histogram_tester.ExpectTotalCount(kServerInRedirectActor, 0);
+}
+
+TEST_F(CriticalActionServiceTest,
+       EventLoggedInRedirectIgnoresNewChainAndNonRedirectNavigations) {
+  base::HistogramTester histogram_tester;
+  NotifyVisit(/*nav_id=*/1, /*visit_id=*/10, kNewChain);
+  service_->AddCriticalActionWithNavigationId(CreateDefaultEntry(),
+                                              /*navigation_id=*/1);
+
+  // A redirect with PAGE_TRANSITION_CHAIN_START starts a new chain and does not
+  // continue the redirect chain from its referring visit.
+  NotifyVisit(/*nav_id=*/2, /*visit_id=*/11,
+              ui::PAGE_TRANSITION_RELOAD | ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+                  ui::PAGE_TRANSITION_CHAIN_START |
+                  ui::PAGE_TRANSITION_CHAIN_END,
+              /*referring_visit=*/10);
+  // A non-redirect navigation from the visit.
+  NotifyVisit(/*nav_id=*/3, /*visit_id=*/12, kNewChain,
+              /*referring_visit=*/10);
+
+  histogram_tester.ExpectTotalCount(kServerInRedirectActor, 0);
+  histogram_tester.ExpectTotalCount(kClientInRedirectActor, 0);
+}
+
+TEST_F(CriticalActionServiceTest, EventLoggedInRedirectForActionAfterRedirect) {
+  base::HistogramTester histogram_tester;
+  NotifyVisit(/*nav_id=*/1, /*visit_id=*/10, kNewChain);
+  NotifyVisit(/*nav_id=*/2, /*visit_id=*/11, kClientRedirectChainEnd,
+              /*referring_visit=*/10);
+
+  // A late action for the already-redirected visit is still counted.
+  service_->AddCriticalActionWithNavigationId(CreateDefaultEntry(),
+                                              /*navigation_id=*/1);
+
+  histogram_tester.ExpectUniqueSample(kClientInRedirectActor,
+                                      ActionType::kFormFill, 1);
+}
+
+TEST_F(CriticalActionServiceTest,
+       EventLoggedInRedirectNotRecordedAfterCacheEviction) {
+  base::HistogramTester histogram_tester;
+  const int max_capacity = features::kMaxVisitToActionsCacheCapacity.Get();
+  for (int i = 0; i <= max_capacity; ++i) {
+    NotifyVisit(/*nav_id=*/i + 1, /*visit_id=*/i + 1000, kNewChain);
+    service_->AddCriticalActionWithNavigationId(CreateDefaultEntry(),
+                                                /*navigation_id=*/i + 1);
+  }
+
+  // The first visit's actions were evicted by the last one.
+  NotifyVisit(/*nav_id=*/max_capacity + 2, /*visit_id=*/2000,
+              kClientRedirectChainEnd, /*referring_visit=*/1000);
+  histogram_tester.ExpectTotalCount(kClientInRedirectActor, 0);
+
+  // The most recent visit's actions are still tracked.
+  NotifyVisit(/*nav_id=*/max_capacity + 3, /*visit_id=*/2001,
+              kClientRedirectChainEnd,
+              /*referring_visit=*/max_capacity + 1000);
+  histogram_tester.ExpectUniqueSample(kClientInRedirectActor,
+                                      ActionType::kFormFill, 1);
 }
 
 }  // namespace critical_actions
