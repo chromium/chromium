@@ -168,7 +168,7 @@ class GlicEnablingTest : public testing::Test {
 #else
         // Disable smart restart metrics to prevent background D-Bus queries to
         // screensaver status, which causes asynchronous test flakiness.
-        {features::kSmartRestartMetrics}
+        {features::kSmartRestart, features::kSmartRestartMetrics}
 #endif
     );
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -620,6 +620,7 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID)
             // Disable smart restart metrics to prevent background D-Bus queries
             // to screensaver status, which causes asynchronous test flakiness.
+            features::kSmartRestart,
             features::kSmartRestartMetrics,
 #endif
         });
@@ -676,6 +677,7 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
     glic_user_session_test_helper_.PostProfileTearDown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
     FlushMessageLoop();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
@@ -920,6 +922,7 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID)
             // Disable smart restart metrics to prevent background D-Bus queries
             // to screensaver status, which causes asynchronous test flakiness.
+            features::kSmartRestart,
             features::kSmartRestartMetrics,
 #endif
         });
