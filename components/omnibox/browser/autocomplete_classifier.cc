@@ -92,6 +92,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
                history_clusters::GetConfig().omnibox_history_cluster_provider
            ? AutocompleteProvider::Type::kHistoryClusterProvider
            : AutocompleteProvider::Type::kNone) |
+      AutocompleteProvider::Type::kEnterpriseSearchAggregator |
 #endif
       AutocompleteProvider::Type::kZeroSuggest |
       AutocompleteProvider::Type::kZeroSuggestLocalHistory |
@@ -115,7 +116,6 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       AutocompleteProvider::Type::kShortcuts |
       AutocompleteProvider::Type::kHistoryFuzzy |
       AutocompleteProvider::Type::kCalculator |
-      AutocompleteProvider::Type::kEnterpriseSearchAggregator |
       AutocompleteProvider::Type::kVerbatimMatch |
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
