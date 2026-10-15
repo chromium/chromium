@@ -79,6 +79,7 @@ class CORE_EXPORT CSSParser {
 
   static StyleRuleBase* ParseNestedDeclarationsRule(
       const CSSParserContext*,
+      StyleSheetContents*,
       CSSNestingType,
       StyleRule* parent_rule_for_nesting,
       StringView);

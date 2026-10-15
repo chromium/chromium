@@ -132,6 +132,37 @@ TEST_F(PropertyRegistryTest, EmptyIterator) {
   EXPECT_EQ(0u, AllRegistrations().size());
 }
 
+TEST_F(PropertyRegistryTest, PrivateRegistrationUsesSeparateNamespace) {
+  AtomicString authored_name("--x");
+  AtomicString private_name = PropertyRegistry::AllocatePrivatePropertyName();
+  Registry().RegisterPrivateProperty(authored_name, private_name,
+                                     CSSSyntaxDefinition::CreateUniversal());
+
+  EXPECT_NE(authored_name, private_name);
+  EXPECT_TRUE(StringView(private_name).starts_with("-ua-private-"));
+  EXPECT_EQ(authored_name,
+            Registry().AuthoredPrivatePropertyName(private_name));
+  EXPECT_TRUE(Registry().PrivateRegistration(private_name));
+  EXPECT_TRUE(Registry().PrivateRegistration(private_name)->Inherits());
+  EXPECT_FALSE(Registry().Registration(private_name));
+  EXPECT_EQ(0u, AllRegistrations().size());
+
+  AtomicString second_private_name =
+      PropertyRegistry::AllocatePrivatePropertyName();
+  Registry().RegisterPrivateProperty(authored_name, second_private_name,
+                                     CSSSyntaxDefinition::CreateUniversal());
+  EXPECT_NE(private_name, second_private_name);
+  EXPECT_EQ(authored_name,
+            Registry().AuthoredPrivatePropertyName(second_private_name));
+
+  PropertyRegistry* copy = Registry().CopyPrivateRegistry();
+  EXPECT_EQ(authored_name, copy->AuthoredPrivatePropertyName(private_name));
+  EXPECT_NE(Registry().PrivateRegistration(private_name),
+            copy->PrivateRegistration(private_name));
+  EXPECT_EQ(Registry().PrivateRegistration(private_name)->Syntax(),
+            copy->PrivateRegistration(private_name)->Syntax());
+}
+
 TEST_F(PropertyRegistryTest, IterateSingleRegistration) {
   auto* reg1 = RegisterProperty("--x");
   auto registrations = AllRegistrations();

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
@@ -105,6 +106,11 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
       is_used_from_text_cache_(false),
       is_used_from_resource_cache_(false),
       parser_context_(o.parser_context_) {
+  if (o.private_property_registry_) {
+    private_property_registry_ =
+        o.private_property_registry_->CopyPrivateRegistry();
+  }
+
   for (unsigned i = 0; i < pre_import_layer_statement_rules_.size(); ++i) {
     pre_import_layer_statement_rules_[i] = To<StyleRuleLayerStatement>(
         o.pre_import_layer_statement_rules_[i]->Clone(
@@ -265,6 +271,14 @@ void StyleSheetContents::ClearRules() {
   import_rules_.clear();
   namespace_rules_.clear();
   child_rules_.clear();
+  private_property_registry_ = nullptr;
+}
+
+PropertyRegistry& StyleSheetContents::EnsurePrivatePropertyRegistry() {
+  if (!private_property_registry_) {
+    private_property_registry_ = MakeGarbageCollected<PropertyRegistry>();
+  }
+  return *private_property_registry_;
 }
 
 wtf_size_t StyleSheetContents::ReplaceChildRuleIfExists(
@@ -1014,6 +1028,7 @@ void StyleSheetContents::Trace(Visitor* visitor) const {
   visitor->Trace(rule_set_);
   visitor->Trace(referenced_from_resource_);
   visitor->Trace(parser_context_);
+  visitor->Trace(private_property_registry_);
   visitor->Trace(rule_set_diff_);
 }
 

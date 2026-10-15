@@ -12,13 +12,14 @@
 
 namespace blink {
 
-class StyleRulePrivate;
+class PropertyRegistry;
+class StyleRule;
 
 class CSSPrivateRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CSSPrivateRule(StyleRulePrivate*, CSSStyleSheet* parent);
+  CSSPrivateRule(StyleRule*, CSSStyleSheet* parent);
 
   String cssText() const override;
   void Reattach(StyleRuleBase*) override;
@@ -28,7 +29,8 @@ class CSSPrivateRule final : public CSSRule {
  private:
   CSSRule::Type GetType() const override { return kPrivateRule; }
 
-  Member<StyleRulePrivate> private_rule_;
+  Member<StyleRule> private_rule_;
+  Member<const PropertyRegistry> property_registry_;
 };
 
 template <>

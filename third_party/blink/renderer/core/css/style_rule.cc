@@ -214,7 +214,7 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       To<StyleRuleCustomMedia>(this)->TraceAfterDispatch(visitor);
       return;
     case kPrivate:
-      To<StyleRulePrivate>(this)->TraceAfterDispatch(visitor);
+      To<StyleRule>(this)->TraceAfterDispatch(visitor);
       return;
   }
   DUMP_WILL_BE_NOTREACHED();
@@ -322,7 +322,7 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       To<StyleRuleCustomMedia>(this)->~StyleRuleCustomMedia();
       return;
     case kPrivate:
-      To<StyleRulePrivate>(this)->~StyleRulePrivate();
+      To<StyleRule>(this)->~StyleRule();
       return;
   }
   NOTREACHED();
@@ -451,10 +451,13 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSResultRule>(To<StyleRuleResult>(self),
                                                  parent_sheet);
       break;
-    case kPrivate:
-      rule = MakeGarbageCollected<CSSPrivateRule>(To<StyleRulePrivate>(self),
-                                                  parent_sheet);
+    case kPrivate: {
+      DCHECK(parent_rule);
+      CSSStyleSheet* containing_sheet = parent_rule->parentStyleSheet();
+      rule = MakeGarbageCollected<CSSPrivateRule>(To<StyleRule>(self),
+                                                  containing_sheet);
       break;
+    }
     case kApplyMixin:
       rule = MakeGarbageCollected<CSSApplyMixinRule>(
           To<StyleRuleApplyMixin>(self), parent_sheet);
@@ -517,6 +520,9 @@ StyleRule::StyleRule(base::PassKey<StyleRule>,
   CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
+StyleRule::StyleRule(base::PassKey<StyleRule>, CSSPropertyValueSet* properties)
+    : StyleRuleBase(kPrivate), properties_(properties) {}
+
 const CSSPropertyValueSet& StyleRule::Properties() const {
   if (!properties_) {
     properties_ = CSSParserImpl::ParseDeclarationListForLazyStyle(
@@ -527,6 +533,9 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
 }
 
 StyleRule::~StyleRule() {
+  if (IsPrivateRule()) {
+    return;
+  }
   // Clean up any RareData that the selectors may be owning.
   CSSSelector* selector = SelectorArray();
   for (;;) {
@@ -592,10 +601,12 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(child_rules_);
   visitor->Trace(mixin_parameter_bindings_);
 
-  const CSSSelector* current = SelectorArray();
-  do {
-    visitor->Trace(*current);
-  } while (!(UNSAFE_BUFFERS(current++))->IsLastInSelectorListForOilpan());
+  if (!IsPrivateRule()) {
+    const CSSSelector* current = SelectorArray();
+    do {
+      visitor->Trace(*current);
+    } while (!(UNSAFE_BUFFERS(current++))->IsLastInSelectorListForOilpan());
+  }
 
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
@@ -815,9 +826,19 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kCustomMedia:
       return MakeGarbageCollected<StyleRuleCustomMedia>(
           To<StyleRuleCustomMedia>(*this));
-    case kPrivate:
-      return MakeGarbageCollected<StyleRulePrivate>(
-          To<StyleRulePrivate>(*this));
+    case kPrivate: {
+      auto* private_rule = To<StyleRule>(this);
+      auto* new_rule = StyleRule::CreatePrivateRule(
+          private_rule->Properties().ImmutableCopyIfNeeded());
+      if (GCedHeapVector<Member<StyleRuleBase>>* child_rules =
+              private_rule->ChildRules()) {
+        for (StyleRuleBase* child_rule : *child_rules) {
+          new_rule->AddChildRule(
+              child_rule->Clone(new_parent, mixin_parameter_bindings));
+        }
+      }
+      return new_rule;
+    }
   }
 }
 
@@ -1211,26 +1232,6 @@ StyleRuleResult::StyleRuleResult(const StyleRuleResult& other,
 
 void StyleRuleResult::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
-}
-
-StyleRulePrivate::StyleRulePrivate(
-    HeapVector<Member<const CSSPrivateVariable>> private_variables)
-    : StyleRuleBase(kPrivate),
-      private_variables_(std::move(private_variables)) {}
-
-StyleRulePrivate::StyleRulePrivate(const StyleRulePrivate& other)
-    : StyleRuleBase(other) {
-  private_variables_.ReserveInitialCapacity(other.private_variables_.size());
-  // Deep copy each private variable.
-  for (const CSSPrivateVariable* variable : other.private_variables_) {
-    private_variables_.push_back(
-        MakeGarbageCollected<CSSPrivateVariable>(*variable));
-  }
-}
-
-void StyleRulePrivate::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(private_variables_);
-  StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
 StyleRuleApplyMixin::StyleRuleApplyMixin(

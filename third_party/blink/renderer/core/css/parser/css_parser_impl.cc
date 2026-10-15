@@ -431,10 +431,16 @@ bool CSSParserImpl::ParseDeclarationList(
 
 StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
     const CSSParserContext* context,
+    StyleSheetContents* style_sheet,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     StringView text) {
-  CSSParserImpl parser(context);
+  CSSParserImpl parser(context, style_sheet);
+  // Nested declarations rules bypass ConsumeStyleRuleContents(), which normally
+  // initializes the private-name map for the style rule.
+  PrivateNameMap private_names;
+  base::AutoReset<PrivateNameMap*> reset_private_names(&parser.private_names_,
+                                                       &private_names);
   CSSParserTokenStream stream(text);
 
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
@@ -2542,6 +2548,9 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   // Parse the actual block.
   CSSParserTokenStream::BlockGuard guard(stream);
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
+  PrivateNameMap private_names;
+  base::AutoReset<PrivateNameMap*> reset_private_names(&private_names_,
+                                                       &private_names);
   ConsumeBlockContents(stream, StyleRule::kMixin, CSSNestingType::kMixin,
                        /*parent_rule_for_nesting=*/nullptr,
                        /*nested_declarations_start_index=*/0, &child_rules,
@@ -2594,23 +2603,26 @@ StyleRuleResult* CSSParserImpl::ConsumeResultRule(
 }
 
 // Parses one variable declared inside a @private block e.g. `--foo: 10px` or
-// `--foo <length>: 10px`. Returns nullptr if the declaration is invalid.
-static CSSPrivateVariable* ConsumePrivateVariable(
+// `--foo <length>: 10px`.
+static bool ConsumePrivateVariable(
     CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    PropertyRegistry& registry,
+    PrivateNameMap& private_names,
+    HeapVector<CSSPropertyValue, 64>& properties) {
   CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
 
   const CSSParserToken& name_token = stream.Peek();
   if (!CSSVariableParser::IsValidVariableName(name_token)) {
-    return nullptr;
+    return false;
   }
-  AtomicString name = name_token.Value().ToAtomicString();
+  AtomicString authored_name = name_token.Value().ToAtomicString();
   stream.ConsumeIncludingWhitespace();
 
   std::optional<CSSSyntaxDefinition> type = ConsumeFunctionType(stream);
 
   if (stream.Peek().GetType() != kColonToken) {
-    return nullptr;
+    return false;
   }
   stream.ConsumeIncludingWhitespace();
   // TODO(crbug.com/549237151): !important is invalid in a @private block per
@@ -2624,7 +2636,7 @@ static CSSPrivateVariable* ConsumePrivateVariable(
           /*restricted_value=*/false,
           /*comma_ends_declaration=*/false, important_ignored, context);
   if (!default_value) {
-    return nullptr;
+    return false;
   }
 
   // If a type and a default are both provided, the default must parse
@@ -2638,22 +2650,30 @@ static CSSPrivateVariable* ConsumePrivateVariable(
     if (!syntax.Parse(default_value->OriginalText(), context, local_context,
                       /*is_animation_tainted=*/false,
                       /*is_attr_tainted=*/false)) {
-      return nullptr;
+      return false;
     }
   }
 
   // Reject any tokens left over before the ';' (e.g. a stray type after the
   // value, or other trailing garbage).
   if (!stream.AtEnd()) {
-    return nullptr;
+    return false;
   }
 
-  return MakeGarbageCollected<CSSPrivateVariable>(name, std::move(syntax),
-                                                  default_value, &context);
+  auto* declaration = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+      default_value, &context);
+  auto result = private_names.insert(authored_name, g_null_atom);
+  if (result.is_new_entry) {
+    result.stored_value->value =
+        PropertyRegistry::AllocatePrivatePropertyName();
+  }
+  const AtomicString& private_name = result.stored_value->value;
+  registry.RegisterPrivateProperty(authored_name, private_name, syntax);
+  properties.emplace_back(CSSPropertyName(private_name), *declaration);
+  return true;
 }
 
-StyleRulePrivate* CSSParserImpl::ConsumePrivateRule(
-    CSSParserTokenStream& stream) {
+StyleRule* CSSParserImpl::ConsumePrivateRule(CSSParserTokenStream& stream) {
   wtf_size_t header_start = stream.LookAheadOffset();
 
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
@@ -2672,13 +2692,16 @@ StyleRulePrivate* CSSParserImpl::ConsumePrivateRule(
 
   // Parse the variables declared in the block. Invalid declarations are skipped
   // so that the valid ones are still collected.
-  HeapVector<Member<const CSSPrivateVariable>> private_variables;
+  if (!style_sheet_) {
+    return nullptr;
+  }
+  CHECK(private_names_);
+  PropertyRegistry& registry = style_sheet_->EnsurePrivatePropertyRegistry();
+  HeapVector<CSSPropertyValue, 64> properties;
   stream.ConsumeWhitespace();
   while (!stream.AtEnd()) {
-    if (CSSPrivateVariable* variable =
-            ConsumePrivateVariable(stream, *context_)) {
-      private_variables.push_back(variable);
-    } else {
+    if (!ConsumePrivateVariable(stream, *context_, registry, *private_names_,
+                                properties)) {
       stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
     }
     if (!stream.AtEnd()) {
@@ -2690,7 +2713,8 @@ StyleRulePrivate* CSSParserImpl::ConsumePrivateRule(
     observer_->EndRuleBody(stream.LookAheadOffset());
   }
 
-  return MakeGarbageCollected<StyleRulePrivate>(std::move(private_variables));
+  return StyleRule::CreatePrivateRule(CreateCSSPropertyValueSet(
+      properties, context_->Mode(), context_->GetDocument()));
 }
 
 StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
@@ -3111,6 +3135,9 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
     CSSParserTokenStream& stream,
     bool has_visited_pseudo) {
   StyleRule* style_rule = StyleRule::Create(selector_vector);
+  PrivateNameMap private_names;
+  base::AutoReset<PrivateNameMap*> reset_private_names(&private_names_,
+                                                       &private_names);
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
   if (observer_) {
     observer_->StartRuleBody(stream.Offset());

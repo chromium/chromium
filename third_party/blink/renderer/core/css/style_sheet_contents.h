@@ -46,6 +46,7 @@ class CSSStyleSheetResource;
 class Document;
 class MediaQueryEvaluator;
 class Node;
+class PropertyRegistry;
 class ResourceFetcher;
 class StyleRuleBase;
 class StyleRuleFontFace;
@@ -82,6 +83,10 @@ class CORE_EXPORT StyleSheetContents final
                                bool allow_import_rules = true,
                                CSSDeferPropertyParsing defer_property_parsing =
                                    CSSDeferPropertyParsing::kNo);
+  PropertyRegistry& EnsurePrivatePropertyRegistry();
+  const PropertyRegistry* GetPrivatePropertyRegistry() const {
+    return private_property_registry_.Get();
+  }
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;
@@ -317,6 +322,7 @@ class CORE_EXPORT StyleSheetContents final
   bool is_used_from_resource_cache_ : 1;
 
   Member<const CSSParserContext> parser_context_;
+  Member<PropertyRegistry> private_property_registry_;
 
   HeapHashSet<WeakMember<CSSStyleSheet>> loading_clients_;
   HeapHashSet<WeakMember<CSSStyleSheet>> completed_clients_;

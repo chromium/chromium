@@ -132,8 +132,9 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(
-          context, nesting_context.nesting_type,
-          nesting_context.parent_rule_for_nesting, rule_string);
+          context, style_sheet ? style_sheet->Contents() : nullptr,
+          nesting_context.nesting_type, nesting_context.parent_rule_for_nesting,
+          rule_string);
     }
   }
 

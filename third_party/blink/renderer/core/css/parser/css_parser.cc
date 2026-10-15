@@ -40,11 +40,12 @@ bool CSSParser::ParseDeclarationList(const CSSParserContext* context,
 
 StyleRuleBase* CSSParser::ParseNestedDeclarationsRule(
     const CSSParserContext* context,
+    StyleSheetContents* style_sheet,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     StringView text) {
   return CSSParserImpl::ParseNestedDeclarationsRule(
-      context, nesting_type, parent_rule_for_nesting, text);
+      context, style_sheet, nesting_type, parent_rule_for_nesting, text);
 }
 
 void CSSParser::ParseDeclarationListForInspector(

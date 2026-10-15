@@ -16,13 +16,18 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -178,6 +183,64 @@ TEST_F(CSSStyleSheetTest, ConstructableStyleSheetCacheSharing) {
   // Both sheets should share the exact same StyleSheetContents.
   EXPECT_EQ(sheet1->Contents(), sheet2->Contents());
   EXPECT_TRUE(sheet1->Contents()->IsUsedFromTextCache());
+}
+
+TEST_F(CSSStyleSheetTest, SharedPrivateStyleSheetCopiesPrivateRegistry) {
+  ScopedCSSPrivateForTest scoped_feature(true);
+  String sheet_text = ".target { @private { --x <length>: 10px; } }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* contents = MakeGarbageCollected<StyleSheetContents>(context);
+  auto* first_sheet = MakeGarbageCollected<CSSStyleSheet>(
+      contents, GetDocument(), CSSStyleSheetInit::Create());
+  ASSERT_EQ(ParseSheetResult::kSucceeded,
+            contents->ParseString(sheet_text, /*allow_import_rules=*/false));
+  Document* second_document =
+      Document::CreateForTest(*GetDocument().GetExecutionContext());
+  auto* second_sheet = MakeGarbageCollected<CSSStyleSheet>(
+      contents, *second_document, CSSStyleSheetInit::Create());
+  EXPECT_EQ(first_sheet->Contents(), second_sheet->Contents());
+  contents->SetIsUsedFromTextCache();
+  EXPECT_EQ(first_sheet->Contents()->GetPrivatePropertyRegistry(),
+            second_sheet->Contents()->GetPrivatePropertyRegistry());
+
+  auto* first_style = To<CSSStyleRule>(first_sheet->ItemInternal(0));
+  auto* second_style = To<CSSStyleRule>(second_sheet->ItemInternal(0));
+  CSSRule* first_private = first_style->ItemInternal(0);
+  CSSRule* second_private = second_style->ItemInternal(0);
+  String expected = "@private { --x <length>: 10px; }";
+  EXPECT_EQ(expected, first_private->cssText());
+  EXPECT_EQ(expected, second_private->cssText());
+
+  second_sheet->insertRule(".other {}", 1, ASSERT_NO_EXCEPTION);
+  EXPECT_NE(first_sheet->Contents(), second_sheet->Contents());
+  EXPECT_NE(first_sheet->Contents()->GetPrivatePropertyRegistry(),
+            second_sheet->Contents()->GetPrivatePropertyRegistry());
+  second_style = To<CSSStyleRule>(second_sheet->ItemInternal(0));
+  second_private = second_style->ItemInternal(0);
+  EXPECT_EQ(expected, second_private->cssText());
+}
+
+TEST_F(CSSStyleSheetTest, InsertedPrivateRuleUsesStyleSheetRegistry) {
+  ScopedCSSPrivateForTest scoped_feature(true);
+  auto* sheet = CSSStyleSheet::Create(
+      GetDocument(), CSSStyleSheetInit::Create(), ASSERT_NO_EXCEPTION);
+  sheet->replaceSync(".target {}", ASSERT_NO_EXCEPTION);
+  auto* style_rule = To<CSSStyleRule>(sheet->ItemInternal(0));
+  unsigned index =
+      style_rule->insertRule(GetDocument().GetExecutionContext(),
+                             "@private { --x: red; }", 0, ASSERT_NO_EXCEPTION);
+
+  const auto* private_rule =
+      To<StyleRule>((*style_rule->GetStyleRule()->ChildRules())[index].Get());
+  const AtomicString& private_name =
+      private_rule->Properties().PropertyAt(0).CustomPropertyName();
+  const PropertyRegistry* registry =
+      sheet->Contents()->GetPrivatePropertyRegistry();
+  ASSERT_TRUE(registry);
+  EXPECT_EQ(AtomicString("--x"),
+            registry->AuthoredPrivatePropertyName(private_name));
+  EXPECT_EQ("@private { --x: red; }",
+            style_rule->ItemInternal(index)->cssText());
 }
 
 TEST_F(CSSStyleSheetTest, ConstructableStyleSheetCopyOnWriteMutation) {
