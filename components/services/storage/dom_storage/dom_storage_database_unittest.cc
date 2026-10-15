@@ -114,9 +114,11 @@ class DomStorageDatabaseTest : public testing::Test {
         sqlite_staging_path, sqlite_path);
   }
 
-  DbStatus VerifyMigration(DomStorageDatabase& source,
+  DbStatus VerifyMigration(StorageType storage_type,
+                           DomStorageDatabase& source,
                            DomStorageDatabase& destination) {
-    return DomStorageDatabaseFactory::VerifyMigration(source, destination);
+    return DomStorageDatabaseFactory::VerifyMigration(storage_type, source,
+                                                      destination);
   }
 
   void OpenSessionStorageSqlite(std::unique_ptr<SessionStorageSqlite>* result) {
@@ -591,7 +593,8 @@ TEST_F(DomStorageDatabaseTest, MigrationFailsOnMetadataMismatch) {
                                            std::move(destination_usage)));
 
   // Verification must fail with missing metadata.
-  DbStatus status = VerifyMigration(*source, *destination);
+  DbStatus status =
+      VerifyMigration(StorageType::kLocalStorage, *source, *destination);
   EXPECT_FALSE(status.ok());
 }
 
@@ -612,7 +615,7 @@ TEST_F(DomStorageDatabaseTest, VerifyMigrationFailsOnMapCountMismatch) {
   ASSERT_TRUE(status.ok()) << status.ToString();
 
   // Migration must fail with missing key/value pairs.
-  status = VerifyMigration(*source, *destination);
+  status = VerifyMigration(StorageType::kLocalStorage, *source, *destination);
   EXPECT_FALSE(status.ok());
 }
 
@@ -655,7 +658,7 @@ TEST_F(DomStorageDatabaseTest, VerifyMigrationIgnoresSessionIdOrder) {
 
   // Migration must succeed when the metadata contains the same session IDs in a
   // different order.
-  status = VerifyMigration(*source, *destination);
+  status = VerifyMigration(StorageType::kSessionStorage, *source, *destination);
   EXPECT_TRUE(status.ok()) << status.ToString();
 }
 
@@ -676,7 +679,8 @@ TEST_F(DomStorageDatabaseTest, VerifyMigrationFailsOnMapContentsMismatch) {
                        {{ToBytes("key"), ToBytes("destination-value")}}));
 
   // Verification must fail when key/value pairs differ.
-  DbStatus status = VerifyMigration(*source, *destination);
+  DbStatus status =
+      VerifyMigration(StorageType::kSessionStorage, *source, *destination);
   EXPECT_FALSE(status.ok());
 }
 

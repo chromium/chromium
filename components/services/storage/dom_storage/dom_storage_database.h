@@ -605,7 +605,8 @@ class DomStorageDatabaseFactory {
 
   // Verifies that `destination` contains the same maps, metadata and entries
   // as `source`.
-  static DbStatus VerifyMigration(DomStorageDatabase& source,
+  static DbStatus VerifyMigration(StorageType storage_type,
+                                  DomStorageDatabase& source,
                                   DomStorageDatabase& destination);
 
   // Returns the open callback, lazily initialized on first call. Defaults to

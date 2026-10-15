@@ -42,6 +42,7 @@
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "sql/database.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace storage {
 
@@ -144,27 +145,101 @@ void RecordOpenDatabaseHistograms(StorageType storage_type,
   }
 }
 
-// After LevelDB to SQLite migration, a map locator's storage keys and session
-// IDs must match. For session storage, a map locator's map IDs must match. For
-// local storage, LevelDB source map locators do not have a map ID. However,
-// SQLite candidate map locators include a map ID.
-bool IsMigratedMapMatch(
-    const DomStorageDatabase::MapLocator& source_locator,
-    const DomStorageDatabase::MapLocator& candidate_locator) {
-  // Compare storage keys.
-  if (source_locator.storage_key() != candidate_locator.storage_key()) {
-    return false;
+// Returns OK when `source_map_locator` contains the same key/value pairs as
+// `dest_map_locator`.
+DbStatus VerifyMapKeyValuesMigration(
+    DomStorageDatabase& source,
+    DomStorageDatabase& dest,
+    DomStorageDatabase::MapLocator source_map_locator,
+    DomStorageDatabase::MapLocator dest_map_locator) {
+  ASSIGN_OR_RETURN((std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+                        source_entries),
+                   source.ReadMapKeyValues(std::move(source_map_locator)));
+
+  ASSIGN_OR_RETURN((std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+                        destination_entries),
+                   dest.ReadMapKeyValues(std::move(dest_map_locator)));
+
+  if (source_entries != destination_entries) {
+    return DbStatus::Corruption("invalid entries");
+  }
+  return DbStatus::OK();
+}
+
+// Returns OK when each map in `source_maps` contains the same metadata and
+// key/value pairs as each map in `dest_maps`.  Local storage does not use
+// sessions so ignore all session IDs.  Unlike the SQLite implementation, local
+// storage LevelDB does not use map IDs so also ignore all map IDs.
+DbStatus VerifyLocalStorageMigration(
+    DomStorageDatabase& source,
+    DomStorageDatabase& dest,
+    std::vector<DomStorageDatabase::MapMetadata> source_maps,
+    std::vector<DomStorageDatabase::MapMetadata> dest_maps) {
+  absl::flat_hash_map<std::reference_wrapper<const blink::StorageKey>,
+                      std::reference_wrapper<DomStorageDatabase::MapMetadata>>
+      dest_map_lookup;
+
+  for (DomStorageDatabase::MapMetadata& dest_map : dest_maps) {
+    dest_map_lookup.insert({dest_map.map_locator.storage_key(), dest_map});
   }
 
-  // Compare map IDs for session storage.
-  if (source_locator.map_id().has_value() &&
-      source_locator.map_id() != candidate_locator.map_id()) {
-    return false;
+  for (DomStorageDatabase::MapMetadata& source_map : source_maps) {
+    auto it = dest_map_lookup.find(source_map.map_locator.storage_key());
+    if (it == dest_map_lookup.end()) {
+      return DbStatus::Corruption("missing map");
+    }
+
+    DomStorageDatabase::MapMetadata& dest_map = it->second;
+    if (source_map.last_accessed != dest_map.last_accessed ||
+        source_map.last_modified != dest_map.last_modified ||
+        source_map.total_size != dest_map.total_size) {
+      return DbStatus::Corruption("invalid metadata");
+    }
+
+    DB_RETURN_IF_ERROR(VerifyMapKeyValuesMigration(
+        source, dest, std::move(source_map.map_locator),
+        std::move(dest_map.map_locator)));
+  }
+  return DbStatus::OK();
+}
+
+// Returns OK when each map in `source_maps` contains the same metadata and
+// key/value pairs as each map in `dest_maps`.  Session storage does not record
+// usage metadata so ignore all usage.
+DbStatus VerifySessionStorageMigration(
+    DomStorageDatabase& source,
+    DomStorageDatabase& dest,
+    std::vector<DomStorageDatabase::MapMetadata> source_maps,
+    std::vector<DomStorageDatabase::MapMetadata> dest_maps) {
+  absl::flat_hash_map</*map_id=*/int64_t,
+                      std::reference_wrapper<DomStorageDatabase::MapMetadata>>
+      dest_map_lookup;
+
+  for (DomStorageDatabase::MapMetadata& dest_map : dest_maps) {
+    dest_map_lookup.insert({dest_map.map_locator.map_id().value(), dest_map});
   }
 
-  // Compare session IDs.
-  return std::ranges::is_permutation(source_locator.session_ids(),
-                                     candidate_locator.session_ids());
+  for (DomStorageDatabase::MapMetadata& source_map : source_maps) {
+    auto it = dest_map_lookup.find(source_map.map_locator.map_id().value());
+    if (it == dest_map_lookup.end()) {
+      return DbStatus::Corruption("missing map");
+    }
+
+    DomStorageDatabase::MapLocator& source_map_locator = source_map.map_locator;
+    DomStorageDatabase::MapLocator& dest_map_locator =
+        it->second.get().map_locator;
+
+    if (source_map_locator.storage_key() != dest_map_locator.storage_key() ||
+        !std::ranges::is_permutation(source_map_locator.session_ids(),
+                                     dest_map_locator.session_ids())) {
+      return DbStatus::Corruption("invalid metadata");
+    }
+
+    DB_RETURN_IF_ERROR(
+        VerifyMapKeyValuesMigration(source, dest, std::move(source_map_locator),
+                                    std::move(dest_map_locator)));
+  }
+  return DbStatus::OK();
 }
 
 }  // namespace
@@ -579,7 +654,7 @@ void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
   // enabled.
   if (kDomStorageSqliteMigrationVerification.Get()) {
     DbStatus verify_status =
-        VerifyMigration(*source_database, *sqlite_destination);
+        VerifyMigration(storage_type, *source_database, *sqlite_destination);
     if (!verify_status.ok()) {
       std::move(callback).Run(OpenResult::FromError(std::move(verify_status)));
       return;
@@ -1019,11 +1094,9 @@ DbStatus DomStorageDatabaseFactory::MoveTempSqliteToFinalLocation(
   return DbStatus::OK();
 }
 
-// TODO(crbug.com/377242771): Reduce the time complexity of migration
-// verification.
-//
 // static
 DbStatus DomStorageDatabaseFactory::VerifyMigration(
+    StorageType storage_type,
     DomStorageDatabase& source,
     DomStorageDatabase& destination) {
   ASSIGN_OR_RETURN(DomStorageDatabase::Metadata source_metadata,
@@ -1036,43 +1109,18 @@ DbStatus DomStorageDatabaseFactory::VerifyMigration(
       destination_metadata.map_metadata.size()) {
     return DbStatus::Corruption("invalid map count");
   }
+  switch (storage_type) {
+    case StorageType::kLocalStorage:
+      return VerifyLocalStorageMigration(
+          source, destination, std::move(source_metadata.map_metadata),
+          std::move(destination_metadata.map_metadata));
 
-  for (const DomStorageDatabase::MapMetadata& source_map :
-       source_metadata.map_metadata) {
-    const DomStorageDatabase::MapMetadata* destination_map = nullptr;
-
-    for (const DomStorageDatabase::MapMetadata& candidate :
-         destination_metadata.map_metadata) {
-      if (IsMigratedMapMatch(source_map.map_locator, candidate.map_locator)) {
-        destination_map = &candidate;
-        break;
-      }
-    }
-
-    if (!destination_map) {
-      return DbStatus::Corruption("missing map");
-    }
-
-    if (source_map.last_accessed != destination_map->last_accessed ||
-        source_map.last_modified != destination_map->last_modified ||
-        source_map.total_size != destination_map->total_size) {
-      return DbStatus::Corruption("invalid metadata");
-    }
-
-    ASSIGN_OR_RETURN((std::map<DomStorageDatabase::Key,
-                               DomStorageDatabase::Value> source_entries),
-                     source.ReadMapKeyValues(source_map.map_locator.Clone()));
-
-    ASSIGN_OR_RETURN(
-        (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
-             destination_entries),
-        destination.ReadMapKeyValues(destination_map->map_locator.Clone()));
-
-    if (source_entries != destination_entries) {
-      return DbStatus::Corruption("invalid entries");
-    }
+    case StorageType::kSessionStorage:
+      return VerifySessionStorageMigration(
+          source, destination, std::move(source_metadata.map_metadata),
+          std::move(destination_metadata.map_metadata));
   }
-  return DbStatus::OK();
+  NOTREACHED();
 }
 
 }  // namespace storage
