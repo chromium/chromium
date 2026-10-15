@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
@@ -378,6 +379,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
     web_state->SetCurrentURL(GURL("chrome://newtab/"));
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+    NewTabPageTabHelper::CreateForWebState(web_state.get());
     GeminiTabHelper::CreateForWebState(web_state.get());
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
@@ -1845,6 +1847,59 @@ TEST_F(GeminiContainerMediatorTest,
   [mediator_ didFinishLoadingConversationWithID:@"conversation_123"
                                           error:error];
   EXPECT_TRUE(consumer.isZeroState);
+}
+
+// Tests that inserting and activating a New Tab Page `WebState` minimizes the
+// assistant container, whereas inserting a non-NTP `WebState`, inserting a
+// background `WebState`, or switching between existing `WebState`s does not.
+TEST_F(GeminiContainerMediatorTest, TestNewTabPageInsertedMinimizesContainer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  AppendActiveWebState();
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
+
+  // Inserting and activating a New Tab Page `WebState` should minimize the
+  // container.
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
+  AppendActiveWebState();
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+
+  // Inserting and activating a non-NTP `WebState` should not minimize the
+  // container.
+  auto non_ntp_web_state = std::make_unique<web::FakeWebState>();
+  non_ntp_web_state->SetBrowserState(profile_.get());
+  non_ntp_web_state->SetCurrentURL(GURL("https://example.com"));
+  non_ntp_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  NewTabPageTabHelper::CreateForWebState(non_ntp_web_state.get());
+  GeminiTabHelper::CreateForWebState(non_ntp_web_state.get());
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(non_ntp_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // Inserting a background NTP `WebState` should not minimize the container.
+  auto background_web_state = std::make_unique<web::FakeWebState>();
+  background_web_state->SetBrowserState(profile_.get());
+  background_web_state->SetCurrentURL(GURL("chrome://newtab/"));
+  background_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  NewTabPageTabHelper::CreateForWebState(background_web_state.get());
+  GeminiTabHelper::CreateForWebState(background_web_state.get());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(background_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(false));
+
+  // Switching to an existing `WebState` should not minimize the container.
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 }
 
 }  // namespace
