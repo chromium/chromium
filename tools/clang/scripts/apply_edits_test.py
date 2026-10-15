@@ -602,7 +602,7 @@ struct S {};
 
   def testPlatformIfDefs(self):
     # This test is based on
-    # //base/third_party/double_conversion/double-conversion/utils.h
+    # //base/third_party/double_conversion/src/double-conversion/utils.h
     # We need to insert the new header in a non-conditional part.
     old_contents = '''
 #ifndef DOUBLE_CONVERSION_UTILS_H_

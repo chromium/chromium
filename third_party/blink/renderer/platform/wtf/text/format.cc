@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/span_printf.h"
-#include "base/third_party/double_conversion/double-conversion/double-conversion.h"
+#include "base/third_party/double_conversion/src/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"

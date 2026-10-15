@@ -1,7 +1,7 @@
 import("//build/shim_headers.gni")
 
 shim_headers("double_conversion_shim") {
-  root_path = "."
+  root_path = "src"
   headers = [
     "double-conversion/bignum.h",
     "double-conversion/cached-powers.h",

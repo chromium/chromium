@@ -37,7 +37,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/third_party/double_conversion/double-conversion/double-conversion.h"
+#include "base/third_party/double_conversion/src/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 namespace blink {
