@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/buildflags/buildflags.h"
@@ -82,6 +83,9 @@ class TabMenuModel : public ui::SimpleMenuModel {
   void AppendGlicItems(int index,
                        int num_tabs,
                        const std::vector<int>& indices);
+  void AppendAiModeItems(int index,
+                         int num_tabs,
+                         base::span<tabs::TabInterface* const> tabs);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Support for appending and executing commands for extension items in the
@@ -100,6 +104,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel> arrange_split_view_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> split_mute_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> glic_tab_sub_menu_model_;
+  std::unique_ptr<ui::SimpleMenuModel> contextual_tasks_tab_sub_menu_model_;
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 
   // `tab_strip_` needs to outlive this class.

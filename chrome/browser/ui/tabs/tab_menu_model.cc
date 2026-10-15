@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/contextual_tasks_tab_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -52,6 +54,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -269,6 +272,33 @@ void TabMenuModel::AppendGlicItems(int index,
     AddItem(TabStripModel::CommandGlicUnshare,
             l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_UNSHARE));
   }
+}
+
+void TabMenuModel::AppendAiModeItems(
+    int index,
+    int num_tabs,
+    base::span<tabs::TabInterface* const> tabs) {
+  const bool has_valid_url =
+      std::ranges::any_of(tabs, [](tabs::TabInterface* tab) {
+        content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+        return contents && contextual_tasks::IsUrlValidForContextSharing(
+                               contents->GetLastCommittedURL());
+      });
+  if (!has_valid_url) {
+    return;
+  }
+
+  contextual_tasks_tab_sub_menu_model_ =
+      std::make_unique<contextual_tasks::ContextualTasksTabSubMenuModel>(
+          tab_strip_, index);
+  const ui::ImageModel ai_mode_icon = ui::ImageModel::FromVectorIcon(
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
+      ui::kColorMenuIcon, kTabMenuIconSize);
+
+  AddSubMenuWithIcon(
+      TabStripModel::CommandAiModeShare,
+      l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_AI_MODE_SHARE, num_tabs),
+      contextual_tasks_tab_sub_menu_model_.get(), ai_mode_icon);
 }
 
 // Capitalization Policy (go/chrome-capitalization):
@@ -542,10 +572,28 @@ void TabMenuModel::Build(int index) {
 
   const bool show_glic_items =
       glic::GlicEnabling::IsReadyForProfile(tab_strip_->profile());
+  const std::vector<tabs::TabInterface*> tabs =
+      tab_strip_->GetTabsAtIndices(indices);
+  const bool has_valid_ai_mode_url =
+      std::ranges::any_of(tabs, [](tabs::TabInterface* tab) {
+        content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+        return contents && contextual_tasks::IsUrlValidForContextSharing(
+                               contents->GetLastCommittedURL());
+      });
+  const bool show_ai_mode_items =
+      contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled() &&
+      contextual_tasks::CanShareTabContext(tab_strip_->profile()) &&
+      has_valid_ai_mode_url;
   bool glic_displayed = false;
-  if (features::IsMenuSimplificationEnabled() && show_glic_items) {
+  if (features::IsMenuSimplificationEnabled() &&
+      (show_glic_items || show_ai_mode_items)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AppendGlicItems(index, num_tabs, indices);
+    if (show_glic_items) {
+      AppendGlicItems(index, num_tabs, indices);
+    }
+    if (show_ai_mode_items) {
+      AppendAiModeItems(index, num_tabs, tabs);
+    }
     AddSeparator(ui::NORMAL_SEPARATOR);
     glic_displayed = true;
   }
@@ -573,6 +621,9 @@ void TabMenuModel::Build(int index) {
 
   if (show_glic_items && !glic_displayed) {
     AppendGlicItems(index, num_tabs, indices);
+  }
+  if (show_ai_mode_items && !glic_displayed) {
+    AppendAiModeItems(index, num_tabs, tabs);
   }
 
   if (display_send_to_self) {

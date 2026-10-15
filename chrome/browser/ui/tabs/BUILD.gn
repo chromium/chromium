@@ -195,6 +195,7 @@ if (!is_android) {
       "//components/commerce/core:commerce_constants",
       "//components/commerce/core:feature_list",
       "//components/contextual_tasks/public",
+      "//components/contextual_tasks/public:feature_list",
       "//components/feed:feature_list",
     ]
   }
@@ -1105,7 +1106,10 @@ if (!is_android) {
       "//components/commerce/core:shopping_service",
       "//components/commerce/core:shopping_service_test_support",
       "//components/content_settings/core/browser",
+      "//components/contextual_search:prefs",
+      "//components/contextual_search:public",
       "//components/contextual_tasks/public",
+      "//components/contextual_tasks/public:feature_list",
       "//components/contextual_tasks/public:test_support",
       "//components/optimization_guide/core",
       "//components/optimization_guide/core:features",
