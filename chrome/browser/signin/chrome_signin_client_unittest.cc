@@ -13,6 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -455,4 +458,47 @@ TEST(ChromeSigninClientTest, ClearSigninPrefsForIsolatedProfile) {
       parent_device_id);
   EXPECT_EQ(profile->GetPrefs()->GetList(prefs::kAccountInfo),
             parent_account_info);
+}
+
+TEST(ChromeSigninClientTest, IsAccountSignedInOnOtherProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  TestingProfile* profile1 = profile_manager.CreateTestingProfile("Profile 1");
+  TestingProfile* profile2 = profile_manager.CreateTestingProfile("Profile 2");
+
+  ProfileAttributesStorage& storage =
+      profile_manager.profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry1 =
+      storage.GetProfileAttributesWithPath(profile1->GetPath());
+  ProfileAttributesEntry* entry2 =
+      storage.GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry1, nullptr);
+  ASSERT_NE(entry2, nullptr);
+
+  const GaiaId gaia1("gaia_1");
+  const GaiaId gaia2("gaia_2");
+  const GaiaId gaia_unassigned("gaia_unassigned");
+
+  entry1->SetAuthInfo(gaia1, u"user1@gmail.com",
+                      /*is_consented_primary_account=*/false);
+  entry2->SetAuthInfo(gaia2, u"user2@gmail.com",
+                      /*is_consented_primary_account=*/false);
+
+  ChromeSigninClient client1(profile1);
+  // Signed in on the same profile -> false.
+  EXPECT_FALSE(client1.IsAccountSignedInOnOtherProfile(gaia1));
+  // Signed in on another profile -> true.
+  EXPECT_TRUE(client1.IsAccountSignedInOnOtherProfile(gaia2));
+  // Omitted other profile -> ignored (false).
+  entry2->SetIsEphemeral(true);
+  entry2->SetIsOmitted(true);
+  EXPECT_FALSE(client1.IsAccountSignedInOnOtherProfile(gaia2));
+  entry2->SetIsOmitted(false);
+  entry2->SetIsEphemeral(false);
+  // Not signed in on any profile -> false.
+  EXPECT_FALSE(client1.IsAccountSignedInOnOtherProfile(gaia_unassigned));
+  // Empty GaiaId -> false.
+  EXPECT_FALSE(client1.IsAccountSignedInOnOtherProfile(GaiaId()));
 }

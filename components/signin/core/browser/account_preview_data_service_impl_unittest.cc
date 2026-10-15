@@ -3267,4 +3267,72 @@ TEST_F(AccountPreviewDataServiceTest,
   run_loop.Run();
 }
 
+TEST_F(
+    AccountPreviewDataServiceTest,
+    GetPreferredAccountForPromoDisregardsPreferredAccountSignedInOnOtherProfile) {
+  base::HistogramTester histogram_tester;
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  static_cast<TestSigninClient*>(identity_test_env_.signin_client())
+      ->set_accounts_signed_in_on_other_profiles({account1.GetGaiaId()});
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()},
+       {std::string(account2.GetEmail()), account2.GetGaiaId()}});
+#endif
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50});
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 10});
+  waiter.Wait();
+
+  // account1 is the preferred candidate (more passwords), but because it is
+  // signed in on another profile, it is disregarded and no account is selected.
+  EXPECT_EQ(service_->GetPreferredAccountForPromo(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kNoSelectionSignedInOnOtherProfile, 1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingDisregardsAccountSignedInOnOtherProfile) {
+  base::HistogramTester histogram_tester;
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  static_cast<TestSigninClient*>(identity_test_env_.signin_client())
+      ->set_accounts_signed_in_on_other_profiles({secondary.GetGaiaId()});
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(
+      &test_url_loader_factory_, {.password_count = 50},
+      {DevicePreview{
+          .cache_guid = "other_device",
+          .last_updated = base::Time::Now(),
+          .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}});
+  waiter.Wait();
+
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo2",
+      AccountSwitchingSelectionOutcome::
+          kWouldNotShowSecondarySignedInOnOtherProfile,
+      1);
+}
+
 }  // namespace signin

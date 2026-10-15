@@ -56,6 +56,7 @@ class IOSChromeSigninClient : public SigninClient {
       signin::PrimaryAccountChangeEvent event_details) override;
   signin::OAuthConsumer GetOAuthConsumerFromId(
       signin::OAuthConsumerId oauth_consumer_id) const override;
+  bool IsAccountSignedInOnOtherProfile(const GaiaId& gaia_id) const override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.

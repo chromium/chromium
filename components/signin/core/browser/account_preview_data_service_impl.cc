@@ -809,6 +809,9 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
 #else
         .is_external_app_primary = false,
 #endif
+        .is_signed_in_on_other_profile =
+            signin_client_->IsAccountSignedInOnOtherProfile(
+                account.GetGaiaId()),
     });
   }
   return contexts;

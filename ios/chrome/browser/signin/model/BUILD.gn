@@ -478,6 +478,7 @@ source_set("unit_tests") {
     "device_accounts_provider_impl_unittest.mm",
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
+    "ios_chrome_signin_client_unittest.mm",
     "pattern_account_restriction_unittest.mm",
     "signin_disabled_browser_agent_unittest.mm",
     "signin_profile_info_updater_unittest.mm",

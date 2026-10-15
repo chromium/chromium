@@ -843,4 +843,36 @@ TEST_F(AccountPreviewMetricsRecorderTest,
                                     2);
 }
 
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSelectionHeuristicScores_NoSelectionSignedInOnOtherProfile) {
+  base::HistogramTester histogram_tester;
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data0;
+  data0.counts[syncer::PASSWORDS] = switches::kPasswordsQ3Threshold.Get();
+
+  AccountPreviewHeuristicContext ctx0{
+      .gaia_id = GaiaId("user0"),
+      .preview_data = &data0,
+      .is_signed_in_on_other_profile = true,
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {ctx0};
+  recorder.RecordSelectionHeuristicResult(
+      accounts, ComputePreferredAccountForPromo(accounts));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kNoSelectionSignedInOnOtherProfile, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason.Profile1",
+      AccountPreviewSelectionReason::kNoSelectionSignedInOnOtherProfile, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 0);
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref),
+            base::Time::Now());
+}
+
 }  // namespace signin
