@@ -62,6 +62,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "chrome-build-team@google.com",
 )
 

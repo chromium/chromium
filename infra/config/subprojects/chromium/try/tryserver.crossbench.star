@@ -18,6 +18,7 @@ try_.defaults.set(
     builderless = True,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
         "chromium_tests.resultdb_module": 100,

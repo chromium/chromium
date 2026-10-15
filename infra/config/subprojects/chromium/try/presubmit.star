@@ -15,6 +15,7 @@ try_.defaults.set(
     pool = try_constants.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     list_view = "presubmit",
 
     # These builders don't run recipes that use the flakiness module, so prevent

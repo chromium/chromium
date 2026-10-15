@@ -33,7 +33,9 @@ _UPDATER_LINK = linkify("https://chromium.googlesource.com/chromium/src/+/main/d
 _LOCATION_FILTER = ["chrome/updater/.+", "chrome/enterprise_companion/.+"]
 
 def updater_linux_builder(*, name, **kwargs):
+    kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.LINUX_DEFAULT)
+    kwargs.setdefault("ssd", True)
     kwargs.setdefault("siso_project", siso.project.DEFAULT_UNTRUSTED)
     kwargs.setdefault("siso_remote_jobs", siso.remote_jobs.LOW_JOBS_FOR_CQ)
     return try_.builder(name = name, **kwargs)

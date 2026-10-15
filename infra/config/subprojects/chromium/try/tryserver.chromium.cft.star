@@ -47,6 +47,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
     siso_remote_linking = True,
 )
 

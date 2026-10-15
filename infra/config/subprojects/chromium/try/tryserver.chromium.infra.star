@@ -151,6 +151,7 @@ try_.builder(
     builderless = True,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "chrome-dev-infra-team@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -314,7 +315,9 @@ try_.builder(
         ),
     ),
     builderless = True,
+    cores = 8,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
     execution_timeout = 2 * time.hour,
     properties = {
