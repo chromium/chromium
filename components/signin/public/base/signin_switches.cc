@@ -435,6 +435,13 @@ BASE_FEATURE(kEnableAccountPreviewPreferredAccountFRE,
 // enabled.
 BASE_FEATURE(kEnableAccountPreviewSwitchingAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
+// When true, skips cooldowns and throttling limits for the account switching
+// promo. Used for manual and automated testing.
+BASE_FEATURE_PARAM(bool,
+                   kEnableAccountPreviewSwitchingAccountSkipCooldown,
+                   &kEnableAccountPreviewSwitchingAccount,
+                   "SkipCooldown",
+                   false);
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag controls whether the CCT captures the account name of the 1p app

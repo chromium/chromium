@@ -1412,6 +1412,16 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
          kEnterpriseProxyErrorForcedSignInRequired, nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kEnableAccountPreviewSwitchingAccountSkipCooldownParams[] = {
+        {switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+         "true"}};
+
+const FeatureEntry::FeatureVariation
+    kEnableAccountPreviewSwitchingAccountVariations[] = {
+        {"(Skip Cooldown)",
+         kEnableAccountPreviewSwitchingAccountSkipCooldownParams, nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2862,7 +2872,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableAccountPreviewSwitchingAccountName,
      flag_descriptions::kEnableAccountPreviewSwitchingAccountDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewSwitchingAccount)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kEnableAccountPreviewSwitchingAccount,
+         kEnableAccountPreviewSwitchingAccountVariations,
+         "EnableAccountPreviewSwitchingAccount")},
     {"aim-history-threads-management",
      flag_descriptions::kAimHistoryThreadsManagementName,
      flag_descriptions::kAimHistoryThreadsManagementDescription,

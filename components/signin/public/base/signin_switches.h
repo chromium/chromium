@@ -384,6 +384,11 @@ BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFRE);
 // `kEnableAccountPreviewData` is not enabled.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewSwitchingAccount);
+// When true, skips cooldowns and throttling limits for the account switching
+// promo. Used for manual and automated testing.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kEnableAccountPreviewSwitchingAccountSkipCooldown);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables the use of 1P app account information on Android in preferred account

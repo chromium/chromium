@@ -193,6 +193,7 @@
 				<string>promos_manager::Promo::DockingPromo</string>
 				<string>promos_manager::Promo::BWGPromo</string>
 				<string>promos_manager::Promo::FullscreenSignin</string>
+				<string>promos_manager::Promo::AccountSwitching</string>
 				<string>promos_manager::Promo::WelcomeBack</string>
 				<string>promos_manager::Promo::EphemeralTheme</string>
 			</array>
@@ -210,6 +211,7 @@
 				<string>Docking Promo</string>
 				<string>BWG Promo</string>
 				<string>Fullscreen sign-in</string>
+				<string>Account Switching Promo</string>
 				<string>Welcome Back Promo</string>
 				<string>Ephemeral Theme</string>
 			</array>
