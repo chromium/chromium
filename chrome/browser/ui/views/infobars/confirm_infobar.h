@@ -15,6 +15,7 @@
 
 namespace views {
 class Label;
+class Link;
 class MdTextButton;
 }  // namespace views
 
@@ -61,6 +62,7 @@ class ConfirmInfoBar : public InfoBarView {
   views::MdTextButton* ok_button_for_testing() { return ok_button_; }
   views::MdTextButton* cancel_button_for_testing() { return cancel_button_; }
   views::MdTextButton* extra_button_for_testing() { return extra_button_; }
+  views::Link* link_for_testing() { return link_; }
 
   int target_height_for_testing() const { return target_height(); }
 

@@ -180,7 +180,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   auto* right_layout = right_side_container_->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
   right_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   right_side_container_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
 
   if (this->delegate()->IsCloseable()) {
