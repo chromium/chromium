@@ -493,10 +493,24 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
   // scenario that it's unlikely to matter much in practice.
 
   long_press_position_in_root_frame_ = gesture_event.PositionInRootFrame();
-  HitTestLocation location(frame_->View()->ConvertFromRootFrame(
-      gfx::ToFlooredPoint(long_press_position_in_root_frame_)));
-  HitTestResult hit_test_result =
-      frame_->GetEventHandler().HitTestResultAtLocation(location);
+  HitTestResult hit_test_result;
+  if (RuntimeEnabledFeatures::LongPressHitTestInFrameEnabled()) {
+    LocalFrame& main_frame = frame_->LocalFrameRoot();
+    if (!frame_->View() || !main_frame.View() ||
+        !main_frame.View()->UpdateAllLifecyclePhasesExceptPaint(
+            DocumentUpdateReason::kHitTest)) {
+      return WebInputEventResult::kNotHandled;
+    }
+    HitTestLocation location(frame_->View()->ConvertFromRootFrame(
+        gfx::ToFlooredPoint(long_press_position_in_root_frame_)));
+    hit_test_result = event_handling_util::HitTestResultInFrame(
+        frame_, location, GetHitTypeForGestureType(gesture_event.GetType()));
+  } else {
+    HitTestLocation location(frame_->View()->ConvertFromRootFrame(
+        gfx::ToFlooredPoint(long_press_position_in_root_frame_)));
+    hit_test_result =
+        frame_->GetEventHandler().HitTestResultAtLocation(location);
+  }
 
   gesture_context_menu_deferred_ = false;
 

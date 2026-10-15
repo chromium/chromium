@@ -723,6 +723,13 @@ bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
     Node* target_node,
     const SelectionInFlatTree& selection,
     const SetSelectionOptions& set_selection_options) {
+  if (RuntimeEnabledFeatures::LongPressHitTestInFrameEnabled()) {
+    if ((target_node && target_node->GetDocument() != GetDocument()) ||
+        !selection.Anchor().IsValidFor(GetDocument()) ||
+        !selection.Focus().IsValidFor(GetDocument())) {
+      return false;
+    }
+  }
   if (target_node && target_node->GetLayoutObject() &&
       !target_node->GetLayoutObject()->IsSelectable())
     return false;
@@ -736,6 +743,11 @@ bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
   // |DispatchSelectStart()| can change document hosted by |frame_|.
   if (!Selection().IsAvailable())
     return false;
+  if (RuntimeEnabledFeatures::LongPressHitTestInFrameEnabled() &&
+      (!selection.Anchor().IsValidFor(GetDocument()) ||
+       !selection.Focus().IsValidFor(GetDocument()))) {
+    return false;
+  }
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.

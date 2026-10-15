@@ -4412,4 +4412,53 @@ TEST_F(
   EXPECT_TRUE(popover->popoverOpen());
 }
 
+// https://crbug.com/572893186
+TEST_F(EventHandlerSimTest,
+       LongPressRemovingOverlayDoesNotSelectCrossFrameContent) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest frame_resource("https://cross-origin.com/iframe.html",
+                            "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      #iframe, #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 200px;
+        border: none;
+      }
+    </style>
+    <iframe id="iframe" src="https://cross-origin.com/iframe.html"></iframe>
+    <div id="overlay">overlay</div>
+    <script>
+      const overlay = document.getElementById('overlay');
+      overlay.addEventListener('gesturelongpress', () => {
+        overlay.remove();
+      });
+    </script>
+  )HTML");
+  frame_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; font-size: 20px; }</style>
+    <div id="victim">SELECTABLE</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  LongPressEventBuilder long_press(gfx::PointF(20, 10));
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(long_press);
+
+  EXPECT_FALSE(GetDocument().getElementById(AtomicString("overlay")));
+  const SelectionInDomTree& main_selection =
+      GetDocument().GetFrame()->Selection().GetSelectionInDomTree();
+  EXPECT_TRUE(main_selection.Anchor().IsValidFor(GetDocument()));
+  EXPECT_TRUE(main_selection.Focus().IsValidFor(GetDocument()));
+  EXPECT_EQ("", GetDocument().GetFrame()->Selection().SelectedText());
+}
+
 }  // namespace blink
