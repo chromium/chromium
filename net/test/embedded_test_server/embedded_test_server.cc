@@ -20,6 +20,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
@@ -467,11 +468,25 @@ EmbeddedTestServer::InitializeCertAndKeyFromFile() {
 std::vector<SSLServerCredential> EmbeddedTestServer::GenerateCertAndKeys() {
   std::vector<SSLServerCredential> ssl_server_credentials;
 
-  // Create AIA server and start listening. Need to have the socket initialized
-  // so the URL can be put in the AIA records of the generated certs.
-  aia_http_server_ = std::make_unique<EmbeddedTestServer>(TYPE_HTTP);
-  if (!aia_http_server_->InitializeAndListen()) {
-    return {};
+  aia_http_server_.reset();
+  bool needs_aia_server = false;
+  for (const auto& config : cert_configs_) {
+    if (config.ocsp_config.response_type != OCSPConfig::ResponseType::kOff ||
+        config.intermediate_ocsp_config.response_type !=
+            OCSPConfig::ResponseType::kOff ||
+        config.intermediate == IntermediateType::kByAIA) {
+      needs_aia_server = true;
+      break;
+    }
+  }
+  if (needs_aia_server) {
+    // Create AIA server and start listening. Need to have the socket
+    // initialized so the URL can be put in the AIA records of the generated
+    // certs.
+    aia_http_server_ = std::make_unique<EmbeddedTestServer>(TYPE_HTTP);
+    if (!aia_http_server_->InitializeAndListen()) {
+      return {};
+    }
   }
 
   credentials_.clear();
@@ -489,7 +504,7 @@ std::vector<SSLServerCredential> EmbeddedTestServer::GenerateCertAndKeys() {
   // `StartAcceptingConnections` so that this server and the AIA server start
   // at the same time. (If the test only called InitializeAndListen they expect
   // no threads to be created yet.)
-  if (io_thread_) {
+  if (io_thread_ && aia_http_server_) {
     aia_http_server_->StartAcceptingConnections();
   }
 
@@ -537,10 +552,18 @@ EmbeddedTestServer::GenerateCertAndKey(
 
   std::unique_ptr<CertBuilder> root;
   switch (cert_config.root) {
-    case RootType::kTestRootCa:
-      root = CertBuilder::FromStaticCertFile(
-          certs_dir.AppendASCII("root_ca_cert.pem"));
+    case RootType::kTestRootCa: {
+      static base::NoDestructor<scoped_refptr<X509Certificate>> g_root_cert(
+          ImportCertFromFile(certs_dir.AppendASCII("root_ca_cert.pem")));
+      static base::NoDestructor<bssl::UniquePtr<EVP_PKEY>> g_root_key(
+          key_util::LoadEVP_PKEYFromPEM(
+              certs_dir.AppendASCII("root_ca_cert.pem")));
+      CHECK(*g_root_cert);
+      CHECK(*g_root_key);
+      root = CertBuilder::FromStaticCert((*g_root_cert)->cert_buffer(),
+                                         g_root_key->get());
       break;
+    }
     case RootType::kUniqueRoot:
       root = std::make_unique<CertBuilder>(nullptr, nullptr);
       root->SetValidity(now - base::Days(100), now + base::Days(1000));
