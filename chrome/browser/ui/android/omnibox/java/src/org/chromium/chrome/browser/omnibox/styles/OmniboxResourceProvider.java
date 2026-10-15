@@ -427,7 +427,10 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     public @ColorInt int getSuggestionBackgroundColor(
             @FuseboxLayoutMode int layoutMode, boolean isDropdownContainer) {
         if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            return getPopoverSuggestionBackgroundColor(mContext, getBrandedColorScheme());
+            return mCache.getColor(
+                    isIncognito()
+                            ? R.color.gm3_baseline_surface_container_dark
+                            : R.color.omnibox_popover_suggestion_bg_color);
         }
         return isDropdownContainer
                 ? getSuggestionsDropdownBackgroundColor(mContext, getBrandedColorScheme())
@@ -435,21 +438,22 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Get tablet toolbar text box background color.
-     *
-     * @see #getTabletToolbarTextBoxBackgroundColor(Context, ...)
+     * Returns the background color for the toolbar pill for tablets. Because tablets always ignore
+     * any branded theme, can collapse to if incog or not.
      */
     public @ColorInt int getTabletToolbarTextBoxBackgroundColor() {
-        return getTabletToolbarTextBoxBackgroundColor(mContext, getBrandedColorScheme());
+        return mCache.getColor(
+                isIncognito()
+                        ? R.color.toolbar_text_box_background_incognito
+                        : R.color.toolbar_text_box_bg_color);
     }
 
-    /**
-     * Get tablet toolbar text box standby background color.
-     *
-     * @see #getTabletToolbarTextBoxStandbyBackgroundColor(Context, ...)
-     */
+    /** Returns the background color for the toolbar pill when the omnibox is in standby. */
     public @ColorInt int getTabletToolbarTextBoxStandbyBackgroundColor() {
-        return getTabletToolbarTextBoxStandbyBackgroundColor(mContext, getBrandedColorScheme());
+        // Not cached: resolved against a night-mode wrapped context in incognito.
+        Context wrappedContext =
+                maybeWrapContextForIncognitoColorScheme(mContext, getBrandedColorScheme());
+        return SemanticColorUtils.getColorSurface(wrappedContext);
     }
 
     /** Gets the margin, in pixels, on either side of an omnibox suggestion list. */
@@ -1006,17 +1010,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Returns the background color for popover suggestions for the given {@link BrandedColorScheme}
-     * with the given context.
-     */
-    public static @ColorInt int getPopoverSuggestionBackgroundColor(
-            Context context, @BrandedColorScheme int colorScheme) {
-        return colorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.gm3_baseline_surface_container_dark)
-                : ContextCompat.getColor(context, R.color.omnibox_popover_suggestion_bg_color);
-    }
-
-    /**
      * Returns the background color for the suggestions dropdown for the given {@link
      * BrandedColorScheme} with the given context.
      */
@@ -1025,25 +1018,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return brandedColorScheme == BrandedColorScheme.INCOGNITO
                 ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
                 : ContextCompat.getColor(context, R.color.omnibox_suggestion_dropdown_bg);
-    }
-
-    /**
-     * Returns the background color for the toolbar pill for tablets. Because tablets always ignore
-     * any branded theme, can collapse to if incog or not.
-     */
-    public static @ColorInt int getTabletToolbarTextBoxBackgroundColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.toolbar_text_box_background_incognito)
-                : context.getColor(R.color.toolbar_text_box_bg_color);
-    }
-
-    /** Returns the background color for the toolbar pill when the omnibox is in standby. */
-    public static @ColorInt int getTabletToolbarTextBoxStandbyBackgroundColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        Context wrappedContext =
-                maybeWrapContextForIncognitoColorScheme(context, brandedColorScheme);
-        return SemanticColorUtils.getColorSurface(wrappedContext);
     }
 
     /**

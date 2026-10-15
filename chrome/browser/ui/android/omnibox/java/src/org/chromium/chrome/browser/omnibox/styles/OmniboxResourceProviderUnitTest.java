@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
@@ -658,18 +659,19 @@ public class OmniboxResourceProviderUnitTest {
     @Test
     public void getPopoverSuggestionBackgroundColor_incognito() {
         final int incognitoColor = mContext.getColor(R.color.gm3_baseline_surface_container_dark);
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 incognitoColor,
-                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getSuggestionBackgroundColor(
+                        FuseboxLayoutMode.SUGGESTIONS_POPOVER, /* isDropdownContainer= */ false));
     }
 
     @Test
     public void getPopoverSuggestionBackgroundColor_light() {
         assertEquals(
                 MaterialColors.getColor(mContext, R.attr.colorSurface, TAG),
-                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getSuggestionBackgroundColor(
+                        FuseboxLayoutMode.SUGGESTIONS_POPOVER, /* isDropdownContainer= */ false));
     }
 
     @Test
@@ -677,8 +679,8 @@ public class OmniboxResourceProviderUnitTest {
     public void getPopoverSuggestionBackgroundColor_dark() {
         assertEquals(
                 SemanticColorUtils.getColorSurfaceContainer(mContext),
-                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getSuggestionBackgroundColor(
+                        FuseboxLayoutMode.SUGGESTIONS_POPOVER, /* isDropdownContainer= */ false));
     }
 
     @Test

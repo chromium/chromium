@@ -197,8 +197,8 @@ public class SuggestionListViewBinderUnitTest {
         assertThat(mContainer.getBackground(), instanceOf(ColorDrawable.class));
         ColorDrawable background = (ColorDrawable) mContainer.getBackground();
         assertEquals(
-                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                        mActivity, BrandedColorScheme.INCOGNITO),
+                mResourceProvider.getSuggestionBackgroundColor(
+                        FuseboxLayoutMode.SUGGESTIONS_POPOVER, /* isDropdownContainer= */ true),
                 background.getColor());
     }
 

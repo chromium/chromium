@@ -516,8 +516,8 @@ public class LocationBarTabletUnitTest {
                                 .findDrawableByLayerId(R.id.focused_popup_inner_bg);
         @ColorInt
         int expectedOuterRectColor =
-                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
-                        mActivity, BrandedColorScheme.APP_DEFAULT);
+                mResourceProvider.getSuggestionBackgroundColor(
+                        FuseboxLayoutMode.SUGGESTIONS_POPOVER, /* isDropdownContainer= */ true);
         assertEquals(expectedOuterRectColor, outerRect.getColor().getDefaultColor());
         assertEquals(expectedOuterRectColor, innerRect.getColor().getDefaultColor());
         assertNull(mLocationBarTablet.getForeground());
@@ -825,18 +825,14 @@ public class LocationBarTabletUnitTest {
         GradientDrawable unfocusedRect = background.getBackgroundGradient();
 
         @ColorInt
-        int expectedIncognitoColor =
-                OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
-                        mActivity, BrandedColorScheme.INCOGNITO);
+        int expectedIncognitoColor = mResourceProvider.getTabletToolbarTextBoxBackgroundColor();
         assertEquals(expectedIncognitoColor, unfocusedRect.getColor().getDefaultColor());
 
         updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
         background = (LocationBarBackgroundDrawable) mLocationBarTablet.getBackground();
         unfocusedRect = background.getBackgroundGradient();
         @ColorInt
-        int expectedAppDefaultColor =
-                OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
-                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        int expectedAppDefaultColor = mResourceProvider.getTabletToolbarTextBoxBackgroundColor();
         assertEquals(expectedAppDefaultColor, unfocusedRect.getColor().getDefaultColor());
     }
 
@@ -896,8 +892,7 @@ public class LocationBarTabletUnitTest {
 
         @ColorInt
         int expectedStandbyColor =
-                OmniboxResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor(
-                        mActivity, BrandedColorScheme.APP_DEFAULT);
+                mResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor();
         assertEquals(expectedStandbyColor, unfocusedRect.getColor().getDefaultColor());
 
         mLocationBarTablet.setShowFocusRing(false);
@@ -907,8 +902,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(HairlineBehavior.SOLID, background.getHairlineBehaviorForTesting());
         @ColorInt
         int expectedIncognitoStandbyColor =
-                OmniboxResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor(
-                        mActivity, BrandedColorScheme.INCOGNITO);
+                mResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor();
         assertEquals(expectedIncognitoStandbyColor, unfocusedRect.getColor().getDefaultColor());
 
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.COMPACT);
@@ -932,9 +926,7 @@ public class LocationBarTabletUnitTest {
         mLocationBarTablet.setShowFocusRing(false);
         assertNull(mLocationBarTablet.getForeground());
         @ColorInt
-        int expectedNormalColor =
-                OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
-                        mActivity, BrandedColorScheme.INCOGNITO);
+        int expectedNormalColor = mResourceProvider.getTabletToolbarTextBoxBackgroundColor();
         assertEquals(expectedNormalColor, unfocusedRect.getColor().getDefaultColor());
     }
 
