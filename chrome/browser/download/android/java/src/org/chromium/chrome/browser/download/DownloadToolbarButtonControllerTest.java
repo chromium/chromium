@@ -45,13 +45,15 @@ public class DownloadToolbarButtonControllerTest {
     @Mock private OfflineContentProvider mProvider;
     @Captor private ArgumentCaptor<Callback<ArrayList<OfflineItem>>> mGetAllItemsCallbackCaptor;
 
+    private DownloadStateModel mModel;
     private DownloadToolbarButtonController mController;
 
     @Before
     public void setUp() {
-        mController = new DownloadToolbarButtonController(mProvider);
-        verify(mProvider).addObserver(mController);
+        // A real model over a mocked provider keeps these tests end to end.
+        mModel = new DownloadStateModel(mProvider);
         verify(mProvider).getAllItems(mGetAllItemsCallbackCaptor.capture());
+        mController = new DownloadToolbarButtonController(mModel);
     }
 
     private static ContentId id(String guid) {
@@ -92,11 +94,15 @@ public class DownloadToolbarButtonControllerTest {
     }
 
     private void onItemAdded(OfflineItem item) {
-        mController.onItemsAdded(List.of(item));
+        mModel.onItemsAdded(List.of(item));
     }
 
     private void onItemUpdated(OfflineItem item) {
-        mController.onItemUpdated(item, /* updateDelta= */ null);
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+    }
+
+    private void onItemRemoved(String guid) {
+        mModel.onItemRemoved(id(guid));
     }
 
     private DownloadToolbarButtonState state() {
@@ -125,39 +131,13 @@ public class DownloadToolbarButtonControllerTest {
     // Visibility ---------------------------------------------------------------------------------
 
     @Test
-    public void testSeed_noActiveItems_staysHidden() {
-        assertFalse("Button should be hidden before items arrive", shouldShow());
-        onAllItemsRetrieved(
-                createCompletedItem("done"), createItem("cancelled", OfflineItemState.CANCELLED));
-        assertFalse("Terminal items from before this session should not show", shouldShow());
-    }
-
-    @Test
-    public void testSeed_withActiveItems_shows() {
-        onAllItemsRetrieved(createCompletedItem("done"), createInProgressItem("active"));
-        assertTrue(shouldShow());
-    }
-
-    @Test
-    public void testItemCompletedBeforeSeed_staleSnapshotDoesNotStrandIt() {
-        // The completion arrives before the (older) snapshot that still lists the item as active.
-        onItemUpdated(createCompletedItem("a"));
-        onAllItemsRetrieved(createInProgressItem("a"));
-        assertFalse("Snapshot must not resurrect an item that already completed", shouldShow());
-
-        // Nothing is stranded as active: a later unrelated item still follows the normal
-        // linger-then-hide path, which would be skipped if "a" were still counted as active.
-        onItemAdded(createInProgressItem("b"));
-        onItemUpdated(createCompletedItem("b"));
-        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
-        assertFalse(shouldShow());
-    }
-
-    @Test
-    public void testItemRemovedBeforeSeed_staleSnapshotDoesNotStrandIt() {
-        mController.onItemRemoved(id("a"));
-        onAllItemsRetrieved(createInProgressItem("a"));
-        assertFalse("Snapshot must not resurrect a removed item", shouldShow());
+    public void testAttachedAfterSeed_showsModelStateImmediately() {
+        // E.g. a provider that delivers its snapshot synchronously, before the controller exists.
+        onAllItemsRetrieved(createInProgressItem("a", 40, 100));
+        DownloadToolbarButtonController controller = new DownloadToolbarButtonController(mModel);
+        assertTrue(controller.getStateSupplier().get().shouldShow);
+        assertEquals(40, controller.getStateSupplier().get().progressPercent);
+        controller.destroy();
     }
 
     @Test
@@ -172,50 +152,17 @@ public class DownloadToolbarButtonControllerTest {
         // The window must have been cancelled: once it would have elapsed, "a" is still counted
         // as ended, so removing "b" lingers rather than hiding immediately.
         advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
-        mController.onItemRemoved(id("b"));
+        onItemRemoved("b");
         assertTrue("Ended item \"a\" should keep the button visible", shouldShow());
         advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
         assertFalse(shouldShow());
     }
 
     @Test
-    public void testAllActiveStates_show() {
-        onAllItemsRetrieved();
-        for (int state :
-                List.of(
-                        OfflineItemState.IN_PROGRESS,
-                        OfflineItemState.PENDING,
-                        OfflineItemState.PAUSED)) {
-            onItemAdded(createItem("a", state));
-            assertTrue("State " + state + " should show the button", shouldShow());
-            mController.onItemRemoved(id("a"));
-            assertFalse(shouldShow());
-        }
-        // Both observer entry points reach the same logic.
-        onItemUpdated(createInProgressItem("b"));
-        assertTrue(shouldShow());
-    }
-
-    @Test
-    public void testUntrackableItems_areIgnored() {
-        onAllItemsRetrieved();
-        OfflineItem transientItem = createInProgressItem("transient");
-        transientItem.isTransient = true;
-        OfflineItem suggestedItem = createInProgressItem("suggested");
-        suggestedItem.isSuggested = true;
-        OfflineItem noIdItem = createInProgressItem("x");
-        noIdItem.id = null;
-
-        onItemAdded(transientItem);
-        onItemAdded(suggestedItem);
-        onItemAdded(noIdItem);
-        assertFalse("Transient, suggested and id-less items should not show", shouldShow());
-    }
-
-    @Test
     public void testAllTerminalStates_lingerThenHide() {
         onAllItemsRetrieved();
         // Every outcome, successful or not, keeps the button for the window, matching desktop.
+        // Only a successful completion draws attention.
         for (int state :
                 List.of(
                         OfflineItemState.COMPLETE,
@@ -225,6 +172,11 @@ public class DownloadToolbarButtonControllerTest {
             onItemAdded(createInProgressItem("a"));
             onItemUpdated(createItem("a", state));
             assertTrue("State " + state + " should linger", shouldShow());
+            assertEquals(IconState.COMPLETE, state().iconState);
+            assertEquals(
+                    "Only COMPLETE should be active",
+                    state == OfflineItemState.COMPLETE,
+                    state().isActive);
 
             advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS - 1);
             assertTrue("State " + state + " should still show before the delay", shouldShow());
@@ -237,7 +189,7 @@ public class DownloadToolbarButtonControllerTest {
     public void testLastItemRemoved_hidesImmediately() {
         onAllItemsRetrieved();
         onItemAdded(createInProgressItem("a"));
-        mController.onItemRemoved(id("a"));
+        onItemRemoved("a");
         assertFalse(shouldShow());
     }
 
@@ -277,7 +229,7 @@ public class DownloadToolbarButtonControllerTest {
 
         // Deleting the only item leaves nothing for the button to surface, so it should not
         // linger for the rest of the window, matching desktop.
-        mController.onItemRemoved(id("a"));
+        onItemRemoved("a");
         assertFalse(shouldShow());
         advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
         assertFalse(shouldShow());
@@ -292,7 +244,7 @@ public class DownloadToolbarButtonControllerTest {
         onItemUpdated(createCompletedItem("b"));
 
         advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS / 2);
-        mController.onItemRemoved(id("a"));
+        onItemRemoved("a");
         assertTrue("Another ended item remains, so the button should still linger", shouldShow());
 
         // Removal must not restart the window: it elapses at the originally scheduled time.
@@ -307,7 +259,7 @@ public class DownloadToolbarButtonControllerTest {
         onItemAdded(createInProgressItem("b"));
         onItemUpdated(createCompletedItem("a"));
 
-        mController.onItemRemoved(id("b"));
+        onItemRemoved("b");
         assertTrue("Ended item \"a\" should keep the button visible", shouldShow());
         advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
         assertFalse(shouldShow());
@@ -324,44 +276,27 @@ public class DownloadToolbarButtonControllerTest {
         assertTrue(shouldShow());
 
         // It is no longer counted as ended, so removing it hides immediately.
-        mController.onItemRemoved(id("a"));
+        onItemRemoved("a");
         assertFalse(shouldShow());
     }
 
     @Test
-    public void testDestroy_unregistersResetsAndIgnoresLaterEvents() {
-        onAllItemsRetrieved();
-        onItemAdded(createInProgressItem("a"));
-        onItemUpdated(createCompletedItem("a"));
-        assertTrue(shouldShow());
-
-        // Destroying mid auto-hide must not leave retained observers with a stale "show".
-        mController.destroy();
-        verify(mProvider).removeObserver(mController);
-        assertFalse("Destroy should reset the supplier", shouldShow());
-        assertState(DownloadToolbarButtonState.HIDDEN);
-
-        // Pending auto-hide is cancelled and later events are ignored.
-        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
-        onItemAdded(createInProgressItem("b"));
-        assertFalse("Destroyed controller should ignore later events", shouldShow());
-    }
-
-    @Test
-    public void testDestroy_whileDownloadActive_publishesHidden() {
+    public void testDestroy_publishesHiddenAndIgnoresLaterEvents() {
         onAllItemsRetrieved();
         onItemAdded(createInProgressItem("active", 50, 100));
         onItemAdded(createInProgressItem("ended"));
         onItemUpdated(createCompletedItem("ended"));
-        assertTrue(state().isActive);
-        assertEquals(1, state().downloadCount);
+        assertTrue(shouldShow());
 
-        // Tracked items are dropped on destroy, so the published state must not keep reporting
-        // the in-flight download.
+        // The model outlives the controller and still holds "active", but retained observers of
+        // the supplier must not keep a stale state.
         mController.destroy();
         assertState(DownloadToolbarButtonState.HIDDEN);
 
+        // Later timers and model events are ignored.
+        advanceTimeMs(DownloadToolbarButtonController.AUTO_HIDE_DELAY_MS);
         onItemUpdated(createInProgressItem("active", 60, 100));
+        onItemAdded(createInProgressItem("b"));
         assertState(DownloadToolbarButtonState.HIDDEN);
     }
 
@@ -467,35 +402,18 @@ public class DownloadToolbarButtonControllerTest {
     }
 
     @Test
-    public void testState_unsuccessfulEnd_isNotActive() {
-        onAllItemsRetrieved();
-        // Only a successful completion draws attention; other outcomes linger inactive.
-        for (int state :
-                List.of(
-                        OfflineItemState.CANCELLED,
-                        OfflineItemState.FAILED,
-                        OfflineItemState.INTERRUPTED)) {
-            onItemAdded(createInProgressItem("a"));
-            onItemUpdated(createItem("a", state));
-            assertEquals(IconState.COMPLETE, state().iconState);
-            assertFalse("State " + state + " should not be active", state().isActive);
-            mController.onItemRemoved(id("a"));
-        }
-    }
-
-    @Test
     public void testState_removedCompletion_noLongerDrawsAttention() {
         onAllItemsRetrieved();
         onItemAdded(createInProgressItem("a"));
         onItemAdded(createInProgressItem("b"));
         onItemUpdated(createCompletedItem("a"));
         onItemUpdated(createCompletedItem("b"));
-        mController.onItemRemoved(id("a"));
+        onItemRemoved("a");
         assertTrue("\"b\" still completed recently", state().isActive);
 
         // Once the last recent completion is gone, a subsequent failure or cancellation within
         // the window must not inherit its accent.
-        mController.onItemRemoved(id("b"));
+        onItemRemoved("b");
         onItemAdded(createInProgressItem("c"));
         onItemUpdated(createItem("c", OfflineItemState.FAILED));
         assertEquals(IconState.COMPLETE, state().iconState);
@@ -570,7 +488,7 @@ public class DownloadToolbarButtonControllerTest {
         assertEquals(2, state().downloadCount);
         assertEquals(75, state().progressPercent);
 
-        mController.onItemRemoved(id("b"));
+        onItemRemoved("b");
         assertEquals(1, state().downloadCount);
         assertEquals(100, state().progressPercent);
     }
@@ -588,8 +506,9 @@ public class DownloadToolbarButtonControllerTest {
         onItemUpdated(createInProgressItem("a", 10, 100));
         assertEquals(1, notifications.get());
 
-        // A terminal update for an item never seen active changes nothing either.
+        // Terminal updates and removals for items never seen active change nothing either.
         onItemUpdated(createCompletedItem("unrelated"));
+        onItemRemoved("unrelated");
         assertEquals(1, notifications.get());
 
         onItemUpdated(createInProgressItem("a", 20, 100));

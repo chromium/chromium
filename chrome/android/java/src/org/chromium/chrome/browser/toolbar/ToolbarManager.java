@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadFeatures;
+import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonController;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
@@ -456,6 +457,7 @@ public class ToolbarManager
     private @MonotonicNonNull ForwardButtonCoordinator mForwardButtonCoordinator;
     private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
 
+    private @Nullable DownloadStateModel mDownloadStateModel;
     private @Nullable DownloadToolbarButtonController mDownloadToolbarButtonController;
     private final Callback<DownloadToolbarButtonState> mDownloadButtonStateObserver =
             mDownloadButtonStateSupplier::set;
@@ -2926,13 +2928,11 @@ public class ToolbarManager
         PictureInPictureWindowManagerBridge.initializeWithNative();
 
         if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
-            // The offline content aggregator requires native, so the controller is created
-            // here and bridged to the toolbar via mDownloadButtonStateSupplier.
-            // TODO(crbug.com/570641245): Consolidate download state observation into a shared
-            // model (seed-on-attach, single OfflineContentProvider observer) instead of the
-            // controller observing the aggregator directly alongside DownloadMessageUiController.
+            // The offline content aggregator requires native, so the model and controller are
+            // created here and bridged to the toolbar via mDownloadButtonStateSupplier.
+            mDownloadStateModel = new DownloadStateModel(OfflineContentAggregatorFactory.get());
             mDownloadToolbarButtonController =
-                    new DownloadToolbarButtonController(OfflineContentAggregatorFactory.get());
+                    new DownloadToolbarButtonController(mDownloadStateModel);
             mDownloadToolbarButtonController
                     .getStateSupplier()
                     .addSyncObserverAndCall(mDownloadButtonStateObserver);
@@ -3164,6 +3164,11 @@ public class ToolbarManager
                     .removeObserver(mDownloadButtonStateObserver);
             mDownloadToolbarButtonController.destroy();
             mDownloadToolbarButtonController = null;
+        }
+
+        if (mDownloadStateModel != null) {
+            mDownloadStateModel.destroy();
+            mDownloadStateModel = null;
         }
 
         if (mOverviewModeMenuButtonCoordinator != null) {

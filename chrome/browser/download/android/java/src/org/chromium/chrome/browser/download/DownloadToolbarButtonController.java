@@ -12,6 +12,7 @@ import android.os.Looper;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -20,38 +21,27 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState.IconState;
 import org.chromium.components.offline_items_collection.ContentId;
-import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
-import org.chromium.components.offline_items_collection.UpdateDelta;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Derives the state of the download toolbar button from download state reported by an {@link
- * OfflineContentProvider}. Mirrors the desktop download bubble; see {@code
- * DownloadDisplayController} in {@code chrome/browser/download/bubble/} as the behavioural
- * reference.
+ * Derives the state of the download toolbar button from the items cached by a {@link
+ * DownloadStateModel}. Mirrors the desktop download bubble; see {@code DownloadDisplayController}
+ * in {@code chrome/browser/download/bubble/} as the behavioural reference.
  *
  * <p>The button is shown while any trackable item is active (in progress, pending or paused). Once
  * the last active item reaches a terminal state it stays visible for {@link #AUTO_HIDE_DELAY_MS}
  * within the current session, then hides. If every tracked item is removed before then, it hides
  * immediately. After a download completes the icon is drawn in the active colour for {@link
  * #ACTIVE_AFTER_COMPLETE_MS}, or until the user acts on the button via {@link #markActioned()}.
- * Transient and suggested items are ignored, as in {@code DownloadMessageUiControllerImpl}. Items
- * from all profiles are tracked, since the toolbar is shared by both tab models within an activity.
- *
- * <p>TODO(crbug.com/569024304): Derive state from a shared download-state model (the Android
- * analogue of desktop's {@code DownloadBubbleUpdateService}) once the download tray needs it.
  */
 @NullMarked
-public class DownloadToolbarButtonController
-        implements OfflineContentProvider.Observer, Destroyable {
+public class DownloadToolbarButtonController implements DownloadStateModel.Observer, Destroyable {
     /**
      * How long the button stays visible after the last active download ends. Mirrors desktop's
      * {@code kToolbarIconVisibilityTimeInterval}. Held in memory only, so it does not survive a
@@ -65,13 +55,10 @@ public class DownloadToolbarButtonController
      */
     @VisibleForTesting static final long ACTIVE_AFTER_COMPLETE_MS = TimeUnit.MINUTES.toMillis(1);
 
-    private final OfflineContentProvider mProvider;
+    private final DownloadStateModel mModel;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final SettableNonNullObservableSupplier<DownloadToolbarButtonState> mStateSupplier =
             ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
-
-    /** Active items keyed by id, holding the latest data for each so progress can be aggregated. */
-    private final Map<ContentId, OfflineItem> mActiveItems = new HashMap<>();
 
     /**
      * Items that ended during this session and have not been removed since. While nothing is active
@@ -89,25 +76,19 @@ public class DownloadToolbarButtonController
      */
     private final Set<ContentId> mUnactionedCompletions = new HashSet<>();
 
-    /**
-     * Ids reported by observer callbacks before the initial {@link
-     * OfflineContentProvider#getAllItems} snapshot arrives; callbacks are fresher than the snapshot
-     * and take precedence. Null once the snapshot has been processed.
-     */
-    private @Nullable Set<ContentId> mIdsUpdatedBeforeSnapshot = new HashSet<>();
-
-    private boolean mIsDestroyed;
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     /**
-     * Creates a controller tracking download state from {@code provider}.
+     * Creates a controller deriving the button state from {@code model}.
      *
-     * @param provider The provider to observe for download state changes.
+     * @param model The model to observe for download state changes. Must outlive this controller.
      */
-    public DownloadToolbarButtonController(OfflineContentProvider provider) {
-        mProvider = provider;
-        mProvider.addObserver(this);
-        // Seed from items already in flight (e.g. a download started in another window).
-        mProvider.getAllItems(this::onAllItemsRetrieved);
+    public DownloadToolbarButtonController(DownloadStateModel model) {
+        mModel = model;
+        mModel.addObserver(this);
+        // The model may already hold active items, e.g. if its initial snapshot was delivered
+        // synchronously before this controller attached.
+        publishState();
     }
 
     /** Returns a supplier of the state the download toolbar button should currently display. */
@@ -120,7 +101,7 @@ public class DownloadToolbarButtonController
      * ends the active colour window of any recent completion.
      */
     public void markActioned() {
-        if (mIsDestroyed || mUnactionedCompletions.isEmpty()) {
+        if (mDestroyChecker.isDestroyed() || mUnactionedCompletions.isEmpty()) {
             return;
         }
         mHandler.removeCallbacks(mInactiveRunnable);
@@ -129,122 +110,36 @@ public class DownloadToolbarButtonController
     }
 
     /**
-     * Stops observing downloads, cancels any pending timers and resets the supplier to {@link
+     * Stops observing the model, cancels any pending timers and resets the supplier to {@link
      * DownloadToolbarButtonState#HIDDEN} so observers that outlive this controller do not keep a
      * stale state.
      */
     @Override
     public void destroy() {
-        if (mIsDestroyed) {
-            return;
-        }
-        mIsDestroyed = true;
+        mDestroyChecker.destroy();
         cancelAutoHide();
         mHandler.removeCallbacks(mInactiveRunnable);
-        mProvider.removeObserver(this);
-        mActiveItems.clear();
+        mModel.removeObserver(this);
         mEndedItems.clear();
         mUnactionedCompletions.clear();
-        mIdsUpdatedBeforeSnapshot = null;
-        // With both collections cleared this publishes HIDDEN. Reset rather than destroy the
-        // supplier: destroying would null the value of a non-null supplier, which is unsafe for
-        // any observer that reads it after this point.
+        // Reset rather than destroy the supplier: destroying would null the value of a non-null
+        // supplier, which is unsafe for any observer that reads it after this point.
         publishState();
     }
 
-    // OfflineContentProvider.Observer implementation:
+    // DownloadStateModel.Observer implementation:
 
     @Override
-    public void onItemsAdded(List<OfflineItem> items) {
-        if (mIsDestroyed) {
-            return;
-        }
-        for (OfflineItem item : items) {
-            recordUpdateBeforeSnapshot(item.id);
-            onItemChanged(item);
-        }
-    }
-
-    @Override
-    public void onItemUpdated(OfflineItem item, @Nullable UpdateDelta updateDelta) {
-        if (mIsDestroyed) {
-            return;
-        }
-        recordUpdateBeforeSnapshot(item.id);
-        onItemChanged(item);
-    }
-
-    @Override
-    public void onItemRemoved(ContentId id) {
-        if (mIsDestroyed) {
-            return;
-        }
-        recordUpdateBeforeSnapshot(id);
-        boolean wasActive = mActiveItems.remove(id) != null;
-        boolean wasEnded = mEndedItems.remove(id);
-        if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
-            mHandler.removeCallbacks(mInactiveRunnable);
-        }
-        if (!wasActive && !wasEnded) {
-            return;
-        }
-        if (mActiveItems.isEmpty() && mEndedItems.isEmpty()) {
-            // Nothing is left for the button to surface, so do not linger.
-            cancelAutoHide();
-        } else if (mActiveItems.isEmpty() && wasActive) {
-            // Last active item removed while ended items remain: start their linger window. If
-            // an ended item was removed instead, the running window is left untouched.
-            scheduleAutoHide();
-        }
-        publishState();
-    }
-
-    private void recordUpdateBeforeSnapshot(@Nullable ContentId id) {
-        if (mIdsUpdatedBeforeSnapshot != null && id != null) {
-            mIdsUpdatedBeforeSnapshot.add(id);
-        }
-    }
-
-    private void onAllItemsRetrieved(List<OfflineItem> items) {
-        if (mIsDestroyed || mIdsUpdatedBeforeSnapshot == null) {
-            return;
-        }
-        Set<ContentId> updatedBeforeSnapshot = mIdsUpdatedBeforeSnapshot;
-        mIdsUpdatedBeforeSnapshot = null;
-
-        // Only items still in flight seed the button; already-ended items are ignored so the
-        // post-completion window does not carry over across a restart.
-        for (OfflineItem item : items) {
-            if (!isTrackable(item) || !isActive(item)) {
-                continue;
-            }
-            // An observer callback already reported a newer state (e.g. completion or removal);
-            // seeding from the stale snapshot would leave the item active forever.
-            if (updatedBeforeSnapshot.contains(item.id)) {
-                continue;
-            }
-            mActiveItems.put(assumeNonNull(item.id), item); // Checked by isTrackable().
-        }
-        if (!mActiveItems.isEmpty()) {
-            // An item that ended before the snapshot arrived may have started the auto-hide
-            // window; the seeded active items now keep the button visible instead.
-            cancelAutoHide();
-        }
-        publishState();
-    }
-
-    private void onItemChanged(OfflineItem item) {
-        if (!isTrackable(item)) {
-            return;
-        }
-        ContentId id = assumeNonNull(item.id); // Checked by isTrackable().
-        if (isActive(item)) {
-            mActiveItems.put(id, item);
+    public void onItemChanged(OfflineItem item, @Nullable OfflineItem previous) {
+        ContentId id = assumeNonNull(item.id); // The model only reports trackable items.
+        if (DownloadStateModel.isActive(item)) {
             // A resumed or retried item is active again rather than ended.
             mEndedItems.remove(id);
             if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
                 mHandler.removeCallbacks(mInactiveRunnable);
             }
+            // Any active item keeps the button visible, including one seeded from the model's
+            // initial snapshot after an earlier item ended and started the auto-hide window.
             cancelAutoHide();
             publishState();
             return;
@@ -252,7 +147,7 @@ public class DownloadToolbarButtonController
 
         // Only items observed active this session count as ended here; terminal updates for
         // anything else (e.g. a pre-existing download being opened) are not tracked.
-        boolean wasActive = mActiveItems.remove(id) != null;
+        boolean wasActive = previous != null && DownloadStateModel.isActive(previous);
         if (!wasActive) {
             return;
         }
@@ -265,10 +160,32 @@ public class DownloadToolbarButtonController
             mHandler.removeCallbacks(mInactiveRunnable);
             mHandler.postDelayed(mInactiveRunnable, ACTIVE_AFTER_COMPLETE_MS);
         }
-        if (mActiveItems.isEmpty()) {
+        if (mModel.getActiveItems().isEmpty()) {
             // The last active item reached a terminal state. Regardless of outcome, keep the
             // button visible for the window so the user can still reach the item, matching
             // desktop.
+            scheduleAutoHide();
+        }
+        publishState();
+    }
+
+    @Override
+    public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
+        boolean wasActive = previous != null && DownloadStateModel.isActive(previous);
+        boolean wasEnded = mEndedItems.remove(id);
+        if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
+            mHandler.removeCallbacks(mInactiveRunnable);
+        }
+        if (!wasActive && !wasEnded) {
+            return;
+        }
+        boolean nothingActive = mModel.getActiveItems().isEmpty();
+        if (nothingActive && mEndedItems.isEmpty()) {
+            // Nothing is left for the button to surface, so do not linger.
+            cancelAutoHide();
+        } else if (nothingActive && wasActive) {
+            // Last active item removed while ended items remain: start their linger window. If
+            // an ended item was removed instead, the running window is left untouched.
             scheduleAutoHide();
         }
         publishState();
@@ -284,7 +201,7 @@ public class DownloadToolbarButtonController
     }
 
     private void onInactiveTimeout() {
-        if (mIsDestroyed) {
+        if (mDestroyChecker.isDestroyed()) {
             return;
         }
         mUnactionedCompletions.clear();
@@ -292,12 +209,12 @@ public class DownloadToolbarButtonController
     }
 
     private void onAutoHideTimeout() {
-        if (mIsDestroyed) {
+        if (mDestroyChecker.isDestroyed()) {
             return;
         }
         // Any item becoming active cancels the pending auto-hide, so the timer can only fire with
         // nothing active.
-        assert mActiveItems.isEmpty() : "Auto-hide fired while downloads are active";
+        assert mModel.getActiveItems().isEmpty() : "Auto-hide fired while downloads are active";
         // The window for the ended items has elapsed; they no longer influence visibility.
         mEndedItems.clear();
         publishState();
@@ -305,16 +222,19 @@ public class DownloadToolbarButtonController
 
     /** Recomputes the button state and notifies observers if it changed. */
     private void publishState() {
-        DownloadToolbarButtonState state = computeState();
+        // The model may outlive this controller, so a destroyed controller publishes HIDDEN
+        // rather than deriving a state from the model's items.
+        DownloadToolbarButtonState state =
+                mDestroyChecker.isDestroyed() ? DownloadToolbarButtonState.HIDDEN : computeState();
         if (!state.equals(mStateSupplier.get())) {
             mStateSupplier.set(state);
         }
     }
 
     /**
-     * Derives the button state purely from {@link #mActiveItems}, {@link #mEndedItems} and {@link
-     * #mUnactionedCompletions}, so it can be recomputed after any change without tracking what
-     * changed. Mirrors {@code DownloadDisplayController::UpdateToolbarButtonState} on desktop.
+     * Derives the button state purely from the model's active items, {@link #mEndedItems} and
+     * {@link #mUnactionedCompletions}, so it can be recomputed after any change without tracking
+     * what changed. Mirrors {@code DownloadDisplayController::UpdateToolbarButtonState} on desktop.
      *
      * <ul>
      *   <li>Nothing active and nothing ended: {@link DownloadToolbarButtonState#HIDDEN}.
@@ -325,11 +245,12 @@ public class DownloadToolbarButtonController
      * </ul>
      */
     private DownloadToolbarButtonState computeState() {
-        if (mActiveItems.isEmpty() && mEndedItems.isEmpty()) {
+        Collection<OfflineItem> activeItems = mModel.getActiveItems();
+        if (activeItems.isEmpty() && mEndedItems.isEmpty()) {
             return DownloadToolbarButtonState.HIDDEN;
         }
 
-        int downloadCount = mActiveItems.size();
+        int downloadCount = activeItems.size();
         if (downloadCount == 0) {
             // Lingering after the last active item ended.
             return new DownloadToolbarButtonState(
@@ -348,7 +269,7 @@ public class DownloadToolbarButtonController
         long receivedBytes = 0;
         long totalBytes = 0;
         boolean progressCertain = true;
-        for (OfflineItem item : mActiveItems.values()) {
+        for (OfflineItem item : activeItems) {
             if (item.state == OfflineItemState.PAUSED) {
                 pausedCount++;
             }
@@ -371,24 +292,5 @@ public class DownloadToolbarButtonController
                 downloadCount,
                 progressPercent,
                 progressCertain);
-    }
-
-    /**
-     * Excludes transient items (e.g. Background Fetch jobs, which only surface as notifications)
-     * and suggested items (e.g. prefetched content), so only user-initiated downloads count.
-     */
-    private static boolean isTrackable(OfflineItem item) {
-        return item.id != null && !item.isTransient && !item.isSuggested;
-    }
-
-    private static boolean isActive(OfflineItem item) {
-        switch (item.state) {
-            case OfflineItemState.IN_PROGRESS:
-            case OfflineItemState.PENDING:
-            case OfflineItemState.PAUSED:
-                return true;
-            default:
-                return false;
-        }
     }
 }
