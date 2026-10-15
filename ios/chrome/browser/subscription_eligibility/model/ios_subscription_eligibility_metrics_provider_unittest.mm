@@ -13,6 +13,8 @@
 #import "components/variations/synthetic_trials_active_group_id_provider.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -46,16 +48,14 @@ class IOSSubscriptionEligibilityMetricsProviderTest : public PlatformTest {
 
 TEST_F(IOSSubscriptionEligibilityMetricsProviderTest,
        ProvideCurrentSessionData) {
-  TestProfileIOS::Builder builder1;
-  builder1.SetName("Profile1");
-  TestProfileIOS* profile1 =
-      profile_manager_.AddProfileWithBuilder(std::move(builder1));
+  TestProfileIOS* personal_profile =
+      profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
   IOSSubscriptionEligibilityMetricsProvider provider;
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(1, profile1);
+    SetAiSubscriptionTierForProfile(1, personal_profile);
     metrics::ChromeUserMetricsExtension uma_proto;
     provider.ProvideCurrentSessionData(&uma_proto);
     histogram_tester.ExpectUniqueSample(
@@ -63,16 +63,14 @@ TEST_F(IOSSubscriptionEligibilityMetricsProviderTest,
         AiSubscriptionTierStatus::kAllProfilesAtTierEquals1, 1);
   }
 
-  // Add another profile.
-  TestProfileIOS::Builder builder2;
-  builder2.SetName("Profile2");
-  TestProfileIOS* profile2 =
-      profile_manager_.AddProfileWithBuilder(std::move(builder2));
+  // Add a managed profile.
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity]);
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(1, profile1);
-    SetAiSubscriptionTierForProfile(2, profile2);
+    SetAiSubscriptionTierForProfile(1, personal_profile);
+    SetAiSubscriptionTierForProfile(2, managed_profile);
     metrics::ChromeUserMetricsExtension uma_proto;
     provider.ProvideCurrentSessionData(&uma_proto);
     histogram_tester.ExpectUniqueSample(
@@ -82,8 +80,8 @@ TEST_F(IOSSubscriptionEligibilityMetricsProviderTest,
 
   {
     base::HistogramTester histogram_tester;
-    SetAiSubscriptionTierForProfile(0, profile1);
-    SetAiSubscriptionTierForProfile(1, profile2);
+    SetAiSubscriptionTierForProfile(0, personal_profile);
+    SetAiSubscriptionTierForProfile(1, managed_profile);
     metrics::ChromeUserMetricsExtension uma_proto;
     provider.ProvideCurrentSessionData(&uma_proto);
     histogram_tester.ExpectUniqueSample(
