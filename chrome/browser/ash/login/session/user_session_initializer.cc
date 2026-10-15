@@ -40,7 +40,6 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/google/google_brand_chromeos.h"
-#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
@@ -60,6 +59,7 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -175,7 +175,7 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
     if (features::IsCrosSafetyServiceEnabled()) {
       cros_safety_service_ = std::make_unique<CrosSafetyService>(
-          manta::MantaServiceFactory::GetForProfile(profile));
+          MantaServiceProvider::Get().Find(account_id));
     }
   }
 
