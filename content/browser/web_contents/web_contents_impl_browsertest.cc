@@ -57,6 +57,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/service_worker/service_worker_client_utils.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/surface_embed/surface_embed_connector_impl.h"
@@ -135,6 +136,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -631,6 +633,90 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
   EXPECT_EQ(new_web_contents, nullptr);
   NavigationController* controller = &shell()->web_contents()->GetController();
   EXPECT_EQ(controller->GetPendingEntry(), nullptr);
+}
+
+namespace {
+
+// Crashes the renderer process of `frame_tree_node`, then navigates it to `url`
+// through `service_worker_client_utils::NavigateClient()`, which is what a
+// ServiceWorker's WindowClient.navigate() runs. This calls
+// WebContentsImpl::OpenURL() with the crashed RenderFrameHost as the source
+// RenderFrameHost. Checks that the navigation works even if the source
+// RenderFrameHost is deleted synchronously during OpenURL(). See
+// https://crbug.com/569408568.
+void NavigateCrashedFrameFromServiceWorker(WebContentsImpl* web_contents,
+                                           FrameTreeNode* frame_tree_node,
+                                           const GURL& url) {
+  RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
+  base::WeakPtr<RenderFrameHostImpl> weak_rfh = rfh->GetWeakPtr();
+  RenderProcessHostWatcher exit_observer(
+      rfh->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  rfh->GetProcess()->Shutdown(0);
+  exit_observer.Wait();
+  ASSERT_TRUE(weak_rfh);
+  EXPECT_FALSE(rfh->IsRenderFrameLive());
+
+  const url::Origin sw_origin = rfh->GetLastCommittedOrigin();
+  service_worker_client_utils::NavigateClient(
+      url, sw_origin.GetURL().Resolve("/sw.js"),
+      blink::StorageKey::CreateFirstParty(sw_origin), rfh->GetGlobalId(),
+      rfh->BuildClientSecurityState(),
+      /*service_worker_policy_container_host=*/nullptr,
+      /*context=*/nullptr, base::DoNothing());
+
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    // The crashed RenderFrameHost is kept until the navigation commits.
+    EXPECT_TRUE(weak_rfh);
+  } else {
+    // Starting the navigation performs an early RenderFrameHost swap for the
+    // crashed frame, which synchronously deletes the crashed RenderFrameHost
+    // while it's still the source RenderFrameHost in OpenURL().
+    EXPECT_FALSE(weak_rfh);
+  }
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(url, frame_tree_node->current_frame_host()->GetLastCommittedURL());
+}
+
+}  // namespace
+
+// In practice, this can be triggered by a b.com ServiceWorker calling
+// WindowClient.navigate() on its client b.com subframe after the subframe's
+// renderer process crashed, but before the client's ServiceWorkerClient is torn
+// down. The test calls NavigateClient() directly to avoid depending on that
+// race.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       OpenURLCrashedSubframeEarlySwap) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  if (!AreAllSitesIsolatedForTesting()) {
+    IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                             {"b.com"});
+  }
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child_node = root->child_at(0);
+  ASSERT_NE(child_node->current_frame_host()->GetProcess(),
+            wc->GetPrimaryMainFrame()->GetProcess());
+
+  NavigateCrashedFrameFromServiceWorker(
+      wc, child_node, embedded_test_server()->GetURL("b.com", "/title1.html"));
+}
+
+// Same as above, but for a crashed main frame.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       OpenURLCrashedMainFrameEarlySwap) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  NavigateCrashedFrameFromServiceWorker(
+      wc, wc->GetPrimaryFrameTree().root(),
+      embedded_test_server()->GetURL("a.com", "/title2.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

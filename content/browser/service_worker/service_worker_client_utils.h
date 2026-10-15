@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
@@ -69,7 +70,7 @@ void OpenWindow(
 
 // Navigates the client specified by `rfh_id` to `url`. `callback` is called
 // with the client information on completion.
-void NavigateClient(
+CONTENT_EXPORT void NavigateClient(
     const GURL& url,
     const GURL& script_url,
     const blink::StorageKey& key,
