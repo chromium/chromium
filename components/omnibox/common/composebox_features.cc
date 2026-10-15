@@ -55,6 +55,11 @@ const base::FeatureParam<bool> kContextManagementInComposeboxTooltips(
     "enable_context_menu_tooltips",
     true);
 
+const base::FeatureParam<bool> kContextManagementInComposeboxSingleTabMenuItem(
+    &kContextManagementInComposebox,
+    "enable_single_tab_menu_item",
+    false);
+
 const base::FeatureParam<int> kContextMenuAnimationDailyLimit(
     &kContextMenuAnimationLimiting,
     "ContextMenuAnimationDailyLimit",
@@ -73,6 +78,11 @@ bool IsTabDeselectionInComposeboxEnabled() {
 bool IsContextMenuTooltipsInComposeboxEnabled() {
   return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
          kContextManagementInComposeboxTooltips.Get();
+}
+
+bool IsSingleTabMenuItemInComposeboxEnabled() {
+  return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
+         kContextManagementInComposeboxSingleTabMenuItem.Get();
 }
 
 }  // namespace omnibox
