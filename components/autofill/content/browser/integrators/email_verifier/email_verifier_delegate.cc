@@ -123,6 +123,7 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
 void EmailVerifierDelegate::Verify(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
+    uint64_t request_id,
     std::string email,
     const std::string& nonce,
     const content::webid::EmailVerifier::Result& result) {
@@ -132,6 +133,7 @@ void EmailVerifierDelegate::Verify(
   content::webid::EmailVerifier* verifier = GetOrCreateEmailVerifier(
       manager->client(), rfh, GetOriginFromEmail(email));
   if (!verifier) {
+    manager->client().HideEmailVerificationPopup();
     NotifyFlowCompleted(email_field_id,
                         EvpAutofillFlowResult::kVerifierUnavailable);
     return;
@@ -141,21 +143,24 @@ void EmailVerifierDelegate::Verify(
       result, nonce,
       base::BindOnce(&EmailVerifierDelegate::OnVerificationResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     email, result.issuer_site));
+                     request_id, email, result.issuer_site));
 }
 
 void EmailVerifierDelegate::OnVerificationResponseReceived(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
+    uint64_t request_id,
     std::string email,
     net::SchemefulSite issuer_site,
     std::optional<std::string> token,
     blink::mojom::EmailVerificationRequestResult status,
     base::TimeDelta verify_duration) {
   auto it = pending_request_metrics_.find(email_field_id);
-  if (it == pending_request_metrics_.end()) {
-    // Navigation already completed this flow and recorded
-    // kPageNavigatedDuringVerification.
+  if (it == pending_request_metrics_.end() ||
+      it->second.request_id != request_id) {
+    // The flow was already terminated or superseded by navigation, form
+    // submission, user cancellation (`CancelVerification()`), or a newer
+    // verification request on the same field.
     return;
   }
   RequestMetrics& metrics = it->second;
@@ -198,14 +203,15 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
 void EmailVerifierDelegate::OnEmailVerificationDecision(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
+    uint64_t request_id,
     std::string email,
     std::string nonce,
     content::webid::EmailVerifier::Result result,
     AutofillClient::EmailVerificationPermissionUiStatus ui_status) {
   auto it = pending_request_metrics_.find(email_field_id);
-  if (it == pending_request_metrics_.end()) {
-    // Navigation already completed this flow and recorded
-    // kPageNavigatedDuringVerification.
+  if (it == pending_request_metrics_.end() ||
+      it->second.request_id != request_id) {
+    // Navigation or a newer request already completed or superseded this flow.
     return;
   }
   RequestMetrics& metrics = it->second;
@@ -242,7 +248,7 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
         update->Set(normalized_email, std::move(email_dict));
       }
 
-      Verify(manager, email_field_id, email, nonce, result);
+      Verify(manager, email_field_id, request_id, email, nonce, result);
 
       const std::string strike_id =
           GetEmailVerificationStrikeDatabaseId(normalized_email);
@@ -287,6 +293,7 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
 void EmailVerifierDelegate::OnIsVerifiable(
     base::WeakPtr<AutofillManager> manager,
     FieldGlobalId email_field_id,
+    uint64_t request_id,
     gfx::RectF email_field_bounds,
     std::u16string email,
     std::string nonce,
@@ -295,9 +302,9 @@ void EmailVerifierDelegate::OnIsVerifiable(
     blink::mojom::EmailVerificationRequestResult status,
     base::TimeDelta is_verifiable_duration) {
   auto it = pending_request_metrics_.find(email_field_id);
-  if (it == pending_request_metrics_.end()) {
-    // Navigation already completed this flow and recorded
-    // kPageNavigatedDuringCheckIfVerifiable.
+  if (it == pending_request_metrics_.end() ||
+      it->second.request_id != request_id) {
+    // Navigation or a newer request already completed or superseded this flow.
     return;
   }
   RequestMetrics& metrics = it->second;
@@ -348,8 +355,10 @@ void EmailVerifierDelegate::OnIsVerifiable(
     // previously, the permission prompt popup is bypassed. Display a loading
     // toast to inform the user that background email verification is in
     // progress while the token request is in flight.
-    manager->client().ShowEmailVerificationLoadingToast();
-    Verify(manager, email_field_id, email_utf8, nonce, *result);
+    manager->client().ShowEmailVerificationLoadingToast(base::BindOnce(
+        &EmailVerifierDelegate::CancelVerification,
+        weak_ptr_factory_.GetWeakPtr(), email_field_id, request_id));
+    Verify(manager, email_field_id, request_id, email_utf8, nonce, *result);
     return;
   }
 
@@ -358,9 +367,8 @@ void EmailVerifierDelegate::OnIsVerifiable(
       email_field_bounds, issuer_site, base::UTF8ToUTF16(normalized_email),
       base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     email_utf8, nonce, std::move(*result)));
+                     request_id, email_utf8, nonce, std::move(*result)));
 }
-
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {
@@ -399,6 +407,21 @@ void EmailVerifierDelegate::AddObserver(Observer* observer) {
 
 void EmailVerifierDelegate::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void EmailVerifierDelegate::CancelVerification(
+    const FieldGlobalId& email_field_id,
+    uint64_t request_id) {
+  auto it = pending_request_metrics_.find(email_field_id);
+  if (it == pending_request_metrics_.end() ||
+      it->second.request_id != request_id) {
+    return;
+  }
+
+  // Reuse `kUserIgnoredPermissionPrompt` when the user cancels or dismisses
+  // the in-flight loading UI.
+  NotifyFlowCompleted(email_field_id,
+                      EvpAutofillFlowResult::kUserIgnoredPermissionPrompt);
 }
 
 EmailVerifierDelegate::MetricsObserver::MetricsObserver() = default;
@@ -469,6 +492,9 @@ void EmailVerifierDelegate::CancelPendingRequests() {
     for (const auto& [email_field_id, flow_result] : pending_requests) {
       NotifyFlowCompleted(email_field_id, flow_result);
     }
+    // TODO(crbug.com/555673134): Immediately dismiss any active EVP prompt or
+    // loading UI on navigation/form submission, bypassing
+    // kMinimumLoadingDuration.
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -702,8 +728,10 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
                                                 gfx::RectF email_field_bounds,
                                                 std::u16string email_value,
                                                 const std::string& nonce) {
+  const uint64_t request_id = ++next_request_id_;
   pending_request_metrics_[email_field_id] = RequestMetrics();
   RequestMetrics& metrics = pending_request_metrics_[email_field_id];
+  metrics.request_id = request_id;
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
       *static_cast<ContentAutofillClient&>(manager.client()).web_contents(),
       email_field_id.frame_token);
@@ -781,8 +809,8 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
       email, base::DoNothing(),
       base::BindOnce(&EmailVerifierDelegate::OnIsVerifiable,
                      weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
-                     email_field_id, email_field_bounds, email_value, nonce,
-                     already_allowed));
+                     email_field_id, request_id, email_field_bounds,
+                     email_value, nonce, already_allowed));
 }
 
 }  // namespace autofill

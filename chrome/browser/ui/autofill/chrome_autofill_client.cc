@@ -1455,8 +1455,10 @@ void ChromeAutofillClient::HideEmailVerificationPopup() {
   GetEmailVerificationController()->HidePopup();
 }
 
-void ChromeAutofillClient::ShowEmailVerificationLoadingToast() {
-  GetEmailVerificationController()->ShowLoadingToast();
+void ChromeAutofillClient::ShowEmailVerificationLoadingToast(
+    base::OnceClosure cancel_callback) {
+  GetEmailVerificationController()->ShowLoadingToast(
+      std::move(cancel_callback));
 }
 
 void ChromeAutofillClient::ShowEmailVerificationErrorToast() {

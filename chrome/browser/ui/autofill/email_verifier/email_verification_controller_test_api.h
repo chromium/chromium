@@ -71,6 +71,7 @@ class EmailVerificationControllerTestApi {
   std::optional<base::TimeTicks> loading_start_time() const {
     return controller_->loading_start_time_;
   }
+  void OnLoadingCancelled() { controller_->OnLoadingCancelled(); }
 
  private:
   const raw_ref<EmailVerificationController> controller_;

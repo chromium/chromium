@@ -50,7 +50,7 @@ class EmailVerificationControllerAndroid final
                          decision_callback,
                      base::OnceClosure on_dismissed) override;
   void HidePopupImpl() override;
-  void ShowLoadingToastImpl() override;
+  void ShowLoadingToastImpl(base::OnceClosure on_cancelled) override;
   void ShowErrorToastImpl() override;
   void ShowVerifiedToastImpl(const GURL& url) override;
   base::WeakPtr<EmailVerificationController> GetWeakPtr() override;

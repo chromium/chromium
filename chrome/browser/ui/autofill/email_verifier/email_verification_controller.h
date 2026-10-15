@@ -54,10 +54,11 @@ class EmailVerificationController {
   // the minimum loading display duration.
   void HidePopup();
 
-  // Displays the "Verifying email" loading toast at the top of the browser
-  // for subsequent-run verifications, dismissing any open first-run permission
-  // prompt first.
-  void ShowLoadingToast();
+  // Displays the "Verifying email" loading notification (Desktop toast or
+  // Android Message banner) for subsequent-run verifications, dismissing any
+  // open first-run permission prompt first. `cancel_callback` is invoked if
+  // the user cancels verification from the loading UI.
+  void ShowLoadingToast(base::OnceClosure cancel_callback);
 
   // Displays the "Couldn't verify your email" error toast, deferring display
   // until any active loading UI has satisfied the minimum display duration.
@@ -78,7 +79,6 @@ class EmailVerificationController {
   //                                      │  ▲                                 │
   //                          ShowPopup() │  │ OnPromptDecision(!kAllowed)     │
   //                                      │  │   or HidePopup()                │
-  //                                      │  │   or ShowLoadingToast()         │
   //                                      ▼  │                                 │
   //                            ┌───────────────────┐                          │
   //         ┌─────────────────►│     kShowing      │                          │
@@ -120,7 +120,7 @@ class EmailVerificationController {
           decision_callback,
       base::OnceClosure on_dismissed) = 0;
   virtual void HidePopupImpl() = 0;
-  virtual void ShowLoadingToastImpl() = 0;
+  virtual void ShowLoadingToastImpl(base::OnceClosure on_cancelled) = 0;
   virtual void ShowErrorToastImpl() = 0;
   virtual void ShowVerifiedToastImpl(const GURL& url) = 0;
 
@@ -136,7 +136,18 @@ class EmailVerificationController {
   // Invoked when the first-run permission prompt is dismissed externally while
   // in the loading state.
   void OnPromptDismissed();
+
+  // Invoked when the user cancels or dismisses the "Verifying email" loading
+  // notification UI.
+  void OnLoadingCancelled();
+
+  // Resets loading state (`prompt_state_`, `hide_popup_timer_`, and
+  // `loading_start_time_`) and flushes any pending `toast_timer_` if the
+  // WebContents is visible.
+  void ResetLoadingStateAndFlushToast();
+
   bool IsFirstRunRequestInFlight() const;
+  bool IsLoadingToastActive() const;
 
   // Records `loading_start_time_` so that subsequent transitions out of loading
   // (`HidePopup()`, `ShowVerifiedToast()`, or `ShowErrorToast()`) enforce
@@ -171,6 +182,11 @@ class EmailVerificationController {
   // confirmed the first-run prompt or when the subsequent-run loading toast was
   // shown), used to enforce kMinimumLoadingDuration.
   std::optional<base::TimeTicks> loading_start_time_;
+
+  // Callback invoked to abort the in-flight verification request if the user
+  // cancels or dismisses the subsequent-run "Verifying email" loading
+  // notification before the verification response arrives.
+  base::OnceClosure loading_cancel_callback_;
 
   base::OneShotTimer hide_popup_timer_;
   base::OneShotTimer toast_timer_;

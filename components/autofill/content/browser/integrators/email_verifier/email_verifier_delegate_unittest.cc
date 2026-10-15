@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -141,7 +142,10 @@ class MockAutofillClient : public TestContentAutofillClient {
                    void(AutofillClient::EmailVerificationPermissionUiStatus)>),
               (override));
   MOCK_METHOD(void, HideEmailVerificationPopup, (), (override));
-  MOCK_METHOD(void, ShowEmailVerificationLoadingToast, (), (override));
+  MOCK_METHOD(void,
+              ShowEmailVerificationLoadingToast,
+              (base::OnceClosure),
+              (override));
   MOCK_METHOD(void, ShowEmailVerificationErrorToast, (), (override));
 
   EmailVerifierDelegate& delegate() { return *delegate_; }
@@ -283,6 +287,7 @@ class EmailVerifierDelegateTestBase
       EXPECT_CALL(driver(),
                   SendEmailVerificationToken(form.field(0)->global_id(), email,
                                              "test_token"));
+
     } else {
       EXPECT_CALL(email_verifier(), Verify).Times(0);
       EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
@@ -1099,7 +1104,7 @@ TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesWhenAlreadyAllowed) {
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(200)));
 
-  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast());
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast);
   EXPECT_CALL(client(), HideEmailVerificationPopup);
   EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
 
@@ -1111,6 +1116,51 @@ TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesWhenAlreadyAllowed) {
   EXPECT_EQ(not_signed_in_strike_db.GetStrikes(
                 EmailVerificationNotSignedInStrikeDatabase::GetId(email)),
             0);
+}
+
+// Verifies that invoking the cancel callback from
+// ShowEmailVerificationLoadingToast aborts the in-flight verification request.
+TEST_F(EmailVerifierDelegateTest,
+       ShowEmailVerificationLoadingToast_CancelAbortsVerification) {
+  FormStructure* form = SetUpValidForm();
+  std::string email = "johndoe@hades.com";
+
+  PrefService* prefs = client().GetPrefs();
+  ASSERT_TRUE(prefs);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  update->Set(email, std::move(email_dict));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          CreateVerifiableResult(email),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
+
+  base::OnceClosure cancel_cb;
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast)
+      .WillOnce([&](base::OnceClosure cb) { cancel_cb = std::move(cb); });
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _));
+
+  NiceMock<MockEmailVerifierDelegateObserver> observer;
+  delegate().AddObserver(&observer);
+
+  TriggerDefaultFormFill(*form);
+
+  ASSERT_TRUE(cancel_cb);
+
+  EXPECT_CALL(observer,
+              OnFlowCompleted(testing::Field(
+                  &EmailVerifierDelegate::RequestMetrics::autofill_flow_result,
+                  testing::Optional(
+                      EvpAutofillFlowResult::kUserIgnoredPermissionPrompt))));
+
+  std::move(cancel_cb).Run();
+  delegate().RemoveObserver(&observer);
 }
 
 // Verifies that when StrikeDatabase is null (e.g. Incognito or disabled),
@@ -2152,8 +2202,8 @@ TEST_F(EmailVerifierDelegateTest,
             base::Milliseconds(100));
       });
 
-  // Verify loading toast is shown and popup is not shown.
-  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast());
+  // Verify loading is shown and popup is not shown.
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast);
   EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
 
   // Success toast and popup hide are called on token receipt.
@@ -2203,8 +2253,8 @@ TEST_F(EmailVerifierDelegateTest,
             base::Milliseconds(100));
       });
 
-  // Verify loading toast is shown and popup is not shown.
-  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast());
+  // Verify loading is shown and popup is not shown.
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast);
   EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
 
   // On error, popup hide and error toast are called.
@@ -2344,6 +2394,157 @@ TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringCheckIfVerifiable) {
            base::Milliseconds(100));
 
   histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 1);
+}
+
+// Verifies that cancelling an in-flight verification notifies observers of
+// cancellation and drops any late-arriving token.
+TEST_F(EmailVerifierDelegateTest, CancelVerificationInFlight) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  FormStructure* form = SetUpValidForm();
+
+  PrefService* prefs = client().GetPrefs();
+  ASSERT_TRUE(prefs);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  update->Set("johndoe@hades.com", std::move(email_dict));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
+      .WillOnce(RunOnceCallback<2>(
+          CreateVerifiableResult(),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
+
+  base::OnceClosure cancel_cb;
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast)
+      .WillOnce([&](base::OnceClosure cb) { cancel_cb = std::move(cb); });
+
+  // Capture the verification response callback and keep it in-flight.
+  EmailVerifier::OnEmailVerifiedCallback saved_response_callback;
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce([&](const EmailVerifier::Result&, const std::string&,
+                    EmailVerifier::OnEmailVerifiedCallback callback) {
+        saved_response_callback = std::move(callback);
+      });
+
+  TriggerDefaultFormFill(*form);
+
+  ASSERT_TRUE(cancel_cb);
+  ASSERT_TRUE(saved_response_callback);
+
+  NiceMock<MockEmailVerifierDelegateObserver> observer;
+  delegate().AddObserver(&observer);
+
+  EXPECT_CALL(observer,
+              OnFlowCompleted(testing::Field(
+                  &EmailVerifierDelegate::RequestMetrics::autofill_flow_result,
+                  testing::Optional(
+                      EvpAutofillFlowResult::kUserIgnoredPermissionPrompt))));
+
+  std::move(cancel_cb).Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kUserIgnoredPermissionPrompt, 1);
+
+  // Late response arrives after cancellation. It must be dropped:
+  // no token sent to driver, no toast shown.
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+
+  std::move(saved_response_callback)
+      .Run(std::optional<std::string>("late_token"),
+           blink::mojom::EmailVerificationRequestResult::kSuccess,
+           base::Milliseconds(200));
+
+  delegate().RemoveObserver(&observer);
+}
+
+// Verifies that if a verification request is cancelled and a new verification
+// is triggered on the same field before the first Verify() callback returns,
+// the first request's late response is ignored and does not corrupt the new
+// request.
+TEST_F(EmailVerifierDelegateTest,
+       CancelVerificationIgnoresStaleResponseWhenRetriggeredOnSameField) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+  FieldGlobalId field_id = form->field(0)->global_id();
+
+  PrefService* prefs = client().GetPrefs();
+  ASSERT_TRUE(prefs);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  update->Set("johndoe@hades.com", std::move(email_dict));
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
+      .WillRepeatedly([this](const std::string& email_arg, base::OnceClosure,
+                             EmailVerifier::IsVerifiableCallback callback) {
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+
+  base::OnceClosure first_cancel_cb;
+  base::OnceClosure second_cancel_cb;
+  EXPECT_CALL(client(), ShowEmailVerificationLoadingToast)
+      .WillOnce([&](base::OnceClosure cb) { first_cancel_cb = std::move(cb); })
+      .WillOnce(
+          [&](base::OnceClosure cb) { second_cancel_cb = std::move(cb); });
+
+  EmailVerifier::OnEmailVerifiedCallback first_response_callback;
+  EmailVerifier::OnEmailVerifiedCallback second_response_callback;
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce([&](const EmailVerifier::Result&, const std::string&,
+                    EmailVerifier::OnEmailVerifiedCallback callback) {
+        first_response_callback = std::move(callback);
+      })
+      .WillOnce([&](const EmailVerifier::Result&, const std::string&,
+                    EmailVerifier::OnEmailVerifiedCallback callback) {
+        second_response_callback = std::move(callback);
+      });
+
+  // 1. Trigger first verification and cancel it while Verify() is in flight.
+  TriggerDefaultFormFill(*form);
+  ASSERT_TRUE(first_cancel_cb);
+  ASSERT_TRUE(first_response_callback);
+  std::move(first_cancel_cb).Run();
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kUserIgnoredPermissionPrompt, 1);
+
+  // 2. Retrigger verification on the same field before the first Verify()
+  // finishes.
+  TriggerDefaultFormFill(*form);
+  ASSERT_TRUE(second_response_callback);
+
+  // 3. The cancelled first request's response arrives late. It must be ignored.
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+  std::move(first_response_callback)
+      .Run(std::optional<std::string>("stale_token"),
+           blink::mojom::EmailVerificationRequestResult::kSuccess,
+           base::Milliseconds(200));
+  testing::Mock::VerifyAndClearExpectations(&driver());
+
+  // 4. The second request's response arrives and completes normally.
+  EXPECT_CALL(client(), HideEmailVerificationPopup);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
+  EXPECT_CALL(driver(), SendEmailVerificationToken(
+                            field_id, "johndoe@hades.com", "fresh_token"));
+  std::move(second_response_callback)
+      .Run(std::optional<std::string>("fresh_token"),
+           blink::mojom::EmailVerificationRequestResult::kSuccess,
+           base::Milliseconds(150));
+  histogram_tester.ExpectBucketCount(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kTokenSentToRenderer, 1);
 }
 
 }  // namespace autofill

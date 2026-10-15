@@ -172,7 +172,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(*bridge_, HideJavaBottomSheet);
   EXPECT_CALL(ui_callback,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
@@ -429,7 +429,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
         shown_model = std::move(model);
       });
 
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
   ASSERT_TRUE(shown_model);
   EXPECT_EQ(shown_model->GetType(),
             AutofillMessageModel::Type::kEmailVerificationLoading);
@@ -443,7 +443,85 @@ TEST_F(EmailVerificationControllerAndroidTest,
        ShowLoadingToastDoesNotShowWhenWebContentsHidden) {
   web_contents()->WasHidden();
   EXPECT_CALL(mock_message_controller_, Show).Times(0);
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       UserCancelWhileInFlightInvokesCancelCallback) {
+  std::unique_ptr<AutofillMessageModel> loading_model;
+  EXPECT_CALL(mock_message_controller_,
+              Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
+  EXPECT_CALL(mock_message_controller_, Show)
+      .WillOnce([&loading_model](std::unique_ptr<AutofillMessageModel> model) {
+        loading_model = std::move(model);
+      });
+
+  base::MockCallback<base::OnceClosure> cancel_callback;
+  evp_controller_->ShowLoadingToast(cancel_callback.Get());
+  ASSERT_TRUE(loading_model);
+  EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
+  testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
+
+  // User taps "Cancel" at 400ms while verification is still in flight. The
+  // Android Messages framework runs OnActionClicked() followed by
+  // OnDismissed(PRIMARY_ACTION); cancel_callback must run exactly once.
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  EXPECT_CALL(cancel_callback, Run).Times(1);
+  loading_model->OnActionClicked();
+  loading_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       GestureDismissWhileInFlightInvokesCancelCallback) {
+  std::unique_ptr<AutofillMessageModel> loading_model;
+  EXPECT_CALL(mock_message_controller_,
+              Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
+  EXPECT_CALL(mock_message_controller_, Show)
+      .WillOnce([&loading_model](std::unique_ptr<AutofillMessageModel> model) {
+        loading_model = std::move(model);
+      });
+
+  base::MockCallback<base::OnceClosure> cancel_callback;
+  evp_controller_->ShowLoadingToast(cancel_callback.Get());
+  ASSERT_TRUE(loading_model);
+  testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
+
+  // User swipes away the loading banner (GESTURE) at 400ms while verification
+  // is still in flight.
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  EXPECT_CALL(cancel_callback, Run).Times(1);
+  loading_model->OnDismissed(messages::DismissReason::GESTURE);
+  EXPECT_FALSE(test_api(*evp_controller_).loading_start_time().has_value());
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowLoadingToastWhileLoadingToastDismissesPreviousLoadingMessage) {
+  std::unique_ptr<AutofillMessageModel> loading_model;
+  EXPECT_CALL(mock_message_controller_,
+              Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
+  EXPECT_CALL(mock_message_controller_, Show)
+      .WillOnce([&loading_model](std::unique_ptr<AutofillMessageModel> model) {
+        loading_model = std::move(model);
+      });
+
+  base::MockCallback<base::OnceClosure> cancel_callback;
+  evp_controller_->ShowLoadingToast(cancel_callback.Get());
+  ASSERT_TRUE(loading_model);
+  testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
+
+  // Calling ShowLoadingToast again while the loading message banner is active
+  // preempts the in-flight verification (invoking cancel_callback once) and
+  // dismisses the previous banner with DISMISSED_BY_FEATURE without invoking
+  // cancel_callback a second time.
+  EXPECT_CALL(cancel_callback, Run).Times(1);
+  EXPECT_CALL(mock_message_controller_,
+              Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE))
+      .WillOnce([&loading_model](messages::DismissReason reason) {
+        loading_model->OnDismissed(reason);
+      });
+  EXPECT_CALL(mock_message_controller_, Show);
+  evp_controller_->ShowLoadingToast(base::DoNothing());
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
@@ -451,7 +529,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(mock_message_controller_,
               Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
   EXPECT_CALL(mock_message_controller_, Show);
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
 
   // Verification response arrives at 200ms (< 800ms).
@@ -487,7 +565,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(mock_message_controller_,
               Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
   EXPECT_CALL(mock_message_controller_, Show);
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
 
   // Error response arrives at 200ms (< 800ms).
@@ -523,7 +601,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(mock_message_controller_,
               Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
   EXPECT_CALL(mock_message_controller_, Show);
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
 
   // The WebContents becomes hidden while verification is in flight.
@@ -544,7 +622,7 @@ TEST_F(
   EXPECT_CALL(mock_message_controller_,
               Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE));
   EXPECT_CALL(mock_message_controller_, Show);
-  evp_controller_->ShowLoadingToast();
+  evp_controller_->ShowLoadingToast(base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&mock_message_controller_);
 
   // The WebContents becomes hidden while verification is in flight.

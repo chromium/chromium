@@ -53,7 +53,8 @@ void EmailVerificationControllerDesktop::HidePopupImpl() {
   }
 }
 
-void EmailVerificationControllerDesktop::ShowLoadingToastImpl() {
+void EmailVerificationControllerDesktop::ShowLoadingToastImpl(
+    base::OnceClosure /*on_cancelled*/) {
   if (ToastController* toast_controller = GetToastController()) {
     toast_controller->MaybeShowToast(
         ToastParams(ToastId::kEmailVerificationLoading));

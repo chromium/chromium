@@ -336,7 +336,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
       base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback)
       final;
   void HideEmailVerificationPopup() final;
-  void ShowEmailVerificationLoadingToast() final;
+  void ShowEmailVerificationLoadingToast(
+      base::OnceClosure cancel_callback) final;
   void ShowEmailVerificationErrorToast() final;
   void ShowGmailOtpOptInBubble(
       const std::u16string& account_email,

@@ -97,7 +97,10 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
                      AutofillClient::EmailVerificationPermissionUiStatus)>),
                 (override));
     MOCK_METHOD(void, HideEmailVerificationPopup, (), (override));
-    MOCK_METHOD(void, ShowEmailVerificationLoadingToast, (), (override));
+    MOCK_METHOD(void,
+                ShowEmailVerificationLoadingToast,
+                (base::OnceClosure),
+                (override));
     MOCK_METHOD(void, ShowEmailVerificationErrorToast, (), (override));
 
     EmailVerifierDelegate& email_verifier_delegate() {

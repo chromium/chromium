@@ -505,7 +505,8 @@ void AutofillClient::HideEmailVerificationPopup() {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::ShowEmailVerificationLoadingToast() {
+void AutofillClient::ShowEmailVerificationLoadingToast(
+    base::OnceClosure cancel_callback) {
   NOTIMPLEMENTED();
 }
 

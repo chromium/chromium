@@ -99,17 +99,31 @@ void EmailVerificationControllerAndroid::HidePopupImpl() {
   bottom_sheet_bridge_->Hide();
 }
 
-void EmailVerificationControllerAndroid::ShowLoadingToastImpl() {
+void EmailVerificationControllerAndroid::ShowLoadingToastImpl(
+    base::OnceClosure on_cancelled) {
   if (!IsWebContentsVisible()) {
     return;
   }
   // TODO(crbug.com/555673134): Move this dismissal into `HideLoadingToastImpl`.
   GetMessageController().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
-  // TODO(crbug.com/555673134): Wire loading cancellation callbacks.
+  auto [on_action_cancelled, on_dismiss_cancelled] =
+      base::SplitOnceCallback(std::move(on_cancelled));
   GetMessageController().Show(
       AutofillMessageModel::CreateForEmailVerificationLoading(
-          web_contents().GetTopLevelNativeWindow(), base::DoNothing(),
-          base::DoNothing()));
+          web_contents().GetTopLevelNativeWindow(),
+          std::move(on_action_cancelled),
+          base::BindOnce(
+              [](base::OnceClosure on_cancelled,
+                 messages::DismissReason reason) {
+                // `PRIMARY_ACTION` already invokes `on_cancelled` via the
+                // action callback, and `DISMISSED_BY_FEATURE` is
+                // programmatic replacement by a subsequent EVP UI state.
+                if (reason != messages::DismissReason::PRIMARY_ACTION &&
+                    reason != messages::DismissReason::DISMISSED_BY_FEATURE) {
+                  std::move(on_cancelled).Run();
+                }
+              },
+              std::move(on_dismiss_cancelled))));
 }
 
 void EmailVerificationControllerAndroid::ShowErrorToastImpl() {

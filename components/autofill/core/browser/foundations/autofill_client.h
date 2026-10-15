@@ -948,6 +948,12 @@ class AutofillClient {
       const EntityInstance& entity,
       base::OnceClosure on_undo_clicked);
 
+  // TODO(crbug.com/555673134): Rename *Popup and *Toast methods below to
+  // platform-agnostic names (e.g., ShowEmailVerificationPrompt,
+  // HideEmailVerificationPrompt, ShowEmailVerificationLoading,
+  // ShowEmailVerifiedNotification, ShowEmailVerificationErrorNotification) in
+  // a follow-up CL, as Android uses a BottomSheet and Message banners.
+
   // Shows a yes/no prompt asking the user to confirm that they want to verify
   // their email. The prompt is anchored on the field at `element_bounds`.
   // `issuer_site` is the site that issued the assertion.
@@ -965,14 +971,17 @@ class AutofillClient {
   // in-button loading spinner.
   virtual void HideEmailVerificationPopup();
 
-  // Displays a loading toast indicating that email verification is in progress.
-  // Called for subsequent-run requests where permission was already granted,
-  // so the permission prompt popup is bypassed while the token request is in
-  // flight.
-  virtual void ShowEmailVerificationLoadingToast();
+  // Displays a loading toast (or Message banner on Android) indicating that
+  // email verification is in progress. Called for subsequent-run requests where
+  // permission was already granted, so the permission prompt popup is bypassed
+  // while the token request is in flight. `cancel_callback` is invoked if the
+  // user cancels the verification from the loading UI.
+  virtual void ShowEmailVerificationLoadingToast(
+      base::OnceClosure cancel_callback);
 
-  // Displays a toast notifying the user that email verification succeeded for
-  // `issuer`. Called upon receiving a valid verification token.
+  // Displays a toast (or Message banner on Android) notifying the user that
+  // email verification succeeded for `issuer`. Called upon receiving a valid
+  // verification token.
   virtual void ShowEmailVerifiedToast(const GURL& issuer);
 
   // Displays an error toast notifying the user that email verification failed.
