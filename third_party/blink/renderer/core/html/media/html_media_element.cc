@@ -5129,9 +5129,11 @@ void HTMLMediaElement::AudioSourceProviderImpl::ProvideInput(
     return;
   }
 
-  // Wrap the AudioBus channel data using span.
+  // Wrap the AudioBus channel data using span. Inline up to 8 channels (e.g.
+  // 7.1 surround) on the stack to avoid heap allocations for common layouts.
+  constexpr wtf_size_t kInlineChannelCapacity = 8;
   unsigned n = bus->NumberOfChannels();
-  std::vector<base::span<float>> web_audio_data(n);
+  Vector<base::span<float>, kInlineChannelCapacity> web_audio_data(n);
   for (unsigned i = 0; i < n; ++i) {
     web_audio_data[i] = bus->Channel(i)->MutableSpan().first(
         base::checked_cast<size_t>(frames_to_process));

@@ -1028,7 +1028,7 @@ class CORE_EXPORT HTMLMediaElement
 
   // AudioSourceProviderImpl wraps a WebAudioSourceProvider.
   // provideInput() calls into Chromium to get a rendered audio stream.
-  class AudioSourceProviderImpl final : public AudioSourceProvider {
+  class CORE_EXPORT AudioSourceProviderImpl final : public AudioSourceProvider {
     DISALLOW_NEW();
 
    public:

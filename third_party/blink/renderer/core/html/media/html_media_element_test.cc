@@ -12,10 +12,13 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
+#include "partition_alloc/partition_alloc.h"
 #include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
@@ -41,6 +44,8 @@
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
@@ -50,6 +55,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
@@ -611,6 +617,11 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   void SetMediaSourceAttachment(
       scoped_refptr<MediaSourceAttachment> attachment) {
     Media()->media_source_attachment_ = std::move(attachment);
+  }
+
+  void WrapAudioSourceProviderForTesting(
+      scoped_refptr<WebAudioSourceProviderImpl> provider) {
+    Media()->audio_source_provider_.Wrap(std::move(provider));
   }
 
  protected:
@@ -3717,6 +3728,59 @@ TEST_P(HTMLMediaElementTest, SourceWasAddedIgnoredWhenNetworkStateNotNoSource) {
   test::RunPendingTasks();
 
   EXPECT_EQ(Media()->getNetworkState(), HTMLMediaElement::kNetworkIdle);
+}
+
+class MockAudioSourceProviderClient final
+    : public GarbageCollected<MockAudioSourceProviderClient>,
+      public AudioSourceProviderClient {
+ public:
+  void SetFormat(uint32_t number_of_channels, float sample_rate) override {}
+  void lock() override {}
+  void unlock() override {}
+  void OnCurrentSrcChanged(const KURL& current_src) override {}
+  void Trace(Visitor* visitor) const override {
+    AudioSourceProviderClient::Trace(visitor);
+  }
+};
+
+TEST_P(HTMLMediaElementTest,
+       AudioSourceProviderProvideInputAvoidsDynamicAllocation) {
+  constexpr int kFrames = 128;
+  auto provider =
+      base::MakeRefCounted<WebAudioSourceProviderImpl>(nullptr, nullptr);
+  WrapAudioSourceProviderForTesting(provider);
+  auto* client = MakeGarbageCollected<MockAudioSourceProviderClient>();
+  Media()->GetAudioSourceProvider().SetClient(client);
+
+  scoped_refptr<AudioBus> bus = AudioBus::Create(2, kFrames);
+  // Warm up `WebAudioSourceProviderImpl::bus_wrapper_` on the first call.
+  Media()->GetAudioSourceProvider().ProvideInput(bus.get(), kFrames);
+
+  for (unsigned ch = 0; ch < bus->NumberOfChannels(); ++ch) {
+    std::ranges::fill(bus->Channel(ch)->MutableSpan(), 1.0f);
+  }
+  EXPECT_FALSE(bus->IsSilent());
+  EXPECT_EQ(bus->MaxAbsValue(), 1.0f);
+
+  auto* buffer_partition = Partitions::BufferPartition();
+  buffer_partition->ResetBookkeepingForTesting();
+  const size_t baseline_allocated_bytes =
+      buffer_partition->total_size_of_allocated_bytes_.load(
+          std::memory_order_relaxed);
+
+  Media()->GetAudioSourceProvider().ProvideInput(bus.get(), kFrames);
+
+  EXPECT_EQ(buffer_partition->max_size_of_allocated_bytes_.load(
+                std::memory_order_relaxed),
+            baseline_allocated_bytes);
+  // `ProvideInput()` mutable-spans each channel (keeping `AudioChannel`'s
+  // silent flag cleared, unlike the early `bus->Zero()` return) and delegates
+  // to `WebAudioSourceProviderImpl::ProvideInput()` to zero the sample data.
+  EXPECT_FALSE(bus->IsSilent());
+  EXPECT_EQ(bus->MaxAbsValue(), 0.0f);
+
+  Media()->GetAudioSourceProvider().SetClient(nullptr);
+  WrapAudioSourceProviderForTesting(nullptr);
 }
 
 }  // namespace blink
