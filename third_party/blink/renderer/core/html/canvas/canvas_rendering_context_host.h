@@ -138,9 +138,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
                                   float font_height) {}
   virtual void ClearRenderedText(const gfx::RectF& rect) {}
   virtual void ClearRenderedText() {}
-  virtual bool ShouldCaptureRenderedText() {
-    return should_capture_rendered_text_;
-  }
+  virtual bool ShouldCaptureRenderedText() = 0;
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
@@ -183,7 +181,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   Member<PlainTextPainter> plain_text_painter_;
   Member<UniqueFontSelector> unique_font_selector_;
   gfx::Size size_;
-  bool should_capture_rendered_text_ = false;
 
  private:
 

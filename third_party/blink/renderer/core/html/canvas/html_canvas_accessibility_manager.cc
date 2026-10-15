@@ -45,95 +45,79 @@ bool SufficientlyOverlapping(const gfx::RectF& a, const gfx::RectF& b) {
 
 HTMLCanvasAccessibilityManager::HTMLCanvasAccessibilityManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    bool is_ignored,
-    HTMLCanvasElement* canvas_element,
-    Options options)
-    : options_(options),
-      is_ignored_(is_ignored),
+    std::optional<bool> is_ignored,
+    HTMLCanvasElement* canvas_element)
+    : is_ignored_(is_ignored),
       uma_timer_(task_runner, this, &HTMLCanvasAccessibilityManager::RecordUma),
       ocr_timer_(std::move(task_runner),
                  this,
                  &HTMLCanvasAccessibilityManager::TriggerOCR),
       canvas_element_(canvas_element) {
-  UpdateHasFallbackElementContent();
-
-  has_content_drawable_ = canvas_element->IsContentDrawable();
-
-  ReadAriaAttributes();
-
-  // If the manager is created with the kCollectTextRuns option only, capture
-  // the rendered text until heuristic decides otherwise.
-  if (options_ == kCollectTextRuns) {
-    canvas_element_->UpdateCaptureRenderedText(true);
-    return;
-  }
-
-  if (options_ & kUpdateHeuristicResults) {
+  if (is_ignored_.has_value()) {
     OnUpdate();
   }
 }
 
 void HTMLCanvasAccessibilityManager::SetIsIgnored(bool is_ignored) {
-  // If AX tree annotation is already enabled and `is_ignored` state is not
-  // changed, update is not needed.
-  if ((options_ & kAnnotateAXTree) && is_ignored_ == is_ignored) {
+  if (is_ignored_ == is_ignored) {
     return;
   }
-
-  // Receiving `is_ignored` indicates that AXObject is created for the canvas,
-  // and the manager should go to full operation mode to decide if the canvas
-  // needs accessibility support or not, and support it if needed.
-  // Note that support is not needed if `is_ignored` is true, however the
-  // update flow is triggered to update the heuristic result and collect
-  // metrics.
-  options_ |= kAll;
   is_ignored_ = is_ignored;
   OnUpdate();
 }
 
-void HTMLCanvasAccessibilityManager::EnableUpdatingHeuristicResults() {
-  if (options_ & kUpdateHeuristicResults) {
-    return;
+HTMLCanvasAccessibilityManager::HeuristicResult
+HTMLCanvasAccessibilityManager::ComputeHeuristicResult(
+    const HTMLCanvasElement& canvas_element,
+    bool is_ignored) {
+  if (is_ignored) {
+    return HeuristicResult::kIsIgnored;
   }
-  options_ |= kUpdateHeuristicResults;
-  OnUpdate();
+
+  if (IsTooSmall(canvas_element)) {
+    return HeuristicResult::kTooSmall;
+  }
+
+  if (canvas_element.IsContentDrawable()) {
+    return HeuristicResult::kHasContentDrawable;
+  }
+
+  // Child element content (e.g. <button>, <a>, <div>) represents an
+  // author-provided accessible fallback structure. Plain child text nodes (e.g.
+  // "Browser does not support canvas") are legacy boilerplate and do not
+  // disqualify the canvas from automated accessibility support.
+  if (ElementTraversal::FirstChild(canvas_element) != nullptr) {
+    return HeuristicResult::kHasFallbackContent;
+  }
+
+  if (canvas_element.FastHasAttribute(html_names::kRoleAttr) ||
+      canvas_element.FastHasAttribute(html_names::kAriaLabelAttr) ||
+      canvas_element.FastHasAttribute(html_names::kAriaLabelledbyAttr) ||
+      canvas_element.FastHasAttribute(html_names::kAriaDescribedbyAttr) ||
+      canvas_element.FastHasAttribute(html_names::kTitleAttr)) {
+    return HeuristicResult::kHasAriaAttributes;
+  }
+
+  return HeuristicResult::kNeedsA11ySupport;
 }
 
-void HTMLCanvasAccessibilityManager::UpdateHasFallbackElementContent() {
-  bool has_fallback_element_content =
-      ElementTraversal::FirstChild(*canvas_element_) != nullptr;
-  if (has_fallback_element_content_ == has_fallback_element_content) {
-    return;
+bool HTMLCanvasAccessibilityManager::IsTooSmall(
+    const HTMLCanvasElement& canvas_element) {
+  constexpr float kMinPixelSizeForTextVisibility = 10;
+  gfx::SizeF layout_size;
+  if (auto* layout_box =
+          DynamicTo<LayoutBox>(canvas_element.GetLayoutObject())) {
+    if (layout_box->GetLayoutResults().empty()) {
+      layout_size = gfx::SizeF(canvas_element.Size());
+    } else {
+      layout_size.set_width(layout_box->LogicalWidth().ToFloat());
+      layout_size.set_height(layout_box->LogicalHeight().ToFloat());
+    }
+  } else {
+    layout_size = gfx::SizeF(canvas_element.Size());
   }
-  has_fallback_element_content_ = has_fallback_element_content;
-  OnUpdate();
-}
-
-void HTMLCanvasAccessibilityManager::ReadAriaAttributes() {
-  if (is_ignored_) {
-    // If the canvas is ignored, accessibility support is not needed and we
-    // don't need to check for aria attributes.
-    return;
-  }
-  if (!has_aria_attributes_) {
-    has_aria_attributes_ =
-        canvas_element_->FastHasAttribute(html_names::kRoleAttr) ||
-        canvas_element_->FastHasAttribute(html_names::kAriaLabelAttr) ||
-        canvas_element_->FastHasAttribute(html_names::kAriaLabelledbyAttr) ||
-        canvas_element_->FastHasAttribute(html_names::kAriaDescribedbyAttr) ||
-        canvas_element_->FastHasAttribute(html_names::kTitleAttr);
-  }
-
-  OnUpdate();
-}
-
-void HTMLCanvasAccessibilityManager::SetHasContentDrawable(
-    bool has_content_drawable) {
-  if (has_content_drawable_ == has_content_drawable) {
-    return;
-  }
-  has_content_drawable_ = has_content_drawable;
-  OnUpdate();
+  return layout_size.width() < kMinPixelSizeForTextVisibility ||
+         layout_size.height() < kMinPixelSizeForTextVisibility;
 }
 
 void HTMLCanvasAccessibilityManager::OnResize() {
@@ -142,52 +126,16 @@ void HTMLCanvasAccessibilityManager::OnResize() {
 }
 
 void HTMLCanvasAccessibilityManager::OnUpdate() {
-  if (!(options_ & kUpdateHeuristicResults)) {
+  if (!is_ignored_.has_value()) {
     return;
   }
-
-  // If AX ignores the canvas, it definitely doesn't need support.
-  // Note that covers elements with aria-hidden=true, or not visible, or 1x1
-  // pixel size are ignored.
-  if (is_ignored_) {
-    SetHeuristicResult(HeuristicResult::kIsIgnored);
-    return;
-  }
-
-  // Minimum size canvas to assume it can have text.
-  if (IsTooSmall()) {
-    SetHeuristicResult(HeuristicResult::kTooSmall);
-    return;
-  }
-
-  if (has_content_drawable_) {
-    SetHeuristicResult(HeuristicResult::kHasContentDrawable);
-    return;
-  }
-
-  if (has_fallback_element_content_) {
-    SetHeuristicResult(HeuristicResult::kHasFallbackContent);
-    return;
-  }
-
-  if (has_aria_attributes_) {
-    SetHeuristicResult(HeuristicResult::kHasAriaAttributes);
-    return;
-  }
-
-  SetHeuristicResult(HeuristicResult::kNeedsA11ySupport);
+  SetHeuristicResult(ComputeHeuristicResult(*canvas_element_, *is_ignored_));
 }
 
-bool HTMLCanvasAccessibilityManager::IsTooSmall() const {
-  const float kMinPixelSizeForTextVisibility = 10;
-  gfx::SizeF layout_size;
-  if (auto* layout_box =
-          DynamicTo<LayoutBox>(canvas_element_->GetLayoutObject())) {
-    layout_size.set_width(layout_box->LogicalWidth().ToFloat());
-    layout_size.set_height(layout_box->LogicalHeight().ToFloat());
-  }
-  return layout_size.width() < kMinPixelSizeForTextVisibility ||
-         layout_size.height() < kMinPixelSizeForTextVisibility;
+bool HTMLCanvasAccessibilityManager::ShouldCaptureRenderedText() const {
+  // Capture speculatively before AXObject provides ignored state, or when
+  // accessibility support is determined to be needed.
+  return !is_ignored_.has_value() || NeedsA11ySupport();
 }
 
 void HTMLCanvasAccessibilityManager::SetHeuristicResult(
@@ -197,9 +145,7 @@ void HTMLCanvasAccessibilityManager::SetHeuristicResult(
   }
   heuristic_result_ = result;
 
-  if (!(options_ & kAnnotateAXTree)) {
-    return;
-  }
+  DCHECK(is_ignored_.has_value());
 
   if (!is_uma_recorded_) {
     uma_timer_.StartOneShot(HTMLCanvasAccessibilityManager::kUMATimerDelay,
@@ -207,21 +153,18 @@ void HTMLCanvasAccessibilityManager::SetHeuristicResult(
   }
 
   if (heuristic_result_ != HeuristicResult::kNeedsA11ySupport) {
+    // Accessibility support is not needed; cancel pending OCR and clear
+    // captured text runs.
     ocr_timer_.Stop();
     ClearOCRDeadline();
+    ClearRenderedText();
+    canvas_annotation_ = String();
+    return;
   }
 
-  if (heuristic_result_ == HeuristicResult::kNeedsA11ySupport &&
-      base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
-    options_ |= kCollectTextRuns;
-    // Schedule OCR to ensure static canvases are annotated if conditions
-    // change later.
+  if (base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
     ScheduleOCRIfNeeded();
-  } else if (options_ & kCollectTextRuns) {
-    ClearRenderedText();
-    options_ &= ~kCollectTextRuns;
   }
-  canvas_element_->UpdateCaptureRenderedText(options_ & kCollectTextRuns);
 }
 
 void HTMLCanvasAccessibilityManager::RecordUma(TimerBase*) {
@@ -244,7 +187,7 @@ void HTMLCanvasAccessibilityManager::RecordRenderedText(
     const String& text,
     const gfx::RectF& bounds,
     float font_height) {
-  if (!(options_ & kCollectTextRuns)) {
+  if (!ShouldCaptureRenderedText()) {
     return;
   }
 
@@ -265,7 +208,7 @@ void HTMLCanvasAccessibilityManager::RecordRenderedText(
 }
 
 void HTMLCanvasAccessibilityManager::ClearRenderedText(const gfx::RectF& rect) {
-  if (!(options_ & kCollectTextRuns)) {
+  if (!ShouldCaptureRenderedText()) {
     return;
   }
 

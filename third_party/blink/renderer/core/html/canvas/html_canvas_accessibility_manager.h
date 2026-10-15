@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -45,40 +46,12 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   // Delay before triggering OCR after the canvas image becomes stable.
   static constexpr base::TimeDelta kOCRDelay = base::Seconds(1);
 
-  // Maximum time an OCR request can be postponed before we stop rescheduling
-  // it.
+  // Maximum time an OCR request can be postponed before rescheduling ceases.
   static constexpr base::TimeDelta kMaxOCRDelay = base::Seconds(5);
 
   // Threshold of text runs count beyond which too much text is considered
   // extracted, requiring support from the OCR service.
   static constexpr size_t kMaxTextRuns = 10;
-
-  using Options = unsigned;
-  enum Option : Options {
-    kNone = 0,
-    kCollectTextRuns = 1 << 0,
-    kUpdateHeuristicResults = 1 << 1,
-    kAnnotateAXTree = 1 << 2,
-    kAll = kCollectTextRuns | kUpdateHeuristicResults | kAnnotateAXTree,
-  };
-
-  // `canvas_element` should outlive this object and should be the owner of it.
-  HTMLCanvasAccessibilityManager(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      bool is_ignored,
-      HTMLCanvasElement* canvas_element,
-      Options options);
-  HTMLCanvasAccessibilityManager(const HTMLCanvasAccessibilityManager&) =
-      delete;
-  HTMLCanvasAccessibilityManager& operator=(
-      const HTMLCanvasAccessibilityManager&) = delete;
-
-  bool NeedsA11ySupport() const {
-    return (options_ & kAnnotateAXTree) &&
-           heuristic_result_ == HeuristicResult::kNeedsA11ySupport;
-  }
-
-  void Trace(Visitor* visitor) const;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -96,22 +69,40 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:CanvasAccessibilityHeuristicResult)
 
+  // `canvas_element` should outlive this object and should be the owner of it.
+  HTMLCanvasAccessibilityManager(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      std::optional<bool> is_ignored,
+      HTMLCanvasElement* canvas_element);
+  HTMLCanvasAccessibilityManager(const HTMLCanvasAccessibilityManager&) =
+      delete;
+  HTMLCanvasAccessibilityManager& operator=(
+      const HTMLCanvasAccessibilityManager&) = delete;
+
+  // Pure stateless heuristic computation.
+  static HeuristicResult ComputeHeuristicResult(
+      const HTMLCanvasElement& canvas_element,
+      bool is_ignored);
+
+  bool NeedsA11ySupport() const {
+    return heuristic_result_ == HeuristicResult::kNeedsA11ySupport;
+  }
+
+  std::optional<bool> GetIsIgnored() const { return is_ignored_; }
+
+  void Trace(Visitor* visitor) const;
+
   HeuristicResult GetHeuristicResultForTesting() const {
     return heuristic_result_;
   }
 
-  void ReadAriaAttributes();
-
   void SetIsIgnored(bool is_ignored);
-  void EnableUpdatingHeuristicResults();
-
-  void SetHasContentDrawable(bool has_content_drawable);
-
-  void UpdateHasFallbackElementContent();
 
   void OnResize();
 
   void OnUpdate();
+
+  bool ShouldCaptureRenderedText() const;
 
   void RecordRenderedText(const String& text,
                           const gfx::RectF& bounds,
@@ -126,12 +117,12 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
 
   // Records the heuristic result to UMA if it hasn't been recorded yet. UMA is
   // recorded as a best effort in a timer to let the canvas element update its
-  // accessibility related information. If it is not recorder by the time the
+  // accessibility related information. If it is not recorded by the time the
   // canvas element's context is destroyed, it will be recorded then.
   void FlushUmaIfNeeded();
 
   bool ShouldCaptureRenderedTextForTesting() const {
-    return options_ & kCollectTextRuns;
+    return ShouldCaptureRenderedText();
   }
 
   bool IsOCRTimerActiveForTesting() const { return ocr_timer_.IsActive(); }
@@ -139,7 +130,7 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
  private:
   void SetHeuristicResult(HeuristicResult result);
   void RecordUma(TimerBase*);
-  bool IsTooSmall() const;
+  static bool IsTooSmall(const HTMLCanvasElement& canvas_element);
   bool ShouldRunOCR() const;
   void ScheduleOCRIfNeeded();
   void TriggerOCR(TimerBase*);
@@ -152,26 +143,8 @@ class CORE_EXPORT HTMLCanvasAccessibilityManager
     float font_height;
   };
 
-  Options options_;
+  std::optional<bool> is_ignored_;
   HeuristicResult heuristic_result_ = HeuristicResult::kUnknown;
-
-  // If canvas is drawn by html-in-canvas API, it should have accessibility
-  // support.
-  bool has_content_drawable_ = false;
-
-  // If canvas is ignored, accessibility support is not needed.
-  bool is_ignored_ = false;
-
-  // Set to true if any of the role, label, labelledby, describedby, or title
-  // aria attributes are set, or aria-hidden=false. This is an indicator that
-  // the developer has considered accessibility for the canvas.
-  bool has_aria_attributes_ = false;
-
-  // If the canvas has fallback element content, it already has accessibility
-  // support. `Element` is used to avoid pure text or comment nodes.
-  bool has_fallback_element_content_ = false;
-
-  std::optional<bool> needs_a11y_support_;
 
   HeapTaskRunnerTimer<HTMLCanvasAccessibilityManager> uma_timer_;
   HeapTaskRunnerTimer<HTMLCanvasAccessibilityManager> ocr_timer_;

@@ -368,9 +368,11 @@ void HTMLCanvasElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
 
-  if (params.name.LocalName().starts_with("aria-")) {
+  if (params.name.LocalName().starts_with("aria-") ||
+      params.name == html_names::kRoleAttr ||
+      params.name == html_names::kTitleAttr) {
     if (accessibility_manager_) {
-      accessibility_manager_->ReadAriaAttributes();
+      accessibility_manager_->OnUpdate();
     }
   }
 
@@ -388,7 +390,7 @@ void HTMLCanvasElement::AttributeChanged(
         object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
       }
       if (accessibility_manager_) {
-        accessibility_manager_->SetHasContentDrawable(has_content_drawable);
+        accessibility_manager_->OnUpdate();
       }
     }
   }
@@ -733,7 +735,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     NotifyListenersCanvasChanged();
   did_notify_listeners_for_current_frame_ = false;
 
-  if (accessibility_manager_ && should_capture_rendered_text_) {
+  if (accessibility_manager_ &&
+      accessibility_manager_->ShouldCaptureRenderedText()) {
     accessibility_manager_->UpdateAnnotation();
   }
 
@@ -1921,6 +1924,7 @@ void HTMLCanvasElement::LangAttributeChanged() {
 void HTMLCanvasElement::DidMoveToNewDocument(Document& old_document) {
   SetExecutionContext(GetExecutionContext());
   SetPage(GetDocument().GetPage());
+  last_ax_ignored_state_ = std::nullopt;
   HTMLElement::DidMoveToNewDocument(old_document);
 }
 
@@ -1942,9 +1946,9 @@ void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kCanvasFallbackElementContent);
     }
-    if (accessibility_manager_) {
-      accessibility_manager_->UpdateHasFallbackElementContent();
-    }
+  }
+  if (accessibility_manager_) {
+    accessibility_manager_->OnUpdate();
   }
 }
 
@@ -2048,7 +2052,8 @@ void HTMLCanvasElement::SetOffscreenCanvasResource(
   SetSize(OffscreenCanvasFrame()->Size());
   NotifyListenersCanvasChanged();
 
-  if (accessibility_manager_ && should_capture_rendered_text_) {
+  if (accessibility_manager_ &&
+      accessibility_manager_->ShouldCaptureRenderedText()) {
     accessibility_manager_->UpdateAnnotation();
   }
 }
@@ -2164,6 +2169,12 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
 }
 
 void HTMLCanvasElement::OnAxObjectIgnoredStateChanged(bool is_ignored) {
+  // Store the ignored state even when accessibility_manager_ is null.
+  // This prevents EnsureAccessibilityManager() from speculatively creating
+  // a manager when text is rendered to an element already determined to be
+  // ignored by the accessibility tree, and preserves the true AX ignored
+  // state for GetNeedsAccessibilitySupportHeuristic().
+  last_ax_ignored_state_ = is_ignored;
   if (accessibility_manager_) {
     accessibility_manager_->SetIsIgnored(is_ignored);
     return;
@@ -2173,33 +2184,32 @@ void HTMLCanvasElement::OnAxObjectIgnoredStateChanged(bool is_ignored) {
     return;
   }
   accessibility_manager_ = MakeGarbageCollected<HTMLCanvasAccessibilityManager>(
-      GetDocument().GetTaskRunner(TaskType::kInternalDefault), is_ignored, this,
-      HTMLCanvasAccessibilityManager::kAll);
+      GetDocument().GetTaskRunner(TaskType::kInternalDefault), is_ignored,
+      this);
 }
 
 // TODO(crbug.com/475512055): Remove this function once UKM collection is
 // not needed anymore.
 bool HTMLCanvasElement::GetNeedsAccessibilitySupportHeuristic() {
-  if (accessibility_manager_) {
-    accessibility_manager_->EnableUpdatingHeuristicResults();
-    return accessibility_manager_->NeedsA11ySupport();
+  bool is_ignored = false;
+  if (accessibility_manager_ &&
+      accessibility_manager_->GetIsIgnored().has_value()) {
+    is_ignored = *accessibility_manager_->GetIsIgnored();
+  } else if (last_ax_ignored_state_.has_value()) {
+    is_ignored = *last_ax_ignored_state_;
+  } else {
+    // Estimate is_ignored when accessibility is not enabled.
+    // True "is_ignored" needs AXObjectCache, so we approximate here by
+    // checking display/visibility and lack of aria-hidden="true".
+    bool is_visible = IsDisplayed();
+    bool has_aria_hidden = EqualIgnoringAsciiCase(
+        FastGetAttribute(html_names::kAriaHiddenAttr), "true");
+    is_ignored = !is_visible || has_aria_hidden;
   }
 
-  // Estimate is_ignored when accessibility is not enabled.
-  // True "is_ignored" needs AXObjectCache, so we approximate here by
-  // checking display/visibility and lack of the aria-hidden attribute.
-  bool is_visible = IsDisplayed();
-  bool has_aria_hidden = FastHasAttribute(html_names::kAriaHiddenAttr);
-  bool is_ignored = !(is_visible && !has_aria_hidden);
-
-  auto* manager = MakeGarbageCollected<HTMLCanvasAccessibilityManager>(
-      GetDocument().GetTaskRunner(TaskType::kInternalDefault), is_ignored, this,
-      HTMLCanvasAccessibilityManager::kUpdateHeuristicResults);
-
-  // The temporary manager is a GarbageCollected object allocated via Oilpan.
-  // Since we do not retain a persistent reference to it, it will automatically
-  // be garbage-collected once it goes out of scope and this function returns.
-  return manager->NeedsA11ySupport();
+  return HTMLCanvasAccessibilityManager::ComputeHeuristicResult(*this,
+                                                                is_ignored) ==
+         HTMLCanvasAccessibilityManager::HeuristicResult::kNeedsA11ySupport;
 }
 
 void HTMLCanvasElement::RecordRenderedText(const String& text,
@@ -2223,13 +2233,13 @@ void HTMLCanvasElement::ClearRenderedText() {
   }
 }
 
-void HTMLCanvasElement::UpdateCaptureRenderedText(bool capture) {
-  should_capture_rendered_text_ = capture;
-}
-
 bool HTMLCanvasElement::ShouldCaptureRenderedText() {
+  if (!base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
+    return false;
+  }
   EnsureAccessibilityManager();
-  return should_capture_rendered_text_;
+  return accessibility_manager_ &&
+         accessibility_manager_->ShouldCaptureRenderedText();
 }
 
 String HTMLCanvasElement::CanvasAnnotation() const {
@@ -2250,20 +2260,21 @@ void HTMLCanvasElement::ClearHasRequestedOCR() {
 }
 
 void HTMLCanvasElement::EnsureAccessibilityManager() {
-  if (accessibility_manager_) {
+  // Do not instantiate a manager if one already exists or if the accessibility
+  // tree has already evaluated this element as ignored.
+  if (accessibility_manager_ || last_ax_ignored_state_.value_or(false)) {
     return;
   }
 
   // If accessibility is enabled but `accessibility_manager_` is not created yet
-  // (AXObject is not created), create `accessibility_manager_` and assume the
-  // canvas is not ignored to start capturing rendered text.
+  // (AXObject is not created), create `accessibility_manager_` with an unknown
+  // ignored state to start capturing rendered text speculatively.
   if (base::FeatureList::IsEnabled(::features::kAccessibilityCanvas) &&
       GetDocument().ExistingAXObjectCache()) {
     accessibility_manager_ =
         MakeGarbageCollected<HTMLCanvasAccessibilityManager>(
             GetDocument().GetTaskRunner(TaskType::kInternalDefault),
-            /*is_ignored=*/false, this,
-            HTMLCanvasAccessibilityManager::kCollectTextRuns);
+            /*is_ignored=*/std::nullopt, this);
   }
 }
 

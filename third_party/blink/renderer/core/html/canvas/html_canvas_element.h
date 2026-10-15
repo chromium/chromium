@@ -73,7 +73,6 @@ class UpdateElementGeometryOptions;
 class ElementImage;
 class ElementImageDefaultSize;
 class GraphicsContext;
-class HTMLCanvasAccessibilityManager;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
 class StaticBitmapImageToVideoFrameCopier;
@@ -294,7 +293,6 @@ class CORE_EXPORT HTMLCanvasElement final
                           float font_height) override;
   void ClearRenderedText(const gfx::RectF& rect) override;
   void ClearRenderedText() override;
-  void UpdateCaptureRenderedText(bool capture);
   bool ShouldCaptureRenderedText() override;
   String CanvasAnnotation() const;
   bool HasRequestedOCR() const;
@@ -488,6 +486,17 @@ class CORE_EXPORT HTMLCanvasElement final
   bool is_content_drawable_ = false;
 
   Member<HTMLCanvasAccessibilityManager> accessibility_manager_;
+  // Stores the latest ignored state received from the accessibility tree via
+  // OnAxObjectIgnoredStateChanged(). Because ignored canvases do not allocate
+  // an HTMLCanvasAccessibilityManager, this state is retained on the element
+  // to:
+  // 1. Prevent EnsureAccessibilityManager() from speculatively allocating a
+  //    manager when text is drawn on a canvas known to be ignored by AX.
+  // 2. Supply the true AX ignored state to
+  //    GetNeedsAccessibilitySupportHeuristic() when accessibility_manager_ is
+  //    null, preventing it from falling back to the non-AX visibility
+  //    heuristic approximation.
+  std::optional<bool> last_ax_ignored_state_;
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.
