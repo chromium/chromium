@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -420,6 +421,245 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingOnlyApiPrivateTest,
       extension_misc::kContextualTasksExtensionId);
 
   EXPECT_EQ("valid_state", content::EvalJs(GetActiveWebContents(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionMessagingTest,
+    ServiceWorkerPortHandshakeAndBidirectionalSearchMessage) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kContextualTasksExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GURL("https://google.com/search")));
+
+  // Verify 0 iframes exist on the page.
+  EXPECT_EQ(0, content::EvalJs(GetActiveWebContents(),
+                               "document.querySelectorAll('iframe').length"));
+
+  auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+      GetOrCreateForWebContents(GetActiveWebContents());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnLensThumbnailCreated("data:image/png;base64,zero_iframe_crop");
+
+  // Connect via chrome.runtime.connect(EXT_ID, {name:
+  // 'chrome-search-channel'}), verify receipt of HandshakePing, reply with
+  // HandshakeResponse (auth_user_index = 2), and wait for the subsequent
+  // InjectChromeInput message over the Service Worker Port.
+  std::string handshake_and_receive_script = base::StringPrintf(
+      R"(
+      (async () => {
+        return new Promise((resolve) => {
+          const port = chrome.runtime.connect(
+              '%s', {name: 'chrome-search-channel'});
+          window.__aimSearchPort = port;
+          let gotHandshakePing = false;
+          port.onMessage.addListener((msg) => {
+            if (!msg || msg.type !== 'chrome-search-channel' ||
+                !Array.isArray(msg.payload)) {
+              return;
+            }
+            // HandshakePing is field 1 (tag 0x0a, length 0x00).
+            if (!gotHandshakePing && msg.payload.length >= 2 &&
+                msg.payload[0] === 0x0a) {
+              gotHandshakePing = true;
+              // Reply with SearchToClientMessage { handshake_response {
+              // auth_user_index: 2 } } -> [0x0a, 0x02, 0x08, 0x02]
+              port.postMessage({
+                type: 'chrome-search-channel',
+                payload: [0x0a, 0x02, 0x08, 0x02]
+              });
+              return;
+            }
+            // InjectChromeInput is field 2 (tag 0x12).
+            if (gotHandshakePing && msg.payload.length >= 2 &&
+                msg.payload[0] === 0x12) {
+              resolve('got_inject_chrome_input');
+            }
+          });
+        });
+      })()
+      )",
+      extension_misc::kContextualTasksExtensionId);
+
+  EXPECT_EQ(
+      "got_inject_chrome_input",
+      content::EvalJs(GetActiveWebContents(), handshake_and_receive_script));
+  EXPECT_TRUE(user_data->IsHandshakeCompleteForTesting());
+  ASSERT_NE(user_data->GetOrCreateContextualSessionHandle(), nullptr);
+  EXPECT_EQ(2u,
+            user_data->GetOrCreateContextualSessionHandle()->auth_user_index());
+
+  // Verify AIM -> Chrome SearchToClientMessage.OnSubmitQueryRequest over the
+  // Service Worker Port returns ClientToSearchMessage.OnSubmitQueryResponse
+  // with 0 iframes mounted.
+  std::string submit_query_script = R"(
+    (async () => {
+      return new Promise((resolve) => {
+        window.__aimSearchPort.onMessage.addListener((msg) => {
+          if (!msg || msg.type !== 'chrome-search-channel' ||
+              !Array.isArray(msg.payload)) {
+            return;
+          }
+          // OnSubmitQueryResponse is field 3 (tag 0x1a).
+          if (msg.payload.length >= 2 && msg.payload[0] === 0x1a) {
+            resolve('got_submit_response');
+          }
+        });
+        // SearchToClientMessage { on_submit_query_request {} } -> [0x12, 0x00]
+        window.__aimSearchPort.postMessage({
+          type: 'chrome-search-channel',
+          payload: [0x12, 0x00]
+        });
+      });
+    })()
+  )";
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  EXPECT_EQ("got_submit_response",
+            content::EvalJs(GetActiveWebContents(), submit_query_script));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,
+                       ServiceWorkerPortReconnectionAfterDisconnect) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kContextualTasksExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GURL("https://google.com/search")));
+
+  auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+      GetOrCreateForWebContents(GetActiveWebContents());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnLensThumbnailCreated("data:image/png;base64,zero_iframe_crop");
+
+  std::string reconnect_script = base::StringPrintf(
+      R"(
+      (async () => {
+        function connectAndCompleteHandshake() {
+          return new Promise((resolve) => {
+            const port = chrome.runtime.connect(
+                '%s', {name: 'chrome-search-channel'});
+            let gotPing = false;
+            port.onMessage.addListener((msg) => {
+              if (msg && msg.type === 'chrome-search-channel' &&
+                  Array.isArray(msg.payload)) {
+                if (!gotPing && msg.payload.length >= 2 &&
+                    msg.payload[0] === 0x0a) {
+                  gotPing = true;
+                  port.postMessage({
+                    type: 'chrome-search-channel',
+                    payload: [0x0a, 0x02, 0x08, 0x01]
+                  });
+                  return;
+                }
+                if (gotPing && msg.payload.length >= 2 &&
+                    msg.payload[0] === 0x12) {
+                  resolve(port);
+                }
+              }
+            });
+          });
+        }
+        const firstPort = await connectAndCompleteHandshake();
+        firstPort.disconnect();
+        const secondPort = await connectAndCompleteHandshake();
+        window.__reconnectedPort = secondPort;
+        return 'reconnected';
+      })()
+      )",
+      extension_misc::kContextualTasksExtensionId);
+
+  EXPECT_EQ("reconnected",
+            content::EvalJs(GetActiveWebContents(), reconnect_script));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,
+                       ServiceWorkerPortSecondConnectBeforeFirstDisconnect) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kContextualTasksExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GURL("https://google.com/search")));
+
+  auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+      GetOrCreateForWebContents(GetActiveWebContents());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnLensThumbnailCreated("data:image/png;base64,zero_iframe_crop");
+
+  std::string connect_second_before_disconnect_script = base::StringPrintf(
+      R"(
+      (async () => {
+        function connectAndCompleteHandshake() {
+          return new Promise((resolve) => {
+            const port = chrome.runtime.connect(
+                '%s', {name: 'chrome-search-channel'});
+            let gotPing = false;
+            port.onMessage.addListener((msg) => {
+              if (msg && msg.type === 'chrome-search-channel' &&
+                  Array.isArray(msg.payload)) {
+                if (!gotPing && msg.payload.length >= 2 &&
+                    msg.payload[0] === 0x0a) {
+                  gotPing = true;
+                  port.postMessage({
+                    type: 'chrome-search-channel',
+                    payload: [0x0a, 0x02, 0x08, 0x01]
+                  });
+                  return;
+                }
+                if (gotPing && msg.payload.length >= 2 &&
+                    msg.payload[0] === 0x12) {
+                  resolve(port);
+                }
+              }
+            });
+          });
+        }
+        const firstPort = await connectAndCompleteHandshake();
+        const secondPort = await connectAndCompleteHandshake();
+        firstPort.disconnect();
+        window.__secondSearchPort = secondPort;
+        return 'second_connected';
+      })()
+      )",
+      extension_misc::kContextualTasksExtensionId);
+
+  EXPECT_EQ("second_connected",
+            content::EvalJs(GetActiveWebContents(),
+                            connect_second_before_disconnect_script));
+
+  // Verify the second port remains active in portsByDocumentId after the
+  // superseded first port disconnects.
+  std::string submit_query_script = R"(
+    (async () => {
+      return new Promise((resolve) => {
+        window.__secondSearchPort.onMessage.addListener((msg) => {
+          if (!msg || msg.type !== 'chrome-search-channel' ||
+              !Array.isArray(msg.payload)) {
+            return;
+          }
+          // OnSubmitQueryResponse is field 3 (tag 0x1a).
+          if (msg.payload.length >= 2 && msg.payload[0] === 0x1a) {
+            resolve('got_submit_response');
+          }
+        });
+        // SearchToClientMessage { on_submit_query_request {} } -> [0x12, 0x00]
+        window.__secondSearchPort.postMessage({
+          type: 'chrome-search-channel',
+          payload: [0x12, 0x00]
+        });
+      });
+    })()
+  )";
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  EXPECT_EQ("got_submit_response",
+            content::EvalJs(GetActiveWebContents(), submit_query_script));
 }
 
 }  // namespace extensions
