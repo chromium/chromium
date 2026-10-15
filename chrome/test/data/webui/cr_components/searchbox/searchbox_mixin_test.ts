@@ -2029,7 +2029,7 @@ suite('SearchboxMixinTest', () => {
         }));
         await microtasksFinished();
 
-        element.inputKeywordModel = {
+        element.keywordModeManager.inputKeywordModel = {
           type: KeywordType.kInKeyword,
           keyword,
           displayText: 'Search Google',
@@ -3051,7 +3051,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   });
 
   test('computeMatchFillIntoEdit strips keyword when in keyword mode', () => {
-    element.inputKeywordModel = {
+    element.keywordModeManager.inputKeywordModel = {
       type: KeywordType.kInKeyword,
       keyword: '@tabs',
       displayText: 'Tabs',

@@ -1383,7 +1383,7 @@ export class OmniboxPopupSearchboxElement extends
     const keywordChanged =
         this.inputKeywordModel?.keyword !== state.keywordModel?.keyword ||
         this.inputKeywordModel?.type !== state.keywordModel?.type;
-    this.inputKeywordModel = state.keywordModel;
+    this.keywordModeManager.inputKeywordModel = state.keywordModel;
     this.lastInputText_ = text;
     this.lastInputSelection_ = selection;
     // Clear edit history and set baseline text on hard state resets (e.g. tab
