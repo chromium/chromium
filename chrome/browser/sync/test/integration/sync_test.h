@@ -364,10 +364,6 @@ class SyncTest : public PlatformBrowserTest,
       SyncTestAccount account,
       bool enable_history_sync_in_transport_mode);
 
-  // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
-  // is applicable on ChromeOS-Ash platform only.
-  bool UseArcPackage();
-
   // Waits for all the changes which might be done asynchronously after setting
   // up sync engine. This is used to prevent starting another sync cycle after
   // SetupSync() call which might be unexpected in several tests.

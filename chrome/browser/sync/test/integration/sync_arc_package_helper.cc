@@ -38,7 +38,7 @@ std::string GetTestPackageName(size_t id) {
 SyncArcPackageHelper* SyncArcPackageHelper::GetInstance() {
   SyncArcPackageHelper* instance = base::Singleton<SyncArcPackageHelper>::get();
   DCHECK(sync_datatype_helper::test());
-  instance->SetupTest(sync_datatype_helper::test());
+  instance->test_ = sync_datatype_helper::test();
   return instance;
 }
 
@@ -57,19 +57,9 @@ SyncArcPackageHelper::SyncArcPackageHelper() = default;
 
 SyncArcPackageHelper::~SyncArcPackageHelper() = default;
 
-void SyncArcPackageHelper::SetupTest(SyncTest* test) {
-  if (setup_completed_) {
-    DCHECK_EQ(test, test_);
-    return;
-  }
-  test_ = test;
-
-  for (Profile* profile : test_->GetAllProfiles()) {
-    EnableArcService(profile);
-    SendRefreshPackageList(profile);
-  }
-
-  setup_completed_ = true;
+void SyncArcPackageHelper::SetupProfile(Profile* profile) {
+  EnableArcService(profile);
+  SendRefreshPackageList(profile);
 }
 
 void SyncArcPackageHelper::InstallPackageWithIndex(Profile* profile,
@@ -172,7 +162,7 @@ void SyncArcPackageHelper::EnableArcService(Profile* profile) {
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
   DCHECK(arc_app_list_prefs);
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   arc_app_list_prefs->SetDefaultAppsReadyCallback(run_loop.QuitClosure());
   run_loop.Run();
 

@@ -36,7 +36,7 @@ class SyncArcPackageHelper {
 
   static sync_pb::EntitySpecifics GetTestSpecifics(size_t id);
 
-  void SetupTest(SyncTest* test);
+  void SetupProfile(Profile* profile);
 
   void InstallPackageWithIndex(Profile* profile, size_t id);
 
@@ -74,7 +74,6 @@ class SyncArcPackageHelper {
   bool ArcPackageDetailsMatch(Profile* profile1, Profile* profile2);
 
   raw_ptr<SyncTest, DanglingUntriaged> test_ = nullptr;
-  bool setup_completed_ = false;
 
   std::unordered_map<Profile*, std::unique_ptr<FakeAppInstance>> instance_map_;
 };
