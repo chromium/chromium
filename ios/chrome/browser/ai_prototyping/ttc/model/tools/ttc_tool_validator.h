@@ -36,25 +36,22 @@ class TtcToolValidator {
  public:
   TtcToolValidator() = delete;
 
-  // Validates the tool name, arguments, and correlation `call_id`
-  // syntactically. Returns `base::ok()` on success, or an error message
-  // describing the violation.
+  // Validates the tool name and arguments syntactically. Returns `base::ok()`
+  // on success, or an error message describing the violation.
   static base::expected<void, std::string> ValidateToolCall(
       const std::string& name,
-      const base::DictValue& arguments,
-      const std::string& call_id);
+      const base::DictValue& arguments);
 
   // Validates a tool call and creates an actuation request containing the
   // serialized `optimization_guide::proto::Action` proto.
   static base::expected<TtcActuationRequest, std::string>
   CreateActuationRequest(const std::string& name,
-                         const base::DictValue& arguments,
-                         const std::string& call_id);
+                         const base::DictValue& arguments);
 
   // Validates a batch of tool call dictionaries and creates an actuation
   // request containing all serialized `optimization_guide::proto::Action`
-  // protos. Each dictionary in `tool_calls` must contain `"name"`, `"id"`, and
-  // optional `"args"`.
+  // protos. Each dictionary in `tool_calls` must contain `"name"` and optional
+  // `"args"`.
   static base::expected<TtcActuationRequest, std::string>
   CreateActuationRequestWithToolCalls(const base::ListValue& tool_calls);
 };

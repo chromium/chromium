@@ -24,17 +24,15 @@ using TtcToolValidatorTest = PlatformTest;
 TEST_F(TtcToolValidatorTest, TestValidToolCalls) {
   base::DictValue open_url_args;
   open_url_args.Set("url", "https://example.com");
-  auto result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl,
-                                                   open_url_args, "call_1");
+  auto result =
+      TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, open_url_args);
   EXPECT_TRUE(result.has_value());
 
   base::DictValue empty_args;
-  result = TtcToolValidator::ValidateToolCall(ttc::kToolGoBack, empty_args,
-                                              "call_2");
+  result = TtcToolValidator::ValidateToolCall(ttc::kToolGoBack, empty_args);
   EXPECT_TRUE(result.has_value());
 
-  result = TtcToolValidator::ValidateToolCall(ttc::kToolGoForward, empty_args,
-                                              "call_3");
+  result = TtcToolValidator::ValidateToolCall(ttc::kToolGoForward, empty_args);
   EXPECT_TRUE(result.has_value());
 }
 
@@ -43,18 +41,12 @@ TEST_F(TtcToolValidatorTest, TestDefensiveRejections) {
   base::DictValue empty_args;
 
   // Empty tool name.
-  auto result = TtcToolValidator::ValidateToolCall("", empty_args, "call_1");
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidToolCall);
-
-  // Empty call ID.
-  result = TtcToolValidator::ValidateToolCall(ttc::kToolGoBack, empty_args, "");
+  auto result = TtcToolValidator::ValidateToolCall("", empty_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidToolCall);
 
   // Unknown tool name.
-  result =
-      TtcToolValidator::ValidateToolCall("unknown_tool", empty_args, "call_1");
+  result = TtcToolValidator::ValidateToolCall("unknown_tool", empty_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageUnknownTool);
 }
@@ -63,16 +55,16 @@ TEST_F(TtcToolValidatorTest, TestDefensiveRejections) {
 TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   // Missing URL.
   base::DictValue empty_args;
-  auto result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl,
-                                                   empty_args, "call_1");
+  auto result =
+      TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, empty_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidArguments);
 
   // Invalid URL.
   base::DictValue invalid_url_args;
   invalid_url_args.Set("url", "not a valid url ://");
-  result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl,
-                                              invalid_url_args, "call_2");
+  result =
+      TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, invalid_url_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidUrl);
 
@@ -86,8 +78,7 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   for (const std::string& url : disallowed_urls) {
     base::DictValue args;
     args.Set("url", url);
-    result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, args,
-                                                "call_test");
+    result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, args);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidUrl);
   }
@@ -96,8 +87,8 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   base::DictValue new_tab_bool_args;
   new_tab_bool_args.Set("url", "https://example.com");
   new_tab_bool_args.Set("new_tab", true);
-  result = TtcToolValidator::ValidateToolCall(
-      ttc::kToolOpenUrl, new_tab_bool_args, "call_new_tab");
+  result =
+      TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, new_tab_bool_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageNewTabUnsupported);
 
@@ -105,8 +96,8 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   base::DictValue new_tab_str_args;
   new_tab_str_args.Set("url", "https://example.com");
   new_tab_str_args.Set("new_tab", "true");
-  result = TtcToolValidator::ValidateToolCall(
-      ttc::kToolOpenUrl, new_tab_str_args, "call_new_tab_str");
+  result =
+      TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, new_tab_str_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageNewTabUnsupported);
 
@@ -114,8 +105,8 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   base::DictValue new_tab_invalid_args;
   new_tab_invalid_args.Set("url", "https://example.com");
   new_tab_invalid_args.Set("new_tab", "today");
-  result = TtcToolValidator::ValidateToolCall(
-      ttc::kToolOpenUrl, new_tab_invalid_args, "call_new_tab_invalid");
+  result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl,
+                                              new_tab_invalid_args);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageNewTabUnsupported);
 
@@ -123,15 +114,15 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   base::DictValue new_tab_false_args;
   new_tab_false_args.Set("url", "https://example.com");
   new_tab_false_args.Set("new_tab", false);
-  result = TtcToolValidator::ValidateToolCall(
-      ttc::kToolOpenUrl, new_tab_false_args, "call_new_tab_false");
+  result =
+      TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl, new_tab_false_args);
   EXPECT_TRUE(result.has_value());
 
   base::DictValue new_tab_false_str_args;
   new_tab_false_str_args.Set("url", "https://example.com");
   new_tab_false_str_args.Set("new_tab", "false");
-  result = TtcToolValidator::ValidateToolCall(
-      ttc::kToolOpenUrl, new_tab_false_str_args, "call_new_tab_false_str");
+  result = TtcToolValidator::ValidateToolCall(ttc::kToolOpenUrl,
+                                              new_tab_false_str_args);
   EXPECT_TRUE(result.has_value());
 }
 
@@ -140,10 +131,9 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
   base::DictValue open_url_args;
   open_url_args.Set("url", "https://example.com");
   auto request_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolOpenUrl, open_url_args, "call_single");
+      ttc::kToolOpenUrl, open_url_args);
   ASSERT_TRUE(request_result.has_value());
   const TtcActuationRequest& request = request_result.value();
-  EXPECT_EQ(request.call_id(), "call_single");
   ASSERT_EQ(request.action_protos.size(), 1u);
 
   optimization_guide::proto::Action action;
@@ -153,8 +143,8 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
 
   // Back tool request.
   base::DictValue empty_args;
-  auto back_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolGoBack, empty_args, "call_back");
+  auto back_result =
+      TtcToolValidator::CreateActuationRequest(ttc::kToolGoBack, empty_args);
   ASSERT_TRUE(back_result.has_value());
   const TtcActuationRequest& back_request = back_result.value();
   ASSERT_EQ(back_request.action_protos.size(), 1u);
@@ -163,8 +153,8 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
   EXPECT_TRUE(back_action.has_back());
 
   // Forward tool request.
-  auto forward_result = TtcToolValidator::CreateActuationRequest(
-      ttc::kToolGoForward, empty_args, "call_forward");
+  auto forward_result =
+      TtcToolValidator::CreateActuationRequest(ttc::kToolGoForward, empty_args);
   ASSERT_TRUE(forward_result.has_value());
   const TtcActuationRequest& forward_request = forward_result.value();
   ASSERT_EQ(forward_request.action_protos.size(), 1u);
@@ -194,12 +184,10 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestBatch) {
   args_1.Set("url", "https://google.com");
   base::DictValue call_1;
   call_1.Set("name", ttc::kToolOpenUrl);
-  call_1.Set("id", "call_batch_1");
   call_1.Set("args", std::move(args_1));
 
   base::DictValue call_2;
   call_2.Set("name", ttc::kToolGoBack);
-  call_2.Set("id", "call_batch_2");
   call_2.Set("args", base::DictValue());
 
   base::ListValue tool_calls;
@@ -210,10 +198,6 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestBatch) {
       TtcToolValidator::CreateActuationRequestWithToolCalls(tool_calls);
   ASSERT_TRUE(request_result.has_value());
   const TtcActuationRequest& request = request_result.value();
-  EXPECT_EQ(request.call_id(), "call_batch_1");
-  ASSERT_EQ(request.call_ids.size(), 2u);
-  EXPECT_EQ(request.call_ids[0], "call_batch_1");
-  EXPECT_EQ(request.call_ids[1], "call_batch_2");
   ASSERT_EQ(request.action_protos.size(), 2u);
 
   optimization_guide::proto::Action action1;
@@ -241,20 +225,6 @@ TEST_F(TtcToolValidatorTest, TestTtcActuationResponse) {
   EXPECT_EQ(error_response.result_code,
             actor::mojom::ActionResultCode::kArgumentsInvalid);
   EXPECT_EQ(error_response.error_message, "Something went wrong");
-}
-
-// Tests TtcActuationRequest batch call IDs accessor.
-TEST_F(TtcToolValidatorTest, TestTtcActuationRequestBatchCallIDs) {
-  std::vector<std::string> call_ids = {"call_1", "call_2", "call_3"};
-  TtcActuationRequest request({}, "In progress", call_ids);
-
-  EXPECT_EQ(request.call_id(), "call_1");
-  EXPECT_EQ(request.call_ids, call_ids);
-  EXPECT_EQ(request.task_update, "In progress");
-
-  TtcActuationRequest empty_ids_request({}, "In progress",
-                                        std::vector<std::string>{});
-  EXPECT_EQ(empty_ids_request.call_id(), std::nullopt);
 }
 
 }  // namespace
