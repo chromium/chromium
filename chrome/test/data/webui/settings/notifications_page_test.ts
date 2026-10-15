@@ -5,19 +5,31 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {NotificationsPageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsState} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, resetPageVisibilityForTesting} from 'chrome://settings/settings.js';
+import {ContentSetting, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsState, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy, resetPageVisibilityForTesting, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
+
+const NOTIFICATIONS_PREF = 'generated.notification';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: NOTIFICATIONS_PREF,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SettingsState.CPSS,
+    },
+  ];
+}
 
 function createPref(
     category: ContentSettingsTypes,
@@ -34,26 +46,27 @@ function createPref(
 
 suite('NotificationsPage', function() {
   let page: NotificationsPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
 
   function createPage() {
     page = document.createElement('settings-notifications-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   }
 
-  setup(function() {
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     return createPage();
   });
 
@@ -88,7 +101,7 @@ suite('NotificationsPage', function() {
     assertTrue(isVisible(radioGroup));
     assertTrue(isVisible(cpssRadioGroup));
     assertEquals(
-        SettingsState.CPSS, page.get('prefs.generated.notification.value'));
+        SettingsState.CPSS, prefService.getPref(NOTIFICATIONS_PREF).value);
 
     const blockNotification =
         radioGroup.shadowRoot!.querySelector<HTMLElement>('#blockRadioOption');
@@ -104,12 +117,38 @@ suite('NotificationsPage', function() {
     await flushTasks();
     assertTrue(isVisible(cpssRadioGroup));
     assertEquals(
-        SettingsState.CPSS, page.get('prefs.generated.notification.value'));
+        SettingsState.CPSS, prefService.getPref(NOTIFICATIONS_PREF).value);
+  });
+
+  test('cpssRadioGroup', async function() {
+    siteSettingsBrowserProxy.setPrefs(
+        createPref(ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ASK));
+
+    const cpssRadioGroup =
+        page.shadowRoot!.querySelector('settings-radio-group');
+    assertTrue(!!cpssRadioGroup);
+    assertEquals(SettingsState.CPSS.toString(), cpssRadioGroup.selected);
+    assertEquals(
+        SettingsState.CPSS, prefService.getPref(NOTIFICATIONS_PREF).value);
+
+    const quietRadioButton = cpssRadioGroup.querySelector<HTMLElement>(
+        `settings-collapse-radio-button[name="${SettingsState.QUIET}"]`);
+    assertTrue(!!quietRadioButton);
+    quietRadioButton.click();
+    await flushTasks();
+    assertEquals(
+        SettingsState.QUIET, prefService.getPref(NOTIFICATIONS_PREF).value);
+    assertEquals(SettingsState.QUIET.toString(), cpssRadioGroup.selected);
+
+    await prefService.setPrefValue(NOTIFICATIONS_PREF, SettingsState.LOUD);
+    await flushTasks();
+    assertEquals(SettingsState.LOUD.toString(), cpssRadioGroup.selected);
   });
 });
 
 suite('NotificationPermissionReview', function() {
   let page: NotificationsPageElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
 
   const oneElementMockData = [{
@@ -117,8 +156,12 @@ suite('NotificationPermissionReview', function() {
     notificationInfoString: 'About 4 notifications a day',
   }];
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
 
     siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);

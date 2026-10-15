@@ -7,17 +7,17 @@
       $i18n{siteSettingsDefaultBehaviorDescription}
     </div>
     <settings-radio-group
-        pref="{{prefs.plugins.always_open_pdf_externally}}"
+        pref-key="plugins.always_open_pdf_externally"
         selectable-elements="settings-collapse-radio-button">
       <settings-collapse-radio-button no-collapse
-          pref="[[prefs.plugins.always_open_pdf_externally]]"
+          pref-key="plugins.always_open_pdf_externally"
           label="$i18n{siteSettingsPdfsAllowed}"
           name="true"
           disabled="[[isGuest_]]"
           icon="cr:download">
       </settings-collapse-radio-button>
       <settings-collapse-radio-button no-collapse
-          pref="[[prefs.plugins.always_open_pdf_externally]]"
+          pref-key="plugins.always_open_pdf_externally"
           label="$i18n{siteSettingsPdfsBlocked}"
           name="false"
           disabled="[[isGuest_]]"

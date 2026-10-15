@@ -13,14 +13,14 @@
     </div>
     <settings-radio-group
         id="javascriptOptimizerRadioGroup"
-        pref="{{prefs.generated.javascript_optimizer}}"
+        pref-key="generated.javascript_optimizer"
         selectable-elements="settings-collapse-radio-button"
         group-aria-label="$i18n{siteSettingsDefaultBehavior}">
       <settings-collapse-radio-button
           id="enableForAllSites"
           class="two-line"
           name="[[javascriptOptimizerSettingEnum_.ALLOWED]]"
-          pref="[[prefs.generated.javascript_optimizer]]"
+          pref-key="generated.javascript_optimizer"
           label="$i18n{siteSettingsJavascriptOptimizerAllowed}"
           sub-label="$i18n{siteSettingsJavascriptOptimizerAllowedSubLabel}"
           no-collapse>
@@ -30,17 +30,16 @@
           class="two-line"
           name="[[
               javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
-          pref="[[prefs.generated.javascript_optimizer]]"
+          pref-key="generated.javascript_optimizer"
           label="$i18n{siteSettingsJavascriptOptimizerBlockedUnfamiliarSites}"
-          sub-label="[[getBlockForUnfamiliarSitesSubLabel_(
-              prefs.generated.javascript_optimizer.value)]]"
+          sub-label="[[blockForUnfamiliarSitesSubLabel_]]"
           no-collapse>
       </settings-collapse-radio-button>
       <settings-collapse-radio-button
           id="blockForAllSites"
           class="two-line"
           name="[[javascriptOptimizerSettingEnum_.BLOCKED]]"
-          pref="[[prefs.generated.javascript_optimizer]]"
+          pref-key="generated.javascript_optimizer"
           label="$i18n{siteSettingsJavascriptOptimizerBlocked}"
           sub-label="$i18n{siteSettingsJavascriptOptimizerBlockedSubLabel}"
           no-collapse>

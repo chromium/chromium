@@ -9,7 +9,7 @@ import '../controls/settings_radio_group.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,7 +19,8 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes, JavascriptOptimizerSetting} from './constants.js';
 import {getTemplate} from './v8_page.html.js';
 
-const V8PageElementBase = SettingsViewMixin(I18nMixin(PrefsMixin(PolymerElement)));
+const V8PageElementBase =
+    SettingsViewMixin(I18nMixin(PrefServiceObserverMixin(PolymerElement)));
 
 export class V8PageElement extends V8PageElementBase {
   static get is() {
@@ -45,22 +46,31 @@ export class V8PageElement extends V8PageElementBase {
         type: Object,
         value: JavascriptOptimizerSetting,
       },
+
+      blockForUnfamiliarSitesSubLabel_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   declare searchTerm: string;
+  declare private blockForUnfamiliarSitesSubLabel_: string;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addPrefObserver<
+        SafeBrowsingSetting>('generated.safe_browsing', pref => {
+      this.blockForUnfamiliarSitesSubLabel_ = this.i18n(
+          pref.value === SafeBrowsingSetting.DISABLED ?
+              'siteSettingsJavascriptOptimizerBlockedUnfamiliarSitesSafeBrowsingOffSubLabel' :
+              'siteSettingsJavascriptOptimizerBlockedUnfamiliarSitesSubLabel');
+    });
+  }
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
-  }
-
-  private getBlockForUnfamiliarSitesSubLabel_(): string {
-    const safeBrowsingSetting = this.getPref('generated.safe_browsing').value;
-    return this.i18n(
-        safeBrowsingSetting === SafeBrowsingSetting.DISABLED
-            ? 'siteSettingsJavascriptOptimizerBlockedUnfamiliarSitesSafeBrowsingOffSubLabel'
-            : 'siteSettingsJavascriptOptimizerBlockedUnfamiliarSitesSubLabel');
   }
 }
 

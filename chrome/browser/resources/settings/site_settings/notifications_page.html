@@ -36,26 +36,26 @@
   <h2 class="cpss-heading">$i18n{siteSettingsHowToShowRequests}</h2>
   <settings-radio-group
       id="notificationCpssRadioGroup"
-      pref="{{prefs.generated.notification}}"
+      pref-key="generated.notification"
       selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button
         id="notificationAskQuiet"
         name="[[settingsStateEnum_.QUIET]]"
-        pref="[[prefs.generated.notification]]"
+        pref-key="generated.notification"
         label="$i18n{siteSettingsNotificationsAskQuiet}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
         id="notificationAskCpss"
         name="[[settingsStateEnum_.CPSS]]"
-        pref="[[prefs.generated.notification]]"
+        pref-key="generated.notification"
         label="$i18n{siteSettingsNotificationsAskCPSS}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
         id="notificationAskLoud"
         name="[[settingsStateEnum_.LOUD]]"
-        pref="[[prefs.generated.notification]]"
+        pref-key="generated.notification"
         label="$i18n{siteSettingsNotificationsAskLoud}"
         no-collapse>
     </settings-collapse-radio-button>

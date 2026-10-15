@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -18,7 +17,6 @@ import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -26,8 +24,7 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSetting, ContentSettingsTypes, SettingsState} from './constants.js';
 import {getTemplate} from './geolocation_page.html.js';
 
-const GeolocationPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+const GeolocationPageElementBase = SettingsViewMixin(PolymerElement);
 
 export class GeolocationPageElement extends GeolocationPageElementBase {
   static get is() {

@@ -11,12 +11,12 @@
     $i18n{siteDataPagedefaultBehaviorDescription}
   </div>
   <settings-radio-group id="defaultGroup" no-set-pref
-      pref="{{prefs.generated.cookie_default_content_setting}}"
+      pref-key="generated.cookie_default_content_setting"
       selectable-elements="cr-radio-button, settings-collapse-radio-button"
       on-change="onDefaultRadioChange_">
     <settings-collapse-radio-button id="defaultAllow" no-collapse
         name="[[contentSettingEnum_.ALLOW]]"
-        pref="[[prefs.generated.cookie_default_content_setting]]"
+        pref-key="generated.cookie_default_content_setting"
         label="$i18n{siteDataPageAllowRadioLabel}"
         sub-label="$i18n{siteDataPageAllowRadioSubLabel}"
         icon="privacy:database">
@@ -24,7 +24,7 @@
     <settings-collapse-radio-button id="defaultSessionOnly" no-collapse
         class="two-line"
         name="[[contentSettingEnum_.SESSION_ONLY]]"
-        pref="[[prefs.generated.cookie_default_content_setting]]"
+        pref-key="generated.cookie_default_content_setting"
         label="$i18n{siteDataPageClearOnExitRadioLabel}"
         sub-label="$i18n{siteDataPageClearOnExitRadioSubLabel}"
         icon="privacy:database">
@@ -32,7 +32,7 @@
     <settings-collapse-radio-button id="defaultBlock" no-collapse
         class="two-line"
         name="[[contentSettingEnum_.BLOCK]]"
-        pref="[[prefs.generated.cookie_default_content_setting]]"
+        pref-key="generated.cookie_default_content_setting"
         label="$i18n{siteDataPageBlockRadioLabel}"
         sub-label="$i18n{siteDataPageBlockRadioSublabel}"
         icon="privacy:database-off">

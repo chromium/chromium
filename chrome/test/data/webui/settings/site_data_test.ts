@@ -6,12 +6,12 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSiteDataElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
@@ -20,24 +20,34 @@ import {createContentSettingTypeToValuePair, createRawSiteException, createSiteS
 // Name of the cookie default content setting pref.
 const PREF_NAME = 'generated.cookie_default_content_setting';
 
+function getInitialPrefs() {
+  return [
+    {
+      key: PREF_NAME,
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: ContentSetting.ALLOW,
+    },
+  ];
+}
+
 suite('SiteDataTest', function() {
   let page: SettingsSiteDataElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     page = document.createElement('settings-site-data');
-    page.prefs = settingsPrefs.prefs!;
-    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.ALLOW);
     document.body.appendChild(page);
     return microtasksFinished();
   });
@@ -55,26 +65,26 @@ suite('SiteDataTest', function() {
     page.$.defaultSessionOnly.click();
     await eventToPromise('change', page.$.defaultGroup);
     assertEquals(
-        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+        prefService.getPref(PREF_NAME).value, ContentSetting.SESSION_ONLY);
 
     page.$.defaultAllow.click();
     await eventToPromise('change', page.$.defaultGroup);
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
   });
 
   test('DefaultSettingSessionOnlyUpdatesPref', async function() {
     // Default is 'allow'.
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
 
     page.$.defaultSessionOnly.click();
     await eventToPromise('change', page.$.defaultGroup);
     assertEquals(
-        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+        prefService.getPref(PREF_NAME).value, ContentSetting.SESSION_ONLY);
   });
 
   test('DefaultSettingBlockUpdatesPref', async function() {
     // Default is 'allow'.
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
 
     page.$.defaultBlock.click();
     await eventToPromise('change', page.$.defaultGroup);
@@ -85,12 +95,12 @@ suite('SiteDataTest', function() {
     await flushTasks();
 
     assertFalse(!!getDefaultBlockDialog());
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.BLOCK);
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.BLOCK);
   });
 
   test('BlockSiteDataFromAllowDontConfirmDialog', async function() {
     // Default is 'allow'.
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
 
     page.$.defaultBlock.click();
     await eventToPromise('change', page.$.defaultGroup);
@@ -100,7 +110,7 @@ suite('SiteDataTest', function() {
     await flushTasks();
 
     assertFalse(!!getDefaultBlockDialog());
-    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+    assertEquals(prefService.getPref(PREF_NAME).value, ContentSetting.ALLOW);
     assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
   });
 
@@ -108,7 +118,7 @@ suite('SiteDataTest', function() {
     page.$.defaultSessionOnly.click();
     await eventToPromise('change', page.$.defaultGroup);
     assertEquals(
-        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+        prefService.getPref(PREF_NAME).value, ContentSetting.SESSION_ONLY);
 
     page.$.defaultBlock.click();
     await eventToPromise('change', page.$.defaultGroup);
@@ -119,7 +129,7 @@ suite('SiteDataTest', function() {
 
     assertFalse(!!getDefaultBlockDialog());
     assertEquals(
-        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+        prefService.getPref(PREF_NAME).value, ContentSetting.SESSION_ONLY);
     assertEquals(page.$.defaultGroup.selected, ContentSetting.SESSION_ONLY);
   });
 
@@ -127,27 +137,28 @@ suite('SiteDataTest', function() {
     // Default is 'allow'.
     assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
 
-    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.SESSION_ONLY);
+    await prefService.setPrefValue(PREF_NAME, ContentSetting.SESSION_ONLY);
     await microtasksFinished();
     assertEquals(page.$.defaultGroup.selected, ContentSetting.SESSION_ONLY);
 
-    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.BLOCK);
+    await prefService.setPrefValue(PREF_NAME, ContentSetting.BLOCK);
     await microtasksFinished();
     assertEquals(page.$.defaultGroup.selected, ContentSetting.BLOCK);
 
-    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.ALLOW);
+    await prefService.setPrefValue(PREF_NAME, ContentSetting.ALLOW);
     await microtasksFinished();
     assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
   });
 
-  test('ExceptionListsReadOnly', function() {
+  test('ExceptionListsReadOnly', async function() {
     // Check all exception lists are read only when the preference
     // reports as managed.
-    page.set('prefs.' + PREF_NAME, {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: PREF_NAME,
       value: ContentSetting.ALLOW,
-      type: chrome.settingsPrivate.PrefType.STRING,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
+    }]);
+    await microtasksFinished();
     let exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
     for (const list of exceptionLists) {
@@ -156,10 +167,12 @@ suite('SiteDataTest', function() {
 
     // Return preference to unmanaged state and check all exception lists
     // are no longer read only.
-    page.set('prefs.' + PREF_NAME, {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: PREF_NAME,
       value: ContentSetting.ALLOW,
-      type: chrome.settingsPrivate.PrefType.STRING,
-    });
+      enforcement: undefined,
+    }]);
+    await microtasksFinished();
     exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
     for (const list of exceptionLists) {
