@@ -113,12 +113,6 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.SEARCH_BOX_TOP_MARGIN == propertyKey) {
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
             marginLayoutParams.topMargin = model.get(SearchBoxProperties.SEARCH_BOX_TOP_MARGIN);
-        } else if (SearchBoxProperties.SEARCH_HINT_VISIBILITY == propertyKey) {
-            boolean isHintVisible = model.get(SearchBoxProperties.SEARCH_HINT_VISIBILITY);
-            view.mHintTextView.setHint(
-                    isHintVisible
-                            ? view.getContext().getString(R.string.omnibox_empty_hint)
-                            : null);
         } else if (SearchBoxProperties.SEARCH_TEXT == propertyKey) {
             view.mHintTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT));
         } else if (SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK == propertyKey) {

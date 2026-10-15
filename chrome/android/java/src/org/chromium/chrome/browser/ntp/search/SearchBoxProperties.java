@@ -51,7 +51,6 @@ interface SearchBoxProperties {
     WritableObjectPropertyKey<TextWatcher> SEARCH_BOX_TEXT_WATCHER =
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey SEARCH_BOX_TOP_MARGIN = new WritableIntPropertyKey();
-    WritableBooleanPropertyKey SEARCH_HINT_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<String> SEARCH_TEXT =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     WritableObjectPropertyKey<OnClickListener> VOICE_SEARCH_CLICK_CALLBACK =
@@ -86,7 +85,6 @@ interface SearchBoxProperties {
                 SEARCH_BOX_TEXT_STYLE_RES_ID,
                 SEARCH_BOX_TEXT_WATCHER,
                 SEARCH_BOX_TOP_MARGIN,
-                SEARCH_HINT_VISIBILITY,
                 SEARCH_TEXT,
                 VOICE_SEARCH_CLICK_CALLBACK,
                 VOICE_SEARCH_COLOR_STATE_LIST,
