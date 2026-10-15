@@ -450,8 +450,8 @@ TEST(CheckDeathTest, ConfigurableDCheck) {
 
   // Verify that DCHECK does crash if LOGGING_DCHECK is set to LOGGING_FATAL.
   logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
-  EXPECT_CHECK("Check failed: false. ", DCHECK(false));
-  EXPECT_CHECK("Check failed: 1 == 2 (1 vs. 2)", DCHECK_EQ(1, 2));
+  EXPECT_CHECK("DCHECK failed: false. ", DCHECK(false));
+  EXPECT_CHECK("DCHECK failed: 1 == 2 (1 vs. 2). ", DCHECK_EQ(1, 2));
 }
 
 TEST(CheckTest, ConfigurableDCheckFeature) {
