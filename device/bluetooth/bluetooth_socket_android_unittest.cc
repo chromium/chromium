@@ -328,6 +328,18 @@ TEST_P(BluetoothSocketAndroidTest, SendAfterDisconnect) {
   EXPECT_NE(last_error_message_, std::string());
 }
 
+// Mirrors ~BluetoothSerialPortImpl(): Disconnect() followed by dropping the
+// last reference before the disconnect completes.
+TEST_P(BluetoothSocketAndroidTest, ReleaseRightAfterDisconnect) {
+  ConnectSocket();
+  ASSERT_TRUE(socket_);
+
+  base::RunLoop run_loop;
+  socket_->Disconnect(run_loop.QuitClosure());
+  socket_.reset();
+  run_loop.Run();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     BluetoothSocketAndroidTests,
     BluetoothSocketAndroidTest,
