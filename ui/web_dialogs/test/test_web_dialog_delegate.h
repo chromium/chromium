@@ -29,11 +29,6 @@ class TestWebDialogDelegate : public WebDialogDelegate {
     size_.SetSize(width, height);
   }
 
-  // Sets the test delegate to delete when closed, as recommended by
-  // WebDialogDelegate::OnDialogClosed(). |observed_destroy| must be a pointer
-  // to a bool, which will be set to true when the destructor is called.
-  void SetDeleteOnClosedAndObserve(bool* destroy_observer);
-
   // Sets whether the dialog should close when we press Escape.
   void SetCloseOnEscape(bool enabled);
 
@@ -43,7 +38,6 @@ class TestWebDialogDelegate : public WebDialogDelegate {
   GURL GetDialogContentURL() const override;
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
-  void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
@@ -52,7 +46,6 @@ class TestWebDialogDelegate : public WebDialogDelegate {
  protected:
   const GURL url_;
   gfx::Size size_;
-  raw_ptr<bool> did_delete_;
   bool close_on_escape_;
 };
 

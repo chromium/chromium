@@ -14,23 +14,11 @@ namespace ui {
 namespace test {
 
 TestWebDialogDelegate::TestWebDialogDelegate(const GURL& url)
-    : url_(url),
-      size_(400, 400),
-      did_delete_(nullptr),
-      close_on_escape_(true) {}
-
-TestWebDialogDelegate::~TestWebDialogDelegate() {
-  if (did_delete_) {
-    CHECK(!*did_delete_);
-    *did_delete_ = true;
-  }
+    : url_(url), size_(400, 400), close_on_escape_(true) {
+  set_delete_on_close(false);
 }
 
-void TestWebDialogDelegate::SetDeleteOnClosedAndObserve(
-    bool* destroy_observer) {
-  CHECK(destroy_observer);
-  did_delete_ = destroy_observer;
-}
+TestWebDialogDelegate::~TestWebDialogDelegate() = default;
 
 void TestWebDialogDelegate::SetCloseOnEscape(bool enabled) {
   close_on_escape_ = enabled;
@@ -54,11 +42,6 @@ void TestWebDialogDelegate::GetDialogSize(gfx::Size* size) const {
 
 std::string TestWebDialogDelegate::GetDialogArgs() const {
   return std::string();
-}
-
-void TestWebDialogDelegate::OnDialogClosed(const std::string& json_retval) {
-  if (did_delete_)
-    delete this;
 }
 
 void TestWebDialogDelegate::OnCloseContents(WebContents* source,
