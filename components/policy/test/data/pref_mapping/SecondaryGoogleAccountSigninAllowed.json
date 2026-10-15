@@ -1,7 +1,9 @@
 [
   {
     "os": [
-      "chromeos"
+      "chromeos",
+      "android",
+      "desktop_android"
     ],
     "policy_pref_mapping_tests": [
       {

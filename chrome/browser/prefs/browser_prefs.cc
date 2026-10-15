@@ -2312,8 +2312,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       PrefRegistry::PUBLIC);
   registry->RegisterBooleanPref(policy::policy_prefs::kFloatingWorkspaceEnabled,
                                 false);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
   ::reporting::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(chromeos::prefs::kFloatingSsoEnabled, false);
   registry->RegisterListPref(chromeos::prefs::kFloatingSsoDomainBlocklist);
@@ -2403,6 +2401,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::boca::BabelOrcaManager::RegisterProfilePrefs(registry);
   ash::boca::GeminiStatusFetcher::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed, true);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
   CdmPrefServiceHelper::RegisterProfilePrefs(registry);

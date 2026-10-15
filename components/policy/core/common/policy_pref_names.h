@@ -247,12 +247,14 @@ inline constexpr char kAlwaysOnVpnPreConnectUrlAllowlist[] =
 // Boolean value for the FloatingWorkspaceEnabled policy
 inline constexpr char kFloatingWorkspaceEnabled[] =
     "ash.floating_workspace_enabled";
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Boolean controlling whether users can add secondary Google accounts. Set via
 // the SecondaryGoogleAccountSigninAllowed policy; defaults to true.
 inline constexpr char kSecondaryGoogleAccountSigninAllowed[] =
     "account_manager.secondary_google_account_signin_allowed";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 // A boolean value indicating whether the built-in AI APIs are enabled.
 inline constexpr char kBuiltInAIAPIsEnabled[] =

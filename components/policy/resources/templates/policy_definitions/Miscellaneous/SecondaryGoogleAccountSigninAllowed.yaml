@@ -6,6 +6,8 @@ desc: |-
 
         If this policy is unset or set to true, the default behavior will be used: signing in to a different Google Account from the browser content area and Android applications will be allowed, except for child accounts where it will be blocked for non-Incognito content area.
 
+        On Android, this setting controls whether users can add additional Google Accounts from the content area of Google websites while they are signed in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If this policy is set to false, Google websites will not offer the option to add another Google Account (for example, the "Add another account" button in the account menu). If this policy is unset or set to true, adding another Google Account from Google websites will be allowed. This policy does not prevent adding Google Accounts to the Android device itself.
+
         In case signing in to a different account shouldn't be allowed via the Incognito mode, consider blocking that mode using the IncognitoModeAvailability policy.
 
         Note that users will be able to access Google services in an unauthenticated state by blocking their cookies.
@@ -14,6 +16,8 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: false
+future_on:
+- android
 items:
 - caption: Enable signing in with additional Google accounts
   value: true
