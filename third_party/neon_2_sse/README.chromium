@@ -6,7 +6,7 @@ Revision: 183fc88bcb90dbfaefba33a292eae8a5ce94bd67
 Date: 2026-08-13
 Update Mechanism: Autoroll
 License: BSD-Source-Code
-License File: LICENSE
+License File: src/LICENSE
 Security Critical: yes
 Shipped: yes
 License Android Compatible: yes
@@ -18,4 +18,4 @@ correspondence (or a real porting) of ARM NEON intrinsics as defined in
 in corresponding x86 compilers headers files.
 
 Local Modifications:
-- Included only the NEON_2_SSE.h file.
+None
