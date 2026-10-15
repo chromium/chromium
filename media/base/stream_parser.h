@@ -42,8 +42,6 @@ class MEDIA_EXPORT StreamParser {
   // With incremental parsing, parse can succeed yet also still indicate there
   // is more uninspected data to parse. This enum identifies the possible
   // results of incremental parsing by a StreamParser.
-  // TODO:(crbug.com/1378678): Investigate usage of TypeStatus<T>::Or<U> where
-  // this is used.
   enum class ParseStatus {
     kFailed,
     kSuccess,

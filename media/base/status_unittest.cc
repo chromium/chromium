@@ -136,12 +136,6 @@ class StatusTest : public testing::Test {
     me.WithData("data", "Hey you! psst! Help me outta here! I'm trapped!");
     return me;
   }
-
-  NormalStatus::Or<std::unique_ptr<int>> TypicalStatusOrUsage(bool succeed) {
-    if (succeed)
-      return std::make_unique<int>(123);
-    return NormalStatus::Codes::kFoo;
-  }
 };
 
 TEST_F(StatusTest, DifferentModesOfConstruction) {
@@ -214,14 +208,6 @@ TEST_F(StatusTest, DifferentModesOfConstruction) {
             static_cast<int>(NormalStatus::Codes::kFoo));
 }
 
-TEST_F(StatusTest, DerefOpOnOrType) {
-  struct SimpleThing {
-    int CallMe() { return 77712; }
-  };
-  NormalStatus::Or<std::unique_ptr<SimpleThing>> sor =
-      std::make_unique<SimpleThing>();
-  ASSERT_EQ(sor->CallMe(), 77712);
-}
 
 TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
   NormalStatus ok = DontFail();
@@ -361,105 +347,6 @@ TEST_F(StatusTest, CanCopyEasily) {
   ASSERT_EQ(actual_dict.FindDict("data")->size(), 1ul);
 }
 
-TEST_F(StatusTest, StatusOrTypicalUsage) {
-  // Mostly so we have some code coverage on the default usage.
-  EXPECT_TRUE(TypicalStatusOrUsage(true).has_value());
-  EXPECT_FALSE(TypicalStatusOrUsage(false).has_value());
-}
-
-TEST_F(StatusTest, StatusOrWithMoveOnlyType) {
-  NormalStatus::Or<std::unique_ptr<int>> status_or(std::make_unique<int>(123));
-  EXPECT_TRUE(status_or.has_value());
-  std::unique_ptr<int> result = std::move(status_or).value();
-  EXPECT_NE(result.get(), nullptr);
-  EXPECT_EQ(*result, 123);
-}
-
-TEST_F(StatusTest, StatusOrWithCopyableType) {
-  NormalStatus::Or<int> status_or(123);
-  EXPECT_TRUE(status_or.has_value());
-  int result = std::move(status_or).value();
-  EXPECT_EQ(result, 123);
-}
-
-TEST_F(StatusTest, StatusOrMoveConstructionAndAssignment) {
-  // Make sure that we can move-construct and move-assign a move-only value.
-  NormalStatus::Or<std::unique_ptr<int>> status_or_0(
-      std::make_unique<int>(123));
-
-  NormalStatus::Or<std::unique_ptr<int>> status_or_1(std::move(status_or_0));
-
-  NormalStatus::Or<std::unique_ptr<int>> status_or_2 = std::move(status_or_1);
-
-  // |status_or_2| should have gotten the original.
-  std::unique_ptr<int> value = std::move(status_or_2).value();
-  EXPECT_EQ(*value, 123);
-}
-
-TEST_F(StatusTest, StatusOrCopyWorks) {
-  // Make sure that we can move-construct and move-assign a move-only value.
-  NormalStatus::Or<int> status_or_0(123);
-  NormalStatus::Or<int> status_or_1(std::move(status_or_0));
-  NormalStatus::Or<int> status_or_2 = std::move(status_or_1);
-  EXPECT_EQ(std::move(status_or_2).value(), 123);
-}
-
-TEST_F(StatusTest, StatusOrCodeIsOkWithValue) {
-  NormalStatus::Or<int> status_or(123);
-  EXPECT_EQ(status_or.code(), NormalStatus::Codes::kOk);
-}
-
-TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
-  using NDStatus = TypedStatus<NoOkStatusTypeTraits>;
-
-  NDStatus foo = NDStatus::Codes::kFoo;
-  EXPECT_EQ(foo.code(), NDStatus::Codes::kFoo);
-
-  NDStatus bar = NDStatus::Codes::kBar;
-  EXPECT_EQ(bar.code(), NDStatus::Codes::kBar);
-
-  NDStatus::Or<std::string> err = NDStatus::Codes::kBaz;
-  NDStatus::Or<std::string> ok = std::string("kBaz");
-
-  EXPECT_FALSE(err.has_value());
-  // One cannot call err.code() without an okay type.
-  EXPECT_EQ(std::move(err).error().code(), NDStatus::Codes::kBaz);
-
-  EXPECT_TRUE(ok.has_value());
-  // One cannot call ok.code() without an okay type.
-
-  base::DictValue actual = MediaSerializeForTesting(bar).TakeDict();
-  EXPECT_EQ(*actual.FindInt("code"), static_cast<int>(bar.code()));
-}
-
-TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
-  using NDStatus = TypedStatus<ZeroValueOkTypeTraits>;
-
-  NDStatus foo = NDStatus::Codes::kFoo;
-  EXPECT_EQ(foo.code(), NDStatus::Codes::kFoo);
-  EXPECT_FALSE(foo.is_ok());
-
-  NDStatus bar = NDStatus::Codes::kBar;
-  EXPECT_EQ(bar.code(), NDStatus::Codes::kBar);
-  EXPECT_FALSE(bar.is_ok());
-
-  NDStatus bat = NDStatus::Codes::kOk;
-  EXPECT_EQ(bat.code(), NDStatus::Codes::kOk);
-  EXPECT_TRUE(bat.is_ok());
-
-  NDStatus::Or<std::string> err = NDStatus::Codes::kBaz;
-  NDStatus::Or<std::string> ok = std::string("kBaz");
-
-  EXPECT_FALSE(err.has_value());
-  EXPECT_EQ(err.code(), NDStatus::Codes::kBaz);
-
-  EXPECT_TRUE(ok.has_value());
-  EXPECT_EQ(ok.code(), NDStatus::Codes::kOk);
-
-  base::DictValue actual = MediaSerializeForTesting(bar).TakeDict();
-  EXPECT_EQ(*actual.FindInt("code"), static_cast<int>(bar.code()));
-}
-
 TEST_F(StatusTest, Okayness) {
   EXPECT_FALSE(
       TypedStatus<ZeroValueOkTypeTraits>(ZeroValueOkTypeTraits::Codes::kFoo)
@@ -497,21 +384,6 @@ TEST_F(StatusTest, OkStatusInitializesToOk) {
             ZeroValueOkTypeTraits::Codes::kOk);
   EXPECT_EQ(TypedStatus<NonZeroOkTypeTraits>(OkStatus()).code(),
             NonZeroOkTypeTraits::Codes::kOk);
-}
-
-TEST_F(StatusTest, StatusOrEqOp) {
-  // Test the case of a non-default (non-ok) status
-  NormalStatus::Or<std::string> failed = FailEasily();
-  ASSERT_TRUE(failed == NormalStatus::Codes::kFoo);
-  ASSERT_FALSE(failed == NormalStatus::Codes::kOk);
-  ASSERT_TRUE(failed != NormalStatus::Codes::kOk);
-  ASSERT_FALSE(failed != NormalStatus::Codes::kFoo);
-
-  NormalStatus::Or<std::string> success = std::string("Kirkland > Seattle");
-  ASSERT_TRUE(success != NormalStatus::Codes::kFoo);
-  ASSERT_FALSE(success != NormalStatus::Codes::kOk);
-  ASSERT_TRUE(success == NormalStatus::Codes::kOk);
-  ASSERT_FALSE(success == NormalStatus::Codes::kFoo);
 }
 
 }  // namespace media

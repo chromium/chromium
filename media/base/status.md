@@ -172,55 +172,6 @@ TypedStatus<MyType> status = {MyType::Codes::kCode, "M", OtherType::Codes::kOthe
 
 
 
-## TypedStatus<T>::Or<D>
-
-For the common case where you'd like to return some constructed thing OR
-an error type, we've also created `TypedStatus<T>::Or<D>`.
-
-The `TypedStatus<T>::Or<D>` type can be constructed implicitly with either
-a `TypedStatus<T>`, a `T`, or a `D`.
-
-This type has methods:
-```c++
-bool has_value() const;
-
-// Return the error, if we have one.
-// Callers should ensure that this `!has_value()`.
-TypedStatus<T> error() &&;
-
-// Return the value, if we have one.
-// Callers should ensure that this `has_value()`.
-OtherType value() &&;
-
-// It is invalid to call `code()` on an `Or<D>` type when
-// has_value() is true and TypedStatusTraits<T>::OkEnumValue is nullopt.
-T::Codes code();
-```
-
-Example usage:
-```c++
-MyExampleStatus::Or<std::unique_ptr<VideoDecoder>> CreateAndInitializeDecoder() {
-  std::unique_ptr<VideoDecoder> decoder = decoder_factory_->GiveMeYourBestDecoder();
-  auto init_status = decoder->Initialize(init_args_);
-  // If the decoder initialized successfully, then just return it.
-  if (init_status == InitStatusCodes::kOk)
-    return std::move(decoder);
-  // Otherwise, return a MediaExampleStatus caused by the init status.
-  return MyExampleStatus(MyExampleEnum::kDontArgueInTheCommentSection).AddCause(
-    std::move(init_status));
-}
-
-int main() {
-  auto result = CreateAndInitializeDecoder();
-  if (result.has_value())
-    decoder_loop_->SetDecoder(std::move(result).value());
-  else
-    logger_->SendError(std::move(result).error());
-}
-
-```
-
-
 ## Testing
 There are some helper matchers defined in test_helpers.h that can help convert
 some of the trickier method expectations. For example, this:
