@@ -24,12 +24,6 @@ struct OfflineCompilationSupport {
   // Supported device IDs corresponding to the device type. An empty span means
   // all device IDs of `device_type` are supported.
   base::raw_span<const uint32_t> device_ids;
-  // Libraries that must be preloaded before sandbox lockdown. This list should
-  // only contain workarounds when compiling a graph has issues to load a
-  // particular library.
-  // TODO(crbug.com/529544314): Remove once EPs load all required libraries
-  // internally by compiling a trivial graph.
-  base::raw_span<const std::string_view> preload_libraries_workaround;
 };
 
 namespace internal {
@@ -42,15 +36,6 @@ inline constexpr OfflineCompilationSupport kOpenVINOOfflineCompilation[] = {
                 0x643E,  // Lunarlake
                 0xB03E,  // Pantherlake
                 0xFD3E,  // Wildcatlake
-            },
-        .preload_libraries_workaround =
-            (const std::string_view[]){
-                // This library is loaded on a worker thread internally in the
-                // NPU compiler, which triggers an ERROR_ACCESS_DENIED error
-                // since the worker thread runs on a lockdown token. Preloading
-                // this library before sandbox lockdown is a workaround for this
-                // issue.
-                "openvino_intel_npu_compiler.dll",
             },
     },
 };
@@ -211,13 +196,11 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
     {
         kOpenVINOExecutionProvider,
         {
-            // The package version 1.8.69.0 maps to the EP
-            // version 1.3.0+b130ce1.
             .min_package_version =
                 {
                     .Major = 1,
                     .Minor = 8,
-                    .Build = 69,
+                    .Build = 95,
                     .Revision = 0,
                 },
             .vendor_id = 0x8086,
