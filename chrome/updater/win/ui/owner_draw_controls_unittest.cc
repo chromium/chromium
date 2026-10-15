@@ -585,14 +585,15 @@ TEST_F(CaptionButtonThemeTest, HoverAndFocusPixels) {
 }
 
 // A control too small for a glyph region still paints its background and its
-// focus frame. `GetButtonRgn` returns null below a few pixels, and because
-// BS_OWNERDRAW suppresses the stock focus rectangle, skipping the frame here
-// would leave the button with no keyboard focus indicator at all.
+// focus frame. `GetButtonRgn` returns an invalid region below a few pixels, and
+// because BS_OWNERDRAW suppresses the stock focus rectangle, skipping the frame
+// here would leave the button with no keyboard focus indicator at all.
 TEST_F(CaptionButtonThemeTest, DegenerateSizeStillDrawsFocusFrame) {
   ASSERT_NO_FATAL_FAILURE(CreateTestDialog(/*dark=*/false));
 
   // 2x2 is below the glyph threshold: the region is sized at 12/31 of the
-  // control, which floors to zero, and `GetButtonRgn` returns null.
+  // control, which floors to zero, and `GetButtonRgn` returns an invalid
+  // region.
   ASSERT_TRUE(::SetWindowPos(close_button().hwnd(), nullptr, 0, 0, 2, 2,
                              SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE));
 

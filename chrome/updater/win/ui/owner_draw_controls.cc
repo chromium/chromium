@@ -11,21 +11,25 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_gdi_object.h"
+#include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace updater::ui {
@@ -42,6 +46,14 @@ int Height(const RECT& rect) {
 
 bool IsRectEmpty(const RECT& rect) {
   return Width(rect) <= 0 || Height(rect) <= 0;
+}
+
+// Returns `object` if it is valid, otherwise the stock object `fallback`.
+// `base::win::ScopedSelectObject` DCHECKs that the object it selects is not
+// null, so pens and brushes whose creation may fail must be passed through
+// this function before being selected.
+HGDIOBJ ObjectOrStockObject(HGDIOBJ object, int fallback) {
+  return object ? object : ::GetStockObject(fallback);
 }
 
 void DeflateRect(RECT* rect, int dx, int dy) {
@@ -92,6 +104,67 @@ COLORREF GetColor(bool is_high_contrast,
 
 gfx::Rect RectToGfx(const RECT& rc) {
   return gfx::Rect(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+}
+
+// Draws a pill (a rounded rectangle whose corner radius is half its height)
+// filled with `fill_color` into `rect` of `dc`. If `border_color` is not
+// `CLR_INVALID`, the pill is also stroked with a `border_thickness`-wide pen.
+void DrawPill(HDC dc,
+              const RECT& rect,
+              COLORREF fill_color,
+              COLORREF border_color,
+              int border_thickness) {
+  base::win::ScopedGDIObject<HBRUSH> brush(::CreateSolidBrush(fill_color));
+  base::win::ScopedGDIObject<HPEN> pen;
+  if (border_color != CLR_INVALID) {
+    // Use PS_INSIDEFRAME so thick borders draw completely inside the rect and
+    // do not get clipped at the top/left bitmap boundaries.
+    pen.reset(::CreatePen(PS_INSIDEFRAME, border_thickness, border_color));
+  }
+  base::win::ScopedSelectObject select_brush(
+      dc, ObjectOrStockObject(brush.get(), NULL_BRUSH));
+  base::win::ScopedSelectObject select_pen(
+      dc, ObjectOrStockObject(pen.get(), NULL_PEN));
+  const int corner_size = Height(rect);
+  ::RoundRect(dc, rect.left, rect.top, rect.right, rect.bottom, corner_size,
+              corner_size);
+}
+
+// Runs `draw` against an offscreen bitmap that is `scale` times the size of
+// `rect` and is seeded with the current contents of `rect` in `dc`, then
+// downsamples the result back into `rect` using `HALFTONE` for smooth,
+// anti-aliased edges. `draw` receives the offscreen DC and the scaled rect,
+// whose origin is (0, 0). `dc` must have a color bitmap selected into it,
+// otherwise the offscreen bitmap is created monochrome. Returns false, leaving
+// `dc` unchanged, if the offscreen DC or bitmap cannot be created.
+bool DrawScaled(HDC dc,
+                const RECT& rect,
+                int scale,
+                base::FunctionRef<void(HDC, const RECT&)> draw) {
+  const RECT high_res_rect = {0, 0, Width(rect) * scale, Height(rect) * scale};
+  base::win::ScopedCreateDC dc_hi_res_handle(::CreateCompatibleDC(dc));
+  base::win::ScopedGDIObject<HBITMAP> bmp_hi_res(::CreateCompatibleBitmap(
+      dc, Width(high_res_rect), Height(high_res_rect)));
+  if (!dc_hi_res_handle.is_valid() || !bmp_hi_res.is_valid()) {
+    return false;
+  }
+  const HDC dc_hi_res = dc_hi_res_handle.get();
+  base::win::ScopedSelectObject select_bmp_hi_res(dc_hi_res, bmp_hi_res.get());
+
+  // Seed the offscreen bitmap with the background so that the anti-aliased
+  // edges blend into it.
+  ::StretchBlt(dc_hi_res, 0, 0, Width(high_res_rect), Height(high_res_rect), dc,
+               rect.left, rect.top, Width(rect), Height(rect), SRCCOPY);
+
+  draw(dc_hi_res, high_res_rect);
+
+  // `HALFTONE` creates a smooth anti-aliased look. Resetting the brush origin
+  // is required for `HALFTONE` to work correctly.
+  ::SetStretchBltMode(dc, HALFTONE);
+  ::SetBrushOrgEx(dc, 0, 0, nullptr);
+  ::StretchBlt(dc, rect.left, rect.top, Width(rect), Height(rect), dc_hi_res, 0,
+               0, Width(high_res_rect), Height(high_res_rect), SRCCOPY);
+  return true;
 }
 
 }  // namespace
@@ -341,15 +414,11 @@ void CaptionButton::DrawFocusFrame(HDC dc,
   if (!pen.is_valid()) {
     return;
   }
-  const HPEN old_pen = static_cast<HPEN>(::SelectObject(dc, pen.get()));
-  const HBRUSH old_brush =
-      static_cast<HBRUSH>(::SelectObject(dc, ::GetStockObject(NULL_BRUSH)));
+  base::win::ScopedSelectObject select_pen(dc, pen.get());
+  base::win::ScopedSelectObject select_brush(dc, ::GetStockObject(NULL_BRUSH));
 
   ::Rectangle(dc, button_rect.left, button_rect.top, button_rect.right,
               button_rect.bottom);
-
-  ::SelectObject(dc, old_brush);
-  ::SelectObject(dc, old_pen);
 }
 
 COLORREF CaptionButton::bk_color() const {
@@ -373,13 +442,14 @@ CloseButton::CloseButton() {
                                        base::UTF8ToWide(GetTagLanguage())));
 }
 
-HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
+base::win::ScopedGDIObject<HRGN> CloseButton::GetButtonRgn(int rgn_width,
+                                                           int rgn_height) {
   // Ensure we have a valid, drawable area. `std::numeric_limits<short>::max()`
   // is a safe UI upper bound.
   if (rgn_width <= 0 || rgn_height <= 0 ||
       rgn_width > std::numeric_limits<short>::max() ||
       rgn_height > std::numeric_limits<short>::max()) {
-    return nullptr;
+    return {};
   }
 
   // Scale the thickness. For instance, 2px at 100% (96 DPI) becomes 4px at 200%
@@ -396,7 +466,10 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
   RECT center_rect = {0, 0, center_size, center_size};
   ::OffsetRect(&center_rect, center_point - thickness,
                center_point - thickness);
-  HRGN rgn = ::CreateRectRgnIndirect(&center_rect);
+  base::win::ScopedGDIObject<HRGN> rgn(::CreateRectRgnIndirect(&center_rect));
+  if (!rgn.is_valid()) {
+    return {};
+  }
 
   // Criss-crossing overlapping rectangles form the close button.
   const int loop_limit = square_side - thickness;
@@ -409,15 +482,15 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
     // Top-left to bottom-right.
     base::win::ScopedGDIObject<HRGN> rgn_nw_to_se(
         ::CreateRectRgn(i, i, i + thickness, i + thickness));
-    ::CombineRgn(rgn, rgn, rgn_nw_to_se.get(), RGN_OR);
+    ::CombineRgn(rgn.get(), rgn.get(), rgn_nw_to_se.get(), RGN_OR);
 
     // Bottom-left to top-right.
     base::win::ScopedGDIObject<HRGN> rgn_sw_to_ne(::CreateRectRgn(
         i, square_side - i - thickness, i + thickness, square_side - i));
-    ::CombineRgn(rgn, rgn, rgn_sw_to_ne.get(), RGN_OR);
+    ::CombineRgn(rgn.get(), rgn.get(), rgn_sw_to_ne.get(), RGN_OR);
   }
 
-  ::OffsetRgn(rgn, (rgn_width - square_side) / 2,
+  ::OffsetRgn(rgn.get(), (rgn_width - square_side) / 2,
               (rgn_height - square_side) / 2);
   return rgn;
 }
@@ -427,11 +500,12 @@ MinimizeButton::MinimizeButton() {
                                        base::UTF8ToWide(GetTagLanguage())));
 }
 
-HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
+base::win::ScopedGDIObject<HRGN> MinimizeButton::GetButtonRgn(int rgn_width,
+                                                              int rgn_height) {
   if (rgn_width <= 0 || rgn_height <= 0 ||
       rgn_width > std::numeric_limits<short>::max() ||
       rgn_height > std::numeric_limits<short>::max()) {
-    return nullptr;
+    return {};
   }
 
   const int thickness = std::max(
@@ -448,7 +522,8 @@ HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
   RECT minimize_button_rect = {0, 0, rgn_width, safe_thickness};
   ::OffsetRect(&minimize_button_rect, 0, y_offset);
 
-  return ::CreateRectRgnIndirect(&minimize_button_rect);
+  return base::win::ScopedGDIObject<HRGN>(
+      ::CreateRectRgnIndirect(&minimize_button_rect));
 }
 
 OwnerDrawTitleBarWindow::OwnerDrawTitleBarWindow() {
@@ -835,14 +910,105 @@ void CustomProgressBarCtrl::GradientFill(HDC dc,
   ::GradientFill(dc, tri_vertex, 2, &gradient_rect, 1, GRADIENT_FILL_RECT_V);
 }
 
+void CustomProgressBarCtrl::DrawBar(HDC dc, const RECT& rect, int scale) const {
+  // The track is the rounded "pill" that holds the progress fill. In light
+  // mode it is `empty_fill_color_` (defaulting to `kProgressEmptyFillColor`,
+  // i.e. white) so the pill stands out as a slightly brighter shape over the
+  // off-white frame drawn at the corners. In high-contrast mode it tracks
+  // `COLOR_WINDOW`. In dark mode it is a darker gray that matches the intent
+  // of the dark-mode commit `514423a7eb35a` while remaining distinct from the
+  // even darker dialog background. (The original dark-mode override never
+  // took visual effect in the legacy WTL build because the brush was
+  // selected into the wrong DC; now that the selection is correct, the
+  // intended dark track color renders.)
+  COLORREF track_color = empty_fill_color_;
+  if (is_high_contrast_) {
+    track_color = ::GetSysColor(COLOR_WINDOW);
+  } else if (is_dark_mode_) {
+    track_color = RGB(0x44, 0x47, 0x46);
+  }
+
+  // `outside_pill_color` fills the area of `rect` that falls outside the
+  // rounded pill. Because the pill is rounded, only the four corners expose
+  // this color, and it becomes the pill's visible frame against the dialog
+  // background.
+  COLORREF outside_pill_color = kProgressEmptyFrameColor;
+  if (is_high_contrast_) {
+    outside_pill_color = ::GetSysColor(COLOR_WINDOW);
+  } else if (is_dark_mode_) {
+    outside_pill_color = RGB(0x20, 0x20, 0x20);
+  }
+
+  FillSolidRect(dc, rect, outside_pill_color);
+
+  // Setup GDI objects for rounded drawing. In dark/light mode, suppress the pen
+  // entirely (`NULL_PEN`) so the pill is purely a colored fill without borders.
+  // In high-contrast mode, stroke the perimeter with `COLOR_WINDOWTEXT` so it's
+  // visible.
+  base::win::ScopedGDIObject<HPEN> hc_pen;
+  if (is_high_contrast_) {
+    hc_pen.reset(::CreatePen(PS_SOLID, scale, ::GetSysColor(COLOR_WINDOWTEXT)));
+  }
+  base::win::ScopedSelectObject select_pen(
+      dc, ObjectOrStockObject(hc_pen.get(), NULL_PEN));
+
+  const int corner_size = std::min(
+      Height(rect),
+      ::MulDiv(16 * scale, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+
+  // Draw the Background Track.
+  base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(track_color));
+  base::win::ScopedSelectObject select_bg_brush(
+      dc, ObjectOrStockObject(bg_brush.get(), NULL_BRUSH));
+  ::RoundRect(dc, rect.left, rect.top, rect.right, rect.bottom, corner_size,
+              corner_size);
+
+  // Calculate Progress Width.
+  constexpr int kBarWidth = kMaxPosition - kMinPosition;
+  const LONG bar_rect_right =
+      rect.left + Width(rect) * (current_position_ - kMinPosition) / kBarWidth;
+
+  RECT progress_rect = rect;
+  progress_rect.right = std::min(bar_rect_right, rect.right);
+
+  // Handle Marquee Style animation.
+  if (::GetWindowLong(hwnd(), GWL_STYLE) & PBS_MARQUEE) {
+    const LONG bar_rect_left =
+        bar_rect_right - (Width(rect) * kMarqueeWidth / kBarWidth);
+    progress_rect.left = std::max(bar_rect_left, rect.left);
+  }
+
+  // Draw the fill.
+  if (!IsRectEmpty(progress_rect) && Width(progress_rect) > (corner_size / 2)) {
+    COLORREF fill_color = bar_color_;
+    if (is_high_contrast_) {
+      fill_color = ::GetSysColor(COLOR_HIGHLIGHT);
+    } else if (is_dark_mode_) {
+      fill_color = kProgressBarFillColorDark;
+    }
+    base::win::ScopedGDIObject<HBRUSH> fill_brush(
+        ::CreateSolidBrush(fill_color));
+    // `select_brush` must be declared after `fill_brush` so that it is
+    // deselected from `dc` before `fill_brush` is destroyed.
+    base::win::ScopedSelectObject select_brush(
+        dc, ObjectOrStockObject(fill_brush.get(), NULL_BRUSH));
+    ::RoundRect(dc, progress_rect.left, progress_rect.top, progress_rect.right,
+                progress_rect.bottom, corner_size, corner_size);
+  }
+}
+
 LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
   PAINTSTRUCT ps = {};
   HDC dc_paint = ::BeginPaint(hwnd(), &ps);
+  // Declared first so that `EndPaint` runs after all scoped GDI objects are
+  // released.
+  const absl::Cleanup end_paint = [&] { ::EndPaint(hwnd(), &ps); };
   RECT window_rect = {};
   ::GetClientRect(hwnd(), &window_rect);
 
-  const bool is_high_contrast = is_high_contrast_;
-  const bool is_dark_mode = is_dark_mode_;
+  if (IsRectEmpty(window_rect)) {
+    return 0;
+  }
 
   // Calculate a half-width rectangle.
   RECT client_rect = window_rect;
@@ -855,144 +1021,33 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
   client_rect.bottom -= vertical_padding;
 
   // Using an offscreen memory DC eliminates flicker.
-  HDC dc_mem = ::CreateCompatibleDC(dc_paint);
+  base::win::ScopedCreateDC dc_mem_handle(::CreateCompatibleDC(dc_paint));
   base::win::ScopedGDIObject<HBITMAP> bmp_mem(::CreateCompatibleBitmap(
       dc_paint, Width(window_rect), Height(window_rect)));
-  HGDIOBJ old_mem_bmp = ::SelectObject(dc_mem, bmp_mem.get());
+  if (!dc_mem_handle.is_valid() || !bmp_mem.is_valid()) {
+    return 0;
+  }
+  const HDC dc_mem = dc_mem_handle.get();
+  base::win::ScopedSelectObject select_mem_bmp(dc_mem, bmp_mem.get());
 
   // Draw the parent's gradient background into the memory DC first.
   DrawParentBackground(hwnd(), dc_mem, window_rect);
 
-  // Draw at 4x scale to get smooth edges when scaling back down.
+  // Draw at 4x scale to get smooth edges when scaling back down. If the
+  // offscreen allocation fails, draw at 1x so that the control is still
+  // painted.
   constexpr int kScale = 4;
-  RECT high_res_rect = {0, 0, Width(client_rect) * kScale,
-                        Height(client_rect) * kScale};
-
-  HDC dc_hi_res = ::CreateCompatibleDC(dc_mem);
-
-  base::win::ScopedGDIObject<HBITMAP> bmp_hi_res(::CreateCompatibleBitmap(
-      dc_mem, Width(high_res_rect), Height(high_res_rect)));
-  HGDIOBJ old_bmp = ::SelectObject(dc_hi_res, bmp_hi_res.get());
-
-  // The track is the rounded "pill" that holds the progress fill. In light
-  // mode it is `empty_fill_color_` (defaulting to `kProgressEmptyFillColor`,
-  // i.e. white) so the pill stands out as a slightly brighter shape over the
-  // off-white frame drawn at the corners. In high-contrast mode it tracks
-  // `COLOR_WINDOW`. In dark mode it is a darker gray that matches the intent
-  // of the dark-mode commit `514423a7eb35a` while remaining distinct from the
-  // even darker dialog background. (The original dark-mode override never
-  // took visual effect in the legacy WTL build because the brush was
-  // selected into the wrong DC; now that the selection is correct, the
-  // intended dark track color renders.)
-  COLORREF track_color = empty_fill_color_;
-  if (is_high_contrast) {
-    track_color = ::GetSysColor(COLOR_WINDOW);
-  } else if (is_dark_mode) {
-    track_color = RGB(0x44, 0x47, 0x46);
+  if (!DrawScaled(dc_mem, client_rect, kScale,
+                  [this](HDC dc_hi_res, const RECT& high_res_rect) {
+                    DrawBar(dc_hi_res, high_res_rect, kScale);
+                  })) {
+    DrawBar(dc_mem, client_rect, /*scale=*/1);
   }
-
-  // `outside_pill_color` fills the area of the high-res bitmap that falls
-  // outside the rounded pill. Because the pill is rounded, only the four
-  // corners expose this color, and it becomes the pill's visible frame
-  // against the dialog background.
-  COLORREF outside_pill_color = kProgressEmptyFrameColor;
-  if (is_high_contrast) {
-    outside_pill_color = ::GetSysColor(COLOR_WINDOW);
-  } else if (is_dark_mode) {
-    outside_pill_color = RGB(0x20, 0x20, 0x20);
-  }
-
-  FillSolidRect(dc_hi_res, high_res_rect, outside_pill_color);
-
-  // Setup GDI objects for rounded drawing. In dark/light mode, suppress the pen
-  // entirely (`NULL_PEN`) so the pill is purely a colored fill without borders.
-  // In high-contrast mode, stroke the perimeter with `COLOR_WINDOWTEXT` so it's
-  // visible.
-  base::win::ScopedGDIObject<HPEN> hc_pen;
-  HGDIOBJ old_pen = nullptr;
-  if (is_high_contrast) {
-    hc_pen.reset(
-        ::CreatePen(PS_SOLID, kScale, ::GetSysColor(COLOR_WINDOWTEXT)));
-    old_pen = ::SelectObject(dc_hi_res, hc_pen.get());
-  } else {
-    old_pen = ::SelectObject(dc_hi_res, ::GetStockObject(NULL_PEN));
-  }
-
-  const int corner_size = std::min(
-      Height(high_res_rect), ::MulDiv(16 * kScale, ::GetDpiForWindow(hwnd()),
-                                      USER_DEFAULT_SCREEN_DPI));
-
-  // Draw the Background Track.
-  base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(track_color));
-  HGDIOBJ old_brush = ::SelectObject(dc_hi_res, bg_brush.get());
-  ::RoundRect(dc_hi_res, high_res_rect.left, high_res_rect.top,
-              high_res_rect.right, high_res_rect.bottom, corner_size,
-              corner_size);
-
-  // Calculate Progress Width.
-  constexpr int kBarWidth = kMaxPosition - kMinPosition;
-  const LONG bar_rect_right =
-      high_res_rect.left +
-      Width(high_res_rect) * (current_position_ - kMinPosition) / kBarWidth;
-
-  RECT progress_rect = high_res_rect;
-  progress_rect.right = std::min(bar_rect_right, high_res_rect.right);
-
-  // Handle Marquee Style animation.
-  if (::GetWindowLong(hwnd(), GWL_STYLE) & PBS_MARQUEE) {
-    const LONG bar_rect_left =
-        bar_rect_right - (Width(high_res_rect) * kMarqueeWidth / kBarWidth);
-    progress_rect.left = std::max(bar_rect_left, high_res_rect.left);
-  }
-
-  // Draw the fill.
-  if (!IsRectEmpty(progress_rect) && Width(progress_rect) > (corner_size / 2)) {
-    COLORREF fill_color = bar_color_;
-    if (is_high_contrast) {
-      fill_color = ::GetSysColor(COLOR_HIGHLIGHT);
-    } else if (is_dark_mode) {
-      fill_color = kProgressBarFillColorDark;
-    }
-    base::win::ScopedGDIObject<HBRUSH> fill_brush(
-        ::CreateSolidBrush(fill_color));
-    {
-      // `select_brush` must be scoped inside or declared after `fill_brush`
-      // so that it is deselected from `dc_hi_res` before `fill_brush` is
-      // destroyed.
-      base::win::ScopedSelectObject select_brush(dc_hi_res, fill_brush.get());
-      ::RoundRect(dc_hi_res, progress_rect.left, progress_rect.top,
-                  progress_rect.right, progress_rect.bottom, corner_size,
-                  corner_size);
-    }
-  }
-
-  // `HALFTONE` creates a smooth anti-aliased look.
-  ::SetStretchBltMode(dc_mem, HALFTONE);
-
-  // Required for HALFTONE to work correctly.
-  ::SetBrushOrgEx(dc_mem, 0, 0, nullptr);
-
-  // Scale the high-res bar back down to the screen.
-  ::StretchBlt(dc_mem, client_rect.left, client_rect.top, Width(client_rect),
-               Height(client_rect), dc_hi_res, 0, 0, Width(high_res_rect),
-               Height(high_res_rect), SRCCOPY);
 
   // Blit the offscreen DC to the paint DC.
   ::BitBlt(dc_paint, window_rect.left, window_rect.top, Width(window_rect),
            Height(window_rect), dc_mem, 0, 0, SRCCOPY);
 
-  // Cleanup.
-  ::SelectObject(dc_hi_res, old_brush);
-  if (old_pen) {
-    ::SelectObject(dc_hi_res, old_pen);
-  }
-  ::SelectObject(dc_hi_res, old_bmp);
-  ::DeleteDC(dc_hi_res);
-
-  ::SelectObject(dc_mem, old_mem_bmp);
-  ::DeleteDC(dc_mem);
-
-  ::EndPaint(hwnd(), &ps);
   return 0;
 }
 
@@ -1119,25 +1174,24 @@ LRESULT FlatButton::OnEraseBkgnd(UINT, WPARAM, LPARAM) {
 LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
   PAINTSTRUCT ps = {};
   HDC dc_paint = ::BeginPaint(hwnd(), &ps);
+  // Declared first so that `EndPaint` runs after all scoped GDI objects are
+  // released.
+  const absl::Cleanup end_paint = [&] { ::EndPaint(hwnd(), &ps); };
   RECT rect = {};
   ::GetClientRect(hwnd(), &rect);
 
   if (IsRectEmpty(rect)) {
-    ::EndPaint(hwnd(), &ps);
     return 0;
   }
 
-  HDC dc = ::CreateCompatibleDC(dc_paint);
+  base::win::ScopedCreateDC dc_mem_handle(::CreateCompatibleDC(dc_paint));
   base::win::ScopedGDIObject<HBITMAP> bmp(
       ::CreateCompatibleBitmap(dc_paint, Width(rect), Height(rect)));
-  if (!dc || !bmp.is_valid()) {
-    if (dc) {
-      ::DeleteDC(dc);
-    }
-    ::EndPaint(hwnd(), &ps);
+  if (!dc_mem_handle.is_valid() || !bmp.is_valid()) {
     return 0;
   }
-  HGDIOBJ old_bmp = ::SelectObject(dc, bmp.get());
+  const HDC dc = dc_mem_handle.get();
+  base::win::ScopedSelectObject select_bmp(dc, bmp.get());
 
   DrawParentBackground(hwnd(), dc, rect);
 
@@ -1204,85 +1258,17 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
     }
   }
 
-  const int dpi = ::GetDpiForWindow(hwnd());
-
   // Render background and border at 4x scale for high-quality anti-aliasing.
+  // If the offscreen allocation fails, draw directly at 1x instead.
   constexpr int kScale = 4;
-  const RECT high_res_rect = {0, 0, Width(rect) * kScale,
-                              Height(rect) * kScale};
-
-  HDC dc_hi_res = ::CreateCompatibleDC(dc);
-  base::win::ScopedGDIObject<HBITMAP> bmp_hi_res(::CreateCompatibleBitmap(
-      dc, Width(high_res_rect), Height(high_res_rect)));
-
-  if (dc_hi_res && bmp_hi_res.is_valid()) {
-    HGDIOBJ old_bmp_hi_res = ::SelectObject(dc_hi_res, bmp_hi_res.get());
-
-    // Copy parent background to high-res DC to blend corners beautifully.
-    ::StretchBlt(dc_hi_res, 0, 0, Width(high_res_rect), Height(high_res_rect),
-                 dc, 0, 0, Width(rect), Height(rect), SRCCOPY);
-
-    base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(bg));
-    HGDIOBJ old_brush = ::SelectObject(dc_hi_res, bg_brush.get());
-
-    HGDIOBJ old_pen = nullptr;
-    base::win::ScopedGDIObject<HPEN> border_pen;
-    if (border != CLR_INVALID) {
-      const int thickness =
-          std::max(1, ::MulDiv(1, dpi, USER_DEFAULT_SCREEN_DPI)) * kScale;
-      // Use PS_INSIDEFRAME so thick borders draw completely inside the rect
-      // and do not get clipped at the top/left bitmap boundaries.
-      border_pen.reset(::CreatePen(PS_INSIDEFRAME, thickness, border));
-      old_pen = ::SelectObject(dc_hi_res, border_pen.get());
-    } else {
-      old_pen = ::SelectObject(dc_hi_res, ::GetStockObject(NULL_PEN));
-    }
-
-    const int corner_size = Height(high_res_rect);
-    ::RoundRect(dc_hi_res, high_res_rect.left, high_res_rect.top,
-                high_res_rect.right, high_res_rect.bottom, corner_size,
-                corner_size);
-
-    ::SelectObject(dc_hi_res, old_brush);
-    if (old_pen) {
-      ::SelectObject(dc_hi_res, old_pen);
-    }
-
-    // Downscale back to 1x DC using HALFTONE for smooth anti-aliased edges.
-    ::SetStretchBltMode(dc, HALFTONE);
-    ::SetBrushOrgEx(dc, 0, 0, nullptr);
-    ::StretchBlt(dc, 0, 0, Width(rect), Height(rect), dc_hi_res, 0, 0,
-                 Width(high_res_rect), Height(high_res_rect), SRCCOPY);
-
-    ::SelectObject(dc_hi_res, old_bmp_hi_res);
-    ::DeleteDC(dc_hi_res);
-  } else {
-    // Fallback: draw directly at 1x if high-res DC allocation failed.
-    if (dc_hi_res) {
-      ::DeleteDC(dc_hi_res);
-    }
-    base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(bg));
-    HGDIOBJ old_brush = ::SelectObject(dc, bg_brush.get());
-
-    HGDIOBJ old_pen = nullptr;
-    base::win::ScopedGDIObject<HPEN> border_pen;
-    if (border != CLR_INVALID) {
-      const int thickness =
-          std::max(1, ::MulDiv(1, dpi, USER_DEFAULT_SCREEN_DPI));
-      border_pen.reset(::CreatePen(PS_INSIDEFRAME, thickness, border));
-      old_pen = ::SelectObject(dc, border_pen.get());
-    } else {
-      old_pen = ::SelectObject(dc, ::GetStockObject(NULL_PEN));
-    }
-
-    const int corner_size = Height(rect);
-    ::RoundRect(dc, rect.left, rect.top, rect.right, rect.bottom, corner_size,
-                corner_size);
-
-    ::SelectObject(dc, old_brush);
-    if (old_pen) {
-      ::SelectObject(dc, old_pen);
-    }
+  const int border_thickness = std::max(
+      1, ::MulDiv(1, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+  if (!DrawScaled(dc, rect, kScale,
+                  [&](HDC dc_hi_res, const RECT& high_res_rect) {
+                    DrawPill(dc_hi_res, high_res_rect, bg, border,
+                             border_thickness * kScale);
+                  })) {
+    DrawPill(dc, rect, bg, border, border_thickness);
   }
 
   if (::GetFocus() == hwnd() && !is_disabled) {
@@ -1290,14 +1276,15 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
     ::InflateRect(&focus_rect, -2, -2);
     const int focus_corner_size = Height(focus_rect);
     base::win::ScopedGDIObject<HPEN> focus_pen(::CreatePen(PS_DOT, 1, text));
-    HGDIOBJ old_focus_pen = ::SelectObject(dc, focus_pen.get());
-    HGDIOBJ old_focus_brush = ::SelectObject(dc, ::GetStockObject(NULL_BRUSH));
-    const int old_bk_mode = ::SetBkMode(dc, TRANSPARENT);
-    ::RoundRect(dc, focus_rect.left, focus_rect.top, focus_rect.right,
-                focus_rect.bottom, focus_corner_size, focus_corner_size);
-    ::SetBkMode(dc, old_bk_mode);
-    ::SelectObject(dc, old_focus_brush);
-    ::SelectObject(dc, old_focus_pen);
+    if (focus_pen.is_valid()) {
+      base::win::ScopedSelectObject select_focus_pen(dc, focus_pen.get());
+      base::win::ScopedSelectObject select_focus_brush(
+          dc, ::GetStockObject(NULL_BRUSH));
+      const int old_bk_mode = ::SetBkMode(dc, TRANSPARENT);
+      ::RoundRect(dc, focus_rect.left, focus_rect.top, focus_rect.right,
+                  focus_rect.bottom, focus_corner_size, focus_corner_size);
+      ::SetBkMode(dc, old_bk_mode);
+    }
   }
 
   wchar_t button_text[256] = {};
@@ -1309,17 +1296,14 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
 
     HFONT font =
         reinterpret_cast<HFONT>(::SendMessageW(hwnd(), WM_GETFONT, 0, 0));
-    HFONT old_font = nullptr;
+    std::optional<base::win::ScopedSelectObject> select_font;
     if (font) {
-      old_font = static_cast<HFONT>(::SelectObject(dc, font));
+      select_font.emplace(dc, font);
     }
 
     ::DrawTextW(dc, button_text, -1, &rect,
                 DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-    if (old_font) {
-      ::SelectObject(dc, old_font);
-    }
     ::SetBkMode(dc, old_bk_mode);
     ::SetTextColor(dc, old_text_color);
   }
@@ -1327,10 +1311,6 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
   ::BitBlt(dc_paint, rect.left, rect.top, Width(rect), Height(rect), dc, 0, 0,
            SRCCOPY);
 
-  ::SelectObject(dc, old_bmp);
-  ::DeleteDC(dc);
-
-  ::EndPaint(hwnd(), &ps);
   return 0;
 }
 

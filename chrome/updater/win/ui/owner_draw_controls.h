@@ -105,7 +105,10 @@ class CaptionButton : public TrackedButton {
  private:
   friend class updater::test::CaptionButtonTestApi;
 
-  virtual HRGN GetButtonRgn(int rgn_width, int rgn_height) = 0;
+  // Returns the glyph region for a `rgn_width` x `rgn_height` area, or an
+  // invalid object if the area is too small or too large to draw.
+  virtual base::win::ScopedGDIObject<HRGN> GetButtonRgn(int rgn_width,
+                                                        int rgn_height) = 0;
 
   // Refreshes the cached theme flags that the paint path reads.
   void UpdateThemeState();
@@ -154,7 +157,8 @@ class CloseButton : public CaptionButton {
   CloseButton& operator=(const CloseButton&) = delete;
 
  private:
-  HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
+  base::win::ScopedGDIObject<HRGN> GetButtonRgn(int rgn_width,
+                                                int rgn_height) override;
 };
 
 class MinimizeButton : public CaptionButton {
@@ -164,7 +168,8 @@ class MinimizeButton : public CaptionButton {
   MinimizeButton& operator=(const MinimizeButton&) = delete;
 
  private:
-  HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
+  base::win::ScopedGDIObject<HRGN> GetButtonRgn(int rgn_width,
+                                                int rgn_height) override;
 };
 
 // Owner-drawn custom title bar. A child of the host dialog; positions and
@@ -333,6 +338,12 @@ class CustomProgressBarCtrl : public SubclassedWindow {
                     const RECT& rect,
                     COLORREF top_color,
                     COLORREF bottom_color);
+
+  // Draws the progress bar (track, progress fill, and the frame exposed at
+  // the rounded corners) into `rect` of `dc`. Pen widths and corner radii are
+  // multiplied by `scale`, so that the bar can be rendered into an enlarged
+  // offscreen bitmap and downsampled for anti-aliasing.
+  void DrawBar(HDC dc, const RECT& rect, int scale) const;
 
   LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnPaint(UINT msg, WPARAM wparam, LPARAM lparam);
