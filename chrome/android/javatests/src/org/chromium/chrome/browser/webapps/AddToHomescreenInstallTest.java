@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -18,11 +20,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -117,6 +121,8 @@ public class AddToHomescreenInstallTest {
     private ChromeActivity mActivity;
     private Tab mTab;
     private HistogramWatcher mInstallHistogramsWatcher;
+    private final CallbackHelper mAddShortcutCallback = new CallbackHelper();
+    private String mAddedShortcutTitle;
 
     @Before
     public void setUp() throws Exception {
@@ -126,6 +132,21 @@ public class AddToHomescreenInstallTest {
         mTab = mActivityTestRule.getActivityTab();
         mInstallHistogramsWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Webapp.Install.InstallEvent", 0);
+        // Don't ask the launcher to pin a shortcut. It would show a confirmation dialog in its own
+        // task that nothing dismisses, so it would outlive the test and affect later tests.
+        ShortcutHelper.setDelegateForTests(
+                new ShortcutHelper.Delegate() {
+                    @Override
+                    public void addShortcutToHomescreen(
+                            String id,
+                            String title,
+                            Bitmap icon,
+                            boolean isIconAdaptive,
+                            Intent shortcutIntent) {
+                        mAddedShortcutTitle = title;
+                        mAddShortcutCallback.notifyCalled();
+                    }
+                });
     }
 
     private void loadUrl(String url, String expectedPageTitle) throws Exception {
@@ -183,5 +204,7 @@ public class AddToHomescreenInstallTest {
         installApp(mTab, "", /* expectAdded= */ true, /* expectedDialogType= */ AppType.WEBAPK_DIY);
 
         histogram.assertExpected();
+        mAddShortcutCallback.waitForOnly();
+        Assert.assertEquals(MANIFEST_TEST_PAGE_TITLE, mAddedShortcutTitle);
     }
 }
