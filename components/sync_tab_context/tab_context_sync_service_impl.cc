@@ -14,11 +14,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
-#include "components/sync/protocol/tab_context_container_access_token.pb.h"
+#include "components/sync_tab_context/build_container_access_token.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_container_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
@@ -28,17 +27,6 @@
 namespace sync_tab_context {
 
 namespace {
-
-google::protobuf::Timestamp TimeToGoogleTimestampProto(base::Time time) {
-  google::protobuf::Timestamp timestamp;
-  const int64_t seconds = (time - base::Time::UnixEpoch()).InSeconds();
-  const int64_t nanos =
-      ((time - base::Time::UnixEpoch()) - base::Seconds(seconds))
-          .InNanoseconds();
-  timestamp.set_seconds(seconds);
-  timestamp.set_nanos(static_cast<int32_t>(nanos));
-  return timestamp;
-}
 
 // Executed on a background thread pool sequence to avoid blocking the UI
 // thread during compression.
@@ -77,33 +65,6 @@ CompressAndEncryptPageContextOnBackgroundThread(
   }
 
   return key_set->Encrypt(base::as_byte_span(*serialized_content));
-}
-
-// TODO(crbug.com/535450467): Consider improving type safety instead of dealing
-// with strings.
-std::string BuildContainerAccessToken(
-    const syncer::AgileSymmetricKeySet& container_key_set,
-    EphemeralKeyFetcher::Result result) {
-  CHECK(result.ephemeral_key);
-
-  const std::string container_key_bytes =
-      container_key_set.ToProto().SerializeAsString();
-  const std::optional<sync_pb::EncryptedData> encrypted_container_key =
-      result.ephemeral_key->Encrypt(base::as_byte_span(container_key_bytes));
-  if (!encrypted_container_key) {
-    return std::string();
-  }
-
-  sync_pb::TabContextContainerAccessToken token_proto;
-  token_proto.set_name(std::move(result.name));
-  token_proto.set_encrypted_container_key(
-      encrypted_container_key->SerializeAsString());
-  if (!result.expire_time.is_null()) {
-    *token_proto.mutable_expire_time() =
-        TimeToGoogleTimestampProto(result.expire_time);
-  }
-
-  return token_proto.SerializeAsString();
 }
 
 }  // namespace

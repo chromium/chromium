@@ -16,6 +16,8 @@ source_set("constants") {
 
 static_library("sync_tab_context") {
   sources = [
+    "build_container_access_token.cc",
+    "build_container_access_token.h",
     "container_id.h",
     "ephemeral_key_fetcher.h",
     "http_rpc_based_ephemeral_key_fetcher.cc",
@@ -85,6 +87,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "build_container_access_token_unittest.cc",
     "http_rpc_based_ephemeral_key_fetcher_unittest.cc",
     "tab_context_container_data_type_controller_unittest.cc",
     "tab_context_container_sync_bridge_unittest.cc",
