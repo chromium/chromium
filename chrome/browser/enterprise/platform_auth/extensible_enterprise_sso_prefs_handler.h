@@ -33,19 +33,10 @@ namespace enterprise_auth {
 // notification system and reading com.apple.extensiblesso from CFPreferences.
 class CFPreferencesObserver {
  public:
-  // This class is a raw snapshot of the `com.apple.extensiblesso` MDM payload.
+  // This struct is a raw snapshot of the `com.apple.extensiblesso` MDM payload.
   // Compared to the ExtensibleEnterpriseSSOPrefsHandler::Config it makes no
   // assumptions about the type, format and validity of its fields.
-  class RawConfig {
-   public:
-    RawConfig(base::apple::ScopedCFTypeRef<CFPropertyListRef> extension_id,
-              base::apple::ScopedCFTypeRef<CFPropertyListRef> team_id,
-              base::apple::ScopedCFTypeRef<CFPropertyListRef> hosts);
-    RawConfig(const RawConfig&);
-    RawConfig(RawConfig&&);
-    RawConfig& operator=(const RawConfig&);
-    RawConfig& operator=(RawConfig&&);
-    ~RawConfig();
+  struct RawConfig {
     base::apple::ScopedCFTypeRef<CFPropertyListRef> extension_id;
     base::apple::ScopedCFTypeRef<CFPropertyListRef> team_id;
     base::apple::ScopedCFTypeRef<CFPropertyListRef> hosts;
@@ -75,7 +66,12 @@ class ExtensibleEnterpriseSSOPrefsHandler {
     std::string team_id;
 
     // `Hosts` entry of the payload. Non-string and empty entries are dropped.
+    // Required for `Credential` payloads. Ignored for `Redirect` payloads.
+    // Host names that begin with a "." are wildcard suffixes that match all
+    // subdomains; otherwise the host name needs to be an exact match.
     std::vector<std::string> hosts;
+
+    friend bool operator==(const Config&, const Config&) = default;
   };
 
   ~ExtensibleEnterpriseSSOPrefsHandler();
@@ -96,6 +92,13 @@ class ExtensibleEnterpriseSSOPrefsHandler {
  private:
   void OnConfigRead(std::optional<Config> config);
 
+  // Validates `raw_config` and converts it into a `Config`. Returns
+  // `std::nullopt` if a required entry is missing or malformed, or if the
+  // payload doesn't belong to a supported IdP.
+  static std::optional<Config> ParseConfig(
+      CFPreferencesObserver::RawConfig config);
+
+  friend class ExtensibleEnterpriseSSOPrefsHandlerTest;
   friend class ScopedCFPreferenceObserverOverride;
   static void OverrideCFPreferenceObserverForTesting(
       base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>

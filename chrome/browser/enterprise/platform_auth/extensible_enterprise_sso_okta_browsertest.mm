@@ -263,9 +263,11 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
   }
 
   Config GetConfig() {
-    return Config(ScopedPropList(kOktaSsoExtensionId),
-                  ScopedPropList(kOktaSsoTeamId),
-                  HostsToPropRef(configured_hosts_));
+    return Config{
+        .extension_id = base::SysUTF8ToCFStringRef(kOktaSsoExtensionId),
+        .team_id = base::SysUTF8ToCFStringRef(kOktaSsoTeamId),
+        .hosts = HostsToPropRef(configured_hosts_),
+    };
   }
 
   std::vector<std::string> configured_hosts_{kDomain1};

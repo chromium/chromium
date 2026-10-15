@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 
-#include <CoreFoundation/CoreFoundation.h>
-
 #include <algorithm>
 #include <functional>
 #include <string>
@@ -17,7 +15,7 @@ namespace enterprise_auth {
 
 namespace {
 
-const CFStringRef kUnknownId(CFSTR("UNKNOWN_ID"));
+constexpr char kUnknownId[] = "UNKNOWN_ID";
 
 }  // namespace
 
@@ -68,9 +66,11 @@ TEST(ExtensibleEnterpriseSSOMetadataTest, SupportedIdps) {
   const base::flat_set<std::string> expected_names = {
       kMicrosoftIdentityProvider, kOktaIdentityProvider};
   const base::flat_set<std::string> actual_names =
-      base::MakeFlatSet<std::string>(
-          GetSupportedIdentityProviders(), std::less<>(),
-          [](const SsoExtensionMetadata& data) { return data.idp_name; });
+      base::MakeFlatSet<std::string>(GetSupportedIdentityProviders(),
+                                     std::less<>(),
+                                     [](const SsoExtensionMetadata& data) {
+                                       return std::string(data.idp_name);
+                                     });
   EXPECT_EQ(expected_names, actual_names);
   EXPECT_EQ(expected_names.size(), GetSupportedIdentityProviders().size());
 }

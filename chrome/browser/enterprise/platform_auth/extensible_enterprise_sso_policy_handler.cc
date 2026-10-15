@@ -43,9 +43,11 @@ void ExtensibleEnterpriseSSOPolicyHandler::ApplyPolicySettings(
   }
 
   base::flat_set<std::string> supported_idps_set =
-      base::MakeFlatSet<std::string>(
-          GetSupportedIdentityProviders(), std::less<>(),
-          [](const SsoExtensionMetadata& data) { return data.idp_name; });
+      base::MakeFlatSet<std::string>(GetSupportedIdentityProviders(),
+                                     std::less<>(),
+                                     [](const SsoExtensionMetadata& data) {
+                                       return std::string(data.idp_name);
+                                     });
 
   for (const base::Value& policy_item : policy_value->GetList()) {
     const std::string* item = policy_item.GetIfString();

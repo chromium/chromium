@@ -39,6 +39,8 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 
 namespace {
 
+// The specification of the com.apple.extensiblesso payload can be found at
+// https://github.com/apple/device-management/blob/release/mdm/profiles/com.apple.extensiblesso.yaml.
 const CFStringRef kExtensibleSsoPrefName(CFSTR("com.apple.extensiblesso"));
 const CFStringRef kExtensionIdentifierKey(CFSTR("ExtensionIdentifier"));
 const CFStringRef kTeamIdentifierKey(CFSTR("TeamIdentifier"));
@@ -59,10 +61,7 @@ class StubCFPreferencesObserver : public CFPreferencesObserver {
   void Subscribe(base::RepeatingClosure on_update) override {}
   void Unsubscribe() override {}
   base::OnceCallback<RawConfig()> GetReadConfigCallback() override {
-    return base::BindOnce([]() {
-      return RawConfig(ScopedPropList(nullptr), ScopedPropList(nullptr),
-                       ScopedPropList(nullptr));
-    });
+    return base::BindOnce([]() { return RawConfig(); });
   }
 };
 
@@ -110,8 +109,11 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
           CFPreferencesCopyAppValue(kHostsKey, kExtensibleSsoPrefName));
       auto team_id = ScopedPropList(CFPreferencesCopyAppValue(
           kTeamIdentifierKey, kExtensibleSsoPrefName));
-      return RawConfig(std::move(extension_id), std::move(team_id),
-                       std::move(hosts));
+      return RawConfig{
+          .extension_id = std::move(extension_id),
+          .team_id = std::move(team_id),
+          .hosts = std::move(hosts),
+      };
     });
   }
 
@@ -140,56 +142,37 @@ std::unique_ptr<CFPreferencesObserver> CreateCfPreferencesObserver() {
   }
 }
 
-std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> ParseConfiguration(
-    CFPreferencesObserver::RawConfig config) {
-  if (!config.extension_id || !config.team_id || !config.hosts) {
-    VLOG_POLICY(1, EXTENSIBLE_SSO)
-        << "SSO extension MDM payload not found or incomplete.";
+// Returns std::nullopt if string_prop is nullptr, not CFString, is empty or it
+// fails to convert to UTF8.
+std::optional<std::string> ParseCfString(CFPropertyListRef string_prop) {
+  if (!string_prop) {
     return std::nullopt;
   }
 
-  // If the extension or team IDs don't match any supported IdPs return an empty
-  // result.
-  const CFStringRef extension_id =
-      base::apple::CFCast<CFStringRef>(config.extension_id.get());
-  if (!extension_id || CFStringGetLength(extension_id) == 0) {
-    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
-                                           "payload: extension_id is invalid.";
+  const CFStringRef cfstring = base::apple::CFCast<CFStringRef>(string_prop);
+  if (!cfstring || CFStringGetLength(cfstring) == 0) {
     return std::nullopt;
   }
 
-  const CFStringRef team_id =
-      base::apple::CFCast<CFStringRef>(config.team_id.get());
-  if (!team_id || CFStringGetLength(team_id) == 0) {
-    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
-                                           "payload: team_id is invalid.";
+  std::string string = base::SysCFStringRefToUTF8(cfstring);
+  // This can happen despite cfstring not being empty.
+  if (string.empty()) {
     return std::nullopt;
   }
 
-  // Only Okta is supported for now since request proxying in
-  // `PlatformAuthProxyingURLLoaderFactory` only handles Okta SSO requests.
-  const SsoExtensionMetadata* metadata =
-      FindSsoExtensionMetadata(team_id, extension_id);
-  if (!metadata || metadata->idp_name != kOktaIdentityProvider) {
-    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
-        << "Failed to parse SSO extension MDM "
-           "payload: extension does not match any supported IdP.";
+  return string;
+}
+
+std::optional<std::vector<std::string>> ParseHostnames(
+    CFPropertyListRef hostnames_prop) {
+  if (!hostnames_prop) {
     return std::nullopt;
   }
 
-  const CFArrayRef array = base::apple::CFCast<CFArrayRef>(config.hosts.get());
+  const CFArrayRef array = base::apple::CFCast<CFArrayRef>(hostnames_prop);
   if (!array) {
     LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
                                            "payload: hosts is not an array.";
-    return std::nullopt;
-  }
-
-  std::string extension_id_string = base::SysCFStringRefToUTF8(extension_id);
-  std::string team_id_string = base::SysCFStringRefToUTF8(team_id);
-  if (extension_id_string.empty() || team_id_string.empty()) {
-    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
-        << "Failed to parse SSO extension MDM "
-           "payload: couldn't convert CFStringRef to UTF-8.";
     return std::nullopt;
   }
 
@@ -197,46 +180,17 @@ std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> ParseConfiguration(
   std::vector<std::string> hostnames;
   hostnames.reserve(size);
   for (CFIndex i = 0; i < size; ++i) {
-    CFStringRef cf_hostname =
-        base::apple::CFCast<CFStringRef>(CFArrayGetValueAtIndex(array, i));
-    if (!cf_hostname) {
-      continue;
-    }
-    std::string hostname = base::SysCFStringRefToUTF8(cf_hostname);
-    if (!hostname.empty()) {
-      hostnames.push_back(std::move(hostname));
+    std::optional<std::string> hostname =
+        ParseCfString(CFArrayGetValueAtIndex(array, i));
+    if (hostname.has_value()) {
+      hostnames.push_back(std::move(hostname.value()));
     }
   }
 
-  return ExtensibleEnterpriseSSOPrefsHandler::Config{
-      .extension_id = std::move(extension_id_string),
-      .team_id = std::move(team_id_string),
-      .hosts = std::move(hostnames),
-  };
-}
-
-std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
-ReadAndParseConfiguration(
-    base::OnceCallback<CFPreferencesObserver::RawConfig()> read_callback) {
-  CFPreferencesObserver::RawConfig config = std::move(read_callback).Run();
-  return ParseConfiguration(std::move(config));
+  return hostnames;
 }
 
 }  // namespace
-
-CFPreferencesObserver::RawConfig::RawConfig(ScopedPropList extension_id,
-                                            ScopedPropList team_id,
-                                            ScopedPropList hosts)
-    : extension_id(std::move(extension_id)),
-      team_id(std::move(team_id)),
-      hosts(std::move(hosts)) {}
-CFPreferencesObserver::RawConfig::RawConfig(const RawConfig&) = default;
-CFPreferencesObserver::RawConfig::RawConfig(RawConfig&&) = default;
-CFPreferencesObserver::RawConfig& CFPreferencesObserver::RawConfig::operator=(
-    const RawConfig&) = default;
-CFPreferencesObserver::RawConfig& CFPreferencesObserver::RawConfig::operator=(
-    RawConfig&&) = default;
-CFPreferencesObserver::RawConfig::~RawConfig() = default;
 
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     PrefService* local_state)
@@ -261,12 +215,17 @@ void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_state_, base::NotFatalUntil::M161);
 
+  // Read and parse config on the thread pool, the result is sent back to the
+  // main thread and handled by OnConfigRead.
+  auto parse_callback = base::BindOnce(&ParseConfig);
+  auto on_config_parsed =
+      base::BindOnce(&ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead,
+                     weak_ptr_factory_.GetWeakPtr());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ReadAndParseConfiguration,
-                     cf_preferences_observer_->GetReadConfigCallback()),
-      base::BindOnce(&ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead,
-                     weak_ptr_factory_.GetWeakPtr()));
+      cf_preferences_observer_->GetReadConfigCallback().Then(
+          std::move(parse_callback)),
+      std::move(on_config_parsed));
 }
 
 void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(
@@ -294,6 +253,59 @@ void ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
     PrefRegistrySimple* pref_registry) {
   pref_registry->RegisterListPref(
       prefs::kExtensibleEnterpriseSSOConfiguredHosts);
+}
+
+// static
+std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
+ExtensibleEnterpriseSSOPrefsHandler::ParseConfig(
+    CFPreferencesObserver::RawConfig config) {
+  if (!config.extension_id || !config.team_id || !config.hosts) {
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "SSO extension MDM payload not found or incomplete.";
+    return std::nullopt;
+  }
+
+  // If the extension or team IDs don't match any supported IdPs return an empty
+  // result.
+  std::optional<std::string> extension_id =
+      ParseCfString(config.extension_id.get());
+  if (!extension_id.has_value()) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
+                                           "payload: extension_id is invalid.";
+    return std::nullopt;
+  }
+
+  std::optional<std::string> team_id = ParseCfString(config.team_id.get());
+  if (!team_id.has_value()) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
+                                           "payload: team_id is invalid.";
+    return std::nullopt;
+  }
+
+  // Only Okta is supported for now since request proxying in
+  // `PlatformAuthProxyingURLLoaderFactory` only handles Okta SSO requests.
+  const SsoExtensionMetadata* metadata =
+      FindSsoExtensionMetadata(*team_id, *extension_id);
+  if (!metadata || metadata->idp_name != kOktaIdentityProvider) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
+        << "Failed to parse SSO extension MDM "
+           "payload: extension does not match any supported IdP.";
+    return std::nullopt;
+  }
+
+  // TODO(b/564412659): Make hostnames an optional field of Config and don't
+  // fail if it's missing from the MDM payload.
+  std::optional<std::vector<std::string>> hostnames =
+      ParseHostnames(config.hosts.get());
+  if (!hostnames.has_value()) {
+    return std::nullopt;
+  }
+
+  return ExtensibleEnterpriseSSOPrefsHandler::Config{
+      .extension_id = std::move(extension_id).value(),
+      .team_id = std::move(team_id).value(),
+      .hosts = std::move(hostnames).value(),
+  };
 }
 
 // static
