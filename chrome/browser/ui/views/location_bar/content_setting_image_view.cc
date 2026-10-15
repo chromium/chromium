@@ -159,8 +159,8 @@ void ContentSettingImageView::Update() {
   }
 
   if (content_setting_image_model_->ShouldAutoOpenBubble(web_contents)) {
-    ShowBubbleImpl();
     content_setting_image_model_->SetBubbleWasAutoOpened(web_contents);
+    ShowBubbleImpl();
   }
 
   // If the content usage or blockage should be indicated to the user, start the
