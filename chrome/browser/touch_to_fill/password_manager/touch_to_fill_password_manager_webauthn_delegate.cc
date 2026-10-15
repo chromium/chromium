@@ -14,7 +14,9 @@
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
@@ -54,24 +56,46 @@ void TouchToFillPasswordManagerWebAuthnDelegate::OnCredentialSelected(
     const password_manager::UiCredential& credential,
     base::OnceClosure action_complete) {
   CHECK(is_immediate_);
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      password_client_ ? password_client_->GetDeviceAuthenticator() : nullptr;
-  if (!password_client_ || !authenticator ||
-      !password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
+  if (!password_client_) {
     FillCredential(credential);
     std::move(action_complete).Run();
     return;
   }
 
-  authenticator_ = std::move(authenticator);
-  action_complete_ = std::move(action_complete);
-  // `this` notifies the authenticator when it is destructed, resulting in
-  // the callback being reset by the authenticator. Therefore, it is safe
-  // to use base::Unretained.
-  authenticator_->AuthenticateWithMessage(
-      u"", base::BindOnce(
-               &TouchToFillPasswordManagerWebAuthnDelegate::OnReauthCompleted,
-               base::Unretained(this), credential));
+  bool should_reauth = false;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    authenticator = password_client_->GetDeviceAuthenticator();
+    should_reauth =
+        authenticator && password_client_->IsReauthBeforeFillingRequiredLegacy(
+                             authenticator.get());
+  } else {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        password_client_->GetDeviceAuthAvailabilityChecker();
+    should_reauth =
+        password_client_->IsReauthBeforeFillingRequired(checker.get());
+  }
+
+  if (should_reauth) {
+    authenticator_ = base::FeatureList::IsEnabled(
+                         password_manager::features::kDeviceReauthRefactor)
+                         ? password_client_->GetDeviceAuthenticator()
+                         : std::move(authenticator);
+    CHECK(authenticator_);
+    action_complete_ = std::move(action_complete);
+    // `this` notifies the authenticator when it is destructed, resulting in
+    // the callback being reset by the authenticator. Therefore, it is safe
+    // to use base::Unretained.
+    authenticator_->AuthenticateWithMessage(
+        u"", base::BindOnce(
+                 &TouchToFillPasswordManagerWebAuthnDelegate::OnReauthCompleted,
+                 base::Unretained(this), credential));
+    return;
+  }
+
+  FillCredential(credential);
+  std::move(action_complete).Run();
 }
 
 void TouchToFillPasswordManagerWebAuthnDelegate::OnReauthCompleted(

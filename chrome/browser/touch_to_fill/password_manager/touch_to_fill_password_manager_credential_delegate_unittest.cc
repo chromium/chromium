@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -91,6 +93,14 @@ class MockPasswordManagerClient
               MarkSharedCredentialsAsNotified,
               (const url::Origin&),
               (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
+              (override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
+              (override));
   MOCK_METHOD(bool,
               IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
@@ -137,6 +147,8 @@ class TouchToFillControllerAutofillTest
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // By default, disable biometric authentication.
+    ON_CALL(client(), IsReauthBeforeFillingRequired)
+        .WillByDefault(Return(false));
     ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
         .WillByDefault(Return(false));
   }
@@ -389,7 +401,19 @@ TEST_F(TouchToFillControllerAutofillTest,
   touch_to_fill_controller().OnCredentialSelected(credential);
 }
 
-TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
+class TouchToFillControllerAutofillReauthTest
+    : public base::test::WithFeatureOverride,
+      public TouchToFillControllerAutofillTest {
+ public:
+  TouchToFillControllerAutofillReauthTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kDeviceReauthRefactor) {}
+
+  bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
+};
+
+TEST_P(TouchToFillControllerAutofillReauthTest,
+       Show_And_Fill_No_Auth_Available) {
   auto credential =
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
   Credential credentials[] = {credential};
@@ -409,7 +433,14 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"alice"),
                                       std::u16string(u"p4ssw0rd"), _));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage).Times(0);
 
   touch_to_fill_controller().OnCredentialSelected(credential);
 
@@ -421,7 +452,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
                                UserAction::kSelectedCredential));
 }
 
-TEST_F(TouchToFillControllerAutofillTest,
+TEST_P(TouchToFillControllerAutofillReauthTest,
        Show_And_Fill_Auth_Available_Success) {
   auto filler_to_pass = CreateMockFiller();
   auto credential =
@@ -448,7 +479,13 @@ TEST_F(TouchToFillControllerAutofillTest,
                                       std::u16string(u"p4ssw0rd"), _))
       .WillOnce(RunOnceCallback<2>(/*trigger_submission=*/true));
 
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
@@ -456,7 +493,7 @@ TEST_F(TouchToFillControllerAutofillTest,
   touch_to_fill_controller().OnCredentialSelected(credential);
 }
 
-TEST_F(TouchToFillControllerAutofillTest,
+TEST_P(TouchToFillControllerAutofillReauthTest,
        Show_And_Fill_Auth_Available_Failure) {
   auto credential =
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
@@ -475,7 +512,13 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _, _)).Times(0);
 
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credential);
@@ -486,6 +529,38 @@ TEST_F(TouchToFillControllerAutofillTest,
           kReauthenticationFailed,
       1);
 }
+
+TEST_P(TouchToFillControllerAutofillReauthTest, DestroyedWhileAuthRunning) {
+  auto credential =
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
+  Credential credentials[] = {credential};
+
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           TouchToFillPasswordManagerView::kNone));
+  Show(credentials,
+       MakeTouchToFillPasswordManagerDelegate(
+           SubmissionReadinessState::kNoInformation, CreateMockFiller(),
+           form_to_fill(), form_to_fill()->password_element_renderer_id,
+           TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
+               false)),
+       /*cred_man_delegate=*/nullptr);
+
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage);
+  touch_to_fill_controller().OnCredentialSelected(credential);
+
+  EXPECT_CALL(*authenticator(), Cancel());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    TouchToFillControllerAutofillReauthTest);
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Empty) {
   EXPECT_CALL(view(), Show).Times(0);
@@ -553,7 +628,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"bob"),
                                       std::u16string(u"s3cr3t"), _));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credential2);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -690,29 +765,6 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
       entries[0], UkmBuilder::kUserActionName,
       static_cast<int64_t>(TouchToFillPasswordManagerCredentialDelegate::
                                UserAction::kSelectedManagePasswords));
-}
-
-TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
-  auto credential =
-      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"});
-  Credential credentials[] = {credential};
-
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(credentials),
-                           TouchToFillPasswordManagerView::kNone));
-  Show(credentials,
-       MakeTouchToFillPasswordManagerDelegate(
-           SubmissionReadinessState::kNoInformation, CreateMockFiller(),
-           form_to_fill(), form_to_fill()->password_element_renderer_id,
-           TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
-               false)),
-       /*cred_man_delegate=*/nullptr);
-
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator(), AuthenticateWithMessage);
-  touch_to_fill_controller().OnCredentialSelected(credential);
-
-  EXPECT_CALL(*authenticator(), Cancel());
 }
 
 TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
@@ -866,7 +918,9 @@ TEST_F(TouchToFillControllerAutofillTest,
            TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
                false)),
        /*cred_man_delegate=*/nullptr);
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
   EXPECT_CALL(*(acknowledge_grouped_credential_sheet_helper().jni_bridge()),
@@ -901,7 +955,9 @@ TEST_F(TouchToFillControllerAutofillTest,
            TouchToFillPasswordManagerCredentialDelegate::ShowHybridOption(
                false)),
        /*cred_man_delegate=*/nullptr);
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
   EXPECT_CALL(*(acknowledge_grouped_credential_sheet_helper().jni_bridge()),

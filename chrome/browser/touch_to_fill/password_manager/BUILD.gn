@@ -102,6 +102,7 @@ if (is_android) {
       "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/autofill/core/common",
+      "//components/device_reauth:test_support",
       "//components/password_manager/content/browser",
       "//components/password_manager/content/browser:test_support",
       "//components/password_manager/core/browser",

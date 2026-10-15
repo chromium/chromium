@@ -10,6 +10,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
@@ -20,8 +21,11 @@
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/browser/webauthn/shared_types.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -51,6 +55,7 @@ using ::testing::_;
 using ::testing::ByMove;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::Return;
 
 class MockPasswordManagerClient
@@ -59,6 +64,14 @@ class MockPasswordManagerClient
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
+              (override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
               (override));
   MOCK_METHOD(bool,
               IsReauthBeforeFillingRequiredLegacy,
@@ -373,7 +386,18 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
 
-TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+class TouchToFillPasswordManagerWebAuthnDelegateReauthTest
+    : public base::test::WithFeatureOverride,
+      public TouchToFillPasswordManagerWebAuthnDelegateTest {
+ public:
+  TouchToFillPasswordManagerWebAuthnDelegateReauthTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kDeviceReauthRefactor) {}
+
+  bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
+};
+
+TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
        ShowPasswordForImmediateWithReauthSuccess) {
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
@@ -387,7 +411,13 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
 
@@ -396,7 +426,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
 
-TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
        ShowPasswordForImmediateWithReauthFailure) {
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
@@ -410,7 +440,13 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
 
@@ -419,7 +455,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
 
-TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
        ShowPasswordForImmediateReauthNotRequired) {
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
@@ -431,18 +467,25 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
                         /*should_show_hybrid_option=*/false,
                         /*is_immediate=*/true, SortingCallback(), &client()));
 
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1)
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
-      .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
+      .Times(is_refactor_enabled() ? 0 : 1)
+      .WillRepeatedly(Return(ByMove(CreateMockAuthenticator())));
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage).Times(0);
+  EXPECT_CALL(*authenticator(), Cancel).Times(0);
 
   PasswordCredentialPair expected = {kUserName2, kPassword};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
 
-TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
-       ShowPasswordForImmediateNullAuthenticator) {
+TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
+       ShowPasswordForImmediateNullAvailabilityChecker) {
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
 
@@ -453,16 +496,23 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
                         /*should_show_hybrid_option=*/false,
                         /*is_immediate=*/true, SortingCallback(), &client()));
 
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
+      .Times(is_refactor_enabled() ? 1 : 0)
+      .WillRepeatedly(Return(ByMove(nullptr)));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired(IsNull()))
+      .Times(is_refactor_enabled() ? 1 : 0)
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(client(), GetDeviceAuthenticator)
-      .WillOnce(Return(ByMove(nullptr)));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(false));
+      .Times(is_refactor_enabled() ? 0 : 1)
+      .WillRepeatedly(Return(ByMove(nullptr)));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy).Times(0);
 
   PasswordCredentialPair expected = {kUserName2, kPassword};
   EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
   touch_to_fill_controller().OnCredentialSelected(password_credential);
 }
 
-TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+TEST_P(TouchToFillPasswordManagerWebAuthnDelegateReauthTest,
        ReauthCancelledOnDestruction) {
   auto password_credential = CreatePasswordCredential();
   std::vector<Credential> credentials({CreatePasskey(), password_credential});
@@ -473,7 +523,13 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(ByMove(CreateMockAuthenticator())));
-  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
   base::OnceCallback<void(bool)> auth_callback;
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce([&auth_callback](const std::u16string& message,
@@ -487,6 +543,9 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
   touch_to_fill_controller().OnCredentialSelected(password_credential);
   touch_to_fill_controller().Close();
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    TouchToFillPasswordManagerWebAuthnDelegateReauthTest);
 
 TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
        SortCredentialsForImmediate) {

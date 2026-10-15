@@ -7,13 +7,16 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -152,10 +155,27 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     // WebContents. And AllPasswordBottomSheetController is owned by
     // PasswordAccessoryController.
     CHECK(client_, base::NotFatalUntil::M161);
-    std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-        client_->GetDeviceAuthenticator();
-    if (client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get())) {
-      authenticator_ = std::move(authenticator);
+    bool should_reauth = false;
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kDeviceReauthRefactor)) {
+      std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+          client_->GetDeviceAuthenticator();
+      should_reauth =
+          client_->IsReauthBeforeFillingRequiredLegacy(authenticator.get());
+      if (should_reauth) {
+        authenticator_ = std::move(authenticator);
+      }
+    } else {
+      std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+          client_->GetDeviceAuthAvailabilityChecker();
+      should_reauth = client_->IsReauthBeforeFillingRequired(checker.get());
+      if (should_reauth) {
+        authenticator_ = client_->GetDeviceAuthenticator();
+      }
+    }
+
+    if (should_reauth) {
+      CHECK(authenticator_);
       authenticator_->AuthenticateWithMessage(
           u"",
           base::BindOnce(&AllPasswordsBottomSheetController::OnReauthCompleted,
