@@ -163,13 +163,8 @@ class Gpu::EstablishRequest
     parent_->OnEstablishedGpuChannel();
   }
 
-  void OnEstablishedGpuChannel(
-      int client_id,
-      mojo::ScopedMessagePipeHandle channel_handle,
-      const gpu::GPUInfo& gpu_info,
-      const gpu::GpuFeatureInfo& gpu_feature_info,
-      const gpu::SharedImageCapabilities& shared_image_capabilities,
-      bool gpu_remote_disconnected) {
+  void OnEstablishedGpuChannel(scoped_refptr<gpu::GpuChannelHost> gpu_channel,
+                               bool gpu_remote_disconnected) {
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
     base::AutoLock lock(lock_);
 
@@ -179,15 +174,7 @@ class Gpu::EstablishRequest
 
     DCHECK(!received_);
     received_ = true;
-    if (channel_handle.is_valid()) {
-      gpu_channel_ = gpu::GpuChannelHost::Create(
-          client_id, gpu_info, gpu_feature_info, shared_image_capabilities,
-          std::move(channel_handle));
-      // `GPUChannelHost::Create()` can't fail, since we pass in `gpu_info` etc
-      // directly instead of requesting the info from the GPU process (which can
-      // fail).
-      CHECK(gpu_channel_);
-    }
+    gpu_channel_ = gpu_channel;
     gpu_remote_disconnected_ = gpu_remote_disconnected;
 
     if (establish_event_) {
@@ -229,9 +216,8 @@ void Gpu::GpuPtrIO::ConnectionError() {
 
   // Make sure |establish_request_| fails so the main thread doesn't block
   // forever after calling Gpu::EstablishGpuChannelSync().
-  establish_request_->OnEstablishedGpuChannel(
-      0, mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(), gpu::GpuFeatureInfo(),
-      gpu::SharedImageCapabilities(), /*gpu_remote_disconnected=*/true);
+  establish_request_->OnEstablishedGpuChannel(nullptr,
+                                              /*gpu_remote_disconnected=*/true);
   establish_request_.reset();
 }
 
@@ -244,10 +230,19 @@ void Gpu::GpuPtrIO::OnEstablishedGpuChannel(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(establish_request_);
 
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel;
+  if (channel_handle.is_valid()) {
+    gpu_channel = gpu::GpuChannelHost::Create(
+        client_id, gpu_info, gpu_feature_info, shared_image_capabilities,
+        std::move(channel_handle));
+    // `GPUChannelHost::Create()` can't fail, since we pass in `gpu_info` etc
+    // directly instead of requesting the info from the GPU process (which can
+    // fail).
+    CHECK(gpu_channel);
+  }
+
   establish_request_->OnEstablishedGpuChannel(
-      client_id, std::move(channel_handle), std::move(gpu_info),
-      std::move(gpu_feature_info), std::move(shared_image_capabilities),
-      /*gpu_remote_disconnected=*/false);
+      std::move(gpu_channel), /*gpu_remote_disconnected=*/false);
   establish_request_.reset();
 }
 
