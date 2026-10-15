@@ -4153,6 +4153,7 @@ ci.builder(
                 ),
             ),
             "android_sync_integration_tests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 4,
                 ),
