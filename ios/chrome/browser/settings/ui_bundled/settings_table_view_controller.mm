@@ -44,6 +44,7 @@
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/universal_optout/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
@@ -168,6 +169,9 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs.h"
+#import "ios/chrome/browser/web_extension/model/extension_service.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_observer_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -270,6 +274,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     DiscoverFeedVisibilityObserver,
     DownloadsSettingsCoordinatorDelegate,
     EnhancedSafeBrowsingInlinePromoDelegate,
+    ExtensionServiceObserving,
     GeminiSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserving,
@@ -323,6 +328,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   std::unique_ptr<
       subscription_eligibility::SubscriptionEligibilityObserverBridge>
       _subscriptionEligibilityObserverBridge;
+  std::unique_ptr<ExtensionServiceObserverBridge>
+      _extensionServiceObserverBridge;
 
   // Gemini settings coordinator.
   GeminiSettingsCoordinator* _geminiSettingsCoordinator;
@@ -390,6 +397,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _autofillAndPasswordsDetailItem;
   TableViewDetailIconItem* _notificationsItem;
+  TableViewDetailIconItem* _privacyDetailItem;
   TableViewDetailIconItem* _defaultBrowserCellItem;
   TableViewDetailIconItem* _BWGDetailItem;
 
@@ -499,6 +507,16 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     _subscriptionEligibilityObserverBridge = std::make_unique<
         subscription_eligibility::SubscriptionEligibilityObserverBridge>(
         _subscriptionEligibilityService, self);
+    if (base::FeatureList::IsEnabled(
+            universal_optout::features::kUniversalOptOutSettings)) {
+      ExtensionService* extensionService =
+          ExtensionServiceFactory::GetForProfile(_profile);
+      if (extensionService) {
+        _extensionServiceObserverBridge =
+            std::make_unique<ExtensionServiceObserverBridge>(extensionService,
+                                                             self);
+      }
+    }
     _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:localState
                    prefName:omnibox::kIsOmniboxInBottomPosition];
@@ -583,6 +601,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   }
 
   [self updateNotificationsDetailText];
+  [self updatePrivacyDetailItem];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -1142,15 +1161,17 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 }
 
 - (TableViewItem*)privacyDetailItem {
-  NSString* title = nil;
-  title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
+  NSString* title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
 
-  return [self detailItemWithType:SettingsItemTypePrivacy
+  _privacyDetailItem =
+      [self detailItemWithType:SettingsItemTypePrivacy
                              text:title
                        detailText:nil
                            symbol:SettingsRootSymbol(SymbolPrivacy)
             symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
           accessibilityIdentifier:kSettingsPrivacyCellId];
+  [self updatePrivacyDetailItem];
+  return _privacyDetailItem;
 }
 
 - (TableViewSwitchItem*)feedSettingsItem {
@@ -2427,6 +2448,35 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   }
 }
 
+// Updates the privacy detail item badge if the extension service has a load
+// error and silent mode is not enabled.
+- (void)updatePrivacyDetailItem {
+  if (!_privacyDetailItem || !_profile) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOutSettings)) {
+    return;
+  }
+  ExtensionService* extensionService =
+      ExtensionServiceFactory::GetForProfile(_profile);
+  const bool hasError =
+      extensionService && extensionService->HasLoadError() &&
+      !universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+  BadgeType badgeType = hasError ? BadgeType::kWarning : BadgeType::kNone;
+  if (badgeType != _privacyDetailItem.badgeType) {
+    _privacyDetailItem.badgeType = badgeType;
+    if (badgeType == BadgeType::kWarning) {
+      _privacyDetailItem.badgeLayout = BadgeLayout::kTrailing;
+    } else {
+      _privacyDetailItem.badgeLayout = BadgeLayout::kInline;
+    }
+    if ([self.tableViewModel hasItem:_privacyDetailItem]) {
+      [self reconfigureCellsForItems:@[ _privacyDetailItem ]];
+    }
+  }
+}
+
 // Updates the state of the Safety Check notifications button based on whether
 // the user has Safety Check notifications enabled.
 - (void)updateSafetyCheckNotificationsButtonState {
@@ -2903,6 +2953,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   _authService = nil;
   _subscriptionEligibilityObserverBridge.reset();
   _subscriptionEligibilityService = nullptr;
+  _extensionServiceObserverBridge.reset();
 
   // Remove PrefObserverDelegates.
   _notificationsObserver.delegate = nil;
@@ -3345,6 +3396,13 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 - (void)onServiceStatusChanged {
   [self updateSigninSection];
   [self.tableView reloadData];
+}
+
+#pragma mark - ExtensionServiceObserving
+
+- (void)extensionService:(ExtensionService*)service
+    didChangeExtensionLoadError:(bool)hasLoadError {
+  [self updatePrivacyDetailItem];
 }
 
 #pragma mark - SubscriptionEligibilityServiceObserving
