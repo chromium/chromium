@@ -10,7 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -21,7 +23,8 @@
 namespace autofill::payments {
 
 namespace {
-constexpr std::string kTestAccessToken = "token";
+constexpr char kTestAccessToken[] = "token";
+constexpr char kOtherTestAccessToken[] = "other_token";
 }
 
 class PaymentsAccessTokenFetcherTest
@@ -71,8 +74,39 @@ TEST_F(PaymentsAccessTokenFetcherTest, AbortIfRequestPending) {
       kTestAccessToken, base::Time::Now() + base::Days(10));
 }
 
-// Tests that if an access token is prefetched, it is returned immediately.
-TEST_F(PaymentsAccessTokenFetcherTest, ReusedToken) {
+// Tests that subsequent requests fetch the token from `IdentityManager` rather
+// than returning the token cached in `PaymentsAccessTokenFetcher`.
+TEST_F(PaymentsAccessTokenFetcherTest, SubsequentTokenFetch) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableOAuth2TokenFix);
+
+  EXPECT_CALL(
+      callback_,
+      Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
+      .Times(1);
+
+  token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kTestAccessToken, base::Time::Now() + base::Days(10));
+
+  EXPECT_CALL(callback_, Run(std::variant<GoogleServiceAuthError, std::string>(
+                             kOtherTestAccessToken)))
+      .Times(1);
+
+  token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kOtherTestAccessToken, base::Time::Now() + base::Days(10));
+  EXPECT_FALSE(token_removed_from_cache_);
+}
+
+// Tests that subsequent requests return the token cached in
+// `PaymentsAccessTokenFetcher` rather than fetching it from `IdentityManager`
+// when `kAutofillEnableOAuth2TokenFix` is disabled.
+TEST_F(PaymentsAccessTokenFetcherTest, SubsequentTokenFetch_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableOAuth2TokenFix);
+
   EXPECT_CALL(
       callback_,
       Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
@@ -101,23 +135,23 @@ TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenSucceeded) {
 // Tests that the access token fetching succeeded when old token needs to be
 // invalidated.
 TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenSucceededInvalidateOld) {
-  EXPECT_CALL(callback_, Run(std::variant<GoogleServiceAuthError, std::string>(
-                             "Some other token")))
-      .Times(1);
-
-  token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "Some other token", base::Time::Now() + base::Days(10));
-  EXPECT_FALSE(token_removed_from_cache_);
-
   EXPECT_CALL(
       callback_,
       Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
       .Times(1);
 
-  token_fetcher_->GetAccessToken(/*invalidate_old=*/true, callback_.Get());
+  token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kTestAccessToken, base::Time::Now() + base::Days(10));
+  EXPECT_FALSE(token_removed_from_cache_);
+
+  EXPECT_CALL(callback_, Run(std::variant<GoogleServiceAuthError, std::string>(
+                             kOtherTestAccessToken)))
+      .Times(1);
+
+  token_fetcher_->GetAccessToken(/*invalidate_old=*/true, callback_.Get());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kOtherTestAccessToken, base::Time::Now() + base::Days(10));
 
   EXPECT_TRUE(token_removed_from_cache_);
 }

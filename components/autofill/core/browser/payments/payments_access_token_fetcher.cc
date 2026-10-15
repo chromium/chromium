@@ -8,9 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -33,7 +35,9 @@ void PaymentsAccessTokenFetcher::GetAccessToken(bool invalidate_old,
       // We're still waiting for the last request to come back.
       return;
     }
-    if (!access_token_.empty()) {
+    if (!access_token_.empty() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillEnableOAuth2TokenFix)) {
       // If there is an access_token ready for use, return it directly.
       std::move(callback).Run(access_token_);
       return;
