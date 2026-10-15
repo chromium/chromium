@@ -510,9 +510,6 @@ public class AccessibilityStateTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Mockito.verify(mAccessibilityStateNatives, Mockito.times(3))
                 .onAnimatorDurationScaleChanged();
-
-        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
-        ApplicationStatus.destroyForJUnitTests();
     }
 
     /**
@@ -552,9 +549,6 @@ public class AccessibilityStateTest {
         simulateActivityStateChange(
                 mockActivity, ActivityState.RESUMED, ApplicationState.HAS_RUNNING_ACTIVITIES);
         assertThat(AccessibilityState.getFontWeightAdjustment()).isEqualTo(300);
-
-        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
-        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -584,9 +578,6 @@ public class AccessibilityStateTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Mockito.verify(mAccessibilityStateNatives, Mockito.times(2))
                 .onAnimatorDurationScaleChanged();
-
-        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
-        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -676,9 +667,6 @@ public class AccessibilityStateTest {
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
         Mockito.verify(mAccessibilityStateNatives, Mockito.times(2))
                 .onSamsungTalkBackStateChanged(false);
-
-        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
-        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -719,9 +707,6 @@ public class AccessibilityStateTest {
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
         Mockito.verify(mAccessibilityStateNatives, Mockito.atLeastOnce())
                 .onSamsungTalkBackStateChanged(false);
-
-        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
-        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -772,9 +757,6 @@ public class AccessibilityStateTest {
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
         Mockito.verify(mAccessibilityStateNatives, Mockito.atLeastOnce())
                 .onSamsungTalkBackStateChanged(false);
-
-        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
-        ApplicationStatus.destroyForJUnitTests();
     }
 
     private void startTestWithService(AccessibilityServiceInfo newService) {
