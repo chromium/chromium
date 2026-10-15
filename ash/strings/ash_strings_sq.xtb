@@ -1020,6 +1020,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3977512764614765090">Bateria është në <ph name="PERCENTAGE" />% dhe po karikohet.</translation>
 <translation id="3978162107953847778">Fut lidhje nga vende si p.sh historiku i shfletimit dhe "Disku i Google". Mund të futësh gjithashtu emoji, skedarë imazhesh etj. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Të ndryshohet dalja e audios?</translation>
+<translation id="3983903378684256134">Steam në Chromebook</translation>
 <translation id="3984536049089846927">Faqja tjetër</translation>
 <translation id="3986082989454912832">Përgjigju</translation>
 <translation id="3990002060657467458">Kontrollet e përdorura shpesh si Wi-Fi, Bluetooth dhe volumi janë te "Cilësimet e shpejta". Mund të shkosh po ashtu këtu për të nxjerrë pamjet e ekranit.</translation>
@@ -1636,6 +1637,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5727460725221669831">Nëse e ke harruar fjalëkalimin tënd ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
 <translation id="5733630091161562207">Njoftimi i mirëseardhjes</translation>
 <translation id="573413375004481890">Kjo pajisje nuk mund t'i mbështeste të gjitha ekranet, kështu që një prej tyre është shkëputur</translation>
+<translation id="5739548907438839901">U lirua <ph name="SIZE" /> hapësirë në disk.</translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5745612484876805746">"Drita e natës" aktivizohet automatikisht kur perëndon dielli</translation>
 <translation id="5749214722697335450">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google". <ph name="BEGIN_LINK1" />Mëso më shumë rreth metrikës<ph name="BEGIN_LINK1_END" />Mëso më shumë<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Instalim i ri</translation>
 <translation id="7413851974711031813">Shtyp Escape për ta mbyllur</translation>
 <translation id="7416471219712049036">Ruaj faqen aktuale</translation>
 <translation id="742594950370306541">Kamera është në përdorim.</translation>
+<translation id="7430466159639897874">Ke hapësirë të papërdorur të diskut (<ph name="SIZE" />) të caktuar për veçorinë e zhvlerësuar "Steam në Chromebook".</translation>
 <translation id="743058460480092004">Kamera dhe mikrofoni janë në përdorim</translation>
 <translation id="7433708794692032816">Fut kartën smart për të vazhduar përdorimin e pajisjes sate <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Kërko në Google</translation>
@@ -2352,6 +2355,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7781335840981796660">Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të hiqen.</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7787212146956232129">Pajisjet e hyrjes dhe daljes janë caktuar. Shko te "Cilësimet" për ta ndryshuar.</translation>
+<translation id="7790757511772316441">Liro hapësirën e diskut</translation>
 <translation id="7792590255364786396">I dukshëm</translation>
 <translation id="7796735576426975947">Njoftimi i ri është fshehur</translation>
 <translation id="7798302898096527229">Shtyp "Kërko" ose "Shift" për të anuluar</translation>

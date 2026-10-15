@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Preferenze della modalità Lettura aperte a schermo intero</translation>
 <translation id="1014147525163127655">Non sono presenti passkey per <ph name="ORIGIN" /> su questo dispositivo</translation>
 <translation id="1016498331642356377">Cerca rapidamente con la tua voce. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
-<translation id="1028699632127661925">Invio a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Vuoi cancellare anche i dati di questi siti e app?</translation>
 <translation id="1035113036584565771">Notifica di promozione suggerita chiusa</translation>
 <translation id="1036348656032585052">Disattiva</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Foglio di conferma della passkey chiuso</translation>
 <translation id="1197933394627598677">Mostra modalità Lettura</translation>
 <translation id="1197935538609051549">Disattiva</translation>
+<translation id="119944043368869598">Cancella tutto</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1202892408424955784">Prodotti monitorati</translation>
 <translation id="1204037785786432551">Scarica link</translation>
@@ -135,6 +135,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1485343711570311792">Apri in <ph name="NATIVE_APP_NAME" /> • Da <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
 <translation id="1496514951988037011">nome utente</translation>
+<translation id="1498051468374914325">Apri la console degli Strumenti per sviluppatori</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1513352483775369820">Preferiti e cronologia web</translation>
@@ -142,6 +143,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1516966594427080024">Apri una nuova finestra in modalità Incognito</translation>
 <translation id="152204906462707884">Elimina rapidamente la cronologia di navigazione e assumi maggiore controllo sulla tua privacy</translation>
 <translation id="153446405401665083">È disponibile una nuova versione di Chrome</translation>
+<translation id="1537160738459068682">Apri Elementi degli Strumenti per sviluppatori</translation>
 <translation id="1540012742443808215">Al momento la barra degli indirizzi è in alto</translation>
 <translation id="1543035591122163372">Accedi per trovare le password e altri dati del <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
@@ -151,6 +153,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" />: "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Contribuisci a migliorare Chrome per le persone che lo usano come fai tu</translation>
+<translation id="1557806604681757705">tuo computer</translation>
 <translation id="1568636008098739136">Ascolta questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="1571041387761170095">Nessuna password inefficace o riutilizzata</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="22091350895006575">Aggiungi nome utente</translation>
 <translation id="2211043920024403606">Dati profilo</translation>
 <translation id="221494669172414749">Se apri Chrome senza un blocco del profilo, le password e i metodi di pagamento salvati verranno rimossi dall'auto. L'utilizzo di un blocco del profilo protegge questi dati.</translation>
+<translation id="2220529011494928058">Segnala un problema</translation>
 <translation id="2226826835915474236">Scorciatoie non attive</translation>
 <translation id="2227179592712503583">Rimuovi suggerimento</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3189635831478931757">Gruppo di schede <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Chiudere la finestra corrente?</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> è stato eliminato</translation>
 <translation id="3232293466644486101">Elimina dati di navigazione…</translation>
@@ -963,6 +968,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
 <translation id="4807700370495020449">Accedi a questo sito e a Chrome per trovare le informazioni salvate e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="480990236307250886">Apri pagina iniziale</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Adatta alla pagina</translation>
 <translation id="4822710610088666676">Gruppo di schede <ph name="TAB_GROUP_TITLE" /> chiuso e salvato</translation>
 <translation id="4835385943915508971">Chrome non ha accesso alla risorsa richiesta.</translation>
@@ -1069,6 +1075,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5233638681132016545">Nuova scheda</translation>
 <translation id="5235196193381275927">Si è verificato un problema durante l'accesso</translation>
 <translation id="5246093389635966745">Modifica scorciatoia per la barra degli strumenti</translation>
+<translation id="5257142004843671642">Ridimensiona il riquadro laterale</translation>
 <translation id="5264813352784073502">ultime 24 ore</translation>
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5273031377282080577">Questa impostazione è gestita dall'amministratore.</translation>
@@ -1095,9 +1102,9 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, scheda Incognito condivisa fissata</translation>
 <translation id="5375374982898812658">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="537865165090710757">Salva e condividi</translation>
-<translation id="5385892579392932755">tuo laptop</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vuole usare le informazioni personali del tuo portafoglio digitale. Continua soltanto se ritieni attendibile questo sito. Siti pericolosi potrebbero indurti con l'inganno a rivelare dati come il tuo nome legale o il numero del tuo documento di identità.</translation>
 <translation id="5395376160638294582">Assicurati di poter usare sempre i dati di Chrome nel tuo Account Google</translation>
+<translation id="5397794290049113714">Tu</translation>
 <translation id="539881862970320163">È stata suggerita una password efficace. Tastiera nascosta.</translation>
 <translation id="5404274604891474619">Impossibile modificare il PDF</translation>
 <translation id="5409881200985013443">Vuoi inviare <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
@@ -1523,6 +1530,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6964300328304469089">Selezione attuale: <ph name="NAME" />, <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="696447261358045621">Esci dalla modalità Incognito</translation>
 <translation id="6965382102122355670">Ok</translation>
+<translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Visualizza <ph name="TABS_COUNT_ONE" /> scheda con nuove attività in gruppi di schede condivisi}other{Visualizza <ph name="TABS_COUNT_MANY" /> schede con nuove attività in gruppi di schede condivisi}}</translation>
 <translation id="6971555615916967190">Preferenze della modalità Lettura aperte nella parte inferiore dello schermo</translation>
 <translation id="6971862865055170158">Non approvare</translation>
@@ -1942,6 +1950,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8512053371384421952">Non riceverai più notifiche da <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor immagini</translation>
 <translation id="8517759303731677493">Modifica…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, schede Picture in picture fissate selezionate</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>
@@ -2061,6 +2070,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
 <translation id="9027728231343310283">Annulla <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Sposta in\u2026</translation>
+<translation id="9038316201889095704">La funzionalità Trova nella pagina è disattivata se sono presenti modifiche non salvate.</translation>
 <translation id="904146253922032365">Tocca e tieni premuto per mostrare le schede verticalmente</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9047347135558855162">Avvia rapidamente una ricerca in Chrome</translation>

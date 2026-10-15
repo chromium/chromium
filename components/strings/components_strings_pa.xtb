@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">ਸੁਝਾਅ ਦਿਖਾਓ</translation>
 <translation id="1038168778161626396">ਕੇਵਲ ਐਨਸਿਫਰ</translation>
 <translation id="1038842779957582377">ਅਗਿਆਤ ਨਾਮ</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">ਕਾਰਵਾਈ ਸ਼ੀਟ ਸੁਨੇਹਾ</translation>
 <translation id="1044897699341250361">ਇਸਦਾ ਕੀ ਮਤਲਬ ਹੈ</translation>
 <translation id="1049837829250301306">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਸਮੱਗਰੀ ਨੂੰ ਪੇਸਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">EDI ਪਾਰਟੀ ਨਾਮ</translation>
 <translation id="1816436748874040213">ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਕ੍ਰੋਲ ਅਤੇ ਜ਼ੂਮ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
 <translation id="1816707915923025275">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਖੋਜਣ ਲਈ @history ਟਾਈਪ ਕਰੋ</translation>
+<translation id="1816771466809215784">ਚੈੱਕ-ਆਊਟ ਕਰਨ ਵੇਲੇ ਇਸਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਭਰਨ ਲਈ, ਇਸ ਕਾਰਡ ਲਈ ਕਾਰਡਧਾਰਕ ਦਾ ਨਾਮ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1817364650920811003">ਭੂਮਿਕਾ: Chrome ਸੰਬੰਧੀ ਨੁਕਤਾ। ਪਹੁੰਚਯੋਗਤਾ ਲੇਬਲ: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">ਸਵੈਚਲਿਤ ਡਾਊਨਲੋਡ</translation>
 <translation id="1821930232296380041">ਬੇਨਤੀ ਜਾਂ ਬੇਨਤੀ ਮਾਪਦੰਡ ਅਵੈਧ ਹੈ</translation>
@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android ਐਪਾਂ</translation>
 <translation id="2103210856015238101">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਉਪਲਬਧ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="2104739941682874393">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਸੁਵਿਧਾ ਫ਼ਾਰਮਾਂ ਨੂੰ ਬਿਹਤਰ ਢੰਗ ਨਾਲ ਸਮਝਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਆਟੋਫਿਲ ਕਰ ਸਕਦੀ ਹੈ</translation>
+<translation id="2105237910269166838">ਇਸ ਪੰਨੇ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="2107021941795971877">ਪ੍ਰਿੰਟ ਸੰਬੰਧੀ ਸਹਾਇਤਾਵਾਂ</translation>
 <translation id="2108755909498034140">ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2109845311767915560">ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਟੈਬ ਗਰੁੱਪ</translation>
@@ -1054,7 +1055,7 @@
 <translation id="2734797989819862638">ਕਾਪੀ ਨਾ ਕਰੋ</translation>
 <translation id="2738771556149464852">ਬਾਅਦ ਵਿੱਚ ਨਹੀਂ</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
-<translation id="275259155159336003">Gemini ਨਾਲ ਪਰਸਨਲ ਇੰਟੈਲੀਜੈਂਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ। ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੀਆਂ ਬੇਨਤੀਆਂ, ਪੰਨਾ ਸਿਰਲੇਖਾਂ ਅਤੇ URL ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਹੁਨਰ}other{# ਹੁਨਰ}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> ਫ਼ਾਈਲ ਨੂੰ Google Drive 'ਤੇ ਅੱਪਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2759299890026163685">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਸਥਿਰ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਹੈ</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਭਰੋ</translation>
@@ -1432,7 +1433,6 @@
 <translation id="3432601291244612633">ਪੰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="3434025015623587566">Google Password Manager ਨੂੰ ਹੋਰ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="343474037147570563">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅੱਪਲੋਡ ਜਾਂ ਨੱਥੀ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਲਈ ਦਿਖਾਈ ਦੇਣਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
-<translation id="3435267628744367511">ਟੈਬਾਂ ਨੂੰ ਸਵਿੱਚ ਕੀਤੇ ਬਿਨਾਂ ਜਾਣਕਾਰੀ ਨੂੰ ਲੱਭਣ ਅਤੇ ਭਰਨ ਲਈ, ਕਿਸੇ ਵੀ ਫ਼ਾਰਮ ਵਿੱਚ Ctrl ਨੂੰ ਦੋ ਵਾਰ ਦਬਾਓ</translation>
 <translation id="3435557549311968410">ਲਗਾਤਾਰ (ਸ਼ਾਰਟ)</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3436125638121079308">ਕੀ ਇਸ ਥ੍ਰੈੱਡ ਵਿੱਚ ਬਿਹਤਰ ਜਵਾਬਾਂ ਲਈ ਢੁਕਵੀਆਂ ਟੈਬਾਂ ਨੂੰ ਆਪਣੇ ਆਪ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
@@ -1877,7 +1877,6 @@
 <translation id="4153446078232988116"><ph name="SITE" /> ਵੱਲੋਂ HTTPS ਵਾਲੇ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="4153858337812834972">ਸਭ ਤੋਂ ਹਾਲੀਆ ਟੈਬਾਂ</translation>
 <translation id="4154277373259957087">Chrome ਹੁਣ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਵਿੱਚ ਜਾਣਕਾਰੀ ਭਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੀ ਪੁਸ਼ਟੀ ਕਰੇਗਾ। ਤੁਸੀਂ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਸਨੂੰ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
-<translation id="4157273919218514718">Gemini ਨਾਲ ਪਰਸਨਲ ਇੰਟੈਲੀਜੈਂਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ। <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4159784952369912983">ਜਾਮਨੀ</translation>
 <translation id="4165422751765527461">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਮਦਦ ਕੇਂਦਰ ਸੰਬੰਧੀ ਲੇਖ ਖੋਲ੍ਹਦਾ ਹੈ</translation>
@@ -2145,7 +2144,6 @@
 <translation id="4599572944836204718">ਆਪਣਾ ਕਾਰਡ ਰੱਖਿਅਤ ਹੋਣ 'ਤੇ Google Pay ਨਾਲ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ। ਕਾਰਡ ਦੇ ਵੇਰਵੇ Google Wallet ਵਿੱਚ ਇਨਕ੍ਰਿਪਟ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="4603727370377253901">ਉਡਾਣ ਦੇ ਰਾਖਵੇਂਕਰਨ</translation>
 <translation id="4607608436550361748">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਦੇਖੋ</translation>
-<translation id="4607879293515681409">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਹੁਣ Gmail ਅਤੇ Photos ਵਰਗੀਆਂ ਐਪਾਂ ਤੋਂ ਜਾਣਕਾਰੀ — ਜਿਵੇਂ ਕਿ ਫਲਾਈਟ ਨੰਬਰ ਅਤੇ ਅਪਾਇੰਟਮੈਂਟ ਦੇ ਸਮੇਂ — ਲੱਭ ਅਤੇ ਭਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="460848736049414407">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4610279718074907952">ਇਹ ਸਾਈਟ <ph name="SET_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਸਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਣਯੋਗ ਹੈ</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> ਰਾਹੀਂ <ph name="MERCHANT_ORIGIN" /> 'ਤੇ ਤੁਹਾਡੇ ਆਰਡਰ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
@@ -2920,7 +2918,6 @@
 <translation id="5884465125445718607">ਚੀਨੀ #6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="5887400589839399685">ਕਾਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5887687176710214216">ਪਿਛਲੀ ਵਾਰ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
-<translation id="5887791684215121787">ਟੈਬਾਂ ਨੂੰ ਸਵਿੱਚ ਕੀਤੇ ਬਿਨਾਂ ਜਾਣਕਾਰੀ ਨੂੰ ਲੱਭਣ ਅਤੇ ਭਰਨ ਲਈ, ਕਿਸੇ ਵੀ ਫ਼ਾਰਮ ਵਿੱਚ ⌘ ⌘ ਦਬਾਓ</translation>
 <translation id="5889251770650310375">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣਾ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ ਅਤੇ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="5895187275912066135">ਨੂੰ ਜਾਰੀ ਕੀਤਾ</translation>
@@ -3026,6 +3023,7 @@
 <translation id="6051221802930200923">ਤੁਸੀਂ ਇਸ ਵੇਲੇ <ph name="SITE" /> 'ਤੇ ਨਹੀਂ ਜਾ ਸਕਦੇ, ਕਿਉਂਕਿ ਵੈੱਬਸਾਈਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪਿੰਨਿੰਗ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ।ਨੈੱਟਵਰਕ ਗੜਬੜੀਆਂ ਅਤੇ ਹਮਲੇ ਆਮ ਤੌਰ 'ਤੇ ਅਸਥਾਈ ਹੁੰਦੇ ਹਨ, ਇਸਲਈ ਇਹ ਪੰਨਾ ਸ਼ਾਇਦ ਬਾਅਦ ਵਿੱਚ ਠੀਕ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰੇਗਾ।</translation>
 <translation id="6051898664905071243">ਪੰਨਾ ਗਿਣਤੀ:</translation>
 <translation id="605237284704429106">IBAN ਭਰਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="6052557981901634648">ਕੋਈ ਪਲਾਨ ਬਣਾਓ</translation>
 <translation id="6053584886670442526">ਤੁਸੀਂ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਵਰਤ ਸਕਦੇ ਹੋ। ਇਹ ਪਤਾ ਤੁਹਾਡੇ Google ਖਾਤੇ <ph name="ACCOUNT" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6055392876709372977">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 SHA-256</translation>
 <translation id="6055982527635883756">ਐਨਵਲੋਪ (ਆਰਕਾਈਵਲ)</translation>
@@ -3463,6 +3461,7 @@
 <translation id="6808579246645021886">ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਟੈਬਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="681021252041861472">ਲੋੜੀਂਦਾ ਖੇਤਰ</translation>
 <translation id="6810899417690483278">ਵਿਉਂਤੀ ਆਈ.ਡੀ.</translation>
+<translation id="6815861164669871832">ਟੈਬ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="681631578600400068">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">ਸੀਰੀਅਲ ਪੋਰਟ</translation>
@@ -3535,7 +3534,6 @@
 <translation id="6936976777388162184">ਇਹ ਬੰਡਲ ਡੀਵਾਈਸ ਹੈ ਅਤੇ ਇਸਨੂੰ ਕਿਓਸਕ ਅਤੇ ਸਾਈਨੇਜ ਅੱਪਗ੍ਰੇਡ ਨਾਲ ਦਰਜ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="6942444979237658241">ਟਿੱਪਣੀ - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">ਤੁਸੀਂ ਉਸ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ ਜੋ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਹੋਰਾਂ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਮੁੜ ਨਾ ਵਰਤੋ।</translation>
-<translation id="6946949206576443118">Chrome ਵਿੱਚ ਵੈੱਬ ਖੋਜੋ</translation>
 <translation id="6948051842255602737">ਗੇਮ ਸਮਾਪਤ, ਤੁਹਾਡਾ ਸਕੋਰ <ph name="SCORE" /> ਹੈ।</translation>
 <translation id="6948223029286835408">ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ Pix ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਦੇਖੋ</translation>
 <translation id="6948701128805548767">ਪਿੱਕਅੱਪ ਵਿਧੀਆਂ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਇੱਕ ਪਤਾ ਚੁਣੋ</translation>
@@ -3625,6 +3623,7 @@
 <translation id="7083258188081898530">ਟ੍ਰੇਅ 9</translation>
 <translation id="70846382339153529">OpenDocument ਲਿਖਤ</translation>
 <translation id="7086090958708083563">ਵਰਤੋਂਕਾਰ ਵੱਲੋਂ ਅੱਪਲੋਡ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ</translation>
+<translation id="7089745480771070611">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ</translation>
 <translation id="7090698782953528257">ਗਣਿਤ ਸਮੀਕਰਨ ਦੀ ਕਲਪਨਾ ਕਰਨ ਅਤੇ ਵਕਰ ਦੀ ਆਕ੍ਰਿਤੀ ਦੇਖਣ ਲਈ ਫੰਕਸ਼ਨ ਨੂੰ ਗ੍ਰਾਫ਼ ਕਰਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="7092087596499105699">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਪ੍ਰਾਈਵੇਟ ਵੈੱਬ ਐਪਲੀਕੇਸ਼ਨਾਂ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ ਸੁਰੱਖਿਅਤ ਗੇਟਵੇ ਕਨੈਕਟਰ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਹੈ। ਇਹ ਪਹੁੰਚ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਦੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਵਿੱਚ ਸਟੋਰ ਕੀਤੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
@@ -4008,6 +4007,7 @@
 <translation id="7696107855583699585">Known Traveler Number ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="7698864304447945242">ਕੀ Google Play Services for AR ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7699509138503320152">ਮੇਰੀ ਈਮੇਲ ਨੂੰ ਜ਼ਿਆਦਾ ਪ੍ਰਭਾਵਸ਼ਾਲੀ ਬਣਾਉਣ ਲਈ ਮੁੜ-ਲਿਖੋ</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਹੁਨਰ (ਸਿੰਕ ਕੀਤਾ ਗਿਆ)}other{# ਹੁਨਰ (ਸਿੰਕ ਕੀਤੇ ਗਏ)}}</translation>
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> ਲਈ ਅੱਗੇ ਵੱਧੋ (ਅਸੁਰੱਖਿਅਤ)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
@@ -4250,6 +4250,7 @@
 <translation id="813024282736408069">ਆਟੋਫਿਲ ਲਈ ਆਭਾਸੀ ਕਾਰਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8135546115396015134">ਖੱਬੀ ਕੁੰਜੀ</translation>
+<translation id="8136385032646505126">ਕੀ ਕਾਰਡਧਾਰਕ ਦਾ ਨਾਮ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8137185688006450980">ਸਿਹਤ ਪਲਾਨ ਵਿਕਲਪਾਂ ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="8138591088112729119">ਪਰਸਨਲ ਇੰਟੈਲੀਜੈਂਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="814071672416123670">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਸਮੱਗਰੀ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -4523,6 +4524,7 @@
 <translation id="8622864575115813231">ਤੁਹਾਡੇ ਵਿੱਤੀ ਸੰਸਥਾ ਨੂੰ ਸੰਪਰਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8632584659860846053">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਰੀਆਂ ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ, ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ, ਕੈਸ਼ੇ ਅਤੇ ਫ਼ਾਰਮਾਂ ਵਿੱਚ ਦਾਖਲ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="8634957317623797170">54 x 86 ਮਿ.ਮੀ.</translation>
+<translation id="8635822281281406185">ਵੱਧੋ-ਵੱਧ 10 ਫ਼ਾਈਲਾਂ, ਟੈਬਾਂ ਜਾਂ ਚਿੱਤਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8637362707224133343">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੌਰਾਨ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕਰਨ ਲਈ Chrome ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਲਈ ਬਿਲਟ-ਇਨ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹਨ — ਜਿਵੇਂ ਕਿ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ, ਜਿਸ ਨੂੰ <ph name="BEGIN_LINK" />ਹਾਲ ਹੀ ਵਿੱਚ ਉਸ ਸਾਈਟ 'ਤੇ ਫ਼ਿਸ਼ਿੰਗ ਦਾ ਪਤਾ ਲੱਗਿਆ ਹੈ<ph name="END_LINK" /> ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ। ਫ਼ਿਸ਼ਿੰਗ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਧੋਖਾ ਦੇਣ ਲਈ ਹੋਰ ਸਾਈਟਾਂ ਹੋਣ ਦਾ ਦਿਖਾਵਾ ਕਰਦੀਆਂ ਹਨ।<ph name="NEW_LINE" />ਇੱਥੋਂ ਤੱਕ ਕਿ ਜਿਹੜੀਆਂ ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਨਾਲ ਵੀ ਕਈ ਵਾਰ ਹਮਲਾਵਰਾਂ ਵੱਲੋਂ ਛੇੜਛਾੜ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਜੇ ਤੁਹਾਨੂੰ ਲੱਗਦਾ ਹੈ ਕਿ ਕੋਈ ਗਲਤੀ ਹੋਈ ਹੈ ਅਤੇ ਇਹ ਸਾਈਟ ਕੋਈ ਖਤਰਾ ਪੈਦਾ ਨਹੀਂ ਕਰਦੀ ਹੈ, ਤਾਂ <ph name="BEGIN_ERROR_LINK" />ਸਾਨੂੰ ਦੱਸੋ<ph name="END_ERROR_LINK" />।</translation>
 <translation id="8640996933372643759">ਟੈਬਾਂ ਸਾਂਝੀਆਂ ਕਰਨ ਅਤੇ ਹੋਰਾਂ ਨਾਲ ਸਹਿਯੋਗ ਕਰਨ ਲਈ, ਤੁਹਾਡਾ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="8641131559425911240">ਐਨਵਲੋਪ (ਬੌਂਡ)</translation>

@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">&amp;Tout sélectionner</translation>
 <translation id="19085484004813472">Il s'agit d'une nouvelle fonctionnalité</translation>
 <translation id="2006524834898217237">Assurez-vous que cet appareil est connecté à Internet.</translation>
-<translation id="208586643495776849">Veuillez réessayer</translation>
 <translation id="2111134541987263231">Activez <ph name="BEGIN_BOLD" />Autoriser en mode navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 j}one{# j}other{# j}}</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">Touchez ici</translation>
 <translation id="5076340679995252485">C&amp;oller</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
-<translation id="5278860589123563674">Échec de l'envoi</translation>
 <translation id="5283101102242354279">Activer une extension en mode navigation privée :</translation>
 <translation id="528468243742722775">Fin</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>

@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">全选(&amp;A)</translation>
 <translation id="19085484004813472">这是一项新功能</translation>
 <translation id="2006524834898217237">请确保此设备已连接到互联网。</translation>
-<translation id="208586643495776849">请重试</translation>
 <translation id="2111134541987263231">开启<ph name="BEGIN_BOLD" />在无痕模式下启用<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">点按此处</translation>
 <translation id="5076340679995252485">粘贴(&amp;P)</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5278860589123563674">发送失败</translation>
 <translation id="5283101102242354279">要在无痕模式下启用扩展程序，请执行以下操作：</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5329858601952122676">删除(&amp;D)</translation>

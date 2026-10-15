@@ -396,6 +396,15 @@ DLP に関連するエンタープライズ ポリシーと自動インストー
 <translation id="1272798957154751008">Chromad デバイスのクラウド管理への移行を有効にします</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
 <translation id="1277411517984768103">ユーザーに <ph name="BOREALIS_NAME" /> の実行を許可する</translation>
+<translation id="1281420319219324116">このポリシーでは、<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> が有効になっている場合にプロビジョニングされる管理対象クライアント証明書を設定できます。
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> フィールドでは、証明書のサブジェクトの共通名（CN）のソースを指定します。
+
+- 未設定の場合、または <ph name="DEVICE_ID_VALUE" /> に設定されている場合、証明書のサブジェクトの共通名は管理対象のブラウザの仮想デバイス ID に設定されます。
+
+- <ph name="COMPUTER_NAME_VALUE" /> に設定すると、証明書のサブジェクトの共通名はそのマシンのホスト名に設定されます。
+
+<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> が無効または未設定の場合、このポリシーは無視されます。</translation>
 <translation id="1285819498003746288">Event.path API を使用不可にする。</translation>
 <translation id="1290722184971934486">このポリシーを <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" />（値 2）に設定した場合、サイトからウィンドウの管理に関する権限が要求されたときに、デフォルトで自動的に拒否します。デバイスの画面に関する情報の取得や、その情報を使用したウィンドウの表示と配置、特定の画面での全画面表示のリクエストといったサイトの機能が制限されます。
 
@@ -748,6 +757,7 @@ PromptInTab に設定した場合は、ユーザーの認証が期限切れに�
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="1539343118617844331">学校</translation>
+<translation id="154021430160122148"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーションの URL を設定する（ベータ版）</translation>
 <translation id="1542491165152947087">ユーザーがデバイスで <ph name="PRIVACY_SANDBOX_NAME" /> の広告トピック設定を有効または無効にできるようにする。</translation>
 <translation id="1542958897137600427">クライアント証明書のプロビジョニングを有効にする</translation>
 <translation id="1550295162561011575">このポリシーを設定すると、管理者は <ph name="PRODUCT_NAME" /> デバイスでアプリ起動の自動化を設定できます。アプリは、ユーザーのログイン時に起動することや、ユーザーがランチャーからまとめて起動することができます。</translation>
@@ -4757,6 +4767,7 @@ Manifest V2 を使用した拡張機能はサポートの終了が予定され�
 
 
 拡張機能を使用できるかどうかは、引き続き他のポリシーによって管理されます。</translation>
+<translation id="4109107305343689466">ユーザーまたはプロファイルの管理対象クライアント証明書を構成する</translation>
 <translation id="4112585124048467596">このポリシーを設定した場合、指定したすべてのデータタイプが <ph name="CHROME_SYNC_NAME" /> とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、<ph name="CHROME_SYNC_NAME" /> サーバーにアップロードされるデータのタイプを制限したりできます。
 
       現在、このポリシーで指定できるデータタイプは次のとおりです: "apps"、"autofill"、"bookmarks"、"extensions"、"preferences"、"passwords"、"payments"、"productComparison"、"readingList"、"tabs"、"themes"、"typedUrls"、"wifiConfigurations"。データタイプの名前では大文字と小文字が区別されます。
@@ -5506,6 +5517,15 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
       設定しない場合、<ph name="PRODUCT_NAME" /> はデフォルトのサイズを使用します。ユーザーは「--disk-cache-size」フラグを使ってこの設定を変更できます。
 
       注: このポリシーで指定した値は、ブラウザのさまざまなキャッシュ サブシステムに対するヒントとして使用されます。そのため、すべてのキャッシュの実際の合計ディスク消費量は、指定した値より高くなりますが、桁数は同じです。</translation>
+<translation id="4582488040806837065">このポリシーでは、<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> が有効になっている場合にプロビジョニングされる管理対象クライアント証明書を設定できます。
+
+<ph name="COMMON_NAME_SOURCE_FIELD" /> フィールドでは、証明書のサブジェクトの共通名（CN）のソースを指定します。
+
+- 未設定の場合、または <ph name="PROFILE_ID_VALUE" /> に設定されている場合、証明書のサブジェクトの共通名はブラウザのプロファイル ID に設定されます。
+
+- <ph name="COMPUTER_NAME_VALUE" /> に設定すると、証明書のサブジェクトの共通名はそのマシンのホスト名に設定されます。注: このプロパティを <ph name="COMPUTER_NAME_VALUE" /> に設定すると、プロファイル スコープの証明書でデバイスレベルのプロパティが使用されます。これにより、管理対象外のデバイスや共有デバイスにおいて、証明書にマシンのホスト名が含まれるため、プライバシー上の懸念が生じます。
+
+<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> が無効または未設定の場合、このポリシーは無視されます。</translation>
 <translation id="4591366717022345234">ユーザーに Quick Fix ビルドを提供する</translation>
 <translation id="4593391169954484940">ファイルの SHA-256 ハッシュです。</translation>
 <translation id="4594027034164195984">サードパーティの画像による認証プロンプトの表示を許可する</translation>
@@ -8308,6 +8328,17 @@ Origin-Agent-Cluster HTTP ヘッダーは、オリジンキー エージェン�
       このポリシーを False に設定した場合、Signed HTTP Exchange は読み込まれません。</translation>
 <translation id="6368011194414932347">ホームページの URL を指定する</translation>
 <translation id="6368403635025849609">これらのサイトの JavaScript を許可する</translation>
+<translation id="6368652917086795891"><ph name="PRODUCT_NAME" /> で <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> の接続設定を構成します。
+
+このポリシーは <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> ポリシーに置き換えられます。両方を設定した場合は、<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> が優先されます。
+
+このポリシーでは、<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> を介して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーション URL を設定します。この URL は、HTTPS スキームを使用する有効な URL で、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ドメインを指す必要があります。また、ユーザー名やパスワードを含んではなりません。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
+
+このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
+
+なお、このポリシーは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できる全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">組み込みの AI API の使用を許可しない。</translation>
 <translation id="6371005337713685988">関連ウェブサイト セットの設定</translation>
@@ -8824,6 +8855,17 @@ Gemini で検索して自動入力: ユーザーが Gemini に接続したアプ
 <translation id="6659877981632400997">コンテキスト メニューに、<ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> と画像を共有するためのメニュー項目を表示しない。</translation>
 <translation id="6661178198729301029">管理対象プロファイルのクラウド レポートを有効にする</translation>
 <translation id="666203515318060501">AI モデルの改善は行わずに、高精度の自動入力を許可する。</translation>
+<translation id="6663125232571868480"><ph name="ALR_FEATURE_NAME" /> 機能が廃止されたため、このポリシーは非推奨となり、M157 以降では無視されます。<ph name="AL_HEADER_NAME" /> HTTP リクエスト ヘッダーと JavaScript <ph name="JS_GETTER_NAME" /> ゲッターは、引き続き、設定されている言語の完全なリストを提供します。
+
+M157 より前では、<ph name="AL_HEADER_NAME" /> HTTP リクエスト ヘッダーと JavaScript <ph name="JS_GETTER_NAME" /> ゲッターは、プライバシー上の理由から削減される予定でした。
+テストを行って互換性を確保するため、このポリシーでは <ph name="ALR_FEATURE_NAME" /> 機能を有効または無効にすることができました。
+
+このポリシーを有効に設定するか未設定のままにしていた場合は、フィールド トライアルを通じて <ph name="ALR_FEATURE_NAME" /> が適用されていました。
+このポリシーを無効に設定していた場合、フィールド トライアルでは <ph name="ALR_FEATURE_NAME" /> を有効にできませんでした。
+
+この機能について詳しくは、https://github.com/explainers-by-googlers/reduce-accept-language をご覧ください。
+
+注: ブラウザの実行中にこのポリシーを変更した場合は、新たに開始したレンダラ プロセスにのみ変更が反映されます。</translation>
 <translation id="6665670272107384733">ロックのクイック解除機能を使用するために必要なパスワード入力の頻度を設定する</translation>
 <translation id="6667586534922258705">ログイン画面とロック画面にパスワード表示ボタンを表示する</translation>
 <translation id="6668559639284945695">このポリシーでは、Cookie のスコープを従来の動作に戻すことができます。
@@ -9245,6 +9287,7 @@ false に設定するか未設定のままにした場合、このレイアウ�
 <translation id="6953246833109449226">オンライン パスワードの不一致時の動作を設定する</translation>
 <translation id="695532899547292238">キオスク アプリケーションのログの収集を有効にする</translation>
 <translation id="6956272732789158625">すべてのサイトにキー生成の使用を許可しない</translation>
+<translation id="6956741245151252020">ブラウザの管理対象クライアント証明書を構成する</translation>
 <translation id="6960996423652450945">ログイン画面でテキスト カーソルによるハイライト表示を無効にする</translation>
 <translation id="6961602002757991199">このポリシーが有効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> はその URL からサイトリストをダウンロードし、<ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> ポリシーで設定されているものとしてルールを適用します。このポリシーにより、<ph name="PRODUCT_NAME" /> と代替ブラウザの双方で互いに他方を開くことができなくなります。
 
@@ -10001,6 +10044,19 @@ URL パターンは、<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> �
 
 バージョン 155 以前では、このポリシーはマシン全体にのみ適用されます。</translation>
 <translation id="7417438464912687020">このパソコンへのリモート アクセス接続を許可する</translation>
+<translation id="7417697379573574567">このポリシーは M157 でサポートが終了しています。代わりに <ph name="AUTOFILL_GEN_AI_SETTINGS_POLICY_NAME" /> を使用してください。
+
+<ph name="PRODUCT_NAME" /> で、生成 AI を使用してフォームの内容を正確に把握し、より多くの項目に入力できるようにするかどうかを指定します。
+
+0 = 1 と同じ効果があります。M153 より前のバージョンでは、この設定により、Google が AI モデルを改善する目的で関連データを使用することが許可されていました。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。以下に記載している場合を除き、0 がデフォルト値です。
+
+1 = この機能の使用を許可しますが、Google がモデルを改善する目的で関連データ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+2 = この機能を許可しません。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="7417972229667085380">プレゼンテーション モードでのアイドル時間に掛ける倍率（サポート終了）</translation>
 <translation id="7421230730436851224">音声処理をサンドボックス化しない</translation>
 <translation id="7421483919690710988">メディア ディスク キャッシュ サイズをバイト単位で設定する</translation>
@@ -10036,6 +10092,15 @@ Kyber の提供には下位互換性があります。既存の TLS サーバー
 
 このポリシーを未設定のままにした場合、通常のユーザーに対しては「<ph name="ALLOWED_NAME" />」に設定した場合と同等の機能が提供されます。エンタープライズ ユーザーに対しては、このポリシーを未設定のままにするとデフォルトで「<ph name="DISALLOWED_NAME" />」となります。</translation>
 <translation id="7438982301540282785"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> を自動で設定する</translation>
+<translation id="7441961773829108385"><ph name="PRODUCT_NAME" /> が接続する <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーションの URL を設定します。
+
+値は、HTTPS スキームを使用する有効な URL で、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ドメインを指し、ユーザー名やパスワードを含まないものである必要があります。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
+
+このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
+
+なお、このポリシーは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できる全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。</translation>
 <translation id="7443356543619955157">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> デバイスのすべてのユーザーにプッシュ型ネットワーク設定を許可します。ネットワーク設定は、Open Network Configuration 形式で定義された JSON 形式の文字列です。</translation>
 <translation id="744349502210151344">デフォルト: ブラウザのデフォルト設定とフィールド トライアルに基づいて、XSLT を使用できるかどうかを決定する。</translation>
 <translation id="7446978687387327623">セーフ ブラウジングのプロキシ リアルタイム チェックを許可する</translation>

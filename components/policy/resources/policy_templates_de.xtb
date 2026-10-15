@@ -402,6 +402,15 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
 <translation id="1274997165432133392">Cookies und andere Websitedaten</translation>
 <translation id="1277411517984768103">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer zulassen</translation>
+<translation id="1281420319219324116">Mit dieser Richtlinie wird das verwaltete Clientzertifikat konfiguriert, das bereitgestellt wird, wenn „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />“ aktiviert ist.
+
+Das Feld „<ph name="COMMON_NAME_SOURCE_FIELD" />“ gibt die Quelle des Common Name (CN) des Eigentümers an:
+
+– Wenn es nicht konfiguriert oder auf „<ph name="DEVICE_ID_VALUE" />“ gesetzt ist, wird als Common Name des Eigentümers die ID des virtuellen Geräts des verwalteten Browsers festgelegt.
+
+– Wenn als Wert „<ph name="COMPUTER_NAME_VALUE" />“ festgelegt ist, wird als Common Name des Eigentümers der Hostname des Computers verwendet.
+
+Diese Richtlinie hat keine Auswirkungen, wenn „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290722184971934486">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterverwaltung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -690,6 +699,25 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
       Hinweis: Diese Richtlinie gilt auch für Komponentenerweiterungen, zum Beispiel die Hangout Services-Erweiterung.</translation>
 <translation id="148194404518916594">Zulassen, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
 <translation id="1484190167468437592">Mono-Audio deaktivieren</translation>
+<translation id="1484391060024155139">Diese Richtlinie konfiguriert <ph name="PRODUCT_NAME" /> so, dass die bevorzugten Verschlüsselungschiffren in TLS 1.3 so angeordnet werden, dass nach einer bestimmten Compliance-Regelung genehmigte Algorithmen bevorzugt werden.
+
+Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
+
+Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptografischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich dazu konfiguriert wurden, diese Algorithmen zu bevorzugen.
+
+Wird die Richtlinie auf „<ph name="CNSA_NAME" />“ festgelegt, wird <ph name="PRODUCT_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 1.0 und 2.0 (CNSA 1.0 und 2.0) erforderlichen Chiffren bevorzugt werden.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> seine standardmäßigen Chiffren.
+
+Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
+
+Ist diese Richtlinie festgelegt, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
+
+Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht jedoch auf frühere Versionen von TLS.
+
+Diese Richtlinie kann auf Geräteebene und auf Nutzerebene festgelegt werden. Wenn diese Richtlinie auf Nutzerebene festgelegt ist, wirkt sie sich nur auf Netzwerkanfragen aus, die vom Nutzerprofil initiiert werden. Sie wirkt sich möglicherweise nicht auf Netzwerkanfragen aus, die von <ph name="PRODUCT_NAME" /> gestellt werden, um browserweite Hintergrundaufgaben auszuführen. Diese werden durch den Wert auf Computerebene gesteuert. Wenn diese Richtlinie sowohl auf Geräte- als auch auf Nutzerebene festgelegt ist, gilt der Wert auf Geräteebene, es sei denn, die Rangfolge der Richtlinien wurde durch die Richtlinie „<ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />“ geändert.
+
+In Version 155 und niedriger gilt diese Richtlinie nur geräteweit.</translation>
 <translation id="1486021504508098388">Informationen zur Hintergrundbeleuchtung ausgeben</translation>
 <translation id="1487722536912664411">Nutzern erlauben, <ph name="PRODUCT_NAME" /> zu verwenden</translation>
 <translation id="1487916040416013623">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche Server für die integrierte Authentifizierung zulässig sind. Die integrierte Authentifizierung wird nur dann aktiviert, wenn <ph name="PRODUCT_NAME" /> eine Authentifizierungsaufforderung von einem Proxy oder einem Server erhält, der sich in dieser Liste zulässiger Programme befindet.
@@ -766,6 +794,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig.</translation>
 <translation id="1539343118617844331">Schule</translation>
+<translation id="154021430160122148">URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung konfigurieren (BETA)</translation>
 <translation id="1542491165152947087">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1542958897137600427">Bereitstellung von Clientzertifikaten aktivieren</translation>
 <translation id="1550295162561011575">Mit dieser Richtlinie können Administratoren eine Automatisierung für das Starten von Apps auf <ph name="PRODUCT_NAME" />-Geräten konfigurieren. Diese Apps können bei der Nutzeranmeldung oder gemeinsam von Nutzern über den Launcher gestartet werden.</translation>
@@ -3925,6 +3954,11 @@ Wenn die Richtlinie „<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />“ auf
 <translation id="3485200437120267231">Anmeldungsabfangen deaktivieren</translation>
 <translation id="3485222925928396648">Google Chat (wird seit Version 135 unterstützt)</translation>
 <translation id="3487651201232258606">Natives Messaging</translation>
+<translation id="3490064150371176690">Steuert, ob Nutzern die In-App-Aufforderung zur Bewertung der App angezeigt werden darf.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird Nutzern maximal einmal pro Jahr eine Aufforderung zur Bewertung der App im jeweiligen App-Shop angezeigt.
+
+Ist die Richtlinie deaktiviert, wird die Aufforderung zur Bewertung der App im jeweiligen App-Shop nicht angezeigt.</translation>
 <translation id="3492351353716550742">Setzt die standardmäßige Verweisrichtlinie nicht auf „no-referrer-when-downgrade“</translation>
 <translation id="3492834335089638487">Mit dieser Richtlinie kann die Nutzung von Android-Apps konfiguriert werden, die aus anderen Quellen als Google Play für ein Gerät heruntergeladen wurden.
 
@@ -4863,6 +4897,7 @@ Wenn die Richtlinie auf „<ph name="ENABLE_FOR_FORCED_EXTENSIONS" />“ (3) ge
 
 
 Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien festgelegt.</translation>
+<translation id="4109107305343689466">Verwaltetes Clientzertifikat für einen Nutzer oder ein Profil konfigurieren</translation>
 <translation id="4112585124048467596">Wenn du diese Richtlinie konfigurierst, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für die <ph name="CHROME_SYNC_NAME" /> als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und du kannst einschränken, welche Arten von Daten auf die <ph name="CHROME_SYNC_NAME" />-Server hochgeladen werden.
 
       Aktuell werden folgende Datentypen unterstützt: „apps“, „autofill“, „bookmarks“, „extensions“, „preferences“, „passwords“, „payments“, „productComparison“, „readingList“, „tabs“, „themes“, „typedUrls“, „wifiConfigurations“. Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.
@@ -5617,6 +5652,15 @@ Bei nicht verwalteten Geräten gilt diese Richtlinie nicht und Nutzer können da
       Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die Standardgröße. Nutzer können diese Einstellung mit dem Flag „--disk-cache-size“ ändern.
 
       Hinweis: Der in dieser Richtlinie angegebene Wert wird als Hinweis für verschiedene Cache-Subsysteme des Browsers verwendet. Daher ist der tatsächliche Speicherplatzverbrauch aller Caches insgesamt größer, der angegebene Wert trifft aber in etwa zu.</translation>
+<translation id="4582488040806837065">Mit dieser Richtlinie wird das verwaltete Clientzertifikat konfiguriert, das bereitgestellt wird, wenn „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />“ aktiviert ist.
+
+Das Feld „<ph name="COMMON_NAME_SOURCE_FIELD" />“ gibt die Quelle des Common Name (CN) des Eigentümers an:
+
+– Wenn es nicht konfiguriert oder auf „<ph name="PROFILE_ID_VALUE" />“ gesetzt ist, wird als Common Name des Eigentümers die Browserprofil-ID festgelegt.
+
+– Wenn als Wert „<ph name="COMPUTER_NAME_VALUE" />“ festgelegt ist, wird als Common Name des Eigentümers der Hostname des Computers verwendet. Hinweis: Wenn du diesen Wert auf „<ph name="COMPUTER_NAME_VALUE" />“ festlegst, wird ein Attribut auf Geräteebene in einem Zertifikat auf Profilebene verwendet. Dies hat Auswirkungen auf den Datenschutz auf nicht verwalteten oder gemeinsam genutzten Geräten, da der Hostname des Computers im Zertifikat enthalten ist.
+
+Diese Richtlinie hat keine Auswirkungen, wenn „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist.</translation>
 <translation id="4591366717022345234">Nutzern einen Quick-Fix-Build bereitstellen</translation>
 <translation id="4593391169954484940">SHA-256-Hash der Datei.</translation>
 <translation id="4594027034164195984">Zulassen, dass in Bildern von Drittanbietern eine Authentifizierungsaufforderung angezeigt wird</translation>
@@ -8562,6 +8606,17 @@ Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstü
       Wenn die Richtlinie auf "False" gesetzt ist, werden die Signed HTTP Exchanges nicht geladen.</translation>
 <translation id="6368011194414932347">Startseiten-URL konfigurieren</translation>
 <translation id="6368403635025849609">JavaScript auf diesen Websites zulassen</translation>
+<translation id="6368652917086795891">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Diese Richtlinie wird durch die Richtlinie „<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />“ ersetzt. Wenn beide konfiguriert sind, hat „<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />“ Vorrang.
+
+Die Richtlinie konfiguriert die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung über <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. Dies muss eine gültige URL sein, die das HTTPS-Schema verwendet, auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweist und keinen Nutzernamen oder kein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt unkonfiguriert.
+
+Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Nicht zulassen, dass Seiten die integrierten KI-APIs verwenden.</translation>
 <translation id="6371005337713685988">Einstellungen für Gruppen ähnlicher Websites</translation>
@@ -8651,6 +8706,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Je nach Eingabemethode wird die Bildschirmtastatur möglicherweise in einem kompakten Layout angezeigt.</translation>
 <translation id="6404064917675764807">Ereignisse in CRD-Sitzungen nicht melden</translation>
 <translation id="6404360891305375004">Netzwerkfreigaben erlauben</translation>
+<translation id="6406382122206104500">Legt fest, ob die Aufforderung zur Bewertung der App auf <ph name="IOS_NAME" /> und <ph name="ANDROID_NAME" /> angezeigt wird</translation>
 <translation id="6407093060083181305">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="640827304541402854">Firewallausnahme über Host für Remote-Zugriff deaktivieren</translation>
 <translation id="6410847321564585975">Zulassungsliste für Berichte zu Websiteaktivitäten</translation>
@@ -9093,6 +9149,17 @@ Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</transl
 <translation id="6659877981632400997">Das Kontextmenü enthält keinen Menüpunkt zum Teilen von Bildern mit <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Cloud-Berichterstellung über verwaltete Profile aktivieren</translation>
 <translation id="666203515318060501">Erweitertes Autofill zulassen, ohne KI‑Modelle zu verbessern.</translation>
+<translation id="6663125232571868480">Diese Richtlinie wird nicht mehr unterstützt und hat ab M157 keine Auswirkungen mehr, da die Funktion „<ph name="ALR_FEATURE_NAME" />“ eingestellt wurde. Der HTTP-Anfrageheader „<ph name="AL_HEADER_NAME" />“ und der JavaScript-Getter „<ph name="JS_GETTER_NAME" />“ stellen weiterhin die vollständige konfigurierte Sprachenliste bereit.
+
+Vor M157 sollten der HTTP-Anfrageheader „<ph name="AL_HEADER_NAME" />“ und der JavaScript-Getter „<ph name="JS_GETTER_NAME" />“ aus Datenschutzgründen reduziert werden.
+Um Tests zu erleichtern und für Kompatibilität zu sorgen, konnte mit dieser Richtlinie die Funktion „<ph name="ALR_FEATURE_NAME" />“ aktiviert oder deaktiviert werden.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert war, wurde „<ph name="ALR_FEATURE_NAME" />“ über Field Trials angewendet.
+Wenn diese Richtlinie deaktiviert war, konnte „<ph name="ALR_FEATURE_NAME" />“ nicht über Field Trials aktiviert werden.
+
+Weitere Informationen zu dieser Funktion findest du unter https://github.com/explainers-by-googlers/reduce-accept-language.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="6665670272107384733">Festlegen, wie oft der Nutzer das Passwort eingeben muss, um das schnelle Entsperren zu verwenden</translation>
 <translation id="6667586534922258705">Button zum Anzeigen des Passworts auf dem Start- oder Sperrbildschirm anzeigen</translation>
 <translation id="6668559639284945695">Mit dieser Richtlinie kann das alte Verhalten für den Cookie-Bereich wiederhergestellt werden.
@@ -9536,6 +9603,7 @@ Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Drucker
 <translation id="6953246833109449226">Verhalten bei Online-Passwortkonflikten konfigurieren</translation>
 <translation id="695532899547292238">Erfassen von Protokollen für die Kiosk-App aktivieren</translation>
 <translation id="6956272732789158625">Schlüsselgenerierung für keine Website zulassen</translation>
+<translation id="6956741245151252020">Verwaltetes Clientzertifikat für den Browser konfigurieren</translation>
 <translation id="6960996423652450945">„Caret hervorheben“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="6961602002757991199">Ist für die Richtlinie eine gültige URL angegeben, lädt <ph name="PRODUCT_NAME" /> die Websiteliste von dieser URL herunter und wendet die Regeln so an, als wären sie mit der Richtlinie "<ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />" konfiguriert worden. Diese Richtlinien verhindern, dass sich <ph name="PRODUCT_NAME" /> und der alternative Browser gegenseitig öffnen.
 
@@ -10325,7 +10393,39 @@ Tatsächliche Werte sensibler Daten (z. B. Cookies oder Eingabewerte) werden NI
 <translation id="7410074797376205571">Zulassen, dass <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="7412456346709338637">Datenzugriff von Thunderbolt/USB4-Peripheriegeräten aktivieren</translation>
 <translation id="7414890119082492552">Keine Präferenz.</translation>
+<translation id="7416280188470120885">Diese Richtlinie konfiguriert <ph name="PRODUCT_NAME" /> so, dass die bevorzugten Algorithmen für Schlüsselvereinbarungen (unterstützte Gruppen) in TLS 1.3 so angeordnet werden, dass nach einer bestimmten Compliance-Regelung genehmigte Algorithmen bevorzugt werden.
+
+Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
+
+Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptografischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich dazu konfiguriert wurden, diese Algorithmen zu bevorzugen.
+
+Wird die Richtlinie auf „<ph name="CNSA2_NAME" />“ festgelegt, wird <ph name="PRODUCT_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) erforderlichen Methoden zum Schlüsselaustausch bevorzugt werden.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> seine standardmäßigen Methoden für den Schlüsselaustausch.
+
+Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
+
+Ist diese Richtlinie festgelegt, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
+
+Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht jedoch auf frühere Versionen von TLS.
+
+Diese Richtlinie kann auf Geräteebene und auf Nutzerebene festgelegt werden. Wenn diese Richtlinie auf Nutzerebene festgelegt ist, wirkt sie sich nur auf Netzwerkanfragen aus, die vom Nutzerprofil initiiert werden. Sie wirkt sich möglicherweise nicht auf Netzwerkanfragen aus, die von <ph name="PRODUCT_NAME" /> gestellt werden, um browserweite Hintergrundaufgaben auszuführen. Diese werden durch den Wert auf Computerebene gesteuert. Wenn diese Richtlinie sowohl auf Geräte- als auch auf Nutzerebene festgelegt ist, gilt der Wert auf Geräteebene, es sei denn, die Rangfolge der Richtlinien wurde durch die Richtlinie „<ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />“ geändert.
+
+In Version 155 und niedriger gilt diese Richtlinie nur geräteweit.</translation>
 <translation id="7417438464912687020">Verbindungen zu diesem Computer per Remote-Zugriff erlauben</translation>
+<translation id="7417697379573574567">Diese Richtlinie wurde in M157 eingestellt. Bitte verwende stattdessen „<ph name="AUTOFILL_GEN_AI_SETTINGS_POLICY_NAME" />“.
+
+Gibt an, ob Nutzer generative KI in <ph name="PRODUCT_NAME" /> zulassen dürfen, damit Inhalte von Formularen besser erkannt und leichter ausgefüllt werden können.
+
+„0“ = Derselbe Effekt wie „1“. Vor M153 erlaubte die Einstellung Google, relevante Daten zur Verbesserung seiner KI-Modelle zu verwenden. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellenmaterialien und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe relevanter Daten (einschließlich Prompts, Eingaben, Ausgaben, Quellenmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
 <translation id="7421230730436851224">Audiovorgang nie in einer Sandbox ausführen</translation>
 <translation id="7421483919690710988">Cache-Größe für Mediendatenträger in Byte festlegen</translation>
@@ -10364,6 +10464,15 @@ Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird der
 
 Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.</translation>
 <translation id="7438982301540282785">Einrichtung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisieren</translation>
+<translation id="7441961773829108385">Konfiguriert die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung, mit der <ph name="PRODUCT_NAME" /> eine Verbindung herstellt.
+
+Der Wert muss eine gültige URL sein, die das HTTPS-Schema verwendet, auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweist und keinen Nutzernamen oder kein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt unkonfiguriert.
+
+Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="744349502210151344">Standard: Die Verfügbarkeit von XSLT wird durch die Standardeinstellungen des Browsers und Field Trials bestimmt.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Yangilandi</translation>
 <translation id="1018804590490383958">Skanerlash va avtomatik kiritish</translation>
 <translation id="1019990162050689579">Gemini ilovasidagi faoliyat</translation>
+<translation id="102471647093736603">Koʻchirish uchun bosib turing</translation>
 <translation id="102645702181682900">Vazifa boshlandi</translation>
 <translation id="102916930470544692">Kalit</translation>
 <translation id="1030376737535466765">Parollar menejerini ochish</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Ayrim kontentlar hamma uchun mos kelmasligi mumkin.</translation>
 <translation id="1601560923496285236">Tatbiq etish</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 ta manzil}other{# ta manzil}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Darajani oshirish uchun 1 ta vazifani bajaring}other{Darajani oshirish uchun {count} ta vazifani bajaring}}</translation>
 <translation id="1605405588277479165">Oʻchiq - Tavsiya etilmaydi</translation>
 <translation id="1605658421715042784">Tasvirni nusxalash</translation>
 <translation id="1606899876897213121">Oxirgi amallar xulosasini yopish</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">Walletda ochilsinmi?</translation>
 <translation id="183878838231635348">Bu bildirgida Xavfsizlik tekshiruvi avtomatik aniqlagan maxfiylik yoki xavfsizlik muammolari chiqadi.</translation>
 <translation id="1845230888742614096">Guruh qolsin</translation>
-<translation id="1853558655412913122">Endi manzil qatori joylashuvini “Sozlamalar”, keyin “Manzil qatori” ruknida oʻzgartirish mumkin.</translation>
 <translation id="1853692000353488670">Yangi inkognito varaq</translation>
 <translation id="1854463785401910334">Ochiq varaqlar ichidan qidirish</translation>
 <translation id="1860609647735325606">Gemini bilan tushuntiring</translation>
@@ -564,7 +565,6 @@
 <translation id="2673508731173059946">Nusxalangan havolani ochish</translation>
 <translation id="2679659833697380">Maʼlumotlaringiz qurilmangizga saqlandi</translation>
 <translation id="2681572445246787428">Hujjat imzolash</translation>
-<translation id="2685514716378236873">Ruxsat berilmagan</translation>
 <translation id="2688535388040882469">Bannerlar</translation>
 <translation id="2690858294534178585">Kamera band.</translation>
 <translation id="2691653761409724435">Oflayn rejimda mavjud emas</translation>
@@ -775,7 +775,6 @@
 <translation id="3430407169377889553">Gemini ishlatishda ehtiyot boʻling va zaruratga qarab boshqaruvni qoʻlga oling. Vazifalar davomida Gemini amallari uchun javobgarsiz.</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3441673211568148613">Internetni maxfiy kezing</translation>
-<translation id="3443810440409579745">Varaq qabul qilindi.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> daq</translation>
 <translation id="344589138074534176">Google Lens haqida batafsil</translation>
 <translation id="3447332786336558089">Bu qurilmada hisobdan chiqilsa, varaqlar yopiladi va saqlanmagan hisob maʼlumotlari oʻchirib tashlanadi. Bunga parollar, tarix va boshqa maʼlumotlar kiradi.</translation>
@@ -790,6 +789,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> sifatida davom etish</translation>
 <translation id="3476450923187944815">Parollarni boshqa ilovalarda ishlatish.</translation>
 <translation id="3479552764303398839">Hozir emas</translation>
+<translation id="3481315707647070701">Rasmlar yarating va tahrirlang</translation>
 <translation id="3485558910355485767">Yangi inkognito oyna</translation>
 <translation id="3488501490964659223">Varaqlar yopiladi va brauzer tarixi tozalanadi. Hisobingizdan chiqasiz</translation>
 <translation id="3490396108106323715">Joriy varaqni ulashish</translation>
@@ -848,6 +848,7 @@
 <translation id="3659297405161482746">Hech qanday toʻlov usuli topilmadi</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 band tanlandi}other{# band belgilandi}}</translation>
 <translation id="3668035568083954765">Maxfiyligingizni asrang va xavfsizlikni taʼminlang</translation>
+<translation id="3668703890943804691">Vazifa toʻxtatildi</translation>
 <translation id="3668816008081204991">Saqlangan sahifalar berkitilgan</translation>
 <translation id="3670030362669914947">Raqam</translation>
 <translation id="3672283986707092811">Hammasini belgilash</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">Majburiy</translation>
 <translation id="3914640181019354363">Manzillarni aniqlash</translation>
 <translation id="391904960191284041">Mahsulotlar haqida sharhlar</translation>
+<translation id="3920165976616657606">“Saytlarni kuchaytirilgan rejimda xavfsiz kezish bilan tanishuv” bajarildi!</translation>
 <translation id="3921585859122905677">Manzil qatori joylashuvi</translation>
 <translation id="3922185497376658606">Oldindan yuklash</translation>
 <translation id="3926703470020109118">Yuklanma bekor qilindi</translation>
@@ -1124,7 +1126,6 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> ulashilmoqda</translation>
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4568230126482344545">Oxirgi varaqlarni berkitish</translation>
-<translation id="4571490460651837010">Manzillar va boshqalarni boshqarish…</translation>
 <translation id="4578835633387306383">Yoqish…</translation>
 <translation id="4580621046861724270">Ayrim bukmarklar saqlanmadi</translation>
 <translation id="4580716718466706433">Parollar menejerini oching</translation>
@@ -1208,6 +1209,7 @@
 <translation id="4808744395915275922">Yangilanishlar</translation>
 <translation id="4813345808229079766">Ulanish</translation>
 <translation id="4821595350501541683">Varaqlar yopiladi va brauzer tarixi tozalanadi</translation>
+<translation id="4823322556950229674">Manzillar qatori va orqaga tugmasini pastga olish uchun bosib turing</translation>
 <translation id="4824480232751123840">Tovush balandligi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} va yana 1 ta varaq}other{{domain} va yana {count} ta varaq}}</translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
@@ -1844,6 +1846,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6708501134077648845">Parol sozlamalari</translation>
 <translation id="6709964700841491574">Lokdaun rejimi</translation>
 <translation id="6710079714193676716">Tashkilotingiz tomonidan boshqariladi. Ayrim funksiyalar ishlamasligi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Yanada aqlli va tezkor javoblar</translation>
 <translation id="6713676799463473249">Tahrirlangan: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Qabul qilingan varaqlar</translation>
 <translation id="6722638373100589752">Axborotni avtomatik kiritish uchun Wallet sozlamalarida “Google xizmatlarida talonlardan foydalanish” funksiyasini yoqing</translation>
@@ -2054,6 +2057,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Davom etish</translation>
 <translation id="741204030948306876">Ha, roziman</translation>
+<translation id="7417055777338419059">Kod yozing, matn yarating yoki slaydlar tayyorlang</translation>
 <translation id="7419565702166471774">Doim xavfsiz ulanish ishlatilsin</translation>
 <translation id="7423098979219808738">Avval so‘ralsin</translation>
 <translation id="7425053386765766120">Toʻlov usulini qoʻshish…</translation>
@@ -2551,7 +2555,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8849001918648564819">Yashirin</translation>
 <translation id="8855242995793521265">Brauzer yoki qurilmani sezilarli darajada sekinlashtirmaydi.</translation>
 <translation id="8856643812068084733">Arxivlar</translation>
-<translation id="8863067612494559785">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Google Xaritalar orqali navigatsiya va mahalliy axborot oling</translation>
 <translation id="8871974300055371298">Kontent sozlamalari</translation>
 <translation id="8876661425082386199">Aloqani tekshiring</translation>

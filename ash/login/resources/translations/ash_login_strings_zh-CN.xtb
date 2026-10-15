@@ -406,7 +406,7 @@
 <translation id="5397794290049113714">您</translation>
 <translation id="5411022484772257615">无法完成学校注册</translation>
 <translation id="5413640305322530561">详细了解诊断数据和使用情况数据</translation>
-<translation id="542750953150239272">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
+<translation id="542750953150239272">继续操作即表示您同意：此设备也可能会自动下载并安装来自 Google、运营商及设备制造商的更新和应用，且此过程可能会使用移动数据。部分应用可能包含应用内购商品。</translation>
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">糟糕，登录时出了点问题</translation>
 <translation id="5453829744223920473">您的孩子可以像在课堂中一样使用所有学校应用、书签和资源。学校会设立基本规则。</translation>

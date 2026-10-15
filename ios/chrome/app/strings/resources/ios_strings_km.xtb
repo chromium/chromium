@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">ធាតុត្រូវបានធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="1018804590490383958">ស្កេន និង​បំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="1019990162050689579">សកម្មភាព​កម្មវិធី Gemini</translation>
+<translation id="102471647093736603">ចុច​ឱ្យជាប់ ដើម្បី​ផ្លាស់ទី</translation>
 <translation id="102645702181682900">បានចាប់ផ្ដើមកិច្ចការ</translation>
 <translation id="102916930470544692">កូដសម្ងាត់</translation>
 <translation id="1030376737535466765">បើកកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">ខ្លឹមសារ​មួយចំនួន​ប្រហែលជា​មិនស័ក្ដិសម​សម្រាប់​អ្នកគ្រប់គ្នា​ទេ។</translation>
 <translation id="1601560923496285236">អនុវត្ត</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{អាសយដ្ឋាន 1}other{អាសយដ្ឋាន #}}</translation>
+<translation id="160477039162785330">{count,plural, =1{បញ្ចប់​កិច្ចការ 1 ដើម្បី​ឡើង​កម្រិត}other{បញ្ចប់​កិច្ចការ {count} ដើម្បី​ឡើង​កម្រិត}}</translation>
 <translation id="1605405588277479165">បិទ - មិនណែនាំទេ</translation>
 <translation id="1605658421715042784">ចម្លង​រូបភាព</translation>
 <translation id="1606899876897213121">បិទ​ការសង្ខេប​អំពី​សកម្មភាពថ្មីៗ</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">បើក​នៅក្នុង Wallet ឬ?</translation>
 <translation id="183878838231635348">កាតនេះ​បង្ហាញបញ្ហា​ឯកជនភាព ឬ​សុវត្ថិភាព​ទាំងឡាយ​ដែលការពិនិត្យ​សុវត្ថិភាព​រកឃើញ​ដោយស្វ័យប្រវត្តិ​សម្រាប់អ្នក។</translation>
 <translation id="1845230888742614096">រក្សា​ក្រុម</translation>
-<translation id="1853558655412913122">ឥឡូវនេះ អ្នកអាចប្ដូរទីតាំងរបស់របារអាសយដ្ឋាននៅក្នុង "ការកំណត់" បន្ទាប់មក "របារអាសយដ្ឋាន"</translation>
 <translation id="1853692000353488670">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="1854463785401910334">ស្វែងរកផ្ទាំងដែលបើក</translation>
 <translation id="1860609647735325606">ពន្យល់ដោយប្រើ Gemini</translation>
@@ -564,7 +565,6 @@
 <translation id="2673508731173059946">ចូល​ទៅកាន់តំណ​ដែល​បានចម្លង</translation>
 <translation id="2679659833697380">ព័ត៌មាន​របស់អ្នក​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="2681572445246787428">ការចុះ​ហត្ថលេខា​លើឯកសារ</translation>
-<translation id="2685514716378236873">មិន​បានអនុញ្ញាត</translation>
 <translation id="2688535388040882469">បដា</translation>
 <translation id="2690858294534178585">កាមេរ៉ាកំពុងត្រូវបានប្រើ</translation>
 <translation id="2691653761409724435">មិន​អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
@@ -775,7 +775,6 @@
 <translation id="3430407169377889553">ប្រើ Gemini ដោយប្រុងប្រយ័ត្ន និងគ្រប់គ្រង ប្រសិនបើចាំបាច់។ អ្នក​ទទួលខុសត្រូវ​ចំពោះ​សកម្មភាព​របស់ Gemini ក្នុងអំឡុងពេល​បំពេញ​កិច្ចការ។</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
 <translation id="3441673211568148613">រក្សា​ការរុករក​របស់អ្នក​ជាលក្ខណៈ​ឯកជន</translation>
-<translation id="3443810440409579745">បាន​ទទួលផ្ទាំង។</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="344589138074534176">ស្វែងយល់បន្ថែម​អំពី Google Lens</translation>
 <translation id="3447332786336558089">បន្ទាប់ពីអ្នកចេញពីគណនី ផ្ទាំងនឹងត្រូវបានបិទ ហើយទិន្នន័យគណនីដែលមិនបានរក្សាទុកនឹងត្រូវបាន​លុប​ចេញពី​ឧបករណ៍នេះ។ ទិន្នន័យនេះ​អាចរួមបញ្ចូល​ពាក្យ​សម្ងាត់ ប្រវត្តិ និង​អ្វីៗជាច្រើនទៀត។</translation>
@@ -790,6 +789,7 @@
 <translation id="3474624961160222204">បន្តជា <ph name="NAME" /></translation>
 <translation id="3476450923187944815">ចូលប្រើ​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​កម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
+<translation id="3481315707647070701">បង្ហាញជារូបភាព ហើយកែ</translation>
 <translation id="3485558910355485767">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="3488501490964659223">ផ្ទាំងត្រូវបានបិទ ហើយទិន្នន័យរុករកត្រូវបានលុប។ អ្នកត្រូវបាននាំចេញពីគណនី</translation>
 <translation id="3490396108106323715">បង្ហាញផ្ទាំងបច្ចុប្បន្ន</translation>
@@ -848,6 +848,7 @@
 <translation id="3659297405161482746">រកមិនឃើញ​វិធីបង់ប្រាក់​ទេ</translation>
 <translation id="3662966164093827811">{count,plural, =1{បាន​ជ្រើសរើស 1}other{បាន​ជ្រើសរើស #}}</translation>
 <translation id="3668035568083954765">ការពារឯកជនភាពរបស់អ្នក និងរក្សាសុវត្ថិភាព</translation>
+<translation id="3668703890943804691">បានបញ្ឈប់​កិច្ចការ</translation>
 <translation id="3668816008081204991">បញ្ជីអាន​ត្រូវបាន​លាក់</translation>
 <translation id="3670030362669914947">លេខ</translation>
 <translation id="3672283986707092811">ជ្រើសរើស​ទាំងអស់</translation>
@@ -921,6 +922,7 @@
 <translation id="3914173277599553213">តម្រូវឲ្យមាន</translation>
 <translation id="3914640181019354363">ចាប់ដឹងអាសយដ្ឋាន</translation>
 <translation id="391904960191284041">មតិវាយតម្លៃ​ផលិតផល</translation>
+<translation id="3920165976616657606">បានបញ្ចប់ "ស្វែងយល់អំពី​ការរុករក​ដោយសុវត្ថិភាពបន្ថែម"!</translation>
 <translation id="3921585859122905677">ទីតាំងរបារអាសយដ្ឋាន</translation>
 <translation id="3922185497376658606">ផ្ទុក​ទំព័របណ្ដាញជាមុន</translation>
 <translation id="3926703470020109118">បានបោះបង់​ការទាញ​យក</translation>
@@ -1124,7 +1126,6 @@
 <translation id="456502772933839252">កំពុង​ចែករំលែក <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">លាក់​ពាក្យ​សម្ងាត់</translation>
 <translation id="4568230126482344545">លាក់ផ្ទាំង​ថ្មីៗ</translation>
-<translation id="4571490460651837010">គ្រប់គ្រង​អាសយដ្ឋាន និង​ច្រើនទៀត…</translation>
 <translation id="4578835633387306383">បើក…</translation>
 <translation id="4580621046861724270">ចំណាំ​មួយចំនួន​មិនត្រូវបាន​រក្សាទុកទេ</translation>
 <translation id="4580716718466706433">ចូល​ទៅកាន់ "កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់"</translation>
@@ -1208,6 +1209,7 @@
 <translation id="4808744395915275922">កំណែថ្មី</translation>
 <translation id="4813345808229079766">ការតភ្ជាប់</translation>
 <translation id="4821595350501541683">ផ្ទាំងត្រូវបានបិទ ហើយទិន្នន័យរុករកត្រូវបានលុប</translation>
+<translation id="4823322556950229674">អ្នកអាចចុច​ឱ្យជាប់ ដើម្បីផ្លាស់ទីរបារអាសយដ្ឋាន និងប៊ូតុងថយក្រោយទៅផ្នែកខាងក្រោម</translation>
 <translation id="4824480232751123840">កម្រិតសំឡេង</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} និង 1 ទៀត}other{{domain} និង {count} ទៀត}}</translation>
 <translation id="4826588772550366629">កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
@@ -1844,6 +1846,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6708501134077648845">ជម្រើស​ពាក្យសម្ងាត់</translation>
 <translation id="6709964700841491574">មុខងារ​ចាក់សោ</translation>
 <translation id="6710079714193676716">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក​។ មុខងារមួយចំនួន​ប្រហែលជាមិន​អាចប្រើ​បានទេ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">ចម្លើយកាន់តែ​រហ័ស កាន់តែ​ឆ្លាតវៃ</translation>
 <translation id="6713676799463473249">បានកែប្រែ​នៅថ្ងៃទី <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">ផ្ទាំងដែលបានទទួល</translation>
 <translation id="6722638373100589752">ដើម្បីបំពេញព័ត៌មានរបស់អ្នកដោយស្វ័យប្រវត្តិ សូមបើក “ប្រើកាត​នៅលើ Google” នៅក្នុងការកំណត់ Wallet</translation>
@@ -2054,6 +2057,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7411034503745719324"><ph name="EMAIL" />។ <ph name="MANAGED_STATUS" />។</translation>
 <translation id="7412027924265291969">បន្ត</translation>
 <translation id="741204030948306876">បាទ/ចាស ខ្ញុំយល់ព្រម</translation>
+<translation id="7417055777338419059">សរសេរកូដ សរសេរ ឬបង្កើតស្លាយ</translation>
 <translation id="7419565702166471774">ប្រើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព​ជានិច្ច</translation>
 <translation id="7423098979219808738">សួរជាមុនសិន</translation>
 <translation id="7425053386765766120">បញ្ចូលវិធីបង់ប្រាក់…</translation>
@@ -2551,7 +2555,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8849001918648564819">លាក់</translation>
 <translation id="8855242995793521265">មិនធ្វើឱ្យ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត ឬ​ឧបករណ៍​របស់អ្នក​មានល្បឿនថយចុះគួរឱ្យកត់សម្គាល់​នោះទេ។</translation>
 <translation id="8856643812068084733">បណ្ណសារ</translation>
-<translation id="8863067612494559785">កំពុងផ្ញើទៅ <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">មើល​ទិសដៅ និង​ព័ត៌មាន​ក្នុងតំបន់ពី Google ផែនទី</translation>
 <translation id="8871974300055371298">ការកំណត់មាតិកា</translation>
 <translation id="8876661425082386199">សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក</translation>

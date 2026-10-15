@@ -290,7 +290,6 @@
 <translation id="1838089197478136166">Vols que s'obri a Wallet?</translation>
 <translation id="183878838231635348">Aquesta targeta mostra qualsevol problema de privadesa o de seguretat que la funció Comprovació de seguretat detecta automàticament.</translation>
 <translation id="1845230888742614096">Conserva el grup</translation>
-<translation id="1853558655412913122">Ara pots canviar la posició de la barra d'adreces a Configuració &gt; Barra d'adreces</translation>
 <translation id="1853692000353488670">Pestanya d'incògnit nova</translation>
 <translation id="1854463785401910334">Cerca a les pestanyes obertes</translation>
 <translation id="1860609647735325606">Explica amb Gemini</translation>
@@ -512,6 +511,7 @@
 <translation id="2524699375503213836">Transfereix les dades des de Safari</translation>
 <translation id="2526166285241366046">Desar una contrasenya</translation>
 <translation id="2529021024822217800">Obre-les totes</translation>
+<translation id="2530932541542751783">Hi ha hagut un error amb aquesta opció de configuració. Actualitza i reinicia Chrome i iPadOS, i torna-ho a provar. Si aquest error continua produint-se, és possible que l'iPad no admeti aquesta opció de configuració.</translation>
 <translation id="2536991091671391962">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contrasenya, amagada</translation>
 <translation id="2538705697765638552">Desa la informació i enllesteix tasques més ràpidament, com ara emplenar formularis en tots els productes de Google. Pots gestionar la teva informació a Google Wallet per a <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +563,6 @@
 <translation id="2673508731173059946">Ves a l'enllaç copiat</translation>
 <translation id="2679659833697380">La teva informació es desa al dispositiu</translation>
 <translation id="2681572445246787428">Signatura de documents</translation>
-<translation id="2685514716378236873">No permès</translation>
 <translation id="2688535388040882469">Bàners</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
 <translation id="2691653761409724435">No disponible sense connexió</translation>
@@ -774,7 +773,6 @@
 <translation id="3430407169377889553">Utilitza Gemini amb cura i, si cal, pren el control. Ets responsable de les accions de Gemini durant les tasques.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3441673211568148613">Mantén la navegació privada</translation>
-<translation id="3443810440409579745">S'ha rebut una pestanya.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Més informació sobre Google Lens</translation>
 <translation id="3447332786336558089">Quan tanquis la sessió, les pestanyes es tancaran i les dades del compte no desades se suprimiran d'aquest dispositiu. Això pot incloure contrasenyes, l'historial i més.</translation>
@@ -789,6 +787,7 @@
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accedeix a les teves contrasenyes en altres aplicacions.</translation>
 <translation id="3479552764303398839">Ara no</translation>
+<translation id="3481315707647070701">Visualitza i edita</translation>
 <translation id="3485558910355485767">Finestra d'incògnit nova</translation>
 <translation id="3488501490964659223">Les pestanyes s'han tancat i les dades de navegació s'han suprimit. S'ha tancat la teva sessió</translation>
 <translation id="3490396108106323715">Comparteix la pestanya actual</translation>
@@ -847,11 +846,13 @@
 <translation id="3659297405161482746">No s'ha trobat cap forma de pagament</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 element seleccionat}other{# elements seleccionats}}</translation>
 <translation id="3668035568083954765">Protegeix la teva privadesa i mantén la seguretat</translation>
+<translation id="3668703890943804691">S'ha aturat la tasca</translation>
 <translation id="3668816008081204991">La llista de lectura està amagada</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3672283986707092811">Selecciona-ho tot</translation>
 <translation id="3679163990085797665">Suprimeix els elements llegits</translation>
 <translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
+<translation id="3689746421535476813">Tria una forma de pagament desada per editar-la o afegeix-ne una de nova</translation>
 <translation id="3695446226812920698">Informació</translation>
 <translation id="3700134753671613714">Inicieu la sessió per accedir a les adreces d'interès des de tots els dispositius</translation>
 <translation id="3701167022068948696">Corregeix ara</translation>
@@ -927,6 +928,7 @@
 <translation id="3933372629914873850">Iniciaràs la sessió a <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pinça per canviar la mida</translation>
 <translation id="393732545649378031">Compte</translation>
+<translation id="3939683043166875001">Amaga o mostra els teus llocs web principals, el feed de Discover i més.</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tanca {COUNT} pestanya}other{Tanca {COUNT} pestanyes}}</translation>
 <translation id="3946483119107054883">Baixa com a CSV</translation>
@@ -1089,6 +1091,7 @@
 <translation id="4455710003856931944">Pots fer lliscar la vora per anar enrere o endavant.</translation>
 <translation id="4460014764210899310">Desagrupa</translation>
 <translation id="446314443268698477">Compra, tradueix i identifica el que veus amb la càmera o les fotos.</translation>
+<translation id="4465941170695753889">Mantén premut per crear un grup de pestanyes</translation>
 <translation id="4469324811108161144">Les notes poden desar fins a <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="4470766488397113689">En què vols treballar?</translation>
 <translation id="4471472356135655769">No es poden exportar les contrasenyes</translation>
@@ -1120,7 +1123,6 @@
 <translation id="456502772933839252">S'està compartint <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
 <translation id="4568230126482344545">Amaga l'opció Pestanyes recents</translation>
-<translation id="4571490460651837010">Gestiona les adreces i més…</translation>
 <translation id="4578835633387306383">Activa…</translation>
 <translation id="4580621046861724270">Algunes adreces d'interès no s'han desat</translation>
 <translation id="4580716718466706433">Ves a Gestor de contrasenyes</translation>
@@ -1261,6 +1263,7 @@
 <translation id="4977176874984951085">Obre el menú d'accions de la pàgina</translation>
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="4985921635659180565">Un cop programada, la supressió d'un fitxer no es pot cancel·lar.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 pestanya compartida}other{{COUNT} pestanyes compartides}}</translation>
 <translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
 <translation id="4986428648020277392">Indicació: Quins hauria de comprar? 2 de 3</translation>
 <translation id="498768198683310172">Comença a utilitzar Gemini</translation>
@@ -1720,6 +1723,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6372558618707314581">Ves a la pàgina que vulguis</translation>
 <translation id="6374469231428023295">Torna-ho a provar</translation>
 <translation id="6374514103145916800">Demana</translation>
+<translation id="6381241974485088375">Personalitza la pàgina Pestanya nova en qualsevol moment des d'aquí</translation>
 <translation id="6383719166112032471">Obre la ubicació…</translation>
 <translation id="6387994324662817823">Les contrasenyes es desen al gestor de contrasenyes de Google només en aquest dispositiu.</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
@@ -1838,6 +1842,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6708501134077648845">Opcions de contrasenya</translation>
 <translation id="6709964700841491574">Mode de bloqueig</translation>
 <translation id="6710079714193676716">Gestionat per la teva organització. Pot ser que algunes funcions no estiguin disponibles. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Respostes més ràpides i intel·ligents</translation>
 <translation id="6713676799463473249">Modificat: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Pestanyes rebudes</translation>
 <translation id="6722638373100589752">Per emplenar automàticament la teva informació, activa l'opció Utilitza passis en tot Google a la configuració de Wallet</translation>
@@ -1918,6 +1923,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="6938212956536472404">Aquesta pestanya no es pot compartir</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6946722113367118030">Pensant</translation>
+<translation id="6947751977892029882">Hi ha hagut un error amb aquesta opció de configuració. Actualitza i reinicia Chrome i iOS, i torna-ho a provar. Si aquest error continua produint-se, és possible que l'iPhone no admeti aquesta opció de configuració.</translation>
 <translation id="6950522403736391608">Amagades</translation>
 <translation id="695965663642079255">Desa i gestiona la informació de pagament per tramitar compres més ràpidament</translation>
 <translation id="6962809930976936328">Obtén informació detallada amb Gemini</translation>
@@ -2340,6 +2346,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8264966119170358612">Algunes de les teves contrasenyes desades han estat exposades en haver-se produït una violació de les dades fora de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Obre el menú de Chrome</translation>
 <translation id="826614135184049678">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPad. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
+<translation id="8266370374397811600">S'ha desbloquejat un nou assoliment! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Estàs a punt de canviar de perfil</translation>
 <translation id="8275068909952022340">Més…</translation>
@@ -2424,6 +2431,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8535368836838588657">Mostra la contrasenya</translation>
 <translation id="8540426897269305488">Inicia la sessió amb <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Hi ha hagut un error. Toca el botó Live per tornar-ho a provar.</translation>
+<translation id="8544172904312384600">Edita o afegeix una forma de pagament nova</translation>
 <translation id="8545276357312221485">Comprova la configuració del navegador predeterminat</translation>
 <translation id="854938212724803178">Tens 1 contrasenya en perill. Corregeix el problema per protegir-te.</translation>
 <translation id="8551311254462607218">A la barra d'adreces, toca la icona de càmera de Google Lens</translation>
@@ -2462,6 +2470,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8639963783467694461">Configuració d'Emplenament automàtic</translation>
 <translation id="8642417828095157370">Les pestanyes es comparteixen per oferir-te respostes més rellevants</translation>
 <translation id="8643403533759285912">Suprimeix el grup</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">No s'ha pogut deixar de fer el seguiment del preu.</translation>
 <translation id="8654802032646794042">Cancel·la</translation>
 <translation id="8655861111558401309">Selecciona Suprimeix les dades de navegació</translation>
@@ -2541,7 +2550,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8849001918648564819">Amagat</translation>
 <translation id="8855242995793521265">No redueix significativament la velocitat del navegador ni del dispositiu.</translation>
 <translation id="8856643812068084733">Arxius</translation>
-<translation id="8863067612494559785">S'està enviant a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtén indicacions i informació local de Google Maps</translation>
 <translation id="8871974300055371298">Configuració del contingut</translation>
 <translation id="8876661425082386199">Comprova la connexió</translation>

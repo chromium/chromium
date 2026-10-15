@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">選取全部(&amp;A)</translation>
 <translation id="19085484004813472">這是新功能</translation>
 <translation id="2006524834898217237">請確認此裝置已連上網際網路。</translation>
-<translation id="208586643495776849">請再試一次</translation>
 <translation id="2111134541987263231">開啟「允許在無痕模式中執行」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 天}other{# 天}}</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">輕觸這裡</translation>
 <translation id="5076340679995252485">貼上(&amp;P)</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5278860589123563674">無法傳送</translation>
 <translation id="5283101102242354279">在無痕模式中開啟擴充功能：</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Zaktualizowano element</translation>
 <translation id="1018804590490383958">Zeskanuj i wypełnij automatycznie</translation>
 <translation id="1019990162050689579">Aktywność w aplikacji Gemini</translation>
+<translation id="102471647093736603">Naciśnij i przytrzymaj, aby przenieść</translation>
 <translation id="102645702181682900">Zadanie rozpoczęte</translation>
 <translation id="102916930470544692">Klucz dostępu</translation>
 <translation id="1030376737535466765">Otwórz Menedżera haseł</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Niektóre treści mogą nie być odpowiednie dla wszystkich osób.</translation>
 <translation id="1601560923496285236">Zastosuj</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adres}few{# adresy}many{# adresów}other{# adresu}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Wykonaj 1 zadanie, aby przejść na kolejny poziom}few{Wykonaj {count} zadania, aby przejść na kolejny poziom}many{Wykonaj {count} zadań, aby przejść na kolejny poziom}other{Wykonaj {count} zadania, aby przejść na kolejny poziom}}</translation>
 <translation id="1605405588277479165">Wyłączono – niezalecane</translation>
 <translation id="1605658421715042784">Kopiuj obraz</translation>
 <translation id="1606899876897213121">Zamknij podsumowanie ostatniej aktywności</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">Otworzyć w Portfelu?</translation>
 <translation id="183878838231635348">Na tej karcie wyświetlają się wszelkie problemy związane z prywatnością i bezpieczeństwem, które zostały automatycznie wykryte przez kontrolę zabezpieczeń.</translation>
 <translation id="1845230888742614096">Zachowaj grupę</translation>
-<translation id="1853558655412913122">Możesz teraz zmienić położenie paska adresu, klikając „Ustawienia”, a następnie „Pasek adresu”</translation>
 <translation id="1853692000353488670">Nowa karta incognito</translation>
 <translation id="1854463785401910334">Wyszukiwanie w otwartych kartach</translation>
 <translation id="1860609647735325606">Wyjaśnij za pomocą Gemini</translation>
@@ -512,6 +513,7 @@
 <translation id="2524699375503213836">Przenieś dane z Safari</translation>
 <translation id="2526166285241366046">Zapisz hasło</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
+<translation id="2530932541542751783">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj i uruchom ponownie Chrome i iPadOS, a następnie spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, iPad może nie obsługiwać tego ustawienia.</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Ukryte, hasło</translation>
 <translation id="2538705697765638552">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Informacjami możesz zarządzać w Portfelu Google na koncie <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +565,6 @@
 <translation id="2673508731173059946">Otwórz skopiowany link</translation>
 <translation id="2679659833697380">Twoje informacje są zapisywane na urządzeniu</translation>
 <translation id="2681572445246787428">Podpisywanie dokumentów</translation>
-<translation id="2685514716378236873">Niedozwolone</translation>
 <translation id="2688535388040882469">Banery</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
 <translation id="2691653761409724435">Niedostępne offline</translation>
@@ -774,7 +775,6 @@
 <translation id="3430407169377889553">Używaj Gemini rozważnie i w razie potrzeby przejmij kontrolę. Ponosisz odpowiedzialność za działania Gemini podczas wykonywania zadań.</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3441673211568148613">Zadbaj o prywatność podczas przeglądania</translation>
-<translation id="3443810440409579745">Odebrano kartę.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Więcej informacji o Obiektywie Google</translation>
 <translation id="3447332786336558089">Po wylogowaniu karty zostaną zamknięte, a niezapisane dane konta zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Uzyskaj dostęp do swoich haseł w innych aplikacjach.</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
+<translation id="3481315707647070701">Wizualizuj i edytuj</translation>
 <translation id="3485558910355485767">Nowe okno incognito</translation>
 <translation id="3488501490964659223">Karty zostały zamknięte, a dane przeglądania usunięte. Nastąpiło wylogowanie</translation>
 <translation id="3490396108106323715">Udostępnij bieżącą kartę</translation>
@@ -847,11 +848,13 @@
 <translation id="3659297405161482746">Nie znaleziono form płatności</translation>
 <translation id="3662966164093827811">{count,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="3668035568083954765">Chroń swoją prywatność i dbaj o bezpieczeństwo</translation>
+<translation id="3668703890943804691">Zadanie zostało zatrzymane</translation>
 <translation id="3668816008081204991">Lista Do przeczytania jest ukryta</translation>
 <translation id="3670030362669914947">Numer</translation>
 <translation id="3672283986707092811">Zaznacz wszystko</translation>
 <translation id="3679163990085797665">Usuń przeczytane</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
+<translation id="3689746421535476813">Wybierz zapisaną formę płatności, którą chcesz edytować, lub dodaj nową</translation>
 <translation id="3695446226812920698">Instrukcje</translation>
 <translation id="3700134753671613714">Zaloguj się, by pobrać zakładki na wszystkie urządzenia.</translation>
 <translation id="3701167022068948696">Napraw teraz</translation>
@@ -919,6 +922,7 @@
 <translation id="3914173277599553213">Wymagane</translation>
 <translation id="3914640181019354363">Wykrywanie adresów</translation>
 <translation id="391904960191284041">Opinie o produktach</translation>
+<translation id="3920165976616657606">Zadanie „Poznaj Ulepszone bezpieczne przeglądanie” zostało ukończone.</translation>
 <translation id="3921585859122905677">Pozycja paska adresu</translation>
 <translation id="3922185497376658606">Wstępne wczytywanie stron internetowych</translation>
 <translation id="3926703470020109118">Pobieranie anulowane</translation>
@@ -927,6 +931,7 @@
 <translation id="3933372629914873850">Zalogujesz się w witrynie <ph name="URL" /></translation>
 <translation id="3934905113567851655">Ściągnij, aby zmienić rozmiar</translation>
 <translation id="393732545649378031">Konto</translation>
+<translation id="3939683043166875001">Ukryj lub pokaż najczęściej odwiedzane strony, karty Discover i inne elementy.</translation>
 <translation id="3940195383040445971">Monitoruj ceny na kartach</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
 <translation id="3946483119107054883">Pobierz plik CSV</translation>
@@ -1089,6 +1094,7 @@
 <translation id="4455710003856931944">Aby przejść wstecz lub do przodu, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="446314443268698477">Kupuj, tłumacz i rozpoznawaj to, co widzisz na obrazie z aparatu lub na zdjęciach.</translation>
+<translation id="4465941170695753889">Naciśnij i przytrzymaj, aby utworzyć grupę kart</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4470766488397113689">Nad czym chcesz pracować?</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
@@ -1120,7 +1126,6 @@
 <translation id="456502772933839252">Udostępniasz <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
 <translation id="4568230126482344545">Ukryj opcję Ostatnie karty</translation>
-<translation id="4571490460651837010">Zarządzaj adresami i innymi informacjami…</translation>
 <translation id="4578835633387306383">Włącz…</translation>
 <translation id="4580621046861724270">Niektóre zakładki nie zostały zapisane</translation>
 <translation id="4580716718466706433">Otwórz „Menedżera haseł”</translation>
@@ -1204,6 +1209,7 @@
 <translation id="4808744395915275922">Zmiany</translation>
 <translation id="4813345808229079766">Połączenie</translation>
 <translation id="4821595350501541683">Karty zostały zamknięte, a dane przeglądania usunięte</translation>
+<translation id="4823322556950229674">Naciśnij i przytrzymaj, aby przenieść na dół pasek adresu i przycisk Wstecz</translation>
 <translation id="4824480232751123840">Objętość</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i jeszcze 1}few{{domain} i jeszcze {count}}many{{domain} i jeszcze {count}}other{{domain} i jeszcze {count}}}</translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
@@ -1261,6 +1267,7 @@
 <translation id="4977176874984951085">Otwórz menu czynności na stronie</translation>
 <translation id="4979397965658815378">Zaloguj się na konto Google, by korzystać z zakładek, haseł, historii i innych ustawień na wszystkich urządzeniach</translation>
 <translation id="4985921635659180565">Zaplanowanego usunięcia pliku nie można anulować.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 udostępniona karta}few{{COUNT} udostępnione karty}many{{COUNT} udostępnionych kart}other{{COUNT} udostępnionej karty}}</translation>
 <translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
 <translation id="4986428648020277392">Prompt: który mam kupić? 2 z 3</translation>
 <translation id="498768198683310172">Zacznij korzystać z Gemini</translation>
@@ -1839,6 +1846,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6708501134077648845">Opcje dotyczące haseł</translation>
 <translation id="6709964700841491574">Tryb blokady</translation>
 <translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Szybsze i bardziej trafne odpowiedzi</translation>
 <translation id="6713676799463473249">Zmodyfikowano <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Odebrano karty</translation>
 <translation id="6722638373100589752">Aby automatycznie uzupełniać informacje, włącz opcję „Korzystanie z kart w Google” w ustawieniach Portfela</translation>
@@ -1919,6 +1927,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="6938212956536472404">Tej karty nie można udostępnić</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6946722113367118030">Myślenie</translation>
+<translation id="6947751977892029882">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj i uruchom ponownie Chrome i iOS, a następnie spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, Twój iPhone może nie obsługiwać tego ustawienia.</translation>
 <translation id="6950522403736391608">Ukryte</translation>
 <translation id="695965663642079255">Zapisuj dane do płatności i zarządzaj nimi, aby płacić szybciej</translation>
 <translation id="6962809930976936328">Uzyskuj statystyki dzięki Gemini</translation>
@@ -2341,6 +2350,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Otwórz menu Chrome</translation>
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
+<translation id="8266370374397811600">Nowe osiągnięcie odblokowane! 🥳</translation>
 <translation id="8270320981823560179">Dysk</translation>
 <translation id="8274795744553482834">Zamierzasz przełączyć profile</translation>
 <translation id="8275068909952022340">Więcej…</translation>
@@ -2425,6 +2435,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8535368836838588657">Pokaż hasło</translation>
 <translation id="8540426897269305488">Zaloguj się przez <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Coś poszło nie tak. Kliknij przycisk Live, aby spróbować ponownie włączyć tryb Live.</translation>
+<translation id="8544172904312384600">Edytuj lub dodaj nową formę płatności</translation>
 <translation id="8545276357312221485">Sprawdź ustawienia przeglądarki domyślnej</translation>
 <translation id="854938212724803178">Masz 1 przejęte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="8551311254462607218">Na pasku adresu kliknij ikonę aparatu Obiektywu Google</translation>
@@ -2543,7 +2554,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8849001918648564819">Ukryte</translation>
 <translation id="8855242995793521265">Nie spowalnia w zauważalnym stopniu przeglądarki ani urządzenia.</translation>
 <translation id="8856643812068084733">Archiwa</translation>
-<translation id="8863067612494559785">Przesyłam (<ph name="DEVICE_NAME" />)…</translation>
 <translation id="8863431381414769983">Uzyskiwanie wskazówek dojazdu i informacji lokalnych z Map Google</translation>
 <translation id="8871974300055371298">Ustawienia treści</translation>
 <translation id="8876661425082386199">Sprawdź połączenie</translation>

@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">Выбраць &amp;усё</translation>
 <translation id="19085484004813472">Гэта новая функцыя</translation>
 <translation id="2006524834898217237">Праверце, ці падключана прылада да інтэрнэту.</translation>
-<translation id="208586643495776849">Паўтарыце спробу</translation>
 <translation id="2111134541987263231">Уключыце параметр <ph name="BEGIN_BOLD" />Дазволіць у рэжыме інкогніта<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 сут}one{# сут}few{# сут}many{# сут}other{# сут}}</translation>
 <translation id="2148716181193084225">Сёння</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">Дакраніцеся тут</translation>
 <translation id="5076340679995252485">&amp;Уставіць</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
-<translation id="5278860589123563674">Не ўдалося адправіць</translation>
 <translation id="5283101102242354279">Уключыце пашырэнне ў рэжыме інкогніта:</translation>
 <translation id="528468243742722775">Канец</translation>
 <translation id="5329858601952122676">&amp;Выдаліць</translation>

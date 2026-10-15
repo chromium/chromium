@@ -1020,6 +1020,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3977512764614765090">Batareya <ph name="PERCENTAGE" /> faizdir və enerji yığır.</translation>
 <translation id="3978162107953847778">Brauzer tarixçəniz və Google Disk kimi yerlərdən keçidlər daxil edin. Emojilər, şəkil faylları və s. də əlavə edə bilərsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Audio çıxışı dəyişdirilsin?</translation>
+<translation id="3983903378684256134">Chromebook-da Steam</translation>
 <translation id="3984536049089846927">Növbəti səhifə</translation>
 <translation id="3986082989454912832">Cavab</translation>
 <translation id="3990002060657467458">Wi-Fi, Bluetooth və səs səviyyəsi kimi tez-tez istifadə edilən nizamlayıcılar Cəld ayarlardadır. Burada skrinşot da çəkə bilərsiniz.</translation>
@@ -1636,6 +1637,7 @@ Cihaz qoşulmayıb.</translation>
 <translation id="5727460725221669831">Parolunuzu unutmusunuzsa və ya bu yaxınlarda Google Hesab parolunuzu dəyişmisinizsə, bu istifadəçini bərpa etməyi sınayın.</translation>
 <translation id="5733630091161562207">Qarşılama bildirişi</translation>
 <translation id="573413375004481890">Bu cihaz bütün displeyləri dəstəkləyə bilmədi və biri ayrıldı</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> disk yeri boşaldıldı.</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5745612484876805746">Gecə İşığı gün batanda avtomatik aktiv edilir</translation>
 <translation id="5749214722697335450">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google-a göndərməklə Android təcrübənizi təkmilləşdirməyə kömək edin. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Data məcmusunun bir qismi Google tətbiqləri və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktivdirsə, bu data Google hesabında yadda saxlanıla bilər. <ph name="BEGIN_LINK1" />Göstəricilər haqqında ətraflı məlumat əldə edin<ph name="BEGIN_LINK1_END" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Yeni quraşdırma</translation>
 <translation id="7413851974711031813">Bağlamaq üçün "escape" düyməsinə basın</translation>
 <translation id="7416471219712049036">Cari səhifəni saxlayın</translation>
 <translation id="742594950370306541">Kamera istifadə olunur.</translation>
+<translation id="7430466159639897874">Köhnəlmiş "Chromebook-da Steam" funksiyası üçün ayrılmış istifadə olunmamış disk yeriniz (<ph name="SIZE" />) var.</translation>
 <translation id="743058460480092004">Kamera və mikrofon istifadə olunur.</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> cihazınızdan istifadəyə davam etmək üçün smart kart taxın</translation>
 <translation id="7440404390546433462">Google Axtarış</translation>
@@ -2352,6 +2355,7 @@ Cihazı söndürmək üçün cihazda enerji düyməsinə yenidən basıb saxlay�
 <translation id="7781335840981796660">Bütün istifadəçi hesabları və lokal data silinəcək.</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7787212146956232129">Giriş və çıxış cihazları ayarlanıb. Dəyişmək üçün Ayarlara keçin.</translation>
+<translation id="7790757511772316441">Disk yerini boşaldın</translation>
 <translation id="7792590255364786396">Görünür</translation>
 <translation id="7796735576426975947">Yeni bildiriş gizlədilib</translation>
 <translation id="7798302898096527229">Ləğv etmək üçün Search və ya Shift düyməsini basın.</translation>

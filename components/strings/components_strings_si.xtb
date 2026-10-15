@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">යෝජනා පෙන්වන්න</translation>
 <translation id="1038168778161626396">Encipher පමණි</translation>
 <translation id="1038842779957582377">නොදන්නා නමක්</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">වැඩ පත්‍ර පණිවුඩය</translation>
 <translation id="1044897699341250361">මෙයින් අදහස් වන දේ</translation>
 <translation id="1049837829250301306">ඔබේ සංවිධානයේ ප්‍රතිපත්ති හේතුවෙන් අන්තර්ගතය ඇලවිය නොහැකි විය</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">EDI සාද නාමය</translation>
 <translation id="1816436748874040213">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට විමසිය හැක</translation>
 <translation id="1816707915923025275">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීමට @ඉතිහාසය ටයිප් කරන්න</translation>
+<translation id="1816771466809215784">ගෙවා පිටවීමේ දී එය ස්වයංක්‍රීයව පිරවීම සඳහා, මෙම කාඩ්පත සඳහා කාඩ්පත් හිමියාගේ නම Google Wallet හි සුරකින්න</translation>
 <translation id="1817364650920811003">භූමිකාව: Chrome ඉඟිය. ප්‍රවේශ්‍යතා ලේබලය: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">ස්වයංක්‍රීය බාගැනීම්</translation>
 <translation id="1821930232296380041">වැරදි ඉල්ලීමක් හෝ ඉල්ලීම් පරාමිති</translation>
@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android යෙදුම්</translation>
 <translation id="2103210856015238101">ස්පර්ශ කිරීමෙන් පිරවිය හැකි විශ්වාස කාඩ්පත් සම්පූර්ණ උසින් විවෘත කර ඇත.</translation>
 <translation id="2104739941682874393">ඉහළ නැංවූ ස්වයං පිරවුම මඟින් පෝරම වඩා හොඳින් වටහා ගන්නා අතර ඒවා ඔබට වේගයෙන් ස්වයංව පිරවිය හැක</translation>
+<translation id="2105237910269166838">මෙම පිටුව ගැන විමසන්න</translation>
 <translation id="2107021941795971877">මුද්‍රණ සහය</translation>
 <translation id="2108755909498034140">ඔබේ පරිගණකය යළි අරඹන්න</translation>
 <translation id="2109845311767915560">බෙදා ගත් පටිති සමූහය</translation>
@@ -1054,7 +1055,7 @@
 <translation id="2734797989819862638">පිටපත් නොකරන්න</translation>
 <translation id="2738771556149464852">පසුව නොවේ</translation>
 <translation id="2740531572673183784">හරි</translation>
-<translation id="275259155159336003">Gemini සමග පුද්ගලික බුද්ධිය මඟින් බලගන්වයි. වැඩිදියුණු කළ ස්වයංක්‍රීය පිරවීම වැඩි දියුණු කිරීම සඳහා ඔබේ ඉල්ලීම්, පිටු මාතෘකා සහ URLs සමාලෝචනය කළ හැක. <ph name="BEGIN_LINK" />සැකසීම් කළමනාකරණය කරන්න<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{කිසිවක් නැත}=1{1 නිපුණතාවක්}one{නිපුණතා #ක්}other{නිපුණතා #ක්}}</translation>
 <translation id="2757727729385895652">Google Drive වෙත ගොනු <ph name="COUNT" />ක් උඩුගත කරමින්</translation>
 <translation id="2759299890026163685">නැවත උත්සාහ කිරීමට පෙර ඔබට ස්ථාවර අන්තර්ජාල සම්බන්ධතාවයක් ඇති බවට වග බලා ගන්න</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> මත ඔබේ මුරපදය පුරවන්න</translation>
@@ -1434,7 +1435,6 @@
 <translation id="3432601291244612633">පිටුව වසන්න</translation>
 <translation id="3434025015623587566">Google මුරපද කළමනාකරුට තවත් ප්‍රවේශයක් අවශ්‍යයි</translation>
 <translation id="343474037147570563">ඔබ උඩුගත කරන හෝ අමුණන ගොනු විශ්ලේෂණය සඳහා Google Cloud හෝ තෙවන පාර්ශව වෙත යවයි. උදාහරණයක් ලෙස, ඒවා සංවේදී දත්ත හෝ අනිෂ්ට මෘදුකාංග සඳහා ස්කෑන් කළ හැකි අතර සමාගම් ප්‍රතිපත්ති මත පදනම්ව ගබඩා කළ හැකි අතර ඔබේ පරිපාලකයාට දෘශ්‍යමාන වේ.</translation>
-<translation id="3435267628744367511">ටැබ මාරු නොකර තොරතුරු සොයා ගැනීමට සහ පිරවීමට ඕනෑම ආකාරයකින් Ctrl දෙවරක් ඔබන්න</translation>
 <translation id="3435557549311968410">අඛණ්ඩ (කෙටි)</translation>
 <translation id="3435738964857648380">ආරක්ෂක</translation>
 <translation id="3436125638121079308">මෙම සංවාද පෙළ තුළ වඩා හොඳ ප්‍රතිචාර ලබා ගැනීමට අදාළ පටිති ස්වයංක්‍රීයව බෙදා ගන්නද?</translation>
@@ -1880,7 +1880,6 @@
 <translation id="4153446078232988116"><ph name="SITE" /> HTTPS සමග ආරක්ෂිත සම්බන්ධතාවයකට සහාය නොදක්වයි</translation>
 <translation id="4153858337812834972">මෑත කාලීන පටිති</translation>
 <translation id="4154277373259957087">ගෙවීම් ක්‍රමය පිරවීමට පෙර Chrome ඒ ඔබ බව සනාථ කරයි. ඔබට <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> තුළ ඕනෑම වේලාවක මෙය යාවත්කාලීන කළ හැකිය.</translation>
-<translation id="4157273919218514718">Gemini සමග පුද්ගලික බුද්ධිය මගින් බලගන්වයි. <ph name="BEGIN_LINK" />සැකසීම් කළමනාකරණය කරන්න<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">රියදුරු බලපත්‍රය ආරක්ෂිතව යාවත්කාලීන කරන්න</translation>
 <translation id="4159784952369912983">දම්</translation>
 <translation id="4165422751765527461">නව පටිත්තක උදවු මධ්‍යස්ථාන ලිපියක් විවෘත කරයි</translation>
@@ -2148,7 +2147,6 @@
 <translation id="4599572944836204718">ඔබේ කාඩ්පත සුරකින විට Google Pay සමග වේගයෙන් ගෙවන්න. කාඩ්පත් විස්තර Google Wallet හි සංකේතනය කර ඇත.</translation>
 <translation id="4603727370377253901">පියාසර වෙන් කිරීම්</translation>
 <translation id="4607608436550361748">Chrome ඉඟි බලන්න</translation>
-<translation id="4607879293515681409">වැඩිදියුණු කළ ස්වයංක්‍රීය පිරවීම දැන් Gmail සහ ඡායාරූප වැනි යෙදුම්වලින් — ගුවන් ගමන් අංක සහ හමුවීම් වේලාවන් වැනි — තතු සොයා පිරවිය හැක</translation>
 <translation id="460848736049414407">පරිපාලක විසින් අවහිර කරන ලදි</translation>
 <translation id="4610279718074907952">මෙම වෙබ් අඩවිය <ph name="SET_OWNER" /> විසින් නිර්වචනය කරන ලද සමූහයක පවතී, එයට ඔබේ ක්‍රියාකාරකම් දැකිය හැක</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> හරහා <ph name="MERCHANT_ORIGIN" /> හි ඔබේ ඇණවුම සැකසීමේදී දෝෂයක් සිදු විය.</translation>
@@ -2923,7 +2921,6 @@
 <translation id="5884465125445718607">ලියුම් කවරය චීන #6</translation>
 <translation id="5887400589839399685">කාඩ්පත සුරැකිණි</translation>
 <translation id="5887687176710214216">අවසන් වරට ඊයේ පිවිසි</translation>
-<translation id="5887791684215121787">ටැබ මාරු නොකර තතු සොයා පිරවීමට ඕනෑම පෝරමයක ⌘ ⌘ ඔබන්න</translation>
 <translation id="5889251770650310375">ඔබේ අනෙකුත් උපාංගවලින් ඔබේ ඉතිහාසය ලබා ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කර ඔබේ ඉතිහාසය සහ පටිති සමමුහුර්ත කරන්න. ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පුද්ගලායනය කිරීමට ඉඩ ඇත.</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
 <translation id="5895187275912066135">නිකුත් කළේ</translation>
@@ -3029,6 +3026,7 @@
 <translation id="6051221802930200923">වෙබ් අඩවිය සහතික ඇමිණීම් භාවිතා කරන නිසා ඔබට මේ දැන් <ph name="SITE" /> වෙත පිවිසිය නොහැක. ජාල දෝෂ සහ ප්‍රහාර සාමාන්‍යයෙන් තාවකාලිකය, එනිසා මෙම පිටුව සමහර විට පසුව වැඩ කරනු ඇත.</translation>
 <translation id="6051898664905071243">පිටු ගණන:</translation>
 <translation id="605237284704429106">IBAN පිරවීම</translation>
+<translation id="6052557981901634648">සැලසුමක් සාදන්න</translation>
 <translation id="6053584886670442526">ඔබට Google නිෂ්පාදන හරහා සුරැකි ලිපින භාවිත කළ හැක. මෙම ලිපිනය ඔබේ <ph name="ACCOUNT" /> Google ගිණුමේ සුරකිනු ලැබේ.</translation>
 <translation id="6055392876709372977">RSA සංකේතනය සහිත PKCS #1 SHA-256</translation>
 <translation id="6055982527635883756">ලියුම් කවරය (ලේඛනාගාරය)</translation>
@@ -3467,6 +3465,7 @@
 <translation id="6808579246645021886">බෙදා ගත් පටිති සහ ගොනු</translation>
 <translation id="681021252041861472">අත්‍යාවශ්‍ය ක්ෂේත්‍රයකි</translation>
 <translation id="6810899417690483278">අභිරුචිකරණ ID</translation>
+<translation id="6815861164669871832">පටිත්තක් ගැන අසන්න</translation>
 <translation id="681631578600400068">රියදුරු බලපත්‍රය සුරකින්න</translation>
 <translation id="6817217109584391709">ජාවාස්ක්‍රිප්ට්</translation>
 <translation id="6820143000046097424">අනුක්‍රමික තොට</translation>
@@ -3539,7 +3538,6 @@
 <translation id="6936976777388162184">මෙය පොදි බඳින ලද උපාංගයක් වන අතර Kiosk සහ Signage Upgrade සමග ලියාපදිංචි විය නොහැක.</translation>
 <translation id="6942444979237658241">අදහස් - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">ඔබ ඔබගේ මුරපදය <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> වෙතින් කළමනාකරණය නොවන අඩවියකට ඇතුළත් කළා. ඔබගේ ගිණුම ආරක්ෂා කිරීමට, ඔබගේ මුරපදය වෙනත් යෙදුම් සහ අඩවිවල නැවත භාවිතා නොකරන්න.</translation>
-<translation id="6946949206576443118">Chrome හි වෙබය සොයන්න</translation>
 <translation id="6948051842255602737">ක්‍රීඩාව අවසන්ය, ඔබගේ ලකුණු <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">ඔබ Chrome හි මිල දී ගැනීම් සිදු කරන විට, විකල්පයක් ලෙස Pix බලන්න</translation>
 <translation id="6948701128805548767">භාර ගැනීමේ ක්‍රම සහ අවශ්‍යතා බැලීමට, ලිපිනයක් තෝරන්න</translation>
@@ -3629,6 +3627,7 @@
 <translation id="7083258188081898530">බඳුන 9</translation>
 <translation id="70846382339153529">OpenDocument පෙළ</translation>
 <translation id="7086090958708083563">පරිශීලකයා විසින් ඉල්ලනු ලැබූ උඩුගත කිරීම</translation>
+<translation id="7089745480771070611">පැති පැනලයේ විවෘත වේ</translation>
 <translation id="7090698782953528257">ගණිත සමීකරණය දෘශ්‍යමාන කිරීමට සහ වක්‍රයේ හැඩය බැලීමට කාර්යයක් ප්‍රස්තාර කිරීමට මට උදවු කරන්න</translation>
 <translation id="7092087596499105699">ඔබේ සංවිධානයේ පෞද්ගලික වෙබ් යෙදුම් වෙත ප්‍රවේශය සුරක්ෂිත කිරීම සඳහා, ඔබේ පරිපාලකයා විසින් ආරක්ෂිත ද්වාර සම්බන්ධකය වින්‍යාස කර ඇත. ප්‍රවේශය සත්‍යාපනය කිරීම සඳහා, එය ඔබගේ කාර්යාල පැතිකඩෙහි ඇති දත්ත භාවිතා කිරීමට ඉඩ ඇත.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ අඩවි හරහා ගබඩා කර ඇති අවසර සහ දත්ත කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
@@ -4012,6 +4011,7 @@
 <translation id="7696107855583699585">දන්නා සංචාරක අංකය සංස්කරණය කරන්න</translation>
 <translation id="7698864304447945242">AR සඳහා වන Google Play සේවා යාවත්කාලීන කරන්න ද?</translation>
 <translation id="7699509138503320152">මගේ ඉ-තැපෑල වඩාත් පොළඹවන සුළු ලෙස නැවත ලියන්න</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{කිසිවක් නැත}=1{1 නිපුණතාවක් (සමමුහුර්ත කර ඇත)}one{නිපුණතා #ක් (සමමුහුර්ත කර ඇත)}other{නිපුණතා #ක් (සමමුහුර්ත කර ඇත)}}</translation>
 <translation id="7701040980221191251">නොමැත</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> (අනාරක්ෂිත) වෙත කරගෙන යන්න<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">මට ලිවීමට උදවු කරන්න</translation>
@@ -4254,6 +4254,7 @@
 <translation id="813024282736408069">ස්වයං පිරවීම සඳහා අතථ්‍ය කාඩ්පතක් ක්‍රියාත්මක කරන්න</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8135546115396015134">වම් යතුර</translation>
+<translation id="8136385032646505126">කාඩ්පත් හිමියාගේ නම සුරකින්න ද?</translation>
 <translation id="8137185688006450980">සෞඛ්‍ය සැලසුම් විකල්ප සසඳන්න</translation>
 <translation id="8138591088112729119">පුද්ගලික බුද්ධිය මගින් බල ගැන්වේ</translation>
 <translation id="814071672416123670">ඔබේ සංවිධානයේ ප්‍රතිපත්ති හේතුවෙන් අන්තර්ගතය පිටපත් කළ නොහැකි විය</translation>
@@ -4527,6 +4528,7 @@
 <translation id="8622864575115813231">ඔබේ මූල්‍ය ආයතනය සමග සම්බන්ධ වෙමින්...</translation>
 <translation id="8632584659860846053">ඔබ සියලු හුදකලා කවුළු වසා දැමූ පසු ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකීස් සහ අඩවි දත්ත, කෑෂ් සහ පෝරමවල ඇතුළත් තොරතුරු මකනු ලැබේ</translation>
 <translation id="8634957317623797170">මිමි 54 x 86</translation>
+<translation id="8635822281281406185">ගොනු, පටිති, හෝ රූප 10ක් දක්වා එක් කරන්න</translation>
 <translation id="8637362707224133343">ඔබ බ්‍රවුස් කරන අතරතුර ඔබව ආරක්‍ෂා කිරීමට Chrome තුළ Google ආරක්ෂිත බ්‍රවුස් කිරීම වැනි තිළැලි ආරක්‍ෂිත විශේෂාංග ඇත — එය ඔබ පිවිසීමට උත්සාහ කළ වෙබ් අඩවියේ <ph name="BEGIN_LINK" />මෑතක දී තතුබෑම සොයා ගන්නා ලදි<ph name="END_LINK" />. තතුබෑම් වෙබ් අඩවි ඔබව රැවටීමට වෙනත් වෙබ් අඩවි ලෙස පෙනී සිටියි.<ph name="NEW_LINE" />සාමාන්‍යයෙන් ආරක්ෂිත වෙබ් අඩවි පවා සමහර විට ප්‍රහාරකයින් විසින් අවදානමට ලක් වේ. වැරදීමක් සිදුවී ඇති බවත් මෙම වෙබ් අඩවිය අනතුරක් නොවන බවත් ඔබ සිතන්නේ නම් <ph name="BEGIN_ERROR_LINK" />අපට දන්වන්න<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">පටිති බෙදා ගැනීමට සහ අන් අය සමග සහයෝගයෙන් කටයුතු කිරීමට, ඔබට Chrome වෙත පුරනය වීමට හැකි විය යුතුය</translation>
 <translation id="8641131559425911240">ලියුම් කවරය (බැඳුණු)</translation>

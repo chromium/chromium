@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">&amp;सर्व निवडा</translation>
 <translation id="19085484004813472">हे नवीन वैशिष्‍ट्य आहे</translation>
 <translation id="2006524834898217237">हे डिव्हाइस इंटरनेटशी कनेक्ट केलेले असल्याची खात्री करा.</translation>
-<translation id="208586643495776849">कृपया पुन्हा प्रयत्न करा</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोडमध्ये अनुमती द्या<ph name="END_BOLD" /> सुरू करा</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1दि}other{#दि}}</translation>
 <translation id="2148716181193084225">आज</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">येथे टॅप करा</translation>
 <translation id="5076340679995252485">&amp;पेस्ट करा</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5278860589123563674">पाठवता आले नाही</translation>
 <translation id="5283101102242354279">गुप्त मोडमध्ये एक्स्टेंशन सुरू करा:</translation>
 <translation id="528468243742722775">बंद करा</translation>
 <translation id="5329858601952122676">&amp;हटवा</translation>

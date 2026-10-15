@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">&amp;Vybrat vše</translation>
 <translation id="19085484004813472">Toto je nová funkce</translation>
 <translation id="2006524834898217237">Zkontrolujte, zda je toto zařízení připojeno k internetu.</translation>
-<translation id="208586643495776849">Zkuste to znovu</translation>
 <translation id="2111134541987263231">Zapněte možnost <ph name="BEGIN_BOLD" />Povolit v anonymním režimu<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}few{# d}many{# d}other{# d}}</translation>
 <translation id="2148716181193084225">Dnes</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">Klepněte sem</translation>
 <translation id="5076340679995252485">Vložit</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5278860589123563674">Odeslání se nezdařilo</translation>
 <translation id="5283101102242354279">Zapnutí rozšíření v anonymním režimu:</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5329858601952122676">&amp;Smazat</translation>

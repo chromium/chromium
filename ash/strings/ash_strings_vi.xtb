@@ -1020,6 +1020,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3977512764614765090">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc.</translation>
 <translation id="3978162107953847778">Chèn đường liên kết từ các vị trí như nhật ký duyệt web và Google Drive. Bạn cũng có thể chèn biểu tượng cảm xúc, tệp hình ảnh và nội dung khác. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Chuyển đầu ra âm thanh?</translation>
+<translation id="3983903378684256134">Steam trên Chromebook</translation>
 <translation id="3984536049089846927">Trang tiếp theo</translation>
 <translation id="3986082989454912832">Trả lời</translation>
 <translation id="3990002060657467458">Các tuỳ chọn kiểm soát thường dùng như Wi-Fi, Bluetooth và âm lượng sẽ nằm trong phần Cài đặt nhanh. Bạn cũng có thể vào phần này để chụp ảnh màn hình.</translation>
@@ -1636,6 +1637,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5727460725221669831">Nếu gần đây bạn quên mật khẩu hoặc thay đổi mật khẩu của Tài khoản Google, hãy thử khôi phục người dùng này.</translation>
 <translation id="5733630091161562207">Thông báo chào mừng</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
+<translation id="5739548907438839901">Đã giải phóng <ph name="SIZE" /> dung lượng ổ đĩa.</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5745612484876805746">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
 <translation id="5749214722697335450">Gửi dữ liệu sử dụng và dữ liệu chẩn đoán. Giúp cải thiện trải nghiệm của bạn trên Android bằng cách tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và dữ liệu về mức sử dụng ứng dụng cho Google. Dữ liệu này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho các ứng dụng và đối tác của Google, chẳng hạn như nhà phát triển Android. Nếu bạn bật chế độ cài đặt Hoạt động bổ sung trên web và ứng dụng thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về các chỉ số<ph name="BEGIN_LINK1_END" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Mới cài đặt</translation>
 <translation id="7413851974711031813">Nhấn phím Escape để đóng</translation>
 <translation id="7416471219712049036">Lưu trang hiện tại</translation>
 <translation id="742594950370306541">Máy ảnh đang được sử dụng.</translation>
+<translation id="7430466159639897874">Bạn có dung lượng ổ đĩa chưa sử dụng (<ph name="SIZE" />) được phân bổ cho tính năng "Steam trên Chromebook" vốn đã bị ngừng hỗ trợ.</translation>
 <translation id="743058460480092004">Máy ảnh và micrô đang được sử dụng.</translation>
 <translation id="7433708794692032816">Lắp thẻ thông minh để tiếp tục sử dụng <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="7440404390546433462">Google Tìm kiếm</translation>
@@ -2352,6 +2355,7 @@ Mới cài đặt</translation>
 <translation id="7781335840981796660">Tất cả tài khoản người dùng và dữ liệu trên máy đều sẽ bị xóa.</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7787212146956232129">Đã thiết lập thiết bị đầu vào và đầu ra. Chuyển đến phần Cài đặt để thay đổi.</translation>
+<translation id="7790757511772316441">Giải phóng dung lượng ổ đĩa</translation>
 <translation id="7792590255364786396">Hiển thị</translation>
 <translation id="7796735576426975947">Đã ẩn thông báo mới</translation>
 <translation id="7798302898096527229">Nhấn phím Search hoặc Shift để hủy.</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
 <translation id="1018804590490383958">Skann og fyll ut automatisk</translation>
 <translation id="1019990162050689579">Aktivitet i Gemini-apper</translation>
+<translation id="102471647093736603">Trykk og hold for å flytte</translation>
 <translation id="102645702181682900">Oppgaven er startet</translation>
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1030376737535466765">Åpne Passordlagring</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Noe innhold er kanskje ikke egnet for alle.</translation>
 <translation id="1601560923496285236">Bruk</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Fullfør 1 oppgave for å gå opp til nytt nivå}other{Fullfør {count} oppgaver for å gå opp til nytt nivå}}</translation>
 <translation id="1605405588277479165">Av – anbefales ikke</translation>
 <translation id="1605658421715042784">Kopiér bildet</translation>
 <translation id="1606899876897213121">Lukk sammendraget av nylig aktivitet</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">Vil du åpne filen i Wallet?</translation>
 <translation id="183878838231635348">Dette kortet viser eventuelle personvern- eller sikkerhetsproblemer som sikkerhetssjekken automatisk oppdager for deg.</translation>
 <translation id="1845230888742614096">Behold gruppen</translation>
-<translation id="1853558655412913122">Nå kan du endre plasseringen av adressefeltet i «Innstillinger» og deretter «Adressefelt»</translation>
 <translation id="1853692000353488670">Ny inkognitofane</translation>
 <translation id="1854463785401910334">Søk i åpne faner</translation>
 <translation id="1860609647735325606">Forklar med Gemini</translation>
@@ -512,6 +513,7 @@
 <translation id="2524699375503213836">Ta med dataene dine fra Safari</translation>
 <translation id="2526166285241366046">Lagre et passord</translation>
 <translation id="2529021024822217800">Åpne alle</translation>
+<translation id="2530932541542751783">Noe gikk galt med denne innstillingen. Oppdater og start Chrome og iPadOS på nytt, og prøv igjen. Hvis denne feilen fortsatt oppstår, kan det hende at iPad-enheten ikke støtter denne innstillingen.</translation>
 <translation id="2536991091671391962">Du kan bruke lagrede passord på alle enheter. De lagres i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skjult, passord</translation>
 <translation id="2538705697765638552">Lagre informasjonen din for å få ting gjort raskere, for eksempel å fylle ut skjemaer på tvers av Google-produkter. Du kan administrere informasjonen din i Google Wallet for <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +565,6 @@
 <translation id="2673508731173059946">Besøk den kopierte linken</translation>
 <translation id="2679659833697380">Informasjonen din lagres på enheten din</translation>
 <translation id="2681572445246787428">Dokumentsignering</translation>
-<translation id="2685514716378236873">Ikke tillatt</translation>
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
@@ -774,7 +775,6 @@
 <translation id="3430407169377889553">Bruk Gemini forsiktig, og ta kontrollen om nødvendig. Du har ansvaret for handlingene Gemini utfører under oppgaver.</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3441673211568148613">Hold surfingen din privat</translation>
-<translation id="3443810440409579745">Fane er mottatt.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Finn ut mer om Google Lens</translation>
 <translation id="3447332786336558089">Når du logger av, lukkes fanene, og kontodata som ikke er lagret, slettes fra denne enheten. Dette kan blant annet inkludere passord og logg.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Få tilgang til passordene dine i andre apper.</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
+<translation id="3481315707647070701">Visualiser og rediger</translation>
 <translation id="3485558910355485767">Nytt inkognitovindu</translation>
 <translation id="3488501490964659223">Faner ble lukket, og nettlesingsdata ble slettet. Du ble logget av</translation>
 <translation id="3490396108106323715">Del den aktive fanen</translation>
@@ -847,11 +848,13 @@
 <translation id="3659297405161482746">Fant ingen betalingsmåter</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 er valgt}other{# er valgt}}</translation>
 <translation id="3668035568083954765">Ivareta personvernet og hold deg trygg</translation>
+<translation id="3668703890943804691">Oppgaven er stoppet</translation>
 <translation id="3668816008081204991">Leselisten er skjult</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Velg alle</translation>
 <translation id="3679163990085797665">Slett leste</translation>
 <translation id="368329460027487650">Logget av. Åpner alternativer for pålogging.</translation>
+<translation id="3689746421535476813">Velg en lagret betalingsmåte du vil endre, eller legg til en ny betalingsmåte</translation>
 <translation id="3695446226812920698">Sånn gjør du det</translation>
 <translation id="3700134753671613714">Logg på for å få bokmerkene dine på alle enhetene du bruker.</translation>
 <translation id="3701167022068948696">Løs dette nå</translation>
@@ -919,6 +922,7 @@
 <translation id="3914173277599553213">Påkrevd</translation>
 <translation id="3914640181019354363">Finn adresser</translation>
 <translation id="391904960191284041">Produktanmeldelser</translation>
+<translation id="3920165976616657606">«Utforsk Safe Browsing med økt beskyttelse» er fullført.</translation>
 <translation id="3921585859122905677">Posisjon for adressefeltet</translation>
 <translation id="3922185497376658606">Forhåndslast nettsider</translation>
 <translation id="3926703470020109118">Nedlastingen er avbrutt</translation>
@@ -927,6 +931,7 @@
 <translation id="3933372629914873850">Du er i ferd med å logge på <ph name="URL" /></translation>
 <translation id="3934905113567851655">Klyp for å endre størrelse</translation>
 <translation id="393732545649378031">Konto</translation>
+<translation id="3939683043166875001">Skjul eller vis de mest besøkte nettstedene dine, Discover-feeden med mer.</translation>
 <translation id="3940195383040445971">Spor priser på faner</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Lukk {COUNT} fane}other{Lukk {COUNT} faner}}</translation>
 <translation id="3946483119107054883">Last ned i CSV-format</translation>
@@ -1089,6 +1094,7 @@
 <translation id="4455710003856931944">Du kan sveipe på kanten for å gå frem eller tilbake.</translation>
 <translation id="4460014764210899310">Fjern gruppering</translation>
 <translation id="446314443268698477">Kjøp, oversett og identifiser det du ser, med kameraet eller bilder.</translation>
+<translation id="4465941170695753889">Trykk og hold for å opprette en fanegruppe</translation>
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="4470766488397113689">Hva vil du jobbe med?</translation>
 <translation id="4471472356135655769">Kan ikke eksportere passordene</translation>
@@ -1120,7 +1126,6 @@
 <translation id="456502772933839252">Deler <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4568230126482344545">Skjul nylige faner</translation>
-<translation id="4571490460651837010">Administrer adresser med mer …</translation>
 <translation id="4578835633387306383">Slå på…</translation>
 <translation id="4580621046861724270">Noen bokmerker er ikke lagret</translation>
 <translation id="4580716718466706433">Gå til «Passordlagring»</translation>
@@ -1204,6 +1209,7 @@
 <translation id="4808744395915275922">Oppdateringer</translation>
 <translation id="4813345808229079766">Tilkobling</translation>
 <translation id="4821595350501541683">Faner ble lukket, og nettlesingsdata ble slettet</translation>
+<translation id="4823322556950229674">Du kan trykke og holde for å flytte adressefeltet og tilbakeknappen til bunnen av skjermen</translation>
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
@@ -1261,6 +1267,7 @@
 <translation id="4977176874984951085">Åpne handlingsmenyen for siden</translation>
 <translation id="4979397965658815378">Logg på med Google-kontoen din for å få bokmerkene, passordene, loggoppføringene og de andre innstillingene dine på alle enhetene du bruker</translation>
 <translation id="4985921635659180565">Når en fil er planlagt slettet, kan ikke dette avbrytes.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 delt fane}other{{COUNT} delte faner}}</translation>
 <translation id="498624032394115435">Alle som har linken, kan redigere alle faner.</translation>
 <translation id="4986428648020277392">Forespørsel: Hvilken bør jeg kjøpe? 2 av 3</translation>
 <translation id="498768198683310172">Begynn å bruke Gemini</translation>
@@ -1720,6 +1727,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6372558618707314581">Gå til en hvilken som helst side</translation>
 <translation id="6374469231428023295">Prøv på nytt</translation>
 <translation id="6374514103145916800">Spør</translation>
+<translation id="6381241974485088375">Du kan tilpasse Ny fane-siden her når som helst</translation>
 <translation id="6383719166112032471">Åpne plassering</translation>
 <translation id="6387994324662817823">Passord lagres i Google Passordlagring kun på denne enheten.</translation>
 <translation id="6393156038355142111">Foreslå et sterkt passord</translation>
@@ -1838,6 +1846,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6708501134077648845">Passordvalg</translation>
 <translation id="6709964700841491574">Låsingsmodus</translation>
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Smartere og raskere svar</translation>
 <translation id="6713676799463473249">Endret <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Mottatte faner</translation>
 <translation id="6722638373100589752">For å autofylle informasjonen din, slå på «Bruk kort og billetter i hele Google» i Wallet-innstillingene</translation>
@@ -1918,6 +1927,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="6938212956536472404">Denne fanen kan ikke deles</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6946722113367118030">Tenkende</translation>
+<translation id="6947751977892029882">Noe gikk galt med denne innstillingen. Oppdater og start Chrome og iOS på nytt, og prøv igjen. Hvis denne feilen fortsatt oppstår, kan det hende at iPhone-enheten ikke støtter denne innstillingen.</translation>
 <translation id="6950522403736391608">Skjult</translation>
 <translation id="695965663642079255">Lagre og administrer betalingsopplysninger for å betale raskere</translation>
 <translation id="6962809930976936328">Få statistikk med Gemini</translation>
@@ -2340,6 +2350,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8264966119170358612">Noen av de lagrede passordene dine ble avdekket i et databrudd utenfor Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Åpne Chrome-menyen</translation>
 <translation id="826614135184049678">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPad. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
+<translation id="8266370374397811600">En ny prestasjon er låst opp! 🥳</translation>
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Du er i ferd med å bytte profil</translation>
 <translation id="8275068909952022340">Mer…</translation>
@@ -2424,6 +2435,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8535368836838588657">Vis passordet</translation>
 <translation id="8540426897269305488">Logg på med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Noe gikk galt. Trykk på Live-knappen for å prøve å starte samtalen igjen.</translation>
+<translation id="8544172904312384600">Endre eller legg til en ny betalingsmåte</translation>
 <translation id="8545276357312221485">Kontroller standardinnstillingene for nettleseren</translation>
 <translation id="854938212724803178">Du har ett passord som er utsatt for sikkerhetsbrudd. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="8551311254462607218">Trykk på Google Lens-kameraikonet i adressefeltet.</translation>
@@ -2462,6 +2474,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8639963783467694461">Innstillinger for autofyll</translation>
 <translation id="8642417828095157370">Faner deles for å gi deg mer relevante svar</translation>
 <translation id="8643403533759285912">Slett gruppen</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Kunne ikke avslutte prissporing.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8655861111558401309">Velg Slett nettlesingsdata</translation>
@@ -2541,7 +2554,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8855242995793521265">Funksjonen gjør ikke nettleseren eller enheten merkbart tregere.</translation>
 <translation id="8856643812068084733">Arkiver</translation>
-<translation id="8863067612494559785">Sender til <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Få veibeskrivelser og lokal informasjon fra Google Maps</translation>
 <translation id="8871974300055371298">Innholdsinnstillinger</translation>
 <translation id="8876661425082386199">Sjekk tilkoblingen din</translation>

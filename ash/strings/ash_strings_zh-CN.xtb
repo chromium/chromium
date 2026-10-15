@@ -1020,6 +1020,7 @@
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
 <translation id="3978162107953847778">插入指向浏览记录和 Google 云端硬盘等位置的链接。您还可以插入表情符号、图片文件等内容。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">要切换音频输出设备吗？</translation>
+<translation id="3983903378684256134">Chromebook 版 Steam</translation>
 <translation id="3984536049089846927">下一页</translation>
 <translation id="3986082989454912832">接听</translation>
 <translation id="3990002060657467458">您可在“快捷设置”中找到常用控件（例如 Wi-Fi、蓝牙和音量），也可在那里执行截屏操作。</translation>
@@ -1229,7 +1230,7 @@
 <translation id="4556953949326137018">当您使用“添加到日历”或“创建 Google 文档”等建议的操作时，系统会将所选区域的内容发送到 Google 服务器以执行建议的操作，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
-<translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
+<translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备也可能会自动下载并安装来自 Google、运营商及设备制造商的更新和应用，且此过程可能会使用移动数据。部分应用可能包含应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="4563880231729913339">手指 3</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4569753163207712681">查看手机中的近期照片、媒体内容和应用</translation>
@@ -1634,6 +1635,7 @@
 <translation id="5727460725221669831">如果您忘记了密码，或最近更改过自己的 Google 账号密码，请尝试让此用户恢复登录。</translation>
 <translation id="5733630091161562207">欢迎通知</translation>
 <translation id="573413375004481890">此设备无法支持您的所有显示屏，因此断开了与其中一个显示屏的连接</translation>
+<translation id="5739548907438839901">已释放 <ph name="SIZE" /> 的磁盘可用空间。</translation>
 <translation id="574392208103952083">中等</translation>
 <translation id="5745612484876805746">夜间光效会于日落时自动开启</translation>
 <translation id="5749214722697335450">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK1" />详细了解指标<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
@@ -2209,6 +2211,7 @@
 <translation id="7413851974711031813">按 Esc 键即可关闭</translation>
 <translation id="7416471219712049036">保存当前网页</translation>
 <translation id="742594950370306541">摄像头处于使用状态。</translation>
+<translation id="7430466159639897874">您将未使用的磁盘可用空间 (<ph name="SIZE" />) 分配给了已弃用的功能“Chromebook 版 Steam”。</translation>
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
 <translation id="7433708794692032816">插入智能卡以继续使用您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google 搜索</translation>
@@ -2350,6 +2353,7 @@
 <translation id="7781335840981796660">所有用户账号和本地数据都将会移除。</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7787212146956232129">输入和输出设备均已设置。如需更改，请前往“设置”。</translation>
+<translation id="7790757511772316441">可用磁盘空间</translation>
 <translation id="7792590255364786396">可见</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>

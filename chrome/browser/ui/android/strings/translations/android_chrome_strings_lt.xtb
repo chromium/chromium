@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Teksto perskaitymo režimo nuostatos atidarytos per visą aukštį</translation>
 <translation id="1014147525163127655">Šiame įrenginyje nėra jokių slaptažodžių, skirtų <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Sparčiai ieškokite balsu. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
-<translation id="1028699632127661925">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="103269572468856066">Taip pat išvalyti duomenis iš šių svetainių ir programų?</translation>
 <translation id="1035113036584565771">Uždaryta patarimų pranešimų reklama</translation>
 <translation id="1036348656032585052">Išjungti</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Prieigos rakto patvirtinimo lapas uždarytas</translation>
 <translation id="1197933394627598677">Rodyti Teksto perskaitymo režimą</translation>
 <translation id="1197935538609051549">Išaktyvinti</translation>
+<translation id="119944043368869598">Valyti viską</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1202892408424955784">Stebimi produktai</translation>
 <translation id="1204037785786432551">Atsisiųsti nuorodą</translation>
@@ -135,6 +135,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1485343711570311792">Atidarykite programoje „<ph name="NATIVE_APP_NAME" />“ • Iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1495677929897281669">Atgal į skirtuką</translation>
 <translation id="1496514951988037011">naudotojo vardas</translation>
+<translation id="1498051468374914325">Atidaryti kūrėjo įrankių pultą</translation>
 <translation id="1501480321619201731">Ištrinti grupę</translation>
 <translation id="1506061864768559482">Paieškos variklis</translation>
 <translation id="1513352483775369820">Žymių ir žiniatinklio istorija</translation>
@@ -142,6 +143,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1516966594427080024">Atidaryti naują langą inkognito režimu</translation>
 <translation id="152204906462707884">Sparčiai ištrinkite naršymo istoriją ir geriau valdykite privatumą</translation>
 <translation id="153446405401665083">Yra nauja „Chrome“ versija</translation>
+<translation id="1537160738459068682">Atidaryti kūrėjo įrankių elementus</translation>
 <translation id="1540012742443808215">Adreso juosta šiuo metu yra viršuje</translation>
 <translation id="1543035591122163372">Prisijunkite, kad gautumėte slaptažodžius ir kt. iš <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
@@ -151,6 +153,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1553358976309200471">Atnaujinti „Chrome“</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> pagal užklausą „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="1554532453982918912">Padėkite tobulinti „Chrome“ žmonėms, naudojantiems ją kaip jūs</translation>
+<translation id="1557806604681757705">kompiuteryje</translation>
 <translation id="1568636008098739136">Klausytis šio puslapio. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
 <translation id="1571041387761170095">Nėra nesudėtingų ar pakartotinai naudojamų slaptažodžių</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="22091350895006575">Pridėti naudotojo vardą</translation>
 <translation id="2211043920024403606">Profilio informacija</translation>
 <translation id="221494669172414749">Atidarius „Chrome“ be profilio užrakto, išsaugoti slaptažodžiai ir mokėjimo metodai bus pašalinti iš automobilio. Naudojant profilio užraktą šie duomenys apsaugomi.</translation>
+<translation id="2220529011494928058">Pranešti apie problemą</translation>
 <translation id="2226826835915474236">Neaktyvūs spartieji klavišai</translation>
 <translation id="2227179592712503583">Pašalinti pasiūlymą</translation>
 <translation id="2227444325776770048">Tęsti kaip <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3189635831478931757">Skirtukų grupė „<ph name="GROUP_TITLE" />“</translation>
 <translation id="3200536777393523575">Uždaryti dabartinį langą?</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
+<translation id="3208321278970793882">Programa</translation>
 <translation id="3208584281581115441">Tikrinti dabar</translation>
 <translation id="3211426585530211793">Ištrinta „<ph name="ITEM_TITLE" />“</translation>
 <translation id="3232293466644486101">Ištrinti naršymo duomenis…</translation>
@@ -963,6 +968,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4807098396393229769">Kortelėje nurodytas vardas ir pavardė</translation>
 <translation id="4807700370495020449">Prisijunkite prie šios svetainės ir „Chrome“, kad gautumėte išsaugotą informaciją ir kt. visuose savo įrenginiuose</translation>
 <translation id="480990236307250886">Atidaryti pagrindinį puslapį</translation>
+<translation id="4812684235631257312">Priegloba</translation>
 <translation id="4816492930507672669">Pritaikyti pagal puslapį</translation>
 <translation id="4822710610088666676">Skirtukų grupė „<ph name="TAB_GROUP_TITLE" />“ uždaryta ir išsaugota</translation>
 <translation id="4835385943915508971">„Chrome“ negali pasiekti pageidaujamo ištekliaus.</translation>
@@ -1069,6 +1075,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5233638681132016545">Naujas skirtukas</translation>
 <translation id="5235196193381275927">Prisijungiant įvyko klaida</translation>
 <translation id="5246093389635966745">Redaguoti spartųjį įrankių juostos klavišą</translation>
+<translation id="5257142004843671642">Pakeisti šoninio skydelio dydį</translation>
 <translation id="5264813352784073502">pastarosios dvidešimt keturios valandos</translation>
 <translation id="5267572070504076962">Įjunkite Saugų naršymą, kad būtumėte apsaugoti nuo pavojingų svetainių</translation>
 <translation id="5273031377282080577">Šį nustatymą tvarko administratorius.</translation>
@@ -1095,9 +1102,9 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5370504953185181057">„<ph name="TAB_TITLE" />“, prisegtas bendrinantis inkognito skirtukas</translation>
 <translation id="5375374982898812658">Iš karto neteksite prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų jūsų įrenginių</translation>
 <translation id="537865165090710757">Išsaugoti ir bendrinti</translation>
-<translation id="5385892579392932755">nešiojamojo kompiuterio</translation>
 <translation id="5390367025924544771">„<ph name="WEBSITE_ORIGIN" />“ nori naudoti asmens informaciją iš skaitmeninės piniginės. Tęskite, tik jei pasitikite šia svetaine. Pavojingose svetainėse gali būti bandoma apgaule priversti jus atskleisti tokią informaciją kaip oficialūs vardas ir pavardė ar asmens tapatybės numeris.</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
+<translation id="5397794290049113714">Jūs</translation>
 <translation id="539881862970320163">Siūlomas sudėtingas slaptažodis. Klaviatūra paslėpta.</translation>
 <translation id="5404274604891474619">Nepavyko redaguoti PDF</translation>
 <translation id="5409881200985013443">Pateikti <ph name="ONE_TIME_CODE" /> įrenginyje (<ph name="CLIENT_NAME" />)?</translation>
@@ -1523,6 +1530,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6964300328304469089">Šiuo metu pasirinkta: <ph name="NAME" />, <ph name="EMAIL" />. Pasirinkite paskyrą.</translation>
 <translation id="696447261358045621">Išjungti inkognito režimą</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6965978654500191972">Įrenginys</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Peržiūrėkite <ph name="TABS_COUNT_ONE" /> skirtuką su nauja veikla bendrinamose skirtukų grupėse}one{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtuką su nauja veikla bendrinamose skirtukų grupėse}few{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtukus su nauja veikla bendrinamose skirtukų grupėse}many{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtuko su nauja veikla bendrinamose skirtukų grupėse}other{Peržiūrėkite <ph name="TABS_COUNT_MANY" /> skirtukų su nauja veikla bendrinamose skirtukų grupėse}}</translation>
 <translation id="6971555615916967190">Teksto perskaitymo režimo nuostatos atidarytos iki pusės aukščio</translation>
 <translation id="6971862865055170158">Nepatvirtinti</translation>
@@ -1942,6 +1950,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8512053371384421952">Nebegausite pranešimų iš <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Vaizdų redagavimo priemonė</translation>
 <translation id="8517759303731677493">Redaguoti…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Saugus naršymas įjungtas</translation>
 <translation id="8538291624121505885">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas prisegtas vaizdo vaizde skirtukas</translation>
 <translation id="8540136935098276800">Įveskite tinkamo formato URL</translation>
@@ -2061,6 +2070,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9024318700713112071">Nustatykite „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="9027728231343310283">Anuliuoti <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Perkelti į\u2026</translation>
+<translation id="9038316201889095704">Paieška puslapyje išjungta, kol yra neišsaugotų pakeitimų.</translation>
 <translation id="904146253922032365">Palieskite ir palaikykite, kad skirtukai būtų rodomi vertikaliai</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>
 <translation id="9047347135558855162">Sparčiai pradėkite paiešką naršyklėje „Chrome“</translation>

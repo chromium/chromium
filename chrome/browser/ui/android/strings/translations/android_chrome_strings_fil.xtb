@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Binuksan nang buo ang mga preference sa Reading mode</translation>
 <translation id="1014147525163127655">Walang anumang passkey para sa <ph name="ORIGIN" /> sa device na ito</translation>
 <translation id="1016498331642356377">Mabilis na maghanap gamit ang iyong boses. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
-<translation id="1028699632127661925">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">I-clear ang data sa mga site at app?</translation>
 <translation id="1035113036584565771">Isinara ang promo na mga notification tungkol sa mga tip</translation>
 <translation id="1036348656032585052">I-off</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Isinara ang sheet ng pagkumpirma sa passkey</translation>
 <translation id="1197933394627598677">Ipakita ang Reading mode</translation>
 <translation id="1197935538609051549">I-deactivate</translation>
+<translation id="119944043368869598">I-clear lahat</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1202892408424955784">Mga sinusubaybayang produkto</translation>
 <translation id="1204037785786432551">Link sa pag-download</translation>
@@ -135,6 +135,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1485343711570311792">Buksan sa <ph name="NATIVE_APP_NAME" /> • Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
 <translation id="1496514951988037011">username</translation>
+<translation id="1498051468374914325">Buksan ang Console ng Mga Tool ng Developer</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmark at history ng web</translation>
@@ -142,6 +143,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1516966594427080024">Magbukas ng bagong window sa Incognito mode</translation>
 <translation id="152204906462707884">Mabilis na i-delete ang iyong history ng pag-browse at mas kontrolin ang privacy mo</translation>
 <translation id="153446405401665083">May available na bagong bersyon ng Chrome</translation>
+<translation id="1537160738459068682">Buksan ang Mga Element ng Mga Tool ng Developer</translation>
 <translation id="1540012742443808215">Kasalukuyang nasa itaas ang address bar</translation>
 <translation id="1543035591122163372">Mag-sign in para makuha ang iyong mga password at higit pa mula sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
@@ -151,6 +153,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1553358976309200471">I-update ang Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> para sa "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Tumulong na pahusayin ang Chrome para sa mga taong ginagamit ito gaya ng paggamit mo</translation>
+<translation id="1557806604681757705">iyong computer</translation>
 <translation id="1568636008098739136">Makinig sa page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="1571041387761170095">Walang password na mahina o ginamit ulit</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="22091350895006575">Magdagdag ng username</translation>
 <translation id="2211043920024403606">Impormasyon ng profile</translation>
 <translation id="221494669172414749">Kapag binuksan ang Chrome nang walang lock ng profile, maaalis ang iyong mga naka-save na password at mga paraan ng pagbabayad sa kotse. Kapag gumamit ng lock ng profile, mananatiling secure ang data na ito.</translation>
+<translation id="2220529011494928058">Mag-ulat ng isyu</translation>
 <translation id="2226826835915474236">Mga hindi aktibong shortcut</translation>
 <translation id="2227179592712503583">Alisin ang suhestyon</translation>
 <translation id="2227444325776770048">Magpatuloy bilang si <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3189635831478931757">Grupo ng tab na <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Isara ang iyong kasalukuyang window?</translation>
 <translation id="3207960819495026254">Naka-bookmark</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Suriin ngayon</translation>
 <translation id="3211426585530211793">Na-delete ang <ph name="ITEM_TITLE" /></translation>
 <translation id="3232293466644486101">I-delete ang data mula sa pag-browse…</translation>
@@ -963,6 +968,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4807098396393229769">Pangalang makikita sa card</translation>
 <translation id="4807700370495020449">Mag-sign in sa site na ito at sa Chrome para makuha ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo</translation>
 <translation id="480990236307250886">Buksan ang home page</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Pagkasyahin sa pahina</translation>
 <translation id="4822710610088666676">Isinara at na-save ang grupo ng tab na <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4835385943915508971">Walang access ang Chrome sa hiniling na mapagkukunan.</translation>
@@ -1069,6 +1075,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5233638681132016545">Bagong tab</translation>
 <translation id="5235196193381275927">Nagkaproblema habang nagsa-sign-in</translation>
 <translation id="5246093389635966745">I-edit ang shortcut ng toolbar</translation>
+<translation id="5257142004843671642">I-resize ang panel sa gilid</translation>
 <translation id="5264813352784073502">nakalipas na 24 na oras</translation>
 <translation id="5267572070504076962">I-on ang Ligtas na Pag-browse para magkaroon ng proteksyon laban sa mga mapanganib na site</translation>
 <translation id="5273031377282080577">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
@@ -1095,9 +1102,9 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, Naka-pin at Nagshe-share na Tab na Incognito</translation>
 <translation id="5375374982898812658">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />,” at ide-delete ito sa lahat ng device mo</translation>
 <translation id="537865165090710757">I-save at i-share</translation>
-<translation id="5385892579392932755">iyong laptop</translation>
 <translation id="5390367025924544771">Gustong gamitin ng <ph name="WEBSITE_ORIGIN" /> ang personal na impormasyon mula sa iyong digital wallet. Magpatuloy lang kung pinagkakatiwalaan mo ang site na ito. Posibleng linlangin ka ng mga mapanganib na site na magbunyag ng mga bagay tulad ng iyong legal na pangalan o numero ng ID.</translation>
 <translation id="5395376160638294582">Tiyaking magagamit mo sa anumang oras ang data ng Chrome sa iyong Google Account</translation>
+<translation id="5397794290049113714">Ikaw</translation>
 <translation id="539881862970320163">Iminumungkahi ang malakas na password. Naka-hide ang keyboard.</translation>
 <translation id="5404274604891474619">Hindi ma-edit ang PDF</translation>
 <translation id="5409881200985013443">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="CLIENT_NAME" />?</translation>
@@ -1523,6 +1530,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6964300328304469089">Kasalukuyang pinili ang <ph name="NAME" />, <ph name="EMAIL" />. Pumili ng account.</translation>
 <translation id="696447261358045621">Umalis sa Incognito mode?</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Device</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Tingnan ang <ph name="TABS_COUNT_ONE" /> tab na may bagong aktibidad sa mga naka-share na grupo ng tab}one{Tingnan ang <ph name="TABS_COUNT_MANY" /> tab na may bagong aktibidad sa mga naka-share na grupo ng tab}other{Tingnan ang <ph name="TABS_COUNT_MANY" /> na tab na may bagong aktibidad sa mga naka-share na grupo ng tab}}</translation>
 <translation id="6971555615916967190">Binuksan nang kalahati ang mga preference sa Reading mode</translation>
 <translation id="6971862865055170158">Huwag aprubahan</translation>
@@ -1942,6 +1950,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8512053371384421952">Hindi ka na makakatanggap ng mga notification mula sa <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor ng Larawan</translation>
 <translation id="8517759303731677493">I-edit…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Naka-on ang Ligtas na Pag-browse</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin na Picture-in-Picture na Tab</translation>
 <translation id="8540136935098276800">Maglagay ng URL na tama ang pag-format</translation>
@@ -2061,6 +2070,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9024318700713112071">Itakda ang Chrome bilang iyong default</translation>
 <translation id="9027728231343310283">I-undo ang <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Ilipat sa\u2026</translation>
+<translation id="9038316201889095704">Naka-disable ang Hanapin sa page habang may mga hindi na-save na pagbabago.</translation>
 <translation id="904146253922032365">Pindutin nang matagal para ipakita ang mga tab nang patayo</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
 <translation id="9047347135558855162">Mabilis na magsimula ng paghahanap sa Chrome</translation>

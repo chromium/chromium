@@ -1020,6 +1020,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3977512764614765090">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge.</translation>
 <translation id="3978162107953847778">Maglagay ng mga link mula sa mga lugar tulad ng iyong history ng pag-browse at Google Drive. Puwede ka ring maglagay ng mga emoji, image file, at higit pa. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Palitan ang audio output?</translation>
+<translation id="3983903378684256134">Steam sa Chromebook</translation>
 <translation id="3984536049089846927">Susunod na page</translation>
 <translation id="3986082989454912832">Sagutin</translation>
 <translation id="3990002060657467458">Nasa Mga Mabilisang Setting ang mga madalas gamiting kontrol tulad ng Wi-Fi, Bluetooth, at volume. Puwede ka rin pumunta rito para kumuha ng mga screenshot.</translation>
@@ -1231,7 +1232,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4556953949326137018">Kapag gumamit ka ng mga suggested action tulad ng “idagdag sa Calendar” o “gumawa ng mga Google Doc,” ipapadala sa mga server ng Google ang content mula sa napiling area para magmungkahi ng mga aksyon, na napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="4560576029703263363">Naka-on</translation>
 <translation id="4561267230861221837">3G</translation>
-<translation id="4562091353415772246">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang posible ring awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, na posibleng gumamit ng cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa awtomatikong pag-install sa pamamagitan ng Play<ph name="BEGIN_LINK1_END" /><ph name="END_LINK1" /></translation>
+<translation id="4562091353415772246">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang posibleng awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, posibleng gamit ang cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa awtomatikong pag-install sa pamamagitan ng Play<ph name="BEGIN_LINK1_END" /><ph name="END_LINK1" /></translation>
 <translation id="4563880231729913339">Daliri 3</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4569753163207712681">Tingnan ang mga kamakailang larawan, media, at app ng iyong telepono</translation>
@@ -1637,6 +1638,7 @@ Walang nakakonektang device.</translation>
 <translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="5733630091161562207">Notification ng pagbati</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
+<translation id="5739548907438839901">Nagbakante ng <ph name="SIZE" /> na disk space.</translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5745612484876805746">Awtomatikong nag-o-on ang Night Light sa paglubog ng araw</translation>
 <translation id="5749214722697335450">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang iyong experience sa Android sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang iyong setting na karagdagang Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@ Kaka-install lang</translation>
 <translation id="7413851974711031813">Pindutin ang escape para isara</translation>
 <translation id="7416471219712049036">I-save ang kasalukuyang page</translation>
 <translation id="742594950370306541">Ginagamit ang camera.</translation>
+<translation id="7430466159639897874">Mayroon kang hindi ginagamit na disk space (<ph name="SIZE" />) na nakalaan para sa hindi na ginagamit na feature na "Steam sa Chromebook."</translation>
 <translation id="743058460480092004">Ginagamit ang camera at mikropono.</translation>
 <translation id="7433708794692032816">Maglagay ng smart card para mapanatili ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google Search</translation>
@@ -2353,6 +2356,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7781335840981796660">Aalisin ang lahat ng user account at lokal na data.</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7787212146956232129">Nakatakda ang mga input device at output device. Pumunta sa Mga Setting para baguhin.</translation>
+<translation id="7790757511772316441">Bakanteng disk space</translation>
 <translation id="7792590255364786396">Nakikita</translation>
 <translation id="7796735576426975947">Nakatago ang bagong notification</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>

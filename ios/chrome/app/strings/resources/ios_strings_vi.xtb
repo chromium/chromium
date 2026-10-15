@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Đã cập nhật mục</translation>
 <translation id="1018804590490383958">Quét và tự động điền</translation>
 <translation id="1019990162050689579">Hoạt động trên Các ứng dụng Gemini</translation>
+<translation id="102471647093736603">Nhấn và giữ để di chuyển</translation>
 <translation id="102645702181682900">Đã bắt đầu nhiệm vụ</translation>
 <translation id="102916930470544692">Khoá truy cập</translation>
 <translation id="1030376737535466765">Mở Trình quản lý mật khẩu</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Một số nội dung có thể không phù hợp với một số người.</translation>
 <translation id="1601560923496285236">Áp dụng</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 địa chỉ}other{# địa chỉ}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Hoàn thành 1 nhiệm vụ để lên cấp}other{Hoàn thành {count} nhiệm vụ để lên cấp}}</translation>
 <translation id="1605405588277479165">Tắt – Không khuyến nghị</translation>
 <translation id="1605658421715042784">Sao chép ảnh</translation>
 <translation id="1606899876897213121">Đóng phần tóm tắt hoạt động gần đây</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">Mở trong Wallet?</translation>
 <translation id="183878838231635348">Thẻ này cho biết mọi vấn đề về quyền riêng tư hoặc bảo mật mà tính năng Kiểm tra an toàn tự động phát hiện cho bạn.</translation>
 <translation id="1845230888742614096">Giữ lại nhóm</translation>
-<translation id="1853558655412913122">Bạn hiện có thể thay đổi vị trí của thanh địa chỉ bằng cách vào phần "Cài đặt" rồi chọn "Thanh địa chỉ"</translation>
 <translation id="1853692000353488670">Thẻ ẩn danh mới</translation>
 <translation id="1854463785401910334">Tìm kiếm trên các thẻ đang mở</translation>
 <translation id="1860609647735325606">Nhờ Gemini giải thích</translation>
@@ -363,7 +364,7 @@
 <translation id="205013082884273671">Tìm kiếm nội dung bất kỳ trên màn hình</translation>
 <translation id="2054044186557130763">Đăng nhập bằng <ph name="NAME" /> <ph name="EMAIL" /> do tổ chức của bạn quản lý.</translation>
 <translation id="2059166748188874810">Thành phố tự trị</translation>
-<translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
+<translation id="2060638295449304809">Địa chỉ này chỉ được lưu trên thiết bị này. Để sử dụng địa chỉ này trên các thiết bị khác, hãy lưu vào Tài khoản Google của bạn (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">Bộ chọn loại đơn vị</translation>
 <translation id="2067852168641682340">Luôn lưu vào tài khoản này</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 thẻ}other{{count} thẻ}}</translation>
@@ -512,6 +513,7 @@
 <translation id="2524699375503213836">Nhập dữ liệu từ Safari</translation>
 <translation id="2526166285241366046">Lưu mật khẩu</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
+<translation id="2530932541542751783">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật rồi khởi động lại Chrome và iPadOS, sau đó thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPad của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="2536991091671391962">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho tài khoản <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Mật khẩu ẩn</translation>
 <translation id="2538705697765638552">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể quản lý thông tin của mình trong Google Wallet cho <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +565,6 @@
 <translation id="2673508731173059946">Truy cập vào đường liên kết đã sao chép</translation>
 <translation id="2679659833697380">Thông tin sẽ được lưu vào thiết bị của bạn</translation>
 <translation id="2681572445246787428">Ký tài liệu</translation>
-<translation id="2685514716378236873">Không được phép</translation>
 <translation id="2688535388040882469">Biểu ngữ</translation>
 <translation id="2690858294534178585">Máy ảnh đang được sử dụng</translation>
 <translation id="2691653761409724435">Ko khả dụng khi ngoại tuyến</translation>
@@ -774,7 +775,6 @@
 <translation id="3430407169377889553">Hãy sử dụng Gemini một cách thận trọng và can thiệp nếu cần. Bạn chịu trách nhiệm về những hành động mà Gemini thực hiện trong các nhiệm vụ.</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3441673211568148613">Duyệt web ở chế độ riêng tư</translation>
-<translation id="3443810440409579745">Đã nhận thẻ.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="344589138074534176">Tìm hiểu thêm về Google Ống kính</translation>
 <translation id="3447332786336558089">Sau khi bạn đăng xuất, hệ thống sẽ đóng các thẻ và xoá dữ liệu tài khoản chưa lưu khỏi thiết bị này. Dữ liệu này có thể bao gồm mật khẩu, nhật ký và nhiều nội dung khác.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Tiếp tục bằng tài khoản <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Sử dụng mật khẩu của bạn trên các ứng dụng khác.</translation>
 <translation id="3479552764303398839">Để sau</translation>
+<translation id="3481315707647070701">Trực quan hoá và chỉnh sửa</translation>
 <translation id="3485558910355485767">Cửa sổ ẩn danh mới</translation>
 <translation id="3488501490964659223">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web. Bạn cũng đã bị đăng xuất</translation>
 <translation id="3490396108106323715">Chia sẻ thẻ hiện tại</translation>
@@ -847,6 +848,7 @@
 <translation id="3659297405161482746">Không tìm thấy phương thức thanh toán nào</translation>
 <translation id="3662966164093827811">{count,plural, =1{Đã chọn 1}other{Đã chọn #}}</translation>
 <translation id="3668035568083954765">Bảo vệ quyền riêng tư và đảm bảo an toàn cho bạn</translation>
+<translation id="3668703890943804691">Đã dừng việc cần làm</translation>
 <translation id="3668816008081204991">Danh sách đọc đang bị ẩn</translation>
 <translation id="3670030362669914947">Số</translation>
 <translation id="3672283986707092811">Chọn tất cả</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">Bắt buộc</translation>
 <translation id="3914640181019354363">Phát hiện địa chỉ</translation>
 <translation id="391904960191284041">Bài đánh giá sản phẩm</translation>
+<translation id="3920165976616657606">Đã hoàn thành nhiệm vụ "Khám phá tính năng Duyệt web an toàn có tăng cường bảo vệ"!</translation>
 <translation id="3921585859122905677">Vị trí của thanh địa chỉ</translation>
 <translation id="3922185497376658606">Tải trước trang web</translation>
 <translation id="3926703470020109118">Đã huỷ tải xuống</translation>
@@ -928,6 +931,7 @@
 <translation id="3933372629914873850">Bạn sẽ đăng nhập vào <ph name="URL" /></translation>
 <translation id="3934905113567851655">Chụm hai ngón tay để thay đổi kích thước</translation>
 <translation id="393732545649378031">Tài khoản</translation>
+<translation id="3939683043166875001">Ẩn hoặc hiện các trang web hàng đầu, nguồn cấp dữ liệu Khám phá và nhiều nội dung khác.</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Đóng {COUNT} thẻ}other{Đóng {COUNT} thẻ}}</translation>
 <translation id="3946483119107054883">Tải xuống dưới dạng tệp CSV</translation>
@@ -1090,6 +1094,7 @@
 <translation id="4455710003856931944">Bạn có thể vuốt từ mép này để quay lại mục trước hoặc chuyển đến mục tiếp theo.</translation>
 <translation id="4460014764210899310">Huỷ nhóm</translation>
 <translation id="446314443268698477">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng bạn thấy bằng camera hoặc ảnh.</translation>
+<translation id="4465941170695753889">Nhấn và giữ để tạo một nhóm thẻ</translation>
 <translation id="4469324811108161144">Ghi chú có thể lưu tối đa <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="4470766488397113689">Bạn muốn làm việc nào?</translation>
 <translation id="4471472356135655769">Không xuất được mật khẩu</translation>
@@ -1121,7 +1126,6 @@
 <translation id="456502772933839252">Đang chia sẻ <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4568230126482344545">Ẩn tuỳ chọn Các thẻ gần đây</translation>
-<translation id="4571490460651837010">Quản lý địa chỉ và các lựa chọn khác…</translation>
 <translation id="4578835633387306383">Bật…</translation>
 <translation id="4580621046861724270">Một số dấu trang không được lưu</translation>
 <translation id="4580716718466706433">Chuyển đến "Trình quản lý mật khẩu"</translation>
@@ -1205,6 +1209,7 @@
 <translation id="4808744395915275922">Bản cập nhật</translation>
 <translation id="4813345808229079766">Kết nối</translation>
 <translation id="4821595350501541683">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web</translation>
+<translation id="4823322556950229674">Bạn có thể nhấn và giữ để di chuyển thanh địa chỉ và nút quay lại xuống dưới cùng</translation>
 <translation id="4824480232751123840">Thể tích</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
 <translation id="4826588772550366629">máy ảnh và micrô</translation>
@@ -1262,6 +1267,7 @@
 <translation id="4977176874984951085">Mở trình đơn thao tác trên trang</translation>
 <translation id="4979397965658815378">Đăng nhập bằng Tài khoản Google để nhận dấu trang, mật khẩu, lịch sử và các cài đặt khác trên tất cả thiết bị của bạn</translation>
 <translation id="4985921635659180565">Sau khi lên lịch xoá, bạn không thể huỷ quá trình xoá.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 thẻ được chia sẻ}other{{COUNT} thẻ được chia sẻ}}</translation>
 <translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
 <translation id="4986428648020277392">Câu lệnh: Tôi nên mua sản phẩm nào? 2/3</translation>
 <translation id="498768198683310172">Bắt đầu sử dụng Gemini</translation>
@@ -1840,6 +1846,7 @@
 <translation id="6708501134077648845">Các lựa chọn mật khẩu</translation>
 <translation id="6709964700841491574">Chế độ khoá</translation>
 <translation id="6710079714193676716">Do tổ chức của bạn quản lý. Bạn có thể không dùng được một số tính năng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Câu trả lời thông minh hơn, nhanh hơn</translation>
 <translation id="6713676799463473249">Đã sửa đổi vào <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Đã nhận thẻ</translation>
 <translation id="6722638373100589752">Để tự động điền thông tin, hãy bật chế độ "Sử dụng thẻ và vé trên các sản phẩm và dịch vụ của Google" trong phần cài đặt Wallet</translation>
@@ -1920,6 +1927,7 @@
 <translation id="6938212956536472404">Không thể chia sẻ thẻ này</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6946722113367118030">Đang suy nghĩ</translation>
+<translation id="6947751977892029882">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật rồi khởi động lại Chrome và iOS, sau đó thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPhone của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="6950522403736391608">Đã ẩn</translation>
 <translation id="695965663642079255">Lưu và quản lý thông tin thanh toán để thanh toán nhanh hơn</translation>
 <translation id="6962809930976936328">Khám phá thông tin chi tiết cùng Gemini</translation>
@@ -2342,6 +2350,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8264966119170358612">Một số mật khẩu bạn lưu đã bị lộ trong một sự cố rò rỉ dữ liệu xảy ra ngoài Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Mở trình đơn Chrome</translation>
 <translation id="826614135184049678">Bạn đã bị đăng xuất khỏi tài khoản <ph name="USER_NAME" /> trong quá trình đặt lại iPad. Để đăng nhập lại, hãy nhấn vào "Tiếp tục" ở dưới.</translation>
+<translation id="8266370374397811600">Bạn vừa đạt được thành tích mới! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Bạn sắp chuyển đổi hồ sơ</translation>
 <translation id="8275068909952022340">Khác…</translation>
@@ -2545,7 +2554,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>
 <translation id="8855242995793521265">Gần như không ảnh hưởng đến tốc độ của trình duyệt hoặc thiết bị.</translation>
 <translation id="8856643812068084733">Kho lưu trữ</translation>
-<translation id="8863067612494559785">Đang gửi tới <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Xem đường đi và thông tin về địa phương từ Google Maps</translation>
 <translation id="8871974300055371298">Cài đặt nội dung</translation>
 <translation id="8876661425082386199">Kiểm tra kết nối của bạn</translation>

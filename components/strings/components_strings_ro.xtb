@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Afișează sugestii</translation>
 <translation id="1038168778161626396">Numai cifrare</translation>
 <translation id="1038842779957582377">nume necunoscut</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
 <translation id="1044897699341250361">Ce înseamnă aceasta</translation>
 <translation id="1049837829250301306">Conținutul nu a putut fi inserat din cauza politicilor organizației</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">Nume parte EDI</translation>
 <translation id="1816436748874040213">Poate solicita permisiunea de a derula și de a face zoom în filele la care s-a permis accesul</translation>
 <translation id="1816707915923025275">Introdu @history pentru a căuta în istoricul de navigare</translation>
+<translation id="1816771466809215784">Pentru a-l completa automat la finalizarea achiziției, salvează numele titularului de card pentru acest card în Portofelul Google</translation>
 <translation id="1817364650920811003">Rol: sfat Chrome. Etichetă de accesibilitate: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">Descărcări automate</translation>
 <translation id="1821930232296380041">Solicitarea sau parametrii săi sunt greșiți</translation>
@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2103210856015238101">Cardurile de fidelitate disponibile pentru completarea la atingere, deschise la înălțimea completă.</translation>
 <translation id="2104739941682874393">Completarea automată îmbunătățită înțelege mai bine formularele și le poate completa automat mai rapid</translation>
+<translation id="2105237910269166838">Întreabă despre această pagină</translation>
 <translation id="2107021941795971877">Suporturi de printare</translation>
 <translation id="2108755909498034140">repornește computerul;</translation>
 <translation id="2109845311767915560">Grup de file comun</translation>
@@ -1054,7 +1055,7 @@
 <translation id="2734797989819862638">Nu copia</translation>
 <translation id="2738771556149464852">Nu după</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Funcție bazată pe Inteligența personalizată, creată cu Gemini. Solicitările, titlurile paginilor și adresele URL pot fi examinate pentru a îmbunătăți completarea automată îmbunătățită. <ph name="BEGIN_LINK" />Gestionează setările<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Niciuna}=1{O abilitate}few{# abilități}other{# de abilități}}</translation>
 <translation id="2757727729385895652">Se încarcă <ph name="COUNT" /> fișiere în Google Drive</translation>
 <translation id="2759299890026163685">Asigură-te că ai o conexiune stabilă la internet înainte de a încerca din nou</translation>
 <translation id="2759825833388495838">completează parola pe <ph name="APP_NAME" /></translation>
@@ -1434,7 +1435,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3434025015623587566">Managerul de parole Google are nevoie de mai multe permisiuni de acces</translation>
 <translation id="343474037147570563">Fișierele pe care le încarci sau atașezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
-<translation id="3435267628744367511">Apasă de două ori pe Ctrl în orice formular pentru a găsi și a completa informații fără a schimba fila</translation>
 <translation id="3435557549311968410">Continuu (scurt)</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3436125638121079308">Permiți automat accesul la filele relevante pentru răspunsuri mai bune în acest fir?</translation>
@@ -1880,7 +1880,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4153446078232988116"><ph name="SITE" /> nu acceptă o conexiune securizată cu HTTPS</translation>
 <translation id="4153858337812834972">Cele mai recente file</translation>
 <translation id="4154277373259957087">Chrome îți va confirma identitatea înainte să completeze metodele de plată. Poți actualiza oricând opțiunea în <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Dezvoltat de Inteligența personalizată cu Gemini. <ph name="BEGIN_LINK" />Gestionarea setărilor<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Actualizează în siguranță permisul de conducere</translation>
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4165422751765527461">Deschide un articol din centrul de ajutor într-o filă nouă</translation>
@@ -2148,7 +2147,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4599572944836204718">Plătește mai rapid cu Google Pay după salvarea cardului. Detaliile cardului sunt criptate în Portofelul Google.</translation>
 <translation id="4603727370377253901">Rezervări de zboruri</translation>
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
-<translation id="4607879293515681409">Completarea automată îmbunătățită poate acum să găsească și să completeze informații, cum ar fi numerele zborurilor și orele programărilor, din aplicații precum Gmail și Foto</translation>
 <translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
 <translation id="4612631413844865947">A apărut o eroare la procesarea comenzii pe <ph name="MERCHANT_ORIGIN" /> prin <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2923,7 +2921,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5884465125445718607">Plic chinezesc 6</translation>
 <translation id="5887400589839399685">Cardul a fost salvat</translation>
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
-<translation id="5887791684215121787">Apasă pe ⌘ ⌘ în orice formular pentru a găsi și a completa informații fără a schimba fila</translation>
 <translation id="5889251770650310375">Pentru a accesa istoricul de pe celelalte dispozitive, confirmă-ți identitatea și sincronizează istoricul și filele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5895187275912066135">Emis la</translation>
@@ -3029,6 +3026,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6051221802930200923">Nu poți accesa <ph name="SITE" /> acum, deoarece site-ul folosește fixarea certificatelor. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
 <translation id="6051898664905071243">Numărul de pagini:</translation>
 <translation id="605237284704429106">Se completează codul IBAN</translation>
+<translation id="6052557981901634648">Fă un plan</translation>
 <translation id="6053584886670442526">Poți folosi adresele salvate în toate produsele Google. Această adresă se salvează în Contul tău Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 cu criptare RSA</translation>
 <translation id="6055982527635883756">Plic (de arhivă)</translation>
@@ -3467,6 +3465,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6808579246645021886">File și fișiere în comun</translation>
 <translation id="681021252041861472">Câmp obligatoriu</translation>
 <translation id="6810899417690483278">ID-ul de personalizare</translation>
+<translation id="6815861164669871832">Întreabă despre o filă</translation>
 <translation id="681631578600400068">Salvează permisul de conducere</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Porturi seriale</translation>
@@ -3539,7 +3538,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6936976777388162184">Acesta este un dispozitiv care face parte dintr-un grup și nu poate fi înregistrat pentru Upgrade-ul la Chioșc și afișaj.</translation>
 <translation id="6942444979237658241">Comentarii - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Ai introdus parola pe un site care nu este gestionat de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pentru a proteja contul, nu folosi aceeași parolă pentru alte aplicații și site-uri.</translation>
-<translation id="6946949206576443118">Caută pe web din Chrome</translation>
 <translation id="6948051842255602737">Jocul s-a terminat. Scorul tău este de <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Când faci achiziții în Chrome, vezi Pix ca opțiune</translation>
 <translation id="6948701128805548767">Pentru a vedea metodele de preluare și cerințele, selectează o adresă</translation>
@@ -3629,6 +3627,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7083258188081898530">Tava 9</translation>
 <translation id="70846382339153529">Text OpenDocument</translation>
 <translation id="7086090958708083563">Utilizatorul a solicitat încărcarea</translation>
+<translation id="7089745480771070611">Se deschide în panoul lateral</translation>
 <translation id="7090698782953528257">Ajută-mă să reprezint grafic o funcție pentru a vizualiza ecuația matematică și a vedea forma curbei</translation>
 <translation id="7092087596499105699">Administratorul a configurat conectorul gateway-ului securizat pentru a proteja accesul la aplicațiile web private ale organizației. Poate folosi date din profilul tău de serviciu pentru a verifica accesul.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona permisiunile și datele stocate pe toate site-urile din setările Chrome</translation>
@@ -4013,6 +4012,7 @@ Detalii suplimentare:
 <translation id="7696107855583699585">Editează numărul de călător cunoscut</translation>
 <translation id="7698864304447945242">Actualizezi Serviciile Google Play pentru realitate augmentată?</translation>
 <translation id="7699509138503320152">Rescrie e-mailul pentru a fi mai convingător</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Niciuna}=1{O abilitate (sincronizată)}few{# abilități (sincronizate)}other{# de abilități (sincronizate)}}</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Accesați <ph name="SITE" /> (nesigur)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Ajută-mă să scriu</translation>
@@ -4255,6 +4255,7 @@ Detalii suplimentare:
 <translation id="813024282736408069">Activează un card virtual pentru completarea automată</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8135546115396015134">tasta săgeată spre stânga</translation>
+<translation id="8136385032646505126">Salvezi numele titularului de card?</translation>
 <translation id="8137185688006450980">Compară opțiunile de planuri de sănătate</translation>
 <translation id="8138591088112729119">Cu Inteligență personalizată</translation>
 <translation id="814071672416123670">Conținutul nu a putut fi copiat din cauza politicilor organizației</translation>
@@ -4529,6 +4530,7 @@ Detalii suplimentare:
 <translation id="8622864575115813231">Se contactează instituția financiară...</translation>
 <translation id="8632584659860846053">Istoricul de navigare, cookie-urile și datele privind site-urile, memoria cache și informațiile introduse în formulare se vor șterge după ce închizi toate ferestrele izolate</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Adaugă până la zece fișiere, file sau imagini</translation>
 <translation id="8637362707224133343">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent activități de phishing<ph name="END_LINK" /> pe site-ul pe care ai încercat să-l accesezi. Site-urile de phishing falsifică alte site-uri pentru a te înșela.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
 <translation id="8640996933372643759">Pentru a permite accesul la file și a colabora cu alții, trebuie să te poți conecta la Chrome</translation>
 <translation id="8641131559425911240">Plic (cretat)</translation>

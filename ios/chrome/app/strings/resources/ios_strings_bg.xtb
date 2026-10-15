@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Елементът е актуализиран</translation>
 <translation id="1018804590490383958">Сканиране и автоматично попълване</translation>
 <translation id="1019990162050689579">Активност в приложенията Gemini</translation>
+<translation id="102471647093736603">Натиснете и задръжте, за да преместите</translation>
 <translation id="102645702181682900">Задачата е стартирана</translation>
 <translation id="102916930470544692">Ключ за достъп</translation>
 <translation id="1030376737535466765">Отваряне на Мениджър на пароли</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Част от съдържанието може да не е подходящо за всички.</translation>
 <translation id="1601560923496285236">Прилагане</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адрес}other{# адреса}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Изпълнете 1 задача, за да преминете към по-горно ниво}other{Изпълнете {count} задачи, за да преминете към по-горно ниво}}</translation>
 <translation id="1605405588277479165">Изключено – не се препоръчва</translation>
 <translation id="1605658421715042784">Копиране на изображението</translation>
 <translation id="1606899876897213121">Затваряне на обобщението на скорошната активност</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">Да се отвори ли в Wallet?</translation>
 <translation id="183878838231635348">Тази карта показва всички проблеми, свързани с поверителността и сигурността, които са открити автоматично от функцията за проверка на безопасността.</translation>
 <translation id="1845230888742614096">Запазване на групата</translation>
-<translation id="1853558655412913122">Вече можете да променяте позицията на адресната лента от „Настройки“ и след това „Адресна лента“</translation>
 <translation id="1853692000353488670">Нов раздел „инкогнито“</translation>
 <translation id="1854463785401910334">Търсене в отворените раздели</translation>
 <translation id="1860609647735325606">Обяснение с Gemini</translation>
@@ -512,6 +513,7 @@
 <translation id="2524699375503213836">Прехвърляне на данните ви от Safari</translation>
 <translation id="2526166285241366046">Запазване на парола</translation>
 <translation id="2529021024822217800">Отваряне на всички</translation>
+<translation id="2530932541542751783">Нещо се обърка с тази настройка. Актуализирайте и рестартирайте Chrome и iPadOS и опитайте отново. Ако грешката продължи да се показва, възможно е вашият iPad да не поддържа тази настройка.</translation>
 <translation id="2536991091671391962">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в Google Мениджър на пароли за <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скрита парола</translation>
 <translation id="2538705697765638552">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете да управлявате информацията си в Google Wallet за <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +565,6 @@
 <translation id="2673508731173059946">Отваряне на копираната връзка</translation>
 <translation id="2679659833697380">Информацията ви се запазва на устройството ви</translation>
 <translation id="2681572445246787428">Подписване на документи</translation>
-<translation id="2685514716378236873">Не е разрешено</translation>
 <translation id="2688535388040882469">Банери</translation>
 <translation id="2690858294534178585">Камерата се използва</translation>
 <translation id="2691653761409724435">Не е налице офлайн</translation>
@@ -774,7 +775,6 @@
 <translation id="3430407169377889553">Използвайте Gemini внимателно и поемете контрола, ако е необходимо. Вие носите отговорност за действията на Gemini по време на задачите.</translation>
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="3441673211568148613">Запазете сърфирането си частно</translation>
-<translation id="3443810440409579745">Получен раздел.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344589138074534176">Научете повече за Google Обектив</translation>
 <translation id="3447332786336558089">След като излезете от профила си, разделите ще бъдат затворени и незапазените данни в него ще бъдат изтрити от това устройство. Те може да включват пароли, история и др.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Продължаване като <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Осъществявайте достъп до паролите си в други приложения.</translation>
 <translation id="3479552764303398839">Не сега</translation>
+<translation id="3481315707647070701">Визуализиране и редактиране</translation>
 <translation id="3485558910355485767">Нов прозорец в режим „инкогнито“</translation>
 <translation id="3488501490964659223">Разделите бяха затворени, а данните за сърфирането – изтрити. Излязохте от профила си</translation>
 <translation id="3490396108106323715">Споделяне на текущия раздел</translation>
@@ -847,11 +848,13 @@
 <translation id="3659297405161482746">Няма намерени начини на плащане</translation>
 <translation id="3662966164093827811">{count,plural, =1{Избрахте 1}other{Избрахте #}}</translation>
 <translation id="3668035568083954765">Защитете поверителността си и бъдете в безопасност</translation>
+<translation id="3668703890943804691">Задачата е спряна</translation>
 <translation id="3668816008081204991">Списъкът за четене е скрит</translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3672283986707092811">Избиране на всички</translation>
 <translation id="3679163990085797665">Изтриване на прочетените</translation>
 <translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
+<translation id="3689746421535476813">Изберете запазен начин на плащане, който да редактирате, или добавете нов</translation>
 <translation id="3695446226812920698">Научете как</translation>
 <translation id="3700134753671613714">Влезте в профила си, за да получите отметките си на всичките си устройства.</translation>
 <translation id="3701167022068948696">Коригиране сега</translation>
@@ -919,6 +922,7 @@
 <translation id="3914173277599553213">Задължително</translation>
 <translation id="3914640181019354363">Откриване на адреси</translation>
 <translation id="391904960191284041">Отзиви за продукта</translation>
+<translation id="3920165976616657606">Задачата „Изпробване на подобрената защита от Безопасно сърфиране“ е изпълнена!</translation>
 <translation id="3921585859122905677">Позиция на адресната лента</translation>
 <translation id="3922185497376658606">Предварително зареждане на уеб страниците</translation>
 <translation id="3926703470020109118">Изтеглянето е анулирано</translation>
@@ -927,6 +931,7 @@
 <translation id="3933372629914873850">Ще влезете в профила си в(ъв) <ph name="URL" /></translation>
 <translation id="3934905113567851655">Съберете пръсти за преоразмеряване</translation>
 <translation id="393732545649378031">Профил</translation>
+<translation id="3939683043166875001">Скрийте или покажете водещите си сайтове, емисията в Discover и др.</translation>
 <translation id="3940195383040445971">Проследяване на цените в разделите</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
 <translation id="3946483119107054883">Изтегляне в CSV файл</translation>
@@ -1089,6 +1094,7 @@
 <translation id="4455710003856931944">Можете да прекарате пръст по края, за да се върнете назад или да преминете напред.</translation>
 <translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="446314443268698477">Пазарувайте, превеждайте и идентифицирайте това, което виждате с камерата или в снимките си.</translation>
+<translation id="4465941170695753889">Натиснете и задръжте, за да създадете група раздели</translation>
 <translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="4470766488397113689">Върху какво искате да работите?</translation>
 <translation id="4471472356135655769">Паролите не могат да се експортират</translation>
@@ -1120,7 +1126,6 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> се споделя</translation>
 <translation id="4565377596337484307">Скриване на паролата</translation>
 <translation id="4568230126482344545">Скриване на „Скорошни раздели“</translation>
-<translation id="4571490460651837010">Управление на адресите и други неща…</translation>
 <translation id="4578835633387306383">Включване на…</translation>
 <translation id="4580621046861724270">Някои отметки не са запазени</translation>
 <translation id="4580716718466706433">Към Мениджър на пароли</translation>
@@ -1204,6 +1209,7 @@
 <translation id="4808744395915275922">Актуализации</translation>
 <translation id="4813345808229079766">Връзка</translation>
 <translation id="4821595350501541683">Разделите бяха затворени, а данните за сърфирането – изтрити</translation>
+<translation id="4823322556950229674">Можете да натиснете и задържите, за да преместите адресната лента и бутона за връщане назад в долната част</translation>
 <translation id="4824480232751123840">Обем</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и още 1}other{{domain} и още {count}}}</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
@@ -1261,6 +1267,7 @@
 <translation id="4977176874984951085">Отваряне на менюто с действия за страницата</translation>
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="4985921635659180565">След като изтриването на даден файл бъде насрочено, то не може да бъде отменено.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 споделен раздел}other{{COUNT} споделени раздела}}</translation>
 <translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
 <translation id="4986428648020277392">Подкана 2 от 3: Кои да купя?</translation>
 <translation id="498768198683310172">Започнете да използвате Gemini</translation>
@@ -1839,6 +1846,7 @@
 <translation id="6708501134077648845">Опции за паролите</translation>
 <translation id="6709964700841491574">Режим на заключване</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">По-интелигентни и по-бързи отговори</translation>
 <translation id="6713676799463473249">Променено на <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Получени раздели</translation>
 <translation id="6722638373100589752">За да попълвате автоматично информацията си, включете „Използване на карти в Google“ в настройките на Wallet</translation>
@@ -1919,6 +1927,7 @@
 <translation id="6938212956536472404">Този раздел не може да бъде споделен</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6946722113367118030">Замислено лице</translation>
+<translation id="6947751977892029882">Нещо се обърка с тази настройка. Актуализирайте и рестартирайте Chrome и iOS и опитайте отново. Ако грешката продължи да се показва, възможно е вашият iPhone да не поддържа тази настройка.</translation>
 <translation id="6950522403736391608">Скрити</translation>
 <translation id="695965663642079255">Запазвайте и управлявайте данните за плащане, за да плащате по-бързо</translation>
 <translation id="6962809930976936328">Получаване на статистика с Gemini</translation>
@@ -2341,6 +2350,7 @@
 <translation id="8264966119170358612">Някои от запазените ви пароли са били разкрити вследствие на нарушение на сигурността на данните извън Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Отваряне на менюто на Chrome</translation>
 <translation id="826614135184049678">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPad. За да влезете отново, докоснете „Напред“ по-долу.</translation>
+<translation id="8266370374397811600">Отключихте ново постижение! 🥳</translation>
 <translation id="8270320981823560179">Диск</translation>
 <translation id="8274795744553482834">Превключвате потребителските профили</translation>
 <translation id="8275068909952022340">Още…</translation>
@@ -2425,6 +2435,7 @@
 <translation id="8535368836838588657">Показване на паролата</translation>
 <translation id="8540426897269305488">Влизане с(ъс) <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Нещо се обърка. Докоснете бутона Live, за да опитате отново да активирате съответния режим.</translation>
+<translation id="8544172904312384600">Редактирайте начин на плащане или добавете нов</translation>
 <translation id="8545276357312221485">Проверка на стандартните настройки на браузъра ви</translation>
 <translation id="854938212724803178">Имате 1 компрометирана парола. Коригирайте я сега, за да сте в безопасност.</translation>
 <translation id="8551311254462607218">В адресната лента докоснете иконата на камерата на Google Обектив</translation>
@@ -2543,7 +2554,6 @@
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8855242995793521265">Не забавя осезаемо браузъра или устройството ви.</translation>
 <translation id="8856643812068084733">Архиви</translation>
-<translation id="8863067612494559785">Изпраща се до <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Получавайте упътвания и местна информация от Google Карти</translation>
 <translation id="8871974300055371298">Настройки за съдържанието</translation>
 <translation id="8876661425082386199">Проверка на връзката ви</translation>

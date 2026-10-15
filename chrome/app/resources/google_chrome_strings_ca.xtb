@@ -300,6 +300,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome requereix Windows 10 o una versió posterior.</translation>
 <translation id="3810973564298564668">Gestiona</translation>
+<translation id="383455301564000773">Tens previst actualitzar a Windows 11? Baixa Chrome a OneDrive per estar a punt des del primer dia.</translation>
 <translation id="383928141529488001">Google Chrome necessita accés al Bluetooth per cercar 
  dispositius Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="3846683726093018685">**Resumeix**: en una sola frase de menys de 30 paraules, descriu el tema i la finalitat principals del contingut de la captura de pantalla.
@@ -586,7 +587,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="660312897435669152">Chrome vol actualitzar-se</translation>
 <translation id="6612152958212564387">No estàs enviant estadístiques d'ús ni informes d'error a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantén les contrasenyes, les adreces d'interès i l'historial perfectament sincronitzats en tots els dispositius definint Chrome com a navegador predeterminat.</translation>
-<translation id="6621391692573306628">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome als dos dispositius</translation>
 <translation id="6631524303639368205">Continua des d'on ho vas deixar: Chrome ha restaurat les pestanyes de la darrera sessió. Pots desactivar-ho a</translation>
 <translation id="6632012506031284914">per cercar amb Chrome.</translation>
 <translation id="6632473616050862500">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional.</translation>

@@ -159,7 +159,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2467438592969358367">Google Chrome wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="2472092250898121027">Deze extensie bevat malware en is onveilig. Verwijder de extensie van Chrome zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chrome in op je eigen profiel als <ph name="USER_EMAIL_ADDRESS" />. Je krijgt ook onder andere je bookmarks van <ph name="DEVICE" />.</translation>
-<translation id="2485422356828889247">Installatie ongedaan maken</translation>
+<translation id="2485422356828889247">Verwijderen</translation>
 <translation id="2513154137948333830">Opnieuw opstarten vereist: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Je werk beveiligd in Chrome</translation>
 <translation id="2534365042754120737">Ter bescherming van je gegevens kun je Chrome de rechten laten verwijderen voor sites die je niet recent hebt bezocht. Hiermee worden meldingen niet gestopt.</translation>
@@ -592,7 +592,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="660312897435669152">Chrome wil updaten</translation>
 <translation id="6612152958212564387">Je stuurt geen gebruiksstatistieken en crashrapporten naar Google. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten door Chrome in te stellen als je standaardbrowser.</translation>
-<translation id="6621391692573306628">Als je dit tabblad naar een ander apparaat wilt sturen, log je op beide apparaten in bij Chrome</translation>
 <translation id="6631524303639368205">Ga verder waar je gebleven was: Chrome heeft je tabbladen uit je vorige sessie hersteld. Je kunt dit uitzetten in</translation>
 <translation id="6632012506031284914">om te zoeken met Chrome.</translation>
 <translation id="6632473616050862500">Chrome OS Flex wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>

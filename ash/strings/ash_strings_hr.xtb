@@ -1020,6 +1020,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3977512764614765090">Baterija je na <ph name="PERCENTAGE" />% i puni se.</translation>
 <translation id="3978162107953847778">Umetnite veze s mjesta kao što su vaša povijest pregledavanja i Google disk. Možete i umetnuti emojije, slikovne datoteke i drugo. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Želite li promijeniti audioizlaz?</translation>
+<translation id="3983903378684256134">Steam na Chromebooku</translation>
 <translation id="3984536049089846927">Sljedeća stranica</translation>
 <translation id="3986082989454912832">Odgovori</translation>
 <translation id="3990002060657467458">U brzim postavkama nalaze se kontrole koje se često upotrebljavaju, kao što su Wi-Fi, Bluetooth i glasnoća. Tu također možete izraditi snimke zaslona.</translation>
@@ -1638,6 +1639,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5727460725221669831">Ako ste zaboravili zaporku ili ste nedavno promijenili zaporku Google računa, pokušajte oporaviti korisnika.</translation>
 <translation id="5733630091161562207">Obavijest dobrodošlice</translation>
 <translation id="573413375004481890">Uređaj ne podržava sve vaše zaslone, pa je s jednim prekinuta veza.</translation>
+<translation id="5739548907438839901">Oslobođeno je <ph name="SIZE" /> prostora na disku.</translation>
 <translation id="574392208103952083">Srednje</translation>
 <translation id="5745612484876805746">Noćno svjetlo automatski se uključuje u suton</translation>
 <translation id="5749214722697335450">Pošaljite podatke o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki agregirani podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. <ph name="BEGIN_LINK1" />Saznajte više o mjernim podacima<ph name="BEGIN_LINK1_END" />Saznajte više<ph name="END_LINK1" /></translation>
@@ -2215,6 +2217,7 @@ Novo instaliranje</translation>
 <translation id="7413851974711031813">Pritisnite tipku escape da biste zatvorili</translation>
 <translation id="7416471219712049036">Spremanje trenutačne stranice</translation>
 <translation id="742594950370306541">Fotoaparat je aktivan.</translation>
+<translation id="7430466159639897874">Imate neiskorišteni prostor na disku (<ph name="SIZE" />) dodijeljen za obustavljenu značajku Steam na Chromebooku.</translation>
 <translation id="743058460480092004">Fotoaparat i mikrofon su aktivni.</translation>
 <translation id="7433708794692032816">Umetnite pametnu karticu da biste nastavili upotrebljavati uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google pretraživanje</translation>
@@ -2356,6 +2359,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7781335840981796660">Uklonit će se svi korisnički računi i lokalni podaci.</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7787212146956232129">Postavljeni su ulazni i izlazni uređaji. Otvorite Postavke da biste ih promijenili.</translation>
+<translation id="7790757511772316441">Raspoloživi prostor na disku</translation>
 <translation id="7792590255364786396">Vidljivo</translation>
 <translation id="7796735576426975947">Nova obavijest je skrivena</translation>
 <translation id="7798302898096527229">Pritisnite Pretraživanje ili Shift da biste otkazali.</translation>

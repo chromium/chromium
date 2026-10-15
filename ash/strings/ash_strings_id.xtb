@@ -1020,6 +1020,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3977512764614765090">Baterai <ph name="PERCENTAGE" />% dan masih mengisi.</translation>
 <translation id="3978162107953847778">Sisipkan link dari berbagai tempat seperti histori penjelajahan dan Google Drive. Anda juga dapat menyisipkan emoji, file gambar, dan lainnya. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Ganti output audio?</translation>
+<translation id="3983903378684256134">Steam di Chromebook</translation>
 <translation id="3984536049089846927">Halaman berikutnya</translation>
 <translation id="3986082989454912832">Jawab</translation>
 <translation id="3990002060657467458">Kontrol yang sering digunakan seperti Wi-Fi, Bluetooth, dan volume ada di Setelan Cepat. Anda juga dapat membuka Setelan Cepat untuk mengambil screenshot.</translation>
@@ -1636,6 +1637,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5727460725221669831">Jika Anda lupa sandi atau mengubah sandi Akun Google Anda baru-baru ini, coba pulihkan pengguna ini.</translation>
 <translation id="5733630091161562207">Notifikasi sambutan</translation>
 <translation id="573413375004481890">Perangkat ini tidak dapat mendukung semua layar Anda, jadi salah satu telah diputuskan sambungannya</translation>
+<translation id="5739548907438839901">Berhasil mengosongkan <ph name="SIZE" /> kapasitas disk.</translation>
 <translation id="574392208103952083">Sedang</translation>
 <translation id="5745612484876805746">Fitur Cahaya Malam akan otomatis aktif saat matahari terbenam</translation>
 <translation id="5749214722697335450">Kirim data penggunaan dan diagnostik. Bantu tingkatkan pengalaman penggunaan Android Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut metrik<ph name="BEGIN_LINK1_END" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Baru diinstal</translation>
 <translation id="7413851974711031813">Tekan escape untuk menutup</translation>
 <translation id="7416471219712049036">Simpan halaman saat ini</translation>
 <translation id="742594950370306541">Kamera sedang digunakan.</translation>
+<translation id="7430466159639897874">Anda memiliki kapasitas disk yang tidak terpakai (<ph name="SIZE" />) yang dialokasikan untuk fitur yang sudah dihentikan "Steam di Chromebook".</translation>
 <translation id="743058460480092004">Kamera dan mikrofon sedang digunakan.</translation>
 <translation id="7433708794692032816">Pasang kartu smart agar tetap menggunakan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google Penelusuran</translation>
@@ -2352,6 +2355,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7781335840981796660">Semua akun dan data lokal pengguna akan dihapus.</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7787212146956232129">Perangkat input dan output disetel. Buka Setelan untuk mengubah.</translation>
+<translation id="7790757511772316441">Kosongkan kapasitas disk</translation>
 <translation id="7792590255364786396">Dapat dilihat</translation>
 <translation id="7796735576426975947">Notifikasi baru disembunyikan</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>

@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">&amp;ყველას არჩევა</translation>
 <translation id="19085484004813472">ეს ახალი ფუნქციაა</translation>
 <translation id="2006524834898217237">დარწმუნდით, რომ ეს მოწყობილობა დაკავშირებულია ინტერნეტთან.</translation>
-<translation id="208586643495776849">გთხოვთ, ცადოთ ხელახლა</translation>
 <translation id="2111134541987263231">ჩართეთ <ph name="BEGIN_BOLD" />ინკოგნიტოში დაშვება<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 დღ}other{# დღ}}</translation>
 <translation id="2148716181193084225">დღეს</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">შეეხეთ აქ</translation>
 <translation id="5076340679995252485">&amp;ჩასმა</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> პბაიტი</translation>
-<translation id="5278860589123563674">გაგზავნა ვერ მოხერხდა</translation>
 <translation id="5283101102242354279">ინკოგნიტო რეჟიმში ჩართეთ გაფართოება:</translation>
 <translation id="528468243742722775">დასასრული</translation>
 <translation id="5329858601952122676">&amp;წაშლა</translation>

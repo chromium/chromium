@@ -1020,6 +1020,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3977512764614765090">Akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%, un notiek uzlāde.</translation>
 <translation id="3978162107953847778">Ievietojiet saites no tādām vietām kā jūsu pārlūkošanas vēsture un Google disks. Varat arī ievietot emocijzīmes, attēlu failus un citu saturu. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Vai pārslēgt audio izvadi?</translation>
+<translation id="3983903378684256134">Steam Chromebook datorā</translation>
 <translation id="3984536049089846927">Nākamā lapa</translation>
 <translation id="3986082989454912832">Atbildēt</translation>
 <translation id="3990002060657467458">Bieži izmantotās vadīklas, piemēram, Wi-Fi, Bluetooth un skaļums, ir pieejamas ātrajos iestatījumos. Šeit varat arī izveidot ekrānuzņēmumus.</translation>
@@ -1638,6 +1639,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5727460725221669831">Ja aizmirsāt paroli vai nesen mainījāt Google konta paroli, mēģiniet atkopt šo lietotāja profilu.</translation>
 <translation id="5733630091161562207">Sveiciena paziņojums</translation>
 <translation id="573413375004481890">Šajā ierīcē nevarēja atbalstīt visus jūsu displejus, tādējādi tika pārtraukts savienojums ar vienu no tiem.</translation>
+<translation id="5739548907438839901">Atbrīvota vieta diskā: <ph name="SIZE" />.</translation>
 <translation id="574392208103952083">Vidējs</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
 <translation id="5749214722697335450">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotos datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja ir ieslēgts iestatījums “Papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK1" />Uzzināt vairāk par rādītājiem<ph name="BEGIN_LINK1_END" />Uzzināt vairāk<ph name="END_LINK1" /></translation>
@@ -2215,6 +2217,7 @@ Jauna instalācija</translation>
 <translation id="7413851974711031813">Lai aizvērtu, nospiediet taustiņu Escape</translation>
 <translation id="7416471219712049036">Saglabāt pašreizējo lapu</translation>
 <translation id="742594950370306541">Kamera tiek lietota.</translation>
+<translation id="7430466159639897874">Jums ir neizmantota brīvā vieta diskā (<ph name="SIZE" />), kas piešķirta novecojušai funkcijai “Steam Chromebook datorā”.</translation>
 <translation id="743058460480092004">Kamera un mikrofons tiek lietoti.</translation>
 <translation id="7433708794692032816">Lai jūs varētu turpināt izmantot savu <ph name="DEVICE_TYPE" /> ierīci, ievietojiet viedkarti</translation>
 <translation id="7440404390546433462">Google meklēšana</translation>
@@ -2356,6 +2359,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7781335840981796660">Visi lietotāju konti un vietējie dati tiks dzēsti.</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7787212146956232129">Ievades un izvades ierīces ir iestatītas. Lai tās mainītu, pārejiet uz iestatījumiem.</translation>
+<translation id="7790757511772316441">Brīva vieta diskā</translation>
 <translation id="7792590255364786396">Redzamas</translation>
 <translation id="7796735576426975947">Paslēpts jauns paziņojums</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>

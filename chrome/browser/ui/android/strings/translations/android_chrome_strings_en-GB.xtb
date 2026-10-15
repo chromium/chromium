@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Reading mode preferences opened at full height</translation>
 <translation id="1014147525163127655">There aren't any passkeys for <ph name="ORIGIN" /> on this device</translation>
 <translation id="1016498331642356377">Quickly search with your voice. To edit this shortcut, touch and hold.</translation>
-<translation id="1028699632127661925">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Also clear data from these sites &amp; apps?</translation>
 <translation id="1035113036584565771">Tips notifications promo closed</translation>
 <translation id="1036348656032585052">Turn off</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Passkey confirmation sheet closed</translation>
 <translation id="1197933394627598677">Show Reading mode</translation>
 <translation id="1197935538609051549">Deactivate</translation>
+<translation id="119944043368869598">Clear all</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1202892408424955784">Tracked products</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -135,6 +135,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1485343711570311792">Open in <ph name="NATIVE_APP_NAME" /> • From <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Back to tab</translation>
 <translation id="1496514951988037011">username</translation>
+<translation id="1498051468374914325">Open Developer Tools console</translation>
 <translation id="1501480321619201731">Delete group</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
@@ -142,6 +143,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1516966594427080024">Open a new window in Incognito mode</translation>
 <translation id="152204906462707884">Quickly delete your browsing history and take more control over your privacy</translation>
 <translation id="153446405401665083">New version of Chrome is available</translation>
+<translation id="1537160738459068682">Open Developer Tools elements</translation>
 <translation id="1540012742443808215">Address bar currently on top</translation>
 <translation id="1543035591122163372">Sign in to get your passwords and more from <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
@@ -151,6 +153,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> for '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="1554532453982918912">Help make Chrome better for people who use it the way that you do</translation>
+<translation id="1557806604681757705">your computer</translation>
 <translation id="1568636008098739136">Listen to this page. To edit this shortcut, touch and hold.</translation>
 <translation id="1571041387761170095">No weak or reused passwords</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="22091350895006575">Add username</translation>
 <translation id="2211043920024403606">Profile information</translation>
 <translation id="221494669172414749">Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.</translation>
+<translation id="2220529011494928058">Report an issue</translation>
 <translation id="2226826835915474236">Inactive shortcuts</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> tab group</translation>
 <translation id="3200536777393523575">Close your current window?</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3211426585530211793">Deleted <ph name="ITEM_TITLE" /></translation>
 <translation id="3232293466644486101">Delete browsing data…</translation>
@@ -963,6 +968,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4807098396393229769">Name on card</translation>
 <translation id="4807700370495020449">Sign in to this site and Chrome to get your saved info and more on all your devices</translation>
 <translation id="480990236307250886">Open the homepage</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Fit to page</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> tab group closed and saved</translation>
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
@@ -1069,6 +1075,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5235196193381275927">Something went wrong during sign-in</translation>
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
+<translation id="5257142004843671642">Resize side panel</translation>
 <translation id="5264813352784073502">last 24 hours</translation>
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5273031377282080577">Your administrator manages this setting.</translation>
@@ -1095,9 +1102,9 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, pinned sharing Incognito tab</translation>
 <translation id="5375374982898812658">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="537865165090710757">Save and share</translation>
-<translation id="5385892579392932755">your laptop</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet. Only continue if you trust this site. Dangerous sites might trick you into revealing things like your legal name or ID number.</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
+<translation id="5397794290049113714">You</translation>
 <translation id="539881862970320163">Strong password suggested. Keyboard hidden.</translation>
 <translation id="5404274604891474619">Cannot edit PDF</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
@@ -1523,6 +1530,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="696447261358045621">Leave Incognito mode</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Device</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{See <ph name="TABS_COUNT_ONE" /> tab with new activity in shared tab groups}other{See <ph name="TABS_COUNT_MANY" /> tabs with new activity in shared tab groups}}</translation>
 <translation id="6971555615916967190">Reading mode preferences opened at half height</translation>
 <translation id="6971862865055170158">Don’t approve</translation>
@@ -1942,6 +1950,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8512053371384421952">You'll no longer receive notifications from <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Image editor</translation>
 <translation id="8517759303731677493">Edit…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing is on</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, multi-selected pinned picture-in-picture tab</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
@@ -2061,6 +2070,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9027728231343310283">Undo <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Move to\u2026</translation>
+<translation id="9038316201889095704">Find in page is disabled while there are unsaved changes.</translation>
 <translation id="904146253922032365">Touch and hold to show tabs vertically</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9047347135558855162">Quickly start a search in Chrome</translation>

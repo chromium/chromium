@@ -493,7 +493,7 @@
 <translation id="2478076885740497414">App installeren</translation>
 <translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2484513351006226581">Druk op <ph name="KEYBOARD_SHORTCUT" /> om van toetsenbordindeling te wisselen.</translation>
-<translation id="2485422356828889247">Installatie ongedaan maken</translation>
+<translation id="2485422356828889247">Verwijderen</translation>
 <translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> is gewijzigd in een resolutie van <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zonder bevestiging worden de vorige instellingen hersteld over <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
@@ -1020,6 +1020,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3977512764614765090">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen.</translation>
 <translation id="3978162107953847778">Voeg links in vanuit plekken zoals je browsegeschiedenis en Google Drive. Je kunt ook bijvoorbeeld emoji's en afbeeldingsbestanden invoegen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Audio-uitvoer wisselen?</translation>
+<translation id="3983903378684256134">Steam op Chromebook</translation>
 <translation id="3984536049089846927">Volgende pagina</translation>
 <translation id="3986082989454912832">Beantwoorden</translation>
 <translation id="3990002060657467458">Veelgebruikte bedieningsopties, zoals wifi, bluetooth en volume, staan in Snelle instellingen. Je kunt hier ook naartoe gaan om screenshots te maken.</translation>
@@ -1636,6 +1637,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5727460725221669831">Als je je wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
 <translation id="5733630091161562207">Welkomstmelding</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> aan schijfruimte vrijgemaakt.</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5745612484876805746">Nachtverlichting wordt automatisch aangezet bij zonsondergang</translation>
 <translation id="5749214722697335450">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK1" />Meer informatie over statistieken<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Nieuwe installatie</translation>
 <translation id="7413851974711031813">Druk op Escape om te sluiten</translation>
 <translation id="7416471219712049036">Huidige pagina opslaan</translation>
 <translation id="742594950370306541">Camera is in gebruik.</translation>
+<translation id="7430466159639897874">Je hebt ongebruikte schijfruimte (<ph name="SIZE" />) toegewezen voor de beëindigde functie Steam op Chromebook.</translation>
 <translation id="743058460480092004">Camera en microfoon zijn in gebruik.</translation>
 <translation id="7433708794692032816">Plaats een smartcard om je <ph name="DEVICE_TYPE" /> te blijven gebruiken</translation>
 <translation id="7440404390546433462">Google Zoeken</translation>
@@ -2352,6 +2355,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7781335840981796660">Alle gebruikersaccounts en lokale gegevens worden verwijderd.</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7787212146956232129">Invoer- en uitvoerapparaten zijn ingesteld. Ga naar Instellingen voor wijzigingen.</translation>
+<translation id="7790757511772316441">Vrije schijfruimte</translation>
 <translation id="7792590255364786396">Zichtbaar</translation>
 <translation id="7796735576426975947">Nieuwe melding verborgen</translation>
 <translation id="7798302898096527229">Druk op Zoeken of Shift om te annuleren.</translation>

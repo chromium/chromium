@@ -1020,6 +1020,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
 <translation id="3978162107953847778">Wstawiaj linki z miejsc takich jak historia przeglądania i Dysk Google. Możesz też wstawiać m.in. emotikony i pliki graficzne. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Przełączyć wyjście audio?</translation>
+<translation id="3983903378684256134">Steam na Chromebooka</translation>
 <translation id="3984536049089846927">Następna strona</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
 <translation id="3990002060657467458">Często używane elementy sterujące dotyczące np. Wi-Fi, Bluetootha czy głośności znajdziesz w Szybkich ustawieniach. Możesz tam też robić zrzuty ekranu.</translation>
@@ -1638,6 +1639,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5727460725221669831">Jeśli nie pamiętasz hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
 <translation id="5733630091161562207">Powiadomienie powitalne</translation>
 <translation id="573413375004481890">To urządzenie nie może obsługiwać wszystkich Twoich wyświetlaczy, dlatego jeden z nich został odłączony</translation>
+<translation id="5739548907438839901">Zwolniono <ph name="SIZE" /> miejsca na dysku.</translation>
 <translation id="574392208103952083">Średni</translation>
 <translation id="5745612484876805746">Podświetlenie nocne włącza się automatycznie o zachodzie słońca</translation>
 <translation id="5749214722697335450">Wysyłaj dane o użytkowaniu i diagnostyce. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane o diagnostyce i korzystaniu z urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz Dodatkową aktywność w internecie i aplikacjach, te dane będą mogły być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK1" />Więcej informacji o danych<ph name="BEGIN_LINK1_END" />Więcej informacji<ph name="END_LINK1" /></translation>
@@ -2214,6 +2216,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7413851974711031813">Naciśnij Escape, aby zamknąć</translation>
 <translation id="7416471219712049036">Zapisz bieżącą stronę</translation>
 <translation id="742594950370306541">Aparat jest używany.</translation>
+<translation id="7430466159639897874">Masz nieużywane miejsce na dysku (<ph name="SIZE" />) przydzielone do wycofanej funkcji „Steam na Chromebooka”.</translation>
 <translation id="743058460480092004">Aparat i mikrofon są używane.</translation>
 <translation id="7433708794692032816">Aby nadal używać swojego urządzenia <ph name="DEVICE_TYPE" />, włóż kartę inteligentną</translation>
 <translation id="7440404390546433462">Wyszukiwarka Google</translation>
@@ -2355,6 +2358,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7781335840981796660">Wszystkie konta użytkowników i dane lokalne zostaną usunięte.</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7787212146956232129">Urządzenia wejściowe i wyjściowe są ustawione. Możesz to zmienić w Ustawieniach.</translation>
+<translation id="7790757511772316441">Wolne miejsce na dysku</translation>
 <translation id="7792590255364786396">Widoczne</translation>
 <translation id="7796735576426975947">Nowe powiadomienie zostało ukryte</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>

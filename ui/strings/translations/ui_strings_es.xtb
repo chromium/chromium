@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="19085484004813472">Es una nueva función</translation>
 <translation id="2006524834898217237">Comprueba que este dispositivo esté conectado a Internet.</translation>
-<translation id="208586643495776849">Vuelve a intentarlo</translation>
 <translation id="2111134541987263231">Activa la opción <ph name="BEGIN_BOLD" />Permitir en incógnito<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 día}other{# días}}</translation>
 <translation id="2148716181193084225">Hoy</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">Toca aquí</translation>
 <translation id="5076340679995252485">&amp;Pegar</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5278860589123563674">No se ha podido enviar</translation>
 <translation id="5283101102242354279">Para activar una extensión en modo Incógnito:</translation>
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5329858601952122676">&amp;Suprimir</translation>

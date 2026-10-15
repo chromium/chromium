@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Certains contenus peuvent ne pas convenir à tout le monde.</translation>
 <translation id="1601560923496285236">Appliquer</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Accomplissez 1 tâche pour passer au niveau supérieur}one{Accomplissez {count} tâche pour passer au niveau supérieur}other{Accomplissez {count} tâches pour passer au niveau supérieur}}</translation>
 <translation id="1605405588277479165">Désactivée : Option non recommandée</translation>
 <translation id="1605658421715042784">Copier l'image</translation>
 <translation id="1606899876897213121">Fermer le résumé de l'activité récente</translation>
@@ -290,7 +291,6 @@
 <translation id="1838089197478136166">Ouvrir dans Portefeuille?</translation>
 <translation id="183878838231635348">Cette carte affiche tous les problèmes de confidentialité ou de sécurité que la Vérification de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1845230888742614096">Conserver le groupe</translation>
-<translation id="1853558655412913122">Vous pouvez désormais modifier la position de la barre d'adresse dans « Paramètres », puis « Barre d'adresse »</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
 <translation id="1854463785401910334">Rechercher dans les onglets ouverts</translation>
 <translation id="1860609647735325606">Expliquer avec Gemini</translation>
@@ -512,6 +512,7 @@
 <translation id="2524699375503213836">Importer vos données à partir de Safari</translation>
 <translation id="2526166285241366046">Enregistrer un mot de passe</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
+<translation id="2530932541542751783">Un problème est survenu avec ce réglage. Mettez Chrome et iPadOS à jour, redémarrez-les, puis réessayez. Si cette erreur persiste, votre iPad ne prend peut-être pas en charge ce réglage.</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Masqué, mot de passe</translation>
 <translation id="2538705697765638552">Enregistrez vos informations et effectuez des tâches plus rapidement, comme remplir des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Portefeuille de <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +564,6 @@
 <translation id="2673508731173059946">Consulter le lien copié</translation>
 <translation id="2679659833697380">Vos informations sont enregistrées sur votre appareil</translation>
 <translation id="2681572445246787428">Signature de documents</translation>
-<translation id="2685514716378236873">Non autorisés</translation>
 <translation id="2688535388040882469">Bannières</translation>
 <translation id="2690858294534178585">La caméra est en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors ligne</translation>
@@ -774,7 +774,6 @@
 <translation id="3430407169377889553">Utilisez Gemini avec prudence et prenez le contrôle au besoin. Vous êtes responsable des actions de Gemini pendant l'exécution des tâches.</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3441673211568148613">Gardez votre navigation privée</translation>
-<translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">En savoir plus sur Lentille Google</translation>
 <translation id="3447332786336558089">Une fois que vous serez déconnecté, les onglets seront fermés, et les données de compte non enregistrées seront supprimées de cet appareil. Cela peut inclure les mots de passe, l'historique et plus encore.</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">Contin. comme <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accédez à vos mots de passe sur d'autres applications.</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
+<translation id="3481315707647070701">Visualiser et modifier</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés, et les données de navigation ont été supprimées. Vous avez été déconnecté</translation>
 <translation id="3490396108106323715">Partager l'onglet actuel</translation>
@@ -847,11 +847,13 @@
 <translation id="3659297405161482746">Modes de paiement introuvable</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 compte sélectionné}one{# compte sélectionné}other{# comptes sélectionnés}}</translation>
 <translation id="3668035568083954765">Protéger votre confidentialité et rester en sécurité</translation>
+<translation id="3668703890943804691">Tâche arrêtée</translation>
 <translation id="3668816008081204991">La Liste de lecture est masquée</translation>
 <translation id="3670030362669914947">Numéro</translation>
 <translation id="3672283986707092811">Tout sélectionner</translation>
 <translation id="3679163990085797665">Supprimer les éléments lus</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
+<translation id="3689746421535476813">Choisissez un mode de paiement enregistré à modifier ou ajoutez-en un nouveau</translation>
 <translation id="3695446226812920698">Découvrez comment</translation>
 <translation id="3700134753671613714">Connectez-vous pour synchroniser vos favoris sur tous vos appareils.</translation>
 <translation id="3701167022068948696">Corriger maintenant</translation>
@@ -919,6 +921,7 @@
 <translation id="3914173277599553213">Obligatoire</translation>
 <translation id="3914640181019354363">Détecter les adresses</translation>
 <translation id="391904960191284041">Avis sur le produit</translation>
+<translation id="3920165976616657606">La tâche « Explorer la navigation sécurisée améliorée » a bien été terminée!</translation>
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922185497376658606">Précharger les pages Web</translation>
 <translation id="3926703470020109118">Téléchargement annulé</translation>
@@ -927,6 +930,7 @@
 <translation id="3933372629914873850">Vous serez connecté à <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
 <translation id="393732545649378031">Compte</translation>
+<translation id="3939683043166875001">Masquez ou affichez vos sites les plus visités, votre flux Découvertes et plus encore.</translation>
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="3946483119107054883">Télécharger dans un fichier CSV</translation>
@@ -1089,6 +1093,7 @@
 <translation id="4455710003856931944">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière ou en avant.</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="446314443268698477">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo ou dans vos photos.</translation>
+<translation id="4465941170695753889">Maintenez le doigt sur l'écran pour créer un groupe d'onglets</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4470766488397113689">Sur quoi voulez-vous travailler?</translation>
 <translation id="4471472356135655769">Impossible d'exporter les mots de passe</translation>
@@ -1120,7 +1125,6 @@
 <translation id="456502772933839252">Partage de <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer les onglets récents</translation>
-<translation id="4571490460651837010">Gérer les adresses et plus encore…</translation>
 <translation id="4578835633387306383">Activer…</translation>
 <translation id="4580621046861724270">Certains favoris n'ont pas été enregistrés</translation>
 <translation id="4580716718466706433">Accédez à « Gestionnaire de mots de passe »</translation>
@@ -1261,6 +1265,7 @@
 <translation id="4977176874984951085">Ouvrir le menu des actions de la page</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier est programmée, elle ne peut plus être annulée.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 onglet partagé}one{{COUNT} onglet partagé}other{{COUNT} onglets partagés}}</translation>
 <translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
 <translation id="4986428648020277392">Requête : Lequel devrais-je acheter? 2 sur 3</translation>
 <translation id="498768198683310172">Commencer à utiliser Gemini</translation>
@@ -1839,6 +1844,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6708501134077648845">Options de mot de passe</translation>
 <translation id="6709964700841491574">Mode Verrouillage</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Des réponses plus intelligentes et plus rapides</translation>
 <translation id="6713676799463473249">Dernière modification : <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Onglets reçus</translation>
 <translation id="6722638373100589752">Pour remplir automatiquement vos informations, activez « Utiliser des cartes partout sur Google » dans les paramètres de Portefeuille</translation>
@@ -1919,6 +1925,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="6938212956536472404">Impossible de partager cet onglet</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6946722113367118030">Pensif</translation>
+<translation id="6947751977892029882">Un problème est survenu avec ce réglage. Mettez Chrome et iPadOS à jour, redémarrez-les, puis réessayez. Si cette erreur persiste, votre iPhone ne prend peut-être pas en charge ce réglage.</translation>
 <translation id="6950522403736391608">Masquées</translation>
 <translation id="695965663642079255">Enregistrez et gérez les infos de paiement pour payer plus rapidement</translation>
 <translation id="6962809930976936328">Obtenir des informations avec Gemini</translation>
@@ -2341,6 +2348,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été exposés à une violation de données d'un tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Ouvrir le menu Chrome</translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
+<translation id="8266370374397811600">Nouvelle réussite débloquée! 🥳</translation>
 <translation id="8270320981823560179">Disque</translation>
 <translation id="8274795744553482834">Vous êtes sur le point de changer de profil</translation>
 <translation id="8275068909952022340">Plus…</translation>
@@ -2425,6 +2433,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8535368836838588657">Afficher le mot de passe</translation>
 <translation id="8540426897269305488">Se connecter avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Un problème est survenu. Touchez le bouton Live pour réessayer de passer à Live.</translation>
+<translation id="8544172904312384600">Modifier ou ajouter un mode de paiement</translation>
 <translation id="8545276357312221485">Vérifier les paramètres de votre navigateur par défaut</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Réglez ce problème maintenant pour rester en sécurité.</translation>
 <translation id="8551311254462607218">Dans la barre d'adresse, touchez l'icône de l'appareil photo Lentille Google</translation>
@@ -2543,7 +2552,6 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8849001918648564819">Caché</translation>
 <translation id="8855242995793521265">Ne ralentit pas de manière perceptible votre navigateur ou votre appareil.</translation>
 <translation id="8856643812068084733">Archives</translation>
-<translation id="8863067612494559785">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="8863431381414769983">Obtenez des itinéraires et des informations locales à partir de Google Maps</translation>
 <translation id="8871974300055371298">Paramètres de contenu</translation>
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>

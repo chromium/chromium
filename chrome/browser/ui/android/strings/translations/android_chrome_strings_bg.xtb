@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Листът с предпочитания за режима на четене е отворен на пълната височина</translation>
 <translation id="1014147525163127655">На това устройство няма ключове за достъп за <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Бързо търсене с гласа ви. За да редактирате този пряк път, докоснете и задръжте.</translation>
-<translation id="1028699632127661925">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Изчиств. и на данните от тези сайтове и прил.?</translation>
 <translation id="1035113036584565771">Долният лист за известия със съвети е затворен</translation>
 <translation id="1036348656032585052">Изключване</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Листът за потвърждение за ключа за достъп е затворен</translation>
 <translation id="1197933394627598677">Показване на режима на четене</translation>
 <translation id="1197935538609051549">Деактивиране</translation>
+<translation id="119944043368869598">Изчистване на всички</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1202892408424955784">Проследявани продукти</translation>
 <translation id="1204037785786432551">Изтегляне на връзката</translation>
@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">Отваряне в(ъв) <ph name="NATIVE_APP_NAME" /> • От <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Назад към раздела</translation>
 <translation id="1496514951988037011">потребителско име</translation>
+<translation id="1498051468374914325">Отваряне на конзолата на инструментите за програмисти</translation>
 <translation id="1501480321619201731">Изтриване на групата</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Отваряне на нов прозорец в режим „инкогнито“</translation>
 <translation id="152204906462707884">Изтривайте бързо историята си на сърфиране и поемете по-голям контрол над поверителността си</translation>
 <translation id="153446405401665083">Налице е нова версия на Chrome</translation>
+<translation id="1537160738459068682">Отваряне на елементите в инструментите за програмисти</translation>
 <translation id="1540012742443808215">Адресната лента понастоящем е в горната част</translation>
 <translation id="1543035591122163372">Влезте в профила си, за да получите достъп до паролите си и др. от <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Начините на плащане и адресите няма да се шифроват. Историята на сърфиране от Chrome няма да се синхронизира.
@@ -151,6 +153,7 @@
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> за „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="1554532453982918912">Помогнете за подобряването на Chrome за хората, които използват браузъра по същия начин като вас</translation>
+<translation id="1557806604681757705">компютъра си</translation>
 <translation id="1568636008098739136">Слушане на тази страница. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="1571041387761170095">Няма ненадеждни или повторно използвани пароли</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@
 <translation id="22091350895006575">Добавяне на потребителското име</translation>
 <translation id="2211043920024403606">Информация за потребителския профил</translation>
 <translation id="221494669172414749">Когато отворите Chrome без опция за заключване на потребителския профил, запазените ви пароли и начини на плащане ще бъдат премахнати от автомобила. Използването на опция за заключване на потребителския профил защитава тези данни.</translation>
+<translation id="2220529011494928058">Подаване на сигнал за проблем</translation>
 <translation id="2226826835915474236">Неактивни преки пътища</translation>
 <translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> – група раздели</translation>
 <translation id="3200536777393523575">Да се затвори ли текущият прозорец?</translation>
 <translation id="3207960819495026254">С отметка</translation>
+<translation id="3208321278970793882">Приложение</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3211426585530211793">Изтрихте „<ph name="ITEM_TITLE" />“</translation>
 <translation id="3232293466644486101">Изтриване на данните за сърфирането…</translation>
@@ -963,6 +968,7 @@
 <translation id="4807098396393229769">Име върху картата</translation>
 <translation id="4807700370495020449">Влезте в профила си в този сайт и в Chrome, за да получите достъп до запазената си информация и др. на всичките си устройства</translation>
 <translation id="480990236307250886">Отваряне на началната страница</translation>
+<translation id="4812684235631257312">Хост</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
 <translation id="4822710610088666676">Затворихте и запазихте групата раздели „<ph name="TAB_GROUP_TITLE" />“</translation>
 <translation id="4835385943915508971">Chrome няма достъп до заявения ресурс.</translation>
@@ -1069,6 +1075,7 @@
 <translation id="5233638681132016545">Нов раздел</translation>
 <translation id="5235196193381275927">Нещо се обърка при влизането в профила</translation>
 <translation id="5246093389635966745">Редактиране на пряк път в лентата с инструменти</translation>
+<translation id="5257142004843671642">Преоразмеряване на страничния панел</translation>
 <translation id="5264813352784073502">последните 24 часа</translation>
 <translation id="5267572070504076962">Включете Безопасно сърфиране, за да получите защита срещу опасни сайтове</translation>
 <translation id="5273031377282080577">Тази настройка се управлява от администратора ви.</translation>
@@ -1095,9 +1102,9 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, който споделя</translation>
 <translation id="5375374982898812658">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="537865165090710757">Запазване и споделяне</translation>
-<translation id="5385892579392932755">лаптопа ви</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> иска да използва лична информация от дигиталния ви портфейл. Продължете само ако имате доверие на този сайт. Опасните сайтове може да ви подведат да разкриете информация, като например името ви или номер на ваш документ за самоличност.</translation>
 <translation id="5395376160638294582">Уверете се, че винаги можете да използвате данните в Chrome в профила си в Google</translation>
+<translation id="5397794290049113714">Вие</translation>
 <translation id="539881862970320163">Предложена бе надеждна парола. Клавиатурата е скрита.</translation>
 <translation id="5404274604891474619">PDF файлът не може да се редактира</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
@@ -1523,6 +1530,7 @@
 <translation id="6964300328304469089">Понастоящем сте избрали: <ph name="NAME" /> (<ph name="EMAIL" />). Изберете профил.</translation>
 <translation id="696447261358045621">Излизане от режим „инкогнито“</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Устройство</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Вижте <ph name="TABS_COUNT_ONE" /> раздел с нова активност в споделените групи раздели}other{Вижте <ph name="TABS_COUNT_MANY" /> раздела с нова активност в споделените групи раздели}}</translation>
 <translation id="6971555615916967190">Листът с предпочитания за режима на четене е отворен на половината височина</translation>
 <translation id="6971862865055170158">Отхвърляне</translation>
@@ -1942,6 +1950,7 @@
 <translation id="8512053371384421952">Вече няма да получавате известия от <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Редактор на изображения</translation>
 <translation id="8517759303731677493">Редактиране…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" /> – фиксиран раздел „картина в картината“, който е избран заедно с други</translation>
 <translation id="8540136935098276800">Въведете правилно форматиран URL адрес</translation>
@@ -2061,6 +2070,7 @@
 <translation id="9024318700713112071">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="9027728231343310283">Отмяна на <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Преместване във\u2026</translation>
+<translation id="9038316201889095704">Функцията за търсене в страницата е деактивирана, докато има незапазени промени.</translation>
 <translation id="904146253922032365">Докоснете и задръжте, за да видите разделите вертикално</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
 <translation id="9047347135558855162">Бързо стартиране на търсене в Chrome</translation>

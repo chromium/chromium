@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">Ընտրել &amp;բոլորը</translation>
 <translation id="19085484004813472">Սա նոր գործառույթ է</translation>
 <translation id="2006524834898217237">Համոզվեք, որ սարքը միացված է ինտերնետին։</translation>
-<translation id="208586643495776849">Նորից փորձեք</translation>
 <translation id="2111134541987263231">Միացրեք <ph name="BEGIN_BOLD" />Թույլ տալ ինկոգնիտո ռեժիմում<ph name="END_BOLD" /> կարգավորումը</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 օր}one{# օր}other{# օր}}</translation>
 <translation id="2148716181193084225">Այսօր</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">Հպեք այստեղ</translation>
 <translation id="5076340679995252485">&amp;Տեղադրել</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ՊԲ</translation>
-<translation id="5278860589123563674">Չհաջողվեց ուղարկել</translation>
 <translation id="5283101102242354279">Միացրեք ընդլայնումը ինկոգնիտո ռեժիմում՝</translation>
 <translation id="528468243742722775">Վերջ</translation>
 <translation id="5329858601952122676">&amp;Ջնջել</translation>

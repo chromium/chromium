@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Præferencer for læsetilstand er åbnet i fuld højde</translation>
 <translation id="1014147525163127655">Der er ingen adgangsnøgler til <ph name="ORIGIN" /> på denne enhed</translation>
 <translation id="1016498331642356377">Søg hurtigt med din stemme. Hold fingeren på genvejen for at redigere.</translation>
-<translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Vil du rydde data fra disse websites og apps?</translation>
 <translation id="1035113036584565771">Promoveringen af notifikationer med tips er lukket</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Feltet til bekræftelse af adgangsnøgle er lukket</translation>
 <translation id="1197933394627598677">Vis læsetilstand</translation>
 <translation id="1197935538609051549">Deaktiver</translation>
+<translation id="119944043368869598">Ryd alle</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1202892408424955784">Produkter, du følger</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -135,6 +135,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1485343711570311792">Åbn i <ph name="NATIVE_APP_NAME" /> • Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Tilbage til fanen</translation>
 <translation id="1496514951988037011">brugernavn</translation>
+<translation id="1498051468374914325">Åbn konsollen Udviklerværktøjer</translation>
 <translation id="1501480321619201731">Slet gruppe</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1513352483775369820">Bogmærker og webhistorik</translation>
@@ -142,6 +143,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1516966594427080024">Åbn et nyt vindue i inkognitotilstand</translation>
 <translation id="152204906462707884">Slet hurtigt din browserhistorik, og få større kontrol over din privatlivsbeskyttelse</translation>
 <translation id="153446405401665083">En ny version af Chrome er tilgængelig</translation>
+<translation id="1537160738459068682">Åbn Udviklerværktøjer i inspektion af elementer</translation>
 <translation id="1540012742443808215">Adresselinjen vises i øjeblikket øverst</translation>
 <translation id="1543035591122163372">Log ind for at få adgang til dine adgangskoder og meget mere fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
@@ -151,6 +153,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> for "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Vær med til at gøre Chrome bedre for andre, der bruger Chrome på samme måde som dig</translation>
+<translation id="1557806604681757705">din computer</translation>
 <translation id="1568636008098739136">Få oplæst denne side. Hold fingeren på denne genvej for at redigere den.</translation>
 <translation id="1571041387761170095">Ingen svage eller genbrugte adgangskoder</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="22091350895006575">Tilføj brugernavn</translation>
 <translation id="2211043920024403606">Profiloplysninger</translation>
 <translation id="221494669172414749">Hvis du åbner Chrome uden en profillås, fjernes dine gemte adgangskoder og betalingsmetoder fra bilen. Du kan beskytte disse data ved at bruge en profillås.</translation>
+<translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2226826835915474236">Inaktive genveje</translation>
 <translation id="2227179592712503583">Fjern forslag</translation>
 <translation id="2227444325776770048">Fortsæt som <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3189635831478931757">Fanegruppe: <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Vil du lukke det aktuelle vindue?</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> blev slettet</translation>
 <translation id="3232293466644486101">Slet browserdata…</translation>
@@ -963,6 +968,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4807098396393229769">Navn på kort</translation>
 <translation id="4807700370495020449">Log ind på dette website og i Chrome for at få adgang til dine gemte oplysninger og meget mere på alle dine enheder</translation>
 <translation id="480990236307250886">Åbn startsiden</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Tilpas til siden</translation>
 <translation id="4822710610088666676">Fanegruppen <ph name="TAB_GROUP_TITLE" /> er lukket og gemt</translation>
 <translation id="4835385943915508971">Chrome har ikke adgang til den ressource, du anmoder om.</translation>
@@ -1069,6 +1075,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5235196193381275927">Noget gik galt under login</translation>
 <translation id="5246093389635966745">Rediger genvej til værktøjslinje</translation>
+<translation id="5257142004843671642">Tilpas størrelsen på sidepanelet</translation>
 <translation id="5264813352784073502">de seneste 24 timer</translation>
 <translation id="5267572070504076962">Aktivér Beskyttet browsing for at blive beskyttet mod skadelige websites</translation>
 <translation id="5273031377282080577">Din administrator styrer denne indstilling.</translation>
@@ -1095,9 +1102,9 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, fastgjort inkognitofane, der deler indhold</translation>
 <translation id="5375374982898812658">Du mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle dine enheder</translation>
 <translation id="537865165090710757">Gem og del</translation>
-<translation id="5385892579392932755">din computer</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vil gerne bruge personlige oplysninger fra din digitale pung. Fortsæt kun, hvis du har tillid til dette website. Farlige websites kan narre dig til at afsløre ting som f.eks. dit juridiske navn eller id-nummer.</translation>
 <translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
+<translation id="5397794290049113714">Dig</translation>
 <translation id="539881862970320163">En stærk adgangskode anbefales. Tastaturet er skjult.</translation>
 <translation id="5404274604891474619">PDF-filen kan ikke redigeres</translation>
 <translation id="5409881200985013443">Vil du angive <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
@@ -1523,6 +1530,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="696447261358045621">Forlad inkognitotilstand</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Enhed</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> fane med ny aktivitet i delte fanegrupper}one{Se <ph name="TABS_COUNT_MANY" /> fane med ny aktivitet i delte fanegrupper}other{Se <ph name="TABS_COUNT_MANY" /> faner med ny aktivitet i delte fanegrupper}}</translation>
 <translation id="6971555615916967190">Indstillingerne for læsetilstand er åbnet i halv højde</translation>
 <translation id="6971862865055170158">Godkend ikke</translation>
@@ -1942,6 +1950,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8512053371384421952">Du vil ikke længere modtage notifikationer fra <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Billedredigering</translation>
 <translation id="8517759303731677493">Rediger…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, fastgjort fane med multivalg i tilstanden integreret billede</translation>
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>
@@ -2061,6 +2070,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9024318700713112071">Angiv Chrome som din standardbrowser</translation>
 <translation id="9027728231343310283">Fortryd for <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flyt til\u2026</translation>
+<translation id="9038316201889095704">Find på siden er deaktiveret, når der er ændringer, som ikke er gemt.</translation>
 <translation id="904146253922032365">Hold fingeren nede for at se faner lodret</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
 <translation id="9047347135558855162">Start hurtigt en søgning i Chrome</translation>

@@ -1020,6 +1020,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3977512764614765090">Batteriet er på <ph name="PERCENTAGE" /> % og oplader.</translation>
 <translation id="3978162107953847778">Indsæt links fra steder såsom din browserhistorik og Google Drev. Du kan også indsætte emojis, billedfiler m.m. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Vil du skifte lydoutput?</translation>
+<translation id="3983903378684256134">Steam på Chromebook</translation>
 <translation id="3984536049089846927">Næste side</translation>
 <translation id="3986082989454912832">Svar</translation>
 <translation id="3990002060657467458">Du finder ofte anvendte styringselementer såsom Wi-Fi, Bluetooth og lydstyrke i kvikmenuen. Du kan også tage screenshots her.</translation>
@@ -1637,6 +1638,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5727460725221669831">Hvis du har glemt din adgangskode eller ændret adgangskoden til din Google-konto for nylig, kan du prøve at gendanne denne bruger.</translation>
 <translation id="5733630091161562207">Velkomstnotifikation</translation>
 <translation id="573413375004481890">Denne enhed kunne ikke understøtte alle dine skærme, så tilslutningen af en af dem blev fjernet</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> diskplads er frigjort.</translation>
 <translation id="574392208103952083">Mellem</translation>
 <translation id="5745612484876805746">Nattelys aktiveres automatisk ved solopgang</translation>
 <translation id="5749214722697335450">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Noget dataaggregering hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger om metrics<ph name="BEGIN_LINK1_END" />Få flere oplysninger<ph name="END_LINK1" /></translation>
@@ -2213,6 +2215,7 @@ Installeret for nylig</translation>
 <translation id="7413851974711031813">Tryk på Escape for at lukke</translation>
 <translation id="7416471219712049036">Gem aktuel side</translation>
 <translation id="742594950370306541">Kameraet er i brug.</translation>
+<translation id="7430466159639897874">Du har ubrugt diskplads (<ph name="SIZE" />), der er tildelt den udfasede funktion "Steam på Chromebook".</translation>
 <translation id="743058460480092004">Kamera og mikrofon er i brug.</translation>
 <translation id="7433708794692032816">Indsæt chipkortet for at blive ved med at bruge din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google Søgning</translation>
@@ -2354,6 +2357,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7781335840981796660">Alle brugerkonti og lokale data fjernes.</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7787212146956232129">Input- og outputenhederne er konfigureret. Gå til Indstillinger for at ændre dem.</translation>
+<translation id="7790757511772316441">Ledig diskplads</translation>
 <translation id="7792590255364786396">Synlig</translation>
 <translation id="7796735576426975947">Nye notifikationer er skjult</translation>
 <translation id="7798302898096527229">Tryk på Søg eller Shift for at annullere.</translation>

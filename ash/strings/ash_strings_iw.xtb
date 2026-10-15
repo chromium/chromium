@@ -1020,6 +1020,7 @@
 <translation id="3977512764614765090">‏שיעור הטעינה של הסוללה הוא ‎<ph name="PERCENTAGE" />%‎ והטעינה נמשכת.</translation>
 <translation id="3978162107953847778">‏אפשר להוסיף קישורים מהיסטוריית הגלישה או מ-Google Drive. ניתן גם להוסיף סמלי אמוג'י, קובצי תמונה ועוד. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">לשנות את מקור האודיו?</translation>
+<translation id="3983903378684256134">‏‫Steam ב-Chromebook</translation>
 <translation id="3984536049089846927">לדף הבא</translation>
 <translation id="3986082989454912832">מענה</translation>
 <translation id="3990002060657467458">‏בתפריט "הגדרות מהירות" מופיעים אמצעי הבקרה שנמצאים בשימוש לעיתים קרובות, כמו Wi-Fi,‏ Bluetooth ועוצמת הקול. את גם יכולה להיכנס לכאן כדי לצלם מסך.</translation>
@@ -1638,6 +1639,7 @@
 <translation id="5727460725221669831">‏אם שינית לאחרונה את הסיסמה לחשבון Google או ששכחת אותה, אפשר לנסות לשחזר את הגישה למשתמש הזה.</translation>
 <translation id="5733630091161562207">התראת הצטרפות</translation>
 <translation id="573413375004481890">המכשיר הזה לא הצליח לתמוך בכל המסכים, ולכן אחד מהם נותק</translation>
+<translation id="5739548907438839901">פינית <ph name="SIZE" /> מהמקום בכונן.</translation>
 <translation id="574392208103952083">בינוני</translation>
 <translation id="5745612484876805746">תאורת לילה נדלקת באופן אוטומטי בשעת השקיעה</translation>
 <translation id="5749214722697335450">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לעזור בשיפור חוויית המשתמש ב-Android, אפשר לשלוח אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה יעזרו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google ויעזרו לשותפים של Google, כמו מפתחים של Android. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה, יכול להיות שהנתונים האלה יישמרו בחשבון שלך ב-Google. <ph name="BEGIN_LINK1" />מידע נוסף על מדדים<ph name="BEGIN_LINK1_END" />מידע נוסף<ph name="END_LINK1" /></translation>
@@ -2215,6 +2217,7 @@
 <translation id="7413851974711031813">‏יש להקיש על "Esc" לסגירה</translation>
 <translation id="7416471219712049036">שמירת הדף הנוכחי</translation>
 <translation id="742594950370306541">המצלמה נמצאת בשימוש.</translation>
+<translation id="7430466159639897874">‏יש לך מקום לא מנוצל בכונן (<ph name="SIZE" />), שמוקצה לתכונה "Steam ב-Chromebook" שיצאה משימוש.</translation>
 <translation id="743058460480092004">המצלמה והמיקרופון נמצאים בשימוש.</translation>
 <translation id="7433708794692032816">יש להכניס את הכרטיס החכם כדי להמשיך להשתמש ב-<ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="7440404390546433462">‏חיפוש Google</translation>
@@ -2358,6 +2361,7 @@
 <translation id="7781335840981796660">תתבצע הסרה של כל חשבונות המשתמש והנתונים השמורים במכשיר.</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7787212146956232129">הוגדרו מכשירי קלט ופלט. אפשר לשנות את זה בהגדרות.</translation>
+<translation id="7790757511772316441">מקום פנוי בכונן</translation>
 <translation id="7792590255364786396">גלוי</translation>
 <translation id="7796735576426975947">התראה חדשה מוסתרת</translation>
 <translation id="7798302898096527229">‏יש להקיש על Search או על Shift כדי לבטל.</translation>

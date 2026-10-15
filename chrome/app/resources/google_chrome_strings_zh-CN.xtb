@@ -587,7 +587,6 @@
 <translation id="660312897435669152">Chrome 需要更新</translation>
 <translation id="6612152958212564387">您未向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">将 Chrome 设为默认浏览器，让您的密码、书签和历史记录在所有设备上实时同步。</translation>
-<translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
 <translation id="6631524303639368205">从上次停下的地方继续：Chrome 已恢复您上次会话中的标签页。如需关闭此功能，请前往</translation>
 <translation id="6632012506031284914">即可使用 Chrome 搜索。</translation>
 <translation id="6632473616050862500">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
@@ -784,7 +783,7 @@
 <translation id="835927394551949760">问问 Google</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8366770919198174997">降低性能，但提高 Chrome 防范攻击的能力</translation>
-<translation id="8367705492654390392">有问题，尽管问</translation>
+<translation id="8367705492654390392">尽情提问</translation>
 <translation id="8367950957770994118">随时随需快速打开 Chrome 中的 Gemini</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8370748943308169953">用于以<ph name="USER_NAME" />的身份登录 Chrome 的二维码</translation>

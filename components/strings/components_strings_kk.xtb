@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038168778161626396">Тек шифрдан шығару</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
 <translation id="1044897699341250361">Бұл нені білдіреді?</translation>
 <translation id="1049837829250301306">Ұйымыңыздың саясаттарына сәйкес, контентті қою мүмкін емес.</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">EDI тарабының атауы</translation>
 <translation id="1816436748874040213">Ортақ қойындыларды айналдыру мен масштабтауды сұрай алады</translation>
 <translation id="1816707915923025275">Браузерді қолдану тарихынан іздеу үшін @history деп теріңіз.</translation>
+<translation id="1816771466809215784">Төлеу кезінде автоматты түрде толтыру үшін осы карта иесінің атын Google Wallet-ке сақтаңыз.</translation>
 <translation id="1817364650920811003">Рөл: Chrome кеңесі. Арнайы мүмкіндіктер белгішесі: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">автоматты жүктеулер</translation>
 <translation id="1821930232296380041">Жарамсыз сұрау немесе сұрау параметрлері</translation>
@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android қолданбалары</translation>
 <translation id="2103210856015238101">Толығымен ашылған, түрту арқылы толтыруға болатын тұрақты клиент карталары.</translation>
 <translation id="2104739941682874393">Дұрысталған автотолтыру функциясы үлгілерді жақсы түсінеді және сізден де жылдам толтыра алады.</translation>
+<translation id="2105237910269166838">Осы бет жайында</translation>
 <translation id="2107021941795971877">Баспаны қолдау</translation>
 <translation id="2108755909498034140">Компьютерді қайта іске қосу</translation>
 <translation id="2109845311767915560">Ортақ қойындылар тобы</translation>
@@ -1054,7 +1055,7 @@
 <translation id="2734797989819862638">Көшірмеу</translation>
 <translation id="2738771556149464852">Кейін емес</translation>
 <translation id="2740531572673183784">Жарайды</translation>
-<translation id="275259155159336003">Gemini-дағы Personal Intelligence арқылы істейді. Сұрауларыңыз, бет атаулары мен URL мекенжайлары дұрысталған автотолтыру функциясын жақсарту үшін тексерілуі мүмкін. <ph name="BEGIN_LINK" />Параметрлерді басқару<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Жоқ}=1{1 дағды}other{# дағды}}</translation>
 <translation id="2757727729385895652">Google Drive-қа <ph name="COUNT" /> файл жүктеп салынып жатыр.</translation>
 <translation id="2759299890026163685">Әрекетті қайталамас бұрын, интернет байланысының тұрақты екеніне көз жеткізіңіз.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> қолданбасында құпия сөздеріңізді толтырмақ</translation>
@@ -1433,7 +1434,6 @@
 <translation id="3432601291244612633">Бетті жабу</translation>
 <translation id="3434025015623587566">Google Password Manager қызметіне көбірек рұқсат қажет</translation>
 <translation id="343474037147570563">Сіз жүктеп салатын немесе тіркейтін файлдар Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, олар құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
-<translation id="3435267628744367511">Кез келген үлгіде Ctrl пернесін екі рет басып, қойындыларды ауыстырмай-ақ ақпаратты тауып, толтырыңыз</translation>
 <translation id="3435557549311968410">Үздіксіз (қысқа)</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3436125638121079308">Осы тізбекте жақсырақ жауаптар алу үшін сәйкес қойындыларды автоматты түрде бөлісу керек пе?</translation>
@@ -1879,7 +1879,6 @@
 <translation id="4153446078232988116"><ph name="SITE" /> сайты HTTPS арқылы қауіпсіз байланысқа қолдау көрсетпейді</translation>
 <translation id="4153858337812834972">Ең соңғы қойындылар</translation>
 <translation id="4154277373259957087">Chrome енді төлеу әдістерін толтырмас бұрын жеке басыңызды растайды. Мұны <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ішінде кез келген уақытта жаңартуға болады.</translation>
-<translation id="4157273919218514718">Gemini-дағы Personal Intelligence арқылы істейді. <ph name="BEGIN_LINK" />Параметрлерді басқару<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Жүргізуші куәлігін қауіпсіз жаңартыңыз</translation>
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4165422751765527461">Анықтамалық орталық мақаласын жаңа қойындыдан ашады.</translation>
@@ -2147,7 +2146,6 @@
 <translation id="4599572944836204718">Карта сақталса, Google Pay арқылы жылдам төлеуге болады. Карта мәліметтері Google Wallet-те шифрланады.</translation>
 <translation id="4603727370377253901">Рейсті резервтеу</translation>
 <translation id="4607608436550361748">Chrome кеңестерін көру</translation>
-<translation id="4607879293515681409">Дұрысталған автотолтыру функциясы енді Gmail және Photos сияқты қолданбалардағы рейс нөмірлері мен кездесу уақыттары сияқты ақпаратты тауып, толтыра алады.</translation>
 <translation id="460848736049414407">Әкімші бөгеді</translation>
 <translation id="4610279718074907952">Бұл сайт әрекетіңізді көре алатын <ph name="SET_OWNER" /> белгілеген топқа кіреді</translation>
 <translation id="4612631413844865947"><ph name="MERCHANT_ORIGIN" /> дүкенінде <ph name="PAYMENT_APP_ORIGIN" /> арқылы тапсырысыңызды өңдеу кезінде қате пайда болды.</translation>
@@ -2922,7 +2920,6 @@
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
 <translation id="5887687176710214216">Соңғы кіру: кеше</translation>
-<translation id="5887791684215121787">Кез келген үлгіде ⌘ ⌘ пернесін басып, қойындыларды ауыстырмай-ақ ақпаратты тауып, толтырыңыз</translation>
 <translation id="5889251770650310375">Басқа құрылғылардағы тарихты алу үшін жеке басыңызды растаңыз және тарих пен қойындыларды синхрондаңыз. Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search пен басқа қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5895187275912066135">Шығарылған күні</translation>
@@ -3028,6 +3025,7 @@
 <translation id="6051221802930200923">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб сайт сертификат бекітуді пайдаланады. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="6051898664905071243">Бет саны:</translation>
 <translation id="605237284704429106">IBAN толтырылып жатыр</translation>
+<translation id="6052557981901634648">Жоспар құрыңыз</translation>
 <translation id="6053584886670442526">Google өнімдерінде сақталған мекенжайларды пайдалана аласыз. Бұл мекенжай Google аккаунтыңызда (<ph name="ACCOUNT" />) сақталады.</translation>
 <translation id="6055392876709372977">RSA шифрлауы бар PKCS #1 SHA-256</translation>
 <translation id="6055982527635883756">Хатқалта (мұрағат)</translation>
@@ -3466,6 +3464,7 @@
 <translation id="6808579246645021886">Ортақ қойындылар мен файлдар</translation>
 <translation id="681021252041861472">Міндетті өріс</translation>
 <translation id="6810899417690483278">Реттеу идентификаторы</translation>
+<translation id="6815861164669871832">Қойынды туралы сұрау</translation>
 <translation id="681631578600400068">Жүргізуші куәлігі деректерін сақтаңыз</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">сериялық порттар</translation>
@@ -3538,7 +3537,6 @@
 <translation id="6936976777388162184">Бұл құрылғының лицензиясы ендірілген және ол Kiosk and Signage Upgrade лицензиясына тіркелмейді.</translation>
 <translation id="6942444979237658241">Түсініктемелер: – <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Құпия сөзіңізді <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> басқармайтын сайтта енгіздіңіз. Аккаунтты қорғау үшін құпия сөзді басқа қолданбалар мен сайттарда пайдаланбаңыз.</translation>
-<translation id="6946949206576443118">Интернеттен Chrome арқылы іздеу</translation>
 <translation id="6948051842255602737">Ойын аяқталды, ұпайыңыз: <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Chrome-да тауар сатып алатын кезде, Pix опция ретінде көрсетіледі.</translation>
 <translation id="6948701128805548767">Таңдау әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
@@ -3628,6 +3626,7 @@
 <translation id="7083258188081898530">9-науа</translation>
 <translation id="70846382339153529">OpenDocument мәтіні</translation>
 <translation id="7086090958708083563">Пайдаланушы жүктеп салуды сұрады.</translation>
+<translation id="7089745480771070611">Бүйірлік панельде ашылады.</translation>
 <translation id="7090698782953528257">Математикалық теңдеуді визуализациялау және қисық сызықтың пішінін көру үшін функцияның графигін салуға көмектес</translation>
 <translation id="7092087596499105699">Әкімші ұйымыңыздың жеке веб-қолданбаларына кіру рұқсатын қорғау үшін қауіпсіз шлюз коннекторын конфигурациялады. Ол кіру рұқсатын тексеру үшін жұмыс профиліндегі деректерді пайдалануы мүмкін.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, сайттарға қатысты сақталған рұқсаттар мен деректерді басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
@@ -4011,6 +4010,7 @@
 <translation id="7696107855583699585">Белгілі жолаушы нөмірін өзгерту</translation>
 <translation id="7698864304447945242">Google Play Services for AR қолданбасын жаңарту керек пе?</translation>
 <translation id="7699509138503320152">Электрондық хатымды сендіретіндей етіп қайта жаз</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Жоқ}=1{1 дағды (синхрондалды)}other{# дағды (синхрондалды)}}</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> сайтына өту (қауіпті)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Жазуға көмек керек</translation>
@@ -4253,6 +4253,7 @@
 <translation id="813024282736408069">Автоматты түрде толтыру үшін виртуалдық картаны қосыңыз</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8135546115396015134">сол жақ перне</translation>
+<translation id="8136385032646505126">Карта иесінің аты-жөнін сақтау керек пе?</translation>
 <translation id="8137185688006450980">Медициналық сақтандыру жоспарларын салыстыр</translation>
 <translation id="8138591088112729119">Personal Intelligence функциясымен істейді.</translation>
 <translation id="814071672416123670">Ұйымыңыздың саясаттарына сәйкес, контентті көшіру мүмкін емес.</translation>
@@ -4526,6 +4527,7 @@
 <translation id="8622864575115813231">Қаржылық мекемеңізбен байланыс орнатылуда...</translation>
 <translation id="8632584659860846053">Барлық оқшау терезені жапқаннан кейін, браузерді қолдану тарихы, cookie файлдары мен сайт деректері, кэш және үлгілерге енгізілген ақпарат жойылады.</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
+<translation id="8635822281281406185">Көп дегенде 10 файл, қойынды немесе сурет қосуға болады</translation>
 <translation id="8637362707224133343">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргіңіз келген сайтта <ph name="BEGIN_LINK" />жақында бір фишинг әрекетін анықтады<ph name="END_LINK" />. Фишинг сайттары сізді басқа сайтпыз деп алдайды.<ph name="NEW_LINE" />Әдетте қауіпсіз болатын сайттардың өзінде кейде шабуылдаушылар болуы мүмкін. Бұл қате болса және осы сайт қауіпті болмаса, <ph name="BEGIN_ERROR_LINK" />бізге хабарлаңыз<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Қойындыларды бөлісіп, басқалармен бірлесіп жұмыс істеу үшін Chrome-ға кіре алатын болуыңыз қажет.</translation>
 <translation id="8641131559425911240">Хатқалта (бонд)</translation>

@@ -1021,6 +1021,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="3977512764614765090">% <ph name="PERCENTAGE" /> geratzen zaio bateriari, eta kargatzen ari da.</translation>
 <translation id="3978162107953847778">Txertatu estekak arakatze-historiatik, Google Drive-tik eta beste kokapen batzuetatik. Emojiak, irudi-fitxategiak eta beste elementu batzuk ere txerta ditzakezu. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Audio-irteera aldatu nahi duzu?</translation>
+<translation id="3983903378684256134">Chromebook-eko Steam</translation>
 <translation id="3984536049089846927">Hurrengo orria</translation>
 <translation id="3986082989454912832">Erantzun</translation>
 <translation id="3990002060657467458">Maiz erabiltzen diren kontrolatzeko aukerak, hala nola wifia, Bluetooth-a eta bolumena, Ezarpen bizkorrak atalean daude. Pantaila-argazkiak ere atera ditzakezu hemen.</translation>
@@ -1637,6 +1638,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5727460725221669831">Pasahitza ahaztu bazaizu edo duela gutxi Google-ko kontuko pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
 <translation id="5733630091161562207">Ongietorri-jakinarazpena</translation>
 <translation id="573413375004481890">Ezin dira zure pantaila guztiak konektatu gailu honetara; beraz, haietako bat deskonektatu da</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> berreskuratu dira diskoan</translation>
 <translation id="574392208103952083">Ertaina</translation>
 <translation id="5745612484876805746">Iluntzean, automatikoki aktibatzen da gaueko argia</translation>
 <translation id="5749214722697335450">Bidali erabilera- eta diagnostiko-datuak. Hobetu Android-en erabilera Google-ra diagnostikoei buruzko datuak eta gailuaren eta aplikazioen erabilera-datuak automatikoki bidalita. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea. <ph name="BEGIN_LINK1" />Lortu neurketei buruzko informazio gehiago<ph name="BEGIN_LINK1_END" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
@@ -2212,6 +2214,7 @@ Berriki instalatu da</translation>
 <translation id="7413851974711031813">Ixteko, sakatu Ihes tekla</translation>
 <translation id="7416471219712049036">Gorde oraingo orria</translation>
 <translation id="742594950370306541">Kamera abian da.</translation>
+<translation id="7430466159639897874">Erabili gabeko diskoko tokia (<ph name="SIZE" />) Chromebook-eko Steam eginbide zaharkiturako esleituta dago.</translation>
 <translation id="743058460480092004">Norbait kamera eta mikrofonoa erabiltzen ari da.</translation>
 <translation id="7433708794692032816">Sartu txartel adimenduna <ph name="DEVICE_TYPE" /> erabiltzen jarraitzeko</translation>
 <translation id="7440404390546433462">Google Bilaketa</translation>
@@ -2353,6 +2356,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7781335840981796660">Erabiltzaile-kontu guztiak eta gailuko datuak kendu egingo dira.</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7787212146956232129">Sarrera- eta irteera-gailuak ezarrita daude. Aldatzeko, joan Ezarpenak atalera.</translation>
+<translation id="7790757511772316441">Egin tokia diskoan</translation>
 <translation id="7792590255364786396">Ikusgai</translation>
 <translation id="7796735576426975947">Beste jakinarazpen bat ezkutatu da</translation>
 <translation id="7798302898096527229">Bertan behera uzteko, sakatu Bilatu edo Maius.</translation>

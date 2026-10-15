@@ -1020,6 +1020,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3977512764614765090">Baterie je nabitá na <ph name="PERCENTAGE" /> % a nabíjí se.</translation>
 <translation id="3978162107953847778">Vkládejte odkazy z míst, jako je historie prohlížení nebo Disk Google. Můžete vkládat i emodži, obrázkové soubory a podobně. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Přepnout zvukový výstup?</translation>
+<translation id="3983903378684256134">Steam na Chromebooku</translation>
 <translation id="3984536049089846927">Další stránka</translation>
 <translation id="3986082989454912832">Přijmout</translation>
 <translation id="3990002060657467458">Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky.</translation>
@@ -1638,6 +1639,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5727460725221669831">Pokud jste heslo zapomněli nebo jste nedávno změnili heslo účtu Google, zkuste tohoto uživatele obnovit.</translation>
 <translation id="5733630091161562207">Uvítací oznámení</translation>
 <translation id="573413375004481890">Toto zařízení nemohlo podporovat všechny vaše obrazovky, jedna proto byla odpojena</translation>
+<translation id="5739548907438839901">Bylo uvolněno <ph name="SIZE" /> místa na disku.</translation>
 <translation id="574392208103952083">Střední</translation>
 <translation id="5745612484876805746">Noční režim se zapíná automaticky za soumraku</translation>
 <translation id="5749214722697335450">Odesílat údaje o využití a diagnostice. Pomozte se zlepšením prostředí Android tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití zařízení a aplikací. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, například vývojáři aplikací pro Android. Pokud je zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google. <ph name="BEGIN_LINK1" />Další informace o metrikách<ph name="BEGIN_LINK1_END" />Další informace<ph name="END_LINK1" /></translation>
@@ -2214,6 +2216,7 @@ Nová instalace</translation>
 <translation id="7413851974711031813">Dialog zavřete stisknutím klávesy Escape</translation>
 <translation id="7416471219712049036">Uložit aktuální stránku</translation>
 <translation id="742594950370306541">Kamera je používána.</translation>
+<translation id="7430466159639897874">Máte nevyužité místo na disku (<ph name="SIZE" />) přidělené zastaralé funkci Steam na Chromebooku.</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
 <translation id="7433708794692032816">Pokud chcete pokračovat v používání zařízení <ph name="DEVICE_TYPE" />, vložte čipovou kartu</translation>
 <translation id="7440404390546433462">Vyhledávání Google</translation>
@@ -2355,6 +2358,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7781335840981796660">Veškeré uživatelské účty a místní data budou odebrána.</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7787212146956232129">Vstupní a výstupní zařízení jsou nastavena. Můžete je změnit v nastavení.</translation>
+<translation id="7790757511772316441">Uvolnit místo na disku</translation>
 <translation id="7792590255364786396">Viditelné</translation>
 <translation id="7796735576426975947">Nové upozornění bylo skryto</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>

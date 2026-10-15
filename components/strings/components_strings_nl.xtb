@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1038168778161626396">Alleen coderen</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
 <translation id="1044897699341250361">Wat dit betekent</translation>
 <translation id="1049837829250301306">Content kan niet worden geplakt vanwege het beleid van je organisatie</translation>
@@ -491,6 +490,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="18139523105317219">EDI Partynaam</translation>
 <translation id="1816436748874040213">Kan vragen om te scrollen en te zoomen op gedeelde tabbladen</translation>
 <translation id="1816707915923025275">Typ @history om in je browsegeschiedenis te zoeken</translation>
+<translation id="1816771466809215784">Sla de naam van de kaarthouder voor deze kaart op in Google Wallet om deze automatisch te laten invullen bij het afrekenen</translation>
 <translation id="1817364650920811003">Rol: Chrome-tip. Toegankelijkheidslabel: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">automatische downloads</translation>
 <translation id="1821930232296380041">Ongeldige aanvraag of aanvraagparameters</translation>
@@ -648,6 +648,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2103210856015238101">Lijst met klantenkaarten die kunnen worden ingevuld via aanraking, is op volledige hoogte geopend.</translation>
 <translation id="2104739941682874393">Verbeterd automatisch invullen begrijpt formulieren beter en kan ze sneller automatisch voor je invullen</translation>
+<translation id="2105237910269166838">Stel een vraag over deze pagina</translation>
 <translation id="2107021941795971877">Afdruksteunen</translation>
 <translation id="2108755909498034140">Je computer opnieuw opstarten</translation>
 <translation id="2109845311767915560">Gedeelde tabbladgroep</translation>
@@ -1054,7 +1055,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2734797989819862638">Niet kopiëren</translation>
 <translation id="2738771556149464852">Niet na</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="275259155159336003">Mogelijk gemaakt door Personal Intelligence met Gemini. Je verzoeken, paginatitels en URL's kunnen worden beoordeeld om verbeterd automatisch invullen te verbeteren. <ph name="BEGIN_LINK" />Instellingen beheren<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Geen}=1{1 vaardigheid}other{# vaardigheden}}</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> bestanden uploaden naar Google Drive</translation>
 <translation id="2759299890026163685">Zorg dat je een stabiele internetverbinding hebt voordat je het opnieuw probeert</translation>
 <translation id="2759825833388495838">je wachtwoord in te vullen in <ph name="APP_NAME" /></translation>
@@ -1431,7 +1432,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3434025015623587566">Google Wachtwoordmanager heeft meer toegang nodig</translation>
 <translation id="343474037147570563">Bestanden die je uploadt of bijvoegt, worden voor analyse naar Google Cloud of derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
-<translation id="3435267628744367511">Druk 2 keer op Ctrl in een formulier om informatie te vinden en in te vullen zonder van tabblad te wisselen</translation>
 <translation id="3435557549311968410">Doorlopend (kort)</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3436125638121079308">Relevante tabbladen automatisch delen voor betere reacties in dit gesprek?</translation>
@@ -1874,7 +1874,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4153446078232988116"><ph name="SITE" /> ondersteunt geen beveiligde verbindingen met HTTPS</translation>
 <translation id="4153858337812834972">Meest recente tabbladen</translation>
 <translation id="4154277373259957087">Chrome verifieert nu of jij het bent voordat een betaalmethode wordt ingevuld. Je kunt dit altijd updaten via <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Mogelijk gemaakt door Personal Intelligence met Gemini. <ph name="BEGIN_LINK" />Instellingen beheren<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Rijbewijs beveiligd updaten</translation>
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4165422751765527461">Opent een Helpcentrum-artikel in een nieuw tabblad</translation>
@@ -2142,7 +2141,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4599572944836204718">Betaal sneller met Google Pay als je kaart is opgeslagen. Kaartgegevens worden versleuteld in Google Wallet.</translation>
 <translation id="4603727370377253901">Vluchtreserveringen</translation>
 <translation id="4607608436550361748">Chrome-tips bekijken</translation>
-<translation id="4607879293515681409">Verbeterd automatisch invullen kan nu informatie vinden en invullen, zoals vluchtnummers en afspraaktijden, uit apps zoals Gmail en Foto's</translation>
 <translation id="460848736049414407">Geblokkeerd door beheerder</translation>
 <translation id="4610279718074907952">Deze site maakt deel uit van een groep die is gedefinieerd door <ph name="SET_OWNER" /> en die je activiteit kan bekijken</translation>
 <translation id="4612631413844865947">Er is een fout opgetreden bij de verwerking van je bestelling op <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2917,7 +2915,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5884465125445718607">Envelop Chinees #6</translation>
 <translation id="5887400589839399685">Kaart opgeslagen</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
-<translation id="5887791684215121787">Druk op ⌘ ⌘ in een formulier om informatie te vinden en in te vullen zonder van tabblad te wisselen</translation>
 <translation id="5889251770650310375">Als je de geschiedenis van je andere apparaten wilt krijgen, laat je verifiëren dat jij het bent en synchroniseer je je geschiedenis en tabbladen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5895187275912066135">Verleend op</translation>
@@ -3023,6 +3020,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6051221802930200923">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website gebruikmaakt van certificaatpinning. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="6051898664905071243">Aantal pagina's:</translation>
 <translation id="605237284704429106">IBAN invullen</translation>
+<translation id="6052557981901634648">Maak een plan</translation>
 <translation id="6053584886670442526">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres is opgeslagen in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="6055392876709372977">PKCS nr. 1 SHA-256 met RSA-versleuteling</translation>
 <translation id="6055982527635883756">Envelop (archief)</translation>
@@ -3460,6 +3458,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6808579246645021886">Gedeelde tabbladen en bestanden</translation>
 <translation id="681021252041861472">Verplicht veld</translation>
 <translation id="6810899417690483278">Aanpassings-ID</translation>
+<translation id="6815861164669871832">Vragen stellen over een tabblad</translation>
 <translation id="681631578600400068">Rijbewijs opslaan</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">seriële poorten</translation>
@@ -3532,7 +3531,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6936976777388162184">Dit is een gebundeld apparaat dat niet kan worden ingeschreven bij de Kiosk &amp; Signage Upgrade.</translation>
 <translation id="6942444979237658241">Reacties - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304">Je hebt je wachtwoord ingevoerd op een site die niet door <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> wordt beheerd. Ter bescherming van je account kun je je wachtwoord beter niet hergebruiken voor andere apps en sites.</translation>
-<translation id="6946949206576443118">Zoek op internet in Chrome</translation>
 <translation id="6948051842255602737">Game over! Je score is <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Als je aankopen doet in Chrome, zie je Pix als optie</translation>
 <translation id="6948701128805548767">Selecteer een adres om ophaalmethoden en vereisten te bekijken</translation>
@@ -3622,6 +3620,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7083258188081898530">Lade 9</translation>
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Upload aangevraagd door gebruiker</translation>
+<translation id="7089745480771070611">Wordt geopend in een zijvenster</translation>
 <translation id="7090698782953528257">Help me een functie te tekenen om de wiskundige vergelijking te visualiseren en de vorm van de curve te bekijken</translation>
 <translation id="7092087596499105699">Je beheerder heeft de Secure Gateway Connector ingesteld om de toegang tot de privé-web-apps van je organisatie te beschermen. De connector kan gegevens uit je werkprofiel gebruiken om de toegang te verifiëren.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om rechten en opgeslagen gegevens voor sites te beheren in de Chrome-instellingen</translation>
@@ -4006,6 +4005,7 @@ Aanvullende informatie:
 <translation id="7696107855583699585">Known Traveler Number bewerken</translation>
 <translation id="7698864304447945242">Google Play-services voor AR updaten?</translation>
 <translation id="7699509138503320152">Herschrijf mijn e-mail om deze overtuigender te maken</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Geen}=1{1 vaardigheid (gesynchroniseerd)}other{# vaardigheden (gesynchroniseerd)}}</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Doorgaan naar <ph name="SITE" /> (onveilig)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Help me met schrijven</translation>
@@ -4248,6 +4248,7 @@ Aanvullende informatie:
 <translation id="813024282736408069">Een virtuele kaart aanzetten voor automatisch invullen</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8135546115396015134">linkertoets</translation>
+<translation id="8136385032646505126">Naam van kaarthouder opslaan?</translation>
 <translation id="8137185688006450980">Vergelijk opties voor zorgverzekeringen</translation>
 <translation id="8138591088112729119">Mogelijk gemaakt door Personal Intelligence</translation>
 <translation id="814071672416123670">Content kan niet worden gekopieerd vanwege het beleid van je organisatie</translation>
@@ -4521,6 +4522,7 @@ Aanvullende informatie:
 <translation id="8622864575115813231">Contact opnemen met je financiële instelling…</translation>
 <translation id="8632584659860846053">Je browsegeschiedenis, cookies en sitegegevens, cache en informatie die je in formulieren hebt ingevoerd, worden verwijderd zodra je alle geïsoleerde vensters sluit</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Voeg maximaal 10 bestanden, tabbladen of afbeeldingen toe</translation>
 <translation id="8637362707224133343">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent phishing heeft gevonden<ph name="END_LINK" /> op de site die je probeerde te bezoeken. Phishingsites doen zich voor als een andere site om je te misleiden.<ph name="NEW_LINE" />Ook sites die normaal gesproken veilig zijn, worden soms gehackt door aanvallers. <ph name="BEGIN_ERROR_LINK" />Laat het ons weten<ph name="END_ERROR_LINK" /> als je denkt dat er een fout is gemaakt en dat deze site geen gevaar vormt.</translation>
 <translation id="8640996933372643759">Als je tabbladen wilt delen en met anderen wilt samenwerken, moet je kunnen inloggen bij Chrome</translation>
 <translation id="8641131559425911240">Envelop (bond)</translation>

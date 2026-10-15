@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Item dikemas kini</translation>
 <translation id="1018804590490383958">Imbas dan autolengkap</translation>
 <translation id="1019990162050689579">Aktiviti Apl Gemini</translation>
+<translation id="102471647093736603">Tekan dan tahan untuk mengalihkan bar alamat</translation>
 <translation id="102645702181682900">Tugasan dimulakan</translation>
 <translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1030376737535466765">Buka Password Manager</translation>
@@ -212,6 +213,7 @@
 <translation id="1600571977391127696">Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang.</translation>
 <translation id="1601560923496285236">Gunakan</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Selesaikan 1 tugasan untuk naik tahap}other{Selesaikan {count} tugasan untuk naik tahap}}</translation>
 <translation id="1605405588277479165">Dimatikan - Tidak disyorkan</translation>
 <translation id="1605658421715042784">Salin Imej</translation>
 <translation id="1606899876897213121">Tutup ringkasan aktiviti baru-baru ini</translation>
@@ -290,7 +292,6 @@
 <translation id="1838089197478136166">Buka dalam Wallet?</translation>
 <translation id="183878838231635348">Kad ini menunjukkan sebarang masalah privasi atau keselamatan yang Pemeriksaan Keselamatan kesan secara automatik untuk anda.</translation>
 <translation id="1845230888742614096">Simpan Kumpulan</translation>
-<translation id="1853558655412913122">Kini anda boleh menukar kedudukan bar alamat dalam "Tetapan", kemudian "Bar alamat"</translation>
 <translation id="1853692000353488670">Tab inkognito baharu</translation>
 <translation id="1854463785401910334">Cari dalam tab terbuka</translation>
 <translation id="1860609647735325606">Terangkan dengan Gemini</translation>
@@ -512,6 +513,7 @@
 <translation id="2524699375503213836">Bawa data anda daripada Safari</translation>
 <translation id="2526166285241366046">Simpan kata laluan</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
+<translation id="2530932541542751783">Ada masalah dengan tetapan ini. Kemas kinikan dan mulakan semula Chrome dan iPadOS, kemudian cuba lagi. Jika ralat ini terus berlaku, iPad anda mungkin tidak menyokong tetapan ini.</translation>
 <translation id="2536991091671391962">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Disembunyikan, kata laluan</translation>
 <translation id="2538705697765638552">Simpan maklumat anda dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh mengurus maklumat anda dalam Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +565,6 @@
 <translation id="2673508731173059946">Lawati pautan disalin</translation>
 <translation id="2679659833697380">Maklumat anda disimpan pada peranti anda</translation>
 <translation id="2681572445246787428">Penandatanganan Dokumen</translation>
-<translation id="2685514716378236873">Tidak Dibenarkan</translation>
 <translation id="2688535388040882469">Sepanduk</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
@@ -774,7 +775,6 @@
 <translation id="3430407169377889553">Gunakan Gemini dengan berhati-hati dan ambil alih kawalan jika perlu. Anda bertanggungjawab terhadap tindakan Gemini semasa melaksanakan tugasan.</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="3441673211568148613">Pastikan penyemakan imbas anda sulit</translation>
-<translation id="3443810440409579745">Tab diterima.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Ketahui lebih lanjut tentang Google Lens</translation>
 <translation id="3447332786336558089">Selepas anda log keluar, tab akan ditutup dan data akaun yang tidak disimpan akan dipadamkan daripada peranti ini. Perkara ini mungkin termasuk kata laluan, sejarah dan pelbagai lagi.</translation>
@@ -789,6 +789,7 @@
 <translation id="3474624961160222204">Teruskan sebagai <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Akses kata laluan anda merentasi apl lain.</translation>
 <translation id="3479552764303398839">Bukan sekarang</translation>
+<translation id="3481315707647070701">Gambarkan dan edit</translation>
 <translation id="3485558910355485767">Tetingkap Inkognito Baharu</translation>
 <translation id="3488501490964659223">Tab telah ditutup dan data semakan imbas dipadamkan. Anda telah dilog keluar</translation>
 <translation id="3490396108106323715">Kongsi tab semasa</translation>
@@ -847,6 +848,7 @@
 <translation id="3659297405161482746">Tiada kaedah pembayaran ditemukan</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="3668035568083954765">Lindungi privasi anda dan kekal selamat</translation>
+<translation id="3668703890943804691">Tugasan dihentikan</translation>
 <translation id="3668816008081204991">Senarai bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nombor</translation>
 <translation id="3672283986707092811">Pilih Semua</translation>
@@ -920,6 +922,7 @@
 <translation id="3914173277599553213">Diperlukan</translation>
 <translation id="3914640181019354363">Kesan alamat</translation>
 <translation id="391904960191284041">Ulasan produk</translation>
+<translation id="3920165976616657606">"Terokai Penyemakan Imbas Selamat Dipertingkat" selesai!</translation>
 <translation id="3921585859122905677">Kedudukan Bar Alamat</translation>
 <translation id="3922185497376658606">Halaman web pramuat</translation>
 <translation id="3926703470020109118">Muat Turun Dibatalkan</translation>
@@ -928,6 +931,7 @@
 <translation id="3933372629914873850">Anda akan log masuk ke <ph name="URL" /></translation>
 <translation id="3934905113567851655">Cubit untuk mengubah saiz imej</translation>
 <translation id="393732545649378031">Akaun</translation>
+<translation id="3939683043166875001">Sembunyikan atau tunjukkan laman popular anda, suapan Discover dan pelbagai lagi.</translation>
 <translation id="3940195383040445971">Jejaki harga pada tab</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tutup {COUNT} tab}other{Tutup {COUNT} tab}}</translation>
 <translation id="3946483119107054883">Muat turun kepada CSV</translation>
@@ -1122,7 +1126,6 @@
 <translation id="456502772933839252">Berkongsi <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
 <translation id="4568230126482344545">Sembunyikan tab Terbaharu</translation>
-<translation id="4571490460651837010">Urus alamat dan pelbagai lagi…</translation>
 <translation id="4578835633387306383">Hidupkan…</translation>
 <translation id="4580621046861724270">Sesetengah penanda halaman tidak disimpan</translation>
 <translation id="4580716718466706433">Akses "Password Manager"</translation>
@@ -1206,6 +1209,7 @@
 <translation id="4808744395915275922">Kemaskinian</translation>
 <translation id="4813345808229079766">Sambungan</translation>
 <translation id="4821595350501541683">Tab telah ditutup dan data semakan imbas dipadamkan</translation>
+<translation id="4823322556950229674">Anda boleh menekan dan menahan untuk mengalihkan bar alamat dan butang kembali kepada bahagian bawah</translation>
 <translation id="4824480232751123840">Kelantangan</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 yang lain}other{{domain} dan {count} yang lain}}</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
@@ -1263,6 +1267,7 @@
 <translation id="4977176874984951085">Buka menu tindakan halaman</translation>
 <translation id="4979397965658815378">Log masuk dengan Google Account anda untuk mendapatkan penanda halaman, kata laluan, sejarah dan tetapan anda yang lain pada semua peranti anda</translation>
 <translation id="4985921635659180565">Setelah fail dijadualkan untuk dipadamkan, tindakan tersebut tidak boleh dibatalkan.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 tab dikongsi}other{{COUNT} tab dikongsi}}</translation>
 <translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
 <translation id="4986428648020277392">Gesaan: Manakah yang perlu saya beli? 2 daripada 3</translation>
 <translation id="498768198683310172">Mula menggunakan Gemini</translation>
@@ -1841,6 +1846,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6708501134077648845">Pilihan Kata Laluan</translation>
 <translation id="6709964700841491574">Mod kunci semua</translation>
 <translation id="6710079714193676716">Diurus oleh organisasi anda. Sesetengah ciri mungkin tidak tersedia. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Jawapan yang lebih pintar dan lebih pantas</translation>
 <translation id="6713676799463473249">Diubah suai <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Tab Diterima</translation>
 <translation id="6722638373100589752">Untuk autolengkap maklumat anda, hidupkan “Gunakan pas merentas Google” dalam tetapan Wallet</translation>
@@ -1921,6 +1927,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="6938212956536472404">Tab ini tidak boleh dikongsi</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6946722113367118030">Memikirkan</translation>
+<translation id="6947751977892029882">Ada masalah dengan tetapan ini. Kemas kinikan dan mulakan semula Chrome dan iOS, kemudian cuba lagi. Jika ralat ini terus berlaku, iPhone anda mungkin tidak menyokong tetapan ini.</translation>
 <translation id="6950522403736391608">Disembunyikan</translation>
 <translation id="695965663642079255">Simpan dan urus maklumat pembayaran untuk semak keluar dengan lebih pantas</translation>
 <translation id="6962809930976936328">Dapatkan cerapan dengan Gemini</translation>
@@ -2050,6 +2057,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Teruskan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
+<translation id="7417055777338419059">Buat pengekodan, tulis atau buat slaid</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7425053386765766120">Tambahkan kaedah pembayaran…</translation>
@@ -2343,6 +2351,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8264966119170358612">Sesetengah kata laluan anda yang disimpan telah terdedah dalam pelanggaran data bukan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Buka menu Chrome</translation>
 <translation id="826614135184049678">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPad anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
+<translation id="8266370374397811600">Pencapaian baharu diperoleh! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Anda akan menukar profil</translation>
 <translation id="8275068909952022340">Lagi…</translation>
@@ -2546,7 +2555,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8849001918648564819">Disembunyikan</translation>
 <translation id="8855242995793521265">Tidak memperlahankan penyemak imbas atau peranti dengan ketara.</translation>
 <translation id="8856643812068084733">Arkib</translation>
-<translation id="8863067612494559785">Menghantar kepada <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Dapatkan arah dan maklumat setempat daripada Google Maps</translation>
 <translation id="8871974300055371298">Tetapan kandungan</translation>
 <translation id="8876661425082386199">Semak sambungan anda</translation>

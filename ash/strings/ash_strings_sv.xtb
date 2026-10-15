@@ -1020,6 +1020,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3977512764614765090">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas.</translation>
 <translation id="3978162107953847778">Infoga länkar från ställen som webbhistoriken och Google Drive. Du kan även infoga emojis, bildfiler och mycket annat. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Vill du byta ljudutgång?</translation>
+<translation id="3983903378684256134">Steam på Chromebook</translation>
 <translation id="3984536049089846927">Nästa sida</translation>
 <translation id="3986082989454912832">Svara</translation>
 <translation id="3990002060657467458">I Snabbinställningar hittar ofta använda inställningar som wifi, Bluetooth och volym. Här kan du även ta en skärmbild.</translation>
@@ -1636,6 +1637,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5727460725221669831">Om du har glömt lösenordet eller bytt lösenord till Google-kontot nyligen kan du testa att återställa den här användaren.</translation>
 <translation id="5733630091161562207">Välkomstmeddelande</translation>
 <translation id="573413375004481890">Enheten har inte stöd för alla skärmar. Därför är en av skärmarna frånkopplad.</translation>
+<translation id="5739548907438839901"><ph name="SIZE" /> diskutrymme har frigjorts.</translation>
 <translation id="574392208103952083">Medelstark</translation>
 <translation id="5745612484876805746">Nattljus aktiveras automatiskt när solen går ned</translation>
 <translation id="5749214722697335450">Skicka användnings- och diagnostikdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används bland annat till att förbättra systemets och apparnas stabilitet. Viss samlad data används även till att förbättra appar från Google och Googles partners, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK1" />Läs mer om mätvärden<ph name="BEGIN_LINK1_END" />Läs mer<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Nyligen installerad</translation>
 <translation id="7413851974711031813">Stäng genom att trycka på Esc</translation>
 <translation id="7416471219712049036">Spara den aktuella sidan</translation>
 <translation id="742594950370306541">Kameran används.</translation>
+<translation id="7430466159639897874">Du har oanvänt diskutrymme (<ph name="SIZE" />) som har tilldelats den utfasade funktionen Steam på Chromebook.</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
 <translation id="7433708794692032816">Sätt i smartkort för att fortsätta använda din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Google Sök</translation>
@@ -2352,6 +2355,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7781335840981796660">Alla användarkonton och all lokal data tas bort.</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7787212146956232129">Ingångar och utgångar har konfigurerats. Du kan ändra detta i inställningarna</translation>
+<translation id="7790757511772316441">Ledigt diskutrymme</translation>
 <translation id="7792590255364786396">Synliga</translation>
 <translation id="7796735576426975947">En ny avisering har dolts</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>

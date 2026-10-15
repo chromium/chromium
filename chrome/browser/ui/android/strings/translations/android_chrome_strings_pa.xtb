@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਵਿੱਚ ਤਰਜੀਹਾਂ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹਨ</translation>
 <translation id="1014147525163127655">ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="ORIGIN" /> ਲਈ ਕੋਈ ਪਾਸਕੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="1016498331642356377">ਤੁਰੰਤ ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ।</translation>
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ਨੂੰ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="103269572468856066">ਇਹਨਾਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਤੋਂ ਵੀ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1035113036584565771">ਨੁਕਤਿਆਂ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਵਾਲਾ ਪ੍ਰੋਮੋ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">ਪਾਸਕੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਵਾਲੀ ਸ਼ੀਟ ਬੰਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="1197933394627598677">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="1197935538609051549">ਅਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
+<translation id="119944043368869598">ਸਾਰੇ ਹਟਾਓ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1202892408424955784">ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦ</translation>
 <translation id="1204037785786432551">ਲਿੰਕ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -135,6 +135,7 @@
 <translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹੋ • <ph name="DEVICE_NAME" /> ਤੋਂ</translation>
 <translation id="1495677929897281669">ਟੈਬ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="1496514951988037011">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
+<translation id="1498051468374914325">ਵਿਕਾਸਕਾਰ ਟੂਲ ਕੰਸੋਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="1501480321619201731">ਗਰੁੱਪ ਮਿਟਾਓ</translation>
 <translation id="1506061864768559482">ਖੋਜ ਇੰਜਣ</translation>
 <translation id="1513352483775369820">ਬੁੱਕਮਾਰਕ ਅਤੇ ਵੈੱਬ ਇਤਿਹਾਸ</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਇੱਕ ਨਵੀਂ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="152204906462707884">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਮਿਟਾਓ ਅਤੇ ਆਪਣੀ ਪਰਦੇਦਾਰੀ 'ਤੇ ਹੋਰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="153446405401665083">Chrome ਦਾ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="1537160738459068682">ਵਿਕਾਸਕਾਰ ਟੂਲ ਤੱਤ ਖੋਲ੍ਹੋ</translation>
 <translation id="1540012742443808215">ਪਤਾ ਬਾਰ ਇਸ ਵੇਲੇ ਸਿਖਰ 'ਤੇ ਹੈ</translation>
 <translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1544084554881119930">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chrome ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।
@@ -151,6 +153,7 @@
 <translation id="1553358976309200471">Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="1554352084785952638">"<ph name="SEARCH_TERMS" />" ਲਈ <ph name="SEARCH_ENGINE" /></translation>
 <translation id="1554532453982918912">ਉਨ੍ਹਾਂ ਲੋਕਾਂ ਲਈ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ ਜੋ ਇਸਨੂੰ ਤੁਹਾਡੇ ਤਰੀਕੇ ਨਾਲ ਵਰਤਦੇ ਹਨ</translation>
+<translation id="1557806604681757705">ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ</translation>
 <translation id="1568636008098739136">ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ।</translation>
 <translation id="1571041387761170095">ਕੋਈ ਵੀ ਕਮਜ਼ੋਰ ਜਾਂ ਮੁੜ-ਵਰਤਿਆ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@
 <translation id="22091350895006575">ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2211043920024403606">ਪ੍ਰੋਫਾਈਲ ਜਾਣਕਾਰੀ</translation>
 <translation id="221494669172414749">ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਤੋਂ ਬਿਨਾਂ Chrome ਨੂੰ ਖੋਲ੍ਹਣ ਨਾਲ ਕਾਰ ਤੋਂ ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਪਾਸਵਰਡ ਅਤੇ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਟ ਜਾਣਗੀਆਂ। ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਵਰਤਣ ਨਾਲ ਇਹ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਰਹਿੰਦਾ ਹੈ।</translation>
+<translation id="2220529011494928058">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="2226826835915474236">ਅਕਿਰਿਆਸ਼ੀਲ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="2227179592712503583">ਸੁਝਾਅ ਹਟਾਓ</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -556,6 +560,7 @@
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="3200536777393523575">ਕੀ ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
+<translation id="3208321278970793882">ਐਪ</translation>
 <translation id="3208584281581115441">ਹੁਣ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="3232293466644486101">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
@@ -963,6 +968,7 @@
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
 <translation id="4807700370495020449">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="480990236307250886">ਹੋਮ ਪੇਜ ਖੋਲ੍ਹੋ</translation>
+<translation id="4812684235631257312">ਹੋਸਟ</translation>
 <translation id="4816492930507672669">ਸਫ਼ੇ ਤੇ ਫਿਟ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਅਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4835385943915508971">Chrome ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਸਰੋਤ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੈ।</translation>
@@ -1069,6 +1075,7 @@
 <translation id="5233638681132016545">ਨਵੀਂ ਟੈਬ</translation>
 <translation id="5235196193381275927">ਸਾਈਨ-ਇਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="5246093389635966745">ਟੂਲਬਾਰ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="5257142004843671642">ਸਾਈਡ ਪੈਨਲ ਦਾ ਆਕਾਰ ਬਦਲੋ</translation>
 <translation id="5264813352784073502">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
 <translation id="5267572070504076962">ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਵਿਰੁੱਧ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5273031377282080577">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
@@ -1095,9 +1102,9 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਗਈ ਅਜਿਹੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ, ਜਿਸਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5375374982898812658">ਤੁਸੀਂ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੋਗੇ ਅਤੇ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="537865165090710757">ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="5385892579392932755">ਤੁਹਾਡਾ ਲੈਪਟਾਪ</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ਦੀ ਤੁਹਾਡੇ ਡਿਜੀਟਲ ਵਾਲੇਟ ਤੋਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੀ ਜਾਰੀ ਰੱਖੋ। ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਧੋਖੇ ਨਾਲ ਤੁਹਾਡੇ ਤੋਂ ਕਨੂੰਨੀ ਨਾਮ ਜਾਂ ਆਈਡੀ ਨੰਬਰ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5395376160638294582">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਦੇ ਵੀ Chrome ਡਾਟਾ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
+<translation id="5397794290049113714">ਤੁਸੀਂ</translation>
 <translation id="539881862970320163">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦਾ ਸੁਝਾਅ ਦਿੱਤਾ ਗਿਆ। ਕੀ-ਬੋਰਡ ਲੁਕਾਇਆ ਗਿਆ।</translation>
 <translation id="5404274604891474619">PDF ਦਾ ਸੰਪਾਦਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5409881200985013443">ਕੀ <ph name="CLIENT_NAME" /> 'ਤੇ <ph name="ONE_TIME_CODE" /> ਸਪੁਰਦ ਕਰਨਾ ਹੈ?</translation>
@@ -1523,6 +1530,7 @@
 <translation id="6964300328304469089">ਫ਼ਿਲਹਾਲ <ph name="NAME" />, <ph name="EMAIL" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ। ਕੋਈ ਖਾਤਾ ਚੁਣੋ।</translation>
 <translation id="696447261358045621">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਛੱਡੋ</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
+<translation id="6965978654500191972">ਡੀਵਾਈਸ</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਦੇਖੋ}one{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਦੇਖੋ}other{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਦੇਖੋ}}</translation>
 <translation id="6971555615916967190">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਵਿੱਚ ਤਰਜੀਹਾਂ ਅੱਧੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹਨ</translation>
 <translation id="6971862865055170158">ਮਨਜ਼ੂਰੀ ਨਾ ਦਿਓ</translation>
@@ -1942,6 +1950,7 @@
 <translation id="8512053371384421952">ਤੁਹਾਨੂੰ ਹੁਣ <ph name="DOMAIN" /> ਤੋਂ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="8516012719330875537">ਚਿੱਤਰ ਸੰਪਾਦਕ</translation>
 <translation id="8517759303731677493">ਸੰਪਾਦਨ ਕਰੋ…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬਾਂ</translation>
 <translation id="8540136935098276800">ਸਹੀ ਢੰਗ ਨਾਲ ਫਾਰਮੈਟ ਕੀਤਾ URL ਦਾਖਲ ਕਰੋ</translation>
@@ -2061,6 +2070,7 @@
 <translation id="9024318700713112071">Chrome ਨੂੰ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="9035378196785279980">ਇੱਥੇ ਲਿਜਾਓ\u2026</translation>
+<translation id="9038316201889095704">ਅਣਰੱਖਿਅਤ ਤਬਦੀਲੀਆਂ ਹੋਣ 'ਤੇ ਪੰਨੇ ਵਿੱਚ ਲੱਭਣ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਕੀਤੀ ਗਈ।</translation>
 <translation id="904146253922032365">ਟੈਬਾਂ ਨੂੰ ਖੜ੍ਹਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਉਣ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
 <translation id="9047347135558855162">Chrome ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ</translation>

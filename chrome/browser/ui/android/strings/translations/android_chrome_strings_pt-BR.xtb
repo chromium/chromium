@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Preferências do modo de leitura abertas na altura máxima</translation>
 <translation id="1014147525163127655">Não há chaves de acesso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Pesquisar rapidamente usando sua voz. Para editar este atalho, toque e pressione.</translation>
-<translation id="1028699632127661925">Enviando para este dispositivo: <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">Remover também dados desses sites e apps?</translation>
 <translation id="1035113036584565771">Mensagem promocional de notificações de dicas fechada</translation>
 <translation id="1036348656032585052">Desativar</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Página de confirmação da chave de acesso fechada</translation>
 <translation id="1197933394627598677">Mostrar Modo de Leitura</translation>
 <translation id="1197935538609051549">Desativar</translation>
+<translation id="119944043368869598">Remover tudo</translation>
 <translation id="1201402288615127009">Avançar</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
 <translation id="1204037785786432551">Baixar link</translation>
@@ -135,6 +135,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1485343711570311792">Abrir no app <ph name="NATIVE_APP_NAME" /> • Do <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
 <translation id="1496514951988037011">nome de usuário</translation>
+<translation id="1498051468374914325">Abrir o Console das Ferramentas para Desenvolvedores</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
@@ -142,6 +143,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1516966594427080024">Abrir uma nova janela no modo de navegação anônima</translation>
 <translation id="152204906462707884">Exclua rapidamente seu histórico de navegação e tenha mais controle sobre sua privacidade</translation>
 <translation id="153446405401665083">Uma nova versão do Chrome está disponível</translation>
+<translation id="1537160738459068682">Abrir Elementos das Ferramentas para Desenvolvedores</translation>
 <translation id="1540012742443808215">A barra de endereço está na parte de cima da tela</translation>
 <translation id="1543035591122163372">Faça login para acessar suas senhas e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
@@ -151,6 +153,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Ajude a melhorar o Chrome para as pessoas que o usam como você.</translation>
+<translation id="1557806604681757705">seu computador</translation>
 <translation id="1568636008098739136">Ouvir esta página. Para editar este atalho, toque e pressione.</translation>
 <translation id="1571041387761170095">Nenhuma senha fraca ou reutilizada</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="22091350895006575">Adicionar nome de usuário</translation>
 <translation id="2211043920024403606">Informações do perfil</translation>
 <translation id="221494669172414749">Se você abrir o Chrome sem um bloqueio de perfil, as senhas e formas de pagamento salvas serão removidas do carro. O uso do bloqueio de perfil protege esses dados.</translation>
+<translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2226826835915474236">Atalhos inativos</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3189635831478931757">Grupo de guias <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Fechar janela atual?</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Confirmar agora</translation>
 <translation id="3211426585530211793">Item excluído: <ph name="ITEM_TITLE" /></translation>
 <translation id="3232293466644486101">Excluir dados de navegação…</translation>
@@ -964,6 +969,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4807098396393229769">Nome no cartão</translation>
 <translation id="4807700370495020449">Faça login neste site e no Chrome para acessar suas informações salvas e muito mais em todos os seus dispositivos</translation>
 <translation id="480990236307250886">Abrir a página inicial</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Ajustar à página</translation>
 <translation id="4822710610088666676">Grupo de guias <ph name="TAB_GROUP_TITLE" /> fechado e salvo</translation>
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
@@ -1070,6 +1076,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5233638681132016545">Nova guia</translation>
 <translation id="5235196193381275927">Algo deu errado durante o login</translation>
 <translation id="5246093389635966745">Editar atalho da barra de ferramentas</translation>
+<translation id="5257142004843671642">Redimensionar painel lateral</translation>
 <translation id="5264813352784073502">nas últimas 24 horas</translation>
 <translation id="5267572070504076962">Ative a Navegação Segura para ter proteção contra sites perigosos</translation>
 <translation id="5273031377282080577">O administrador gerencia essa configuração.</translation>
@@ -1096,9 +1103,9 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, guia anônima de compartilhamento fixada</translation>
 <translation id="5375374982898812658">Você vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos seus dispositivos</translation>
 <translation id="537865165090710757">Salvar e compartilhar</translation>
-<translation id="5385892579392932755">seu notebook</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital. Continue apenas se confiar neste site. Sites perigosos podem induzir você a revelar dados como nome civil ou número de documento de identificação.</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
+<translation id="5397794290049113714">Você</translation>
 <translation id="539881862970320163">Senha forte sugerida. Teclado oculto.</translation>
 <translation id="5404274604891474619">Não é possível editar o PDF</translation>
 <translation id="5409881200985013443">Enviar <ph name="ONE_TIME_CODE" /> no <ph name="CLIENT_NAME" />?</translation>
@@ -1524,6 +1531,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
 <translation id="696447261358045621">Sair do modo de navegação anônima</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> guia com nova atividade nos grupos de guias compartilhados}one{Ver <ph name="TABS_COUNT_MANY" /> guia com nova atividade nos grupos de guias compartilhados}other{Ver <ph name="TABS_COUNT_MANY" /> guias com nova atividade nos grupos de guias compartilhados}}</translation>
 <translation id="6971555615916967190">Preferências do modo de leitura abertas na metade da altura</translation>
 <translation id="6971862865055170158">Não aprovar</translation>
@@ -1943,6 +1951,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8512053371384421952">Você não vai mais receber notificações de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imagem</translation>
 <translation id="8517759303731677493">Editar…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A Navegação Segura está ativada</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, guia picture-in-picture fixada com várias seleções</translation>
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>
@@ -2062,6 +2071,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9024318700713112071">Definir Chrome como navegador padrão</translation>
 <translation id="9027728231343310283">Desfazer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover para\u2026</translation>
+<translation id="9038316201889095704">A opção Localizar na Página fica desativada quando há mudanças não salvas.</translation>
 <translation id="904146253922032365">Toque e segure para mostrar as guias na vertical</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9047347135558855162">Comece uma pesquisa no Chrome</translation>

@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">Visst innehåll kanske inte är lämpligt för alla.</translation>
 <translation id="1601560923496285236">Verkställ</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adress}other{# adresser}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Slutför 1 uppgift för att levla upp}other{Slutför {count} uppgifter för att levla upp}}</translation>
 <translation id="1605405588277479165">Av – rekommenderas inte</translation>
 <translation id="1605658421715042784">Kopiera bild</translation>
 <translation id="1606899876897213121">Stäng sammanfattningen av de senaste aktiviteterna</translation>
@@ -290,7 +291,6 @@
 <translation id="1838089197478136166">Vill du öppna den i Wallet?</translation>
 <translation id="183878838231635348">På det här kortet visas eventuella integritets- eller säkerhetsproblem som automatiskt har identifierats av säkerhetskontrollen.</translation>
 <translation id="1845230888742614096">Behåll gruppen</translation>
-<translation id="1853558655412913122">Nu kan du ändra adressfältets placering genom att gå till Inställningar och sedan Adressfält</translation>
 <translation id="1853692000353488670">Ny inkognitoflik</translation>
 <translation id="1854463785401910334">Sök på öppna flikar</translation>
 <translation id="1860609647735325606">Förklara med Gemini</translation>
@@ -512,6 +512,7 @@
 <translation id="2524699375503213836">Hämta din data från Safari</translation>
 <translation id="2526166285241366046">Spara ett lösenord</translation>
 <translation id="2529021024822217800">Öppna alla</translation>
+<translation id="2530932541542751783">Något gick fel med den här inställningen. Uppdatera och starta om Chrome och iPadOS och försök igen. Om felet kvarstår kanske din iPad inte har stöd för den här inställningen.</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Dolt, lösenord</translation>
 <translation id="2538705697765638552">Spara dina uppgifter så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan hantera dina uppgifter i Google Wallet för <ph name="USER_EMAIL" />.</translation>
@@ -563,7 +564,6 @@
 <translation id="2673508731173059946">Besök kopierad länk</translation>
 <translation id="2679659833697380">Din information sparas på enheten</translation>
 <translation id="2681572445246787428">Dokumentsignering</translation>
-<translation id="2685514716378236873">Tillåts ej</translation>
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">Kameran används</translation>
 <translation id="2691653761409724435">Ej tillgänglig offline</translation>
@@ -774,7 +774,6 @@
 <translation id="3430407169377889553">Använd Gemini med försiktighet och ta kontrollen om det behövs. Du ansvarar för det Gemini gör när den utför uppgifter.</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3441673211568148613">Håll ditt surfande privat</translation>
-<translation id="3443810440409579745">En flik har tagits emot.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Läs mer om Google Lens</translation>
 <translation id="3447332786336558089">När du har loggat ut stängs flikarna och kontodata som inte har sparats raderas från enheten. Detta kan omfatta lösenord, historik med mera.</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Få tillgång till dina lösenord i andra appar.</translation>
 <translation id="3479552764303398839">Inte nu</translation>
+<translation id="3481315707647070701">Visualisera och redigera</translation>
 <translation id="3485558910355485767">Nytt inkognitofönster</translation>
 <translation id="3488501490964659223">Flikarna stängdes och webbinformationen rensades. Du loggades ut</translation>
 <translation id="3490396108106323715">Dela aktuell flik</translation>
@@ -847,11 +847,13 @@
 <translation id="3659297405161482746">Inga betalningsmetoder hittades</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 har valts}other{# har valts}}</translation>
 <translation id="3668035568083954765">Skydda din integritet och förbli säker</translation>
+<translation id="3668703890943804691">Uppgiften har stoppats</translation>
 <translation id="3668816008081204991">Läslistan har dolts</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Markera alla</translation>
 <translation id="3679163990085797665">Radera lästa</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
+<translation id="3689746421535476813">Välj en sparad betalningsmetod som du vill redigera eller lägg till en ny betalningsmetod</translation>
 <translation id="3695446226812920698">Läs mer</translation>
 <translation id="3700134753671613714">Logga in om du vill ha dina bokmärken på alla dina enheter.</translation>
 <translation id="3701167022068948696">Åtgärda nu</translation>
@@ -919,6 +921,7 @@
 <translation id="3914173277599553213">Obligatoriskt</translation>
 <translation id="3914640181019354363">Identifiera adresser</translation>
 <translation id="391904960191284041">Produktrecensioner</translation>
+<translation id="3920165976616657606">Du har slutfört Utforska Förbättrad säker webbsökning.</translation>
 <translation id="3921585859122905677">Adressfältets position</translation>
 <translation id="3922185497376658606">Läs in webbsidor i förväg</translation>
 <translation id="3926703470020109118">Nedladdningen har avbrutits</translation>
@@ -927,6 +930,7 @@
 <translation id="3933372629914873850">Du loggar in på <ph name="URL" /></translation>
 <translation id="3934905113567851655">Nyp för att ändra storlek</translation>
 <translation id="393732545649378031">Konto</translation>
+<translation id="3939683043166875001">Dölj eller visa dina favoritwebbplatser, Förslag-flödet med mera.</translation>
 <translation id="3940195383040445971">Bevaka priser på flikar</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
 <translation id="3946483119107054883">Ladda ned till CSV</translation>
@@ -1089,6 +1093,7 @@
 <translation id="4455710003856931944">Du kan gå framåt eller bakåt genom att svepa längs kanten.</translation>
 <translation id="4460014764210899310">Ta bort grupp</translation>
 <translation id="446314443268698477">Köp, översätt och identifiera det du ser med kameran eller foton.</translation>
+<translation id="4465941170695753889">Tryck länge för att skapa en flikgrupp</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4470766488397113689">Vad vill du jobba med?</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
@@ -1120,7 +1125,6 @@
 <translation id="456502772933839252">Delar <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4568230126482344545">Dölj Senaste flikarna</translation>
-<translation id="4571490460651837010">Hantera adresser och annat …</translation>
 <translation id="4578835633387306383">Aktivera …</translation>
 <translation id="4580621046861724270">Vissa bokmärken har inte sparats</translation>
 <translation id="4580716718466706433">Öppna Lösenordshantering</translation>
@@ -1261,6 +1265,7 @@
 <translation id="4977176874984951085">Öppna sidan med åtgärdsmenyn</translation>
 <translation id="4979397965658815378">Logga in med ditt Google-konto så att du kan använda bokmärken, lösenord, historik med mera på alla dina enheter</translation>
 <translation id="4985921635659180565">När en fil har schemalagts för radering kan den inte avbrytas.</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{1 delad flik}other{{COUNT} delade flikar}}</translation>
 <translation id="498624032394115435">Alla som har länken kan redigera alla flikar.</translation>
 <translation id="4986428648020277392">Prompt: Vilken borde jag köpa? 2 av 3</translation>
 <translation id="498768198683310172">Börja använda Gemini</translation>
@@ -1720,6 +1725,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6372558618707314581">Öppna valfri sida</translation>
 <translation id="6374469231428023295">Försök igen</translation>
 <translation id="6374514103145916800">Fråga</translation>
+<translation id="6381241974485088375">Anpassa sidan Ny flik härifrån när som helst</translation>
 <translation id="6383719166112032471">Öppna plats …</translation>
 <translation id="6387994324662817823">Lösenorden sparas med Google Lösenordshantering endast på den här enheten.</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
@@ -1838,6 +1844,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6708501134077648845">Lösenordsalternativ</translation>
 <translation id="6709964700841491574">Låsningsläge</translation>
 <translation id="6710079714193676716">Hanteras av organisationen. Vissa funktioner kanske inte är tillgängliga. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">Smartare och snabbare svar</translation>
 <translation id="6713676799463473249">Ändrades <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Mottagna flikar</translation>
 <translation id="6722638373100589752">Aktivera Använd värdekort på Google i Wallet-inställningarna om du vill fylla i dina uppgifter automatiskt</translation>
@@ -1918,6 +1925,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="6938212956536472404">Det går inte att dela den här fliken</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6946722113367118030">Tänker</translation>
+<translation id="6947751977892029882">Något gick fel med den här inställningen. Uppdatera och starta om Chrome och iOS och försök igen. Om felet kvarstår kanske din iPhone inte har stöd för den här inställningen.</translation>
 <translation id="6950522403736391608">Dolda</translation>
 <translation id="695965663642079255">Spara och hantera betalningsuppgifter för att betala snabbare</translation>
 <translation id="6962809930976936328">Få insikter med Gemini</translation>
@@ -2340,6 +2348,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Öppna Chrome-menyn</translation>
 <translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
+<translation id="8266370374397811600">Du har låst upp en ny prestation! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Du är på väg att byta profil</translation>
 <translation id="8275068909952022340">Mer …</translation>
@@ -2424,6 +2433,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8535368836838588657">Visa lösenord</translation>
 <translation id="8540426897269305488">Logga in med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8542331710562073430">Något gick fel. Tryck på Live-knappen för att försöka använda Live igen.</translation>
+<translation id="8544172904312384600">Redigera eller lägg till en ny betalningsmetod</translation>
 <translation id="8545276357312221485">Kontrollera inställningarna för standardwebbläsare</translation>
 <translation id="854938212724803178">Du har 1 utsatt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
 <translation id="8551311254462607218">Tryck på kameraikonen för Google Lens i adressfältet</translation>
@@ -2462,6 +2472,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8639963783467694461">Inställningar för autofyll</translation>
 <translation id="8642417828095157370">Flikar delas för mer relevanta svar</translation>
 <translation id="8643403533759285912">Radera grupp</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">Det gick inte att avsluta prisbevakningen.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8655861111558401309">Välj Radera webbinformation</translation>
@@ -2541,7 +2552,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8855242995793521265">Gör inte webbläsaren eller enheten märkbart långsammare.</translation>
 <translation id="8856643812068084733">Arkiv</translation>
-<translation id="8863067612494559785">Skickar till <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Få vägbeskrivningar och lokal information från Google Maps</translation>
 <translation id="8871974300055371298">Innehållsinställningar</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>

@@ -407,6 +407,15 @@ instalação.</translation>
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
 <translation id="1274997165432133392">Cookies e outros dados do site</translation>
 <translation id="1277411517984768103">Permitir que a <ph name="BOREALIS_NAME" /> seja executada para um usuário</translation>
+<translation id="1281420319219324116">Esta política configura o certificado do cliente gerenciado provisionado quando <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> está ativado.
+
+O campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica a origem do Nome Comum (CN) do Assunto do certificado:
+
+- Se não for definido ou for definido como <ph name="DEVICE_ID_VALUE" />, o Nome Comum do Assunto do certificado será definido como o ID do dispositivo virtual do navegador gerenciado.
+
+- Se definido como <ph name="COMPUTER_NAME_VALUE" />, o Nome Comum do Assunto do certificado será definido como o nome do host da máquina.
+
+Esta política não terá efeito se <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_POLICY_NAME" /> estiver desativado ou não for definido.</translation>
 <translation id="1285819498003746288">A API Event.path não vai estar disponível.</translation>
 <translation id="1290722184971934486">Se a política for definida como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), por padrão, a permissão a sites para gerenciamento de janelas será automaticamente negada. Isso vai limitar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
@@ -807,6 +816,7 @@ Se não for definida, o comportamento será determinado pela política <ph name=
 
       Para saber mais sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="1539343118617844331">Escola</translation>
+<translation id="154021430160122148">Configurar o URL do aplicativo da web do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BETA)</translation>
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
 <translation id="1542958897137600427">Ativar o provisionamento de certificado do cliente</translation>
 <translation id="1550295162561011575">Se a política for definida, os administradores poderão configurar a automação para iniciar apps em dispositivos <ph name="PRODUCT_NAME" />. Esses apps podem ser iniciados no login ou pelo usuário na tela de início.</translation>
@@ -5071,6 +5081,7 @@ Se a política for definida como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3),
 
 
 A disponibilidade das extensões ainda é controlada por outras políticas.</translation>
+<translation id="4109107305343689466">Configurar o certificado do cliente gerenciado para um usuário ou perfil</translation>
 <translation id="4112585124048467596">Se esta política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para a <ph name="CHROME_SYNC_NAME" /> quanto para a sincronização de perfil de roaming. Isso pode ajudar a reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado por upload aos servidores da <ph name="CHROME_SYNC_NAME" />.
 
       Atualmente, os tipos de dados para esta política são: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "tabs", "themes", "typedUrls" e "wifiConfigurations". Esses nomes diferenciam letras maiúsculas de minúsculas.
@@ -5853,6 +5864,15 @@ Para dispositivos não gerenciados, esta política não se aplica, e os usuário
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> usará o tamanho padrão. Os usuários podem mudar essa configuração usando a sinalização "--disk-cache-size".
 
       Observação: o valor especificado nesta política é usado como uma dica para vários subsistemas de cache no navegador. Portanto, o consumo total real do disco de todos os caches será maior, mas dentro da mesma ordem de magnitude do valor especificado.</translation>
+<translation id="4582488040806837065">Esta política configura o certificado do cliente gerenciado provisionado quando <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> está ativado.
+
+O campo <ph name="COMMON_NAME_SOURCE_FIELD" /> especifica a origem do Nome Comum (CN) do Assunto do certificado:
+
+- Se não for definido ou for definido como <ph name="PROFILE_ID_VALUE" />, o Nome Comum do Assunto do certificado será definido como o ID do perfil do navegador.
+
+- Se definido como <ph name="COMPUTER_NAME_VALUE" />, o Nome Comum do Assunto do certificado será definido como o nome do host da máquina. Observação: definir essa propriedade como <ph name="COMPUTER_NAME_VALUE" /> usa uma propriedade no nível do dispositivo em um certificado com escopo de perfil, o que tem implicações de privacidade em dispositivos não gerenciados ou compartilhados, já que o nome do host da máquina será incluído no certificado.
+
+Esta política não terá efeito se <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME" /> estiver desativado ou não for definido.</translation>
 <translation id="4591366717022345234">Oferecer Quick Fix Build a usuários</translation>
 <translation id="4593391169954484940">Hash SHA-256 do arquivo.</translation>
 <translation id="4594027034164195984">Permitir que imagens de terceiros enviem um prompt de autenticação</translation>
@@ -8960,6 +8980,17 @@ Observação: esta política só se aplica a plataformas que são compatíveis c
       Se ela for definida como falsa, conteúdos Signed HTTP Exchanges não serão carregados.</translation>
 <translation id="6368011194414932347">Configurar o URL da página inicial</translation>
 <translation id="6368403635025849609">Permitir o JavaScript nestes sites</translation>
+<translation id="6368652917086795891">Define as configurações de conexão do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no <ph name="PRODUCT_NAME" />.
+
+Esta política está sendo substituída pela política <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Se as duas opções forem definidas, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> terá precedência.
+
+A política configura o URL do aplicativo da web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> pelo <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, que precisa ser um URL válido que use o esquema https, aponte para um domínio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e não inclua um nome de usuário ou senha. Se não atender a esses requisitos, a política será ignorada e o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ficará sem configuração.
+
+Se esta política for definida, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> será configurado para os usuários que fizerem login com uma conta ou um navegador gerenciado.
+
+Se esta política ficar sem definição, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será configurado.
+
+Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Proíba o uso de APIs de IA integradas.</translation>
 <translation id="6371005337713685988">Configurações dos conjuntos de sites relacionados</translation>
@@ -9510,6 +9541,17 @@ No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translat
 <translation id="6659877981632400997">O menu de contexto não terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Ativar os relatórios de nuvem do perfil gerenciado</translation>
 <translation id="666203515318060501">Permitir o preenchimento automático aprimorado sem melhorar os modelos de IA.</translation>
+<translation id="6663125232571868480">Esta política foi descontinuada e não tem efeito a partir da versão M157 porque o recurso <ph name="ALR_FEATURE_NAME" /> foi desativado. O cabeçalho da solicitação HTTP <ph name="AL_HEADER_NAME" /> e o getter <ph name="JS_GETTER_NAME" /> do JavaScript continuam fornecendo a lista completa de idiomas configurados.
+
+Antes da versão M157, o cabeçalho da solicitação HTTP <ph name="AL_HEADER_NAME" /> e o getter <ph name="JS_GETTER_NAME" /> do JavaScript seriam reduzidos por motivos de privacidade.
+Para facilitar os testes e garantir a compatibilidade, esta política permitiu que você ativasse ou desativasse o recurso <ph name="ALR_FEATURE_NAME" />.
+
+Se a política foi ativada ou ficou sem definição, o <ph name="ALR_FEATURE_NAME" /> foi aplicado por meio de testes de campo.
+Se a política fosse desativada, os testes de campo não poderiam ativar o <ph name="ALR_FEATURE_NAME" />.
+
+Para mais informações sobre esse recurso, acesse: https://github.com/explainers-by-googlers/reduce-accept-language (site em inglês).
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta política enquanto o navegador estiver em execução.</translation>
 <translation id="6665670272107384733">Definir com que frequência o usuário precisa digitar a senha para usar o desbloqueio rápido</translation>
 <translation id="6667586534922258705">Exibir o botão "mostrar senha" na tela de login e de bloqueio</translation>
 <translation id="6668559639284945695">Esta política permite reverter para o comportamento do escopo legado dos cookies.
@@ -9974,6 +10016,7 @@ Esta política será removida após o lançamento do recurso de drivers de impre
 <translation id="6953246833109449226">Configurar o comportamento para senhas on-line que não correspondem</translation>
 <translation id="695532899547292238">Ativar a coleta de registros do aplicativo de quiosque</translation>
 <translation id="6956272732789158625">Não permitir que nenhum site use a geração de chaves</translation>
+<translation id="6956741245151252020">Configurar o certificado do cliente gerenciado para o navegador</translation>
 <translation id="6960996423652450945">Desativar o destaque do cursor de texto na tela de login</translation>
 <translation id="6961602002757991199">Se a política for definida como um URL válido, o <ph name="PRODUCT_NAME" /> fará o download da lista de sites desse URL e aplicará as regras como se tivessem sido configuradas com a política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Essas políticas evitam que o <ph name="PRODUCT_NAME" /> e o navegador alternativo abram um ao outro.
 
@@ -10820,6 +10863,19 @@ Esta política pode ser definida para a máquina e para o usuário. Se for defin
 
 Nas versões 155 e anteriores, esta política é apenas para toda a máquina.</translation>
 <translation id="7417438464912687020">Permitir conexões de acesso remoto a esta máquina</translation>
+<translation id="7417697379573574567">Esta política foi descontinuada na versão M157. Use a <ph name="AUTOFILL_GEN_AI_SETTINGS_POLICY_NAME" />.
+
+Especifica se os usuários podem permitir que o <ph name="PRODUCT_NAME" /> use a IA generativa para entender melhor os formulários e ajudar a preencher mais campos.
+
+0 = tem o mesmo efeito que 1. Antes da versão M153, a configuração permitia que o Google usasse dados relevantes para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = o recurso será habilitado, mas o Google não poderá usar dados relevantes (incluindo comandos, entradas, saídas, materiais de fonte e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se a política for definida como 2, o recurso não será habilitado.
+
+Se ela não for definida, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre como tratar dados em recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7417972229667085380">Percentual pelo qual calcular o intervalo de inatividade no modo de apresentação (uso suspenso)</translation>
 <translation id="7421230730436851224">Nunca colocar o processo de áudio no sandbox</translation>
 <translation id="7421483919690710988">Define o tamanho do cache de disco de mídia em bytes</translation>
@@ -10858,6 +10914,15 @@ Definir a política como "<ph name="AUTOMATED_NAME" />" configura o fluxo de <ph
 
 Se a política não for definida, ela será funcionalmente equivalente a ser definida como "<ph name="ALLOWED_NAME" />" para usuários comuns. Para usuários corporativos o padrão da política é "<ph name="DISALLOWED_NAME" />".</translation>
 <translation id="7438982301540282785">Automatizar a configuração do <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
+<translation id="7441961773829108385">Configura o URL do aplicativo da web do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ao qual o <ph name="PRODUCT_NAME" /> se conecta.
+
+O valor precisa ser um URL válido que use o esquema https, aponte para um domínio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e não inclua um nome de usuário ou senha. Se não atender a esses requisitos, a política será ignorada e o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ficará sem configuração.
+
+Se esta política for definida, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> será configurado para os usuários que fizerem login com uma conta ou um navegador gerenciado.
+
+Se esta política ficar sem definição, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será configurado.
+
+Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7443356543619955157">Se a política for definida, será possível aplicar a configuração de rede para todos os usuários de um dispositivo <ph name="PRODUCT_OS_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
 <translation id="744349502210151344">Padrão: a disponibilidade do XSLT será definida pelas configurações padrão do navegador e pelos testes de campo.</translation>
 <translation id="7446978687387327623">Permitir verificações em tempo real com o proxy da Navegação segura</translation>

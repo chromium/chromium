@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">已打开阅读模式偏好设置，并以最大高度显示</translation>
 <translation id="1014147525163127655">在此设备上未发现 <ph name="ORIGIN" /> 的任何通行密钥</translation>
 <translation id="1016498331642356377">使用语音快速搜索。若要修改此快捷方式，请轻触并按住这里。</translation>
-<translation id="1028699632127661925">正在发送到<ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">一并清除来自这些网站和应用的数据？</translation>
 <translation id="1035113036584565771">已关闭提示通知宣传内容</translation>
 <translation id="1036348656032585052">关闭</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">已关闭通行密钥确认工作表</translation>
 <translation id="1197933394627598677">显示阅读模式</translation>
 <translation id="1197935538609051549">停用</translation>
+<translation id="119944043368869598">全部清除</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1202892408424955784">跟踪的商品</translation>
 <translation id="1204037785786432551">下载链接</translation>
@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">在<ph name="NATIVE_APP_NAME" />中打开 • 来自“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1496514951988037011">用户名</translation>
+<translation id="1498051468374914325">打开开发者工具控制台</translation>
 <translation id="1501480321619201731">删除标签页组</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">在无痕模式下打开新窗口</translation>
 <translation id="152204906462707884">快速删除浏览记录，更好地掌控自己的隐私</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1537160738459068682">打开开发者工具元素</translation>
 <translation id="1540012742443808215">地址栏目前位于顶部</translation>
 <translation id="1543035591122163372">登录即可获取<ph name="DEVICE_TYPE" />中的密码等信息</translation>
 <translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
@@ -151,6 +153,7 @@
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1554352084785952638">针对“<ph name="SEARCH_TERMS" />”<ph name="SEARCH_ENGINE" /></translation>
 <translation id="1554532453982918912">可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能够获享更好的体验</translation>
+<translation id="1557806604681757705">您的电脑</translation>
 <translation id="1568636008098739136">读出此网页的内容。如要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="1571041387761170095">没有安全系数低或重复使用的密码</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@
 <translation id="22091350895006575">添加用户名</translation>
 <translation id="2211043920024403606">个人资料信息</translation>
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
+<translation id="2220529011494928058">报告问题</translation>
 <translation id="2226826835915474236">未使用的快捷字词</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2227444325776770048">以“<ph name="USER_FULL_NAME" />”的身份继续</translation>
@@ -556,6 +560,7 @@
 <translation id="3189635831478931757">“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="3200536777393523575">关闭当前窗口？</translation>
 <translation id="3207960819495026254">已加书签</translation>
+<translation id="3208321278970793882">应用</translation>
 <translation id="3208584281581115441">立即检查</translation>
 <translation id="3211426585530211793">已删除“<ph name="ITEM_TITLE" />”</translation>
 <translation id="3232293466644486101">删除浏览数据…</translation>
@@ -963,6 +968,7 @@
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="4807700370495020449">登录此网站和 Chrome，即可在自己的所有设备上获取保存的信息等内容</translation>
 <translation id="480990236307250886">打开主页</translation>
+<translation id="4812684235631257312">主机</translation>
 <translation id="4816492930507672669">适应页面</translation>
 <translation id="4822710610088666676">已关闭并保存“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
@@ -1069,6 +1075,7 @@
 <translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
+<translation id="5257142004843671642">调整侧边栏大小</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
@@ -1095,9 +1102,9 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />，已固定的无痕式标签页，正在共享内容</translation>
 <translation id="5375374982898812658">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="537865165090710757">保存并分享</translation>
-<translation id="5385892579392932755">您的笔记本电脑</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。除非您信任此网站，否则请勿继续操作。危险网站可能会诱骗您泄露法定全名或身份证号码等信息。</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
+<translation id="5397794290049113714">您</translation>
 <translation id="539881862970320163">建议使用安全系数高的密码。键盘已隐藏。</translation>
 <translation id="5404274604891474619">无法修改 PDF 文件</translation>
 <translation id="5409881200985013443">将“<ph name="ONE_TIME_CODE" />”提交至“<ph name="CLIENT_NAME" />”？</translation>
@@ -1523,6 +1530,7 @@
 <translation id="6964300328304469089">目前选择的是：<ph name="NAME" />，<ph name="EMAIL" />。请选择一个账号。</translation>
 <translation id="696447261358045621">退出无痕模式</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6965978654500191972">设备</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{查看在共享标签页分组中有新活动的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{查看在共享标签页分组中有新活动的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6971555615916967190">已打开阅读模式偏好设置，并以一半高度显示</translation>
 <translation id="6971862865055170158">禁止</translation>
@@ -1940,6 +1948,7 @@
 <translation id="8512053371384421952">您将不会再收到来自 <ph name="DOMAIN" /> 的通知。</translation>
 <translation id="8516012719330875537">图片编辑器</translation>
 <translation id="8517759303731677493">修改…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />，多选状态下固定的画中画标签页</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>
@@ -2059,6 +2068,7 @@
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9027728231343310283">重新授权 <ph name="SITE" /></translation>
 <translation id="9035378196785279980">移至\u2026</translation>
+<translation id="9038316201889095704">存在未保存的更改时，无法使用“在当前页面中查找”。</translation>
 <translation id="904146253922032365">轻触并按住即可垂直显示标签页</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9047347135558855162">在 Chrome 中快速发起搜索</translation>

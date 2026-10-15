@@ -212,6 +212,7 @@
 <translation id="1600571977391127696">কিছু কন্টেন্ট সকলের জন্য উপযুক্ত নাও হতে পারে।</translation>
 <translation id="1601560923496285236">প্রয়োগ করুন</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{১টি ঠিকানা}one{#টি ঠিকানা}other{#টি ঠিকানা}}</translation>
+<translation id="160477039162785330">{count,plural, =1{এক লেভেল উপরে যেতে ১টি টাস্ক সম্পূর্ণ করুন}one{এক লেভেল উপরে যেতে {count}টি টাস্ক সম্পূর্ণ করুন}other{এক লেভেল উপরে যেতে {count}টি টাস্ক সম্পূর্ণ করুন}}</translation>
 <translation id="1605405588277479165">বন্ধ আছে - সাজেস্ট করা হয়নি</translation>
 <translation id="1605658421715042784">ছবি কপি করুন</translation>
 <translation id="1606899876897213121">সাম্প্রতিক অ্যাক্টিভিটির সারসংক্ষেপ বন্ধ করুন</translation>
@@ -290,7 +291,6 @@
 <translation id="1838089197478136166">Wallet-এ খুলতে চান?</translation>
 <translation id="183878838231635348">আপনার জন্য 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার অটোমেটিক যেকোনও গোপনীয়তা বা সুরক্ষা সংক্রান্ত সমস্যা শনাক্ত করলে, এই কার্ড তা দেখায়।</translation>
 <translation id="1845230888742614096">গ্রুপ রেখে দিন</translation>
-<translation id="1853558655412913122">আপনি এখন "সেটিংস" এবং তারপরে "অ্যাড্রেস বার" থেকে অ্যাড্রেস বারের পজিশন পরিবর্তন করতে পারবেন</translation>
 <translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1854463785401910334">খুলে রাখা ট্যাবে সার্চ করুন</translation>
 <translation id="1860609647735325606">Gemini-র সাহায্যে ব্যাখ্যা করুন</translation>
@@ -512,6 +512,7 @@
 <translation id="2524699375503213836">Safari থেকে আপনার ডেটা নিয়ে আসুন</translation>
 <translation id="2526166285241366046">পাসওয়ার্ড সেভ করুন</translation>
 <translation id="2529021024822217800">সবকটি খুলুন</translation>
+<translation id="2530932541542751783">এই সেটিংয়ে কোনও সমস্যা হয়েছে। Chrome ও iPadOS আপডেট ও রিস্টার্ট করে আবার চেষ্টা করুন। এই সমস্যা হতে থাকলে, আপনার iPad-এ এই সেটিং কাজ নাও করতে পারে।</translation>
 <translation id="2536991091671391962">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে।</translation>
 <translation id="2538103551183528357">লুকানো আছে, পাসওয়ার্ড</translation>
 <translation id="2538705697765638552">আপনার তথ্য সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="USER_EMAIL" />-এর জন্য Google Wallet-এ নিজের তথ্য ম্যানেজ করতে পারবেন।</translation>
@@ -563,7 +564,6 @@
 <translation id="2673508731173059946">কপি করা লিঙ্কে যান</translation>
 <translation id="2679659833697380">আপনার তথ্য ডিভাইসে সেভ করা হয়েছে</translation>
 <translation id="2681572445246787428">ডকুমেন্টে স্বাক্ষর করা</translation>
-<translation id="2685514716378236873">অনুমোদিত নয়</translation>
 <translation id="2688535388040882469">ব্যানার</translation>
 <translation id="2690858294534178585">ক্যামেরা ব্যবহার করা হচ্ছে</translation>
 <translation id="2691653761409724435">অফলাইনে উপলব্ধ নেই</translation>
@@ -774,7 +774,6 @@
 <translation id="3430407169377889553">সাবধানে Gemini ব্যবহার করুন এবং প্রয়োজন হলে নিয়ন্ত্রণ নিজের হাতে রাখুন। টাস্কের সময় Gemini যা করবে তার দায় আপনারই।</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3441673211568148613">আপনার ব্রাউজিং ব্যক্তিগত রাখুন</translation>
-<translation id="3443810440409579745">ট্যাব পাওয়া গেছে।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="344589138074534176">Google Lens সম্পর্কে আরও জানুন</translation>
 <translation id="3447332786336558089">আপনি সাইন-আউট করার পরে ট্যাব বন্ধ করে দেওয়া হবে এবং অ্যাকাউন্টে সেভ করা হয়নি এমন ডেটা এই ডিভাইস থেকে মুছে দেওয়া হবে। এটির মধ্যে পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু অন্তর্ভুক্ত থাকতে পারে।</translation>
@@ -789,6 +788,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
 <translation id="3476450923187944815">অন্যান্য অ্যাপ জুড়ে আপনার পাসওয়ার্ড অ্যাক্সেস করুন।</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
+<translation id="3481315707647070701">ভিজ্যুয়ালাইজ ও এডিট করুন</translation>
 <translation id="3485558910355485767">নতুন ছদ্মবেশী উইন্ডো</translation>
 <translation id="3488501490964659223">ট্যাব বন্ধ করা এবং ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে। আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="3490396108106323715">বর্তমান ট্যাব শেয়ার করুন</translation>
@@ -847,11 +847,13 @@
 <translation id="3659297405161482746">কোনও পেমেন্ট পদ্ধতি খুঁজে পাওয়া যায়নি</translation>
 <translation id="3662966164093827811">{count,plural, =1{১টি বেছে নেওয়া হয়েছে}one{#টি বেছে নেওয়া হয়েছে}other{#টি বেছে নেওয়া হয়েছে}}</translation>
 <translation id="3668035568083954765">আপনার গোপনীয়তা সুরক্ষিত রাখুন এবং নিরাপদ থাকুন</translation>
+<translation id="3668703890943804691">টাস্ক বন্ধ আছে</translation>
 <translation id="3668816008081204991">পড়ার তালিকা লুকানো আছে</translation>
 <translation id="3670030362669914947">নম্বর</translation>
 <translation id="3672283986707092811">সব বেছে নিন</translation>
 <translation id="3679163990085797665">পড়া আইটেম মুছুন</translation>
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
+<translation id="3689746421535476813">এডিট করার জন্য সেভ করা পেমেন্ট পদ্ধতি বেছে নিন অথবা নতুন পেমেন্ট পদ্ধতি যোগ করুন</translation>
 <translation id="3695446226812920698">কীভাবে করবেন তা জানুন</translation>
 <translation id="3700134753671613714">আপনার সকল ডিভাইসগুলিতে আপনার বুকমার্কগুলি পেতে সাইন করুন।</translation>
 <translation id="3701167022068948696">এখনই সমাধান করুন</translation>
@@ -919,6 +921,7 @@
 <translation id="3914173277599553213">প্রয়োজন</translation>
 <translation id="3914640181019354363">ঠিকানা শনাক্ত করুন</translation>
 <translation id="391904960191284041">প্রোডাক্টের রিভিউ</translation>
+<translation id="3920165976616657606">"উন্নত Safe Browsing এক্সপ্লোর করুন" টাস্ক সম্পূর্ণ হয়েছে!</translation>
 <translation id="3921585859122905677">অ্যাড্রেস বারের পজিশন</translation>
 <translation id="3922185497376658606">ওয়েবপেজ প্রিলোড করুন</translation>
 <translation id="3926703470020109118">ডাউনলোড বাতিল করা হয়েছে</translation>
@@ -927,6 +930,7 @@
 <translation id="3933372629914873850">আপনি <ph name="URL" />-এ সাইন-ইন করবেন</translation>
 <translation id="3934905113567851655">সাইজ পরিবর্তন করতে পিঞ্চ করুন</translation>
 <translation id="393732545649378031">অ্যাকাউন্ট</translation>
+<translation id="3939683043166875001">আপনার সেরা সাইট, ডিসকভার ফিড ও আরও অনেক কিছু লুকান বা দেখুন।</translation>
 <translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
 <translation id="3946483119107054883">CSV হিসেবে ডাউনলোড করুন</translation>
@@ -1089,6 +1093,7 @@
 <translation id="4455710003856931944">পিছনে বা সামনে যেতে স্ক্রিনের প্রান্তটি সোয়াইপ করুন।</translation>
 <translation id="4460014764210899310">আলাদা করুন</translation>
 <translation id="446314443268698477">আপনার ক্যামেরা বা ফটোর মাধ্যমে যা দেখছেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
+<translation id="4465941170695753889">ট্যাব গ্রুপ তৈরি করতে, প্রেস করে ধরে রাখুন</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4470766488397113689">আপনি কোন বিষয় নিয়ে কাজ করতে চান?</translation>
 <translation id="4471472356135655769">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
@@ -1120,7 +1125,6 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> শেয়ার করা হচ্ছে</translation>
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
 <translation id="4568230126482344545">সাম্প্রতিক ট্যাব লুকান</translation>
-<translation id="4571490460651837010">ঠিকানা ও আরও অনেক কিছু ম্যানেজ করুন…</translation>
 <translation id="4578835633387306383">চালু করুন…</translation>
 <translation id="4580621046861724270">কিছু বুকমার্ক সেভ করা হয়নি</translation>
 <translation id="4580716718466706433">"পাসওয়ার্ড ম্যানেজার" বিকল্পে যান</translation>
@@ -1261,6 +1265,7 @@
 <translation id="4977176874984951085">পৃষ্ঠার অ্যাকশন মেনু খুলুন</translation>
 <translation id="4979397965658815378">আপনার সব ডিভাইসে আপনার বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং অন্যান্য সেটিংস পেতে আপনার Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4985921635659180565">কোনও একটি ফাইল মুছে ফেলার জন্য শিডিউল করা হলে, এটি বাতিল করা যাবে না।</translation>
+<translation id="4985969760619279130">{COUNT,plural, =1{শেয়ার করা ১টি ট্যাব}one{শেয়ার করা {COUNT}টি ট্যাব}other{শেয়ার করা {COUNT}টি ট্যাব}}</translation>
 <translation id="498624032394115435">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন।</translation>
 <translation id="4986428648020277392">প্রম্পট: আমি কোনটি কেনা উচিত? ৩টির মধ্যে ২টি</translation>
 <translation id="498768198683310172">Gemini ব্যবহার করা শুরু করুন</translation>
@@ -1721,6 +1726,7 @@
 <translation id="6372558618707314581">আপনার পছন্দের যেকোনও পৃষ্ঠায় যান</translation>
 <translation id="6374469231428023295">আবার চেষ্টা করুন</translation>
 <translation id="6374514103145916800">জিজ্ঞাসা করুন</translation>
+<translation id="6381241974485088375">এখান থেকে যেকোনও সময় আপনার নতুন ট্যাব পৃষ্ঠা কাস্টমাইজ করুন</translation>
 <translation id="6383719166112032471">লোকেশন খুলুন…</translation>
 <translation id="6387994324662817823">শুধুমাত্র এই ডিভাইসের 'Google পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="6393156038355142111">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন</translation>
@@ -1839,6 +1845,7 @@
 <translation id="6708501134077648845">পাসওয়ার্ড সংক্রান্ত বিকল্প</translation>
 <translation id="6709964700841491574">লকডাউন মোড</translation>
 <translation id="6710079714193676716">আপনার সংস্থা এটি ম্যানেজ করে। কিছু ফিচার হয়ত উপলভ্য নয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="6712003214447962889">আরও স্মার্ট, দ্রুত উত্তর</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />-এ পরিবর্তন করা হয়েছে</translation>
 <translation id="6722623263381062480">প্রাপ্ত ট্যাব</translation>
 <translation id="6722638373100589752">আপনার তথ্য অটোফিল করতে, Wallet সেটিংসে “Google জুড়ে পাস ব্যবহার করুন” বিকল্প চালু করুন</translation>
@@ -1919,6 +1926,7 @@
 <translation id="6938212956536472404">এই ট্যাব শেয়ার করা যাবে না</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6946722113367118030">চিন্তা করা</translation>
+<translation id="6947751977892029882">এই সেটিংয়ে কোনও সমস্যা হয়েছে। Chrome ও iOS আপডেট করে রিস্টার্ট করুন এবং আবার চেষ্টা করুন। এই সমস্যা চলতে থাকলে, আপনার iPhone-এ এই সেটিং কাজ নাও করতে পারে।</translation>
 <translation id="6950522403736391608">লুকানো আছে</translation>
 <translation id="695965663642079255">আরও দ্রুত চেক-আউট করতে পেমেন্টের তথ্য সেভ ও ম্যানেজ করুন</translation>
 <translation id="6962809930976936328">Gemini-এর সাহায্যে ইনসাইট পান</translation>
@@ -2341,6 +2349,7 @@
 <translation id="8264966119170358612">Google-এর নয়, এমন ডেটার নিরাপত্তা লঙ্ঘনের সময় আপনার সেভ করা কিছু পাসওয়ার্ড ফাঁস হয়ে গেছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8265730590513812063">Chrome মেনু খুলুন</translation>
 <translation id="826614135184049678">আপনার iPad রিসেটের অংশ হিসেবে আপনার অ্যাকাউন্ট <ph name="USER_NAME" /> থেকে সাইন-আউট হয়ে গেছেন। আবার সাইন ইন করতে, নিচে "চালিয়ে যান" বিকল্পে ট্যাপ করুন।</translation>
+<translation id="8266370374397811600">নতুন কৃতিত্ব আনলক করা হয়েছে! 🥳</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">আপনি প্রোফাইল সুইচ করতে চলেছেন</translation>
 <translation id="8275068909952022340">আরও…</translation>
@@ -2425,6 +2434,7 @@
 <translation id="8535368836838588657">পাসওয়ার্ড দেখুন</translation>
 <translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> দিয়ে সাইন-ইন করুন</translation>
 <translation id="8542331710562073430">কোনও সমস্যা হয়েছে। আবার Live শুরু করার চেষ্টা করতে Live বোতামে ট্যাপ করুন।</translation>
+<translation id="8544172904312384600">নতুন পেমেন্ট পদ্ধতি এডিট বা যোগ করুন</translation>
 <translation id="8545276357312221485">আপনার ডিফল্ট ব্রাউজার সেটিংস চেক করুন</translation>
 <translation id="854938212724803178">আপনার ১টি চুরি হয়ে যাওয়া পাসওয়ার্ড আছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
 <translation id="8551311254462607218">অ্যাড্রেস বারে, Google Lens ক্যামেরা আইকনে ট্যাপ করুন</translation>
@@ -2463,6 +2473,7 @@
 <translation id="8639963783467694461">স্বতঃপূর্ণ সেটিংস</translation>
 <translation id="8642417828095157370">আরও প্রাসঙ্গিক উত্তরের জন্য ট্যাব শেয়ার করা হয়েছে</translation>
 <translation id="8643403533759285912">গ্রুপ মুছুন</translation>
+<translation id="8646357898207744479">Lens</translation>
 <translation id="8647280737650867362">দাম ট্র্যাক করা বন্ধ হয়নি।</translation>
 <translation id="8654802032646794042">বাতিল করুন</translation>
 <translation id="8655861111558401309">ব্রাউজ করা ডেটা মোছার বিকল্প বেছে নিন</translation>
@@ -2542,7 +2553,6 @@
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8855242995793521265">উল্লেখযোগ্যভাবে আপনার ব্রাউজার বা ডিভাইসের পারফর্ম্যান্স ধীর গতির করে দেয় না।</translation>
 <translation id="8856643812068084733">আর্কাইভ</translation>
-<translation id="8863067612494559785"><ph name="DEVICE_NAME" /> ডিভাইসে পাঠানো হচ্ছে…</translation>
 <translation id="8863431381414769983">Google Maps থেকে স্থানীয় তথ্য এবং দিকনির্দেশ পান</translation>
 <translation id="8871974300055371298">কন্টেন্ট সেটিংস</translation>
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>

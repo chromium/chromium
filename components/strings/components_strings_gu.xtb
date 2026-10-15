@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">સૂચનો બતાવો</translation>
 <translation id="1038168778161626396">ફક્ત ચિહ્નિત કરો</translation>
 <translation id="1038842779957582377">અજ્ઞાત નામ</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">જોબ શીટ મેસેજ</translation>
 <translation id="1044897699341250361">આનો અર્થ શું છે</translation>
 <translation id="1049837829250301306">તમારી સંસ્થાની પૉલિસીઓને કારણે કન્ટેન્ટ પેસ્ટ કરી શકાયું નથી</translation>
@@ -491,6 +490,7 @@
 <translation id="18139523105317219">EDI પાર્ટી નામ</translation>
 <translation id="1816436748874040213">શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવા માટે કહી શકાય છે</translation>
 <translation id="1816707915923025275">તમારો બ્રાઉઝિંગ ઇતિહાસ શોધવા માટે @history ટાઇપ કરો</translation>
+<translation id="1816771466809215784">ચેકઆઉટ વખતે તેને ઑટોમૅટિક રીતે ભરવા માટે, Google Walletમાં આ કાર્ડ માટે કાર્ડધારકનું નામ સાચવો</translation>
 <translation id="1817364650920811003">રોલ: Chromeની ટિપ. ઍક્સેસિબિલિટી લેબલ: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
 <translation id="1821930232296380041">અમાન્ય વિનંતી અથવા વિનંતી પરિમાણો</translation>
@@ -648,6 +648,7 @@
 <translation id="2102495993840063010">Android ઍપ્લિકેશનો</translation>
 <translation id="2103210856015238101">ટચ કરીને ભરવા માટે ઉપલબ્ધ લૉયલ્ટિ કાર્ડ પૂરી ઊંચાઈએ ખોલ્યા છે.</translation>
 <translation id="2104739941682874393">વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા ફોર્મને વધુ સારી રીતે સમજે છે અને તમારા માટે ઑટોમૅટિક રીતે તેમને વધુ ઝડપથી ભરી શકે છે</translation>
+<translation id="2105237910269166838">આ પેજ વિશે પૂછો</translation>
 <translation id="2107021941795971877">પ્રિન્ટ માટેના સપોર્ટ</translation>
 <translation id="2108755909498034140">તમારું કમ્પ્યુટર પુનઃપ્રારંભ કરો</translation>
 <translation id="2109845311767915560">શેર કરેલું ટૅબનું ગ્રૂપ</translation>
@@ -1054,7 +1055,7 @@
 <translation id="2734797989819862638">કૉપિ કરશો નહીં</translation>
 <translation id="2738771556149464852">આના પછી નહીં</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
-<translation id="275259155159336003">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને બહેતર બનાવવા માટે, તમારી વિનંતીઓ, પેજના શીર્ષકો અને URLsનો રિવ્યૂ કરવામાં આવી શકે છે. <ph name="BEGIN_LINK" />સેટિંગ મેનેજ કરો<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{એકપણ નહીં}=1{1 કૌશલ્ય}one{# કૌશલ્ય}other{# કૌશલ્ય}}</translation>
 <translation id="2757727729385895652">Google Drive પર <ph name="COUNT" /> ફાઇલ અપલોડ કરી રહ્યાં છીએ</translation>
 <translation id="2759299890026163685">ફરી પ્રયાસ કરતા પહેલાં તમારું ઇન્ટરનેટ કનેક્શન સ્થિર હોય તેની ખાતરી કરો</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> પર તમારો પાસવર્ડ ભરો</translation>
@@ -1434,7 +1435,6 @@
 <translation id="3432601291244612633">પેજ બંધ કરો</translation>
 <translation id="3434025015623587566">Google Password Managerને વધુ ઍક્સેસની જરૂર છે</translation>
 <translation id="343474037147570563">તમે જે ફાઇલો અપલોડ કરો અથવા જોડો તેને Google Cloud અથવા ત્રીજા પક્ષોને વિશ્લેષણ માટે મોકલવામાં આવે છે. ઉદાહરણ તરીકે, તેમને કદાચ સંવેદનશીલ વ્યક્તિગત ડેટા અથવા માલવેર માટે સ્કૅન કરવામાં આવી શકે છે અને કંપનીની પૉલિસીઓના આધારે સ્ટોર કરવામાં આવી શકે છે તથા તમારા ઍડમિનિસ્ટ્રેટર તેને જોઈ શકે છે.</translation>
-<translation id="3435267628744367511">ટૅબ સ્વિચ કર્યા વિના માહિતી શોધવા અને ભરવા માટે કોઈપણ ફોર્મમાં બે વાર Ctrl દબાવો</translation>
 <translation id="3435557549311968410">સતત (નાનો)</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3436125638121079308">આ થ્રેડમાં બહેતર જવાબો મેળવવા માટે સંબંધિત ટૅબ ઑટોમૅટિક રીતે શેર કરીએ?</translation>
@@ -1880,7 +1880,6 @@
 <translation id="4153446078232988116"><ph name="SITE" /> HTTPS ધરાવતા સુરક્ષિત કનેક્શનને સપોર્ટ કરતી નથી</translation>
 <translation id="4153858337812834972">સૌથી તાજેતરના ટૅબ</translation>
 <translation id="4154277373259957087">Chrome હવે ચુકવણી પદ્ધતિઓ ભરતા પહેલાં તે તમે જ છો તેની ચકાસણી કરશે. તમે કોઈપણ સમયે <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />માં જઈને આને અપડેટ કરી શકો છો.</translation>
-<translation id="4157273919218514718">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. <ph name="BEGIN_LINK" />સેટિંગ મેનેજ કરો<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">ડ્રાઇવિંગ લાઇસન્સની માહિતી સુરક્ષિત રીતે અપડેટ કરો</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4165422751765527461">નવા ટૅબમાં સહાયતા કેન્દ્ર પરનો લેખ ખોલે છે</translation>
@@ -2148,7 +2147,6 @@
 <translation id="4599572944836204718">તમારું કાર્ડ સાચવેલું હોય ત્યારે Google Pay વડે વધુ ઝડપથી ચુકવણી કરો. કાર્ડની વિગતો Google Walletમાં એન્ક્રિપ્ટેડ હોય છે.</translation>
 <translation id="4603727370377253901">ફ્લાઇટ રિઝર્વેશન</translation>
 <translation id="4607608436550361748">Chrome વિશે ટિપ જુઓ</translation>
-<translation id="4607879293515681409">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા હવે Gmail અને Photos જેવી ઍપમાંથી ફ્લાઇટ નંબર અને અપૉઇન્ટમેન્ટના સમય જેવી માહિતી શોધી અને ભરી શકે છે</translation>
 <translation id="460848736049414407">ઍડમિન દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="4610279718074907952">આ સાઇટ <ph name="SET_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે, જે તમારી પ્રવૃત્તિ જોઈ શકે છે</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> મારફતે <ph name="MERCHANT_ORIGIN" /> પર તમારા ઑર્ડર પર પ્રક્રિયા કરતી વખતે ભૂલ આવી હતી.</translation>
@@ -2923,7 +2921,6 @@
 <translation id="5884465125445718607">એન્વલપ ચાઇનીઝ #6</translation>
 <translation id="5887400589839399685">કાર્ડ સાચવ્યું</translation>
 <translation id="5887687176710214216">છેલ્લે કાલે મુલાકાત લીધી</translation>
-<translation id="5887791684215121787">ટૅબ સ્વિચ કર્યા વિના માહિતી શોધવા અને ભરવા માટે કોઈપણ ફોર્મમાં ⌘ ⌘ દબાવો</translation>
 <translation id="5889251770650310375">તમારા અન્ય ડિવાઇસમાંનો ઇતિહાસ મેળવવા માટે, આ તમે જ છો તેની ચકાસણી કરો તથા તમારો ઇતિહાસ અને ટૅબ સિંક કરો. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5895187275912066135">ના રોજ રજૂ કરાયું</translation>
@@ -3029,6 +3026,7 @@
 <translation id="6051221802930200923">તમે અત્યારે આ <ph name="SITE" />ની મુલાકાત લઈ શકતાં નથી કારણ કે આ વેબસાઇટ પ્રમાણપત્ર પિનિંગનો ઉપયોગ કરે છે. નેટવર્કમાં ભૂલ આવવી અને હુમલા થવા સામાન્ય રીતે અસ્થાયી હોય છે, તેથી આ પેજ સંભવિત રૂપે થોડા સમય પછી કાર્ય કરશે.</translation>
 <translation id="6051898664905071243">પેજની સંખ્યા:</translation>
 <translation id="605237284704429106">IBAN ભરી રહ્યાં છીએ</translation>
+<translation id="6052557981901634648">પ્લાન બનાવો</translation>
 <translation id="6053584886670442526">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામાને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, <ph name="ACCOUNT" />.</translation>
 <translation id="6055392876709372977">RSA એન્ક્રિપ્શનવાળા PKCS #1 SHA-256</translation>
 <translation id="6055982527635883756">એન્વલપ (આર્કાઇવલ)</translation>
@@ -3467,6 +3465,7 @@
 <translation id="6808579246645021886">શેર કરેલા ટૅબ અને ફાઇલો</translation>
 <translation id="681021252041861472">ફરજિયાત</translation>
 <translation id="6810899417690483278">કસ્ટમાઇઝેશન ID</translation>
+<translation id="6815861164669871832">ટૅબ વિશે પૂછો</translation>
 <translation id="681631578600400068">ડ્રાઇવિંગ લાઇસન્સની માહિતી સાચવો</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">સીરિયલ પોર્ટ</translation>
@@ -3539,7 +3538,6 @@
 <translation id="6936976777388162184">આ બંડલ કરેલું ડિવાઇસ છે અને તેની કિઓસ્ક અને સાઇનેજ અપગ્રેડ સાથે નોંધણી કરી શકાતી નથી.</translation>
 <translation id="6942444979237658241">કૉમેન્ટ - <ph name="GROUP_NAME" /></translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> દ્વારા મેનેજ ન થતી હોય તેવી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો છે. તમારા એકાઉન્ટની સુરક્ષા માટે, અન્ય ઍપ અને સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ ન કરો.</translation>
-<translation id="6946949206576443118">Chromeમાં વેબ પર શોધો</translation>
 <translation id="6948051842255602737">ગેમ સમાપ્ત, તમારો સ્કોર <ph name="SCORE" /> છે.</translation>
 <translation id="6948223029286835408">જ્યારે તમે Chromeમાં ખરીદી કરો, ત્યારે Pixને વિકલ્પ તરીકે જુઓ</translation>
 <translation id="6948701128805548767">પિકઅપ પદ્ધતિ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
@@ -3629,6 +3627,7 @@
 <translation id="7083258188081898530">ટ્રે 9</translation>
 <translation id="70846382339153529">OpenDocument ટેક્સ્ટ</translation>
 <translation id="7086090958708083563">વપરાશકર્તાએ અપલોડની વિનંતી કરી છે</translation>
+<translation id="7089745480771070611">બાજુની પૅનલમાં ખૂલે છે</translation>
 <translation id="7090698782953528257">ગણિતના સમીકરણને વિઝ્યુઅલાઇઝ કરવા અને વક્રનો આકાર જોવા માટે ફંક્શનનો ગ્રાફ બનાવવામાં મારી મદદ કરો</translation>
 <translation id="7092087596499105699">તમારી સંસ્થાની ખાનગી વેબ ઍપ્લિકેશનના ઍક્સેસને સુરક્ષિત રાખવા માટે, તમારા ઍડમિનિસ્ટ્રેટરે સુરક્ષિત ગેટવે કનેક્ટરને ગોઠવ્યું છે. ઍક્સેસની ચકાસણી કરવા માટે, તે તમારી ઑફિસની પ્રોફાઇલના ડેટાનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ દબાવો અને પછી Chrome સેટિંગમાં પરવાનગીઓ અને સમગ્ર સાઇટનો સ્ટોર કરેલો ડેટા મેનેજ કરવા માટે Enter કી દબાવો</translation>
@@ -4013,6 +4012,7 @@
 <translation id="7696107855583699585">નોન ટ્રાવેલર નંબરમાં ફેરફાર કરો</translation>
 <translation id="7698864304447945242">શું Google Play Services for AR અપડેટ કરીએ?</translation>
 <translation id="7699509138503320152">મારો ઇમેઇલ વધુ પ્રભાવ પાડનાર બને તે રીતે ફરીથી લખો</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{એકપણ નહીં}=1{1 કૌશલ્ય (સિંક કરેલું)}one{# કૌશલ્ય (સિંક કરેલું)}other{# કૌશલ્ય (સિંક કરેલા)}}</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> પર આગળ વધો (અસલામત)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">લખવામાં મારી સહાય કરો</translation>
@@ -4255,6 +4255,7 @@
 <translation id="813024282736408069">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે વર્ચ્યુઅલ કાર્ડ ચાલુ કરો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8135546115396015134">ડાબી કી</translation>
+<translation id="8136385032646505126">કાર્ડધારકનું નામ સાચવીએ?</translation>
 <translation id="8137185688006450980">આરોગ્ય પ્લાનના વિકલ્પોની તુલના કરો</translation>
 <translation id="8138591088112729119">પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત</translation>
 <translation id="814071672416123670">તમારી સંસ્થાની પૉલિસીઓને કારણે કન્ટેન્ટ કૉપિ કરી શકાયું નથી</translation>
@@ -4528,6 +4529,7 @@
 <translation id="8622864575115813231">તમારી નાણાકીય સંસ્થાનો સંપર્ક કરી રહ્યાં છીએ...</translation>
 <translation id="8632584659860846053">એકવાર તમે બધી આઇસોલેટેડ વિન્ડો બંધ કરો, પછી તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી અને સાઇટનો ડેટા, કૅશ મેમરી અને ફોર્મમાં દાખલ કરેલી માહિતી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8634957317623797170">54 x 86 મિમી</translation>
+<translation id="8635822281281406185">વધુમાં વધુ 10 ફાઇલ, ટૅબ અથવા છબી ઉમેરો</translation>
 <translation id="8637362707224133343">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing, જે સુવિધાએ તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પર <ph name="BEGIN_LINK" />તાજેતરમાં ફિશિંગ શોધ્યું<ph name="END_LINK" /> હતું. ફિશિંગ સાઇટ તમને ફસાવવા માટે કોઈ અન્ય સાઇટ હોવાનો ઢોંગ કરે છે.<ph name="NEW_LINE" />ઘણીવાર સામાન્ય રીતે સુરક્ષિત ગણાતી સાઇટ પર પણ અટૅક કરનારા લોકો દ્વારા ચેડાં કરવામાં આવી શકે છે. જો તમે માનતા હો કે આ કોઈ ભૂલ છે અને આ સાઇટ કોઈ રીતે જોખમી નથી, તો <ph name="BEGIN_ERROR_LINK" />અમને જણાવો<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">અન્ય લોકો સાથે ટૅબ શેર કરવા અને સહયોગ કરવા માટે, તમારે Chromeમાં સાઇન ઇન કરવું જરૂરી છે</translation>
 <translation id="8641131559425911240">એન્વેલોપ (બોન્ડ)</translation>

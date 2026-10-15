@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Las preferencias del Modo de lectura están totalmente abiertas</translation>
 <translation id="1014147525163127655">No hay ninguna llave de acceso para <ph name="ORIGIN" /> en este dispositivo</translation>
 <translation id="1016498331642356377">Haz una búsqueda rápida con la voz. Para editar este atajo, mantenlo presionado.</translation>
-<translation id="1028699632127661925">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="103269572468856066">¿Borrar estos datos?</translation>
 <translation id="1035113036584565771">Se cerró a promoción de notificaciones de sugerencias</translation>
 <translation id="1036348656032585052">Desactivar</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Se cerró la hoja de confirmación de la llave de acceso</translation>
 <translation id="1197933394627598677">Mostrar el Modo de lectura</translation>
 <translation id="1197935538609051549">Desactivar</translation>
+<translation id="119944043368869598">Borrar todo</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1202892408424955784">Productos con seguimiento</translation>
 <translation id="1204037785786432551">Descargar vínculo</translation>
@@ -135,6 +135,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1485343711570311792">Abrir en <ph name="NATIVE_APP_NAME" /> • De <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
 <translation id="1496514951988037011">nombre de usuario</translation>
+<translation id="1498051468374914325">Abrir la consola de las Herramientas para desarrolladores</translation>
 <translation id="1501480321619201731">Borrar grupo</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1513352483775369820">Favoritos e historial web</translation>
@@ -142,6 +143,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1516966594427080024">Abrir una ventana nueva en modo Incógnito</translation>
 <translation id="152204906462707884">Borra rápidamente tu historial de navegación y controla más tu privacidad</translation>
 <translation id="153446405401665083">Hay una nueva versión de Chrome disponible</translation>
+<translation id="1537160738459068682">Abrir los elementos de las Herramientas para desarrolladores</translation>
 <translation id="1540012742443808215">La barra de direcciones está en la parte superior</translation>
 <translation id="1543035591122163372">Accede para obtener tus contraseñas y más de <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">No se encriptarán las formas de pago ni las direcciones. No se sincronizará el historial de navegación de Chrome.
@@ -151,6 +153,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> en "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Ayúdanos a mejorar Chrome para quienes lo usan como tú.</translation>
+<translation id="1557806604681757705">tu computadora</translation>
 <translation id="1568636008098739136">Escuchar esta página. Para editar este acceso directo, mantenlo presionado.</translation>
 <translation id="1571041387761170095">No tienes contraseñas poco seguras o reutilizadas</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="22091350895006575">Agregar nombre de usuario</translation>
 <translation id="2211043920024403606">Información del perfil</translation>
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
+<translation id="2220529011494928058">Informar un problema</translation>
 <translation id="2226826835915474236">Atajos inactivos</translation>
 <translation id="2227179592712503583">Quitar sugerencia</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> grupo de pestañas</translation>
 <translation id="3200536777393523575">¿Quieres cerrar la ventana actual?</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
 <translation id="3211426585530211793">Se borró <ph name="ITEM_TITLE" /></translation>
 <translation id="3232293466644486101">Borrar datos de navegación…</translation>
@@ -963,6 +968,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4807098396393229769">Nombre en la tarjeta</translation>
 <translation id="4807700370495020449">Accede a este sitio y a Chrome para obtener tu información guardada y más en todos tus dispositivos</translation>
 <translation id="480990236307250886">Abrir la página principal</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
 <translation id="4822710610088666676">Se cerró y guardó el grupo de pestañas <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4835385943915508971">Chrome no tiene acceso al recurso solicitado.</translation>
@@ -1069,6 +1075,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5235196193381275927">Se produjo un error durante el acceso</translation>
 <translation id="5246093389635966745">Editar la combinación de teclas de la barra de herramientas</translation>
+<translation id="5257142004843671642">Cambiar el tamaño del panel lateral</translation>
 <translation id="5264813352784073502">últimas 24 horas</translation>
 <translation id="5267572070504076962">Activa la Navegación segura para obtener protección contra sitios peligrosos</translation>
 <translation id="5273031377282080577">El administrador gestiona este parámetro de configuración.</translation>
@@ -1095,9 +1102,9 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, pestaña de incógnito con uso compartido fijada</translation>
 <translation id="5375374982898812658">Perderás de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se borrará de todos tus dispositivos</translation>
 <translation id="537865165090710757">Guardar y compartir</translation>
-<translation id="5385892579392932755">tu laptop</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quiere usar información personal de tu billetera digital. Continúa solo si confías en este sitio. Los sitios peligrosos pueden engañarte para que reveles información como tu nombre legal o número de documento de identidad.</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu Cuenta de Google</translation>
+<translation id="5397794290049113714">Tú</translation>
 <translation id="539881862970320163">Se sugiere una contraseña segura. El teclado está oculto.</translation>
 <translation id="5404274604891474619">No se puede editar el PDF</translation>
 <translation id="5409881200985013443">¿Deseas enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
@@ -1523,6 +1530,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestaña con actividad nueva en los grupos de pestañas compartidos}other{Ver <ph name="TABS_COUNT_MANY" /> pestañas con actividad nueva en los grupos de pestañas compartidos}}</translation>
 <translation id="6971555615916967190">Las preferencias del Modo de lectura están abiertas a media altura</translation>
 <translation id="6971862865055170158">No aprobar</translation>
@@ -1942,6 +1950,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8512053371384421952">Ya no recibirás notificaciones de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imágenes</translation>
 <translation id="8517759303731677493">Editar…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, pestaña con pantalla en pantalla fijada y con selección múltiple</translation>
 <translation id="8540136935098276800">Ingresa una URL con el formato correcto</translation>
@@ -2061,6 +2070,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9024318700713112071">Establece Chrome como navegador predeterminado</translation>
 <translation id="9027728231343310283">Deshacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
+<translation id="9038316201889095704">La función para Buscar en la página está inhabilitada porque hay cambios sin guardar.</translation>
 <translation id="904146253922032365">Mantén presionado para mostrar las pestañas verticalmente</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9047347135558855162">Inicia rápidamente una búsqueda en Chrome</translation>

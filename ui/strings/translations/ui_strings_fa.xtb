@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">انتخاب &amp;همه</translation>
 <translation id="19085484004813472">این ویژگی جدید است</translation>
 <translation id="2006524834898217237">مطمئن شوید دستگاه به اینترنت متصل باشد.</translation>
-<translation id="208586643495776849">لطفاً دوباره امتحان کنید</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />در «حالت ناشناس» مجاز است<ph name="END_BOLD" /> را روشن کنید</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{۱ روز}one{# روز}other{# روز}}</translation>
 <translation id="2148716181193084225">امروز</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">در اینجا تک‌ضرب بزنید</translation>
 <translation id="5076340679995252485">&amp;جاگذاری</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> پتابایت</translation>
-<translation id="5278860589123563674">ارسال نشد</translation>
 <translation id="5283101102242354279">افزونه‌ای را در «حالت ناشناس» روشن کنید:</translation>
 <translation id="528468243742722775">پایان</translation>
 <translation id="5329858601952122676">&amp;حذف</translation>

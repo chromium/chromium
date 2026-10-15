@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Ընթերցման ռեժիմի կարգավորումները բացված են ամբողջ էկրանով</translation>
 <translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար մուտքի բանալիներ չկան</translation>
 <translation id="1016498331642356377">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
-<translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
 <translation id="103269572468856066">Մաքրե՞լ այս տվյալները</translation>
 <translation id="1035113036584565771">Ծանուցումներով պրոմոհուշումը փակված է</translation>
 <translation id="1036348656032585052">Անջատել</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Մուտքի բանալու հաստատման թերթը փակված է</translation>
 <translation id="1197933394627598677">Բացել Ընթերցման ռեժիմը</translation>
 <translation id="1197935538609051549">Ապակտիվացնել</translation>
+<translation id="119944043368869598">Մաքրել բոլորը</translation>
 <translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
 <translation id="1204037785786432551">Ներբեռնել հղումը</translation>
@@ -135,6 +135,7 @@
 <translation id="1485343711570311792">Բացել <ph name="NATIVE_APP_NAME" /> հավելվածում • <ph name="DEVICE_NAME" />-ից</translation>
 <translation id="1495677929897281669">Վերադառնալ ներդիր</translation>
 <translation id="1496514951988037011">օգտանուն</translation>
+<translation id="1498051468374914325">Բացել ծրագրավորողի գործիքների վահանակը</translation>
 <translation id="1501480321619201731">Ջնջել խումբը</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
@@ -142,6 +143,7 @@
 <translation id="1516966594427080024">Բացել նոր պատուհան ինկոգնիտո ռեժիմում</translation>
 <translation id="152204906462707884">Արագ ջնջեք ձեր այցելությունների պատմությունը և ավելի շատ վերահսկեք ձեր գաղտնիությունը</translation>
 <translation id="153446405401665083">Chrome-ի նոր տարբերակը հասանելի է</translation>
+<translation id="1537160738459068682">Բացել ծրագրավորողի գործիքների տարրերը</translation>
 <translation id="1540012742443808215">Հասցեագոտին ներկայումս վերևում է</translation>
 <translation id="1543035591122163372">Մուտք գործեք՝ ձեր գաղտնաբառերը և այլ տվյալներ <ph name="DEVICE_TYPE" /> օգտագործելու համար</translation>
 <translation id="1544084554881119930">Վճարման եղանակները և հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։
@@ -151,6 +153,7 @@
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" />՝ «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="1554532453982918912">Օգնեք ավելի լավը դարձնել Chrome-ը ձեզ նման օգտատերերի համար</translation>
+<translation id="1557806604681757705">ձեր համակարգչից</translation>
 <translation id="1568636008098739136">Հնչեցնել այս էջը։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1571041387761170095">Թույլ կամ կրկնվող գաղտնաբառեր չեն հայտնաբերվել</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@
 <translation id="22091350895006575">Ավելացնել օգտանուն</translation>
 <translation id="2211043920024403606">Պրոֆիլի տվյալներ</translation>
 <translation id="221494669172414749">Եթե դուք բացեք Chrome-ը առանց պրոֆիլի կողպման, ձեր պահված գաղտնաբառերը և վճարման եղանակները կհեռացվեն մեքենայից։ Տվյալները պաշտպանելու համար օգտագործեք պրոֆիլի կողպում։</translation>
+<translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
 <translation id="2226826835915474236">Ոչ ակտիվ դյուրանցումներ</translation>
 <translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
@@ -556,6 +560,7 @@
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ներդիրների խումբ</translation>
 <translation id="3200536777393523575">Փակե՞լ ընթացիկ պատուհանը</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
+<translation id="3208321278970793882">Հավելված</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
 <translation id="3232293466644486101">Ջնջել այցելությունների պատմությունը…</translation>
@@ -963,6 +968,7 @@
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
 <translation id="4807700370495020449">Մուտք գործեք հաշիվ այս կայքում և Chrome-ում՝ ձեր պահված տվյալները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="480990236307250886">Բացել գլխավոր էջը</translation>
+<translation id="4812684235631257312">Խնամորդ</translation>
 <translation id="4816492930507672669">Հարմարեցնել էջին</translation>
 <translation id="4822710610088666676">«<ph name="TAB_GROUP_TITLE" />» ներդիրների խումբը փակվեց և պահվեց</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
@@ -1069,6 +1075,7 @@
 <translation id="5233638681132016545">Նոր ներդիր</translation>
 <translation id="5235196193381275927">Չհաջողվեց մուտք գործել</translation>
 <translation id="5246093389635966745">Փոփոխել գործիքագոտու դյուրանցումը</translation>
+<translation id="5257142004843671642">Փոխել կողային վահանակի չափը</translation>
 <translation id="5264813352784073502">վերջին 24 ժամը</translation>
 <translation id="5267572070504076962">Միացրեք Անվտանգ դիտարկումը՝ վտանգավոր կայքերից պաշտպանվելու համար</translation>
 <translation id="5273031377282080577">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
@@ -1095,9 +1102,9 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="537865165090710757">Պահել և կիսվել</translation>
-<translation id="5385892579392932755">ձեր նոթբուքում</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։ Շարունակեք միայն, եթե վստահում եք այս կայքին։ Վտանգավոր կայքերը կարող են ձեզ խաբել՝ բացահայտելու ձեր լրիվ անունը կամ անձը հաստատող փաստաթղթի համարը։</translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
+<translation id="5397794290049113714">Դուք</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="5404274604891474619">Հնարավոր չէ խմբագրել PDF ֆայլը</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
@@ -1523,6 +1530,7 @@
 <translation id="6964300328304469089">Ներկայումս ընտրված է <ph name="NAME" /> (<ph name="EMAIL" />) հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="696447261358045621">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="6965382102122355670">Եղավ</translation>
+<translation id="6965978654500191972">Սարք</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_ONE" /> ներդիր ներդիրների ընդհանուր խմբում}one{Տեսնել նոր գործողությամբ <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}other{Տեսնել նոր գործողություններով <ph name="TABS_COUNT_MANY" /> ներդիր ներդիրների ընդհանուր խմբում}}</translation>
 <translation id="6971555615916967190">Ընթերցման ռեժիմի կարգավորումները բացված են կիսով չափ</translation>
 <translation id="6971862865055170158">Չհաստատել</translation>
@@ -1942,6 +1950,7 @@
 <translation id="8512053371384421952">Դուք այլևս չեք ստանա ծանուցումներ <ph name="DOMAIN" /> կայքից։</translation>
 <translation id="8516012719330875537">Պատկերների խմբագրիչ</translation>
 <translation id="8517759303731677493">Փոփոխել…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ընտրված մի քանի ներդիրներից մեկը, որն ամրացված է, և որում նկարը նկարի մեջ է</translation>
 <translation id="8540136935098276800">Մուտքագրեք ճիշտ ձևաչափի URL</translation>
@@ -2061,6 +2070,7 @@
 <translation id="9024318700713112071">Դարձնել Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="9027728231343310283">Հետարկել <ph name="SITE" /> կայքը</translation>
 <translation id="9035378196785279980">Տեղափոխել\u2026</translation>
+<translation id="9038316201889095704">«Գտնել էջում» գործառույթն անջատված է, քանի դեռ կան չպահված փոփոխություններ։</translation>
 <translation id="904146253922032365">Հպեք և պահեք՝ ներդիրներն ուղղաձիգ դիրքով ցուցադրելու համար</translation>
 <translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
 <translation id="9047347135558855162">Արագ որոնում Chrome-ում</translation>

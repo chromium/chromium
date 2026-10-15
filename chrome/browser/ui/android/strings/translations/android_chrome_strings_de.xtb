@@ -7,7 +7,6 @@
 <translation id="1014083013111769343">Einstellungen für den Lesemodus sind vollständig geöffnet</translation>
 <translation id="1014147525163127655">Für <ph name="ORIGIN" /> gibt es auf diesem Gerät keine Passkeys</translation>
 <translation id="1016498331642356377">Schnelle Sprachsuche verwenden. Zum Ändern Button gedrückt halten.</translation>
-<translation id="1028699632127661925">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="103269572468856066">Auch Daten dieser Websites &amp; Apps löschen?</translation>
 <translation id="1035113036584565771">Werbeangebot zu Benachrichtigungen mit Tipps geschlossen</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
@@ -63,6 +62,7 @@
 <translation id="1197761954713363183">Passkey-Bestätigungsansicht geschlossen</translation>
 <translation id="1197933394627598677">Lesemodus anzeigen</translation>
 <translation id="1197935538609051549">Deaktivieren</translation>
+<translation id="119944043368869598">Alle entfernen</translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1202892408424955784">Beobachtete Produkte</translation>
 <translation id="1204037785786432551">Link herunterladen</translation>
@@ -135,6 +135,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1485343711570311792">In <ph name="NATIVE_APP_NAME" /> öffnen • von <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
 <translation id="1496514951988037011">Nutzername</translation>
+<translation id="1498051468374914325">Entwicklertools-Konsole öffnen</translation>
 <translation id="1501480321619201731">Gruppe löschen</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1513352483775369820">Lesezeichen und Webprotokoll</translation>
@@ -142,6 +143,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1516966594427080024">Neues Fenster im Inkognitomodus öffnen</translation>
 <translation id="152204906462707884">Browserverlauf schnell löschen und mehr Kontrolle über deine Privatsphäre erhalten</translation>
 <translation id="153446405401665083">Neue Chrome-Version verfügbar</translation>
+<translation id="1537160738459068682">Entwicklertools-Elemente öffnen</translation>
 <translation id="1540012742443808215">Adressleiste derzeit oben</translation>
 <translation id="1543035591122163372">Melde dich an, um auf Passwörter und mehr auf <ph name="DEVICE_TYPE" /> zuzugreifen</translation>
 <translation id="1544084554881119930">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
@@ -151,6 +153,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> nach „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="1554532453982918912">Hilf dabei, Chrome für andere Nutzer wie dich zu verbessern</translation>
+<translation id="1557806604681757705">deinem Computer</translation>
 <translation id="1568636008098739136">Diese Seite anhören. Zum Ändern Button gedrückt halten.</translation>
 <translation id="1571041387761170095">Keine schwachen oder wiederverwendeten Passwörter</translation>
 <translation id="1574831985137643109">360°</translation>
@@ -301,6 +304,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="22091350895006575">Nutzername hinzufügen</translation>
 <translation id="2211043920024403606">Profilinformationen</translation>
 <translation id="221494669172414749">Wenn du Chrome ohne Profilsperre öffnest, werden deine gespeicherten Passwörter und Zahlungsmethoden aus dem Auto entfernt. Durch das Verwenden einer Profilsperre werden diese Daten geschützt.</translation>
+<translation id="2220529011494928058">Problem melden</translation>
 <translation id="2226826835915474236">Inaktive Kürzel</translation>
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="2227444325776770048">Als <ph name="USER_FULL_NAME" /> fortfahren</translation>
@@ -556,6 +560,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" />, Tabgruppe</translation>
 <translation id="3200536777393523575">Aktuelles Fenster schließen?</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> gelöscht</translation>
 <translation id="3232293466644486101">Browserdaten löschen…</translation>
@@ -963,6 +968,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4807098396393229769">Name auf der Karte</translation>
 <translation id="4807700370495020449">Melde dich in dieser Website und Chrome an, um auf deine gespeicherten Informationen und mehr auf allen deinen Geräten zuzugreifen</translation>
 <translation id="480990236307250886">Startseite öffnen</translation>
+<translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">An Seite anpassen</translation>
 <translation id="4822710610088666676">„<ph name="TAB_GROUP_TITLE" />“-Tabgruppe geschlossen und gespeichert</translation>
 <translation id="4835385943915508971">Chrome hat keinen Zugriff auf die angeforderte Ressource.</translation>
@@ -1069,6 +1075,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5233638681132016545">Neuer Tab</translation>
 <translation id="5235196193381275927">Bei der Anmeldung ist ein Fehler aufgetreten</translation>
 <translation id="5246093389635966745">Verknüpfung auf Symbolleiste bearbeiten</translation>
+<translation id="5257142004843671642">Größe der Seitenleiste anpassen</translation>
 <translation id="5264813352784073502">den letzten 24 Stunden</translation>
 <translation id="5267572070504076962">Du kannst Safe Browsing aktivieren, um den Schutz vor gefährlichen Websites zu verbessern</translation>
 <translation id="5273031377282080577">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
@@ -1095,9 +1102,9 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, angepinnter Inkognitotab für die Freigabe</translation>
 <translation id="5375374982898812658">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und sie wird von allen deinen Geräten gelöscht</translation>
 <translation id="537865165090710757">Speichern und teilen</translation>
-<translation id="5385892579392932755">deinem Laptop</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> möchte personenbezogene Daten aus deinem digitalen Wallet verwenden. Fahre nur fort, wenn du dieser Website vertraust. Gefährliche Websites könnten versuchen, dich dazu zu bringen, deinen rechtsgültigen Namen, deine Personalausweisnummer oder andere Daten preiszugeben.</translation>
 <translation id="5395376160638294582">Achte darauf, dass du die Chrome-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
+<translation id="5397794290049113714">Ich</translation>
 <translation id="539881862970320163">Starkes Passwort vorgeschlagen. Tastatur ausgeblendet.</translation>
 <translation id="5404274604891474619">PDF kann nicht bearbeitet werden</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> an <ph name="CLIENT_NAME" /> senden?</translation>
@@ -1523,6 +1530,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6964300328304469089">Aktuell ausgewählt: <ph name="NAME" />, <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
 <translation id="696447261358045621">Inkognitomodus deaktivieren</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Gerät</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab mit neuer Aktivität in freigegebenen Tabgruppen ansehen}other{<ph name="TABS_COUNT_MANY" /> Tabs mit neuer Aktivität in freigegebenen Tabgruppen ansehen}}</translation>
 <translation id="6971555615916967190">Einstellungen für den Lesemodus sind halb geöffnet</translation>
 <translation id="6971862865055170158">Nicht genehmigen</translation>
@@ -1942,6 +1950,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8512053371384421952">Du erhältst keine Benachrichtigungen mehr von <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Bildeditor</translation>
 <translation id="8517759303731677493">Bearbeiten…</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing ist aktiviert</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, mehrfach ausgewählter angepinnter Tab im Bild-im-Bild-Modus</translation>
 <translation id="8540136935098276800">Bitte gib eine korrekt formatierte URL ein</translation>
@@ -2061,6 +2070,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9024318700713112071">Chrome als Standardbrowser festlegen</translation>
 <translation id="9027728231343310283">Für <ph name="SITE" /> rückgängig machen</translation>
 <translation id="9035378196785279980">Verschieben in\u2026</translation>
+<translation id="9038316201889095704">„Auf Seite suchen“ ist deaktiviert, solange es nicht gespeicherte Änderungen gibt.</translation>
 <translation id="904146253922032365">Gedrückt halten, um Tabs vertikal anzuzeigen</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="9047347135558855162">Schnell eine Suche in Chrome starten</translation>

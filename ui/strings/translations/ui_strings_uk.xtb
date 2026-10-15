@@ -37,7 +37,6 @@
 <translation id="1901303067676059328">Вибрати &amp;всі</translation>
 <translation id="19085484004813472">Це нова функція</translation>
 <translation id="2006524834898217237">Перевірте, чи пристрій підключено до Інтернету.</translation>
-<translation id="208586643495776849">Повторіть спробу</translation>
 <translation id="2111134541987263231">Увімкніть параметр <ph name="BEGIN_BOLD" />Дозволити в анонімному режимі<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# дн.}many{# дн.}other{# дн.}}</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
@@ -126,7 +125,6 @@
 <translation id="5046499563572181734">Торкніться тут</translation>
 <translation id="5076340679995252485">&amp;Вставити</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
-<translation id="5278860589123563674">Не вдалося надіслати</translation>
 <translation id="5283101102242354279">Щоб увімкнути розширення в анонімному режимі:</translation>
 <translation id="528468243742722775">Завершити</translation>
 <translation id="5329858601952122676">&amp;Видалити</translation>

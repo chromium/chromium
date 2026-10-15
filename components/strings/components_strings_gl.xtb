@@ -23,7 +23,6 @@
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038168778161626396">Só cifrar</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
-<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
 <translation id="1044897699341250361">Que significa</translation>
 <translation id="1049837829250301306">Non se puido pegar o contido debido ás políticas da túa organización</translation>
@@ -491,6 +490,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="18139523105317219">Nome da parte EDI</translation>
 <translation id="1816436748874040213">Pode pedir permiso para desprazarse polas pestanas compartidas e facer zoom</translation>
 <translation id="1816707915923025275">Escribe @historial para facer buscas no teu historial de navegación</translation>
+<translation id="1816771466809215784">Para que se complete automaticamente ao tramitar as compras, garda o nome da persoa titular desta tarxeta en Google Wallet</translation>
 <translation id="1817364650920811003">Función: Consello de Chrome. Etiqueta de accesibilidade: <ph name="CHROME_TIP" /></translation>
 <translation id="182139138257690338">descargas automáticas</translation>
 <translation id="1821930232296380041">Solicitude ou parámetros de solicitude non válidos</translation>
@@ -648,6 +648,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2102495993840063010">Aplicacións para Android</translation>
 <translation id="2103210856015238101">Lista de tarxetas de fidelidade dispoñibles que se completarán cun toque aberta a altura completa.</translation>
 <translation id="2104739941682874393">A función de autocompletar mellorada entenderá mellor o contido dos formularios e poderá completalos automaticamente máis rápido</translation>
+<translation id="2105237910269166838">Fai unha pregunta sobre esta páxina</translation>
 <translation id="2107021941795971877">Soportes de impresión</translation>
 <translation id="2108755909498034140">Reinicia o ordenador</translation>
 <translation id="2109845311767915560">Grupo de pestanas compartido</translation>
@@ -1054,7 +1055,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2734797989819862638">Non copiar</translation>
 <translation id="2738771556149464852">Non despois de</translation>
 <translation id="2740531572673183784">Aceptar</translation>
-<translation id="275259155159336003">Con tecnoloxía de Intelixencia personalizada de Gemini. As túas solicitudes, os títulos das páxinas e os URL poden revisarse para mellorar a función de autocompletar mellorada. <ph name="BEGIN_LINK" />Xestionar a configuración<ph name="END_LINK" /></translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Ningunha}=1{1 habilidade}other{# habilidades}}</translation>
 <translation id="2757727729385895652">Cargando <ph name="COUNT" /> ficheiros en Google Drive</translation>
 <translation id="2759299890026163685">Debes ter unha conexión estable a Internet antes de tentalo de novo</translation>
 <translation id="2759825833388495838">poñer o teu contrasinal en <ph name="APP_NAME" /></translation>
@@ -1434,7 +1435,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3434025015623587566">O xestor de contrasinais de Google necesita máis acceso</translation>
 <translation id="343474037147570563">Os ficheiros que cargues ou anexes enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais ou software malicioso, e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
-<translation id="3435267628744367511">Preme Control dúas veces en calquera formulario para buscar e completar información sen cambiar de pestana</translation>
 <translation id="3435557549311968410">Continuo (curto)</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3436125638121079308">Queres compartir automaticamente as pestanas relevantes para obter mellores respostas neste fío de mensaxes?</translation>
@@ -1880,7 +1880,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4153446078232988116"><ph name="SITE" /> non admite unha conexión segura con HTTPS</translation>
 <translation id="4153858337812834972">Pestanas máis recentes</translation>
 <translation id="4154277373259957087">Chrome agora verificará a túa identidade antes de completar os métodos de pago. Podes actualizar esta opción en calquera momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4157273919218514718">Con tecnoloxía de Intelixencia personalizada de Gemini. <ph name="BEGIN_LINK" />Xestionar a configuración<ph name="END_LINK" /></translation>
 <translation id="4157469997675439324">Actualiza o permiso de conducir de forma segura</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4165422751765527461">Abrir un artigo do Centro de axuda nunha nova pestana</translation>
@@ -2148,7 +2147,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4599572944836204718">Cando o fagas poderás pagar máis rápido con Google Pay. A información da tarxeta encríptase en Google Wallet.</translation>
 <translation id="4603727370377253901">Reservas de voos</translation>
 <translation id="4607608436550361748">Ver consellos de Chrome</translation>
-<translation id="4607879293515681409">A función de autocompletar mellorada agora pode atopar e completar información (por exemplo, números de voo e horas de citas) en aplicacións como Gmail e Fotos</translation>
 <translation id="460848736049414407">Bloqueado polo administrador</translation>
 <translation id="4610279718074907952">Este sitio está nun grupo definido por <ph name="SET_OWNER" />, que pode ver a túa actividade</translation>
 <translation id="4612631413844865947">Produciuse un erro ao procesar o teu pedido en <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2923,7 +2921,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5884465125445718607">Sobre chinés n.º 6</translation>
 <translation id="5887400589839399685">Gardouse a tarxeta</translation>
 <translation id="5887687176710214216">Visitouse onte por última vez</translation>
-<translation id="5887791684215121787">Preme ⌘ ⌘ en calquera formulario para buscar e completar información sen cambiar de pestana</translation>
 <translation id="5889251770650310375">Para obter o historial dos teus outros dispositivos, verifica a túa identidade e sincroniza o historial e as pestanas. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido o</translation>
@@ -3029,6 +3026,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6051221802930200923">Non podes acceder a <ph name="SITE" /> agora momento porque o sitio web usa a fixación de certificados. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="6051898664905071243">Número de páxinas:</translation>
 <translation id="605237284704429106">Completando IBAN</translation>
+<translation id="6052557981901634648">Elabora un plan</translation>
 <translation id="6053584886670442526">Podes usar os enderezos gardados nos produtos de Google. Este enderezo está gardado na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6055392876709372977">PKCS n.º 1 SHA-256 con cifrado RSA</translation>
 <translation id="6055982527635883756">Sobre (arquivo)</translation>
@@ -3467,6 +3465,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6808579246645021886">Pestanas e ficheiros compartidos</translation>
 <translation id="681021252041861472">Campo obrigatorio</translation>
 <translation id="6810899417690483278">ID de personalización</translation>
+<translation id="6815861164669871832">Fai preguntas sobre unha pestana</translation>
 <translation id="681631578600400068">Garda o permiso de conducir</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">portos de serie</translation>
@@ -3539,7 +3538,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6936976777388162184">Este é un dispositivo dun lote e non se pode inscribir con Kiosk e Signage Upgrade.</translation>
 <translation id="6942444979237658241">Comentarios (<ph name="GROUP_NAME" />)</translation>
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
-<translation id="6946949206576443118">Fai buscas na Web desde Chrome</translation>
 <translation id="6948051842255602737">Fin da partida. A túa puntuación é <ph name="SCORE" />.</translation>
 <translation id="6948223029286835408">Cando fagas compras en Chrome, verás Pix como opción</translation>
 <translation id="6948701128805548767">Para consultar os requisitos e métodos de recollida, selecciona un enderezo</translation>
@@ -3629,6 +3627,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7083258188081898530">Bandexa 9</translation>
 <translation id="70846382339153529">Texto de OpenDocument</translation>
 <translation id="7086090958708083563">O usuario solicitou a carga</translation>
+<translation id="7089745480771070611">Ábrese no panel lateral</translation>
 <translation id="7090698782953528257">Axúdame a representar graficamente unha función para visualizar a ecuación matemática e ver a forma da curva</translation>
 <translation id="7092087596499105699">A persoa administradora configurou o conector de pasarela segura para protexer o acceso ás aplicacións web privadas da túa organización. Este pode utilizar datos do teu perfil de traballo para verificar o acceso.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar na configuración de Chrome os permisos e os datos almacenados dos sitios, preme Tabulador e, a continuación, Introducir</translation>
@@ -4012,6 +4011,7 @@ Detalles adicionais:
 <translation id="7696107855583699585">Editar o número de viaxeiro coñecido (KTN)</translation>
 <translation id="7698864304447945242">Queres actualizar Servizos de Google Play para realidade aumentada?</translation>
 <translation id="7699509138503320152">Reescribe o meu correo electrónico para que sexa máis persuasivo</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Ningunha}=1{1 habilidade (sincronizada)}other{# habilidades (sincronizadas)}}</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Ir a <ph name="SITE" /> (non seguro)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Axúdame a escribir</translation>
@@ -4254,6 +4254,7 @@ Detalles adicionais:
 <translation id="813024282736408069">Activa unha tarxeta virtual para usala coa función de autocompletar</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
+<translation id="8136385032646505126">Queres gardar o nome da persoa titular da tarxeta?</translation>
 <translation id="8137185688006450980">Compara opcións de plans de saúde</translation>
 <translation id="8138591088112729119">Con tecnoloxía da Intelixencia personalizada</translation>
 <translation id="814071672416123670">Non se puido copiar o contido debido ás políticas da túa organización</translation>
@@ -4527,6 +4528,7 @@ Detalles adicionais:
 <translation id="8622864575115813231">Contactando coa túa entidade financeira...</translation>
 <translation id="8632584659860846053">O teu historial de navegación, as cookies e os datos dos sitios, a memoria caché e a información introducidas nos formularios eliminaranse ao pechar todas as ventás illadas</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
+<translation id="8635822281281406185">Engade 10 ficheiros, pestanas ou imaxes como máximo</translation>
 <translation id="8637362707224133343">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco phishing<ph name="END_LINK" /> no sitio ao que tentaches acceder. Os sitios de phishing fanse pasar por outros sitios para enganarte.<ph name="NEW_LINE" />Ás veces, mesmo os sitios que adoitan ser seguros poden verse vulnerados por atacantes. <ph name="BEGIN_ERROR_LINK" />Infórmanos<ph name="END_ERROR_LINK" /> se consideras que se cometeu un erro e que o sitio non representa ningún perigo.</translation>
 <translation id="8640996933372643759">Para compartir pestanas e colaborar con outras persoas, tes que poder iniciar sesión en Chrome</translation>
 <translation id="8641131559425911240">Sobre (carta)</translation>

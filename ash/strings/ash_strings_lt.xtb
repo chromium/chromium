@@ -1020,6 +1020,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3977512764614765090">Aumuliatoriaus įkrova <ph name="PERCENTAGE" /> % ir jis įkraunamas.</translation>
 <translation id="3978162107953847778">Įterpkite nuorodų iš tokių vietų kaip naršymo istorija ir „Google“ diskas. Be to, galite įterpti jaustukų, vaizdų failų ir kt. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Perjungti garso išvestį?</translation>
+<translation id="3983903378684256134">„Steam“ „Chromebook“ įrenginyje</translation>
 <translation id="3984536049089846927">Kitas puslapis</translation>
 <translation id="3986082989454912832">Atsakyti</translation>
 <translation id="3990002060657467458">Dažnai naudojami valdikliai, pvz., „Wi-Fi“, „Bluetooth“ ir garsumo, pateikiami sparčiuosiuose nustatymuose. Čia taip pat galite kurti ekrano kopijas.</translation>
@@ -1639,6 +1640,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5727460725221669831">Jei pamiršote slaptažodį arba neseniai pakeitėte „Google“ paskyros slaptažodį, pabandykite atkurti šį naudotoją.</translation>
 <translation id="5733630091161562207">Pasisveikinimo pranešimas</translation>
 <translation id="573413375004481890">Šis įrenginys negali palaikyti visų ekranų, todėl vienas iš jų buvo atjungtas</translation>
+<translation id="5739548907438839901">Atlaisvinta <ph name="SIZE" /> vietos diske.</translation>
 <translation id="574392208103952083">Vidutinis</translation>
 <translation id="5745612484876805746">Nakties šviesa įjungiama automatiškai saulei leidžiantis</translation>
 <translation id="5749214722697335450">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie suminiai duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomos žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie metriką<ph name="BEGIN_LINK1_END" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
@@ -2217,6 +2219,7 @@ Naujas įdiegimas</translation>
 <translation id="7413851974711031813">Norėdami išeiti paspauskite klavišą „Escape“</translation>
 <translation id="7416471219712049036">Išsaugoti dabartinį puslapį</translation>
 <translation id="742594950370306541">Kamera naudojama.</translation>
+<translation id="7430466159639897874">Turite nepanaudotos vietos diske (<ph name="SIZE" />), skirtos funkcijai „Steam“ „Chromebook“ įrenginyje“, kurios teikimas nutrauktas.</translation>
 <translation id="743058460480092004">Kamera ir mikrofonas naudojami.</translation>
 <translation id="7433708794692032816">Įdėkite išmaniąją kortelę, kad galėtumėte toliau naudoti „<ph name="DEVICE_TYPE" />“ įrenginį</translation>
 <translation id="7440404390546433462">„Google“ paieška</translation>
@@ -2358,6 +2361,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7781335840981796660">Bus pašalintos visos naudotojo paskyros ir vietiniai duomenys.</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7787212146956232129">Įvesties ir išvesties įrenginiai nustatyti. Eikite į skiltį „Nustatymai“ ir pakeiskite.</translation>
+<translation id="7790757511772316441">Laisva vieta diske</translation>
 <translation id="7792590255364786396">Matoma</translation>
 <translation id="7796735576426975947">Nauji pranešimai paslėpti</translation>
 <translation id="7798302898096527229">Jei norite atšaukti, paspauskite paieškos klavišą arba „Shift“.</translation>
