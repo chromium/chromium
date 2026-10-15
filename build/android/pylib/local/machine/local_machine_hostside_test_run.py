@@ -43,6 +43,13 @@ LOGCAT_FILTERS = [
     'StrictMode:D',
 ]
 
+_TRADEFED_CONFIG_PATH = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        'local_machine_hostside_tradefed_config.xml',
+    )
+)
+
 
 @dataclasses.dataclass
 class _Job:
@@ -115,6 +122,12 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
     def _MakeEnv(self):
         return dict(
             os.environ,
+            # Bypass ATS console to run Tradefed directly in-process and ensure
+            # environment variables (e.g. DISABLE_CLEARCUT) are inherited.
+            USE_ATS='false',
+            # Disable Tradefed Clearcut usage metrics to avoid remote
+            # network calls.
+            DISABLE_CLEARCUT='1',
             PATH=':'.join(
                 [
                     os.getenv('PATH'),
@@ -167,6 +180,8 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
                 'run',
                 'commandAndExit',
                 'cts',
+                '--template:map',
+                f'reporters={_TRADEFED_CONFIG_PATH}',
             ]
             + self._MakeModeArgs()
             + filter_args
@@ -223,16 +238,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
                 '--max-testcase-run-count',
                 str(self._test_instance.max_tries),
                 '--template:map',
-                f'''reporters={
-                    (
-                        os.path.abspath(
-                            os.path.join(
-                                os.path.dirname(__file__),
-                                'local_machine_hostside_tradefed_config.xml',
-                            )
-                        )
-                    )
-                }''',
+                f'reporters={_TRADEFED_CONFIG_PATH}',
             ]
         )
 
