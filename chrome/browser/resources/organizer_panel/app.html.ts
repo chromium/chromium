@@ -18,7 +18,7 @@ export function getHtml(this: OrganizerPanelAppElement) {
     .searchQuery="${this.searchQuery_}">
 </organizer-list>
 <div id="dragRegion"></div>
-<cr-action-menu id="menu">
+<cr-action-menu id="menu" auto-close-on-focusout>
   ${this.allSectionsExpanded_ ? html`
     <button id="collapseAllButton" class="dropdown-item"
         ?disabled="${this.isSearching_()}" @click="${this.onCollapseAllClick_}">
