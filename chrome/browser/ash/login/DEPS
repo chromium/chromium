@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/ui/webui/signin",
   "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/grit",
@@ -65,6 +64,7 @@ specific_include_rules = {
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
     "+chrome/browser/sessions",
     "+chrome/browser/ssl",
+    "+chrome/common/chrome_paths.h",
   ],
   ".*test\\..*": [
     "+chrome/browser/ash/policy/test_support",
