@@ -3,24 +3,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Benchmark runner for Glic client initialization latency.
+"""Benchmark runner for Glic client initialization and presentation latency.
 
-Runs GlicInitializationBenchmark across Webview/NoWebview and
-Compressed/Uncompressed configurations and prints a comparative summary table.
+Runs GlicInitializationBenchmark across Webview/NoWebview and Warmed/Cold
+configurations and prints a comparative summary table.
 """
 
 import argparse
-import os  # noqa: F401
+import os
 import re
 import subprocess
 import sys
-from typing import Dict, List, Optional  # noqa: F401
+from typing import Dict, List
 
 TEST_FILE = "chrome/browser/glic/host/glic_start_benchmark_browsertest.cc"
 
 ALL_MODES = [
-  "Webview",
-  "NoWebview",
+  "Webview_Warmed",
+  "NoWebview_Warmed",
+  "Webview_Cold",
+  "NoWebview_Cold",
 ]
 
 
@@ -38,7 +40,6 @@ def run_command(cmd: List[str], verbose: bool = False) -> str:
   for line in proc.stdout:
     lines.append(line)
     if verbose:
-      # Filter for interesting lines in verbose mode
       if "Iteration " in line or "RESULTS for" in line or "Mean" in line:
         print(f"  {line.strip()}", flush=True)
   proc.wait()
@@ -61,48 +62,47 @@ def parse_results(output: str, mode: str) -> Dict:
   result = {
     "mode": mode,
     "iterations": 0,
-    "mean_ms": None,
-    "stddev_ms": None,
-    "min_ms": None,
-    "max_ms": None,
+    "init_mean_ms": None,
+    "init_stddev_ms": None,
+    "init_min_ms": None,
+    "init_max_ms": None,
+    "pres_mean_ms": None,
+    "pres_stddev_ms": None,
+    "pres_min_ms": None,
+    "pres_max_ms": None,
     "time_to_warmed_ms": None,
-    "decompress_ms": None,
     "script_start_ms": None,
+    "bootstrap_received_ms": None,
     "client_init_ms": None,
     "panel_opened_ms": None,
     "iteration_times": [],
   }
 
-  # Parse individual iteration timings
   iter_re = re.compile(
     r"\["
     + re.escape(mode)
     + r"\] Iteration (\d+)/(\d+): total_init=([\d\.]+) ms"
+    + r", presentation_time=([\d\.]+) ms"
     + r"(?:, time_to_warmed=([\d\.]+) ms)?"
-    + r"(?:, decompress=([\d\.]+) ms)?"
+    + r"(?:, warmed_vp=[^\s,]+)?"
+    + r"(?:, opened_vp=[^\s,]+)?"
+    + r"(?:, panel_size=[^\s,]+)?"
     + r"(?:, script_start=([\d\.]+) ms)?"
     + r"(?:, bootstrap_received=([\d\.]+) ms)?"
     + r"(?:, client_init=([\d\.]+) ms)?"
     + r"(?:, panel_opened=([\d\.]+) ms)?"
   )
   for m in iter_re.finditer(output):
-    init_ms = float(m.group(3))
-    time_to_warmed_ms = float(m.group(4)) if m.group(4) else 0.0
-    decompress_ms = float(m.group(5)) if m.group(5) else 0.0
-    script_start = float(m.group(6)) if m.group(6) else 0.0
-    bootstrap_received = float(m.group(7)) if m.group(7) else 0.0
-    client_init = float(m.group(8)) if m.group(8) else 0.0
-    panel_opened = float(m.group(9)) if m.group(9) else 0.0
     result["iteration_times"].append(
       {
         "iteration": int(m.group(1)),
-        "init_ms": init_ms,
-        "time_to_warmed_ms": time_to_warmed_ms,
-        "decompress_ms": decompress_ms,
-        "script_start_ms": script_start,
-        "bootstrap_received_ms": bootstrap_received,
-        "client_init_ms": client_init,
-        "panel_opened_ms": panel_opened,
+        "init_ms": float(m.group(3)),
+        "presentation_ms": float(m.group(4)),
+        "time_to_warmed_ms": float(m.group(5)) if m.group(5) else 0.0,
+        "script_start_ms": float(m.group(6)) if m.group(6) else 0.0,
+        "bootstrap_received_ms": float(m.group(7)) if m.group(7) else 0.0,
+        "client_init_ms": float(m.group(8)) if m.group(8) else 0.0,
+        "panel_opened_ms": float(m.group(9)) if m.group(9) else 0.0,
       }
     )
 
@@ -123,28 +123,37 @@ def parse_results(output: str, mode: str) -> Dict:
     result["min_ms"] = sorted_vals[0]
     result["max_ms"] = sorted_vals[-1]
 
-  # Parse final RESULTS block
-  mean_m = re.search(
+  # Parse final RESULTS block for total init time
+  init_m = re.search(
     r"RESULTS for "
     + re.escape(mode)
-    + r":.*?Mean init time:\s+([\d\.]+)\s+ms\s+\(stddev:\s+([\d\.]+)\s+ms\)",
+    + r":.*?Total init time:\s+([\d\.]+)\s+ms\s+"
+    + r"\(stddev:\s+([\d\.]+)\s+ms,\s+min:\s+([\d\.]+)\s+ms,\s+"
+    + r"max:\s+([\d\.]+)\s+ms\)",
     output,
     re.DOTALL,
   )
-  if mean_m:
-    result["mean_ms"] = float(mean_m.group(1))
-    result["stddev_ms"] = float(mean_m.group(2))
+  if init_m:
+    result["init_mean_ms"] = float(init_m.group(1))
+    result["init_stddev_ms"] = float(init_m.group(2))
+    result["init_min_ms"] = float(init_m.group(3))
+    result["init_max_ms"] = float(init_m.group(4))
 
-  minmax_m = re.search(
+  # Parse final RESULTS block for panel presentation time
+  pres_m = re.search(
     r"RESULTS for "
     + re.escape(mode)
-    + r":.*?Min / Max:\s+([\d\.]+)\s+ms\s+/\s+([\d\.]+)\s+ms",
+    + r":.*?Panel presentation time:\s+([\d\.]+)\s+ms\s+"
+    + r"\(stddev:\s+([\d\.]+)\s+ms,\s+min:\s+([\d\.]+)\s+ms,\s+"
+    + r"max:\s+([\d\.]+)\s+ms\)",
     output,
     re.DOTALL,
   )
-  if minmax_m:
-    result["min_ms"] = float(minmax_m.group(1))
-    result["max_ms"] = float(minmax_m.group(2))
+  if pres_m:
+    result["pres_mean_ms"] = float(pres_m.group(1))
+    result["pres_stddev_ms"] = float(pres_m.group(2))
+    result["pres_min_ms"] = float(pres_m.group(3))
+    result["pres_max_ms"] = float(pres_m.group(4))
 
   warmed_m = re.search(
     r"RESULTS for "
@@ -154,15 +163,6 @@ def parse_results(output: str, mode: str) -> Dict:
     re.DOTALL,
   )
   result["time_to_warmed_ms"] = float(warmed_m.group(1)) if warmed_m else 0.0
-
-  decomp_m = re.search(
-    r"RESULTS for "
-    + re.escape(mode)
-    + r":.*?Mean decompress:\s+([\d\.]+)\s+ms",
-    output,
-    re.DOTALL,
-  )
-  result["decompress_ms"] = float(decomp_m.group(1)) if decomp_m else 0.0
 
   script_m = re.search(
     r"RESULTS for "
@@ -205,93 +205,106 @@ def parse_results(output: str, mode: str) -> Dict:
 
 def print_summary_tables(results: List[Dict]) -> None:
   """Prints summary and sequential phase breakdown tables."""
-  baseline_mean = None
+  baseline_warmed_pres = None
+  baseline_cold_pres = None
   for r in results:
-    if r["mode"] == "Webview" and r["mean_ms"] is not None:
-      baseline_mean = r["mean_ms"]
-      break
+    if r["mode"] == "Webview_Warmed":
+      baseline_warmed_pres = r["pres_mean_ms"]
+    elif r["mode"] == "Webview_Cold":
+      baseline_cold_pres = r["pres_mean_ms"]
 
-  # Table 1: Overall, Cold, and Warm Initialization Latency
-  width = 138
-  print("\n" + "=" * width)
-  print(f"{'END-TO-END INITIALIZATION LATENCY (total_init)':^{width}}")
-  print("=" * width)
+  # Table 1: Presentation Time vs Init Time Comparison Table
+  print("\n" + "=" * 134)
+  print(
+    f"{'BENCHMARK RESULTS (Presentation Time vs Init Time & TimeToWarmed)':^134}"
+  )
+  print("=" * 134)
   header = (
-    f"| {'Configuration':<16} | {'Mean (ms)':<10} | {'Median':<9} |"
-    f" {'Cold (Iter 1)':<13} | {'Warm Mean':<10} | {'TimeToWarmed':<12} |"
-    f" {'StdDev':<8} | {'Min / Max (ms)':<18} | {'Delta vs Baseline':<18} |"
+    f"| {'Configuration':<20} | {'Pres Mean':<10} | {'Pres StdDev':<11} |"
+    f" {'Pres Min/Max (ms)':<18} | {'Init Mean':<10} |"
+    f" {'TimeToWarmed':<16} | {'Delta vs Webview':<20} |"
   )
   separator = (
-    f"|:{'-' * 16}-|-{'-' * 10}:|-{'-' * 9}:|-{'-' * 13}:"
-    f"|-{'-' * 10}:|-{'-' * 12}:|-{'-' * 8}:|-{'-' * 18}:|-{'-' * 18}:|"
+    f"|:{'-' * 20}-|-{'-' * 10}:|-{'-' * 11}:|-{'-' * 18}:"
+    f"|-{'-' * 10}:|-{'-' * 16}:|-{'-' * 20}:|"
   )
   print(header)
   print(separator)
 
   for r in results:
     mode = r["mode"]
-    mean_str = f"{r['mean_ms']:.1f}" if r.get("mean_ms") is not None else "N/A"
-    med_str = (
-      f"{r['median_ms']:.1f}" if r.get("median_ms") is not None else "N/A"
+    pres_mean_str = (
+      f"{r['pres_mean_ms']:.2f} ms" if r["pres_mean_ms"] is not None else "N/A"
     )
-    cold_str = f"{r['cold_ms']:.1f}" if r.get("cold_ms") is not None else "N/A"
-    warm_str = (
-      f"{r['warm_mean_ms']:.1f}" if r.get("warm_mean_ms") is not None else "N/A"
+    pres_stddev_str = (
+      f"{r['pres_stddev_ms']:.2f} ms"
+      if r["pres_stddev_ms"] is not None
+      else "N/A"
+    )
+    pres_minmax_str = (
+      f"{r['pres_min_ms']:.1f} / {r['pres_max_ms']:.1f}"
+      if r["pres_min_ms"] is not None and r["pres_max_ms"] is not None
+      else "N/A"
+    )
+    init_mean_str = (
+      f"{r['init_mean_ms']:.2f} ms" if r["init_mean_ms"] is not None else "N/A"
     )
     warmed_str = (
-      f"{r['time_to_warmed_ms']:.1f}" if r.get("time_to_warmed_ms") else "N/A"
-    )
-    stddev_str = (
-      f"{r['stddev_ms']:.1f}" if r.get("stddev_ms") is not None else "N/A"
-    )
-    minmax_str = (
-      f"{r['min_ms']:.1f} / {r['max_ms']:.1f}"
-      if r.get("min_ms") is not None
+      f"{r['time_to_warmed_ms']:.2f} ms"
+      if r.get("time_to_warmed_ms")
       else "N/A"
     )
 
     delta_str = "-"
-    if baseline_mean is not None and r.get("mean_ms") is not None:
-      delta = r["mean_ms"] - baseline_mean
-      pct = (delta / baseline_mean) * 100
-      if abs(delta) < 0.01:
-        delta_str = "Baseline"
-      elif delta < 0:
-        delta_str = f"{delta:.1f} ms ({pct:.1f}%)"
-      else:
-        delta_str = f"+{delta:.1f} ms (+{pct:.1f}%)"
+    if "Warmed" in mode:
+      if mode == "Webview_Warmed":
+        delta_str = "Baseline (Warmed)"
+      elif baseline_warmed_pres is not None and r["pres_mean_ms"] is not None:
+        delta = r["pres_mean_ms"] - baseline_warmed_pres
+        pct = (delta / baseline_warmed_pres) * 100
+        sign = "+" if delta > 0 else ""
+        delta_str = f"{sign}{delta:.1f} ms ({sign}{pct:.1f}%)"
+    elif "Cold" in mode:
+      if mode == "Webview_Cold":
+        delta_str = "Baseline (Cold)"
+      elif baseline_cold_pres is not None and r["pres_mean_ms"] is not None:
+        delta = r["pres_mean_ms"] - baseline_cold_pres
+        pct = (delta / baseline_cold_pres) * 100
+        sign = "+" if delta > 0 else ""
+        delta_str = f"{sign}{delta:.1f} ms ({sign}{pct:.1f}%)"
 
     print(
-      f"| {mode:<16} | {mean_str:>10} | {med_str:>9} |"
-      f" {cold_str:>13} | {warm_str:>10} | {warmed_str:>12} |"
-      f" {stddev_str:>8} | {minmax_str:>18} | {delta_str:>18} |"
+      f"| {mode:<20} | {pres_mean_str:>10} | {pres_stddev_str:>11} |"
+      f" {pres_minmax_str:>18} | {init_mean_str:>10} |"
+      f" {warmed_str:>16} | {delta_str:>20} |"
     )
 
-  print("=" * width)
+  print("=" * 134)
 
-  # Table 2: Sequential Phase Breakdown (additive intervals summing to Mean)
+  # Table 2: Sequential Phase Breakdown (additive intervals summing
+  #   to Init Mean)
   has_client_marks = any(r.get("script_start_ms") for r in results)
   if has_client_marks:
-    p_width = 123
+    p_width = 127
     print("\n" + "=" * p_width)
     print(
       f"{'SEQUENTIAL PHASE BREAKDOWN (additive intervals -> Total Init)':^{p_width}}"
     )
     print("=" * p_width)
     m_header = (
-      f"| {'Configuration':<16} | {'1. Host/Setup':<14} |"
+      f"| {'Configuration':<20} | {'1. Host/Setup':<14} |"
       f" {'2. Guest Load':<14} | {'3. Bootstrap':<14} |"
       f" {'4. Client Init':<14} | {'5. Panel Open':<14} |"
       f" {'= Total Init':<14} |"
     )
     m_sub = (
-      f"| {'':<16} | {'(pre/post nav)':>14} |"
+      f"| {'':<20} | {'(pre/post nav)':>14} |"
       f" {'(nav->script)':>14} | {'(script->boot)':>14} |"
       f" {'(boot->init)':>14} | {'(init->open)':>14} |"
       f" {'(sum)':>14} |"
     )
     m_sep = (
-      f"|:{'-' * 16}-|-{'-' * 14}:|-{'-' * 14}:|-{'-' * 14}:"
+      f"|:{'-' * 20}-|-{'-' * 14}:|-{'-' * 14}:|-{'-' * 14}:"
       f"|-{'-' * 14}:|-{'-' * 14}:|-{'-' * 14}:|"
     )
     print(m_header)
@@ -299,7 +312,7 @@ def print_summary_tables(results: List[Dict]) -> None:
     print(m_sep)
     for r in results:
       mode = r["mode"]
-      tot = r.get("mean_ms") or 0.0
+      tot = r.get("init_mean_ms") or 0.0
       ss = r.get("script_start_ms") or 0.0
       br = r.get("bootstrap_received_ms") or 0.0
       ci = r.get("client_init_ms") or 0.0
@@ -312,7 +325,7 @@ def print_summary_tables(results: List[Dict]) -> None:
       panel_open = max(0.0, po - ci) if (po > 0 and ci > 0) else 0.0
 
       print(
-        f"| {mode:<16} | {f'{host_overhead:.1f} ms':>14} |"
+        f"| {mode:<20} | {f'{host_overhead:.1f} ms':>14} |"
         f" {f'{guest_load:.1f} ms':>14} | {f'{bootstrap:.1f} ms':>14} |"
         f" {f'{client_init:.1f} ms':>14} | {f'{panel_open:.1f} ms':>14} |"
         f" {f'{tot:.1f} ms':>14} |"
@@ -330,12 +343,14 @@ def main():
     "-n",
     "--iterations",
     type=int,
-    default=25,
-    help="Number of iterations per mode (default: 25)",
+    default=5,
+    help="Number of iterations per mode (default: 5)",
   )
   parser.add_argument(
     "-C",
     "--outdir",
+    "--out-dir",
+    dest="outdir",
     default="out/Default",
     help="Build output directory for tools/autotest.py (default: out/Default)",
   )
@@ -345,15 +360,43 @@ def main():
     action="store_true",
     help="Show iteration progress as tests run",
   )
+  parser.add_argument(
+    "--prod",
+    action="store_true",
+    help="Run against production https://gemini.google.com/glic",
+  )
+  parser.add_argument(
+    "--url",
+    type=str,
+    default=None,
+    help="Run against a custom Glic guest URL",
+  )
+  parser.add_argument(
+    "--modes",
+    type=str,
+    default=None,
+    help="Comma-separated list of modes to run (default: all)",
+  )
   args = parser.parse_args()
 
+  modes = (
+    [m.strip() for m in args.modes.split(",") if m.strip()]
+    if args.modes
+    else ALL_MODES
+  )
+
+  target_str = (
+    f" [url={args.url}]"
+    if args.url
+    else (" [prod=https://gemini.google.com/glic]" if args.prod else "")
+  )
   print(
-    f"=== Running Glic Initialization Benchmark "
-    f"({len(ALL_MODES)} modes, {args.iterations} iterations each) ==="
+    f"=== Running Glic Initialization Benchmark [{args.outdir}]{target_str} "
+    f"({len(modes)} modes, {args.iterations} iterations each) ==="
   )
 
   results = []
-  for mode in ALL_MODES:
+  for mode in modes:
     print(f"\n[{mode}] Running {args.iterations} iterations...", flush=True)
     cmd = [
       "tools/autotest.py",
@@ -364,27 +407,34 @@ def main():
       "--gtest_filter="
       f"All/GlicInitializationBenchmark.MeasureInitializationTime/{mode}",
       "--test-launcher-print-test-stdio=always",
+      "--test-launcher-timeout=180000",
+      "--ui-test-action-max-timeout=180000",
       f"--glic-benchmark-iterations={args.iterations}",
     ]
+    if args.url:
+      cmd.append(f"--glic-benchmark-url={args.url}")
+    elif args.prod:
+      cmd.append("--glic-benchmark-prod")
     output = run_command(cmd, verbose=args.verbose)
     res = parse_results(output, mode)
     results.append(res)
-    if res["mean_ms"] is not None:
+    if res["pres_mean_ms"] is not None:
       warmed_str = (
-        f", time_to_warmed={res['time_to_warmed_ms']:.1f}ms"
+        f" | TimeToWarmed={res['time_to_warmed_ms']:.2f}ms"
         if res.get("time_to_warmed_ms")
         else ""
       )
-      decomp_str = (
-        f", decompress={res['decompress_ms']:.1f}ms"
-        if res["decompress_ms"]
-        else ""
-      )
       print(
-        f"  Done: Mean={res['mean_ms']:.2f}ms"
-        f" (stddev={res['stddev_ms']:.2f}ms),"
-        f" Min={res['min_ms']:.1f}ms,"
-        f" Max={res['max_ms']:.1f}ms{warmed_str}{decomp_str}"
+        f"  Done: Presentation Mean={res['pres_mean_ms']:.2f}ms"
+        f" (stddev={res['pres_stddev_ms']:.2f}ms),"
+        f" Min={res['pres_min_ms']:.1f}ms,"
+        f" Max={res['pres_max_ms']:.1f}ms |"
+        f" Total Init Mean={res['init_mean_ms']:.2f}ms{warmed_str}"
+      )
+    elif res["init_mean_ms"] is not None:
+      print(
+        f"  Done: Init Mean={res['init_mean_ms']:.2f}ms"
+        f" (stddev={res['init_stddev_ms']:.2f}ms)"
       )
     else:
       print(f"  Warning: Could not parse results for {mode}")

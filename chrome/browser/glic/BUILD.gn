@@ -1125,6 +1125,7 @@ source_set("browser_tests") {
       "//chrome/browser/permissions:test_support",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
+      "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/skills",
       "//chrome/browser/skills:ui",
       "//chrome/browser/subscription_eligibility",
