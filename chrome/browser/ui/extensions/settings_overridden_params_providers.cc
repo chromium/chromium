@@ -192,7 +192,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
     const base::Value* secondary_pref =
         extension_prefs_value_map->GetEffectivePrefValue(
-            search_pref_key, profile->IsIncognitoProfile(),
+            search_pref_key, profile->IsPrimaryOTRProfileWithRegularParent(),
             /* from_incognito= */ nullptr,
             /* ignore_extension_id= */ primary_ext_id);
 
