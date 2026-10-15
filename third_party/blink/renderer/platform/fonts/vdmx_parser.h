@@ -33,15 +33,21 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
-bool ParseVDMX(int* ymax,
-               int* ymin,
-               base::span<const uint8_t> vdmx,
-               wtf_size_t target_pixel_size);
+// Parse a TrueType VDMX table.
+//   vdmx: the table bytes
+//   target_pixel_size: the pixel size of the font (e.g. 16)
+//
+// Returns a pair of the ascender value (yMax) and the descender value (yMin)
+// iff a suitable match is found. Otherwise, std::nullopt is returned.
+std::optional<std::pair<int, int>> ParseVdmx(base::span<const uint8_t> vdmx,
+                                             wtf_size_t target_pixel_size);
 
 }  // namespace blink
 

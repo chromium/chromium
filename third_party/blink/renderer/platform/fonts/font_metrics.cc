@@ -88,9 +88,12 @@ void FontMetrics::AscentDescentWithHacks(
         // SAFETY: FastMalloc allocated vdmx_size bytes for vdmx_table.
         auto vdmx_span = UNSAFE_BUFFERS(base::span(vdmx_table, vdmx_size));
         if (face->getTableData(kVdmxTag, 0, vdmx_size, vdmx_table) ==
-                vdmx_size &&
-            ParseVDMX(&vdmx_ascent, &vdmx_descent, vdmx_span, pixel_size)) {
-          is_vdmx_valid = true;
+            vdmx_size) {
+          if (auto max_min = ParseVdmx(vdmx_span, pixel_size)) {
+            vdmx_ascent = max_min->first;
+            vdmx_descent = max_min->second;
+            is_vdmx_valid = true;
+          }
         }
         Partitions::FastFree(vdmx_table);
       }

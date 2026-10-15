@@ -48,53 +48,42 @@ namespace blink {
 // needed in order to match font metrics on Windows.
 //
 // Freetype does not parse these tables so we do so here.
-
-// Parse a TrueType VDMX table.
-//   y_max: (output) the ascender value from the table
-//   y_min: (output) the descender value from the table (negative!)
-//   vdmx: the table bytes
-//   target_pixel_size: the pixel size of the font (e.g. 16)
 //
-// Returns true iff a suitable match is found. Otherwise, *y_max and *y_min are
-// untouched. size_t must be 32-bits to avoid overflow.
-//
-// See http://www.microsoft.com/opentype/otspec/vdmx.htm
-bool ParseVDMX(int* y_max,
-               int* y_min,
-               base::span<const uint8_t> vdmx,
-               wtf_size_t target_pixel_size) {
+// See https://learn.microsoft.com/en-us/typography/opentype/spec/vdmx
+std::optional<std::pair<int, int>> ParseVdmx(base::span<const uint8_t> vdmx,
+                                             wtf_size_t target_pixel_size) {
   // We ignore the version. Future tables should be backwards compatible with
   // this layout.
   uint16_t num_ratios;
   {
     auto reader = base::SpanReader(vdmx);
     if (!reader.Skip(4u) || !reader.ReadU16BigEndian(num_ratios)) {
-      return false;
+      return std::nullopt;
     }
   }
 
-  const size_t ratios_offset = 6u;  // Bytes read so far.
+  const size_t kRatiosOffset = 6u;  // Bytes read so far.
+  const size_t kRatioRecordSize = 4u;
 
   // Now we have two tables. Firstly we have @numRatios Ratio records, then a
   // matching array of @numRatios offsets. We save the offset of the beginning
   // of this second table.
   //
   // Range 6 <= x <= 262146
-  size_t offset_table_offset =
-      ratios_offset + 4u /* sizeof struct ratio */ * num_ratios;
+  size_t offset_table_offset = kRatiosOffset + kRatioRecordSize * num_ratios;
 
-  wtf_size_t desired_ratio = 0xffffffff;
+  wtf_size_t desired_ratio = kNotFound;
   // We read 4 bytes per record, so the offset range is
   //   6 <= x <= 524286
   {
-    auto reader = base::SpanReader(vdmx.subspan(ratios_offset));
+    auto reader = base::SpanReader(vdmx.subspan(kRatiosOffset));
     for (wtf_size_t i = 0; i < num_ratios; ++i) {
       uint8_t x_ratio, y_ratio1, y_ratio2;
 
       if (!reader.Skip(1u) || !reader.ReadU8BigEndian(x_ratio) ||
           !reader.ReadU8BigEndian(y_ratio1) ||
           !reader.ReadU8BigEndian(y_ratio2)) {
-        return false;
+        return std::nullopt;
       }
 
       // This either covers 1:1, or this is the default entry (0, 0, 0)
@@ -105,8 +94,9 @@ bool ParseVDMX(int* y_max,
       }
     }
   }
-  if (desired_ratio == 0xffffffff)  // no ratio found
-    return false;
+  if (desired_ratio == kNotFound) {
+    return std::nullopt;
+  }
 
   uint16_t group_offset;
   {
@@ -114,7 +104,7 @@ bool ParseVDMX(int* y_max,
     const size_t offset_of_group_offset =
         offset_table_offset + sizeof(uint16_t) * desired_ratio;
     if (offset_of_group_offset + sizeof(uint16_t) > vdmx.size()) {
-      return false;
+      return std::nullopt;
     }
     // Now we read from the offset table to get the offset of another array.
     group_offset = base::U16FromBigEndian(
@@ -129,7 +119,7 @@ bool ParseVDMX(int* y_max,
     uint16_t num_records;
     if (!reader.ReadU16BigEndian(num_records) ||
         !reader.Skip(sizeof(uint16_t))) {
-      return false;
+      return std::nullopt;
     }
 
     // We read 6 bytes per record, so the offset range is
@@ -137,29 +127,27 @@ bool ParseVDMX(int* y_max,
     for (wtf_size_t i = 0; i < num_records; ++i) {
       uint16_t pixel_size;
       if (!reader.ReadU16BigEndian(pixel_size)) {
-        return false;
+        return std::nullopt;
       }
       // the entries are sorted, so we can abort early if need be
       if (pixel_size > target_pixel_size) {
-        return false;
+        return std::nullopt;
       }
 
       if (pixel_size == target_pixel_size) {
-        int16_t temp_y_max, temp_y_min;
-        if (!reader.ReadI16BigEndian(temp_y_max) ||
-            !reader.ReadI16BigEndian(temp_y_min)) {
-          return false;
+        int16_t y_max, y_min;
+        if (!reader.ReadI16BigEndian(y_max) ||
+            !reader.ReadI16BigEndian(y_min)) {
+          return std::nullopt;
         }
-        *y_min = temp_y_min;
-        *y_max = temp_y_max;
-        return true;
+        return std::make_pair(y_max, y_min);
       } else if (!reader.Skip(2 * sizeof(int16_t))) {
-        return false;
+        return std::nullopt;
       }
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 }  // namespace blink
