@@ -7,11 +7,9 @@
 #include <optional>
 
 #include "base/auto_reset.h"
-#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,12 +42,6 @@ namespace omnibox {
 const void* kOmniboxWebUIPopupWidgetId = &kOmniboxWebUIPopupWidgetId;
 }
 
-namespace {
-
-bool g_ignore_browser_window_presentation_for_testing = false;
-
-}  // namespace
-
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxPopupPresenterBase,
                                       kRoundedResultsFrame);
 
@@ -74,7 +66,6 @@ OmniboxPopupPresenterBase::~OmniboxPopupPresenterBase() {
 }
 
 void OmniboxPopupPresenterBase::Show() {
-  EnsureWebUIContentCreated();
   if (IsShown()) {
     // If a re-entrant `Show()` occurs while the widget is still visible but
     // WebContents was set to hidden by a preceding `Hide()`, ensure it is woken
@@ -440,71 +431,6 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIPopupHideOnCreation)) {
     Hide();
   }
-}
-
-void OmniboxPopupPresenterBase::EnsureWebUIContentCreated() {
-  if (GetWebUIContent()) {
-    return;
-  }
-  // Covers `CreateWebUIContent()`, which creates the WebContents and starts
-  // its navigation.
-  TRACE_EVENT("omnibox", "OmniboxPopupPresenterBase::EnsureWebUIContentCreated",
-              "prefix", GetPopupMetricPrefix());
-  std::unique_ptr<OmniboxPopupWebUIBaseContent> content = CreateWebUIContent();
-  if (!content) {
-    // Every production presenter either sets its content in its constructor
-    // or overrides `CreateWebUIContent()`. Only unit-test presenters without
-    // WebUI content get here.
-    CHECK_IS_TEST();
-    return;
-  }
-  SetWebUIContent(std::move(content));
-}
-
-std::unique_ptr<OmniboxPopupWebUIBaseContent>
-OmniboxPopupPresenterBase::CreateWebUIContent() {
-  return nullptr;
-}
-
-// static
-base::AutoReset<bool>
-OmniboxPopupPresenterBase::IgnoreBrowserWindowPresentationForTesting() {
-  return base::AutoReset<bool>(
-      &g_ignore_browser_window_presentation_for_testing, true);
-}
-
-void OmniboxPopupPresenterBase::
-    CreateWebUIContentAfterBrowserWindowPresentation() {
-  views::Widget* widget = delegate().GetLocationBarWidget();
-  ui::Compositor* compositor = widget ? widget->GetCompositor() : nullptr;
-  if (!compositor) {
-    // `Show()` and the other callers of `EnsureWebUIContentCreated()` still
-    // create the content when they need it.
-    return;
-  }
-  // A successful-presentation callback is kept across failed presentations
-  // until a frame is presented (see
-  // `cc::PresentationTimeCallbackBuffer::PopPendingCallbacks()`), so it runs
-  // once the window is shown. A window that is created hidden or minimized
-  // runs it when it is first shown.
-  compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      base::IgnoreArgs<const viz::FrameTimingDetails&>(
-          base::BindOnce(&OmniboxPopupPresenterBase::OnBrowserWindowPresented,
-                         weak_factory_.GetWeakPtr())));
-}
-
-void OmniboxPopupPresenterBase::OnBrowserWindowPresented() {
-  if (g_ignore_browser_window_presentation_for_testing ||
-      deferred_creation_scheduled_ || GetWebUIContent()) {
-    return;
-  }
-  deferred_creation_scheduled_ = true;
-  // Post rather than create inline, so that the WebContents is not created
-  // inside the presentation feedback callback.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OmniboxPopupPresenterBase::EnsureWebUIContentCreated,
-                     weak_factory_.GetWeakPtr()));
 }
 
 bool OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide() const {

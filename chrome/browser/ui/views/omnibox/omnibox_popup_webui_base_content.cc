@@ -306,12 +306,9 @@ void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
   // profiles.
   auto* aim_presenter =
       popup_presenter_->delegate().GetOmniboxPopupAimPresenter();
-  if (!aim_presenter) {
+  if (!aim_presenter || !aim_presenter->GetWebUIContent()) {
     return;
   }
-  // The AI Mode popup's content may not exist yet with
-  // `omnibox::kOmniboxAimPopupDeferCreation`.
-  aim_presenter->EnsureWebUIContentCreated();
   ConvertPointToScreen(this, &point);
   context_menu_ = std::make_unique<OmniboxContextMenu>(
       GetWidget(), popup_presenter_->delegate().GetOmniboxPopupFileSelector(),

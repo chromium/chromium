@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -25,15 +24,8 @@ OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     OmniboxController* controller,
     OmniboxPopupPresenterDelegate& presenter_delegate)
     : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
-  // With `omnibox::kOmniboxAimPopupDeferCreation`, the content is created by
-  // the first `EnsureWebUIContentCreated()` call instead. It comes from the
-  // task posted after the browser window presents a frame, from `Show()`, or
-  // from the classic popup's context menu, which needs the AIM WebContents.
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxAimPopupDeferCreation)) {
-    CreateWebUIContentAfterBrowserWindowPresentation();
-  } else {
-    SetWebUIContent(CreateWebUIContent());
-  }
+  SetWebUIContent(std::make_unique<OmniboxAimPopupWebUIContent>(
+      this, location_bar, controller));
 }
 
 OmniboxPopupAimPresenter::~OmniboxPopupAimPresenter() = default;
@@ -61,12 +53,6 @@ void OmniboxPopupAimPresenter::Hide() {
 
 std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
   return OmniboxPopupPresenterBase::kAimPopupMetricPrefix;
-}
-
-std::unique_ptr<OmniboxPopupWebUIBaseContent>
-OmniboxPopupAimPresenter::CreateWebUIContent() {
-  return std::make_unique<OmniboxAimPopupWebUIContent>(this, location_bar(),
-                                                       controller());
 }
 
 void OmniboxPopupAimPresenter::LogResultToContentReadyMetric(

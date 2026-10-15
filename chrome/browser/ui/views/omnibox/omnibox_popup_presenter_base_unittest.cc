@@ -5,12 +5,9 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,24 +42,6 @@ class TestShadowOmniboxPopupPresenter : public TestOmniboxPopupPresenter {
   using TestOmniboxPopupPresenter::TestOmniboxPopupPresenter;
 
   bool ShouldDrawShadowInWebUI() const override { return true; }
-};
-
-// Presenter that defers its content and never creates it, so that each
-// creation attempt can be counted.
-class TestCountingDeferredPresenter : public TestOmniboxPopupPresenter {
- public:
-  using TestOmniboxPopupPresenter::TestOmniboxPopupPresenter;
-
-  int create_count() const { return create_count_; }
-
- protected:
-  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent() override {
-    ++create_count_;
-    return nullptr;
-  }
-
- private:
-  int create_count_ = 0;
 };
 
 class TestDeferredOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
@@ -163,14 +142,6 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
 
   int GetContentHeight(OmniboxPopupPresenterBase* presenter) {
     return presenter->content_height_;
-  }
-
-  // Runs the tasks posted to the current thread so far.
-  void RunPostedTasks() {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 };
 
@@ -472,20 +443,4 @@ TEST_F(OmniboxPopupPresenterBaseTest, RedundantHideDoesNotDiscardWidget) {
 
   EXPECT_NE(presenter_->GetWidget(), nullptr);
   EXPECT_FALSE(presenter_->IsShown());
-}
-
-// Repeated browser window presentations before the creation task runs post
-// only that one task, and none of them creates the content inline.
-TEST_F(OmniboxPopupPresenterBaseTest, BrowserWindowPresentationPostsOneTask) {
-  auto presenter = std::make_unique<TestCountingDeferredPresenter>(
-      nullptr, dummy_delegate_, controller_.get());
-
-  presenter->OnBrowserWindowPresented();
-  presenter->OnBrowserWindowPresented();
-  EXPECT_EQ(presenter->create_count(), 0);
-  RunPostedTasks();
-  presenter->OnBrowserWindowPresented();
-  RunPostedTasks();
-
-  EXPECT_EQ(presenter->create_count(), 1);
 }
