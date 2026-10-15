@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_payment_method_delegate.h"
+#include "components/autofill/core/browser/metrics/autocomplete_key_metrics_logger.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
@@ -119,6 +120,8 @@ class BrowserAutofillManager : public AutofillManager {
     autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
     autofill_metrics::LoyaltyCardFormEventLogger loyalty_card_form_event_logger;
     autofill_metrics::OtpFormEventLogger otp_form_event_logger;
+    autofill_metrics::AutocompleteKeyMetricsLogger
+        autocomplete_key_metrics_logger;
 
     // Have we logged whether Autofill is enabled for this page load?
     bool has_logged_autofill_enabled = false;

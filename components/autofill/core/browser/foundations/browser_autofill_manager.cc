@@ -986,6 +986,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
 
+  metrics_->autocomplete_key_metrics_logger.OnFormSubmitted(form);
+
   if (!submitted_form) {
     // We always give Autocomplete a chance to save the data.
     if (!client().IsOffTheRecord()) {
@@ -2346,6 +2348,9 @@ void BrowserAutofillManager::DidShowSuggestions(
     }
   }
 
+  metrics_->autocomplete_key_metrics_logger.OnSuggestionsShown(field_id,
+                                                               suggestions);
+
   if (shown_suggestion_types.contains(SuggestionType::kIbanEntry) &&
       client().GetPaymentsAutofillClient()->GetIbanManager()) {
     client()
@@ -2489,6 +2494,9 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const FieldGlobalId& field_id) {
   client().GetSingleFieldFillRouter().OnSingleFieldSuggestionSelected(
       suggestion);
+
+  metrics_->autocomplete_key_metrics_logger.OnSuggestionSelected(field_id,
+                                                                 suggestion);
 
   auto [form_structure, autofill_trigger_field] =
       FindMutableFormAndField(form_id, field_id);

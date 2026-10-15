@@ -1027,6 +1027,66 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autocomplete.KeyMetrics.FillingAcceptance{MatchingType}"
+    enum="BooleanAutofillFillingAcceptance" expires_after="2027-02-14">
+  <owner>mikhe@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, for each field in a submitted form, whether the user accepted an
+    autocomplete suggestion or not, provided that autocomplete suggestions were
+    shown for that field. For the per-matching-type variants, a sample is
+    emitted for each distinct matching type shown on the field: true is recorded
+    only for the matching type of the accepted suggestion, while false is
+    recorded for all other matching types that were also shown on that field. If
+    the user accepts suggestions multiple times on the same field before
+    submission, only the last accepted suggestion's matching type is recorded as
+    accepted. Recorded on form submission regardless of whether the form was
+    parsed (e.g. also for single-field forms), and also in Incognito mode,
+    consistent with Autocomplete.Events3. {MatchingType}
+  </summary>
+  <token key="MatchingType">
+    <variant name="" summary="Recorded across all matching types."/>
+    <variant name=".BothNameAndLabel"
+        summary="Recorded for fields where suggestions matching by both name
+                 and label were shown."/>
+    <variant name=".Label"
+        summary="Recorded for fields where suggestions matching by label were
+                 shown."/>
+    <variant name=".Name"
+        summary="Recorded for fields where suggestions matching by name were
+                 shown."/>
+  </token>
+</histogram>
+
+<histogram name="Autocomplete.KeyMetrics.FillingCorrectness{MatchingType}"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2027-02-14">
+  <owner>mikhe@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, for each field on which an autocomplete suggestion was accepted and
+    filled in a submitted form, whether the field's value at submission still
+    matches the filled value without manual edits. No sample is recorded for
+    fields where no autocomplete suggestion was accepted. If the user accepts
+    suggestions multiple times on the same field before submission, correctness
+    is evaluated against the last accepted suggestion's value and matching type.
+    Recorded on form submission regardless of whether the form was parsed (e.g.
+    also for single-field forms), and also in Incognito mode, consistent with
+    Autocomplete.Events3. {MatchingType}
+  </summary>
+  <token key="MatchingType">
+    <variant name="" summary="Recorded across all matching types."/>
+    <variant name=".BothNameAndLabel"
+        summary="Recorded for fields where a suggestion matching by both name
+                 and label was accepted."/>
+    <variant name=".Label"
+        summary="Recorded for fields where a suggestion matching by label was
+                 accepted."/>
+    <variant name=".Name"
+        summary="Recorded for fields where a suggestion matching by name was
+                 accepted."/>
+  </token>
+</histogram>
+
 <histogram name="Autocomplete.{MatchingType}BasedSuggestions"
     enum="AutocompleteEvents" expires_after="2027-02-14">
   <owner>mikhe@google.com</owner>

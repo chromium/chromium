@@ -135,6 +135,7 @@
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
@@ -5548,6 +5549,112 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
     histogram_tester.ExpectTotalCount(
         kTypeHistogram + "ServerOrHeuristics." + suffix, 4);
   }
+}
+
+// Tests that Autocomplete.KeyMetrics.FillingAcceptance and FillingCorrectness
+// are emitted correctly on form submission.
+TEST_F(BrowserAutofillManagerTest, AutocompleteKeyMetrics) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillLabelSensitiveAutocomplete};
+
+  FormData form = test::GetFormData({
+      .fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}},
+  });
+  FormsSeen({form});
+  ASSERT_GE(form.fields().size(), 2u);
+
+  auto create_suggestion = [](const std::u16string& value,
+                              MatchingType matching_type) {
+    Suggestion suggestion(value, SuggestionType::kAutocompleteEntry);
+    suggestion.payload = AutocompleteSearchResultLabelSensitive(
+        value, matching_type, /*query_name=*/u"name", /*query_label=*/u"label",
+        /*count=*/1, /*date_last_used=*/base::Time::Now());
+    return suggestion;
+  };
+
+  // Field 0: Shown Name and Label suggestions. Select Name ("Alice").
+  std::vector<Suggestion> field0_suggestions = {
+      create_suggestion(u"Alice", MatchingType::kName),
+      create_suggestion(u"Alison", MatchingType::kLabel),
+  };
+  autofill_manager().DidShowSuggestions(field0_suggestions, /*metadata=*/{},
+                                        form.global_id(),
+                                        form.fields()[0].global_id(), {});
+  autofill_manager().OnSingleFieldSuggestionSelected(
+      field0_suggestions[0], form.global_id(), form.fields()[0].global_id());
+
+  // Field 1: Shown Label suggestion. User does not select it.
+  std::vector<Suggestion> field1_suggestions = {
+      create_suggestion(u"Smith", MatchingType::kLabel),
+  };
+  autofill_manager().DidShowSuggestions(field1_suggestions, /*metadata=*/{},
+                                        form.global_id(),
+                                        form.fields()[1].global_id(), {});
+
+  // Field 0 is submitted without edits ("Alice").
+  test_api(form).field(0).set_value(u"Alice");
+  test_api(form).field(1).set_value(u"Jones");
+
+  base::HistogramTester histogram_tester;
+  FormSubmitted(form);
+
+  // Field 0 accepted (true), Field 1 ignored (false) -> total has 1 true, 1
+  // false.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autocomplete.KeyMetrics.FillingAcceptance"),
+              BucketsAre(Bucket(false, 1), Bucket(true, 1)));
+
+  // Name was shown on Field 0 and accepted -> 1 true.
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingAcceptance.Name", true, 1);
+
+  // Label was shown on Field 0 (not accepted) and Field 1 (not accepted) -> 2
+  // false.
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingAcceptance.Label", false, 2);
+
+  // Field 0 was accepted and submitted without edits -> Correctness is true.
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingCorrectness", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingCorrectness.Name", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autocomplete.KeyMetrics.FillingCorrectness.Label", 0);
+}
+
+// Tests that Autocomplete.KeyMetrics are emitted even when the submitted form
+// was not parsed into a cached FormStructure.
+TEST_F(BrowserAutofillManagerTest,
+       AutocompleteKeyMetrics_WithoutFormStructure) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillLabelSensitiveAutocomplete};
+
+  // Single-field form where FormsSeen() is not called, so there is no cached
+  // FormStructure and ValidateSubmittedForm() returns nullptr.
+  FormData form = test::GetFormData({.fields = {{}}});
+  Suggestion suggestion(u"Alice", SuggestionType::kAutocompleteEntry);
+  suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"Alice", MatchingType::kName, /*query_name=*/u"name",
+      /*query_label=*/u"label", /*count=*/1,
+      /*date_last_used=*/base::Time::Now());
+
+  base::HistogramTester histogram_tester;
+  autofill_manager().DidShowSuggestions({suggestion}, /*metadata=*/{},
+                                        form.global_id(),
+                                        form.fields()[0].global_id(), {});
+  autofill_manager().OnSingleFieldSuggestionSelected(
+      suggestion, form.global_id(), form.fields()[0].global_id());
+  test_api(form).field(0).set_value(u"Alice");
+  FormSubmitted(form);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingAcceptance", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingAcceptance.Name", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingCorrectness", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.KeyMetrics.FillingCorrectness.Name", true, 1);
 }
 
 // Test that we don't treat javascript scheme target URLs as mixed forms.
