@@ -32,7 +32,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "skia/ext/skia_utils_ios.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/color_palette.h"
 #import "ui/gfx/image/image.h"
@@ -116,11 +115,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     // Prevent the text from overlapping the clear text button.
     // (crbug.com/1403031)
     self.textInputView.clipsToBounds = YES;
-
-    // Disable drag on iPhone because there's nowhere to drag to
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-      self.textDragInteraction.enabled = NO;
-    }
 
     // Force initial layout of internal text label.  Needed for omnibox
     // animations that will otherwise animate the text label from origin {0, 0}.
