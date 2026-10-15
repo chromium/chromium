@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
@@ -168,6 +169,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.tabs.TabAlert;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -175,6 +177,7 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -7360,6 +7363,23 @@ public class StripLayoutHelperTest {
         // Notify that the tab was removed from the model, then finish animations.
         stripLayoutHelper.tabClosed(closingTab);
         stripLayoutHelper.finishAnimations();
+    }
+
+    @Test
+    public void testHandleLinkDrop_opensNewTabAtEnd() {
+        initializeTest(/* tabIndex= */ 0);
+        int expectedIndex = mModel.getCount();
+
+        mStripLayoutHelper.handleLinkDrop(/* xDp= */ 100f, JUnitTestGURLs.EXAMPLE_URL);
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(
+                        captor.capture(),
+                        eq(TabLaunchType.FROM_CHROME_UI),
+                        isNull(),
+                        eq(expectedIndex));
+        assertEquals(JUnitTestGURLs.EXAMPLE_URL.getSpec(), captor.getValue().getUrl());
     }
 
     private class TestTabRemover implements TabRemover {

@@ -31,6 +31,7 @@ public class DragDropMetricUtils {
         DragDropType.TAB_STRIP_TO_NEW_INSTANCE,
         DragDropType.LINK_TO_NEW_INSTANCE,
         DragDropType.UNKNOWN_TO_NEW_INSTANCE,
+        DragDropType.LINK_TO_TAB_STRIP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DragDropType {
@@ -39,7 +40,8 @@ public class DragDropMetricUtils {
         int TAB_STRIP_TO_NEW_INSTANCE = 2;
         int LINK_TO_NEW_INSTANCE = 3;
         int UNKNOWN_TO_NEW_INSTANCE = 4;
-        int NUM_ENTRIES = 5;
+        int LINK_TO_TAB_STRIP = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /**

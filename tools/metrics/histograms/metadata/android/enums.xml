@@ -1369,6 +1369,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="TAB_STRIP_TO_NEW_INSTANCE"/>
   <int value="3" label="LINK_TO_NEW_INSTANCE"/>
   <int value="4" label="UNKNOWN_TO_NEW_INSTANCE"/>
+  <int value="5" label="LINK_TO_TAB_STRIP"/>
 </enum>
 
 <!-- LINT.IfChange(DroppedSequenceEventAndDownTimeDelta) -->

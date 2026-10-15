@@ -2297,8 +2297,8 @@ chromium-metrics-reviews@google.com.
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
-    Records the drag source and drop target when a {TabObjectType} is dropped
-    successfully.
+    Records the drag source and drop target when a {TabObjectType} or a link is
+    dropped successfully. Link drops are recorded under the Tab variant.
   </summary>
   <token key="TabObjectType" variants="TabObjectType"/>
 </histogram>

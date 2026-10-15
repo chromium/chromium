@@ -436,6 +436,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabDragShadowBuilder.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabReorderStrategy.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabStripDragHandler.java",
+  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/TabStripLinkDragDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/StaticResourcePreloads.java",
   "java/src/org/chromium/chrome/browser/compositor/resources/SystemResourcePreloads.java",
   "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",

@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -142,13 +143,16 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabAlert;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.StyleUtils;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -5806,6 +5810,48 @@ public class StripLayoutHelper
     // ============================================================================================
     // Drag and Drop View Delegate.
     // ============================================================================================
+
+    /**
+     * Handles a link drag entering the tab strip.
+     *
+     * @param xDp The x-coordinate of the drag event in dp.
+     */
+    public void handleLinkDragEnter(float xDp) {
+        // TODO(crbug.com/568820678): Show the drop indicator.
+    }
+
+    /**
+     * Handles a link drag moving within the tab strip.
+     *
+     * @param xDp The x-coordinate of the drag event in dp.
+     */
+    public void handleLinkDragWithin(float xDp) {
+        // TODO(crbug.com/568820678): Update the drop indicator.
+    }
+
+    /** Handles a link drag leaving the tab strip or ending. */
+    public void handleLinkDragExit() {
+        // TODO(crbug.com/568820678): Hide the drop indicator.
+    }
+
+    /**
+     * Handles a link dropped onto the tab strip by opening it in a new, selected tab at the end of
+     * the strip.
+     *
+     * @param xDp The x-coordinate of the drop event in dp.
+     * @param url The URL extracted from the drop data.
+     */
+    public void handleLinkDrop(float xDp, GURL url) {
+        // TODO(crbug.com/568820678): Use xDp to insert at, or load into, the tab under the drop.
+        if (mModel == null || mTabCreator == null) return;
+        // Use FROM_CHROME_UI rather than FROM_LINK, which ignores the index and opens the tab next
+        // to the current tab.
+        mTabCreator.createNewTab(
+                new LoadUrlParams(url, PageTransition.LINK),
+                TabLaunchType.FROM_CHROME_UI,
+                /* parent= */ null,
+                mModel.getCount());
+    }
 
     public void handleDragEnter(
             float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
