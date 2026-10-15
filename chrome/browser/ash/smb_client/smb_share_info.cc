@@ -20,8 +20,10 @@ SmbShareInfo::SmbShareInfo(const SmbUrl& share_url,
       workgroup_(workgroup),
       use_kerberos_(use_kerberos),
       password_salt_(password_salt) {
-  CHECK(share_url_.IsValid(), base::NotFatalUntil::M160);
-  CHECK(!display_name.empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/573528876): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(share_url_.IsValid());
+  DCHECK(!display_name.empty());
 }
 
 SmbShareInfo::~SmbShareInfo() = default;
