@@ -74,6 +74,9 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
                                         const SensorReading& rhs,
                                         mojom::SensorType sensor_type);
 
+  // Returns true if this is a virtual (emulated) sensor with synthetic data.
+  virtual bool IsVirtual() const;
+
   mojom::SensorType GetType() const;
 
   bool StartListening(Client* client,

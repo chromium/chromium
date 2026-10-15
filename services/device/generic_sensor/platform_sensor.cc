@@ -94,6 +94,10 @@ bool PlatformSensor::StopListening(Client* client) {
   return UpdateSensorInternal(config_map_);
 }
 
+bool PlatformSensor::IsVirtual() const {
+  return false;
+}
+
 void PlatformSensor::UpdateSensor() {
   UpdateSensorInternal(config_map_);
 }

@@ -639,7 +639,7 @@ TEST_F(FrameSensorProviderProxyTest,
 }
 
 TEST_F(FrameSensorProviderProxyTest,
-       GetSensor_VirtualSensor_BypassesSuspension) {
+       GetSensor_VirtualSensorDoesNotBypassFrameSuspension) {
   NavigateAndCommit(GURL("https://google.com"));
 
   // Ensure main frame is focused initially.
@@ -674,13 +674,14 @@ TEST_F(FrameSensorProviderProxyTest,
   ASSERT_TRUE(fake_sensor);
   EXPECT_FALSE(fake_sensor->is_browser_suspended());
 
-  // Hiding the WebContents does NOT suspend the virtual sensor.
+  // FrameSensorProviderProxy enforces a strict frame lifecycle boundary and
+  // suspends all controllers on visibility loss. Virtual sensor immunity is
+  // handled in services/device.
   web_contents()->WasHidden();
-  base::test::TestFuture<void> flush_future_virtual;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, flush_future_virtual.GetCallback());
-  EXPECT_TRUE(flush_future_virtual.Wait());
-  EXPECT_FALSE(fake_sensor->is_browser_suspended());
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(true));
+
+  web_contents()->WasShown();
+  EXPECT_TRUE(fake_sensor->WaitForBrowserSuspend(false));
 }
 }  // namespace
 }  // namespace content

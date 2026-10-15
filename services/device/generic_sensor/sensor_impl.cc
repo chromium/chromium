@@ -136,6 +136,9 @@ void SensorImpl::OnSensorError() {
 }
 
 bool SensorImpl::IsSuspended() {
+  if (sensor_->IsVirtual()) {
+    return client_suspended_;
+  }
   return client_suspended_ || controller_suspended_;
 }
 

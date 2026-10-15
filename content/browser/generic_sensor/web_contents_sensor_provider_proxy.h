@@ -68,10 +68,6 @@ class CONTENT_EXPORT WebContentsSensorProviderProxy final
   void AddObserver(Observer*);
   void RemoveObserver(Observer*);
 
-  bool HasVirtualSensors() const {
-    return !virtual_sensor_types_for_devtools_.empty();
-  }
-
  private:
   friend class ScopedVirtualSensorForDevTools;
 

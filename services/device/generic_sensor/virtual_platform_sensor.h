@@ -61,6 +61,7 @@ class VirtualPlatformSensor : public PlatformSensor {
 
  private:
   // PlatformSensor overrides.
+  bool IsVirtual() const override;
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;
   void StopSensor() override;
   mojom::ReportingMode GetReportingMode() override;

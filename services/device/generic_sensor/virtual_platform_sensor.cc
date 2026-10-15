@@ -53,6 +53,10 @@ void VirtualPlatformSensor::SimulateSensorRemoval() {
   NotifySensorError();
 }
 
+bool VirtualPlatformSensor::IsVirtual() const {
+  return true;
+}
+
 bool VirtualPlatformSensor::StartSensor(
     const PlatformSensorConfiguration& optimal_configuration) {
   const bool is_already_running = optimal_configuration_.has_value();

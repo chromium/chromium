@@ -133,6 +133,13 @@ PlatformSensorFusion::~PlatformSensorFusion() {
     pair.second->RemoveClient(this);
 }
 
+bool PlatformSensorFusion::IsVirtual() const {
+  return !source_sensors_.empty() &&
+         std::ranges::all_of(source_sensors_, [](const auto& pair) {
+           return pair.second && pair.second->IsVirtual();
+         });
+}
+
 mojom::ReportingMode PlatformSensorFusion::GetReportingMode() {
   return reporting_mode_;
 }

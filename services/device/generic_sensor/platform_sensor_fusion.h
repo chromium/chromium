@@ -47,6 +47,7 @@ class PlatformSensorFusion : public PlatformSensor,
   PlatformSensorFusion& operator=(const PlatformSensorFusion&) = delete;
 
   // PlatformSensor:
+  bool IsVirtual() const override;
   mojom::ReportingMode GetReportingMode() override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
   bool CheckSensorConfiguration(

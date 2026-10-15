@@ -340,19 +340,6 @@ bool FrameSensorProviderProxy::ShouldSuspendSensors() const {
     return true;
   }
 
-  // Virtual / emulated sensors created via DevTools or WPT test_driver bypass
-  // visibility and focus requirements so that DevTools inspection or running
-  // tests in headless test runners (e.g. mac-rel headless_shell) does not
-  // freeze emulated sensor streams.
-  auto* web_contents_proxy =
-      WebContentsSensorProviderProxy::FromWebContents(web_contents());
-  bool is_virtual_sensor =
-      web_contents_proxy && web_contents_proxy->HasVirtualSensors();
-
-  if (is_virtual_sensor) {
-    return false;
-  }
-
   // Suspend hardware sensors if not strictly visible (covers HIDDEN and
   // OCCLUDED).
   if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
