@@ -4,30 +4,14 @@
 
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature.h"
 
-// static
-JavaScriptConsoleFeature* JavaScriptConsoleFeatureFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<JavaScriptConsoleFeature>(
-      profile, /*create=*/true);
-}
-
-// static
-JavaScriptConsoleFeatureFactory*
-JavaScriptConsoleFeatureFactory::GetInstance() {
-  static base::NoDestructor<JavaScriptConsoleFeatureFactory> instance;
-  return instance.get();
-}
-
-JavaScriptConsoleFeatureFactory::JavaScriptConsoleFeatureFactory()
-    : ProfileKeyedServiceFactoryIOS("JavaScriptConsoleFeature",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-JavaScriptConsoleFeatureFactory::~JavaScriptConsoleFeatureFactory() = default;
+JavaScriptConsoleFeatureFactory::JavaScriptConsoleFeatureFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "JavaScriptConsoleFeature",
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 JavaScriptConsoleFeatureFactory::BuildServiceInstanceFor(

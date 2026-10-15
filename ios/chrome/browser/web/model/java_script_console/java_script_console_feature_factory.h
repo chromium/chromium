@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class JavaScriptConsoleFeature;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature.h"
 
 // Singleton that owns all JavaScriptConsoleFeatures and associates them with
 // a profile.
-class JavaScriptConsoleFeatureFactory : public ProfileKeyedServiceFactoryIOS {
+class JavaScriptConsoleFeatureFactory
+    : public TypedProfileKeyedServiceFactoryIOS<JavaScriptConsoleFeatureFactory,
+                                                JavaScriptConsoleFeature> {
  public:
-  static JavaScriptConsoleFeatureFactory* GetInstance();
-  static JavaScriptConsoleFeature* GetForProfile(ProfileIOS* profile);
+  explicit JavaScriptConsoleFeatureFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<JavaScriptConsoleFeatureFactory>;
-
-  JavaScriptConsoleFeatureFactory();
-  ~JavaScriptConsoleFeatureFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
