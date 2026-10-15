@@ -74,11 +74,6 @@ class TtcActuationHandler {
                     actor::ActorTaskStoppedReason::kTaskComplete);
 
  private:
-  struct ActiveActuation {
-    ActuationCallback callback;
-    std::string call_id;
-  };
-
   // Handles completion of `ActorService::PerformActions`.
   void OnPerformActionsFinished(actor::ActorTaskId task_id,
                                 actor::PerformActionsResult result);
@@ -98,7 +93,7 @@ class TtcActuationHandler {
   std::map<actor::ActorTaskId, web::WebStateID> task_to_web_state_id_map_;
 
   // Active actuation callbacks awaiting completion, keyed by task ID.
-  std::map<actor::ActorTaskId, ActiveActuation> active_callbacks_;
+  std::map<actor::ActorTaskId, ActuationCallback> active_callbacks_;
 
   // Intervention delegate used for Actor tasks created by this handler.
   TtcTaskInterventionHandler* intervention_delegate_ = nil;

@@ -229,20 +229,18 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestBatch) {
 // Tests TtcActuationResponse initialization and field access.
 TEST_F(TtcToolValidatorTest, TestTtcActuationResponse) {
   TtcActuationResponse response(actor::mojom::ActionResultCode::kOk,
-                                std::string(), "call_123");
+                                std::string());
 
   EXPECT_EQ(response.result_code, actor::mojom::ActionResultCode::kOk);
   EXPECT_TRUE(response.error_message.empty());
-  EXPECT_EQ(response.call_id, "call_123");
 
   TtcActuationResponse error_response(
-      actor::mojom::ActionResultCode::kArgumentsInvalid, "Something went wrong",
-      "call_error");
+      actor::mojom::ActionResultCode::kArgumentsInvalid,
+      "Something went wrong");
 
   EXPECT_EQ(error_response.result_code,
             actor::mojom::ActionResultCode::kArgumentsInvalid);
   EXPECT_EQ(error_response.error_message, "Something went wrong");
-  EXPECT_EQ(error_response.call_id, "call_error");
 }
 
 // Tests TtcActuationRequest batch call IDs accessor.

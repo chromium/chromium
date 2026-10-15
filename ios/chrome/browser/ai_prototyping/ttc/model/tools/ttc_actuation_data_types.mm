@@ -41,11 +41,8 @@ std::optional<std::string> TtcActuationRequest::call_id() const {
 
 TtcActuationResponse::TtcActuationResponse(
     actor::mojom::ActionResultCode result_code,
-    std::string error_message,
-    std::string call_id)
-    : result_code(result_code),
-      error_message(std::move(error_message)),
-      call_id(std::move(call_id)) {}
+    std::string error_message)
+    : result_code(result_code), error_message(std::move(error_message)) {}
 
 TtcActuationResponse::TtcActuationResponse(const TtcActuationResponse&) =
     default;

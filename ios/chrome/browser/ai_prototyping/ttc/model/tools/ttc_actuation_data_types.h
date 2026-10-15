@@ -43,8 +43,7 @@ struct TtcActuationRequest {
 // Encapsulates the execution response for a `TtcActuationRequest`.
 struct TtcActuationResponse {
   TtcActuationResponse(actor::mojom::ActionResultCode result_code,
-                       std::string error_message,
-                       std::string call_id);
+                       std::string error_message);
   TtcActuationResponse(const TtcActuationResponse&);
   TtcActuationResponse& operator=(const TtcActuationResponse&);
   TtcActuationResponse(TtcActuationResponse&&);
@@ -56,9 +55,6 @@ struct TtcActuationResponse {
 
   // Descriptive error message if the actuation failed, or empty on success.
   std::string error_message;
-
-  // Correlation identifier matching the request's `call_id`.
-  std::string call_id;
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_ACTUATION_DATA_TYPES_H_

@@ -163,7 +163,6 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestTaskWentAway) {
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
             response.result_code);
-  EXPECT_EQ(response.call_id, "call_123");
   handler->Disconnect();
 }
 
@@ -181,7 +180,6 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestEmptyActionProtos) {
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kEmptyActionSequence,
             response.result_code);
-  EXPECT_EQ(response.call_id, "call_empty");
   handler->Disconnect();
 }
 
@@ -210,11 +208,9 @@ TEST_F(TtcActuationHandlerTest,
   const TtcActuationResponse& response2 = future2.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kExecutionEngineExistingAction,
             response2.result_code);
-  EXPECT_EQ(response2.call_id, "call_2");
 
   const TtcActuationResponse& response1 = future1.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response1.result_code);
-  EXPECT_EQ(response1.call_id, "call_1");
   handler->Disconnect();
 }
 
@@ -233,7 +229,6 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestMalformedProto) {
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kArgumentsInvalid,
             response.result_code);
-  EXPECT_EQ(response.call_id, "call_malformed");
   handler->Disconnect();
 }
 
@@ -253,7 +248,6 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestSuccess) {
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.result_code);
-  EXPECT_EQ(response.call_id, "call_ok");
   handler->Disconnect();
 }
 
@@ -275,7 +269,6 @@ TEST_F(TtcActuationHandlerTest,
 
   const TtcActuationResponse& first_response = first_future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, first_response.result_code);
-  EXPECT_EQ(first_response.call_id, "call_seq_1");
 
   // Dispatch a second actuation using the exact same task ID.
   auto second_request_result = TtcToolValidator::CreateActuationRequest(
@@ -288,7 +281,6 @@ TEST_F(TtcActuationHandlerTest,
 
   const TtcActuationResponse& second_response = second_future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, second_response.result_code);
-  EXPECT_EQ(second_response.call_id, "call_seq_2");
 
   handler->Disconnect();
 }
@@ -314,7 +306,6 @@ TEST_F(TtcActuationHandlerTest, TestStopTask) {
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
             response.result_code);
-  EXPECT_EQ(response.call_id, "call_after_stop");
 
   handler->Disconnect();
 }
@@ -340,7 +331,6 @@ TEST_F(TtcActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
             response.result_code);
-  EXPECT_EQ(response.call_id, "call_inflight_stop");
 
   handler->Disconnect();
 }
@@ -373,7 +363,6 @@ TEST_F(TtcActuationHandlerTest,
 
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.result_code);
-  EXPECT_EQ(response.call_id, "call_close_bg_tab");
 
   // Verify background tab 456 was closed and active tab 123 remains open.
   EXPECT_EQ(1, browser_->GetWebStateList()->count());
@@ -423,7 +412,7 @@ TEST_F(TtcActuationHandlerTest, TestDisconnectCancelsActiveTasks) {
 }
 
 // Tests that disconnecting while an actuation is in-flight fails the pending
-// callback with kExecutorDestroyed and preserves call_id.
+// callback with `kExecutorDestroyed`.
 TEST_F(TtcActuationHandlerTest,
        TestDisconnectDuringInFlightActuationFailsCallback) {
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
@@ -444,7 +433,6 @@ TEST_F(TtcActuationHandlerTest,
   const TtcActuationResponse& response = future.Get();
   EXPECT_EQ(actor::mojom::ActionResultCode::kExecutorDestroyed,
             response.result_code);
-  EXPECT_EQ(response.call_id, "call_inflight_disconnect");
 }
 
 // Tests that multiple Disconnect calls are idempotent and safe.

@@ -171,15 +171,13 @@ void TtcActuationHandler::Disconnect() {
 
   task_to_web_state_id_map_.clear();
 
-  std::map<actor::ActorTaskId, ActiveActuation> callbacks =
+  std::map<actor::ActorTaskId, ActuationCallback> callbacks =
       std::exchange(active_callbacks_, {});
-  for (auto& [task_id, actuation] : callbacks) {
-    if (actuation.callback) {
-      std::move(actuation.callback)
-          .Run(TtcActuationResponse(
-              actor::mojom::ActionResultCode::kExecutorDestroyed,
-              kActuationHandlerDisconnectedMessage,
-              std::move(actuation.call_id)));
+  for (auto& [task_id, callback] : callbacks) {
+    if (callback) {
+      std::move(callback).Run(TtcActuationResponse(
+          actor::mojom::ActionResultCode::kExecutorDestroyed,
+          kActuationHandlerDisconnectedMessage));
     }
   }
   journal_.reset();
@@ -223,26 +221,25 @@ void TtcActuationHandler::DispatchActuationRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
 
-  std::string call_id = request.call_id().value_or(std::string());
   auto task_it = task_to_web_state_id_map_.find(task_id);
   if (!actor_service_ || task_it == task_to_web_state_id_map_.end()) {
-    std::move(callback).Run(TtcActuationResponse(
-        actor::mojom::ActionResultCode::kTaskWentAway,
-        kTaskNotActiveOrStoppedMessage, std::move(call_id)));
+    std::move(callback).Run(
+        TtcActuationResponse(actor::mojom::ActionResultCode::kTaskWentAway,
+                             kTaskNotActiveOrStoppedMessage));
     return;
   }
 
   if (request.action_protos.empty()) {
     std::move(callback).Run(TtcActuationResponse(
         actor::mojom::ActionResultCode::kEmptyActionSequence,
-        kEmptyActionSequenceMessage, std::move(call_id)));
+        kEmptyActionSequenceMessage));
     return;
   }
 
   if (active_callbacks_.find(task_id) != active_callbacks_.end()) {
     std::move(callback).Run(TtcActuationResponse(
         actor::mojom::ActionResultCode::kExecutionEngineExistingAction,
-        kConcurrentActionSequenceMessage, std::move(call_id)));
+        kConcurrentActionSequenceMessage));
     return;
   }
 
@@ -255,7 +252,7 @@ void TtcActuationHandler::DispatchActuationRequest(
     if (!action.ParseFromString(proto_bytes)) {
       std::move(callback).Run(TtcActuationResponse(
           actor::mojom::ActionResultCode::kArgumentsInvalid,
-          kFailedToParseActionProtoMessage, std::move(call_id)));
+          kFailedToParseActionProtoMessage));
       return;
     }
     InjectDataIntoAction(action, web_state_id,
@@ -263,10 +260,7 @@ void TtcActuationHandler::DispatchActuationRequest(
     actions.push_back(std::move(action));
   }
 
-  active_callbacks_[task_id] = {
-      std::move(callback),
-      std::move(call_id),
-  };
+  active_callbacks_[task_id] = std::move(callback);
 
   actor_service_->PerformActions(
       task_id, actions, request.task_update,
@@ -286,13 +280,12 @@ void TtcActuationHandler::StopTask(actor::ActorTaskId task_id,
 
   auto callback_it = active_callbacks_.find(task_id);
   if (callback_it != active_callbacks_.end()) {
-    ActiveActuation actuation = std::move(callback_it->second);
+    ActuationCallback callback = std::move(callback_it->second);
     active_callbacks_.erase(callback_it);
-    if (actuation.callback) {
-      std::move(actuation.callback)
-          .Run(TtcActuationResponse(
-              actor::mojom::ActionResultCode::kTaskWentAway,
-              kTaskNotActiveOrStoppedMessage, std::move(actuation.call_id)));
+    if (callback) {
+      std::move(callback).Run(
+          TtcActuationResponse(actor::mojom::ActionResultCode::kTaskWentAway,
+                               kTaskNotActiveOrStoppedMessage));
     }
   }
 
@@ -312,7 +305,7 @@ void TtcActuationHandler::OnPerformActionsFinished(
   if (it == active_callbacks_.end()) {
     return;
   }
-  ActiveActuation actuation = std::move(it->second);
+  ActuationCallback callback = std::move(it->second);
   active_callbacks_.erase(it);
 
   actor::mojom::ActionResultCode result_code =
@@ -328,10 +321,9 @@ void TtcActuationHandler::OnPerformActionsFinished(
     }
   }
 
-  if (actuation.callback) {
-    std::move(actuation.callback)
-        .Run(TtcActuationResponse(result_code, std::move(error_message),
-                                  std::move(actuation.call_id)));
+  if (callback) {
+    std::move(callback).Run(
+        TtcActuationResponse(result_code, std::move(error_message)));
   }
 }
 
