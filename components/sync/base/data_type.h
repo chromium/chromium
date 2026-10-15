@@ -352,6 +352,8 @@ inline constexpr DataTypeSet AlwaysPreferredUserTypes() {
           SKILL,
           AI_THREAD,
           GEMINI_THREAD,
+          ENCRYPTED_TAB_CONTEXT_CONTAINER,
+          ENCRYPTED_TAB_CONTEXT_ITEM,
           AUTOFILL_ENTITY_SUPPRESSION};
 }
 

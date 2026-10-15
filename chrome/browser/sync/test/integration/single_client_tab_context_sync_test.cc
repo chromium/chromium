@@ -94,12 +94,8 @@ class SingleClientTabContextSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientTabContextSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncEncryptedTabContextContainer};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_overrides_.InitWithFeatures(enabled_features, {});
+    feature_overrides_.InitAndEnableFeature(
+        syncer::kSyncEncryptedTabContextContainer);
   }
 
   SingleClientTabContextSyncTest(const SingleClientTabContextSyncTest&) =
