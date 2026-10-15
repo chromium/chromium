@@ -7,11 +7,14 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bits.h"
 #include "base/check.h"
@@ -170,6 +173,19 @@ class HeapDumper {
 
       super_pages_.emplace(super_page, std::move(local_super_page));
     }
+
+    uintptr_t table_addr = reinterpret_cast<uintptr_t>(
+        root_.get()->GetReservationOffsetTable().GetData());
+    reservation_offset_table_.resize(internal::kMaxSuperPagesInPool);
+    if (!table_addr ||
+        !reader_.ReadMemory(
+            table_addr, internal::kMaxSuperPagesInPool * sizeof(uint16_t),
+            reinterpret_cast<char*>(reservation_offset_table_.data()))) {
+      LOG(WARNING) << base::StringPrintf(
+          "Cannot read ReservationOffsetTable at 0x%lx", table_addr);
+      reservation_offset_table_.clear();
+    }
+
     LOG(WARNING) << "Read all super pages";
     return !super_pages_.empty();
   }
@@ -411,6 +427,28 @@ class HeapDumper {
     return ret;
   }
 
+  base::DictValue DumpGigacage() const {
+    base::DictValue ret;
+    if (super_pages_.empty() || reservation_offset_table_.empty()) {
+      return ret;
+    }
+    uintptr_t pool_base =
+        super_pages_.begin()->first & ~(internal::kPoolMaxSize - 1);
+
+    base::ListValue superpages;
+    for (uint16_t val : reservation_offset_table_) {
+      superpages.Append(
+          val == internal::ReservationOffsetTable::kOffsetTagNotAllocated
+              ? "free"
+          : val == internal::ReservationOffsetTable::kOffsetTagNormalBuckets
+              ? "normal"
+              : "direct_mapped");
+    }
+    ret.Set("pool_base", base::StringPrintf("0x%lx", pool_base));
+    ret.Set("superpages", std::move(superpages));
+    return ret;
+  }
+
  private:
   const PartitionPageMetadata* GetPartitionPageMetadata(
       uintptr_t address) const {
@@ -452,6 +490,7 @@ class HeapDumper {
   RemoteProcessMemoryReader reader_;
   RawBuffer<PartitionRoot> root_ = {};
   std::map<uintptr_t, std::unique_ptr<char[]>> super_pages_ = {};
+  std::vector<uint16_t> reservation_offset_table_ = {};
 };
 
 }  // namespace partition_alloc::tools
@@ -485,6 +524,7 @@ int main(int argc, char** argv) {
 
   base::DictValue overall_dump;
   overall_dump.Set("superpages", dumper.Dump());
+  overall_dump.Set("gigacage", dumper.DumpGigacage());
 
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   overall_dump.Set("allocated_sizes", dumper.DumpAllocatedSizes());
