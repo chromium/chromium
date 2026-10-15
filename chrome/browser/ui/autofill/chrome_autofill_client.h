@@ -236,6 +236,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void TriggerAtMemoryPersonalizationAndTrustSurvey(
       bool is_dismissed,
       const HatsSurveyStringData& product_specific_data) final;
+  void TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
+      const HatsSurveyStringData& product_specific_data) final;
   bool IsTabInActorMode() const final;
   ActorAutofillManager* GetActorAutofillManager() final;
   int64_t GetNavigationId() const final;

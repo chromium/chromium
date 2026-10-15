@@ -1044,6 +1044,25 @@ void ChromeAutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey(
   }
 }
 
+void ChromeAutofillClient::
+    TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
+        const HatsSurveyStringData& product_specific_data) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  hats_service->LaunchSurvey(
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordDismissed,
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing(),
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/product_specific_data);
+}
+
 bool ChromeAutofillClient::IsTabInActorMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return actor_autofill_manager_ && actor_autofill_manager_->IsTabInActorMode();

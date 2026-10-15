@@ -287,6 +287,10 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, OpenGmailForOtps, (), (override));
   MOCK_METHOD(void, OpenGeminiInSidebar, (const std::u16string&), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
+  MOCK_METHOD(void,
+              TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey,
+              (const HatsSurveyStringData&),
+              (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(IdentityCredentialDelegate*,
               GetIdentityCredentialDelegate,
@@ -1812,6 +1816,48 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(autofill_manager(), OnSuggestionsHidden(reason));
 
   external_delegate().OnSuggestionsHidden(reason);
+}
+
+// Tests that a HaT survey is triggered when dismissing a popup without
+// accepting one of the shown OTP suggestions.
+TEST_F(AutofillExternalDelegateTest,
+       PersonalizationAndTrustSurvey_OtpDismissal) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey};
+  IssueOnQuery();
+
+  OnSuggestionsReturned(queried_field(),
+                        {Suggestion(SuggestionType::kOneTimePasswordEntry)});
+
+  EXPECT_CALL(autofill_client(),
+              TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
+                  HatsSurveyStringData{
+                      {"GIC opt-in accepted", "false"},
+                      {"Origin of the website (eTLD+1)", "example.test"},
+                      {"OTP type", "SMS"},
+                      {"Personal Intelligence available", "true"},
+                      {"Type of dismissal", "User dismissed"}}));
+
+  external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kUserAborted);
+}
+
+// Tests that no OTP dismissal HaT survey is triggered when accepting an OTP
+// suggestion.
+TEST_F(AutofillExternalDelegateTest,
+       PersonalizationAndTrustSurvey_NoDismissalSurvey_OnOtpFilling) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey};
+  IssueOnQuery();
+
+  OnSuggestionsReturned(queried_field(),
+                        {Suggestion(SuggestionType::kOneTimePasswordEntry)});
+
+  EXPECT_CALL(autofill_client(),
+              TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey)
+      .Times(0);
+
+  external_delegate().OnSuggestionsHidden(
+      SuggestionHidingReason::kAcceptSuggestion);
 }
 
 // Tests that the Autofill delegate fills a form with a VCN when a suggestion

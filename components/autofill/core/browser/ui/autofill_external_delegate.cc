@@ -77,6 +77,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -721,6 +722,10 @@ void AutofillExternalDelegate::OnSuggestionsHidden(
   if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
     amm->OnPopupHidden(reason);
   }
+
+  MaybeTriggerOneTimePasswordDismissalHatsSurvey(manager_->client(), reason,
+                                                 shown_suggestion_types_);
+
   manager_->OnSuggestionsHidden(reason);
 }
 

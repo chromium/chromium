@@ -89,47 +89,6 @@ constexpr std::array<int, 3> kFetchingStringIds = std::to_array<int>({
     IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER,
 });
 
-std::string_view SuggestionHidingReasonToDismissalTypeForHats(
-    SuggestionHidingReason reason) {
-  switch (reason) {
-    case SuggestionHidingReason::kTabGone:
-    case SuggestionHidingReason::kFocusChanged:
-    case SuggestionHidingReason::kEndEditing:
-    case SuggestionHidingReason::kSearchBarFocusLost:
-    case SuggestionHidingReason::kNoFrameHasFocus:
-      return "Focus lost, tab hidden or tab closed";
-    case SuggestionHidingReason::kContentAreaMoved:
-    case SuggestionHidingReason::kElementOutsideOfContentArea:
-    case SuggestionHidingReason::kWidgetChanged:
-    case SuggestionHidingReason::kInsufficientSpace:
-      return "Window resized, page zoomed or insufficient space";
-    case SuggestionHidingReason::kRendererEvent:
-    case SuggestionHidingReason::kAttachInterstitialPage:
-    case SuggestionHidingReason::kFieldValueChanged:
-      return "Page scrolled, navigated or field/DOM changed";
-    case SuggestionHidingReason::kUserAborted:
-      return "User dismissed";
-    case SuggestionHidingReason::kOverlappingWithAnotherPrompt:
-    case SuggestionHidingReason::kOverlappingWithPasswordGenerationPopup:
-    case SuggestionHidingReason::kOverlappingWithTouchToFillSurface:
-    case SuggestionHidingReason::kOverlappingWithAutofillContextMenu:
-    case SuggestionHidingReason::kOverlappingWithPictureInPictureWindow:
-    case SuggestionHidingReason::kContextMenuOpened:
-      return "Overlapped by another UI surface or menu";
-    case SuggestionHidingReason::kAcceptSuggestion:
-      return "Suggestion accepted";
-    case SuggestionHidingReason::kNoSuggestions:
-    case SuggestionHidingReason::kStaleData:
-    case SuggestionHidingReason::kViewDestroyed:
-    case SuggestionHidingReason::kMouseLocked:
-    case SuggestionHidingReason::kExpandedSuggestionCollapsedSubPopup:
-    case SuggestionHidingReason::kFadeTimerExpired:
-    case SuggestionHidingReason::kHiddenByCaller:
-      return "Other";
-  }
-  NOTREACHED();
-}
-
 // Returns the primary type name label for `entry`. For AutofillAi
 // entities and attributes, this resolves to the Entity name.
 std::u16string GetSuggestionPrimaryTypeName(const MemorySearchResult& entry) {

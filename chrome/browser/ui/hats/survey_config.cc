@@ -873,6 +873,19 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_product_specific_data);
   survey_configs.emplace_back(
+      &::autofill::features::
+          kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordDismissed,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      with_client_context_psd_fields({
+          // Description of how the OTP suggestion popup was dismissed.
+          "Type of dismissal",
+          // Source of the OTP offer that was dismissed (e.g. Gmail, SMS).
+          "OTP type",
+      }));
+  survey_configs.emplace_back(
       &password_manager::features::
           kAutofillPersonalizationAndTrustPasswordSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled,

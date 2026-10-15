@@ -16,6 +16,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -48,6 +50,17 @@ std::string FormatCountForHats(int count, int limit);
 // trust surveys.
 HatsSurveyStringData CollectPersonalizationAndTrustClientContextData(
     const AutofillClient& client);
+
+// Translates `reason` to a user-facing dismissal description for HaTS.
+std::string_view SuggestionHidingReasonToDismissalTypeForHats(
+    SuggestionHidingReason reason);
+
+// If the conditions of a HaTS survey for dismissing OTP offers are satisfied,
+// try to trigger the survey.
+void MaybeTriggerOneTimePasswordDismissalHatsSurvey(
+    AutofillClient& client,
+    SuggestionHidingReason reason,
+    base::span<const SuggestionType> shown_types);
 
 // Keeps track of the most recent user interactions in the context of
 // `AutofillAiManager`. This information is used for collecting the

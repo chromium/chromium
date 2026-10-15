@@ -273,6 +273,85 @@ HatsSurveyStringData CollectPersonalizationAndTrustClientContextData(
   };
 }
 
+std::string_view SuggestionHidingReasonToDismissalTypeForHats(
+    SuggestionHidingReason reason) {
+  switch (reason) {
+    case SuggestionHidingReason::kTabGone:
+    case SuggestionHidingReason::kFocusChanged:
+    case SuggestionHidingReason::kEndEditing:
+    case SuggestionHidingReason::kSearchBarFocusLost:
+    case SuggestionHidingReason::kNoFrameHasFocus:
+      return "Focus lost, tab hidden or tab closed";
+    case SuggestionHidingReason::kContentAreaMoved:
+    case SuggestionHidingReason::kElementOutsideOfContentArea:
+    case SuggestionHidingReason::kWidgetChanged:
+    case SuggestionHidingReason::kInsufficientSpace:
+      return "Window resized, page zoomed or insufficient space";
+    case SuggestionHidingReason::kRendererEvent:
+    case SuggestionHidingReason::kAttachInterstitialPage:
+    case SuggestionHidingReason::kFieldValueChanged:
+      return "Page scrolled, navigated or field/DOM changed";
+    case SuggestionHidingReason::kUserAborted:
+      return "User dismissed";
+    case SuggestionHidingReason::kOverlappingWithAnotherPrompt:
+    case SuggestionHidingReason::kOverlappingWithPasswordGenerationPopup:
+    case SuggestionHidingReason::kOverlappingWithTouchToFillSurface:
+    case SuggestionHidingReason::kOverlappingWithAutofillContextMenu:
+    case SuggestionHidingReason::kOverlappingWithPictureInPictureWindow:
+    case SuggestionHidingReason::kContextMenuOpened:
+      return "Overlapped by another UI surface or menu";
+    case SuggestionHidingReason::kAcceptSuggestion:
+      return "Suggestion accepted";
+    case SuggestionHidingReason::kNoSuggestions:
+    case SuggestionHidingReason::kStaleData:
+    case SuggestionHidingReason::kViewDestroyed:
+    case SuggestionHidingReason::kMouseLocked:
+    case SuggestionHidingReason::kExpandedSuggestionCollapsedSubPopup:
+    case SuggestionHidingReason::kFadeTimerExpired:
+    case SuggestionHidingReason::kHiddenByCaller:
+      return "Other";
+  }
+  NOTREACHED();
+}
+
+void MaybeTriggerOneTimePasswordDismissalHatsSurvey(
+    AutofillClient& client,
+    SuggestionHidingReason reason,
+    base::span<const SuggestionType> shown_types) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey) ||
+      reason == SuggestionHidingReason::kAcceptSuggestion) {
+    return;
+  }
+
+  const std::string_view otp_type = [&]() {
+    const bool has_gmail = std::ranges::contains(
+        shown_types, SuggestionType::kGmailOneTimePasswordEntry);
+    const bool has_sms = std::ranges::contains(
+        shown_types, SuggestionType::kOneTimePasswordEntry);
+    if (has_gmail && has_sms) {
+      return "Gmail and SMS";
+    } else if (has_gmail) {
+      return "Gmail";
+    } else if (has_sms) {
+      return "SMS";
+    }
+    return "";
+  }();
+  if (otp_type.empty()) {
+    return;
+  }
+
+  HatsSurveyStringData survey_data = {
+      {"Type of dismissal",
+       std::string(SuggestionHidingReasonToDismissalTypeForHats(reason))},
+      {"OTP type", std::string(otp_type)}};
+  survey_data.merge(CollectPersonalizationAndTrustClientContextData(client));
+
+  client.TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
+      survey_data);
+}
+
 RecentUserAutofillAiInteractionsForHats::
     RecentUserAutofillAiInteractionsForHats() = default;
 RecentUserAutofillAiInteractionsForHats::

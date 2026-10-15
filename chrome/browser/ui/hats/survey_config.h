@@ -197,6 +197,9 @@ inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordFilled[] =
         "autofill-personalization-and-trust-one-time-password-filled";
 inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordDismissed
+        [] = "autofill-personalization-and-trust-one-time-password-dismissed";
+inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled[] =
         "autofill-personalization-and-trust-password-filled";
 inline constexpr char

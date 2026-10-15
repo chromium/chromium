@@ -730,6 +730,11 @@ class AutofillClient {
       bool is_dismissed,
       const HatsSurveyStringData& product_specific_data);
 
+  // Triggers a survey to ask the user about their experience regarding
+  // dismissed OTP suggestions.
+  virtual void TriggerOneTimePasswordDismissalPersonalizationAndTrustSurvey(
+      const HatsSurveyStringData& product_specific_data);
+
   // Returns whether there is an active actor task for this client's tab (if
   // one exists).
   virtual bool IsTabInActorMode() const;
