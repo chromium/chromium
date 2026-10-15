@@ -86,7 +86,22 @@ public interface ActorForegroundServiceController {
     default void restoreActiveWindowBackgroundTabs(
             TabModelSelector selector,
             WindowAndroid window,
-            TabDelegateFactory tabDelegateFactory) {}
+            TabDelegateFactory tabDelegateFactory) {
+        restoreActiveWindowBackgroundTabs(
+                selector,
+                window,
+                tabDelegateFactory,
+                /* waitDurationMs= */ 0,
+                /* isColdStart= */ false);
+    }
+
+    /** Restores active window background tabs when activity starts or receives intent. */
+    default void restoreActiveWindowBackgroundTabs(
+            TabModelSelector selector,
+            WindowAndroid window,
+            TabDelegateFactory tabDelegateFactory,
+            long waitDurationMs,
+            boolean isColdStart) {}
 
     /** Handles cleanup when a message-triggered task is stopped for a context ID. */
     default void onMessageTriggerTaskStopped(String contextId) {}

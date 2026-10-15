@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.List;
 import java.util.Set;
 
 /** Android implementation of {@link ActorForegroundServiceController}. */
@@ -147,21 +146,17 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
     public void restoreActiveWindowBackgroundTabs(
             TabModelSelector selector,
             WindowAndroid window,
-            TabDelegateFactory tabDelegateFactory) {
+            TabDelegateFactory tabDelegateFactory,
+            long waitDurationMs,
+            boolean isColdStart) {
         ThreadUtils.assertOnUiThread();
         if (mBackgroundActuationManager == null) return;
         int activeWindowId =
                 TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
         if (activeWindowId == TabWindowManager.INVALID_WINDOW_ID) return;
 
-        List<BackgroundSession> sessionsToRemove =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
-                        selector,
-                        activeWindowId,
-                        window,
-                        mBackgroundActuationManager.getBackgroundSessions(),
-                        tabDelegateFactory);
-        mBackgroundActuationManager.removeBackgroundSessions(sessionsToRemove);
+        mBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                selector, activeWindowId, window, tabDelegateFactory, waitDurationMs, isColdStart);
     }
 
     @Override

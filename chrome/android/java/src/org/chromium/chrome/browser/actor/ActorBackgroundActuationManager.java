@@ -10,11 +10,14 @@ import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -437,6 +440,66 @@ public class ActorBackgroundActuationManager {
     }
 
     /**
+     * Restores background tabs belonging to the active window context from the manager's active
+     * background sessions and removes any fully restored sessions.
+     *
+     * @param selector The TabModelSelector of the active foreground window.
+     * @param activeWindowId The WindowId of the active foreground window.
+     * @param window The WindowAndroid instance of the active foreground window.
+     * @param tabDelegateFactory The delegate factory for the foreground window.
+     * @param waitDurationMs Time in milliseconds spent waiting for tab state initialization.
+     * @param isColdStart Whether tab state was uninitialized when restoration was requested.
+     * @return True if at least one background tab was restored into the foreground window.
+     */
+    public boolean restoreActiveWindowBackgroundTabs(
+            TabModelSelector selector,
+            int activeWindowId,
+            WindowAndroid window,
+            TabDelegateFactory tabDelegateFactory,
+            long waitDurationMs,
+            boolean isColdStart) {
+        return restoreTabsForWindow(
+                        selector,
+                        activeWindowId,
+                        window,
+                        mBackgroundSessions,
+                        tabDelegateFactory,
+                        waitDurationMs,
+                        isColdStart)
+                > 0;
+    }
+
+    private int restoreTabsForWindow(
+            TabModelSelector selector,
+            int activeWindowId,
+            WindowAndroid window,
+            List<BackgroundSession> targetSessions,
+            TabDelegateFactory tabDelegateFactory,
+            long waitDurationMs,
+            boolean isColdStart) {
+        long startTimeMs = TimeUtils.uptimeMillis();
+        List<BackgroundSession> sessionsToRemove = new ArrayList<>();
+        int restoredTabCount =
+                restoreActiveWindowBackgroundTabsInternal(
+                        selector,
+                        activeWindowId,
+                        window,
+                        targetSessions,
+                        tabDelegateFactory,
+                        sessionsToRemove);
+        mBackgroundSessions.removeAll(sessionsToRemove);
+        if (restoredTabCount > 0) {
+            long restoreDurationMs = TimeUtils.uptimeMillis() - startTimeMs;
+            if (isColdStart) {
+                ActorMetrics.recordWaitForTabStateInitializedLatency(waitDurationMs);
+            }
+            ActorMetrics.recordTotalRestoreLatency(
+                    (isColdStart ? waitDurationMs : 0) + restoreDurationMs, isColdStart);
+        }
+        return restoredTabCount;
+    }
+
+    /**
      * Restores background tabs belonging to the active window context from the given sessions.
      *
      * <p>Note: This method is kept here in {@code //chrome/android:chrome_java} rather than in
@@ -453,22 +516,43 @@ public class ActorBackgroundActuationManager {
      * @param tabDelegateFactory The delegate factory for the foreground window.
      * @return List of BackgroundSession instances that have been completely restored.
      */
-    public static List<BackgroundSession> restoreActiveWindowBackgroundTabs(
+    @VisibleForTesting
+    public static List<BackgroundSession> restoreActiveWindowBackgroundTabsForTesting(
             TabModelSelector selector,
             int activeWindowId,
             WindowAndroid window,
             List<BackgroundSession> backgroundSessions,
             TabDelegateFactory tabDelegateFactory) {
+        List<BackgroundSession> sessionsToRemove = new ArrayList<>();
+        restoreActiveWindowBackgroundTabsInternal(
+                selector,
+                activeWindowId,
+                window,
+                backgroundSessions,
+                tabDelegateFactory,
+                sessionsToRemove);
+        return sessionsToRemove;
+    }
+
+    private static int restoreActiveWindowBackgroundTabsInternal(
+            TabModelSelector selector,
+            int activeWindowId,
+            WindowAndroid window,
+            List<BackgroundSession> backgroundSessions,
+            TabDelegateFactory tabDelegateFactory,
+            List<BackgroundSession> sessionsToRemove) {
         ThreadUtils.assertOnUiThread();
         TabModel model = selector.getModel(/* incognito= */ false);
-        if (model == null) return Collections.emptyList();
+        if (model == null) {
+            return 0;
+        }
         Profile profile = model.getProfile();
         if (profile == null || profile.isOffTheRecord()) {
-            return Collections.emptyList();
+            return 0;
         }
 
         BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
-        List<BackgroundSession> sessionsToRemove = new ArrayList<>();
+        int restoredTabCount = 0;
         Set<Integer> usableWindowIds =
                 MultiWindowUtils.getUsableInstanceIds(PersistedInstanceType.ACTIVE);
         try {
@@ -486,7 +570,9 @@ public class ActorBackgroundActuationManager {
                                     || !usableWindowIds.contains(tabWindowId));
 
                     if (shouldRestoreIntoThisWindow) {
-                        restoreSessionTab(tabData, pool, model, window, tabDelegateFactory);
+                        if (restoreSessionTab(tabData, pool, model, window, tabDelegateFactory)) {
+                            restoredTabCount++;
+                        }
                         iterator.remove();
                     }
                 }
@@ -499,21 +585,22 @@ public class ActorBackgroundActuationManager {
             BackgroundTabPoolManager.release(pool);
         }
 
-        return sessionsToRemove;
+        return restoredTabCount;
     }
 
-    private static void restoreSessionTab(
+    private static boolean restoreSessionTab(
             BackgroundSession.BackgroundTabData tabData,
             BackgroundTabPool pool,
             TabModel model,
             WindowAndroid window,
             TabDelegateFactory tabDelegateFactory) {
         Tab originalTab = tabData.getTab();
-        if (originalTab == null) return;
+        if (originalTab == null) return false;
 
         LiveBackgroundTab liveTab = pool.getLiveTab(originalTab.getId());
         if (liveTab != null) {
             liveTab.attachToForeground(model, window, tabDelegateFactory);
+            return true;
         } else if (tabData.getPlaceholderTabId() == null) {
             if (!originalTab.isDestroyed()) {
                 ActorTabStateHelper.restoreSessionTabToForeground(
@@ -523,7 +610,9 @@ public class ActorBackgroundActuationManager {
                         model,
                         window,
                         tabDelegateFactory);
+                return true;
             }
+            return false;
         } else {
             Log.w(
                     TAG,
@@ -533,6 +622,7 @@ public class ActorBackgroundActuationManager {
             if (placeholderId != null) {
                 ActorTabStateHelper.removePlaceholderTab(model, placeholderId);
             }
+            return false;
         }
     }
 
@@ -569,12 +659,15 @@ public class ActorBackgroundActuationManager {
                             .createDefaultTabDelegateFactory();
             if (tabDelegateFactory == null) continue;
 
-            List<BackgroundSession> restoredSessions =
-                    restoreActiveWindowBackgroundTabs(
-                            selector, windowId, windowAndroid, targetSessions, tabDelegateFactory);
-            mBackgroundSessions.removeAll(restoredSessions);
-
-            if (!restoredSessions.isEmpty()) {
+            if (restoreTabsForWindow(
+                            selector,
+                            windowId,
+                            windowAndroid,
+                            targetSessions,
+                            tabDelegateFactory,
+                            /* waitDurationMs= */ 0,
+                            /* isColdStart= */ false)
+                    > 0) {
                 // Synchronously save tab state to disk upon restoring warm background
                 // sessions. When Chrome is in the background or stopped, deferred async saves
                 // may not execute before process or Foreground Service terminates, which
