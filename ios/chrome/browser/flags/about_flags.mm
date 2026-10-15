@@ -1414,8 +1414,7 @@ const FeatureEntry::FeatureVariation kEnterpriseProxyErrorHandlingVariations[] =
 
 const FeatureEntry::FeatureParam
     kEnableAccountPreviewSwitchingAccountSkipCooldownParams[] = {
-        {switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
-         "true"}};
+        {"SkipCooldown", "true"}};
 
 const FeatureEntry::FeatureVariation
     kEnableAccountPreviewSwitchingAccountVariations[] = {
