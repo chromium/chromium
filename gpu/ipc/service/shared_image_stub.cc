@@ -639,6 +639,50 @@ gfx::GpuMemoryBufferHandle SharedImageStub::CreateGpuMemoryBufferHandle(
   return gfx::GpuMemoryBufferHandle();
 }
 
+gfx::GpuMemoryBufferHandle SharedImageStub::CreateSharedImageWithHandle(
+    const Mailbox& mailbox,
+    mojom::SharedImageInfoPtr info,
+    gfx::BufferUsage buffer_usage,
+    const std::optional<SharedImagePoolId>& pool_id) {
+  auto handle_for_client = CreateGpuMemoryBufferHandle(
+      info->meta.size, info->meta.format, buffer_usage);
+  auto handle_for_service = handle_for_client.Clone();
+
+  if (!handle_for_service.is_null()) {
+    CHECK(!handle_for_client.is_null());
+
+    // Clear the external sampler prefs for shared memory case if it is set.
+    // Note that the |si_info.format| is a reference, so any modifications to it
+    // will also be reflected at the place from which this method is called
+    // from. https://issues.chromium.org/339546249.
+    if (info->meta.format.PrefersExternalSampler() &&
+        (handle_for_service.type ==
+         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
+      info->meta.format.ClearPrefersExternalSampler();
+      if (info->meta.alpha_type == kPremul_SkAlphaType) {
+        info->meta.alpha_type = kUnpremul_SkAlphaType;
+      }
+    }
+    auto run_on_main = base::BindOnce(
+        [](base::WeakPtr<SharedImageStub> stub, const Mailbox& mailbox,
+           mojom::SharedImageInfoPtr info, gfx::GpuMemoryBufferHandle handle,
+           std::optional<SharedImagePoolId> pool_id) {
+          if (stub) {
+            stub->CreateSharedImage(
+                mailbox,
+                SharedImageInfo(info->meta, stub->GetLabel(info->debug_label)),
+                std::move(handle), std::move(pool_id));
+          }
+        },
+        weak_factory_.GetWeakPtr(), mailbox, std::move(info),
+        std::move(handle_for_service), pool_id);
+    channel_->scheduler()->ScheduleTask(
+        Scheduler::Task(sequence_, std::move(run_on_main), {}, SyncToken()));
+  }
+
+  return handle_for_client;
+}
+
 bool SharedImageStub::ValidateGpuMemoryBufferHandle(
     const gfx::GpuMemoryBufferHandle& buffer_handle) {
   // Shared memory always allowed.

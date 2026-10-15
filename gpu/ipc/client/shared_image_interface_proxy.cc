@@ -6,6 +6,7 @@
 
 #include <bit>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -21,6 +22,8 @@
 
 namespace gpu {
 namespace {
+
+BASE_FEATURE(kUseCreateSharedImageWithHandle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SafeIncrementAndAlign(size_t aligned_value,
                            size_t increment,
@@ -124,6 +127,53 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     gfx::BufferUsage buffer_usage,
     std::optional<SharedImagePoolId> pool_id,
     gfx::GpuMemoryBufferHandle* handle_to_populate) {
+  if (base::FeatureList::IsEnabled(kUseCreateSharedImageWithHandle)) {
+    auto mailbox = Mailbox::Generate();
+
+    {
+      mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
+      host_->CreateSharedImageWithHandle(
+          mailbox, CreateSharedImageInfo(si_info), buffer_usage,
+          std::move(pool_id), handle_to_populate);
+    }
+
+    if (handle_to_populate->is_null()) {
+      if (!host_->IsLost()) {
+        VLOG(1) << "Buffer handle is null. Not creating a mailbox from it.";
+      }
+      return Mailbox();
+    }
+
+    // Clear the external sampler prefs for shared memory case if it is set.
+    // Note that the |si_info.format| is a reference, so any modifications to it
+    // will also be reflected at the place from which this method is called
+    // from. https://issues.chromium.org/339546249.
+    if (si_info.format.PrefersExternalSampler() &&
+        (handle_to_populate->type ==
+         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
+      si_info.format.ClearPrefersExternalSampler();
+      if (si_info.alpha_type == kPremul_SkAlphaType) {
+        si_info.alpha_type = kUnpremul_SkAlphaType;
+      }
+    }
+
+    base::AutoLock lock(lock_);
+    // Note: we enqueue and send the IPC under the lock to guarantee
+    // monotonicity of the release ids as seen by the service. This will
+    // generate creation sync_token for the shared image, not that we can't
+    // easily bundle it with IPC above, because it needs to be ordered with
+    // deferred messages from other threads and we don't want to hold lock for
+    // the duration of Sync IPC above.
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewNop(0)),
+        /*sync_token_fences=*/{}, ++next_release_id_);
+    host_->EnsureFlush(last_flush_id_);
+
+    AddMailbox(mailbox);
+    return mailbox;
+  }
+
   // Create a GMB here first on IO thread via sync IPC. Then create a mailbox
   // from it.
   {

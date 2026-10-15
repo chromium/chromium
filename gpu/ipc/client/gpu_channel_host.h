@@ -202,6 +202,15 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
                              gfx::BufferUsage buffer_usage,
                              gfx::GpuMemoryBufferHandle* handle);
 
+  // Same as above, but also dispatches creation of the shared image to the gpu
+  // main thread. This is intended replacement for the call above to avoid extra
+  // roundtrips for native buffers. For new code use this instead of above.
+  void CreateSharedImageWithHandle(const Mailbox& mailbox,
+                                   mojom::SharedImageInfoPtr info,
+                                   gfx::BufferUsage buffer_usage,
+                                   std::optional<SharedImagePoolId> pool_id,
+                                   gfx::GpuMemoryBufferHandle* buffer_handle);
+
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBufferAsync(
       const Mailbox& mailbox,

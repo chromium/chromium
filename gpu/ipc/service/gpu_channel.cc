@@ -166,6 +166,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
                              const viz::SharedImageFormat& format,
                              gfx::BufferUsage buffer_usage,
                              CreateGpuMemoryBufferCallback callback) override;
+
+  void CreateSharedImageWithHandle(
+      const Mailbox& mailbox,
+      mojom::SharedImageInfoPtr info,
+      gfx::BufferUsage buffer_usage,
+      const std::optional<SharedImagePoolId>& pool_id,
+      CreateSharedImageWithHandleCallback callback) override;
 #if BUILDFLAG(IS_WIN)
   void CreateDCOMPTexture(
       int32_t route_id,
@@ -438,6 +445,23 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
   if (handle.is_null()) {
     DLOG(ERROR) << "Buffer Handle is null.";
   }
+  std::move(callback).Run(std::move(handle));
+}
+
+void GpuChannelMessageFilter::CreateSharedImageWithHandle(
+    const Mailbox& mailbox,
+    mojom::SharedImageInfoPtr info,
+    gfx::BufferUsage buffer_usage,
+    const std::optional<SharedImagePoolId>& pool_id,
+    CreateSharedImageWithHandleCallback callback) {
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
+  }
+
+  auto handle = gpu_channel_->shared_image_stub()->CreateSharedImageWithHandle(
+      mailbox, std::move(info), buffer_usage, pool_id);
   std::move(callback).Run(std::move(handle));
 }
 

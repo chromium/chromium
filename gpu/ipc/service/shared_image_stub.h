@@ -84,6 +84,11 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
       gfx::BufferUsage buffer_usage);
+  gfx::GpuMemoryBufferHandle CreateSharedImageWithHandle(
+      const Mailbox& mailbox,
+      mojom::SharedImageInfoPtr info,
+      gfx::BufferUsage buffer_usage,
+      const std::optional<SharedImagePoolId>& pool_id);
 
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);

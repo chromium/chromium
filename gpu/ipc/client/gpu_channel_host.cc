@@ -464,6 +464,17 @@ void GpuChannelHost::CreateGpuMemoryBuffer(
                                         buffer_handle);
 }
 
+void GpuChannelHost::CreateSharedImageWithHandle(
+    const Mailbox& mailbox,
+    mojom::SharedImageInfoPtr info,
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id,
+    gfx::GpuMemoryBufferHandle* buffer_handle) {
+  GetGpuChannel().CreateSharedImageWithHandle(mailbox, std::move(info),
+                                              buffer_usage, std::move(pool_id),
+                                              buffer_handle);
+}
+
 void GpuChannelHost::CrashGpuProcessForTesting() {
   GetGpuChannel().CrashForTesting();
 }

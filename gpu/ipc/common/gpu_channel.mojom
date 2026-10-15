@@ -156,6 +156,14 @@ interface GpuChannel {
   viz.mojom.SharedImageFormat format, gfx.mojom.BufferUsage buffer_usage)
   => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
 
+  // Create a GpuMemoryBuffer on IO thread and schedule creation of the
+  // SharedImage from it to the main thread. Note that this needs to be a
+  // blocking call on calling client's thread in order to return the
+  // GpuMemoryBufferHandle before it's used to create client shared image.
+  [Sync] CreateSharedImageWithHandle(Mailbox mailbox, SharedImageInfo info,
+      gfx.mojom.BufferUsage buffer_usage, SharedImagePoolId? pool_id)
+  => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
+
   // Creates a DCOMPTexture and attaches to the provided `route_id`.
   // Note: this `route_id` must not conflict with the routing ids for command
   // buffers or shared image stub. Otherwise, unexpected behaviour can happen
