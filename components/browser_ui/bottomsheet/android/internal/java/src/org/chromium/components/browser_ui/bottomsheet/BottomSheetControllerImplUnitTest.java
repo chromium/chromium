@@ -1523,4 +1523,64 @@ public class BottomSheetControllerImplUnitTest {
                 "handleBackPress should return false when sheet is not open",
                 mController.handleBackPress());
     }
+
+    @Test
+    public void testDoubleHide_AnimatedThenNonAnimated_CleansUpContentQueue() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        assertTrue(mController.requestShowContent(mSheetContent, /* animate= */ true));
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.PEEK);
+
+        // 1. Initial animated hide puts controller in hide-processing state and triggers animated
+        // setSheetState(HIDDEN, true).
+        mController.hideContent(mSheetContent, /* animate= */ true);
+        verify(mBottomSheet, times(1))
+                .setSheetState(SheetState.HIDDEN, true, StateChangeReason.NONE);
+
+        // 2. Immediate non-animated hide purges content from queue and must not get stuck.
+        mController.hideContent(mSheetContent, /* animate= */ false);
+
+        // Settle sheet to HIDDEN.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        simulateSheetHidden(StateChangeReason.NONE);
+
+        // Verify content was destroyed upon reaching HIDDEN.
+        verify(mSheetContent).destroy();
+
+        // 3. Verify subsequent content requests are not stuck and succeed cleanly.
+        when(mOtherSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(null);
+        assertTrue(mController.requestShowContent(mOtherSheetContent, /* animate= */ true));
+        verify(mBottomSheet).showContent(mOtherSheetContent);
+    }
+
+    @Test
+    public void testHideContent_WhenAlreadyHidden_AllowsSubsequentShow() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mOtherSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        // Sheet is already at SheetState.HIDDEN with mSheetContent as current content.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(mSheetContent);
+
+        // Calling hideContent() when already at SheetState.HIDDEN should destroy content and clean
+        // up.
+        mController.hideContent(mSheetContent, /* animate= */ false);
+        verify(mSheetContent).destroy();
+
+        // Verify subsequent requestShowContent succeeds cleanly without wedging the controller.
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(null);
+        assertTrue(mController.requestShowContent(mOtherSheetContent, /* animate= */ true));
+        verify(mBottomSheet).showContent(mOtherSheetContent);
+    }
 }

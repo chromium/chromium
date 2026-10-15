@@ -1071,6 +1071,106 @@ public class BottomSheetControllerTest {
                 mSheetController.getCurrentSheetContent());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"BottomSheetController"})
+    public void testDoubleHide_AnimatedThenNonAnimatedDismissesCleanly() {
+        requestContentInSheet(mHighPriorityContent, true);
+        assertEquals(mHighPriorityContent, mSheetController.getCurrentSheetContent());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetController.hideContent(mHighPriorityContent, true);
+                    mSheetController.hideContent(mHighPriorityContent, false);
+                });
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
+        CriteriaHelper.pollUiThread(() -> mSheetController.getCurrentSheetContent() == null);
+        assertNull(mSheetController.getCurrentSheetContent());
+        assertEquals(SheetState.HIDDEN, mSheetController.getSheetState());
+
+        // Verify subsequent content can be shown without being wedged.
+        requestContentInSheet(mLowPriorityContent, true);
+        assertEquals(mLowPriorityContent, mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"BottomSheetController"})
+    public void testHideContent_CalledFromOnSheetClosedObserver() throws TimeoutException {
+        requestContentInSheet(mHighPriorityContent, true);
+        expandSheet();
+
+        CallbackHelper closedHelper = new CallbackHelper();
+        BottomSheetObserver observer =
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetClosed(@StateChangeReason int reason) {
+                        // Re-entrant call to hideContent() from onSheetClosed observer callback
+                        // (ArchivedTabsAutoDeletePromo pattern).
+                        mSheetController.hideContent(mHighPriorityContent, false);
+                        closedHelper.notifyCalled();
+                        mSheetController.removeObserver(this);
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetController.addObserver(observer);
+                    mSheetController.hideContent(mHighPriorityContent, true);
+                });
+
+        closedHelper.waitForOnly();
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
+        CriteriaHelper.pollUiThread(() -> mSheetController.getCurrentSheetContent() == null);
+        assertNull(mSheetController.getCurrentSheetContent());
+        assertEquals(SheetState.HIDDEN, mSheetController.getSheetState());
+
+        // Subsequent show succeeds.
+        requestContentInSheet(mLowPriorityContent, true);
+        assertEquals(mLowPriorityContent, mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"BottomSheetController"})
+    public void testHideContent_WhenAlreadyHidden_DoesNotWedgeController() {
+        assertEquals(SheetState.HIDDEN, mSheetController.getSheetState());
+        assertNull(mSheetController.getCurrentSheetContent());
+
+        // Calling hideContent() when already at SheetState.HIDDEN should be a no-op and not wedge.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetController.hideContent(mHighPriorityContent, false);
+                    mSheetController.hideContent(mHighPriorityContent, true);
+                    mSheetController.hideContent(null, false);
+                });
+
+        assertEquals(SheetState.HIDDEN, mSheetController.getSheetState());
+        assertNull(mSheetController.getCurrentSheetContent());
+
+        // Verify that subsequent show content requests still succeed cleanly.
+        requestContentInSheet(mHighPriorityContent, true);
+        assertEquals(mHighPriorityContent, mSheetController.getCurrentSheetContent());
+        assertEquals(SheetState.PEEK, mSheetController.getSheetState());
+
+        // Hide and confirm another redundant hideContent when already HIDDEN.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSheetController.hideContent(mHighPriorityContent, false));
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
+        CriteriaHelper.pollUiThread(() -> mSheetController.getCurrentSheetContent() == null);
+        assertNull(mSheetController.getCurrentSheetContent());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSheetController.hideContent(mHighPriorityContent, false));
+        assertEquals(SheetState.HIDDEN, mSheetController.getSheetState());
+
+        // Verify another subsequent show still succeeds.
+        requestContentInSheet(mLowPriorityContent, true);
+        assertEquals(mLowPriorityContent, mSheetController.getCurrentSheetContent());
+        assertEquals(SheetState.PEEK, mSheetController.getSheetState());
+    }
+
     /**
      * Request content be shown in the bottom sheet and end animations.
      *
