@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -196,8 +195,8 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
   // `task_environment_` must outlive all objects created by BVC, because those
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
-    IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-        initWithReauthModule:[[ReauthenticationModule alloc] init]];
+    IncognitoReauthSceneAgent* reauth_agent =
+        [[IncognitoReauthSceneAgent alloc] init];
     [scene_state() addAgent:reauth_agent];
     BrowserLifecycleManager* wrangler =
         [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -232,8 +231,8 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
 }
 
 TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
-  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]];
+  IncognitoReauthSceneAgent* reauth_agent =
+      [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -301,8 +300,8 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
 }
 
 TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
-  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]];
+  IncognitoReauthSceneAgent* reauth_agent =
+      [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -329,8 +328,8 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
 
 // Tests the session restoration logic.
 TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
-  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]];
+  IncognitoReauthSceneAgent* reauth_agent =
+      [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -361,8 +360,8 @@ TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
 // CommandDispatcher allows late invocations during teardown to fail silently
 // instead of throwing unrecognized selector exceptions.
 TEST_F(BrowserLifecycleManagerTest, TestPrepareForShutdown) {
-  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]];
+  IncognitoReauthSceneAgent* reauth_agent =
+      [[IncognitoReauthSceneAgent alloc] init];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()

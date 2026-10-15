@@ -15,6 +15,9 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
@@ -26,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -90,12 +94,9 @@
 
 #pragma mark - public
 
-- (instancetype)initWithReauthModule:
-    (id<ReauthenticationProtocol>)reauthModule {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    DCHECK(reauthModule);
-    _reauthModule = reauthModule;
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(appWillTerminate:)
@@ -125,8 +126,6 @@
 
 - (void)authenticateIncognitoContentWithCompletionBlock:
     (void (^)(BOOL success))completion {
-  DCHECK(self.reauthModule);
-
   if (!self.sceneState.incognitoState.isAuthenticationRequired) {
     if ([self areLockFeaturesEnabled]) {
       [self updateLockState];
@@ -446,6 +445,11 @@
 // result).
 - (void)reauthIncognitoContentWithCompletionBlock:
     (void (^)(BOOL success))completion {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (!profile) {
+    return;
+  }
+
   base::RecordAction(base::UserMetricsAction(
       "MobileIncognitoBiometricAuthenticationRequested"));
 
@@ -466,9 +470,11 @@
           completion(success);
         }
       };
-  [self.reauthModule attemptReauthWithLocalizedReason:authReason
-                                 canReusePreviousAuth:false
-                                              handler:completionHandler];
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(profile)->GetReauthModule();
+  [reauthModule attemptReauthWithLocalizedReason:authReason
+                            canReusePreviousAuth:false
+                                         handler:completionHandler];
 }
 
 // Checks whether the window has any Incognito tabs. Called when the browser is

@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/device_reauth/model",
+  # keep-sorted end
+]
