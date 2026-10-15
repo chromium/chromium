@@ -1629,8 +1629,7 @@ bool ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
   // every other image type is always a right-hand-side content setting image.
   switch (image_type) {
     case ImageType::kMediaStream:
-      return base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators);
+      return true;
     case ImageType::kSensors:
       return base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideSensorActivityIndicators);

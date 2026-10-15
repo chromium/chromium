@@ -81,6 +81,10 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
 
   void HideIndicatorsForTesting() { HideIndicators(); }
 
+  ContentSettingImageModel* indicator_model_for_testing() {
+    return content_setting_image_model_;
+  }
+
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold) {
     page_info_bubble_suppressor_.SetSuppressionThresholdForTesting(  // IN-TEST
         threshold);

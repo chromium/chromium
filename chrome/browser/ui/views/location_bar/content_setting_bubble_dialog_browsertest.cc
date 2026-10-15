@@ -27,7 +27,6 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
@@ -76,12 +75,8 @@ class ContentSettingBubbleDialogTest
       : resetter_(&ChromeContentBrowserClient::
                       GetPopupNavigationDelegateFactoryForTesting(),
                   &CreateTestPopupNavigationDelegate) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts},
-        // `kLeftHandSideActivityIndicators` should be disabled as it changes
-        // the UI of the camera/mic activity indicator. The new UI will be
-        // tested separately.
-        {content_settings::features::kLeftHandSideActivityIndicators});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kQuietNotificationPrompts);
   }
 
   ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =
@@ -89,7 +84,6 @@ class ContentSettingBubbleDialogTest
   ContentSettingBubbleDialogTest& operator=(
       const ContentSettingBubbleDialogTest&) = delete;
 
-  void ApplyMediastreamSettings(bool mic_accessed, bool camera_accessed);
   void ApplyContentSettingsForType(ContentSettingsType content_type);
   void TriggerQuietNotificationPermissionRequest(
       QuietUiReason simulated_reason_for_quiet_ui);
@@ -106,33 +100,6 @@ class ContentSettingBubbleDialogTest
       resetter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
-    bool mic_accessed,
-    bool camera_accessed) {
-  content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-
-  GURL last_committed_url = web_contents->GetLastCommittedURL();
-  // Default opt-in for camera PTZ permission to current tab.
-  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
-      ->SetContentSettingDefaultScope(last_committed_url, GURL(),
-                                      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                                      CONTENT_SETTING_ASK);
-  content_settings::PageSpecificContentSettings::MicrophoneCameraState state;
-  if (mic_accessed) {
-    state.Put(
-        content_settings::PageSpecificContentSettings::kMicrophoneAccessed);
-  }
-  if (camera_accessed) {
-    state.Put(content_settings::PageSpecificContentSettings::kCameraAccessed);
-  }
-
-  content_settings::PageSpecificContentSettings* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetPrimaryMainFrame());
-  content_settings->OnMediaStreamPermissionSet(last_committed_url, state);
-}
 
 void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
     ContentSettingsType content_type) {
@@ -260,22 +227,6 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
   auto scoped_display_url =
       ContentSettingBubbleModel::CreateScopedDisplayURLOverrideForTesting();
 
-  if (base::StartsWith(name, "mediastream", base::CompareCase::SENSITIVE)) {
-    bool apply_mic_settings = name.find("mic") != std::string::npos;
-    bool apply_camera_settings = name.find("camera") != std::string::npos;
-    std::vector<ContentSettingsType> types;
-    if (apply_mic_settings) {
-      types.push_back(ContentSettingsType::MEDIASTREAM_MIC);
-    }
-    if (apply_camera_settings) {
-      types.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
-    }
-    OverrideContentSettingsProvider(types);
-    ApplyMediastreamSettings(apply_mic_settings, apply_camera_settings);
-    ShowDialogBubble(ImageType::kMediaStream);
-    return;
-  }
-
   if (base::StartsWith(name, "notifications_quiet",
                        base::CompareCase::SENSITIVE)) {
     QuietUiReason reason = QuietUiReason::kEnabledInPrefs;
@@ -352,21 +303,6 @@ IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest, InvokeUi_geolocation) {
 }
 
 IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest, InvokeUi_mixed_script) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_mediastream_mic) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_mediastream_camera) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
-                       InvokeUi_mediastream_mic_and_camera) {
   ShowAndVerifyUi();
 }
 

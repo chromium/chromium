@@ -212,17 +212,17 @@ TEST_F(WebUIContentSettingImageControlTest,
   EXPECT_EQ(u"Popup Tooltip", popup_state->tooltip);
 }
 
-// The camera/mic and sensor indicators are drawn by the Permissions Dashboard
-// on the left-hand side only while the corresponding feature is enabled. When
-// it is disabled they must fall back to being right-hand-side content setting
-// images, like in the Views location bar.
+// The camera/mic indicator is always drawn by the Permissions Dashboard on the
+// left-hand side, while the sensor indicator is drawn on the left-hand side
+// only while the corresponding feature is enabled (falling back to a
+// right-hand-side content setting image when disabled).
 TEST_F(WebUIContentSettingImageControlTest,
        ProcessContentSettingState_ActivityIndicators) {
   const struct TestCase {
     bool enable_lhs_indicators;
     std::vector<ImageType> expected_types;
   } kTestCases[] = {
-      {false, {ImageType::kMediaStream, ImageType::kSensors}},
+      {false, {ImageType::kSensors}},
       {true, {}},
   };
 
@@ -232,11 +232,9 @@ TEST_F(WebUIContentSettingImageControlTest,
     // A `ScopedFeatureList` can only be initialized once, so it has to be
     // re-created on every iteration.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureStates(
-        {{content_settings::features::kLeftHandSideActivityIndicators,
-          test_case.enable_lhs_indicators},
-         {content_settings::features::kLeftHandSideSensorActivityIndicators,
-          test_case.enable_lhs_indicators}});
+    feature_list.InitWithFeatureState(
+        content_settings::features::kLeftHandSideSensorActivityIndicators,
+        test_case.enable_lhs_indicators);
 
     std::vector<std::unique_ptr<ContentSettingImageModel>> models;
     auto media_model_ptr = std::make_unique<FakeContentSettingImageModel>(

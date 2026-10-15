@@ -9,23 +9,22 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/views_switches.h"
 
 namespace {
@@ -39,10 +38,7 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
   PermissionRHSIndicatorsInteractiveUITest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFileSystemAccessPersistentPermissions},
-        // This class is for RHS indicators.
-        // LHS indicators and WebUILocationBar features should be disabled.
-        {content_settings::features::kLeftHandSideActivityIndicators,
-         features::kWebUILocationBar});
+        {features::kWebUILocationBar});
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
@@ -194,7 +190,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraPermissionRequestTest) {
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
+      NavigateWebContents(kWebContentsElementId, GetURL()), Do([this]() {
+        BrowserWindow::FromBrowser(browser())
+            ->GetLocationBar()
+            ->GetPermissionDashboardController()
+            ->DoNotCollapseForTesting();
+      }),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
@@ -203,78 +204,15 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      // Click on the PageInfo icon and verify that the first permission is
-      // Notification.
-      PressButton(kLocationIconElementId),
+      // Click on the LHS camera activity indicator and verify that the first
+      // permission is Camera.
+      WaitForShow(PermissionChipView::kIndicatorChipElementId),
+      PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
                     kFirstPermissionRow, 0u),
+      // Verify the row label is Camera
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
-}
-
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
-                       CameraActivityIndicatorTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCamera"),
-      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-
-      // Permission prompt bubble is shown, click on the Allow button.
-      PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
-      CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
-                        &ContentSettingImageView::get_icon_for_testing,
-                        &(features::IsRoundedIconsEnabled()
-                              ? vector_icons::kVideocamIcon
-                              : vector_icons::kVideocamChromeRefreshOldIcon)));
-}
-
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
-                       MicrophoneActivityIndicatorTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestMicrophone"),
-      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-
-      // Permission prompt bubble is shown, click on the Allow button.
-      PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
-      CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
-                        &ContentSettingImageView::get_icon_for_testing,
-                        &(features::IsRoundedIconsEnabled()
-                              ? vector_icons::kMicIcon
-                              : vector_icons::kMicChromeRefreshOldIcon)));
-}
-
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
-                       CameraAndMicrophoneActivityIndicatorTest) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
-      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-
-      // Permission prompt bubble is shown, click on the Allow button.
-      PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
-      // In case both camera and microphone permissions are requested and used
-      // at once, we show a single indicator with a camera icon.
-      CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
-                        &ContentSettingImageView::get_icon_for_testing,
-                        &(features::IsRoundedIconsEnabled()
-                              ? vector_icons::kVideocamIcon
-                              : vector_icons::kVideocamChromeRefreshOldIcon)));
 }
