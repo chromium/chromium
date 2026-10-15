@@ -1449,6 +1449,7 @@ void ExecutionEngine::KickOffNextAction() {
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
+      // TODO(b/573357545): Probably unneeded
       task_->AddActorSurface(actor_surface->GetHandle(),
                              /*stop_task_on_detach=*/true, base::DoNothing());
       CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
@@ -1573,6 +1574,7 @@ void ExecutionEngine::FailedOnTabBeforeToolCreation() {
   ActorSurfaceHandle actuation_actor_surface_handle =
       GetNextAction().GetActorSurfaceHandle();
   if (!actuation_actor_surface_handle.is_null()) {
+    // TODO(b/573357545): Probably unneeded
     task_->AddActorSurface(actuation_actor_surface_handle,
                            /*stop_task_on_detach=*/true, base::DoNothing());
   }

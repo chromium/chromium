@@ -394,38 +394,23 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   callback_for_act_ = std::move(callback);
 
   // TODO(b/474410401): ActorTask tabs should be explicitly added by the client.
-  if (base::FeatureList::IsEnabled(kGlicEarlyAddTaskTabs)) {
-    ActorSurfaceHandleSet actor_surfaces_to_add;
-    for (const std::unique_ptr<ToolRequest>& request : actions) {
-      CHECK(request);
-      // TODO(b/567721071): Filter on the request's surface handle once requests
-      // carry one. Until then a null handle can't tell "targets no page" from
-      // "targets a tab without a surface", which must still fail.
-      if (request->GetTabHandle() != tabs::TabHandle::Null()) {
-        actor_surfaces_to_add.insert(request->GetActorSurfaceHandle());
-      }
+  ActorSurfaceHandleSet actor_surfaces_to_add;
+  for (const std::unique_ptr<ToolRequest>& request : actions) {
+    // TODO(b/567721071): Filter on the request's surface handle once requests
+    // carry one. Until then a null handle can't tell "targets no page" from
+    // "targets a tab without a surface", which must still fail.
+    if (request->GetTabHandle() != tabs::TabHandle::Null()) {
+      actor_surfaces_to_add.insert(request->GetActorSurfaceHandle());
     }
+  }
 
-    did_add_tabs_callback_.Reset(base::BindOnce(
-        &ActorTask::DidEarlyAddTabs, GetWeakPtr(), std::move(actions)));
-    auto add_tabs_barrier = base::BarrierCallback<mojom::ActionResultPtr>(
-        actor_surfaces_to_add.size(), did_add_tabs_callback_.callback());
-    for (const ActorSurfaceHandle& actor_surface_handle :
-         actor_surfaces_to_add) {
-      AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
-                      add_tabs_barrier);
-    }
-  } else {
-    SetState(State::kActing);
-
-    actions_in_current_state_ += actions.size();
-    total_number_of_actions_ += actions.size();
-
-    action_tracker_for_metrics_->WillAct(actions);
-
-    execution_engine_->Act(std::move(actions),
-                           base::BindOnce(&ActorTask::OnFinishedAct,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  did_add_tabs_callback_.Reset(base::BindOnce(
+      &ActorTask::DidEarlyAddTabs, GetWeakPtr(), std::move(actions)));
+  auto add_tabs_barrier = base::BarrierCallback<mojom::ActionResultPtr>(
+      actor_surfaces_to_add.size(), did_add_tabs_callback_.callback());
+  for (const ActorSurfaceHandle& actor_surface_handle : actor_surfaces_to_add) {
+    AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                    add_tabs_barrier);
   }
 }
 
@@ -490,8 +475,7 @@ void ActorTask::Stop(StoppedReason stop_reason) {
 
   if (callback_for_act_) {
     // A task can be stopped while still in `kCreated` if an Act request is
-    // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
-    // before transitioning to `kActing`.
+    // waiting on asynchronous tab addition before transitioning to `kActing`.
     CHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
               state_ == State::kCreated,
           base::NotFatalUntil::M161);
@@ -533,8 +517,7 @@ void ActorTask::Pause(bool from_actor) {
   // result before seeing the state transition.
   if (callback_for_act_) {
     // A task can be paused while still in `kCreated` if an Act request is
-    // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
-    // before transitioning to `kActing`.
+    // waiting on asynchronous tab addition before transitioning to `kActing`.
     CHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
               state_ == State::kCreated,
           base::NotFatalUntil::M161);
@@ -817,8 +800,6 @@ void ActorTask::OnActorSurfaceWillDetach(
 void ActorTask::DidEarlyAddTabs(
     std::vector<std::unique_ptr<ToolRequest>>&& actions,
     std::vector<mojom::ActionResultPtr> add_tab_results) {
-  CHECK(base::FeatureList::IsEnabled(kGlicEarlyAddTaskTabs));
-
   // If any tabs failed to be added, return the first failing result and respond
   // with failure.
   for (mojom::ActionResultPtr& result : add_tab_results) {
