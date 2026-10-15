@@ -228,6 +228,20 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
                     mojom::ActionResultCode::kDefaultSearchProviderNotSet);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
+                       DefaultSearchProviderWithoutReplacementFails) {
+  constexpr char kQuery[] = "test query";
+  SetDefaultSearchProviderUrl(embedded_test_server()->GetURL(kStartUrlPath));
+
+  std::unique_ptr<ToolRequest> action =
+      MakePerformSearchRequest(*active_tab(), kQuery);
+  EXPECT_EQ(action->AssociatedOriginGrant(), std::nullopt);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kSearchUrlGenerationFailed);
+}
+
 }  // namespace
 
 }  // namespace actor

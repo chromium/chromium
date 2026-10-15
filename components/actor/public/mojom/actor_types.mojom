@@ -582,6 +582,10 @@ enum ActionResultCode {
   // OpenSearch template nor a discoverable search input.
   kSiteBasedSearchNotAvailable = 1902,
 
+  // The default search provider does not support search term replacement or
+  // failed to generate a valid search URL.
+  kSearchUrlGenerationFailed = 1903,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 2000-2099: Errors for page search (switch tab, open known page).
 
