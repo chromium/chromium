@@ -58,6 +58,7 @@ class OmniboxPopupAimPresenter
   void LogResultToContentReadyMetric(base::TimeTicks result_ready_time,
                                      bool is_first_show) override;
   void WidgetDestroyed() override;
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent() override;
 
  private:
   // views::WidgetObserver:
