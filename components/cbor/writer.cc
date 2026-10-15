@@ -306,18 +306,19 @@ bool Writer::EncodeCBOR(ValueView node,
       [&](bool v) {
         StartItem(
             Value::Type::SIMPLE_VALUE,
-            base::checked_cast<uint64_t>(v ? Value::SimpleValue::TRUE_VALUE
-                                           : Value::SimpleValue::FALSE_VALUE));
+            base::checked_cast<uint64_t>(v ? constants::SimpleValue::kTrue
+                                           : constants::SimpleValue::kFalse));
         return true;
       },
       [&](Value::Null) {
         StartItem(Value::Type::SIMPLE_VALUE,
-                  base::checked_cast<uint64_t>(Value::SimpleValue::NULL_VALUE));
+                  base::checked_cast<uint64_t>(constants::SimpleValue::kNull));
         return true;
       },
       [&](Value::Undefined) {
-        StartItem(Value::Type::SIMPLE_VALUE,
-                  base::checked_cast<uint64_t>(Value::SimpleValue::UNDEFINED));
+        StartItem(
+            Value::Type::SIMPLE_VALUE,
+            base::checked_cast<uint64_t>(constants::SimpleValue::kUndefined));
         return true;
       },
   });

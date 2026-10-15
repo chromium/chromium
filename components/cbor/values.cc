@@ -165,17 +165,6 @@ Value::Type Value::type() const {
   });
 }
 
-Value::SimpleValue Value::GetSimpleValue() const {
-  return Visit(absl::Overload{
-      [](Null) { return SimpleValue::NULL_VALUE; },
-      [](Undefined) { return SimpleValue::UNDEFINED; },
-      [](bool value) {
-        return value ? SimpleValue::TRUE_VALUE : SimpleValue::FALSE_VALUE;
-      },
-      [](const auto&) -> SimpleValue { NOTREACHED(); },
-  });
-}
-
 bool Value::GetBool() const {
   return std::get<bool>(data_);
 }

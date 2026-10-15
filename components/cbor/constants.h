@@ -31,6 +31,13 @@ static constexpr uint8_t kAdditionalInformation8Bytes = 27u;
 
 extern const char kUnsupportedMajorType[];
 
+enum class SimpleValue {
+  kFalse = 20,
+  kTrue = 21,
+  kNull = 22,
+  kUndefined = 23,
+};
+
 }  // namespace constants
 }  // namespace cbor
 

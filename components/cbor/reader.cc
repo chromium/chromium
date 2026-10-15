@@ -477,16 +477,16 @@ std::optional<Value> Reader::DecodeToSimpleValue(const DataItemHeader& header) {
   CHECK_LE(header.value, 255u);
   // |SimpleValue| is an enum class and so the underlying type is specified to
   // be |int|. So this cast is safe.
-  Value::SimpleValue possibly_unsupported_simple_value =
-      static_cast<Value::SimpleValue>(static_cast<int>(header.value));
+  constants::SimpleValue possibly_unsupported_simple_value =
+      static_cast<constants::SimpleValue>(static_cast<int>(header.value));
   switch (possibly_unsupported_simple_value) {
-    case Value::SimpleValue::FALSE_VALUE:
+    case constants::SimpleValue::kFalse:
       return Value(false);
-    case Value::SimpleValue::TRUE_VALUE:
+    case constants::SimpleValue::kTrue:
       return Value(true);
-    case Value::SimpleValue::NULL_VALUE:
+    case constants::SimpleValue::kNull:
       return Value(Value::null);
-    case Value::SimpleValue::UNDEFINED:
+    case constants::SimpleValue::kUndefined:
       return Value(Value::undefined);
   }
 

@@ -896,13 +896,13 @@ TEST_P(CBORReaderTest, TestIntegerOutOfRangeError) {
 
 TEST_P(CBORReaderTest, TestReadSimpleValue) {
   static const struct {
-    const Value::SimpleValue value;
+    const Value value;
     const std::vector<uint8_t> cbor_data;
   } kSimpleValueTestCases[] = {
-      {Value::SimpleValue::FALSE_VALUE, {0xf4}},
-      {Value::SimpleValue::TRUE_VALUE, {0xf5}},
-      {Value::SimpleValue::NULL_VALUE, {0xf6}},
-      {Value::SimpleValue::UNDEFINED, {0xf7}},
+      {Value(false), {0xf4}},
+      {Value(true), {0xf5}},
+      {Value(Value::null), {0xf6}},
+      {Value(Value::undefined), {0xf7}},
   };
 
   int test_element_index = 0;
@@ -913,7 +913,7 @@ TEST_P(CBORReaderTest, TestReadSimpleValue) {
     std::optional<Value> cbor = DoRead(test_case.cbor_data);
     ASSERT_TRUE(cbor.has_value());
     ASSERT_EQ(cbor.value().type(), Value::Type::SIMPLE_VALUE);
-    EXPECT_EQ(cbor.value().GetSimpleValue(), test_case.value);
+    EXPECT_EQ(cbor.value(), test_case.value);
 
     auto cbor_data_with_extra_byte = WithExtraneousData(test_case.cbor_data);
     Reader::DecoderError error_code;
@@ -925,7 +925,7 @@ TEST_P(CBORReaderTest, TestReadSimpleValue) {
     cbor = DoRead(cbor_data_with_extra_byte, &num_bytes_consumed, &error_code);
     ASSERT_TRUE(cbor.has_value());
     ASSERT_EQ(cbor.value().type(), Value::Type::SIMPLE_VALUE);
-    EXPECT_EQ(cbor.value().GetSimpleValue(), test_case.value);
+    EXPECT_EQ(cbor.value(), test_case.value);
     EXPECT_EQ(error_code, Reader::DecoderError::CBOR_NO_ERROR);
     EXPECT_EQ(num_bytes_consumed, test_case.cbor_data.size());
   }

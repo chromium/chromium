@@ -49,16 +49,6 @@ class CBOR_EXPORT Value {
     INVALID_UTF8 = -2,
   };
 
-  enum class SimpleValue {
-    FALSE_VALUE = 20,
-    TRUE_VALUE = 21,
-    NULL_VALUE = 22,
-    UNDEFINED = 23,
-
-    kMinValue = FALSE_VALUE,
-    kMaxValue = UNDEFINED,
-  };
-
   struct Null final {
     constexpr explicit Null() = default;
 
@@ -150,8 +140,6 @@ class CBOR_EXPORT Value {
   bool is_undefined() const { return std::holds_alternative<Undefined>(data_); }
 
   // These will all fatally assert if the type doesn't match.
-  // Deprecated: Use `GetBool()` or `is_null()` or `is_undefined()`.
-  SimpleValue GetSimpleValue() const;
   bool GetBool() const;
   int64_t GetInteger() const;
   int64_t GetUnsigned() const;
