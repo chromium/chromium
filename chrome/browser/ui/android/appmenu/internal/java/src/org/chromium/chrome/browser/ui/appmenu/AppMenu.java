@@ -279,7 +279,6 @@ class AppMenu implements OnKeyListener {
     private final int mBottomBarMenuTopMargin;
     private final int[] mTempLocation;
     private final AppMenuVisibilityDelegate mVisibilityDelegate;
-    private final boolean mDisableVerticalScrollbar;
     private boolean mPositionBelowAnchor;
 
     private @Nullable Context mContext;
@@ -305,10 +304,8 @@ class AppMenu implements OnKeyListener {
     AppMenu(
             AppMenuVisibilityDelegate visibilityDelegate,
             Resources res,
-            HierarchicalMenuController<AppMenuPopup> hierarchicalMenuController,
-            boolean disableVerticalScrollbar) {
+            HierarchicalMenuController<AppMenuPopup> hierarchicalMenuController) {
         mVisibilityDelegate = visibilityDelegate;
-        mDisableVerticalScrollbar = disableVerticalScrollbar;
 
         mNegativeSoftwareVerticalOffset =
                 res.getDimensionPixelSize(R.dimen.menu_negative_software_vertical_offset);
@@ -426,12 +423,6 @@ class AppMenu implements OnKeyListener {
 
         View contentView = createAppMenuContentView(context, addTopPaddingBeforeFirstRow);
         mListView = contentView.findViewById(R.id.app_menu_list);
-
-        if (mDisableVerticalScrollbar) {
-            // TODO(crbug.com/465107697) Move code to xml file once the feature is launched.
-            // Cleanup AppMenuDelegate too.
-            mListView.setVerticalScrollBarEnabled(false);
-        }
 
         if (SysUtils.isLowEndDevice()) {
             var sharedDrawable = AppCompatResources.getDrawable(context, R.drawable.popup_bg_8dp);

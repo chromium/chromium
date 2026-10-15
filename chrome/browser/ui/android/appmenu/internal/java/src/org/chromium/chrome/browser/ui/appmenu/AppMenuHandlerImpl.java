@@ -361,8 +361,7 @@ class AppMenuHandlerImpl
                     new AppMenu(
                             this,
                             mContext.getResources(),
-                            mHierarchicalMenuController,
-                            mAppMenuDelegate.shouldDisableVerticalScrollbar());
+                            mHierarchicalMenuController);
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
 
