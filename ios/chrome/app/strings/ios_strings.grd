@@ -3771,6 +3771,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_SETTINGS_CAPTIONS_TITLE" desc="Title of the Closed Captioning toggle in Gemini settings.">
         Closed Captioning
       </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_EDIT_PROMPT" desc="Title for the button in the contextual cue settings sheet that opens the Gemini floaty with the contextual cue prompt pre-filled so the user can edit it.">
+        Edit prompt
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_MANAGE_SUGGESTIONS" desc="Title for the button in the contextual cue settings sheet that opens the Gemini suggestions settings page.">
+        Manage Gemini suggestions
+      </message>
       <message name="IDS_IOS_GEMINI_SETTINGS_MIC_FOOTER_TEXT" desc="Footer text of the Microphone toggle in Gemini settings.">
         Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it's on). Your data is not used to improve generative AI models
       </message>
