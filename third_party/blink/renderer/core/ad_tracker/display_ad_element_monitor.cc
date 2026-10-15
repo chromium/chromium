@@ -6,6 +6,8 @@
 
 #include <cstdlib>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -182,7 +184,21 @@ void DisplayAdElementMonitor::UpdateToVideoAd() {
 }
 
 void DisplayAdElementMonitor::SetIsOverlayPopupAd() {
+  if (is_overlay_popup_ad_) {
+    return;
+  }
   is_overlay_popup_ad_ = true;
+
+  // Repaint so the ad highlight picks up the "popup" label. This only affects
+  // painting when the highlight is currently shown and labels are enabled; if
+  // the highlight is turned on later, DidFinishLifecycleUpdate() invalidates
+  // paint on that transition.
+  if (should_highlight_ &&
+      base::FeatureList::IsEnabled(features::kAdHighlightLabel)) {
+    if (auto* layout_object = element_->GetLayoutObject()) {
+      layout_object->SetShouldDoFullPaintInvalidation();
+    }
+  }
 }
 
 void DisplayAdElementMonitor::MaybeRecordVideoAdUseCounter() {

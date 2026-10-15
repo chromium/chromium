@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_FRAGMENT_PAINTER_H_
 
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -53,6 +55,23 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
       const PhysicalBoxFragment& fragment,
       const DisplayItemClient& display_item_client,
       PaintPhase phase);
+
+  // The kinds of ad an ad highlight can be labeled with. Each type in the set
+  // adds a word to the small label painted on top of the highlight; see
+  // AdLabelText().
+  enum class AdLabelType {
+    kPopup,
+    kSticky,
+    kVideo,
+    kMaxValue = kVideo,
+  };
+  using AdLabelTypes =
+      base::EnumSet<AdLabelType, AdLabelType::kPopup, AdLabelType::kMaxValue>;
+
+  // Returns the label text for `labels`, e.g. "popup" or "popup, video".
+  // Words follow `AdLabelType` order, separated by ", ". Returns the empty
+  // string if `labels` is empty.
+  static String AdLabelText(AdLabelTypes labels);
 
   // Paint a fragment. This normally just creates a BoxFragmentPainter and calls
   // Paint(), but certain object types require custom painters (such as replaced

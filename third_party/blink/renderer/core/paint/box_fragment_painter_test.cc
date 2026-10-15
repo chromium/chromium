@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -15,6 +18,8 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/core/paint/paint_event.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 
 using testing::ElementsAre;
@@ -584,6 +589,234 @@ TEST_P(BoxFragmentPainterTest, NodeAtPointWithFilterOnInline) {
       GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
           location, hit_type);
   EXPECT_EQ(result.InnerElement(), target);
+}
+
+namespace {
+
+bool ContainsDrawRectWithColor(const PaintRecord& record, SkColor4f color) {
+  for (const cc::PaintOp& op : record) {
+    if (op.GetType() == cc::PaintOpType::kDrawRect) {
+      const auto& rect_op = static_cast<const cc::DrawRectOp&>(op);
+      if (rect_op.flags.getColor4f() == color) {
+        return true;
+      }
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
+      if (ContainsDrawRectWithColor(record_op.record, color)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// The label text is the only white text in these tests' pages, so counting
+// text blobs drawn in the label color counts the labels.
+int CountDrawTextBlobOpsWithColor(const PaintRecord& record, SkColor4f color) {
+  int count = 0;
+  for (const cc::PaintOp& op : record) {
+    if (op.GetType() == cc::PaintOpType::kDrawTextBlob) {
+      const auto& text_op = static_cast<const cc::DrawTextBlobOp&>(op);
+      if (text_op.flags.getColor4f() == color) {
+        ++count;
+      }
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
+      count += CountDrawTextBlobOpsWithColor(record_op.record, color);
+    }
+  }
+  return count;
+}
+
+const SkColor4f kRedOverlay =
+    SkColor4f::FromColor(SkColorSetARGB(128, 255, 0, 0));
+// The label is white text on a Google Red 700 background; see PaintAdLabel().
+const SkColor4f kPopupLabelBackground =
+    Color::FromRGB(0xC5, 0x22, 0x1F).toSkColor4f();
+const SkColor4f kPopupLabelText = Color::kWhite.toSkColor4f();
+
+void SimulateFirstContentfulPaint(Document& document) {
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = base::TimeTicks::Now();
+  PaintTiming::From(document).ReportPresentationTime(
+      PaintEvent::kFirstContentfulPaint, base::TimeTicks(), details);
+}
+
+}  // namespace
+
+// AdLabelText() is a pure function, so this doesn't need the paint test
+// fixture or its configurations.
+TEST(BoxFragmentPainterAdLabelTest, AdLabelText) {
+  using Type = BoxFragmentPainter::AdLabelType;
+
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({}), "");
+
+  // One type: no separator.
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kPopup}), "popup");
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kSticky}), "sticky");
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kVideo}), "video");
+
+  // Two types: one separator.
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kPopup, Type::kSticky}),
+            "popup, sticky");
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kSticky, Type::kVideo}),
+            "sticky, video");
+
+  // Three types: two separators.
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText(
+                {Type::kPopup, Type::kSticky, Type::kVideo}),
+            "popup, sticky, video");
+
+  // Word order follows `AdLabelType` order, not the order the types were
+  // listed in.
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kVideo, Type::kPopup}),
+            "popup, video");
+}
+
+TEST_P(BoxFragmentPainterTest, PaintPopupBadgeForOverlayPopupAd) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="normal_ad" style="width: 100px; height: 100px;"></div>
+    <div id="popup_ad" style="width: 100px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* normal_ad = GetDocument().getElementById(AtomicString("normal_ad"));
+  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  ASSERT_TRUE(normal_ad);
+  ASSERT_TRUE(popup_ad);
+  normal_ad->SetIsAdRelated(NoProvenance{});
+  popup_ad->SetIsAdRelated(NoProvenance{});
+  popup_ad->SetIsOverlayPopupAd();
+
+  // First lifecycle update runs
+  // DisplayAdElementMonitor::DidFinishLifecycleUpdate which updates
+  // `should_highlight_` and invalidates paint.
+  UpdateAllLifecyclePhasesForTest();
+  // Second lifecycle update paints the ad highlight overlays.
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintRecordBuilder builder;
+  GetDocument().View()->PaintOutsideOfLifecycle(
+      builder.Context(), PaintFlag::kOmitCompositingInfo, CullRect::Infinite());
+  auto record = builder.EndRecording();
+
+  // Both ads get the same red highlight.
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+
+  // Only the overlay popup ad gets the "popup" label: white text on a solid
+  // dark red box.
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 1);
+}
+
+TEST_P(BoxFragmentPainterTest, PopupBadgeAddedAfterAdHighlightIsPainted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="ad" style="width: 100px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* ad = GetDocument().getElementById(AtomicString("ad"));
+  ASSERT_TRUE(ad);
+  ad->SetIsAdRelated(NoProvenance{});
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_FALSE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 0);
+  }
+
+  // Now flag the already-painted ad as an overlay popup ad, which is what
+  // OverlayInterstitialAdDetector does at runtime. Since the highlight is
+  // already shown, this must invalidate paint so the label gets painted.
+  ad->SetIsOverlayPopupAd();
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    // The highlight stays red; only the label is added.
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 1);
+  }
+}
+
+TEST_P(BoxFragmentPainterTest, NoPopupBadgeWhenOverlayPopupAdIsTooSmall) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="popup_ad" style="width: 8px; height: 8px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  ASSERT_TRUE(popup_ad);
+  popup_ad->SetIsAdRelated(NoProvenance{});
+  popup_ad->SetIsOverlayPopupAd();
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintRecordBuilder builder;
+  GetDocument().View()->PaintOutsideOfLifecycle(
+      builder.Context(), PaintFlag::kOmitCompositingInfo, CullRect::Infinite());
+  auto record = builder.EndRecording();
+
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+  EXPECT_FALSE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 0);
+}
+
+// Even if an element was marked while the feature was on, the label is not
+// painted while the feature is off: the highlight is exactly as before.
+TEST_P(BoxFragmentPainterTest, NoPopupBadgeWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="popup_ad" style="width: 100px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  ASSERT_TRUE(popup_ad);
+  popup_ad->SetIsAdRelated(NoProvenance{});
+  popup_ad->SetIsOverlayPopupAd();
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintRecordBuilder builder;
+  GetDocument().View()->PaintOutsideOfLifecycle(
+      builder.Context(), PaintFlag::kOmitCompositingInfo, CullRect::Infinite());
+  auto record = builder.EndRecording();
+
+  // The red highlight is unaffected by the feature; only the label is gated.
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+  EXPECT_FALSE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 0);
 }
 
 }  // namespace blink

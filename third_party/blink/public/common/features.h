@@ -31,6 +31,10 @@ namespace features {
 // `RuntimeEnabledFeatures)`, they should still be ordered in this section based
 // on the identifier name of the generated feature.
 
+// Controls whether the ad highlight is annotated with a label describing the
+// type of ad such as popup, sticky, or video.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdHighlightLabel);
+
 // Controls whether to include information about the page's open popup in
 // AIPageContent.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAIPageContentIncludePopupWindows);

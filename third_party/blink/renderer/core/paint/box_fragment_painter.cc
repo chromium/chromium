@@ -9,6 +9,9 @@
 #include <ranges>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -69,12 +72,18 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/utils/SkParsePath.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -508,7 +517,110 @@ bool ShouldDeferLineBoxHitToBackground(const PhysicalBoxFragment& container,
          nullptr;
 }
 
+// Builds the font used by the ad label: `font_size`px regular-weight
+// `sans-serif`. The generic family is resolved through `font_selector`, so it
+// maps to the document's configured sans-serif font just as
+// `font-family: sans-serif` does in CSS.
+//
+// Note: the result must not be cached in a static. A `Font` holds
+// `SimpleFontData`, whose destructor is bound to the V8 isolate that allocated
+// it, so keeping one alive past the isolate is a use-after-free. Building it
+// per paint is cheap: the highlight is behind the display item cache, and text
+// shaping is cached by `PlainTextPainter`.
+Font* CreateAdLabelFont(float font_size, FontSelector* font_selector) {
+  FontDescription font_description;
+  font_description.SetFamily(FontFamily(font_family_names::kSansSerif,
+                                        FontFamily::Type::kGenericFamily));
+  font_description.SetSpecifiedSize(font_size);
+  font_description.SetComputedSize(font_size);
+  return MakeGarbageCollected<Font>(font_description, font_selector);
+}
+
+// Paints a label in the top-right corner of an ad highlight listing the kinds
+// of ad in `labels`, e.g. "popup" or "popup, video" (see
+// BoxFragmentPainter::AdLabelText()). Styled like the DevTools "Scrolling
+// performance issues" labels (HeadsUpDisplayLayerImpl::DrawDebugRect()): white
+// text on a solid dark red box that is flush with the corner of the highlight,
+// with no margin and no rounded corners. Paints nothing if `labels` is empty
+// or if the highlight is too small to fit the label.
+void PaintAdLabel(GraphicsContext& context,
+                  const gfx::Rect& paint_rect,
+                  FontSelector* font_selector,
+                  BoxFragmentPainter::AdLabelTypes labels) {
+  const String label_text = BoxFragmentPainter::AdLabelText(labels);
+  if (label_text.empty()) {
+    return;
+  }
+
+  // Label metrics, in CSS pixels. Same as the DevTools debug rect labels.
+  constexpr float kFontSize = 12;
+  constexpr float kPadding = 3;
+
+  // Google Red 700 (gfx::kGoogleRed700): an opaque, darker shade of the red
+  // highlight overlay, so the white text is readable over any ad content.
+  constexpr Color kLabelBackgroundColor = Color::FromRGB(0xC5, 0x22, 0x1F);
+
+  const Font* font = CreateAdLabelFont(kFontSize, font_selector);
+  const SimpleFontData* font_data = font->PrimaryFont();
+  if (!font_data) {
+    return;
+  }
+
+  TextRun text_run(label_text);
+  const float text_width =
+      PlainTextPainter::Shared().ComputeInlineSize(text_run, *font);
+  const FontMetrics& font_metrics = font_data->GetFontMetrics();
+
+  // The label's background box. It is snapped to whole pixels and sits flush
+  // with the top-right corner of the highlight.
+  const gfx::Size label_size = gfx::ToCeiledSize(gfx::SizeF(
+      text_width + 2 * kPadding, font_metrics.FloatHeight() + 2 * kPadding));
+  const gfx::Rect label_rect(
+      gfx::Point(paint_rect.right() - label_size.width(), paint_rect.y()),
+      label_size);
+
+  // Don't paint the label if the highlighted ad is too small to fit it.
+  if (!paint_rect.Contains(label_rect)) {
+    return;
+  }
+
+  // Center the text within the snapped box.
+  const gfx::PointF text_origin(
+      label_rect.x() + (label_rect.width() - text_width) / 2,
+      label_rect.y() + (label_rect.height() - font_metrics.FloatHeight()) / 2 +
+          font_metrics.FloatAscent());
+
+  GraphicsContextStateSaver state_saver(context);
+  context.FillRect(label_rect, kLabelBackgroundColor, AutoDarkMode::Disabled());
+  context.SetFillColor(Color::kWhite);
+  context.DrawBidiText(*font, text_run, text_origin, AutoDarkMode::Disabled());
+}
+
 }  // anonymous namespace
+
+// static
+String BoxFragmentPainter::AdLabelText(AdLabelTypes labels) {
+  // EnumSet iterates in enum order, so words appear in `AdLabelType` order
+  // regardless of the order they were added to `labels`.
+  StringBuilder builder;
+  for (AdLabelType label : labels) {
+    if (!builder.empty()) {
+      builder.Append(", ");
+    }
+    switch (label) {
+      case AdLabelType::kPopup:
+        builder.Append("popup");
+        break;
+      case AdLabelType::kSticky:
+        builder.Append("sticky");
+        break;
+      case AdLabelType::kVideo:
+        builder.Append("video");
+        break;
+    }
+  }
+  return builder.ReleaseString();
+}
 
 // static
 void BoxFragmentPainter::PaintAdHighlightIfNeeded(
@@ -559,6 +671,15 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
     Color red_overlay(255, 0, 0, 128);
     context.FillRect(paint_rect, red_overlay, AutoDarkMode::Disabled(),
                      SkBlendMode::kHardLight);
+  }
+
+  // Overlay popup ads get an additional "popup" label in the top-right corner
+  // of the highlight.
+  if (base::FeatureList::IsEnabled(features::kAdHighlightLabel) &&
+      element->IsOverlayPopupAd()) {
+    PaintAdLabel(context, paint_rect,
+                 element->GetDocument().GetStyleEngine().GetFontSelector(),
+                 {AdLabelType::kPopup});
   }
 
   // Paint an "AD" text overlay.
@@ -619,6 +740,7 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
     ad_label_flags.setColor(SkColorSetARGB(204, 255, 255, 255));
 
     // Apply the transform and draw the path.
+    GraphicsContextStateSaver state_saver(context);
     context.ConcatCTM(transform);
     context.DrawPath(ad_label_path, ad_label_flags, AutoDarkMode::Disabled());
   }
