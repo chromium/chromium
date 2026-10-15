@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -416,4 +417,104 @@ TEST_F(TtcConversationTest,
   EXPECT_TRUE([default_conversation.audio_controller()
       isKindOfClass:[TTCAudioSessionController class]]);
   default_conversation.Disconnect();
+}
+
+// Tests that upstream audio capture bursts log `AudioInputStarted` on the first
+// chunk and flush `AudioInputSent` with aggregated chunk count, byte volume,
+// and peak input energy when the burst ends.
+TEST_F(TtcConversationTest, TestJournalUpstreamAudioBurstTelemetry) {
+  TTCJournal journal;
+  conversation_->set_journal(&journal);
+  EXPECT_EQ(conversation_->journal(), &journal);
+  EXPECT_EQ(fake_audio_controller_.journal, &journal);
+
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  mock_backend_->observer()->OnBackendInitialized();
+  journal.Clear();
+
+  @autoreleasepool {
+    std::vector<int16_t> pcm_samples(512, 0x0101);  // 1024 bytes (1 KB).
+    NSData* chunk = [NSData dataWithBytes:pcm_samples.data()
+                                   length:pcm_samples.size() * sizeof(int16_t)];
+
+    // First chunk logs `AudioInputStarted`.
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didUpdateInputEnergy:0.42f];
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didCaptureAudioChunk:chunk];
+    ASSERT_EQ(journal.entries().size(), 1u);
+    EXPECT_EQ(journal.entries()[0].component, TTCJournalComponent::kAudio);
+    EXPECT_EQ(journal.entries()[0].event_name, "AudioInputStarted");
+    EXPECT_EQ(journal.entries()[0].FormatSimplifiedLine(),
+              "Sending audio to server...");
+
+    // Second chunk accumulates without adding a new entry yet.
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didUpdateInputEnergy:0.85f];
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didCaptureAudioChunk:chunk];
+    EXPECT_EQ(journal.entries().size(), 1u);
+
+    // Receiving output audio flushes the burst into `AudioInputSent`.
+    const int16_t output_pcm[] = {0x1234};
+    mock_backend_->observer()->OnAudioOutput(output_pcm, 0);
+    ASSERT_EQ(journal.entries().size(), 2u);
+    EXPECT_EQ(journal.entries()[1].component, TTCJournalComponent::kAudio);
+    EXPECT_EQ(journal.entries()[1].event_name, "AudioInputSent");
+    EXPECT_EQ(journal.entries()[1].FormatSimplifiedLine(),
+              "Sent audio: 2 chunks (2 KiB)");
+    EXPECT_THAT(journal.entries()[1].FormatLine(),
+                testing::HasSubstr("chunks=2"));
+    EXPECT_THAT(journal.entries()[1].FormatLine(),
+                testing::HasSubstr("bytes=2048"));
+    EXPECT_THAT(journal.entries()[1].FormatLine(),
+                testing::HasSubstr("peak_energy=0.85"));
+  }
+
+  conversation_->set_journal(nullptr);
+}
+
+// Tests that `AudioInputSuppressed` and `AudioInputDropped` are logged and
+// deduplicated within a state span.
+TEST_F(TtcConversationTest, TestJournalAudioSuppressionAndDropDeduplication) {
+  TTCJournal journal;
+  conversation_->set_journal(&journal);
+  conversation_->Start();
+  ASSERT_TRUE(mock_backend_->observer());
+  journal.Clear();
+
+  @autoreleasepool {
+    const int16_t mic_pcm[] = {0x1111, 0x2222};
+    NSData* chunk = [NSData dataWithBytes:mic_pcm length:sizeof(mic_pcm)];
+
+    // Start playback so microphone input is suppressed; repeated chunks only
+    // log `AudioInputSuppressed` once.
+    const int16_t output_pcm[] = {0x1234};
+    mock_backend_->observer()->OnAudioOutput(output_pcm, 0);
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didCaptureAudioChunk:chunk];
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didCaptureAudioChunk:chunk];
+    ASSERT_EQ(journal.entries().size(), 1u);
+    EXPECT_EQ(journal.entries()[0].event_name, "AudioInputSuppressed");
+    EXPECT_EQ(journal.entries()[0].FormatSimplifiedLine(),
+              "Audio input suppressed (playback active)");
+
+    // Stop playback and disconnect the backend transport; repeated chunks only
+    // log `AudioInputDropped` once.
+    [fake_audio_controller_ stopPlayback];
+    mock_backend_->Close();
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didCaptureAudioChunk:chunk];
+    [fake_audio_controller_.delegate audioController:fake_audio_controller_
+                                didCaptureAudioChunk:chunk];
+    ASSERT_EQ(journal.entries().size(), 2u);
+    EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kError);
+    EXPECT_EQ(journal.entries()[1].event_name, "AudioInputDropped");
+    EXPECT_EQ(journal.entries()[1].FormatSimplifiedLine(),
+              "[ERROR] Audio input dropped (backend not ready)");
+  }
+
+  conversation_->set_journal(nullptr);
 }

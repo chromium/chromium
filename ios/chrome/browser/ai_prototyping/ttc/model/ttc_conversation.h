@@ -135,6 +135,18 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   void LogBackendInitialized();
   void LogBackendClosed();
   void LogBackendError(ttc::ErrorCode error);
+  // Logs `AudioInputSuppressed` to the journal when microphone capture is
+  // suppressed due to active response playback.
+  void LogAudioInputSuppressed();
+  // Logs `AudioInputDropped` to the journal when microphone capture arrives
+  // while the backend transport is disconnected.
+  void LogAudioInputDropped();
+  // Records `byte_size` audio payload bytes sent in the current burst, logging
+  // `AudioInputStarted` on the burst's first chunk.
+  void RecordAndLogAudioChunkSent(size_t byte_size);
+  // Flushes accumulated sent audio burst telemetry (`AudioInputSent`) to the
+  // journal and resets burst counters.
+  void FlushSentAudioJournalState();
   void LogGenerationStateChanged(bool started,
                                  bool completed,
                                  bool interrupted);
@@ -167,6 +179,16 @@ class TtcConversation : public ttc::TtcBackend::Observer {
 
   // Optional session journal for structured event logging.
   base::WeakPtr<TTCJournal> journal_;
+
+  // Per-burst upstream audio sending telemetry metrics.
+  size_t sent_audio_chunks_ = 0;
+  size_t sent_audio_bytes_ = 0;
+  float peak_input_energy_ = 0.0f;
+
+  // Deduplication flags preventing log spam while capture is suppressed or
+  // disconnected.
+  bool logged_playback_suppression_ = false;
+  bool logged_disconnected_drop_ = false;
 
   // Per-turn coalesced transcription state for one direction (input or output).
   struct TranscriptionJournalState {

@@ -4,15 +4,18 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 
+#import <inttypes.h>
 #import <stddef.h>
 #import <stdint.h>
 
+#import <algorithm>
 #import <memory>
 #import <string>
 #import <utility>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/byte_size.h"
 #import "base/check.h"
 #import "base/containers/span.h"
 #import "base/strings/strcat.h"
@@ -32,6 +35,14 @@ ttc::ErrorCode ExtractTTCErrorCode(NSError* error) {
     return static_cast<ttc::ErrorCode>(error.code);
   }
   return ttc::ErrorCode::kAudioUnknownError;
+}
+
+// Formats a simplified summary line for `chunks` upstream audio chunks sent in
+// a burst representing `bytes` total audio data.
+std::string FormatAudioSentSummary(size_t chunks, size_t bytes) {
+  return base::StringPrintf("Sent audio: %zu %s (%" PRIu64 " KiB)", chunks,
+                            chunks == 1 ? "chunk" : "chunks",
+                            base::ByteSize(bytes).InKiB());
 }
 
 // Appends `chunk` to `accumulated` and logs or updates the coalesced
@@ -214,9 +225,7 @@ void TtcConversation::SendToolSetUpdate(
 
 void TtcConversation::OnAudioChunkCaptured(NSData* pcm_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Disable barge-in: suppress microphone capture while response audio is
-  // playing.
-  if (audio_controller_.isPlaying || !backend_) {
+  if (!backend_) {
     return;
   }
 
@@ -225,12 +234,30 @@ void TtcConversation::OnAudioChunkCaptured(NSData* pcm_data) {
     return;
   }
 
+  // Disable barge-in: suppress microphone capture while response audio is
+  // playing.
+  if (audio_controller_.isPlaying) {
+    LogAudioInputSuppressed();
+    return;
+  }
+  logged_playback_suppression_ = false;
+
+  if (!backend_->is_transport_connected()) {
+    LogAudioInputDropped();
+    return;
+  }
+
+  RecordAndLogAudioChunkSent(raw_bytes.size());
   backend_->SendAudioChunk(
       base::subtle::reinterpret_span<const int16_t>(raw_bytes));
 }
 
 void TtcConversation::OnInputEnergyUpdated(float energy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (backend_ && !audio_controller_.isPlaying &&
+      backend_->is_transport_connected()) {
+    peak_input_energy_ = std::max(peak_input_energy_, energy);
+  }
   if (delegate_) {
     delegate_->OnAudioEnergyUpdated(energy);
   }
@@ -276,6 +303,7 @@ void TtcConversation::OnAudioOutput(base::span<const int16_t> audio_data,
   if (audio_data.empty()) {
     return;
   }
+  FlushSentAudioJournalState();
   base::span<const uint8_t> audio_bytes = base::as_byte_span(audio_data);
   NSData* pcm_data = [NSData dataWithBytes:audio_bytes.data()
                                     length:audio_bytes.size()];
@@ -359,6 +387,7 @@ void TtcConversation::LogBackendSetupStarted() {
 }
 
 void TtcConversation::LogBackendInitialized() {
+  logged_disconnected_drop_ = false;
   if (!journal_) {
     return;
   }
@@ -368,6 +397,7 @@ void TtcConversation::LogBackendInitialized() {
 }
 
 void TtcConversation::LogBackendClosed() {
+  FlushSentAudioJournalState();
   if (!journal_) {
     return;
   }
@@ -377,6 +407,7 @@ void TtcConversation::LogBackendClosed() {
 }
 
 void TtcConversation::LogBackendError(ttc::ErrorCode error) {
+  FlushSentAudioJournalState();
   if (!journal_) {
     return;
   }
@@ -390,9 +421,82 @@ void TtcConversation::LogBackendError(ttc::ErrorCode error) {
           .Build());
 }
 
+void TtcConversation::LogAudioInputSuppressed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FlushSentAudioJournalState();
+  if (logged_playback_suppression_) {
+    return;
+  }
+  logged_playback_suppression_ = true;
+  if (!journal_) {
+    return;
+  }
+  journal_->Log(TTCJournalComponent::kAudio, "AudioInputSuppressed",
+                TTCJournalDetailsBuilder()
+                    .SetSummary("Audio input suppressed (playback active)")
+                    .Add("reason", "playback_active")
+                    .Build());
+}
+
+void TtcConversation::LogAudioInputDropped() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FlushSentAudioJournalState();
+  if (logged_disconnected_drop_) {
+    return;
+  }
+  logged_disconnected_drop_ = true;
+  if (!journal_) {
+    return;
+  }
+  journal_->LogError(TTCJournalComponent::kAudio, "AudioInputDropped",
+                     TTCJournalDetailsBuilder()
+                         .SetSummary("Audio input dropped (backend not ready)")
+                         .Add("reason", "backend_not_connected")
+                         .Build());
+}
+
+void TtcConversation::RecordAndLogAudioChunkSent(size_t byte_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  logged_disconnected_drop_ = false;
+  const bool is_first_chunk = (sent_audio_chunks_ == 0);
+  sent_audio_chunks_++;
+  sent_audio_bytes_ += byte_size;
+  if (is_first_chunk && journal_) {
+    journal_->Log(TTCJournalComponent::kAudio, "AudioInputStarted",
+                  TTCJournalDetailsBuilder()
+                      .SetSummary("Sending audio to server...")
+                      .Build());
+  }
+}
+
+void TtcConversation::FlushSentAudioJournalState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (sent_audio_chunks_ == 0) {
+    peak_input_energy_ = 0.0f;
+    return;
+  }
+  if (journal_) {
+    journal_->Log(
+        TTCJournalComponent::kAudio, "AudioInputSent",
+        TTCJournalDetailsBuilder()
+            .SetSummary(
+                FormatAudioSentSummary(sent_audio_chunks_, sent_audio_bytes_))
+            .Add("chunks", sent_audio_chunks_)
+            .Add("bytes", sent_audio_bytes_)
+            .Add("peak_energy", base::StringPrintf("%.2f", peak_input_energy_))
+            .Build());
+  }
+  sent_audio_chunks_ = 0;
+  sent_audio_bytes_ = 0;
+  peak_input_energy_ = 0.0f;
+}
+
 void TtcConversation::LogGenerationStateChanged(bool started,
                                                 bool completed,
                                                 bool interrupted) {
+  if (completed || interrupted) {
+    FlushSentAudioJournalState();
+  }
   if (!journal_) {
     return;
   }
@@ -415,6 +519,7 @@ void TtcConversation::LogOrUpdateInputTranscription(const std::string& chunk) {
 }
 
 void TtcConversation::LogOrUpdateOutputTranscription(const std::string& chunk) {
+  FlushSentAudioJournalState();
   LogOrUpdateTranscriptionEntry(journal_.get(), chunk, "TtcOutputTranscription",
                                 "Output: ", output_transcription_.text,
                                 output_transcription_.chunks,
@@ -422,6 +527,7 @@ void TtcConversation::LogOrUpdateOutputTranscription(const std::string& chunk) {
 }
 
 void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
+  FlushSentAudioJournalState();
   if (!journal_) {
     return;
   }
@@ -434,6 +540,9 @@ void TtcConversation::LogToolCallReceived(const std::string& tool_name) {
 
 void TtcConversation::ResetTurnJournalState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FlushSentAudioJournalState();
+  logged_playback_suppression_ = false;
+  logged_disconnected_drop_ = false;
   input_transcription_ = {};
   output_transcription_ = {};
 }
