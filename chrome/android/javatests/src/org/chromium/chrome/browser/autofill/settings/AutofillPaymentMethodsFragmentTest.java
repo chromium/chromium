@@ -2062,19 +2062,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
-    public void testTitle_HoTDisabled_showsPaymentMethods() throws Exception {
-        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
-
-        AutofillPaymentMethodsFragment fragment =
-                (AutofillPaymentMethodsFragment) activity.getMainFragment();
-        assertThat(fragment.getPageTitle().get())
-                .isEqualTo(activity.getString(R.string.autofill_payment_methods));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
     public void testTitle_HoTEnabled_showsPayments() throws Exception {
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 

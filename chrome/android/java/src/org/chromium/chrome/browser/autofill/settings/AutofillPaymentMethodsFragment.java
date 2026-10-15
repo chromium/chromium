@@ -120,11 +120,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
-            mPageTitle.set(getString(R.string.autofill_payments_title));
-        } else {
-            mPageTitle.set(getString(R.string.autofill_payment_methods));
-        }
+        mPageTitle.set(getString(R.string.autofill_payments_title));
 
         requireActivity()
                 .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
@@ -274,8 +270,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             createMandatoryReauthSwitch();
         }
 
-        ChromeSwitchPreference saveCvcSwitch =
-                new ChromeSwitchPreference(getStyledContext(), null);
+        ChromeSwitchPreference saveCvcSwitch = new ChromeSwitchPreference(getStyledContext(), null);
         saveCvcSwitch.setTitle(R.string.autofill_settings_page_enable_cvc_storage_label);
         saveCvcSwitch.setSummary(R.string.autofill_settings_page_enable_cvc_storage_sublabel);
         saveCvcSwitch.setKey(PREF_SAVE_CVC);
@@ -285,8 +280,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 personalDataManager.isAutofillPaymentMethodsEnabled() && !disabledSettings);
         saveCvcSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
-                        personalDataManager.setAutofillPaymentCvcStorage((boolean) newValue);
-                        return true;
+                    personalDataManager.setAutofillPaymentCvcStorage((boolean) newValue);
+                    return true;
                 });
         getPreferenceScreen().addPreference(saveCvcSwitch);
 
