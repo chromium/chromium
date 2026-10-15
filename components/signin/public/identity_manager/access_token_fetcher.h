@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
@@ -221,6 +222,11 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override;
 
+  // Records the latency of the access token fetch for the "Request" stage
+  // (measured from `StartAccessTokenRequest()`) and the "EndToEnd" stage
+  // (measured from the creation of this object).
+  void RecordLatency(bool success);
+
   // Invokes |callback_| with (|error|, |access_token_info|). Per the contract
   // of this class, it is allowed for clients to delete this object as part of
   // the invocation of |callback_|. Hence, this object must assume that it is
@@ -248,6 +254,16 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       token_service_observation_{this};
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
+
+  // Time at which this fetcher was created. Used to record the end-to-end
+  // latency of the access token fetch, including any time spent waiting for a
+  // refresh token to become available.
+  const base::TimeTicks creation_time_ = base::TimeTicks::Now();
+
+  // Time at which the access token request was started. Used to record the
+  // latency of the access token request. Note that this excludes any time spent
+  // waiting for a refresh token to become available.
+  base::TimeTicks access_token_request_start_time_;
 
   const OAuthConsumerId oauth_consumer_id_;
 };

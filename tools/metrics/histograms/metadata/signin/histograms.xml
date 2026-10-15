@@ -209,6 +209,49 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <token key="Error" variants="AccessTokenFetchFailureError"/>
 </histogram>
 
+<histogram name="Signin.AccessTokenFetch.Latency.{Stage}.{Result}" units="ms"
+    expires_after="2027-10-01">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the duration of an OAuth2 access token fetch, or of one of its
+    stages, that finished with {Result}. {Stage} Fetches cancelled by the token
+    service are recorded as failures in the EndToEnd and Request stages, like in
+    the Signin.AccessTokenFetch.Failure.* histograms: with REQUEST_CANCELED when
+    the refresh token is updated (on Android, every time the device accounts are
+    reloaded) or on shutdown, and with ACCOUNT_NOT_FOUND when the refresh token
+    is revoked (e.g. on sign-out). The TokenService stage is not recorded for
+    these cancellations. The EndToEnd and Request stages are not recorded if the
+    fetcher is destroyed before the fetch completes, nor for device tokens on
+    iOS.
+  </summary>
+  <token key="Stage">
+    <variant name="EndToEnd"
+        summary="From the creation of the access token fetcher until the
+                 result is returned to the client, including any wait for a
+                 refresh token to become available. Includes requests served
+                 from the cache. Recorded when the fetcher returns its
+                 result."/>
+    <variant name="Request"
+        summary="From the start of the access token request until the result
+                 is returned to the client, excluding any wait for a refresh
+                 token. Includes requests served from the cache, which are
+                 expected to be very fast. Recorded when the fetcher returns
+                 its result."/>
+    <variant name="TokenService"
+        summary="A single attempt by the token service to get a token from
+                 the platform, e.g. from the system account manager on
+                 Android (including retries and network waits on the Android
+                 side) or from Gaia on desktop. Cache hits and delays between
+                 retries are excluded. An attempt may serve several
+                 concurrent requests. Recorded when each attempt completes."/>
+  </token>
+  <token key="Result">
+    <variant name="Failure" summary="a failure"/>
+    <variant name="Success" summary="a success"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.AccessTokenFetch.Success" enum="OAuthConsumerId"
     expires_after="never">
 <!-- expires-never: This is needed as long as Chrome is fetching access tokens

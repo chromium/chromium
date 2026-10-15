@@ -1608,6 +1608,14 @@ TEST_F(IdentityManagerTest,
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
   histogram_tester.ExpectUniqueSample("Signin.AccessTokenFetch.Success", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Request.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Request.Failure", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Failure", 0);
 }
 
 TEST_F(IdentityManagerTest,
@@ -1641,6 +1649,14 @@ TEST_F(IdentityManagerTest,
                 ->on_access_token_request_completed_error());
   histogram_tester.ExpectUniqueSample(
       "Signin.AccessTokenFetch.Failure.AccountNotFound", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Request.Failure", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Failure", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Request.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Success", 0);
 }
 
 TEST_F(IdentityManagerTest, GetAccountsCookieMutator) {

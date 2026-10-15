@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/base/consent_level.h"
@@ -189,6 +190,8 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
   // OAuth API scopes in this request.
   VerifyScopeAccess();
 
+  access_token_request_start_time_ = base::TimeTicks::Now();
+
   if (url_loader_factory_) {
     access_token_request_ = token_service_->StartRequestWithContext(
         account_id_, url_loader_factory_, scopes_, this);
@@ -234,6 +237,7 @@ void AccessTokenFetcher::OnGetTokenSuccess(
 
   base::UmaHistogramEnumeration("Signin.AccessTokenFetch.Success",
                                 oauth_consumer_id_);
+  RecordLatency(/*success=*/true);
   RunCallbackAndMaybeDie(
       GoogleServiceAuthError::AuthErrorNone(),
       AccessTokenInfo(token_response.access_token,
@@ -253,9 +257,38 @@ void AccessTokenFetcher::OnGetTokenFailure(
   std::string error_str = ErrorToString(error.state());
   base::UmaHistogramEnumeration("Signin.AccessTokenFetch.Failure." + error_str,
                                 oauth_consumer_id_);
+  RecordLatency(/*success=*/false);
   RunCallbackAndMaybeDie(error, AccessTokenInfo());
 
   // Potentially dead after the above invocation; nothing to do except return.
+}
+
+void AccessTokenFetcher::RecordLatency(bool success) {
+  // Each AccessTokenFetcher starts at most one access token request (see
+  // `StartAccessTokenRequest()`), so the start time is always set here.
+  CHECK(!access_token_request_start_time_.is_null(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/544919868): Remove this early return once the CHECK above is
+  // fatal.
+  if (access_token_request_start_time_.is_null()) {
+    return;
+  }
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta request_latency =
+      now - access_token_request_start_time_;
+  const base::TimeDelta end_to_end_latency = now - creation_time_;
+  if (success) {
+    base::UmaHistogramMediumTimes(
+        "Signin.AccessTokenFetch.Latency.Request.Success", request_latency);
+    base::UmaHistogramMediumTimes(
+        "Signin.AccessTokenFetch.Latency.EndToEnd.Success", end_to_end_latency);
+  } else {
+    base::UmaHistogramMediumTimes(
+        "Signin.AccessTokenFetch.Latency.Request.Failure", request_latency);
+    base::UmaHistogramMediumTimes(
+        "Signin.AccessTokenFetch.Latency.EndToEnd.Failure", end_to_end_latency);
+  }
+  // Guard against recording the same request twice.
+  access_token_request_start_time_ = base::TimeTicks();
 }
 
 void AccessTokenFetcher::RunCallbackAndMaybeDie(

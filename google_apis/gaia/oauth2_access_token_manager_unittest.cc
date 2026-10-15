@@ -7,8 +7,11 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -17,11 +20,16 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/gaia/oauth2_access_token_manager_test_util.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -307,7 +315,8 @@ class OAuth2AccessTokenManagerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   CoreAccountId account_id_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   FakeOAuth2AccessTokenManagerDelegate delegate_;
@@ -327,6 +336,130 @@ TEST_F(OAuth2AccessTokenManagerTest, StartRequest) {
 
   EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(0, consumer_.number_of_errors_);
+}
+
+// Test that the TokenService latency is recorded on a successful fetch, and
+// not recorded when the token is served from the cache.
+TEST_F(OAuth2AccessTokenManagerTest, RecordsTokenServiceLatencyOnSuccess) {
+  base::HistogramTester histogram_tester;
+  OAuth2AccessTokenManager::ScopeSet scope_list;
+  scope_list.insert("scope");
+  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+
+  CreateRequestAndBlockUntilComplete(account_id_, scope_list);
+  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Failure", 0);
+
+  // The second request is served from the cache, so no latency is recorded.
+  CreateRequestAndBlockUntilComplete(account_id_, scope_list);
+  EXPECT_EQ(2, consumer_.number_of_successful_tokens_);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Failure", 0);
+}
+
+// Test that the TokenService latency is recorded on a failed fetch.
+TEST_F(OAuth2AccessTokenManagerTest, RecordsTokenServiceLatencyOnFailure) {
+  base::HistogramTester histogram_tester;
+  SimulateOAuthTokenResponse("", net::HTTP_BAD_REQUEST);
+
+  CreateRequestAndBlockUntilComplete(account_id_,
+                                     OAuth2AccessTokenManager::ScopeSet());
+  EXPECT_EQ(1, consumer_.number_of_errors_);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Failure", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Success", 0);
+}
+
+// Test that the TokenService latency is recorded once per attempt when a fetch
+// is retried after a transient error, and that the backoff delay between
+// attempts is not included.
+TEST_F(OAuth2AccessTokenManagerTest, RecordsTokenServiceLatencyPerAttempt) {
+  base::HistogramTester histogram_tester;
+  const GURL token_url = GaiaUrls::GetInstance()->oauth2_token_url();
+  // The first attempt fails with a transient (connection) error, and the retry
+  // succeeds.
+  int attempts = 0;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url != token_url) {
+          return;
+        }
+        if (++attempts == 1) {
+          test_url_loader_factory_.AddResponse(
+              token_url, network::mojom::URLResponseHead::New(), std::string(),
+              network::URLLoaderCompletionStatus(net::ERR_FAILED));
+        } else {
+          SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+        }
+      }));
+
+  const base::TimeTicks start = base::TimeTicks::Now();
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      token_manager_->StartRequest(
+          account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
+  // `Run()` fast-forwards mock time past the retry backoff.
+  run_loop.Run();
+
+  EXPECT_EQ(2, attempts);
+  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
+  EXPECT_EQ(0, consumer_.number_of_errors_);
+  // The retry was delayed by a backoff of at least 1 second...
+  EXPECT_GE(base::TimeTicks::Now() - start, base::Seconds(1));
+  // ... which is not included in either attempt's latency.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.TokenService.Failure", base::TimeDelta(),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.TokenService.Success", base::TimeDelta(),
+      1);
+}
+
+// Test that the TokenService latency measures the time until the underlying
+// fetcher returns a result.
+TEST_F(OAuth2AccessTokenManagerTest, RecordsTokenServiceLatencyDuration) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  consumer_.SetResponseCompletedClosure(run_loop.QuitClosure());
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      token_manager_->StartRequest(
+          account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
+
+  // The response arrives 300ms after the fetch started.
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+  run_loop.Run();
+
+  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.TokenService.Success",
+      base::Milliseconds(300), 1);
+}
+
+// Test that the TokenService latency is not recorded when the token service
+// cancels the fetch, consistently with Signin.OAuth2TokenGetResult.
+TEST_F(OAuth2AccessTokenManagerTest,
+       DoesNotRecordTokenServiceLatencyWhenTokenServiceCancels) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      token_manager_->StartRequest(
+          account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
+
+  token_manager_->CancelRequestsForAccount(
+      account_id_, GoogleServiceAuthError::CreateRequestCanceled());
+
+  EXPECT_EQ(1, consumer_.number_of_errors_);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Failure", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.TokenService.Success", 0);
 }
 
 // Test that destroying `OAuth2AccessTokenManager` triggers

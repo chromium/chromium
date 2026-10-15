@@ -9,7 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -199,6 +201,11 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   // and false otherwise.
   bool RetryIfPossible(const GoogleServiceAuthError& error);
 
+  // Records the latency of the current fetch attempt, measured from the last
+  // call to `Start()`. Must only be called while `fetcher_` is set, which
+  // guarantees that `Start()` was called.
+  void RecordAttemptLatency(bool success);
+
   const raw_ptr<OAuth2AccessTokenManager> oauth2_access_token_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const CoreAccountId account_id_;
@@ -209,6 +216,10 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   int retry_number_;
   base::OneShotTimer retry_timer_;
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher_;
+
+  // Time at which the current fetch attempt was started. Used to record the
+  // latency of each individual attempt (retries are recorded separately).
+  base::TimeTicks attempt_start_time_;
 
   // Token binding challenge from the last server response or an empty string if
   // the response didn't contain any challenge.
@@ -270,6 +281,7 @@ OAuth2AccessTokenManager::Fetcher::~Fetcher() {
 }
 
 void OAuth2AccessTokenManager::Fetcher::Start() {
+  attempt_start_time_ = base::TimeTicks::Now();
   fetcher_ = oauth2_access_token_manager_->CreateAccessTokenFetcher(
       account_id_, url_loader_factory_, this, token_binding_challenge_);
   DCHECK(fetcher_);
@@ -284,6 +296,7 @@ void OAuth2AccessTokenManager::Fetcher::Start() {
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   CHECK(fetcher_);
+  RecordAttemptLatency(/*success=*/true);
   OAuth2AccessTokenConsumer::TokenResponse fetcher_token_response =
       token_response;
   fetcher_.reset();
@@ -300,6 +313,7 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   CHECK(fetcher_);
+  RecordAttemptLatency(/*success=*/false);
   GoogleServiceAuthError fetcher_error = error;
   fetcher_.reset();
 
@@ -309,6 +323,24 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
 
   RecordOAuth2TokenFetchResult(fetcher_error.state());
   InformFetchCompleted(base::unexpected(fetcher_error));
+}
+
+void OAuth2AccessTokenManager::Fetcher::RecordAttemptLatency(bool success) {
+  // `fetcher_` is only set by `Start()`, right after `attempt_start_time_`, so
+  // the start time is always set here.
+  CHECK(!attempt_start_time_.is_null(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/544919868): Remove this early return once the CHECK above is
+  // fatal.
+  if (attempt_start_time_.is_null()) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(
+      success ? "Signin.AccessTokenFetch.Latency.TokenService.Success"
+              : "Signin.AccessTokenFetch.Latency.TokenService.Failure",
+      base::TimeTicks::Now() - attempt_start_time_);
+  // Guard against recording the same attempt twice. `Start()` sets it again
+  // for the next attempt.
+  attempt_start_time_ = base::TimeTicks();
 }
 
 std::string OAuth2AccessTokenManager::Fetcher::GetConsumerName() const {

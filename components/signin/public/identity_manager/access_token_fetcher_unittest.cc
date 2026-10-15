@@ -10,8 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -201,6 +203,8 @@ class AccessTokenFetcherTest
     return signin_client_.GetOAuthConsumerFromId(consumer_id);
   }
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  private:
   std::unique_ptr<AccountTrackerService> CreateAccountTrackerService() {
 #if BUILDFLAG(IS_ANDROID)
@@ -220,7 +224,8 @@ class AccessTokenFetcherTest
     }
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSyncable pref_service_;
   TestSigninClient signin_client_;
   metrics::ProfileMetricsService profile_metrics_service_;
@@ -493,6 +498,136 @@ TEST_F(AccessTokenFetcherTest, FailedAccessTokenRequest) {
   auto error = GoogleServiceAuthError::FromServiceUnavailable("");
   EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
   token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
+}
+
+// Test that EndToEnd latency includes the time spent waiting for a refresh
+// token, while Request latency does not.
+TEST_F(AccessTokenFetcherTest, RecordsEndToEndAndRequestLatency) {
+  base::HistogramTester histogram_tester;
+  TestTokenCallback callback;
+  CoreAccountId account_id = SetPrimaryAccount(kTestGaiaId, kTestEmail);
+
+  // The refresh token is not available yet, so the fetcher waits for it.
+  auto fetcher =
+      CreateFetcher(account_id, callback.Get(),
+                    AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  // The refresh token becomes available, which starts the request.
+  base::RunLoop run_loop;
+  set_on_access_token_request_callback(run_loop.QuitClosure());
+  token_service()->UpdateCredentials(account_id, "refresh token");
+  run_loop.Run();
+
+  // The request completes 200ms later.
+  task_environment().FastForwardBy(base::Milliseconds(200));
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
+                            access_token_info()));
+  token_service()->IssueAllTokensForAccount(
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Success",
+      base::Milliseconds(1200), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.Request.Success",
+      base::Milliseconds(200), 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Failure", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Latency.Request.Failure", 0);
+}
+
+// Test that the latency of failed requests is recorded.
+TEST_F(AccessTokenFetcherTest, RecordsLatencyOnFailure) {
+  base::HistogramTester histogram_tester;
+  TestTokenCallback callback;
+  CoreAccountId account_id = SetPrimaryAccount(kTestGaiaId, kTestEmail);
+  token_service()->UpdateCredentials(account_id, "refresh token");
+
+  base::RunLoop run_loop;
+  set_on_access_token_request_callback(run_loop.QuitClosure());
+  auto fetcher = CreateFetcher(account_id, callback.Get(),
+                               AccessTokenFetcher::Mode::kImmediate);
+  run_loop.Run();
+
+  task_environment().FastForwardBy(base::Milliseconds(300));
+  auto error = GoogleServiceAuthError::FromServiceUnavailable("");
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
+  token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Failure",
+      base::Milliseconds(300), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.Request.Failure",
+      base::Milliseconds(300), 1);
+}
+
+// Test that the latency of requests failing with REQUEST_CANCELED is recorded
+// as a failure, like their count in
+// Signin.AccessTokenFetch.Failure.RequestCanceled.
+TEST_F(AccessTokenFetcherTest, RecordsRequestCanceledErrorAsFailure) {
+  base::HistogramTester histogram_tester;
+  TestTokenCallback callback;
+  CoreAccountId account_id = SetPrimaryAccount(kTestGaiaId, kTestEmail);
+  token_service()->UpdateCredentials(account_id, "refresh token");
+
+  base::RunLoop run_loop;
+  set_on_access_token_request_callback(run_loop.QuitClosure());
+  auto fetcher = CreateFetcher(account_id, callback.Get(),
+                               AccessTokenFetcher::Mode::kImmediate);
+  run_loop.Run();
+
+  task_environment().FastForwardBy(base::Milliseconds(100));
+  auto error = GoogleServiceAuthError::CreateRequestCanceled();
+  EXPECT_CALL(callback, Run(error, AccessTokenInfo()));
+  token_service()->IssueErrorForAllPendingRequestsForAccount(account_id, error);
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccessTokenFetch.Failure.RequestCanceled", 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.EndToEnd.Failure",
+      base::Milliseconds(100), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Signin.AccessTokenFetch.Latency.Request.Failure",
+      base::Milliseconds(100), 1);
+}
+
+// Test that no latency is recorded if the fetcher is destroyed before the
+// request completes.
+TEST_F(AccessTokenFetcherTest, DoesNotRecordLatencyIfDestroyed) {
+  base::HistogramTester histogram_tester;
+  TestTokenCallback callback;
+  CoreAccountId account_id = SetPrimaryAccount(kTestGaiaId, kTestEmail);
+  token_service()->UpdateCredentials(account_id, "refresh token");
+
+  base::RunLoop run_loop;
+  set_on_access_token_request_callback(run_loop.QuitClosure());
+  auto fetcher = CreateFetcher(account_id, callback.Get(),
+                               AccessTokenFetcher::Mode::kImmediate);
+  run_loop.Run();
+
+  fetcher.reset();
+  token_service()->IssueAllTokensForAccount(
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
+
+  EXPECT_TRUE(
+      histogram_tester
+          .GetTotalCountsForPrefix("Signin.AccessTokenFetch.Latency.EndToEnd.")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester
+          .GetTotalCountsForPrefix("Signin.AccessTokenFetch.Latency.Request.")
+          .empty());
 }
 
 TEST_F(AccessTokenFetcherTest, MultipleRequestsForSameAccountFulfilled) {
