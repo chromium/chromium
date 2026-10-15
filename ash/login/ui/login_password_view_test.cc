@@ -60,6 +60,7 @@ class LoginPasswordViewTest : public LoginTestBase {
   }
 
   void TearDown() override {
+    view_->SetLoginArrowNavigationDelegate(nullptr);
     arrow_navigation_delegate_.reset();
     view_ = nullptr;
     LoginTestBase::TearDown();

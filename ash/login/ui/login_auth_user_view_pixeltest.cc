@@ -182,6 +182,11 @@ class LoginAuthUserViewPixelTest : public LoginAuthUserViewTestBase {
     LoginAuthUserViewTestBase::SetUp();
     InitializeViewForUser(CreateUser("user@domain.com"));
   }
+
+  void TearDown() override {
+    container_->RemoveChildViewT(view_.ExtractAsDangling());
+    LoginAuthUserViewTestBase::TearDown();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(

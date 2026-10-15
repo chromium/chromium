@@ -742,6 +742,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
 }
 
 LoginAuthUserView::~LoginAuthUserView() {
+  password_view_->SetLoginArrowNavigationDelegate(nullptr);
+  password_view_ = nullptr;
+  user_view_ = nullptr;
   DeleteRemoveAccountDialog();
 }
 
@@ -812,6 +815,7 @@ void LoginAuthUserView::SetAuthMethods(
   password_view_->SetFocusEnabledForTextfield(current_state.has_password);
   password_view_->SetVisible(current_state.has_password);
   password_view_->layer()->SetOpacity(current_state.has_password);
+  password_view_->SetLoginArrowNavigationDelegate(nullptr);
   arrow_navigation_delegate_ =
       std::make_unique<LoginScreenArrowNavigationDelegate>();
   password_view_->SetLoginArrowNavigationDelegate(

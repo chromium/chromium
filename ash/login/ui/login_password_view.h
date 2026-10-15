@@ -186,8 +186,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   OnPasswordTextChanged on_password_text_changed_;
 
   // Arrow keystrokes delegate.
-  raw_ptr<LoginArrowNavigationDelegate, DanglingUntriaged>
-      arrow_navigation_delegate_ = nullptr;
+  raw_ptr<LoginArrowNavigationDelegate> arrow_navigation_delegate_ = nullptr;
 
   // Clears the password field after a time without action if the display
   // password button is visible.
