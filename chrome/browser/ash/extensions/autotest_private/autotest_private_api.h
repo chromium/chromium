@@ -1278,6 +1278,7 @@ class AutotestPrivateSetMetricsEnabledFunction : public ExtensionFunction {
   ~AutotestPrivateSetMetricsEnabledFunction() override;
   ResponseAction Run() override;
 
+  void OnOwnershipStatusKnown();
   void OnDeviceSettingsStored();
 
   bool target_value_ = false;

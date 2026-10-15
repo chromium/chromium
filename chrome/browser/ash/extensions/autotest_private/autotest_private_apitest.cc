@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -33,6 +34,9 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -52,6 +56,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -793,6 +798,85 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
   NET_LOG(DEBUG) << "NetworkTestLog";
   USB_LOG(DEBUG) << "USBTestLog";
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("getDeviceEventLog")) << message_;
+}
+
+// Keeps the device unowned, so `StatsReportingController` only stores pending
+// values, as in OOBE before ownership is taken.
+class AutotestPrivateSetMetricsEnabledApiTest
+    : public AutotestPrivateApiTestWithContextType {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    AutotestPrivateApiTestWithContextType::SetUpInProcessBrowserTestFixture();
+    // No owner key exists and generating one fails, so the signed-in user
+    // never takes ownership.
+    owner_key_util_->SimulateGenerateKeyFailure(/*fail_times=*/999);
+    ash::OwnerSettingsServiceAshFactory::GetInstance()
+        ->SetOwnerKeyUtilForTesting(owner_key_util_);
+  }
+
+ protected:
+  bool RunSetMetricsEnabledTest(bool enabled) {
+    base::ListValue args;
+    args.Append(enabled);
+    return RunAutotestPrivateExtensionTest("setMetricsEnabled",
+                                           std::move(args));
+  }
+
+  scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_ =
+      base::MakeRefCounted<ownership::MockOwnerKeyUtil>();
+};
+
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         AutotestPrivateSetMetricsEnabledApiTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutotestPrivateSetMetricsEnabledApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+// A pending `true` (e.g. from OOBE pre-consent metrics) must be overridden even
+// though `kStatsReportingPref` is still `false`.
+IN_PROC_BROWSER_TEST_P(AutotestPrivateSetMetricsEnabledApiTest,
+                       DisableOverridesPendingValueBeforeOwnership) {
+  ASSERT_NE(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
+            ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken);
+  ash::StatsReportingController* controller =
+      ash::StatsReportingController::Get();
+  controller->SetEnabled(browser()->GetProfile(), true);
+  ASSERT_TRUE(controller->IsEnabled());
+
+  ASSERT_TRUE(RunSetMetricsEnabledTest(false)) << message_;
+  EXPECT_FALSE(controller->IsEnabled());
+}
+
+// The call must respond without waiting for the value to be persisted, which
+// only happens once ownership is taken.
+IN_PROC_BROWSER_TEST_P(AutotestPrivateSetMetricsEnabledApiTest,
+                       EnableRespondsBeforeOwnership) {
+  ASSERT_NE(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
+            ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken);
+  ash::StatsReportingController* controller =
+      ash::StatsReportingController::Get();
+  controller->SetEnabled(browser()->GetProfile(), false);
+  ASSERT_FALSE(controller->IsEnabled());
+
+  ASSERT_TRUE(RunSetMetricsEnabledTest(true)) << message_;
+  EXPECT_TRUE(controller->IsEnabled());
+}
+
+// `IsEnabled()` already matches the target via the pending value (e.g. from
+// OOBE pre-consent metrics) while `kStatsReportingPref` is still `false`, so
+// the call must return early and keep the value.
+IN_PROC_BROWSER_TEST_P(AutotestPrivateSetMetricsEnabledApiTest,
+                       ReturnsEarlyWhenPendingValueMatchesTarget) {
+  ASSERT_NE(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
+            ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken);
+  ash::StatsReportingController* controller =
+      ash::StatsReportingController::Get();
+  controller->SetEnabled(browser()->GetProfile(), true);
+  ASSERT_TRUE(controller->IsEnabled());
+
+  ASSERT_TRUE(RunSetMetricsEnabledTest(true)) << message_;
+  EXPECT_TRUE(controller->IsEnabled());
 }
 
 }  // namespace extensions

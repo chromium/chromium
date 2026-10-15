@@ -1653,6 +1653,13 @@ const setDeviceLanguage = [
   },
 ];
 
+const setMetricsEnabledTests = [
+  function setMetricsEnabled(enabled) {
+    chrome.autotestPrivate.setMetricsEnabled(
+        enabled, chrome.test.callbackPass());
+  },
+];
+
 const getDeviceEventLog = [
   function getDeviceEventLogSingle() {
     chrome.autotestPrivate.getDeviceEventLog(
@@ -1748,6 +1755,7 @@ const test_suites = {
   'isFieldTrialActive': isFieldTrialActiveTests,
   'clearAllowedPref': clearAllowedPrefTests,
   'setDeviceLanguage': setDeviceLanguage,
+  'setMetricsEnabled': setMetricsEnabledTests,
   'getDeviceEventLog': getDeviceEventLog,
 };
 

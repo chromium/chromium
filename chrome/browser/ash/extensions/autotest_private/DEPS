@@ -40,6 +40,7 @@ specific_include_rules = {
     "+ui/message_center",
   ],
   "autotest_private_apitest\\.cc": [
+    "+chrome/browser/ash/ownership/owner_settings_service_ash_factory.h",
     "+chrome/browser/ui/browser_window.h",
   ],
 }

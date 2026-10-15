@@ -55,6 +55,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -117,6 +118,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -4840,25 +4842,45 @@ AutotestPrivateSetMetricsEnabledFunction::Run() {
 
   target_value_ = params->enabled;
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Wait until ownership status is loaded (`kOwnershipNone` or
+  // `kOwnershipTaken`) before reading or updating `StatsReportingController`.
+  ash::DeviceSettingsService::Get()->GetOwnershipStatusAsync(
+      base::IgnoreArgs<ash::DeviceSettingsService::OwnershipStatus>(
+          base::BindOnce(
+              &AutotestPrivateSetMetricsEnabledFunction::OnOwnershipStatusKnown,
+              this)));
 
-  bool value;
-  if (ash::CrosSettings::Get()->GetBoolean(ash::kStatsReportingPref, &value) &&
-      value == target_value_) {
-    VLOG(1) << "Value at target; returning early";
-    return RespondNow(NoArguments());
-  }
+  return RespondLater();
+}
+
+void AutotestPrivateSetMetricsEnabledFunction::OnOwnershipStatusKnown() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
 
   ash::StatsReportingController* stats_reporting_controller =
       ash::StatsReportingController::Get();
+
+  // Unlike `kStatsReportingPref`, `IsEnabled()` also reflects a pending value
+  // that is not persisted yet, e.g. one set in OOBE before ownership is taken.
+  if (stats_reporting_controller->IsEnabled() == target_value_) {
+    VLOG(1) << "Value at target; returning early";
+    Respond(NoArguments());
+    return;
+  }
+
+  // Before ownership is taken, `SetEnabled()` only stores a pending value that
+  // is persisted once ownership is taken, so don't wait for the store.
+  if (ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
+      ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
+    stats_reporting_controller->SetEnabled(profile, target_value_);
+    Respond(NoArguments());
+    return;
+  }
 
   stats_reporting_controller->SetOnDeviceSettingsStoredCallBack(base::BindOnce(
       &AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored, this));
 
   // Set the preference to indicate metrics are enabled/disabled.
   stats_reporting_controller->SetEnabled(profile, target_value_);
-
-  return RespondLater();
 }
 
 void AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored() {
