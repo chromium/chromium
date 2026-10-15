@@ -48,7 +48,7 @@ BASE_FEATURE(kEnableTouchDragCursorSync, base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, DesktopWindowTreeHostWin ensures HandleDestroying() is called
 // in HandleDestroyed() if WM_DESTROY was dropped before WM_NCDESTROY; see
 // https://crbug.com/330804494 and https://crbug.com/540755275.
-BASE_FEATURE(kHandleMissingWmDestroy, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHandleMissingWmDestroy, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Used to enable keyboard-accessible tooltips in Views UI, as opposed
