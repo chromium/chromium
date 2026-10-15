@@ -482,6 +482,12 @@
   E(kRestoreWindow, IDC_RESTORE_WINDOW) \
   E(kActionMoveWindow, IDC_MOVE_WINDOW) \
   E(kActionSizeWindow, IDC_SIZE_WINDOW)
+#elif BUILDFLAG(IS_ANDROID)
+#define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
+  E(kActionToggleMultiselect, IDC_TOGGLE_MULTISELECT) \
+  E(kActionOpenTabStripContextMenu, IDC_OPEN_TAB_STRIP_CONTEXT_MENU) \
+  E(kActionReorderTabStripItemLeft, IDC_REORDER_TAB_STRIP_ITEM_LEFT) \
+  E(kActionReorderTabStripItemRight, IDC_REORDER_TAB_STRIP_ITEM_RIGHT)
 #else
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS
 #endif  // BUILDFLAG(IS_CHROMEOS)

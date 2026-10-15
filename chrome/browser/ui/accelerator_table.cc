@@ -254,7 +254,7 @@ constexpr AcceleratorMapping kLinuxAndWinAcceleratorMap[] = {
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 constexpr AcceleratorMapping kAltTabSelectAcceleratorMap[] = {
     {ui::VKEY_1, ui::EF_ALT_DOWN, IDC_SELECT_TAB_0},
     {ui::VKEY_NUMPAD1, ui::EF_ALT_DOWN, IDC_SELECT_TAB_0},
@@ -275,11 +275,39 @@ constexpr AcceleratorMapping kAltTabSelectAcceleratorMap[] = {
     {ui::VKEY_9, ui::EF_ALT_DOWN, IDC_SELECT_LAST_TAB},
     {ui::VKEY_NUMPAD9, ui::EF_ALT_DOWN, IDC_SELECT_LAST_TAB},
 };
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_LINUX)
 constexpr AcceleratorMapping kLinuxAcceleratorMap[] = {
     {ui::VKEY_BROWSER_FAVORITES, ui::EF_NONE, IDC_SHOW_BOOKMARK_BAR},
 };
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr AcceleratorMapping kAndroidAcceleratorMap[] = {
+    {ui::VKEY_BROWSER_FORWARD, ui::EF_NONE, IDC_FORWARD},
+    {ui::VKEY_BROWSER_REFRESH, ui::EF_NONE, IDC_RELOAD},
+    {ui::VKEY_BROWSER_REFRESH, ui::EF_CONTROL_DOWN, IDC_RELOAD_BYPASSING_CACHE},
+    {ui::VKEY_BROWSER_REFRESH, ui::EF_SHIFT_DOWN, IDC_RELOAD_BYPASSING_CACHE},
+    // Some Android keyboards do not have a delete key, so assign it to
+    // backspace.
+    {ui::VKEY_BACK, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_CLEAR_BROWSING_DATA},
+    {ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_HELP_PAGE_VIA_KEYBOARD},
+    {ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_TAB_SEARCH},
+    {ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN, IDC_TASK_MANAGER_SHORTCUT},
+    {ui::VKEY_F10, ui::EF_SHIFT_DOWN, IDC_OPEN_TAB_STRIP_CONTEXT_MENU},
+    {ui::VKEY_LEFT, ui::EF_CONTROL_DOWN, IDC_REORDER_TAB_STRIP_ITEM_LEFT},
+    {ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN, IDC_REORDER_TAB_STRIP_ITEM_RIGHT},
+    {ui::VKEY_H, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_TOGGLE_MULTISELECT},
+    {ui::VKEY_Q, ui::EF_CONTROL_DOWN, IDC_EXIT},
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FEEDBACK},
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Prevent conflicts with global_keyboard_shortcuts_mac.mm and chromeos
 // accelerators.
@@ -295,6 +323,7 @@ constexpr AcceleratorMapping kTabGroupAcceleratorMap[] = {
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
 constexpr int kDebugModifier =
     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 
@@ -306,6 +335,7 @@ constexpr AcceleratorMapping kUIDebugAcceleratorMap[] = {
     {ui::VKEY_W, kDebugModifier, IDC_DEBUG_PRINT_WINDOW_HIERARCHY},
     {ui::VKEY_L, kDebugModifier, IDC_DEBUG_PRINT_LAYER_HIERARCHY},
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const int kRepeatableCommandIds[] = {
     IDC_FIND_NEXT,           IDC_FIND_PREVIOUS,       IDC_FOCUS_NEXT_PANE,
@@ -326,9 +356,13 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
 
   if (accelerators->empty()) {
     constexpr base::span<const AcceleratorMapping> kAcceleratorTables[] = {
-        kDevToolsAcceleratorMap,         kAcceleratorMap,
+        kDevToolsAcceleratorMap,
+        kAcceleratorMap,
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
         kDesktopOnlyAcceleratorMap,
+#endif
+#if BUILDFLAG(IS_ANDROID)
+        kAndroidAcceleratorMap,
 #endif
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
         kNonChromeOSAcceleratorMap,
@@ -342,8 +376,11 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
         kLinuxAndWinAcceleratorMap,
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+        kAltTabSelectAcceleratorMap,
+#endif
 #if BUILDFLAG(IS_LINUX)
-        kAltTabSelectAcceleratorMap,     kLinuxAcceleratorMap,
+        kLinuxAcceleratorMap,
 #endif
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
         kTabGroupAcceleratorMap,
@@ -366,11 +403,13 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
     }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
       accelerators->insert(accelerators->begin(),
                            std::begin(kUIDebugAcceleratorMap),
                            std::end(kUIDebugAcceleratorMap));
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     for (AcceleratorMapping& mapping : *accelerators) {
       mapping.action_id = chrome::GetActionIdForCommandId(mapping.command_id);
