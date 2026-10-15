@@ -32,6 +32,8 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/base/idle/idle.h"
+#include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 #include "ui/base/ui_base_paths.h"
@@ -76,6 +78,14 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   ~ChromeUnitTestSuiteInitializer() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
+    // Report the user as active by default so that unit tests never query the
+    // host's real idle or screen lock state. Without this, on Linux,
+    // global features such as SmartRestartMetricsObserver start
+    // DBusScreenSaverWatcher, whose async session bus calls can reply after
+    // the task environment's final RunUntilIdle() and leave a task pending at
+    // teardown, causing flaky MainThreadIsIdle() failures. Tests that need a
+    // specific state can nest their own ui::ScopedSetIdleState.
+    idle_state_override_.emplace(ui::IDLE_STATE_ACTIVE);
     TestingBrowserProcess::CreateInstance();
 #if !BUILDFLAG(IS_ANDROID)
     // Injects global publisher factory for unit_tests.
@@ -126,12 +136,14 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
 #if !BUILDFLAG(IS_ANDROID)
     publisher_host_factory_resetter_.reset();
 #endif
+    idle_state_override_.reset();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<base::AutoReset<std::unique_ptr<apps::PublisherHostFactory>>>
       publisher_host_factory_resetter_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+  std::optional<ui::ScopedSetIdleState> idle_state_override_;
 };
 
 }  // namespace

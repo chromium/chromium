@@ -570,6 +570,8 @@ source_set("chrome_unit_test_suite") {
     "//testing/gtest",
     "//ui/accessibility",
     "//ui/base",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
     "//ui/gfx",
     "//ui/gl:test_support",
   ]

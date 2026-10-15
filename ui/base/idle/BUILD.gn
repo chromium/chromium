@@ -128,4 +128,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
   ]
+
+  if (is_linux && use_dbus) {
+    sources += [ "idle_linux_unittest.cc" ]
+    deps += [ "//components/dbus" ]
+  }
 }

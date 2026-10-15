@@ -1299,6 +1299,10 @@ test("ui_base_unittests") {
     }
   }
 
+  if (is_linux && use_dbus) {
+    deps += [ "//ui/base/idle:unit_tests" ]
+  }
+
   if (is_android) {
     deps += [
       "//chrome:resources",

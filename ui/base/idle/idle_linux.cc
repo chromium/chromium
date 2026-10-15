@@ -226,6 +226,11 @@ class DBusScreenSaverWatcher {
 
 base::CallbackListSubscription AddScreenLockCallback(
     base::RepeatingCallback<void(bool)> callback) {
+  // When the idle state is overridden for testing, the lock state is fixed, so
+  // there is nothing to watch. Avoid probing the real D-Bus session bus.
+  if (IdleStateForTesting().has_value()) {
+    return {};
+  }
 #if BUILDFLAG(USE_DBUS)
   return DBusScreenSaverWatcher::GetInstance()->AddCallback(
       std::move(callback));

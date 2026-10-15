@@ -114,4 +114,8 @@ void Shutdown() {
   g_instance = nullptr;
 }
 
+bool IsInitializedForTesting() {
+  return g_instance != nullptr;
+}
+
 }  // namespace dbus_thread_linux

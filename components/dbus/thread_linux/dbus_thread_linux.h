@@ -53,6 +53,12 @@ scoped_refptr<dbus::Bus> GetSharedSystemBus();
 COMPONENT_EXPORT(COMPONENTS_DBUS)
 void Shutdown();
 
+// Returns whether the shared D-Bus thread and buses currently exist, i.e.
+// Initialize() or a getter above has run since the last Shutdown(). Must be
+// called on the thread that called Initialize().
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+bool IsInitializedForTesting();
+
 }  // namespace dbus_thread_linux
 
 #endif  // COMPONENTS_DBUS_THREAD_LINUX_DBUS_THREAD_LINUX_H_
