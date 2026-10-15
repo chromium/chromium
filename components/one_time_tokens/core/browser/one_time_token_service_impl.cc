@@ -68,55 +68,20 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
 }
 
 ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
-    OneTimeTokenSource source,
     base::Time expiration,
     Callback callback,
     base::OnceClosure expiration_callback) {
-  switch (source) {
-    case OneTimeTokenSource::kOnDeviceSms: {
-      if (!sms_.backend) {
-        callback.Run(OneTimeTokenSource::kOnDeviceSms,
-                     base::unexpected(OneTimeTokenRetrievalError::
-                                          kSmsOtpBackendPlatformNotSupported));
-        return ExpiringSubscription();
-      }
-      ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(
-          expiration, std::move(callback), std::move(expiration_callback));
-      RetrieveSmsOtpIfNeeded();
-      return subscription;
-    }
-    case OneTimeTokenSource::kGmail: {
-      ExpiringSubscription subscription = gmail_subscription_manager_.Subscribe(
-          expiration, std::move(callback), std::move(expiration_callback));
-      RetrieveGmailOtpIfNeeded(expiration);
-      return subscription;
-    }
-    case OneTimeTokenSource::kUnknown:
-      break;
+  if (!sms_.backend) {
+    callback.Run(
+        OneTimeTokenSource::kOnDeviceSms,
+        base::unexpected(
+            OneTimeTokenRetrievalError::kSmsOtpBackendPlatformNotSupported));
+    return ExpiringSubscription();
   }
-  NOTREACHED() << "OneTimeTokenServiceImpl::Subscribe: Unsupported source "
-               << static_cast<int>(source);
-}
-
-ExpiringSubscription OneTimeTokenServiceImpl::SubscribeToTickles(
-    OneTimeTokenSource source,
-    base::Time expiration,
-    TickleCallback callback) {
-  switch (source) {
-    case OneTimeTokenSource::kGmail: {
-      if (!gmail_.backend) {
-        return ExpiringSubscription();
-      }
-      return gmail_.backend->SubscribeToTickles(
-          expiration,
-          base::BindRepeating(std::move(callback), OneTimeTokenSource::kGmail));
-    }
-    case OneTimeTokenSource::kUnknown:
-    case OneTimeTokenSource::kOnDeviceSms:
-      NOTREACHED()
-          << "OneTimeTokenServiceImpl::SubscribeToTickles: Unsupported source "
-          << static_cast<int>(source);
-  }
+  ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(
+      expiration, std::move(callback), std::move(expiration_callback));
+  RetrieveSmsOtpIfNeeded();
+  return subscription;
 }
 
 std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
@@ -132,19 +97,6 @@ std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
   // that we can deliver the most recent token first.
   std::ranges::sort(tokens, {}, &OneTimeToken::on_device_arrival_time);
   return tokens;
-}
-
-bool OneTimeTokenServiceImpl::HasPendingRequests(
-    OneTimeTokenSource source) const {
-  switch (source) {
-    case OneTimeTokenSource::kGmail:
-      return gmail_.backend && gmail_.backend->HasPendingRequests();
-    case OneTimeTokenSource::kOnDeviceSms:
-      return sms_.has_pending_request;
-    case OneTimeTokenSource::kUnknown:
-      break;
-  }
-  return false;
 }
 
 void OneTimeTokenServiceImpl::RequestOneTimeToken(
@@ -213,37 +165,6 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
       base::BindOnce(&OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded,
                      weakptr_factory_.GetWeakPtr()),
       kSmsRefetchInterval);
-}
-
-void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded(base::Time expiration) {
-  if (!gmail_.backend || !gmail_subscription_manager_.GetNumberSubscribers()) {
-    return;
-  }
-
-  if (gmail_subscription_.IsAlive()) {
-    // We use std::max to ensure that a new subscriber with a shorter expiration
-    // doesn't accidentally terminate the backend session for existing
-    // subscribers who need it to stay alive longer.
-    base::Time new_expiration =
-        std::max(expiration, gmail_subscription_.GetExpirationTime());
-    LOG_OTT(&log_sink_) << "Extended existing Gmail backend subscription to "
-                        << "expiration=" << new_expiration;
-    gmail_subscription_.SetExpirationTime(new_expiration);
-    return;
-  }
-
-  LOG_OTT(&log_sink_) << "Created new Gmail backend subscription with "
-                      << "expiration=" << expiration;
-  gmail_subscription_ = gmail_.backend->Subscribe(
-      expiration, base::BindRepeating(
-                      &OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend,
-                      weakptr_factory_.GetWeakPtr()));
-}
-
-void OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend(
-    base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
-  gmail_subscription_manager_.Notify(OneTimeTokenSource::kGmail,
-                                     std::move(reply));
 }
 
 }  // namespace one_time_tokens

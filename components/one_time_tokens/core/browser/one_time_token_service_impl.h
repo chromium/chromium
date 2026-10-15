@@ -33,9 +33,9 @@ inline constexpr base::TimeDelta kSmsRefetchInterval = base::Seconds(5);
 class OneTimeTokenServiceImpl : public OneTimeTokenService {
  public:
   // If `sms_otp_backend` is null, this class does not do any SMS-based
-  // subscriptions. If `gmail_otp_backend` is null, this class does not do any
-  // Gmail-based subscriptions. If `log_handler` is provided, it is registered
-  // with `log_sink_` for the lifetime of this service.
+  // subscriptions. If `gmail_otp_backend` is null, this class does not return
+  // any Gmail-based tokens. If `log_handler` is provided, it is registered with
+  // `log_sink_` for the lifetime of this service.
   OneTimeTokenServiceImpl(SmsOtpBackend* sms_otp_backend,
                           GmailOtpBackend* gmail_otp_backend,
                           OneTimeTokenLogSink::LogHandler log_handler = {});
@@ -47,16 +47,10 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   OneTimeTokenLogSink* log_sink() override;
   void GetRecentOneTimeTokens(Callback callback) override;
   [[nodiscard]] ExpiringSubscription Subscribe(
-      OneTimeTokenSource source,
       base::Time expiration,
       Callback callback,
       base::OnceClosure expiration_callback) override;
-  [[nodiscard]] ExpiringSubscription SubscribeToTickles(
-      OneTimeTokenSource source,
-      base::Time expiration,
-      TickleCallback callback) override;
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
-  bool HasPendingRequests(OneTimeTokenSource source) const override;
   void RequestOneTimeToken(
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<OneTimeToken>)> callback) override;
@@ -67,13 +61,9 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   void RetrieveSmsOtpIfNeeded();
   void OnResponseFromSmsOtpBackend(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
-  void RetrieveGmailOtpIfNeeded(base::Time expiration);
-  void OnResponseFromGmailOtpBackend(
-      base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   // Handles subscriptions to the `OneTimeTokenService`.
   ExpiringSubscriptionManager<CallbackSignature> sms_subscription_manager_;
-  ExpiringSubscriptionManager<CallbackSignature> gmail_subscription_manager_;
 
   // Handles requests of the `OneTimeTokenService` to the `SmsOtpBackend`.
   struct {
@@ -85,8 +75,6 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   struct {
     raw_ptr<GmailOtpBackend> backend;
   } gmail_;
-
-  ExpiringSubscription gmail_subscription_;
 
   // Keys used by `cache_` to identify and deduplicate tokens. Unlike a direct
   // comparison of `OneTimeToken` objects (which was removed because different

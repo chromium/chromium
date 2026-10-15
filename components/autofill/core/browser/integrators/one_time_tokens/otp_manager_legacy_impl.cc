@@ -116,7 +116,6 @@ void OtpManagerLegacyImpl::GetRecentOtpsAndRenewSubscription() {
                                             kSmsOtpSubscriptionDuration);
   } else {
     sms_otp_subscription_ = one_time_token_service_->Subscribe(
-        OneTimeTokenSource::kOnDeviceSms,
         base::Time::Now() + kSmsOtpSubscriptionDuration,
         /*callback=*/
         base::BindRepeating(&OtpManagerLegacyImpl::OnOneTimeTokenReceived,
