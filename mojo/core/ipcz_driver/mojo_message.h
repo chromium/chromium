@@ -135,7 +135,7 @@ class MojoMessage {
 
   // A view into the message data, whether it's backed by `parcel_` or stored in
   // `data_storage_`.
-  base::raw_span<uint8_t, DanglingUntriaged> data_;
+  base::raw_span<uint8_t> data_;
 
   std::vector<IpczHandle> handles_;
   bool handles_consumed_ = false;

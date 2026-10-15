@@ -171,6 +171,7 @@ MojoResult MojoMessage::ReserveCapacity(uint32_t payload_buffer_size,
 
   data_storage_size_ = std::max(payload_buffer_size, uint32_t{kMinBufferSize});
   DataPtr new_storage(new uint8_t[data_storage_size_]);
+  data_ = {};
   data_storage_ = std::move(new_storage);
   data_ = UNSAFE_TODO(base::span(base::unchecked, data_storage_.get(), 0u));
 
@@ -208,6 +209,7 @@ MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
     std::ranges::copy(UNSAFE_TODO(base::span(base::unchecked,
                                              data_storage_.get(), copy_size)),
                       new_storage.get());
+    data_ = {};
     data_storage_ = std::move(new_storage);
   }
   data_ = UNSAFE_TODO(
