@@ -112,9 +112,9 @@ const Element* ColdModeSpellCheckRequester::QualifyingEditable() const {
   if (!element || !element->isConnected())
     return nullptr;
 
-  if (!element->IsSpellCheckingEnabled() ||
-      !SpellChecker::IsSpellCheckingEnabledAt(position))
+  if (!SpellChecker::IsSpellCheckingEnabledAt(position)) {
     return nullptr;
+  }
 
   return element;
 }

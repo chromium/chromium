@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -428,6 +429,60 @@ TEST_P(IdleSpellCheckControllerTest,
 
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
   EXPECT_EQ(0u, IdleChecker().LastProcessedUndoStepSequenceForTesting());
+}
+
+TEST_P(IdleSpellCheckControllerTest, ColdModeNestedSpellcheckTrue) {
+  if (!IsUnrestricted()) {
+    return;
+  }
+
+  SetBodyContent(
+      "<div contenteditable='true' spellcheck='false'>"
+      "hello <span id='check' spellcheck='true'>world</span>"
+      "</div>");
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .Collapse(Position(QuerySelector("#check")->firstChild(), 0))
+          .Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForTest();
+
+  IdleChecker().ForceInvocationForTesting();
+  IdleChecker().SkipColdModeTimerForTesting();
+  ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+  int sequence_before =
+      GetSpellChecker().GetSpellCheckRequester().LastRequestSequence();
+  IdleChecker().ForceInvocationForTesting();
+  EXPECT_GT(GetSpellChecker().GetSpellCheckRequester().LastRequestSequence(),
+            sequence_before);
+}
+
+TEST_P(IdleSpellCheckControllerTest, ColdModeNestedSpellcheckFalse) {
+  if (!IsUnrestricted()) {
+    return;
+  }
+
+  SetBodyContent(
+      "<div contenteditable='true' spellcheck='true'>"
+      "hello <span id='nocheck' spellcheck='false'>world</span>"
+      "</div>");
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .Collapse(Position(QuerySelector("#nocheck")->firstChild(), 0))
+          .Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForTest();
+
+  IdleChecker().ForceInvocationForTesting();
+  IdleChecker().SkipColdModeTimerForTesting();
+  ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+  int sequence_before =
+      GetSpellChecker().GetSpellCheckRequester().LastRequestSequence();
+  IdleChecker().ForceInvocationForTesting();
+  EXPECT_EQ(sequence_before,
+            GetSpellChecker().GetSpellCheckRequester().LastRequestSequence());
 }
 
 }  // namespace blink
