@@ -872,8 +872,8 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
       base::BindOnce(&D3DVideoDecoder::ReceivePictureBufferFromClient,
                      weak_factory_.GetWeakPtr(),
                      scoped_refptr<D3DPictureBuffer>(picture_buffer)));
-  frame->SetReleaseMailboxCB(
-      base::BindOnce(release_mailbox_cb_, std::move(wait_complete_cb)));
+  frame->SetReleaseMailboxCB(base::BindOnce(
+      release_mailbox_cb_, std::move(wait_complete_cb), shared_image));
   frame->metadata().power_efficient = true;
 
   if (shared_image->color_space().IsHDR()) {

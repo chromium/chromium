@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -45,6 +46,12 @@ class CommandBufferHelperImpl
 
   void WaitForSyncToken(gpu::SyncToken sync_token,
                         base::OnceClosure done_cb) override {
+    WaitForSyncTokens(std::vector<gpu::SyncToken>({sync_token}),
+                      std::move(done_cb));
+  }
+
+  void WaitForSyncTokens(std::vector<gpu::SyncToken> sync_tokens,
+                         base::OnceClosure done_cb) override {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -55,9 +62,8 @@ class CommandBufferHelperImpl
     // TODO(sandersd): Do we need to keep a ref to |this| while there are
     // pending waits? If we destruct while they are pending, they will never
     // run.
-    stub_->channel()->scheduler()->ScheduleTask(
-        gpu::Scheduler::Task(wait_sequence_id_, std::move(done_cb),
-                             std::vector<gpu::SyncToken>({sync_token})));
+    stub_->channel()->scheduler()->ScheduleTask(gpu::Scheduler::Task(
+        wait_sequence_id_, std::move(done_cb), std::move(sync_tokens)));
   }
 
   // Const variant of GetSharedImageStub() for internal callers.
@@ -147,6 +153,12 @@ CommandBufferHelper::CommandBufferHelper(
 scoped_refptr<CommandBufferHelper> CommandBufferHelper::Create(
     gpu::CommandBufferStub* stub) {
   return base::MakeRefCounted<CommandBufferHelperImpl>(stub);
+}
+
+void CommandBufferHelper::WaitForSyncTokens(
+    std::vector<gpu::SyncToken> sync_tokens,
+    base::OnceClosure done_cb) {
+  NOTREACHED();
 }
 
 }  // namespace media

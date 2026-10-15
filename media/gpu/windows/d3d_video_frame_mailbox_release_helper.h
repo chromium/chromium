@@ -15,6 +15,7 @@
 #include "media/gpu/media_gpu_export.h"
 
 namespace gpu {
+class ClientSharedImage;
 struct SyncToken;
 }  // namespace gpu
 
@@ -41,7 +42,9 @@ class MEDIA_GPU_EXPORT D3DVideoFrameMailboxReleaseHelper
 
   // Callback to us to wait for a sync token, then call a closure.
   using ReleaseMailboxCB =
-      base::RepeatingCallback<void(base::OnceClosure, const gpu::SyncToken&)>;
+      base::RepeatingCallback<void(base::OnceClosure,
+                                   scoped_refptr<gpu::ClientSharedImage>,
+                                   const gpu::SyncToken&)>;
   using InitCB = base::OnceCallback<void(bool success, ReleaseMailboxCB)>;
 
   // We will call back |init_cb| with the init status.
@@ -53,6 +56,7 @@ class MEDIA_GPU_EXPORT D3DVideoFrameMailboxReleaseHelper
 
   // Called to wait on |sync_token|, and call |wait_complete_cb| when done.
   void OnMailboxReleased(base::OnceClosure wait_complete_cb,
+                         scoped_refptr<gpu::ClientSharedImage> shared_image,
                          const gpu::SyncToken& sync_token);
 
   void OnSyncTokenReleased(base::OnceClosure);

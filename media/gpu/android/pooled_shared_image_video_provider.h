@@ -34,6 +34,7 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
 
     // Called (on the gpu thread) to handle image return.
     virtual void OnImageReturned(
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
         const gpu::SyncToken& sync_token,
         scoped_refptr<CodecImageHolder> codec_image_holder,
         base::OnceClosure cb,
@@ -73,7 +74,8 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
     ~GpuHelperImpl() override;
 
     // GpuHelper
-    void OnImageReturned(const gpu::SyncToken& sync_token,
+    void OnImageReturned(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                         const gpu::SyncToken& sync_token,
                          scoped_refptr<CodecImageHolder> codec_image_holder,
                          base::OnceClosure cb,
                          scoped_refptr<gpu::RefCountedLock> drdc_lock) override;

@@ -243,7 +243,7 @@ void VideoToolboxFrameConverter::OnVideoFrameReleased(
   // Release |image|.
   stub_->channel()->scheduler()->ScheduleTask(gpu::Scheduler::Task(
       wait_sequence_id_, base::DoNothingWithBoundArgs(std::move(image)),
-      std::vector<gpu::SyncToken>({sync_token})));
+      client_shared_image->GetSyncTokensForVideoFrame(sync_token)));
 }
 
 }  // namespace media

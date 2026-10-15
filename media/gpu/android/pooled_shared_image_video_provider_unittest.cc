@@ -30,7 +30,8 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
         : sync_token_out_(sync_token_out) {}
 
     // PooledSharedImageVideoProvider::GpuHelper
-    void OnImageReturned(const gpu::SyncToken& sync_token,
+    void OnImageReturned(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                         const gpu::SyncToken& sync_token,
                          scoped_refptr<CodecImageHolder> codec_image_holder,
                          base::OnceClosure cb,
                          scoped_refptr<gpu::RefCountedLock> lock) override {

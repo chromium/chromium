@@ -658,6 +658,20 @@ std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
   }
 }
 
+std::vector<SyncToken> ClientSharedImage::GetSyncTokensForVideoFrame(
+    const SyncToken& sync_token) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    return CollectSyncTokens();
+  } else {
+    if (sync_token.HasData()) {
+      return {sync_token};
+    } else {
+      return {};
+    }
+  }
+}
+
 void ClientSharedImage::EndDisplayCompositorAccess(
     const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(

@@ -125,7 +125,8 @@ void PooledSharedImageVideoProvider::OnImageReturned(
   // An image has been returned to us.  Wait for |sync_token| and then send it
   // to ProcessFreePooledImage to re-use / pool / delete.
   gpu_helper_.AsyncCall(&GpuHelper::OnImageReturned)
-      .WithArgs(sync_token, pooled_image->record.codec_image_holder,
+      .WithArgs(pooled_image->record.shared_image, sync_token,
+                pooled_image->record.codec_image_holder,
                 base::BindPostTaskToCurrentDefault(base::BindOnce(
                     &PooledSharedImageVideoProvider::ProcessFreePooledImage,
                     weak_factory_.GetWeakPtr(), pooled_image)),
@@ -199,6 +200,7 @@ PooledSharedImageVideoProvider::GpuHelperImpl::GpuHelperImpl(
 PooledSharedImageVideoProvider::GpuHelperImpl::~GpuHelperImpl() = default;
 
 void PooledSharedImageVideoProvider::GpuHelperImpl::OnImageReturned(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     scoped_refptr<CodecImageHolder> codec_image_holder,
     base::OnceClosure cb,
@@ -206,8 +208,9 @@ void PooledSharedImageVideoProvider::GpuHelperImpl::OnImageReturned(
   auto on_sync_token_cleared_cb = base::BindOnce(
       &GpuHelperImpl::OnSyncTokenCleared, weak_factory_.GetWeakPtr(),
       std::move(codec_image_holder), std::move(cb), std::move(drdc_lock));
-  command_buffer_helper_->WaitForSyncToken(sync_token,
-                                           std::move(on_sync_token_cleared_cb));
+  command_buffer_helper_->WaitForSyncTokens(
+      shared_image->GetSyncTokensForVideoFrame(sync_token),
+      std::move(on_sync_token_cleared_cb));
 }
 
 void PooledSharedImageVideoProvider::GpuHelperImpl::OnSyncTokenCleared(

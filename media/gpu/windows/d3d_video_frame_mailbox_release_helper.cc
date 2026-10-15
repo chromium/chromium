@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_log.h"
 
@@ -51,11 +52,12 @@ void D3DVideoFrameMailboxReleaseHelper::Initialize(InitCB init_cb) {
 
 void D3DVideoFrameMailboxReleaseHelper::OnMailboxReleased(
     base::OnceClosure wait_complete_cb,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(helper_);
-  helper_->WaitForSyncToken(
-      sync_token,
+  helper_->WaitForSyncTokens(
+      shared_image->GetSyncTokensForVideoFrame(sync_token),
       base::BindOnce(&D3DVideoFrameMailboxReleaseHelper::OnSyncTokenReleased,
                      this, std::move(wait_complete_cb)));
 }
