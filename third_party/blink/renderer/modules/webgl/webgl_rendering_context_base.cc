@@ -1065,9 +1065,6 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
                  GetAlphaType(), shared_image_usages, "CanvasResourceRaster"},
                 gpu::kNullSurfaceHandle);
     gpu::SyncToken sync_token = client_si->creation_sync_token();
-    if (sync_token.HasData()) {
-      client_si->UpdateDestructionSyncToken(sync_token);
-    }
     auto access = client_si->BeginRasterAccess(raster_interface, sync_token,
                                                /*readonly=*/false);
     sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
