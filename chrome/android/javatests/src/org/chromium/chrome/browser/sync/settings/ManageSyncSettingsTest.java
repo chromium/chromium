@@ -1728,6 +1728,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/573984028
     public void testSearchHistoryAndTabs_signedIn() {
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
