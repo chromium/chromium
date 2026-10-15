@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// An attachment represents a payload (usually large) that is associated with an
+// entity but is not uploaded or downloaded within the Sync HTTP protocol, but
+// an external side channel.
+message Attachment {
+  // Populated by the client only, when a commit is adding a new attachment to
+  // an entity (either newly-created entity or a pre-existing one). Note that
+  // each entity is associated to at most one attachment, so committing a new
+  // blob ID overrides any previous one.
+  optional string temporary_blob_id = 1;
+
+  // Set to the timestamp the attachment was last updated.
+  optional int64 modification_time_unix_epoch_millis = 2;
+}

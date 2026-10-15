@@ -18,6 +18,12 @@
 #include "components/sync/model/processor_entity_metadata.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 
+class GURL;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace sync_pb {
 class EntitySpecifics;
 class UniquePosition;
@@ -168,6 +174,37 @@ class ProcessorEntity {
   // Increment sequence number in the metadata. This will also update the
   // base_specifics_hash if the entity was not already unsynced.
   void IncrementSequenceNumber(base::Time modification_time);
+
+  // Returns true if an outgoing attachment upload is queued or in progress for
+  // this entity and has not yet produced a `temporary_blob_id`.
+  bool HasPendingAttachmentUpload() const;
+
+  // Marks that a local attachment upload for `file_path` is queued for this
+  // entity before the asynchronous upload handshake completes, holding back the
+  // entity from commit until `RecordAttachmentUploadCompleted()` is called.
+  // Must be called on an unsynced entity after `RecordLocalUpdate()` (which
+  // already increments the sequence number for the local change, avoiding
+  // double-incrementing). `ProcessorEntity` takes ownership of the staging file
+  // at `file_path` (which must be a unique path) and asynchronously deletes it
+  // once the upload completes or is cancelled. Any existing pending attachment
+  // upload is cancelled and its file is deleted.
+  void RecordAttachmentUploadQueued(const base::FilePath& file_path);
+
+  // Records that the asynchronous upload handshake completed and returned the
+  // resumable session `upload_url`.
+  void RecordAttachmentUploadStarted(const GURL& upload_url);
+
+  // Records that the outgoing attachment upload finished and returned
+  // `temporary_blob_id`, clearing `pending_upload` from metadata, scheduling
+  // deletion of the staging file on disk, and unblocking the entity for commit.
+  void RecordAttachmentUploadCompleted(const std::string& temporary_blob_id);
+
+  // Cancels any pending attachment upload for this entity, clearing
+  // `pending_upload` from metadata and scheduling deletion of the staging file
+  // on disk. Also called automatically on local deletion, forced remote
+  // update, and when a new attachment upload replaces an existing pending
+  // upload.
+  void RecordAttachmentUploadCancelled();
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;

@@ -4,11 +4,17 @@
 
 #include "components/sync/protocol/entity_data.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/attachment.pb.h"
+#include "components/sync/protocol/attachment_metadata.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
+
+using base::test::EqualsProto;
 
 class EntityDataTest : public testing::Test {
  protected:
@@ -22,6 +28,15 @@ TEST_F(EntityDataTest, IsDeleted) {
 
   AddDefaultFieldValue(BOOKMARKS, &data.specifics);
   EXPECT_FALSE(data.is_deleted());
+}
+
+// Verifies that `AttachmentMetadata::FromProto()` and `ToProto()` round-trip
+// `sync_pb::Attachment`.
+TEST_F(EntityDataTest, AttachmentMetadataFromAndToProto) {
+  sync_pb::Attachment proto;
+  proto.set_temporary_blob_id("temp_blob_123");
+  EXPECT_THAT(AttachmentMetadata::FromProto(proto).ToProto(),
+              EqualsProto(proto));
 }
 
 }  // namespace syncer

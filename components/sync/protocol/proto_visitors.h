@@ -12,6 +12,7 @@
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/arc_package_specifics.pb.h"
+#include "components/sync/protocol/attachment.pb.h"
 #include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
@@ -561,6 +562,7 @@ VISIT_PROTO_FIELDS(const sync_pb::CommitResponse::EntryResponse& proto) {
   VISIT(version);
   VISIT(error_message);
   VISIT(mtime);
+  VISIT(attachment_modification_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DataTypeContext& proto) {
@@ -735,6 +737,18 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(deleted_by_version);
   VISIT(collaboration);
   VISIT(deletion_origin);
+  VISIT(attachment_metadata);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::EntityMetadata::AttachmentMetadata::PendingUpload& proto) {
+  VISIT(file_path);
+  VISIT(upload_url);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata::AttachmentMetadata& proto) {
+  VISIT(attachment);
+  VISIT(pending_upload);
 }
 
 VISIT_PROTO_FIELDS(

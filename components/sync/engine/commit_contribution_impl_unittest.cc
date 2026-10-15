@@ -16,6 +16,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/entity_data.h"
@@ -36,6 +37,7 @@ using sync_pb::SharingMessageCommitError;
 using sync_pb::SyncEntity;
 using testing::IsEmpty;
 using testing::Not;
+using testing::Optional;
 using testing::SizeIs;
 
 constexpr char kValue[] = "value";
@@ -394,8 +396,7 @@ TEST_F(CommitContributionImplTest, ShouldPopulateAttachment) {
       PREFERENCES, *CreateCommitRequestData(std::move(data)), &entity);
 
   EXPECT_TRUE(entity.has_attachment());
-  EXPECT_THAT(entity.attachment(),
-              EqualsProto(attachment_metadata.ToProto()));
+  EXPECT_THAT(entity.attachment(), EqualsProto(attachment_metadata.ToProto()));
 }
 
 // Verifies that `PopulateCommitProto` leaves `SyncEntity::attachment` unset
@@ -424,6 +425,47 @@ TEST_F(CommitContributionImplTest, ShouldNotPopulateAttachmentForTombstone) {
 
   EXPECT_TRUE(entity.deleted());
   EXPECT_FALSE(entity.has_attachment());
+}
+
+// Verifies that `ProcessCommitResponse` propagates
+// `attachment_modification_time_unix_epoch_millis` from `EntryResponse` into
+// `CommitResponseData::attachment_modification_time`.
+TEST_F(CommitContributionImplTest,
+       ShouldPropagateAttachmentModificationTimeOnCommitResponse) {
+  CommitRequestDataList requests_data;
+  requests_data.push_back(
+      CreateCommitRequestData(CreateDefaultPreferenceEntityData()));
+
+  CommitResponseDataList committed_response_list;
+  CommitContributionImpl contribution(
+      PREFERENCES, sync_pb::DataTypeContext(), std::move(requests_data),
+      base::BindOnce(
+          [](CommitResponseDataList* out_committed,
+             const CommitResponseDataList& committed,
+             const FailedCommitResponseDataList& error_response_list) {
+            *out_committed = committed;
+          },
+          &committed_response_list),
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
+      PassphraseType::kKeystorePassphrase);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+
+  sync_pb::ClientToServerResponse response;
+  sync_pb::CommitResponse_EntryResponse* entry =
+      response.mutable_commit()->add_entryresponse();
+  entry->set_response_type(CommitResponse::SUCCESS);
+  entry->set_id_string("server_id");
+  entry->set_version(124);
+  entry->set_attachment_modification_time_unix_epoch_millis(987654321);
+
+  StatusController status;
+  contribution.ProcessCommitResponse(response, &status);
+
+  ASSERT_THAT(committed_response_list, SizeIs(1));
+  EXPECT_THAT(committed_response_list[0].attachment_modification_time,
+              Optional(ProtoTimeToTime(987654321)));
 }
 
 }  // namespace syncer

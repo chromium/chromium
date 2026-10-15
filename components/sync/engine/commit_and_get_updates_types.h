@@ -8,9 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_data.h"
@@ -68,6 +70,7 @@ struct CommitResponseData {
   int64_t sequence_number = 0;
   int64_t response_version = 0;
   std::string specifics_hash;
+  std::optional<base::Time> attachment_modification_time;
 };
 
 // Represents an item, which wasn't committed due to an error.

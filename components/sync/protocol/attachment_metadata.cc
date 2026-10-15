@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/attachment.pb.h"
 
 namespace syncer {
 
@@ -19,6 +19,12 @@ namespace syncer {
 AttachmentMetadata AttachmentMetadata::ForNew(std::string temporary_blob_id) {
   CHECK(!temporary_blob_id.empty());
   return AttachmentMetadata(std::move(temporary_blob_id));
+}
+
+// static
+AttachmentMetadata AttachmentMetadata::FromProto(
+    const sync_pb::Attachment& proto) {
+  return AttachmentMetadata(proto.temporary_blob_id());
 }
 
 AttachmentMetadata::AttachmentMetadata(const AttachmentMetadata& other) =

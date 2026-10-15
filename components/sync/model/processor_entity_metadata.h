@@ -13,6 +13,12 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 
+class GURL;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace sync_pb {
 class EntitySpecifics;
 class UniquePosition;
@@ -137,6 +143,29 @@ class ProcessorEntityMetadata {
 
   // Performs a local deletion, updating metadata fields.
   void RecordLocalDeletion(const DeletionOrigin& origin);
+
+  // Returns true if an outgoing attachment upload is queued or in progress and
+  // has not yet produced a `temporary_blob_id`.
+  bool HasPendingAttachmentUpload() const;
+
+  // Marks that a local attachment upload for `file_path` is queued for this
+  // entity before the asynchronous upload handshake completes, clearing any
+  // previous `attachment` or `upload_url`. Does not increment the sequence
+  // number itself; the entity must already be unsynced (e.g. via an
+  // accompanying `RecordLocalUpdate()` call).
+  void RecordAttachmentUploadQueued(const base::FilePath& file_path);
+
+  // Records that the asynchronous upload handshake completed and returned the
+  // resumable session `upload_url`.
+  void RecordAttachmentUploadStarted(const GURL& upload_url);
+
+  // Records that the outgoing attachment upload finished and returned
+  // `temporary_blob_id`, clearing `pending_upload` from metadata.
+  void RecordAttachmentUploadCompleted(const std::string& temporary_blob_id);
+
+  // Clears `pending_upload` from metadata if an attachment upload is queued or
+  // in progress.
+  void RecordAttachmentUploadCancelled();
 
  private:
   explicit ProcessorEntityMetadata(sync_pb::EntityMetadata metadata);

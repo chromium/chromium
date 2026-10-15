@@ -22,6 +22,9 @@ class AttachmentMetadata {
   // to be committed to the Sync server.
   static AttachmentMetadata ForNew(std::string temporary_blob_id);
 
+  // Constructs an `AttachmentMetadata` from the given `proto`.
+  static AttachmentMetadata FromProto(const sync_pb::Attachment& proto);
+
   AttachmentMetadata(const AttachmentMetadata& other);
   AttachmentMetadata& operator=(const AttachmentMetadata& other);
   AttachmentMetadata(AttachmentMetadata&& other);

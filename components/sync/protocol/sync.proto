@@ -382,6 +382,10 @@ message CommitResponse {
     }
     // Datatype specific error (if any).
     optional DatatypeSpecificError datatype_specific_error = 11;
+
+    // If the commit updated an attachment, echoes back the server-assigned
+    // modification time of the attachment (in milliseconds since Unix epoch).
+    optional int64 attachment_modification_time_unix_epoch_millis = 12;
   }
 }
 

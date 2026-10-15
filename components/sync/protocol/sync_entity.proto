@@ -11,23 +11,10 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/attachment.proto";
 import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
-
-// An attachment represents a payload (usually large) that is associated with an
-// entity but is not uploaded or downloaded within the Sync HTTP protocol, but
-// an external side channel.
-message Attachment {
-  // Populated by the client only, when a commit is adding a new attachment to
-  // an entity (either newly-created entity or a pre-existing one). Note that
-  // each entity is associated to at most one attachment, so committing a new
-  // blob ID overrides any previous one.
-  optional string temporary_blob_id = 1;
-
-  // Set to the timestamp the attachment was last updated.
-  optional int64 modification_time_unix_epoch_millis = 2;
-}
 
 message SyncEntity {
   // This item's identifier.  In a commit of a new item, this will be a
