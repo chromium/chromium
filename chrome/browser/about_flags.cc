@@ -417,6 +417,16 @@
 #include "ui/views/views_switches.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
+// The FeatureEntry tables below (kFeatureEntries and the Choice, FeatureParam
+// and FeatureVariation arrays it references) must not require static
+// initializers. For example, reading base::FeatureParam::name from an extern
+// param does. This is not enforced in Windows component builds, where features
+// and constants from other components are dllimport'd and their addresses are
+// not compile-time constants.
+#if !(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD))
+#pragma clang diagnostic error "-Wglobal-constructors"
+#endif
+
 using flags_ui::FeatureEntry;
 using flags_ui::kDeprecated;
 using flags_ui::kOsAndroid;
