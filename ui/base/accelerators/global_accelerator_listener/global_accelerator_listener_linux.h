@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -37,6 +38,12 @@ namespace ui {
 // Linux-specific implementation of the GlobalShortcutListener class that
 // listens for global shortcuts using the org.freedesktop.portal.GlobalShortcuts
 // interface.
+//
+// Portal backends differ in behavior: some only report shortcuts bound in the
+// current session from ListShortcuts, most require BindShortcuts in every
+// session to activate shortcuts, and every BindShortcuts call replaces the set
+// of shortcuts stored for the app. This class binds only global commands, and
+// keeps listed shortcuts of accelerator groups that aren't loaded.
 class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  public:
   GlobalAcceleratorListenerLinux(scoped_refptr<dbus::Bus> bus,
@@ -52,8 +59,6 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  private:
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            OnCommandsChanged);
-  FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
-                           OnCommandsChangedPendingSessionCreation);
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            PruneStaleCommands);
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
@@ -132,24 +137,57 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
 
   void CreateSession();
 
-  void BindShortcuts(DbusShortcuts old_shortcuts, std::string parent_handle);
+  void BindShortcuts(std::string parent_handle);
 
   void CloseSession();
 
-  bool HasGlobalShortcuts() const;
+  // Creates, re-creates or closes the portal session as needed so that the
+  // shortcuts returned by GetIdsToBind() are bound.
+  void MaybeBind();
+
+  // Returns the IDs of the shortcuts that should be bound to the portal.
+  base::flat_set<std::string> GetIdsToBind() const;
+
+  // Returns true if GetIdsToBind() contains an ID that isn't in `ids`.
+  bool HasIdsToBindNotIn(const base::flat_set<std::string>& ids) const;
+
+  // Returns true if `id` belongs to an accelerator group that has been loaded
+  // in this session.
+  bool IsIdOfLoadedGroup(const std::string& id) const;
 
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> global_shortcuts_proxy_ = nullptr;
   std::unique_ptr<dbus_xdg::Session> session_;
   std::optional<bool> service_started_;
+  uint32_t portal_version_ = 0;
   std::unique_ptr<dbus_xdg::Request> request_;
   BindState bind_state_ = BindState::kNotBound;
   const std::string session_token_;
   const bool set_preferred_trigger_;
 
   gfx::AcceleratedWidget context_window_ = gfx::kNullAcceleratedWidget;
+
+  // Global commands of the accelerator groups that are currently loaded, keyed
+  // by shortcut ID.
   std::map<std::string, BoundCommand> bound_commands_;
+
+  // Shortcuts reported by ListShortcuts whose accelerator group isn't loaded,
+  // e.g. shortcuts of other profiles. Maps ID to description. These are passed
+  // through to BindShortcuts so they aren't dropped by the portal.
+  std::map<std::string, std::string> untracked_shortcuts_;
+
+  // Shortcut ID prefixes (including the trailing "-") of the accelerator
+  // groups that have been loaded in this session.
+  base::flat_set<std::string> loaded_prefixes_;
+
+  // IDs that have been bound, or attempted to be bound, in the current
+  // session. Failed binds are included so that MaybeBind() doesn't immediately
+  // retry binding the same set of IDs.
+  base::flat_set<std::string> session_ids_;
+
+  // IDs sent in the in-flight BindShortcuts call.
+  base::flat_set<std::string> pending_bind_ids_;
 
   base::WeakPtrFactory<GlobalAcceleratorListenerLinux> weak_ptr_factory_{this};
 };

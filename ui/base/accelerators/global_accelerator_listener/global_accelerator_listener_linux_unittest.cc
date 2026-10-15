@@ -369,8 +369,15 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           auto shortcuts = dbus_utils::ReadValue<DbusShortcuts>(reader);
           ASSERT_TRUE(shortcuts);
 
-          ASSERT_EQ(shortcuts->size(), 1u);
-          auto& [_, props] = (*shortcuts)[0];
+          ASSERT_EQ(shortcuts->size(), commands.size());
+          const std::string first_id =
+              kSessionId + std::string("-") + kCommandName;
+          auto shortcut_it =
+              std::ranges::find_if(*shortcuts, [&](const auto& shortcut) {
+                return std::get<0>(shortcut) == first_id;
+              });
+          ASSERT_NE(shortcut_it, shortcuts->end());
+          auto& props = std::get<1>(*shortcut_it);
           auto trigger_it = props.find("preferred_trigger");
           if (global_shortcut_listener->set_preferred_trigger_) {
             ASSERT_NE(trigger_it, props.end());
@@ -412,6 +419,13 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           MatchMethod(GlobalAcceleratorListenerLinux::kSessionInterface,
                       GlobalAcceleratorListenerLinux::kMethodCloseSession),
           _, _));
+
+  // Adding a global command re-creates the session and binds both commands.
+  static constexpr char kSecondCommandName[] = "second_command";
+  commands[kSecondCommandName] =
+      ui::Command(kSecondCommandName, kShortcutDescription, /*global=*/true);
+  commands[kSecondCommandName].set_accelerator(
+      ui::Accelerator(ui::VKEY_B, ui::EF_CONTROL_DOWN));
 
   update_commands();
 
@@ -485,13 +499,33 @@ TEST(GlobalAcceleratorListenerLinuxTest, PruneStaleCommands) {
                 .Run(interface_name, signal_name, true);
           });
 
+  // OnCommandsChanged() creates a portal session for global commands. The
+  // session isn't relevant for this test, so never respond.
+  std::vector<scoped_refptr<dbus::MockObjectProxy>> request_proxies;
+  EXPECT_CALL(
+      *mock_bus,
+      GetObjectProxy(GlobalAcceleratorListenerLinux::kPortalServiceName,
+                     testing::Ne(dbus::ObjectPath(
+                         GlobalAcceleratorListenerLinux::kPortalObjectPath))))
+      .WillRepeatedly([&](std::string_view service_name,
+                          const dbus::ObjectPath& object_path) {
+        scoped_refptr<dbus::MockObjectProxy> proxy =
+            base::MakeRefCounted<testing::NiceMock<dbus::MockObjectProxy>>(
+                mock_bus.get(), std::string(service_name), object_path);
+        request_proxies.push_back(proxy);
+        return proxy.get();
+      });
+  EXPECT_CALL(*mock_global_shortcuts_proxy,
+              CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([] {});
+
   auto listener =
       std::make_unique<GlobalAcceleratorListenerLinux>(mock_bus, kSessionToken);
 
   auto callback_target = std::make_unique<WeakCommandCallback>();
   ui::CommandMap commands;
   commands[kCommandName] = ui::Command(kCommandName, kShortcutDescription,
-                                       /*global=*/false);
+                                       /*global=*/true);
 
   const auto expected_command_id =
       base::StrCat({kSessionId, "-", kCommandName});
@@ -513,10 +547,15 @@ TEST(GlobalAcceleratorListenerLinuxTest, PruneStaleCommands) {
 }
 
 // Regression test: when ListShortcuts reports that every command is already
-// registered with the portal, no BindShortcuts call is made. A subsequent
-// OnCommandsChanged() that adds a new global command must still bind it.
+// registered with a version 1 portal, no BindShortcuts call is made. A
+// subsequent OnCommandsChanged() that adds a new global command must still bind
+// it.
 TEST(GlobalAcceleratorListenerLinuxTest, BindsCommandAddedAfterUpToDateList) {
   dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kSuccess);
+  // Binding is only skipped for listed shortcuts on version 1 of the
+  // interface.
+  dbus_xdg::SetPortalInterfaceVersionForTesting(
+      GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface, 1);
   base::ScopedClosureRunner restore_portal_state(base::BindOnce([] {
     dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
   }));
@@ -877,6 +916,12 @@ class GlobalAcceleratorListenerLinuxBindTest : public testing::Test {
         method_calls_, GlobalAcceleratorListenerLinux::kMethodCreateSession);
   }
 
+  // Must be called before CreateListener().
+  static void SetPortalVersion(uint32_t version) {
+    dbus_xdg::SetPortalInterfaceVersionForTesting(
+        GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface, version);
+  }
+
   BindState bind_state() const { return listener_->bind_state_; }
 
   bool IsBound() const { return bind_state() == BindState::kBound; }
@@ -1089,8 +1134,10 @@ TEST_F(GlobalAcceleratorListenerLinuxBindTest, NoPreferredTriggerIfDisabled) {
   EXPECT_TRUE(bind_calls_[0].triggers.empty());
 }
 
-// Commands that the portal already lists are not bound again.
+// With version 1 of the interface, commands that the portal already lists are
+// not bound again.
 TEST_F(GlobalAcceleratorListenerLinuxBindTest, DoesNotBindListedCommands) {
+  SetPortalVersion(1);
   listed_ids_ = {Id("global")};
   CreateListener();
   LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
@@ -1099,8 +1146,10 @@ TEST_F(GlobalAcceleratorListenerLinuxBindTest, DoesNotBindListedCommands) {
   EXPECT_TRUE(IsBound());
 }
 
-// Shortcuts bound before a browser restart are not bound again.
+// With version 1 of the interface, shortcuts bound before a browser restart are
+// not bound again.
 TEST_F(GlobalAcceleratorListenerLinuxBindTest, DoesNotRebindAfterRestart) {
+  SetPortalVersion(1);
   CreateListener();
   LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
   ASSERT_EQ(bind_calls_.size(), 1u);
@@ -1115,23 +1164,21 @@ TEST_F(GlobalAcceleratorListenerLinuxBindTest, DoesNotRebindAfterRestart) {
   EXPECT_TRUE(IsBound());
 }
 
-// Documents the current behavior when the user cancels the bind dialog.
-TEST_F(GlobalAcceleratorListenerLinuxBindTest, CancelledBind) {
+// A failed bind, e.g. because the user cancelled the dialog, must not prevent
+// binding commands that are added later.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, RebindsAfterFailedBind) {
   bind_response_codes_ = {kResponseCancelled};
   CreateListener();
   LoadCommands(kProfileId, {MakeCommand("first", /*global=*/true)});
-
   ASSERT_EQ(bind_calls_.size(), 1u);
   EXPECT_TRUE(listed_ids_.empty());
-  // TODO(crbug.com/404298968): The bind state isn't reset after a failed bind,
-  // so later command changes are never bound.
-  EXPECT_EQ(bind_state(), BindState::kBindCalled);
 
   LoadCommands(kProfileId,
                {MakeCommand("first", /*global=*/true),
                 MakeCommand("second", /*global=*/true, ui::VKEY_8)});
-  EXPECT_EQ(bind_calls_.size(), 1u);
-  EXPECT_EQ(bind_state(), BindState::kNeedsRebind);
+  ASSERT_EQ(bind_calls_.size(), 2u);
+  EXPECT_THAT(bind_calls_[1].ids,
+              testing::UnorderedElementsAre(Id("first"), Id("second")));
 }
 
 // Adding a command while a bind is in flight binds the complete set once the
@@ -1155,11 +1202,81 @@ TEST_F(GlobalAcceleratorListenerLinuxBindTest, CommandAddedDuringBind) {
 
   EXPECT_EQ(CountCreateSessionCalls(), 2u);
   ASSERT_EQ(bind_calls_.size(), 2u);
-  // TODO(crbug.com/404298968): "first" is sent twice since it's both listed by
-  // the portal and a bound command.
-  EXPECT_THAT(bind_calls_[1].ids, testing::UnorderedElementsAre(
-                                      Id("first"), Id("first"), Id("second")));
+  EXPECT_THAT(bind_calls_[1].ids,
+              testing::UnorderedElementsAre(Id("first"), Id("second")));
   EXPECT_TRUE(IsBound());
+}
+
+// Adding a command while a bind is in flight and removing it again before the
+// bind finishes doesn't cause a rebind.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest,
+       CommandAddedAndRemovedDuringBind) {
+  defer_bind_responses_ = true;
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("first", /*global=*/true)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  ASSERT_EQ(bind_state(), BindState::kBindCalled);
+
+  LoadCommands(kProfileId,
+               {MakeCommand("first", /*global=*/true),
+                MakeCommand("second", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_state(), BindState::kNeedsRebind);
+
+  LoadCommands(kProfileId, {MakeCommand("first", /*global=*/true)});
+  EXPECT_EQ(bind_state(), BindState::kBindCalled);
+
+  defer_bind_responses_ = false;
+  RespondToDeferredBind();
+  WaitForPortalIdle();
+
+  EXPECT_EQ(CountCreateSessionCalls(), 1u);
+  EXPECT_EQ(bind_calls_.size(), 1u);
+  EXPECT_TRUE(IsBound());
+}
+
+// Non-global commands must not be bound. Otherwise they are shown in the
+// portal dialog, and changing them causes the dialog to be shown again.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, BindsOnlyGlobalCommands) {
+  CreateListener();
+  LoadCommands(kProfileId,
+               {MakeCommand("global", /*global=*/true),
+                MakeCommand("local", /*global=*/false, ui::VKEY_K)});
+
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids, testing::ElementsAre(Id("global")));
+}
+
+// Shortcuts reported by ListShortcuts must not be sent twice.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, NoDuplicateIds) {
+  listed_ids_ = {Id("global")};
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids, testing::ElementsAre(Id("global")));
+}
+
+// Some backends ignore shortcuts without a description.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, EmptyDescription) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true, ui::VKEY_7,
+                                        /*description=*/u"")});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_EQ(bind_calls_[0].descriptions[Id("global")], "global");
+}
+
+// Listed shortcuts that aren't tracked, e.g. because they were bound by an
+// older version, are passed through unless they belong to a loaded extension.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, UntrackedListedShortcuts) {
+  listed_ids_ = {"untracked-id", Id("local")};
+  CreateListener();
+  LoadCommands(kProfileId,
+               {MakeCommand("global", /*global=*/true),
+                MakeCommand("local", /*global=*/false, ui::VKEY_K)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids,
+              testing::UnorderedElementsAre("untracked-id", Id("global")));
+  EXPECT_EQ(bind_calls_[0].descriptions["untracked-id"], "Listed");
 }
 
 }  // namespace ui

@@ -64,6 +64,13 @@ bool ShouldSetPreferredTrigger() {
       .value_or(default_preferred_trigger);
 }
 
+std::string GetDescription(const ui::Command& command) {
+  // Some portal backends ignore shortcuts without a description, so fall back
+  // to the command name.
+  std::string description = base::UTF16ToUTF8(command.description());
+  return description.empty() ? command.command_name() : description;
+}
+
 }  // namespace
 
 GlobalAcceleratorListenerLinux::BoundCommand::BoundCommand() = default;
@@ -101,6 +108,7 @@ GlobalAcceleratorListenerLinux::~GlobalAcceleratorListenerLinux() {
 
 void GlobalAcceleratorListenerLinux::OnServiceStarted(uint32_t version) {
   service_started_ = (version != 0);
+  portal_version_ = version;
 
   if (!*service_started_) {
     bound_commands_.clear();
@@ -117,9 +125,7 @@ void GlobalAcceleratorListenerLinux::OnServiceStarted(uint32_t version) {
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnSignalConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (HasGlobalShortcuts()) {
-    CreateSession();
-  }
+  MaybeBind();
 }
 
 void GlobalAcceleratorListenerLinux::CreateSession() {
@@ -166,28 +172,35 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
 
   context_window_ = widget;
 
-  const std::string prefix =
-      GetShortcutPrefix(accelerator_group_id, profile_id);
-  const std::string id_prefix = prefix + "-";
+  const std::string id_prefix =
+      GetShortcutPrefix(accelerator_group_id, profile_id) + "-";
+  loaded_prefixes_.insert(id_prefix);
 
-  // Build incoming IDs so we can drop stale entries for this prefix.
-  std::vector<std::string> incoming_command_ids;
-  incoming_command_ids.reserve(commands.size());
+  // Only global commands are bound. Binding non-global commands would show
+  // them in the portal dialog, and some backends would show the dialog again
+  // whenever the set of non-global commands changes.
+  base::flat_set<std::string> global_ids;
   for (const auto& [_, command] : commands) {
-    incoming_command_ids.push_back(id_prefix + command.command_name());
+    if (command.global()) {
+      global_ids.insert(id_prefix + command.command_name());
+    }
   }
-
-  base::flat_set<std::string> incoming_command_id_set(
-      std::move(incoming_command_ids));
 
   // Replace the command set for this prefix instead of only inserting. This
   // avoids retaining stale commands after command updates.
-  std::erase_if(bound_commands_, [&](const auto& pair) {
+  auto is_stale = [&](const auto& pair) {
     return pair.first.starts_with(id_prefix) &&
-           !incoming_command_id_set.contains(pair.first);
+           !global_ids.contains(pair.first);
+  };
+  std::erase_if(bound_commands_, is_stale);
+  std::erase_if(untracked_shortcuts_, [&](const auto& pair) {
+    return pair.first.starts_with(id_prefix);
   });
 
   for (const auto& [_, command] : commands) {
+    if (!command.global()) {
+      continue;
+    }
     std::string id = id_prefix + command.command_name();
     auto& bc = bound_commands_[id];
     bc.command = command;
@@ -195,11 +208,12 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     bc.execute_command = execute_command;
   }
 
-  // Only proceed if there is at least one global command.
-  if (!HasGlobalShortcuts()) {
-    if (session_) {
-      CloseSession();
-    }
+  MaybeBind();
+}
+
+void GlobalAcceleratorListenerLinux::MaybeBind() {
+  if (GetIdsToBind().empty()) {
+    CloseSession();
     return;
   }
 
@@ -219,15 +233,30 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     return;
   }
 
-  if (bind_state_ == BindState::kBindCalled) {
-    // Wait for an existing bind to finish before re-binding. This is required
-    // since GNOME has a quirk where the shortcut dialogs need to be dismissed
-    // in the order they're created, otherwise the portal interface will
-    // indicate an error.
-    bind_state_ = BindState::kNeedsRebind;
-  } else if (bind_state_ == BindState::kBound) {
-    CloseSession();
-    CreateSession();
+  switch (bind_state_) {
+    case BindState::kNotBound:
+      // ListShortcuts is in progress. OnListShortcuts() will bind the latest
+      // set of shortcuts.
+      return;
+    case BindState::kBindCalled:
+    case BindState::kNeedsRebind:
+      // Wait for an existing bind to finish before re-binding. This is
+      // required since GNOME has a quirk where the shortcut dialogs need to be
+      // dismissed in the order they're created, otherwise the portal interface
+      // will indicate an error. If shortcuts that were added during the bind
+      // have been removed again, no rebind is needed.
+      bind_state_ = HasIdsToBindNotIn(pending_bind_ids_)
+                        ? BindState::kNeedsRebind
+                        : BindState::kBindCalled;
+      return;
+    case BindState::kBound:
+      // Some backends only allow one bind per session, so re-create the
+      // session to bind new shortcuts.
+      if (HasIdsToBindNotIn(session_ids_)) {
+        CloseSession();
+        CreateSession();
+      }
+      return;
   }
 }
 
@@ -239,7 +268,6 @@ void GlobalAcceleratorListenerLinux::OnCreateSessionResponse(
     return;
   }
 
-  // Now that the session is created, bind all accumulated shortcuts.
   request_ = std::make_unique<dbus_xdg::Request>(
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
       kMethodListShortcuts, dbus_xdg::Dictionary(),
@@ -250,84 +278,100 @@ void GlobalAcceleratorListenerLinux::OnCreateSessionResponse(
 
 void GlobalAcceleratorListenerLinux::OnListShortcuts(
     base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
-  if (!results.has_value()) {
+  std::optional<DbusShortcuts> shortcuts;
+  if (results.has_value()) {
+    shortcuts = TakeFromDict<DbusShortcuts>(*results, "shortcuts");
+    if (!shortcuts) {
+      LOG(ERROR) << "Failed to parse shortcuts from ListShortcuts response.";
+    }
+  } else {
     LOG(ERROR) << "Failed to call ListShortcuts (error code "
                << static_cast<int>(results.error()) << ").";
-    return;
   }
 
-  auto shortcuts = TakeFromDict<DbusShortcuts>(*results, "shortcuts");
-  if (!shortcuts) {
-    LOG(ERROR) << "Failed to parse shortcuts from ListShortcuts response.";
-    return;
-  }
-
-  std::vector<std::string> registered_ids_list;
-  registered_ids_list.reserve(shortcuts->size());
-  for (const DbusShortcut& shortcut : *shortcuts) {
-    registered_ids_list.push_back(std::get<0>(shortcut));
-  }
-  base::flat_set<std::string> registered_ids(std::move(registered_ids_list));
-
-  // If any bound command is not found among the registered shortcuts, bind
-  // them.
-  for (const auto& [modified_id, bound_cmd] : bound_commands_) {
-    if (!registered_ids.contains(modified_id)) {
-      auto* delegate = ui::LinuxUiDelegate::GetInstance();
-      if (delegate && context_window_ != gfx::kNullAcceleratedWidget) {
-        delegate->ExportWindowHandle(
-            context_window_,
-            base::BindOnce(&GlobalAcceleratorListenerLinux::BindShortcuts,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(*shortcuts)));
-      } else {
-        BindShortcuts(std::move(*shortcuts), "");
+  // Continue with an empty list on failure. Some backends never list
+  // shortcuts, so binding is required anyway.
+  base::flat_set<std::string> listed_ids;
+  if (shortcuts) {
+    for (auto& [id, properties] : *shortcuts) {
+      listed_ids.insert(id);
+      if (IsIdOfLoadedGroup(id)) {
+        // Either a global command of a loaded group, which is bound anyway, or
+        // a non-global command bound by an older version.
+        continue;
       }
-      return;
+      // A shortcut of a group that isn't loaded, e.g. of another profile. Pass
+      // it through to BindShortcuts so that it isn't removed from the portal.
+      auto description = TakeFromDict<std::string>(properties, "description");
+      untracked_shortcuts_[id] =
+          description && !description->empty() ? *description : id;
     }
   }
 
-  // Every command is already registered with the portal, so no bind pass is
-  // needed. Mark the session as bound so that a later OnCommandsChanged() with
-  // new commands re-creates the session and binds them; otherwise no branch of
-  // the state machine would ever do so.
-  bind_state_ = BindState::kBound;
+  const base::flat_set<std::string> ids_to_bind = GetIdsToBind();
+  if (ids_to_bind.empty()) {
+    CloseSession();
+    return;
+  }
+
+  // Older backends that implement version 1 of the interface show a dialog on
+  // every bind, but keep shortcuts that are listed active, so skip binding if
+  // every shortcut is listed.
+  if (portal_version_ < 2 &&
+      std::ranges::all_of(
+          ids_to_bind,
+          [&](const std::string& id) { return listed_ids.contains(id); })) {
+    session_ids_ = ids_to_bind;
+    bind_state_ = BindState::kBound;
+    return;
+  }
+
+  auto* delegate = ui::LinuxUiDelegate::GetInstance();
+  if (delegate && context_window_ != gfx::kNullAcceleratedWidget) {
+    delegate->ExportWindowHandle(
+        context_window_,
+        base::BindOnce(&GlobalAcceleratorListenerLinux::BindShortcuts,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    BindShortcuts("");
+  }
 }
 
-void GlobalAcceleratorListenerLinux::BindShortcuts(DbusShortcuts old_shortcuts,
-                                                   std::string parent_handle) {
-  DbusShortcuts shortcuts;
-  for (auto& old_shortcut : old_shortcuts) {
-    const std::string& id = std::get<0>(old_shortcut);
-    dbus_xdg::Dictionary& properties = std::get<1>(old_shortcut);
-    dbus_xdg::Dictionary new_props;
-    auto description = TakeFromDict<std::string>(properties, "description");
-    if (description) {
-      new_props["description"] =
-          dbus_utils::Variant::Wrap<"s">(std::move(*description));
-    }
-    auto preferred_trigger =
-        TakeFromDict<std::string>(properties, "preferred_trigger");
-    if (preferred_trigger) {
-      new_props["preferred_trigger"] =
-          dbus_utils::Variant::Wrap<"s">(std::move(*preferred_trigger));
-    }
-    shortcuts.emplace_back(id, std::move(new_props));
+void GlobalAcceleratorListenerLinux::BindShortcuts(std::string parent_handle) {
+  if (!session_ || !session_->path().IsValid()) {
+    return;
   }
 
-  for (const auto& [modified_id, bound_cmd] : bound_commands_) {
-    dbus_xdg::Dictionary props;
-    props["description"] = dbus_utils::Variant::Wrap<"s">(
-        base::UTF16ToUTF8(bound_cmd.command.description()));
-    std::string trigger =
-        AcceleratorToXdgShortcut(bound_cmd.command.accelerator());
+  // Each bind replaces the set of shortcuts that the portal has stored for the
+  // app, so always bind the complete set. The map ensures there are no
+  // duplicate IDs.
+  std::map<std::string, dbus_xdg::Dictionary> shortcut_map;
+  for (const auto& [id, description] : untracked_shortcuts_) {
+    shortcut_map[id]["description"] =
+        dbus_utils::Variant::Wrap<"s">(description);
+  }
+
+  const base::flat_set<std::string> ids_to_bind = GetIdsToBind();
+  for (const std::string& id : ids_to_bind) {
+    dbus_xdg::Dictionary& props = shortcut_map[id];
+    props.clear();
+    const ui::Command& command = bound_commands_.at(id).command;
+    props["description"] =
+        dbus_utils::Variant::Wrap<"s">(GetDescription(command));
+    std::string trigger = AcceleratorToXdgShortcut(command.accelerator());
     if (set_preferred_trigger_ && !trigger.empty()) {
       props["preferred_trigger"] =
           dbus_utils::Variant::Wrap<"s">(std::move(trigger));
     }
-    shortcuts.emplace_back(modified_id, std::move(props));
   }
 
+  DbusShortcuts shortcuts;
+  shortcuts.reserve(shortcut_map.size());
+  for (auto& [id, props] : shortcut_map) {
+    shortcuts.emplace_back(id, std::move(props));
+  }
+
+  pending_bind_ids_ = ids_to_bind;
   bind_state_ = BindState::kBindCalled;
   request_ = std::make_unique<dbus_xdg::Request>(
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
@@ -344,22 +388,26 @@ void GlobalAcceleratorListenerLinux::CloseSession() {
   session_.reset();
   request_.reset();
   bind_state_ = BindState::kNotBound;
+  session_ids_.clear();
+  pending_bind_ids_.clear();
 }
 
 void GlobalAcceleratorListenerLinux::OnBindShortcuts(
     base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
+  const bool needs_rebind = bind_state_ == BindState::kNeedsRebind;
+  base::flat_set<std::string> bound_ids = std::move(pending_bind_ids_);
+  pending_bind_ids_.clear();
+
   if (!results.has_value()) {
     LOG(ERROR) << "Failed to call BindShortcuts (error code "
                << static_cast<int>(results.error()) << ").";
-    return;
   }
-  // Shortcuts successfully bound.
-  if (bind_state_ == BindState::kNeedsRebind) {
+
+  session_ids_ = std::move(bound_ids);
+  bind_state_ = BindState::kBound;
+  if (needs_rebind) {
     CloseSession();
     CreateSession();
-  } else {
-    CHECK_EQ(bind_state_, BindState::kBindCalled);
-    bind_state_ = BindState::kBound;
   }
 }
 
@@ -403,9 +451,26 @@ void GlobalAcceleratorListenerLinux::PruneStaleCommands() {
   });
 }
 
-bool GlobalAcceleratorListenerLinux::HasGlobalShortcuts() const {
-  return std::ranges::any_of(bound_commands_, [](const auto& pair) {
-    return pair.second.command.global();
+base::flat_set<std::string> GlobalAcceleratorListenerLinux::GetIdsToBind()
+    const {
+  std::vector<std::string> ids;
+  ids.reserve(bound_commands_.size());
+  for (const auto& [id, bound_command] : bound_commands_) {
+    ids.push_back(id);
+  }
+  return base::flat_set<std::string>(std::move(ids));
+}
+
+bool GlobalAcceleratorListenerLinux::HasIdsToBindNotIn(
+    const base::flat_set<std::string>& ids) const {
+  return std::ranges::any_of(
+      GetIdsToBind(), [&](const std::string& id) { return !ids.contains(id); });
+}
+
+bool GlobalAcceleratorListenerLinux::IsIdOfLoadedGroup(
+    const std::string& id) const {
+  return std::ranges::any_of(loaded_prefixes_, [&](const std::string& prefix) {
+    return id.starts_with(prefix);
   });
 }
 
