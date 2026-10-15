@@ -2353,6 +2353,60 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
   WebUIIOSControllerFactory::DeregisterFactory(&factory);
 }
 
+// Tests that a back-forward navigation to an app-specific URL is only allowed
+// when `backForwardList.currentItem.URL` matches the requested app-specific
+// URL, and is rejected when a back-forward navigation to a regular web URL
+// redirects to an app-specific URL.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       BackForwardAppSpecificNavigationRequiresMatchingCurrentItemURL) {
+  NSURL* app_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSMutableURLRequest* app_request =
+      [NSMutableURLRequest requestWithURL:app_url];
+  app_request.mainDocumentURL = app_url;
+
+  FakeWKFrameInfo* main_frame = [[FakeWKFrameInfo alloc] init];
+  main_frame.mainFrame = YES;
+  main_frame.webView = mock_web_view_;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = app_request;
+  action.navigationType = WKNavigationTypeBackForward;
+  action.targetFrame = (WKFrameInfo*)main_frame;
+
+  // 1. Back-forward navigation where `currentItem` is a web URL (e.g. a server
+  // redirect from a history entry to an app-specific URL) must be cancelled.
+  [fake_wk_list_ setCurrentURL:@(kTestURLString)];
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+  EXPECT_FALSE(WebStateImpl::FromWebState(web_state())->HasWebUI());
+
+  // 2. Back-forward navigation where `currentItem` matches the requested
+  // app-specific URL is allowed.
+  [fake_wk_list_ setCurrentURL:@(kTestAppSpecificURL)];
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+}
+
 // Test fixture for window.open tests.
 class WindowOpenByDomTest : public WebTestWithWebController {
  protected:

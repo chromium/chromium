@@ -520,7 +520,8 @@ NSError* SanitizeNavigationError(
     // `policyDecision` is initialized above this conditional to allow loads, so
     // it only needs to be overwritten if the load should be cancelled.
     if (![self shouldAllowAppSpecificURLNavigationAction:action
-                                              transition:transition]) {
+                                              transition:transition
+                                                 webView:webView]) {
       policyDecision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
     }
   }
@@ -1540,7 +1541,8 @@ NSError* SanitizeNavigationError(
 //   - navigation is performed in iframe and main frame is app-specific page
 - (BOOL)shouldAllowAppSpecificURLNavigationAction:(WKNavigationAction*)action
                                        transition:
-                                           (ui::PageTransition)pageTransition {
+                                           (ui::PageTransition)pageTransition
+                                          webView:(WKWebView*)webView {
   GURL requestURL = net::GURLWithNSURL(action.request.URL);
   DCHECK(web::GetWebClient()->IsAppSpecificURL(requestURL));
   web::NavigationItem* lastItem =
@@ -1563,8 +1565,14 @@ NSError* SanitizeNavigationError(
   }
 
   if (pageTransition & ui::PAGE_TRANSITION_FORWARD_BACK) {
-    // Allow back-forward navigations.
-    return YES;
+    // Allow back-forward navigations only if the destination item in the
+    // back-forward list matches `requestURL`. Note that WebKit updates
+    // `currentItem` to the destination item before calling
+    // `decidePolicyForNavigationAction:`.
+    WKBackForwardListItem* currentItem = webView.backForwardList.currentItem;
+    if (currentItem && requestURL == net::GURLWithNSURL(currentItem.URL)) {
+      return YES;
+    }
   }
 
   // Allow navigating to chrome:// pages if the navigation happens due to
