@@ -411,6 +411,16 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
                                            kInactiveDocumentError));
   }
 
+  // Likewise, that script could have registered a tool with the same name, so
+  // check for a duplicate again. Otherwise, the browser would receive two tools
+  // with the same name from this document, and kill the renderer.
+  if (tool_map_.find(tool->name()) != tool_map_.end()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Duplicate tool name"));
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   ScriptPromise promise = resolver->Promise();
