@@ -1630,10 +1630,6 @@ BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 // used. Note that IPv6 (DHCPv6-PD) always uses dhcpcd10.
 BASE_FEATURE(kUseDHCPCD10, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the new `TokenHandleStoreImpl` will be used instead of
-// `TokenHandleUtil`.
-BASE_FEATURE(kUseTokenHandleStore, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use the AnnotatedAccountId for mapping between User and BrowserContext
 // (a.k.a. browser's Profile).
 BASE_FEATURE(kUseAnnotatedAccountId, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2944,10 +2940,6 @@ bool IsWebAuthNAuthDialogMergeEnabled() {
 
 bool ShouldEnterOverviewFromWallpaper() {
   return base::FeatureList::IsEnabled(kEnterOverviewFromWallpaper);
-}
-
-bool IsUseTokenHandleStoreEnabled() {
-  return base::FeatureList::IsEnabled(kUseTokenHandleStore);
 }
 
 bool IsFwupdDeveloperModeEnabled() {

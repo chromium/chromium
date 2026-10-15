@@ -8,10 +8,8 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/token_handle_store.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -81,7 +79,6 @@ class CountingFakeUserDataAuthClient : public FakeUserDataAuthClient {
 class TokenHandleStoreFactoryTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kUseTokenHandleStore);
     auto counting_client = std::make_unique<CountingFakeUserDataAuthClient>();
     counting_client_ = counting_client.get();
     FakeUserDataAuthClient::TestApi::OverrideGlobalInstance(
@@ -113,7 +110,6 @@ class TokenHandleStoreFactoryTest : public testing::Test {
   using GaiaPasswordFuture = base::test::TestFuture<std::optional<bool>>;
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<session_manager::SessionManager> session_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
