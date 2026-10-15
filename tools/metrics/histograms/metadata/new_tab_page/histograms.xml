@@ -442,6 +442,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composeplate.Buttons.Impression"
+    enum="NtpActionChips" expires_after="2027-04-08">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records an impression of each button shown on the composeplate on the New
+    Tab Page: the AI Mode button, the incognito button and, if shown, the
+    optional button (e.g. create image or gallery). One sample is logged each
+    time the NTP impression (UserAction.Counts MobileNTPShown) is logged while
+    the composeplate is visible. Replaces
+    NewTabPage.FakeSearchBox.ComposeplateButton.Impression2. The histogram is
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Composeplate.Impression" enum="BooleanVisible"
     expires_after="2027-02-14">
   <owner>hanxi@chromium.org</owner>
@@ -891,17 +907,6 @@ chromium-metrics-reviews@google.com.
     Records the reason of why failed to show a home surface UI on the chosen
     NTP. Logged in cold or warm startup when failed to show the home surface UI.
     This histogram is recorded on tablets only.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.FakeSearchBox.ComposeplateButton.Impression2"
-    enum="BooleanVisible" expires_after="2027-02-14">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total number of impressions of the fake search box composeplate
-    view on the New Tab Page. The histogram is logged on New tab page and is
-    Android-only.
   </summary>
 </histogram>
 

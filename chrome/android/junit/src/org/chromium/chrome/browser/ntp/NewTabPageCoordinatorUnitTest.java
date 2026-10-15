@@ -1495,6 +1495,25 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    public void testRecordNtpShown_recordsComposeplateButtonsImpression() {
+        setupMockSubCoordinators();
+
+        mCoordinator.recordNtpShown();
+
+        verify(mMockComposeplate).recordButtonsImpression();
+    }
+
+    @Test
+    public void testRecordNtpShown_composeplateCoordinatorNotInitialized() {
+        setupMockSubCoordinators();
+        mCoordinator.setComposeplateCoordinatorForTesting(null);
+
+        mCoordinator.recordNtpShown();
+
+        verify(mMockComposeplate, never()).recordButtonsImpression();
+    }
+
+    @Test
     @Features.DisableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2

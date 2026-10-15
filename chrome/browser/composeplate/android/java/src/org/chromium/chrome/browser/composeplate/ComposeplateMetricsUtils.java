@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.composeplate;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
@@ -17,8 +18,8 @@ public class ComposeplateMetricsUtils {
             "NewTabPage.Composeplate.Impression";
     public static final String HISTOGRAM_NTP_OMNIBOX_IMPRESSION2 =
             "NewTabPage.FakeSearchBox.Impression2";
-    public static final String HISTOGRAM_NTP_OMNIBOX_COMPOSEPLATE_BUTTON_IMPRESSION2 =
-            "NewTabPage.FakeSearchBox.ComposeplateButton.Impression2";
+    public static final String HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION =
+            "NewTabPage.Composeplate.Buttons.Impression";
 
     /**
      * Records a click on a section within the Composeplate row on the New Tab Page.
@@ -43,9 +44,14 @@ public class ComposeplateMetricsUtils {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_NTP_OMNIBOX_IMPRESSION2, true);
     }
 
-    /** Records an impression of composeplate button on the fake search box in the New Tab Page. */
-    public static void recordFakeSearchBoxComposeplateButtonImpression2(boolean isVisible) {
-        RecordHistogram.recordBooleanHistogram(
-                HISTOGRAM_NTP_OMNIBOX_COMPOSEPLATE_BUTTON_IMPRESSION2, isVisible);
+    /**
+     * Records an impression of a button on the composeplate in the New Tab Page.
+     *
+     * @param buttonType The {@link ActionChips} type of the button that was shown. {@link
+     *     ActionChips#DEFAULT} stands for the AI Mode button.
+     */
+    public static void recordComposeplateButtonImpression(@ActionChips int buttonType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION, buttonType, ActionChips.NUM_ENTRIES);
     }
 }

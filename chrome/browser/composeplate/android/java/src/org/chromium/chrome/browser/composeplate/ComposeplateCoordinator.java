@@ -30,6 +30,12 @@ public class ComposeplateCoordinator {
     private final boolean mIsLff;
 
     /**
+     * The {@link ActionChips} type of the optional button, used to record its impression metrics.
+     * Null until the optional button's click listener is set.
+     */
+    private @Nullable @ActionChips Integer mOptionalButtonType;
+
+    /**
      * Constructs a new ComposeplateCoordinator.
      *
      * @param parentView The parent {@link ViewGroup} for the composeplate.
@@ -84,6 +90,22 @@ public class ComposeplateCoordinator {
         }
 
         mModel.set(ComposeplateProperties.IS_VISIBLE, visible);
+    }
+
+    /**
+     * Records an impression for each visible button on the composeplate: the AI Mode button, the
+     * incognito button and, if shown, the optional button. Nothing is recorded if the composeplate
+     * isn't visible. Should only be called when the New Tab Page is shown to the user.
+     */
+    public void recordButtonsImpression() {
+        if (!mModel.get(ComposeplateProperties.IS_VISIBLE)) return;
+
+        ComposeplateMetricsUtils.recordComposeplateButtonImpression(ActionChips.DEFAULT);
+        ComposeplateMetricsUtils.recordComposeplateButtonImpression(ActionChips.INCOGNITO);
+        if (mOptionalButtonType != null
+                && mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE)) {
+            ComposeplateMetricsUtils.recordComposeplateButtonImpression(mOptionalButtonType);
+        }
     }
 
     /**
@@ -240,6 +262,7 @@ public class ComposeplateCoordinator {
      */
     public void setOptionalButtonClickListener(
             View.OnClickListener optionalButtonClickListener, @ActionChips int actionChipsType) {
+        mOptionalButtonType = actionChipsType;
         mModel.set(
                 ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER,
                 createEnhancedClickListener(

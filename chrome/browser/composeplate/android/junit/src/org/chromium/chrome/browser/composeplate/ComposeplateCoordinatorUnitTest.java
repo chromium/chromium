@@ -109,6 +109,78 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     @Test
+    public void testRecordButtonsImpression_optionalButtonHidden() {
+        testRecordButtonsImpressionImpl(
+                ActionChips.CREATE_IMAGE, /* isOptionalButtonVisible= */ false);
+    }
+
+    @Test
+    public void testRecordButtonsImpression_createImageButtonVisible() {
+        testRecordButtonsImpressionImpl(
+                ActionChips.CREATE_IMAGE, /* isOptionalButtonVisible= */ true);
+    }
+
+    @Test
+    public void testRecordButtonsImpression_galleryButtonVisible() {
+        testRecordButtonsImpressionImpl(ActionChips.GALLERY, /* isOptionalButtonVisible= */ true);
+    }
+
+    @Test
+    public void testRecordButtonsImpression_optionalButtonTypeNotSet() {
+        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+
+        String histogramName = ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION;
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(histogramName, ActionChips.DEFAULT, ActionChips.INCOGNITO)
+                        .build();
+
+        mCoordinator.recordButtonsImpression();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordButtonsImpression_composeplateHidden() {
+        mCoordinator.setOptionalButtonClickListener(
+                mOriginalOnClickListener, ActionChips.CREATE_IMAGE);
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+        mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ false);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION)
+                        .build();
+
+        mCoordinator.recordButtonsImpression();
+
+        histogramWatcher.assertExpected();
+    }
+
+    private void testRecordButtonsImpressionImpl(
+            @ActionChips int optionalButtonType, boolean isOptionalButtonVisible) {
+        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
+        mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, optionalButtonType);
+        mCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
+
+        String histogramName = ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION;
+        HistogramWatcher.Builder builder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                histogramName, ActionChips.DEFAULT, ActionChips.INCOGNITO);
+        if (isOptionalButtonVisible) {
+            builder.expectIntRecord(histogramName, optionalButtonType);
+        }
+        HistogramWatcher histogramWatcher = builder.build();
+
+        mCoordinator.recordButtonsImpression();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testSetIncognitoClickListener() {
         mCoordinator.setIncognitoClickListener(mOriginalOnClickListener);
 

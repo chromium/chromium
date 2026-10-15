@@ -1304,16 +1304,14 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mNtpSearchBox.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
         mNtpSearchBox.setLensButtonVisibility(shouldShowLensButton);
-        boolean shouldShowComposeplateButton = false;
         // As long as mComposeplateCoordinator has been initialized, we should update its
         // visibility.
         if (mComposeplateCoordinator != null) {
-            shouldShowComposeplateButton = mCanShowComposeplateButton == TriState.TRUE;
             mComposeplateCoordinator.setVisibility(
-                    shouldShowComposeplateButton, mManager.isCurrentPage());
+                    mCanShowComposeplateButton == TriState.TRUE, mManager.isCurrentPage());
         }
         updatePreviousButtonVisibilityAndRecordMetrics(
-                shouldShowVoiceSearchButton, shouldShowLensButton, shouldShowComposeplateButton);
+                shouldShowVoiceSearchButton, shouldShowLensButton);
     }
 
     /**
@@ -1358,12 +1356,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      *
      * @param isVoiceSearchButtonVisible The new visibility state of the voice search button.
      * @param isLensButtonVisible The new visibility state of the lens button.
-     * @param isComposeplateButtonVisible The new visibility state of the composeplate button.
      */
     private void updatePreviousButtonVisibilityAndRecordMetrics(
-            boolean isVoiceSearchButtonVisible,
-            boolean isLensButtonVisible,
-            boolean isComposeplateButtonVisible) {
+            boolean isVoiceSearchButtonVisible, boolean isLensButtonVisible) {
         int voiceSearchVisibleState = TriStateUtils.from(isVoiceSearchButtonVisible);
         int lensVisibleState = TriStateUtils.from(isLensButtonVisible);
         if (!mManager.isCurrentPage()
@@ -1377,8 +1372,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         ComposeplateMetricsUtils.recordFakeSearchBoxImpression2();
-        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression2(
-                isComposeplateButtonVisible);
 
         mPreviousVoiceSearchButtonVisible = voiceSearchVisibleState;
         mPreviousLensButtonVisible = lensVisibleState;
@@ -1712,6 +1705,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+    }
+
+    /**
+     * Records UMA for the NTP being shown. This includes a fresh page load or being brought to the
+     * foreground.
+     */
+    void recordNtpShown() {
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.recordButtonsImpression();
         }
     }
 
