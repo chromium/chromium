@@ -38,6 +38,36 @@ reviewer.
 
 <!-- LINT.ThenChange(//components/private_ai/proto/private_ai.proto:FeatureName) -->
 
+<histogram name="PrivateAi.Certs.DownloadSuccess" enum="BooleanSuccess"
+    expires_after="2027-04-01">
+  <owner>georgeseb@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <summary>
+    Records whether downloading the Trusted Certificate Authority (TCA) root and
+    Oak Certificate Transparency (OakCT) certificates succeeded. Recorded every
+    time a certificate download completes.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Certs.OakCtVerificationResult"
+    enum="PrivateAiOakCtVerificationResult" expires_after="2027-04-01">
+  <owner>georgeseb@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <summary>
+    Records the outcome of verifying that the Trusted Certificate Authority
+    (TCA) root certificate used for Private AI TLS sessions has been published
+    to Oak Certificate Transparency, i.e. that the accompanying OakCT
+    certificate is publicly trusted and CT-compliant for the hostname derived
+    from the TCA root. Recorded every time the TCA root is downloaded or loaded
+    from the on-disk cache and verified; only verified roots are cached and
+    handed out.
+  </summary>
+</histogram>
+
 <histogram name="PrivateAi.Client.ClientAttestationRequestFailureReason"
     enum="PrivateAiStatusCode" expires_after="2027-03-28">
   <owner>arabm@google.com</owner>

@@ -41,8 +41,10 @@ class OakCtVerifier {
   // Expected length of the ContentID (SHA-256 base32 without padding).
   static constexpr size_t kContentIdLength = 52;
 
-  // Outcome of Verify(). Recorded in UMA (PrivateAi.Certs.OakCtVerification),
+  // Outcome of Verify(). Recorded in UMA
+  // (PrivateAi.Certs.OakCtVerificationResult),
   // so entries must not be reordered or renumbered.
+  // LINT.IfChange(OakCtVerificationResult)
   enum class Result {
     kVerified = 0,
     // The ContentID could not be computed from the TCA root.
@@ -62,6 +64,7 @@ class OakCtVerifier {
     kCtPolicyNotMet = 7,
     kMaxValue = kCtPolicyNotMet,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiOakCtVerificationResult)
 
   using VerifyCallback = base::OnceCallback<void(Result)>;
 

@@ -25156,6 +25156,25 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/private_ai/proto/private_ai.proto:FeatureName) -->
 
+<!-- LINT.IfChange(PrivateAiOakCtVerificationResult) -->
+
+<enum name="PrivateAiOakCtVerificationResult">
+  <summary>
+    Outcome of verifying that a Private AI TCA root certificate is published to
+    Oak Certificate Transparency.
+  </summary>
+  <int value="0" label="Verified"/>
+  <int value="1" label="Invalid TCA root (ContentID could not be computed)"/>
+  <int value="2" label="Invalid OakCT certificate chain"/>
+  <int value="3" label="No NetworkContext available"/>
+  <int value="4" label="NetworkContext disconnected before replying"/>
+  <int value="5" label="Certificate verification failed"/>
+  <int value="6" label="Not issued by a publicly trusted root"/>
+  <int value="7" label="CT policy not met"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/private_ai/attestation/oak_ct_verifier.h:OakCtVerificationResult) -->
+
 <!-- LINT.IfChange(PrivateAiPhosphorGetAuthnTokensResult) -->
 
 <enum name="PrivateAiPhosphorGetAuthnTokensResult">

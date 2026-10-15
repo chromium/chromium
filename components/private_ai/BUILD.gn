@@ -79,6 +79,8 @@ source_set("private_ai") {
     "status_code.h",
     "tls_certificate_downloader.cc",
     "tls_certificate_downloader.h",
+    "tls_certificate_repository.cc",
+    "tls_certificate_repository.h",
     "transport.h",
     "websocket_client.cc",
     "websocket_client.h",
@@ -164,6 +166,7 @@ source_set("unit_tests") {
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
     "tls_certificate_downloader_unittest.cc",
+    "tls_certificate_repository_unittest.cc",
     "websocket_client_unittest.cc",
   ]
   deps = [
