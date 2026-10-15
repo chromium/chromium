@@ -16,8 +16,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "chrome/browser/ui/autofill/autofill_message_model_test_api.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_test_api.h"
 #include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
@@ -378,6 +381,29 @@ TEST_F(EmailVerificationControllerAndroidTest,
   web_contents()->WasHidden();
   EXPECT_CALL(mock_message_controller_, Show).Times(0);
   evp_controller_->ShowVerifiedToast(GURL("https://google.com"));
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowErrorToastEnqueuesErrorMessage) {
+  std::unique_ptr<AutofillMessageModel> shown_model;
+  EXPECT_CALL(mock_message_controller_, Show)
+      .WillOnce([&shown_model](std::unique_ptr<AutofillMessageModel> model) {
+        shown_model = std::move(model);
+      });
+
+  evp_controller_->ShowErrorToast();
+  ASSERT_TRUE(shown_model);
+  EXPECT_EQ(shown_model->GetType(),
+            AutofillMessageModel::Type::kEmailVerificationError);
+  EXPECT_EQ(test_api(*shown_model).GetMessage().GetTitle(),
+            l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_ERROR));
+}
+
+TEST_F(EmailVerificationControllerAndroidTest,
+       ShowErrorToastDoesNotShowWhenWebContentsHidden) {
+  web_contents()->WasHidden();
+  EXPECT_CALL(mock_message_controller_, Show).Times(0);
+  evp_controller_->ShowErrorToast();
 }
 
 }  // namespace

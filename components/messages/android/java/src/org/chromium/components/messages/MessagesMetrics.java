@@ -240,6 +240,8 @@ public class MessagesMetrics {
                 return "EmailVerified";
             case MessageIdentifier.RESURRECT_CHURNED_USERS:
                 return "ResurrectChurnedUsers";
+            case MessageIdentifier.EMAIL_VERIFICATION_ERROR:
+                return "EmailVerificationError";
             default:
                 return "Unknown";
         }

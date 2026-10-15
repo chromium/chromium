@@ -111,9 +111,11 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [ "email_verification_controller_android_unittest.cc" ]
     deps += [
+      "//chrome/app:generated_resources",
       "//chrome/browser/ui/android/autofill",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/autofill:test_support",
+      "//ui/base",
     ]
   } else {
     sources += [

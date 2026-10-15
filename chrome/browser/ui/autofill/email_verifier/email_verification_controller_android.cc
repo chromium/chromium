@@ -102,7 +102,13 @@ void EmailVerificationControllerAndroid::ShowLoadingToastImpl() {
 }
 
 void EmailVerificationControllerAndroid::ShowErrorToastImpl() {
-  // TODO(crbug.com/555673134): Implement Android error Message banner.
+  if (!IsWebContentsVisible()) {
+    return;
+  }
+  // TODO(crbug.com/555673134): Dismiss any active loading Message banner once
+  // ShowLoadingToastImpl() is implemented.
+  GetMessageController().Show(
+      AutofillMessageModel::CreateForEmailVerificationError());
 }
 
 void EmailVerificationControllerAndroid::ShowVerifiedToastImpl(

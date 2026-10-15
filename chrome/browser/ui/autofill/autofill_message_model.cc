@@ -151,6 +151,19 @@ AutofillMessageModel::CreateForEmailVerified(
 }
 
 std::unique_ptr<AutofillMessageModel>
+AutofillMessageModel::CreateForEmailVerificationError() {
+  std::unique_ptr<messages::MessageWrapper> message =
+      std::make_unique<messages::MessageWrapper>(
+          messages::MessageIdentifier::EMAIL_VERIFICATION_ERROR);
+  message->SetTitle(l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_ERROR));
+  message->SetIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_ERROR));
+
+  return std::make_unique<AutofillMessageModel>(std::move(message),
+                                                Type::kEmailVerificationError);
+}
+
+std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForResurrectChurnedUsers(
     base::OnceClosure action_callback,
     messages::MessageWrapper::DismissCallback dismiss_callback) {
@@ -191,6 +204,8 @@ std::string_view AutofillMessageModel::TypeToString(Type message_type) {
       return "EmailVerified";
     case Type::kResurrectChurnedUsers:
       return "ResurrectChurnedUsers";
+    case Type::kEmailVerificationError:
+      return "EmailVerificationError";
   }
 }
 

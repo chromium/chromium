@@ -30,6 +30,7 @@ bool ShouldLogMessageMetrics(AutofillMessageModel::Type type) {
     case AutofillMessageModel::Type::kPersonalContextFetchingFailure:
     case AutofillMessageModel::Type::kPrivateInferenceNotice:
     case AutofillMessageModel::Type::kEmailVerified:
+    case AutofillMessageModel::Type::kEmailVerificationError:
       return false;
   }
   NOTREACHED();
