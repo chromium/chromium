@@ -25,9 +25,12 @@ import java.util.Objects;
 /** Handles slide and settle animations for Hub pane transitions. */
 @NullMarked
 public class HubPaneSwipeAnimator {
-    /** Callback for reporting swipe drag animation progress. */
+    /** Callback for reporting swipe settle and slide animation progress. */
     public interface SwipeAnimationProgressCallback {
-        /** Called with the normalized progress [0..1] and gesture direction. */
+        /**
+         * Called with the normalized progress [0..1] and whether the other pane is to the right, as
+         * for a left swipe.
+         */
         void onProgress(float progress, boolean isSwipeLeft);
     }
 
@@ -84,12 +87,7 @@ public class HubPaneSwipeAnimator {
         animatorSet.setDuration(settleDuration);
 
         if (progressCallback != null) {
-            currentAnim.addUpdateListener(
-                    animation -> {
-                        float dx = currentView.getTranslationX();
-                        float progress = Math.abs(dx) / (float) containerWidth;
-                        progressCallback.onProgress(progress, isSwipeLeft);
-                    });
+            addProgressListener(currentAnim, containerWidth, isSwipeLeft, progressCallback);
         }
 
         animatorSet.addListener(
@@ -110,6 +108,7 @@ public class HubPaneSwipeAnimator {
      * @param oldRootView The view sliding out.
      * @param newRootView The view sliding in.
      * @param isLeftToRight Whether sliding left-to-right or right-to-left.
+     * @param progressCallback Callback for progress updates during the animation.
      * @param onAnimationEnd Callback invoked when the slide animation completes.
      */
     public void animateSlideTransition(
@@ -117,6 +116,7 @@ public class HubPaneSwipeAnimator {
             View oldRootView,
             View newRootView,
             boolean isLeftToRight,
+            @Nullable SwipeAnimationProgressCallback progressCallback,
             Runnable onAnimationEnd) {
         mAnimationHandler.forceFinishAnimation();
         int containerWidth = container.getWidth();
@@ -133,9 +133,13 @@ public class HubPaneSwipeAnimator {
 
         tryAddViewToContainer(container, newRootView);
 
-        Animator slideOut =
+        ValueAnimator slideOut =
                 ObjectAnimator.ofFloat(oldRootView, View.TRANSLATION_X, 0, oldViewEndTranslation);
         slideOut.setDuration(PANE_SLIDE_ANIMATION_DURATION_MS);
+        if (progressCallback != null) {
+            addProgressListener(
+                    slideOut, containerWidth, /* isSwipeLeft= */ !isLeftToRight, progressCallback);
+        }
 
         Animator slideIn =
                 ObjectAnimator.ofFloat(newRootView, View.TRANSLATION_X, newViewStartTranslation, 0);
@@ -160,6 +164,23 @@ public class HubPaneSwipeAnimator {
     /** Cancels or finishes any currently running animation immediately. */
     public void forceFinishAnimation() {
         mAnimationHandler.forceFinishAnimation();
+    }
+
+    /**
+     * Reports the translation of {@code animator} as a fraction of {@code containerWidth}.
+     * ObjectAnimator notifies update listeners before it sets the view property, so the frame's
+     * value is read from the animator rather than from the view.
+     */
+    private static void addProgressListener(
+            ValueAnimator animator,
+            int containerWidth,
+            boolean isSwipeLeft,
+            SwipeAnimationProgressCallback progressCallback) {
+        animator.addUpdateListener(
+                animation -> {
+                    float dx = (float) animation.getAnimatedValue();
+                    progressCallback.onProgress(Math.abs(dx) / containerWidth, isSwipeLeft);
+                });
     }
 
     private void tryAddViewToContainer(ViewGroup container, View rootView) {

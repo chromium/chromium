@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -96,6 +97,18 @@ public class HubPaneSwipeCoordinatorUnitTest {
 
         assertEquals(1, mPaneFrame.getChildCount());
         assertEquals(rootView, mPaneFrame.getChildAt(0));
+    }
+
+    @Test
+    public void testSetRootView_slideNotifiesProvider() {
+        Activity activity = mActivityController.get();
+        mCoordinator.setRootView(new View(activity), false);
+
+        mCoordinator.setRootView(new View(activity), /* isSlideAnimationLeftToRight= */ false);
+        Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
+
+        verify(mPaneViewProvider, atLeastOnce()).onSlideTransitionProgress(anyFloat(), eq(true));
+        verify(mPaneViewProvider).onSlideTransitionEnd();
     }
 
     @Test

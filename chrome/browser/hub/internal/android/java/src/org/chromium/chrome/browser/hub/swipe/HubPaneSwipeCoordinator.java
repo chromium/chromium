@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubPaneHostView.InteractiveElementChecker;
@@ -111,7 +110,16 @@ public class HubPaneSwipeCoordinator implements SwipeGestureDelegate {
                         oldRootView,
                         newRootView,
                         isSlideAnimationLeftToRight,
-                        CallbackUtils.emptyRunnable());
+                        (progress, isSwipeLeft) -> {
+                            if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSlideTransitionProgress(progress, isSwipeLeft);
+                            }
+                        },
+                        () -> {
+                            if (mPaneViewProvider != null) {
+                                mPaneViewProvider.onSlideTransitionEnd();
+                            }
+                        });
             }
         } else if (newRootView == null) {
             mPaneFrame.removeAllViews();

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -23,6 +24,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,6 +45,7 @@ public class HubPaneSwipeAnimatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HubPaneSwipeAnimator.SwipeAnimationProgressCallback mProgressCallback;
+    @Captor private ArgumentCaptor<Float> mProgressCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private HubPaneSwipeAnimator mAnimator;
@@ -196,6 +200,7 @@ public class HubPaneSwipeAnimatorUnitTest {
                 mCurrentView,
                 mAdjacentView,
                 /* isLeftToRight= */ false,
+                /* progressCallback= */ null,
                 () -> ended.set(true));
 
         Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
@@ -215,6 +220,7 @@ public class HubPaneSwipeAnimatorUnitTest {
                 mCurrentView,
                 mAdjacentView,
                 /* isLeftToRight= */ true,
+                /* progressCallback= */ null,
                 () -> ended.set(true));
 
         Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
@@ -223,6 +229,58 @@ public class HubPaneSwipeAnimatorUnitTest {
         assertEquals(0f, mAdjacentView.getTranslationX(), 0.01f);
         assertEquals(0f, mCurrentView.getTranslationX(), 0.01f);
         assertEquals(1, mContainer.getChildCount());
+    }
+
+    @Test
+    public void testAnimateSlideTransition_leftToRightReportsSwipeRight() {
+        mAnimator.animateSlideTransition(
+                mContainer,
+                mCurrentView,
+                mAdjacentView,
+                /* isLeftToRight= */ true,
+                mProgressCallback,
+                () -> {});
+
+        Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
+
+        verify(mProgressCallback, atLeastOnce()).onProgress(anyFloat(), eq(false));
+        verify(mProgressCallback, never()).onProgress(anyFloat(), eq(true));
+    }
+
+    @Test
+    public void testAnimateSlideTransition_reportsProgressOfLastFrame() {
+        mAnimator.animateSlideTransition(
+                mContainer,
+                mCurrentView,
+                mAdjacentView,
+                /* isLeftToRight= */ false,
+                mProgressCallback,
+                () -> {});
+
+        Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
+
+        // Progress read from the view would lag one frame behind and never reach 1.
+        verify(mProgressCallback, atLeastOnce()).onProgress(mProgressCaptor.capture(), eq(true));
+        assertEquals(1.0f, mProgressCaptor.getValue(), 0.0001f);
+    }
+
+    @Test
+    public void testAnimateSettle_reportsProgressOfLastFrame() {
+        mCurrentView.setTranslationX(-300f);
+        mAnimator.animateSettle(
+                mCurrentView,
+                mAdjacentView,
+                /* isSwitch= */ true,
+                /* isSwipeLeft= */ true,
+                CONTAINER_WIDTH,
+                mProgressCallback,
+                () -> {});
+
+        Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
+
+        // Progress read from the view would lag one frame behind and never reach 1.
+        verify(mProgressCallback, atLeastOnce()).onProgress(mProgressCaptor.capture(), eq(true));
+        assertEquals(1.0f, mProgressCaptor.getValue(), 0.0001f);
     }
 
     @Test
@@ -235,6 +293,7 @@ public class HubPaneSwipeAnimatorUnitTest {
                 mCurrentView,
                 mAdjacentView,
                 /* isLeftToRight= */ true,
+                /* progressCallback= */ null,
                 () -> ended.set(true));
 
         assertTrue(ended.get());
@@ -274,6 +333,7 @@ public class HubPaneSwipeAnimatorUnitTest {
                 mCurrentView,
                 mAdjacentView,
                 /* isLeftToRight= */ true,
+                /* progressCallback= */ null,
                 () -> ended.set(true));
 
         Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
@@ -295,6 +355,7 @@ public class HubPaneSwipeAnimatorUnitTest {
                 mCurrentView,
                 mAdjacentView,
                 /* isLeftToRight= */ true,
+                /* progressCallback= */ null,
                 () -> ended.set(true));
 
         Shadows.shadowOf(Looper.getMainLooper()).idleFor(1, TimeUnit.SECONDS);
@@ -315,6 +376,7 @@ public class HubPaneSwipeAnimatorUnitTest {
                 mCurrentView,
                 mAdjacentView,
                 /* isLeftToRight= */ true,
+                /* progressCallback= */ null,
                 () -> ended.set(true));
 
         assertFalse(ended.get());
