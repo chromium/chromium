@@ -63,6 +63,11 @@ const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
 const char kOnDeviceAiUserSettingsEnabled[] =
     "optimization_guide.on_device_foundational_model_user_settings";
 
+// A boolean pref for whether unused on-device GenAI models should be
+// automatically removed after the retention period.
+const char kOnDeviceAiAutoRemoveUnusedModelsEnabled[] =
+    "optimization_guide.on_device_ai_auto_remove_unused_models_enabled";
+
 // Boolean pref indicating whether the AI embeddings model is eligible for
 // download.
 const char kEmbeddingApiModelDownloadEligible[] =
@@ -92,6 +97,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
   registry->RegisterBooleanPref(localstate::kOnDeviceAiUserSettingsEnabled,
                                 true);
+  registry->RegisterBooleanPref(
+      localstate::kOnDeviceAiAutoRemoveUnusedModelsEnabled, true);
   registry->RegisterBooleanPref(localstate::kEmbeddingApiModelDownloadEligible,
                                 false);
   registry->RegisterDictionaryPref(localstate::kManifestAssetLedger);

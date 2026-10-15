@@ -386,6 +386,12 @@ ManifestAssetManager::ManifestAssetManager(
 
   // Register observers for when we might need to update the registrations.
   usage_tracker_observation_.Observe(&usage_tracker);
+  pref_change_registrar_.Init(&local_state_.get());
+  pref_change_registrar_.Add(
+      model_execution::prefs::localstate::
+          kOnDeviceAiAutoRemoveUnusedModelsEnabled,
+      base::BindRepeating(&ManifestAssetManager::UpdateRegistrations,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // Schedule a one-time scan for orphaned assets on disk after initialization.
   if (base::FeatureList::IsEnabled(kScanForOrphanedManifestAssets)) {
@@ -555,7 +561,10 @@ void ManifestAssetManager::EnableEviction() {
 bool ManifestAssetManager::IsEvictionEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_eviction_enabled_ ||
-         base::FeatureList::IsEnabled(kOnDeviceModelEviction);
+         (base::FeatureList::IsEnabled(kOnDeviceModelEviction) &&
+          local_state_->GetBoolean(
+              model_execution::prefs::localstate::
+                  kOnDeviceAiAutoRemoveUnusedModelsEnabled));
 }
 
 void ManifestAssetManager::ScanForOrphanedAssets() {

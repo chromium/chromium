@@ -942,10 +942,10 @@ TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledAfterRetentionPeriod) {
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
-  // Within the 90-day retention period, the asset should remain installed.
+  // Within the 30-day retention period, the asset should remain installed.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(31));
+    task_environment_.FastForwardBy(base::Days(29));
     UpdateManifest(DummyManifest().Add(asset));
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
@@ -959,7 +959,7 @@ TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledAfterRetentionPeriod) {
   // evictable.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(60));
+    task_environment_.FastForwardBy(base::Days(2));
     UpdateManifest(DummyManifest().Add(asset));
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
@@ -981,10 +981,10 @@ TEST_F(ManifestAssetManagerTest,
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
-  // Within the 90-day retention period, the asset should remain installed.
+  // Within the 30-day retention period, the asset should remain installed.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(31));
+    task_environment_.FastForwardBy(base::Days(29));
     UpdateManifest(DummyManifest().Add(asset));
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
@@ -993,10 +993,10 @@ TEST_F(ManifestAssetManagerTest,
         1);
   }
 
-  // After the 90-day retention period expires, the asset should be uninstalled.
+  // After the 30-day retention period expires, the asset should be uninstalled.
   {
     base::HistogramTester histogram_tester;
-    task_environment_.FastForwardBy(base::Days(60));
+    task_environment_.FastForwardBy(base::Days(2));
     UpdateManifest(DummyManifest().Add(asset));
     EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
     histogram_tester.ExpectBucketCount(
@@ -1006,6 +1006,48 @@ TEST_F(ManifestAssetManagerTest,
         "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
         Manifest::UninstallReason::kEvicted, 1);
   }
+}
+
+TEST_F(ManifestAssetManagerTest, AutoRemoveUnusedModelsPrefControlsEviction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
+
+  // Disable auto-remove initially.
+  local_state_.local_state().SetBoolean(
+      model_execution::prefs::localstate::
+          kOnDeviceAiAutoRemoveUnusedModelsEnabled,
+      false);
+
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Advance past the 30-day retention period. Because auto-remove is false, the
+  // asset should remain installed.
+  {
+    base::HistogramTester histogram_tester;
+    task_environment_.FastForwardBy(base::Days(31));
+    UpdateManifest(DummyManifest().Add(asset));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester
+                 .GetAllSamples(
+                     "OptimizationGuide.ModelExecution."
+                     "OnDeviceModelEvictableAssetsCount")
+                 .size() == 1;
+    }));
+    EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+  }
+
+  // Enabling the auto-remove pref immediately triggers registration updates and
+  // uninstalls the expired asset.
+  local_state_.local_state().SetBoolean(
+      model_execution::prefs::localstate::
+          kOnDeviceAiAutoRemoveUnusedModelsEnabled,
+      true);
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
@@ -1168,14 +1210,19 @@ TEST_F(ManifestAssetManagerTest,
 
 TEST_F(ManifestAssetManagerTest, OrphanedAssetInManifestRetainedAndUsed) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
+  feature_list.InitWithFeaturesAndParameters(
+      {{kOnDeviceModelEviction, {}},
+       {kOnDeviceModelUsageTracking,
+        {{"recent_use_period", "15d"}, {"retention_period", "30d"}}}},
+      {});
 
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.RaisePriority(asset.use_case,
                                UsageTracker::Priority::kUserBlocking);
-  // Advance 40 days so priority drops to kRetain (not eligible for new
-  // download, but eligible to be retained if already on disk).
-  task_environment_.FastForwardBy(base::Days(40));
+  // Advance 16 days (>15 days recent use window, <=30 days retention period)
+  // so priority drops to kRetain (not eligible for new download, but eligible
+  // to be retained if already on disk).
+  task_environment_.FastForwardBy(base::Days(16));
 
   MakeAssetsInstallable(DummyManifest().Add(asset));
   component_state_.SetInstalled(asset.ToInstallTarget());
@@ -1223,14 +1270,20 @@ TEST_F(ManifestAssetManagerTest, OrphanedScanDoesNotOverwriteTrackedAsset) {
 
 TEST_F(ManifestAssetManagerTest,
        OrphanedAssetWithMismatchedVersionIsUninstalled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kOnDeviceModelUsageTracking,
+        {{"recent_use_period", "15d"}, {"retention_period", "30d"}}}},
+      {});
+
   DummyAsset orphan_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
   DummyAsset target_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
   usage_tracker_.RaisePriority(target_v2.use_case,
                                UsageTracker::Priority::kUserBlocking);
-  // Advance 40 days so priority drops to kRetain (eligible to be retained if
-  // the target version were already installed, but not eligible for a new
-  // download).
-  task_environment_.FastForwardBy(base::Days(40));
+  // Advance 16 days (>15 days recent use window, <=30 days retention period)
+  // so priority drops to kRetain (eligible to be retained if the target version
+  // were already installed, but not eligible for a new download).
+  task_environment_.FastForwardBy(base::Days(16));
 
   MakeAssetInstallable(orphan_v1);
   component_state_.SetInstalled(orphan_v1.ToInstallTarget());
@@ -1252,11 +1305,18 @@ TEST_F(ManifestAssetManagerTest,
 
 TEST_F(ManifestAssetManagerTest,
        OrphanedAssetWithNoUsableVersionIsUninstalled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kOnDeviceModelUsageTracking,
+        {{"recent_use_period", "15d"}, {"retention_period", "30d"}}}},
+      {});
+
   DummyAsset target = DummyAsset::For("compose").WithVersion("1.0.0.0");
   usage_tracker_.RaisePriority(target.use_case,
                                UsageTracker::Priority::kUserBlocking);
-  // Advance 40 days so priority drops to kRetain.
-  task_environment_.FastForwardBy(base::Days(40));
+  // Advance 16 days (>15 days recent use window, <=30 days retention period)
+  // so priority drops to kRetain.
+  task_environment_.FastForwardBy(base::Days(16));
 
   component_state_.SetInstalled({target.public_key, std::nullopt});
   MakeAssetsInstallable(DummyManifest().Add(target));

@@ -195,19 +195,25 @@ TEST_F(UsageTrackerTest, ScamDetectionObserverNotifiedWithBestEffort) {
 }
 
 TEST_F(UsageTrackerTest, RetentionPeriodPriorityRetain) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kOnDeviceModelUsageTracking,
+        {{"recent_use_period", "15d"}, {"retention_period", "30d"}}}},
+      {});
+
   usage_tracker().RaisePriority("use_case_1", Priority::kUserBlocking);
   usage_tracker().RaisePriority("use_case_2", Priority::kBestEffort);
 
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kUserBlocking);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kBestEffort);
 
-  // After 31 days (>30 days recent use window, <=90 days retention period),
+  // After 16 days (>15 days recent use window, <=30 days retention period),
   // priorities transition to Priority::kRetain.
-  task_environment().FastForwardBy(base::Days(31));
+  task_environment().FastForwardBy(base::Days(16));
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kRetain);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
 
-  // Across restart at 31 days, prefs are retained and priority remains kRetain.
+  // Across restart at 16 days, prefs are retained and priority remains kRetain.
   ResetUsageTracker();
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kRetain);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
@@ -225,16 +231,16 @@ TEST_F(UsageTrackerTest, RetentionPeriodPriorityRetain) {
 
 TEST_F(UsageTrackerTest, PrefPruningAfterTrackingPeriod) {
   usage_tracker().RaisePriority("use_case_1", Priority::kBestEffort);
-  task_environment().FastForwardBy(base::Days(31));
+  task_environment().FastForwardBy(base::Days(15));
   usage_tracker().RaisePriority("use_case_2", Priority::kBestEffort);
 
-  // Advance another 60 days: use_case_1 is 91 days old (>90 days retention,
-  // <=180 days tracking), use_case_2 is 60 days old (30 < age <= 90 days).
-  task_environment().FastForwardBy(base::Days(60));
+  // Advance another 16 days: use_case_1 is 31 days old (>30 days retention,
+  // <=180 days tracking), use_case_2 is 16 days old (<=30 days).
+  task_environment().FastForwardBy(base::Days(16));
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
-  EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
+  EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kBestEffort);
 
-  // On restart at 91 days, prefs within the 180-day tracking period are not
+  // On restart at 31 days, prefs within the 180-day tracking period are not
   // pruned yet.
   ResetUsageTracker();
   {
@@ -244,11 +250,11 @@ TEST_F(UsageTrackerTest, PrefPruningAfterTrackingPeriod) {
     EXPECT_NE(dict.Find("use_case_2"), nullptr);
   }
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
-  EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
+  EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kBestEffort);
 
-  // Advance another 90 days: use_case_1 is 181 days old (>180 days tracking),
-  // use_case_2 is 150 days old (90 < age <= 180 days).
-  task_environment().FastForwardBy(base::Days(90));
+  // Advance another 150 days: use_case_1 is 181 days old (>180 days tracking),
+  // use_case_2 is 166 days old (30 < age <= 180 days).
+  task_environment().FastForwardBy(base::Days(150));
   ResetUsageTracker();
   {
     const auto& dict = local_state().GetDict(

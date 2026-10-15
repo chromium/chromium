@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -350,6 +351,7 @@ class ManifestAssetManager : public UsageTracker::Observer,
 
   bool is_eviction_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>
       usage_tracker_observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);

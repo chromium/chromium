@@ -70,6 +70,9 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceAiUserSettingsEnabled[];
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceAiAutoRemoveUnusedModelsEnabled[];
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kEmbeddingApiModelDownloadEligible[];
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
