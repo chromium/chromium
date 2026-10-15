@@ -4,7 +4,13 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
+#include <string_view>
+
+#include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
@@ -44,6 +50,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
@@ -81,6 +88,8 @@ namespace contextual_tasks {
 namespace {
 
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
+constexpr std::string_view kProfileAvatarPathPrefix =
+    "profile-avatar.png?gaia_id=";
 
 void OpenUrlWithDisposition(Profile* profile,
                             const GURL& url,
@@ -101,12 +110,52 @@ GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
           identity_manager->FindExtendedAccountInfoByGaiaId(account->gaia_id);
       if (!extended_info.IsEmpty() &&
           extended_info.GetAvatarImage().has_value()) {
-        return GURL(webui::GetBitmapDataUrl(
-            extended_info.GetAvatarImage()->AsBitmap()));
+        return GURL(base::StrCat({chrome::kChromeUIContextualTasksURL,
+                                  kProfileAvatarPathPrefix,
+                                  account->gaia_id.ToString()}));
       }
     }
   }
   return GURL(profiles::GetPlaceholderAvatarIconUrl());
+}
+
+// `WebUIDataSource::SetRequestFilter` only supports a single filter callback
+// pair, so `ShouldHandleContextualTasksRequest` and
+// `HandleContextualTasksRequest` multiplex both `WebUIToolbarLayoutCssHelper`
+// and `kProfileAvatarPathPrefix` requests.
+bool ShouldHandleContextualTasksRequest(const std::string& path) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (WebUIToolbarLayoutCssHelper::ShouldHandleRequest(path)) {
+    return true;
+  }
+#endif
+  return base::StartsWith(path, kProfileAvatarPathPrefix);
+}
+
+void HandleContextualTasksRequest(
+    const base::WeakPtr<Profile>& profile,
+    const std::string& path,
+    content::WebUIDataSource::GotDataCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (WebUIToolbarLayoutCssHelper::ShouldHandleRequest(path)) {
+    WebUIToolbarLayoutCssHelper::HandleRequest(path, std::move(callback));
+    return;
+  }
+#endif
+  scoped_refptr<base::RefCountedMemory> png_bytes;
+  if (profile) {
+    if (auto* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile.get())) {
+      GaiaId gaia_id(path.substr(kProfileAvatarPathPrefix.size()));
+      AccountInfo extended_info =
+          identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+      if (!extended_info.IsEmpty() &&
+          extended_info.GetAvatarImage().has_value()) {
+        png_bytes = extended_info.GetAvatarImage()->As1xPNGBytes();
+      }
+    }
+  }
+  std::move(callback).Run(std::move(png_bytes));
 }
 
 }  // namespace
@@ -204,8 +253,11 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
 
 #if !BUILDFLAG(IS_ANDROID)
   source->AddResourcePaths(kWebuiToolbarSharedResources);
-  WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);
 #endif
+  source->SetRequestFilter(
+      base::BindRepeating(&ShouldHandleContextualTasksRequest),
+      base::BindRepeating(&HandleContextualTasksRequest,
+                          profile->GetWeakPtr()));
 
   source->AddResourcePath(
       "internals",
