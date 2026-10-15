@@ -45,6 +45,7 @@ class AwPacProcessor {
       const std::vector<std::string>& string_link_addresses);
 
  private:
+  static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
   void CancelJobsOnPacThread();
   void SetProxyScriptNative(
       std::unique_ptr<net::ProxyResolverFactory::Request>* request,
@@ -56,6 +57,7 @@ class AwPacProcessor {
       net::ProxyInfo* proxy_info,
       net::CompletionOnceCallback complete);
 
+  friend class AwPacProcessorTest;
   friend class Job;
   friend class SetProxyScriptJob;
   friend class MakeProxyRequestJob;

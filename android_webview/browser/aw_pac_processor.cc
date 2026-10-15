@@ -69,7 +69,17 @@ int AndroidGetAddrInfoForNetwork(net_handle_t network,
   return getaddrinfofornetwork(network, node, service, hints, res);
 }
 
-scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
+proxy_resolver::ProxyResolverV8TracingFactory* GetProxyResolverFactory() {
+  static std::unique_ptr<proxy_resolver::ProxyResolverV8TracingFactory>
+      factory = proxy_resolver::ProxyResolverV8TracingFactory::Create();
+
+  return factory.get();
+}
+
+}  // namespace
+
+// static
+scoped_refptr<base::SingleThreadTaskRunner> AwPacProcessor::GetTaskRunner() {
   struct ThreadHolder {
     base::Thread thread_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -83,15 +93,6 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
 
   return thread_holder.task_runner_;
 }
-
-proxy_resolver::ProxyResolverV8TracingFactory* GetProxyResolverFactory() {
-  static std::unique_ptr<proxy_resolver::ProxyResolverV8TracingFactory>
-      factory = proxy_resolver::ProxyResolverV8TracingFactory::Create();
-
-  return factory.get();
-}
-
-}  // namespace
 
 // TODO(amalova): We could use a separate thread or thread pool for executing
 // blocking DNS queries, to get better performance.
@@ -296,7 +297,7 @@ class Job {
   virtual ~Job() = default;
 
   bool ExecSync() {
-    GetTaskRunner()->PostTask(
+    AwPacProcessor::GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&Job::Exec, base::Unretained(this)));
     event_.Wait();
     return net_error_ == net::OK;
