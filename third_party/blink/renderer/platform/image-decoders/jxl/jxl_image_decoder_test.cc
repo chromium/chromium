@@ -177,7 +177,11 @@ TEST_F(JXLImageDecoderTest, PqIntensityTargetIsContentLightLevel) {
   };
 
   EXPECT_EQ(max_cll("pq_intensity_target_600.jxl"), 600.f);
-  EXPECT_EQ(max_cll("pq_intensity_target_10000.jxl"), 10000.f);
+  // 10000 cd/m2 is the PQ nominal peak that encoders write by default, and
+  // 255 is the codestream default when the field is absent; neither states
+  // the content's peak.
+  EXPECT_EQ(max_cll("pq_intensity_target_10000.jxl"), std::nullopt);
+  EXPECT_EQ(max_cll("pq_intensity_target_255.jxl"), std::nullopt);
 }
 
 // Test that an SDR image's intensity_target is not reported as HDR metadata.

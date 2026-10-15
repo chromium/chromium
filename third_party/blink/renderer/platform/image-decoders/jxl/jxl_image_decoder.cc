@@ -45,13 +45,10 @@ constexpr uint64_t kMaxDecodedSamples = 64ULL * 1024 * 1024;
 constexpr uint64_t kMaxDecodedSamples = 1024ULL * 1024 * 1024;
 #endif
 
-// Content light level metadata is only consumed when tone mapping these
-// transfer functions.
-bool IsToneMappedTransferFunction(const skia::ColorProfile& profile) {
+skcms_TFType TransferFunctionType(const skia::ColorProfile& profile) {
   skcms_TransferFunction trfn;
   profile.GetSkColorSpace()->transferFn(&trfn);
-  const skcms_TFType type = skcms_TransferFunction_getType(&trfn);
-  return type == skcms_TFType_PQ || type == skcms_TFType_HLG;
+  return skcms_TransferFunction_getType(&trfn);
 }
 
 }  // namespace
@@ -171,9 +168,21 @@ bool JXLImageDecoder::SetBasicInfo() {
     cmyk_color_profile_ = profile;
   }
   // intensity_target is a JPEG XL codestream's only statement of its peak
-  // luminance, which is what CLLI MaxCLL states in other formats.
-  if (profile && IsToneMappedTransferFunction(*profile)) {
-    hdr_metadata_.SetCLLI({.fMaxCLL = basic_info_->intensity_target});
+  // luminance, which is what CLLI MaxCLL states in other formats. Content
+  // light level metadata is only consumed when tone mapping PQ or HLG. 255 is
+  // the codestream default when the field is absent, and 10000 cd/m2 is PQ's
+  // own peak, which encoders write for PQ regardless of the content; neither
+  // states the content's peak.
+  const skcms_TFType tf_type =
+      profile ? TransferFunctionType(*profile) : skcms_TFType_Invalid;
+  if (tf_type == skcms_TFType_PQ || tf_type == skcms_TFType_HLG) {
+    const float intensity_target = basic_info_->intensity_target;
+    const bool states_no_content_peak =
+        intensity_target == 255.0f ||
+        (tf_type == skcms_TFType_PQ && intensity_target == 10000.0f);
+    if (!states_no_content_peak) {
+      hdr_metadata_.SetCLLI({.fMaxCLL = intensity_target});
+    }
   }
   if (!IgnoresColorSpace() && profile) {
     SetEmbeddedColorProfile(std::move(profile));
