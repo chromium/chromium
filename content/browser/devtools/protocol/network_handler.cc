@@ -3752,8 +3752,6 @@ void NetworkHandler::ProcessDurableMessageOrGetLocalData(
 void NetworkHandler::GetResponseBody(
     const String& request_id,
     std::unique_ptr<GetResponseBodyCallback> callback) {
-  CHECK(storage_partition_);
-  CHECK(devtools_token_);
   network::mojom::DurableMessageCollector* collector =
       root_session_->MaybeGetDurableMessageCollector();
   if (collector) {

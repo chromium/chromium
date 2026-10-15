@@ -462,8 +462,11 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
 DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
 ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
-  const url::Origin origin = url::Origin::Create(url_);
   const auto* version = context_wrapper_->GetLiveVersion(version_id_);
+  if (!rph || !version) {
+    return {};
+  }
+  const url::Origin origin = url::Origin::Create(url_);
   // TODO(crbug.com/40190528): make sure client_security_state is no longer
   // nullptr anywhere.
   auto factory = URLLoaderFactoryParamsHelper::CreateForWorker(

@@ -7,4 +7,12 @@ Response for fetch with existing resource: {
         success : true
     }
 }
+Response for fetch from a stopped service worker: {
+    code : -32000
+    message : Target not supported
+}
+Response body request sent to a stopped service worker: {
+    code : -32000
+    message : No resource with given identifier found
+}
 
