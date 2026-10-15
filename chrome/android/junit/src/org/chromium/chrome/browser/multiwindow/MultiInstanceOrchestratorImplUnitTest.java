@@ -531,6 +531,44 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
+    public void testMoveTabsToWindowByIdChecked_toDestTabIndex_singleTab() {
+        // Setup.
+        int destTabIndex = 1;
+
+        // Act.
+        mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
+                DEST_WINDOW_ID,
+                List.of(mTab1),
+                destTabIndex,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
+                /* bringToFront= */ true);
+
+        // Verify.
+        verify(mTabReparentingDelegate)
+                .reparentTabsToExistingWindow(
+                        eq(mTabbedActivity2),
+                        eq(List.of(mTab1)),
+                        eq(destTabIndex),
+                        eq(Tab.INVALID_TAB_ID),
+                        eq(true));
+    }
+
+    @Test
+    public void testMoveTabsToWindowByIdChecked_emptyTabs_noOps() {
+        // Act.
+        mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
+                DEST_WINDOW_ID,
+                List.of(),
+                /* destTabIndex= */ 0,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID,
+                /* bringToFront= */ true);
+
+        // Verify.
+        verify(mTabReparentingDelegate, never())
+                .reparentTabsToExistingWindow(any(), any(), anyInt(), anyInt(), anyBoolean());
+    }
+
+    @Test
     public void testMoveTabsToWindowByIdChecked_toDestTabGroup() {
         // Setup.
         List<Tab> tabs = List.of(mTab1, mTab2);
