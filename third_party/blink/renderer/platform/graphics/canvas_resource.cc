@@ -102,8 +102,6 @@ void CanvasResource::DropRefOnOwningThread(
 viz::TransferableResource CanvasResource::PrepareTransferableResource() {
   TRACE_EVENT0("blink", "CanvasResource::PrepareTransferableResource");
 
-  CHECK(!CreatesAcceleratedTransferableResources() || ContextProviderWrapper());
-
   auto resource = viz::TransferableResource::Make(
       GetSharedImage(), GetTransferableResourceSource(), sync_token());
 
