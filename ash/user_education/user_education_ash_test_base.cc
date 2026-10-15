@@ -101,4 +101,9 @@ void UserEducationAshTestBase::SetUpInitParams(
   init_params.delegate = std::move(shell_delegate);
 }
 
+void UserEducationAshTestBase::TearDown() {
+  user_education_delegate_ = nullptr;
+  NoSessionAshTestBase::TearDown();
+}
+
 }  // namespace ash
