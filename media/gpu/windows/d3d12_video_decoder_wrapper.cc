@@ -98,9 +98,9 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     TRACE_EVENT("gpu", "D3D12VideoDecoderWrapperImpl::WaitForFrameBegins");
     Reset();
 
-    auto result = output_picture->AcquireOutputView();
-    if (!result.has_value()) {
-      media_log_->NotifyError<D3DStatusTraits>(std::move(result).error());
+    D3DStatus result = output_picture->BeginSharedImageAccess();
+    if (!result.is_ok()) {
+      media_log_->NotifyError<D3DStatusTraits>(std::move(result));
       return false;
     }
 

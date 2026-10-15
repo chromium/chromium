@@ -424,7 +424,7 @@ TEST_F(D3DVideoDecoderTest, OutputResultSendsDecodeFenceToTextureWrapper) {
   FakeTexture2DWrapper* wrapper_ptr = wrapper.get();
   const gfx::Size size = wrapper->GetSize();
   auto resource = MakeComPtr<NiceMock<D3D12ResourceMock>>();
-  auto picture_buffer = base::MakeRefCounted<D3DPictureBuffer>(
+  auto picture_buffer = base::MakeRefCounted<D3D12PictureBufferImpl>(
       task_environment_.GetMainThreadTaskRunner(), std::move(resource),
       /*array_slice=*/0, std::move(wrapper), size, /*picture_index=*/0);
 

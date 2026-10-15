@@ -347,7 +347,7 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
     texture = picture_buffer_texture_;
   }
 
-  auto picture_buffer = base::MakeRefCounted<D3DPictureBuffer>(
+  auto picture_buffer = base::MakeRefCounted<D3D11PictureBufferImpl>(
       std::move(decoder_task_runner), std::move(texture), array_slice,
       std::move(texture_wrapper), size, picture_index);
 
@@ -365,7 +365,7 @@ D3D11VideoDecoderBackend::CreateAndInitPictureBuffer(
     return std::move(result).AddHere();
   }
 
-  return picture_buffer;
+  return scoped_refptr<D3DPictureBuffer>(std::move(picture_buffer));
 }
 
 bool D3D11VideoDecoderBackend::ShouldUseDXVADeviceForHEVCRangeExtension(

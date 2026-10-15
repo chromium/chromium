@@ -91,7 +91,8 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
   }
 
   bool WaitForFrameBegins(D3DPictureBuffer* output_picture) override {
-    auto result = output_picture->AcquireOutputView();
+    auto result =
+        output_picture->As<D3D11PictureBufferImpl>()->AcquireOutputView();
     if (!result.has_value()) {
       media_log_->NotifyError(std::move(result).error().AddHere());
       return false;
