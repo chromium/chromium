@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_BACKEND_PROMO_MODEL_BACKEND_PROMO_SERVICE_H_
 
 #import <memory>
+#import <string_view>
 
 #import "components/keyed_service/core/keyed_service.h"
 
@@ -25,6 +26,10 @@ class BackendPromoService : public KeyedService {
 
   // Notifies the service that the app became active in the foreground.
   virtual void NotifyBackendAppForegroundActive() {}
+
+  // Registers a synthetic field trial for backend promo campaigns.
+  static bool RegisterSyntheticFieldTrial(std::string_view trial_name,
+                                          std::string_view group_name);
 };
 
 class BrowserList;

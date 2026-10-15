@@ -5,12 +5,16 @@
 source_set("model") {
   sources = [
     "backend_promo_service.h",
+    "backend_promo_service.mm",
     "backend_promo_service_factory.h",
     "backend_promo_service_factory.mm",
   ]
   deps = [
+    "//base",
     "//components/keyed_service/core",
+    "//components/variations",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
