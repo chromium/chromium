@@ -79,9 +79,20 @@
 }
 
 @media (forced-colors: active) {
+  :host(.hovered),
+  :host([force-hover]) {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
   #anchor:focus,
   #button:focus {
     outline: var(--cr-focus-outline-hcm);
+  }
+
+  #iconContainer {
+    border: 1px solid CanvasText;
+    box-sizing: border-box;
   }
 }
 
