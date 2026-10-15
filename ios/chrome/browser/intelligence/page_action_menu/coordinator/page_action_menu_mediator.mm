@@ -672,30 +672,17 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
   _webStateObserver.reset();
 }
 
-// Returns whether the row for `permission` should be shown. With domain level
-// site permissions, the row remains visible for any permission the site has
-// requested or has a site-specific setting for, so that a blocked permission
-// can still be changed back.
+// Returns whether the row for `permission` should be shown.
 - (BOOL)isPermissionRowAvailable:(web::Permission)permission {
   if (!_webState) {
     return NO;
   }
   web::PermissionState state = _webState->GetStateForPermission(permission);
-  if (state != web::PermissionStateNotAccessible) {
-    return state == web::PermissionStateAllowed ||
-           IsDomainLevelSitePermissionsEnabled();
-  }
-  if (!_hostContentSettingsMap || !IsDomainLevelSitePermissionsEnabled()) {
+  if (state == web::PermissionStateNotAccessible) {
     return NO;
   }
-  const GURL& url = _webState->GetLastCommittedURL();
-  if (!url.is_valid()) {
-    return NO;
-  }
-  content_settings::SettingInfo settingInfo;
-  _hostContentSettingsMap->GetWebsiteSetting(
-      url, url, ContentSettingsTypeForPermission(permission), &settingInfo);
-  return !settingInfo.primary_pattern.MatchesAllHosts();
+  return state == web::PermissionStateAllowed ||
+         IsDomainLevelSitePermissionsEnabled();
 }
 
 // Populates `feature` with the current state of `permission`, either as a
