@@ -610,6 +610,7 @@ void ReadAnythingAppController::PrepareForNewContentDistillation() {
 
   model_.set_requires_readability_distillation(false);
   model_.set_readability_distillation_complete_for_current_tree(false);
+  model_.set_readability_content_drawn(false);
 
   // TODO: crbug.com/526701545: Show Loading screen when re-distilling.
 
@@ -1773,6 +1774,11 @@ int ReadAnythingAppController::DistillationTypeScreen2x() const {
 int ReadAnythingAppController::DistillationTypeReadability() const {
   return static_cast<int>(
       ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+bool ReadAnythingAppController::IsInSelectionMode() const {
+  return model_.side_panel_distillation_mode() ==
+         ReadAnythingAppModel::SidePanelDistillationMode::kSelection;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -3127,6 +3133,8 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   // If readability distillation returns empty content, consider distillation as
   // failure and default to Screen2X distillation.
   if (dom_distiller_content_html_.empty()) {
+    model_.set_readability_content_drawn(false);
+
     // Immediately attempt distillation. If there's not yet an active tree,
     // distillation will be attempted after the event processes. However,
     // attempting distillation immediately will allow distillation failures
@@ -3158,6 +3166,7 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
       ReadAnythingAppModel::DistillationMethod::kReadability);
   model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
+  model_.set_readability_content_drawn(true);
 
   // Reset text blocks when content is updated and reset should map flag to
   // not trigger a false positive when rendered text is not ready.

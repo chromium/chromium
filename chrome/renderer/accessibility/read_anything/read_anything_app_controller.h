@@ -272,6 +272,7 @@ class ReadAnythingAppController
   int InImmersiveOverlayPresentationState() const;
   int DistillationTypeScreen2x() const;
   int DistillationTypeReadability() const;
+  bool IsInSelectionMode() const;
   std::string GetStoredVoice() const;
   std::vector<std::string> GetLanguagesEnabledInPref() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;

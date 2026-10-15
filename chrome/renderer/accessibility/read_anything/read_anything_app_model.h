@@ -411,6 +411,11 @@ class ReadAnythingAppModel {
     last_readability_distilled_url_ = complete ? GetActiveTreeUrl() : GURL();
   }
 
+  bool readability_content_drawn() const { return readability_content_drawn_; }
+  void set_readability_content_drawn(bool content_drawn) {
+    readability_content_drawn_ = content_drawn;
+  }
+
   read_anything::mojom::LetterSpacing letter_spacing() const {
     return letter_spacing_;
   }
@@ -571,11 +576,32 @@ class ReadAnythingAppModel {
     return display_node_ids_;
   }
 
+  void set_display_node_ids_for_testing(
+      const std::set<ui::AXNodeID>& display_node_ids) {
+    display_node_ids_ = display_node_ids;
+  }
+
   const std::set<ui::AXNodeID>& selection_node_ids() const {
     return selection_node_ids_;
   }
+  void set_selection_node_ids_for_testing(
+      const std::set<ui::AXNodeID>& selection_node_ids) {
+    selection_node_ids_ = selection_node_ids;
+  }
 
   bool is_empty() const {
+    if (side_panel_distillation_mode_ ==
+        SidePanelDistillationMode::kSelection) {
+      return selection_node_ids_.empty();
+    }
+
+    // This needs to check the next distillation method because if this is
+    // checked while Readability is falling back to Screen2x,
+    // is_readability_current_distillation_method may temporarily be true
+    // before the fallback is complete.
+    if (is_readability_next_distillation_method()) {
+      return !readability_content_drawn_;
+    }
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
@@ -775,6 +801,10 @@ class ReadAnythingAppModel {
 
   SidePanelDistillationMode side_panel_distillation_mode() const {
     return side_panel_distillation_mode_;
+  }
+  void set_side_panel_distillation_mode_for_testing(
+      SidePanelDistillationMode mode) {
+    side_panel_distillation_mode_ = mode;
   }
 
   bool has_pending_selection() const { return has_pending_selection_; }
@@ -1173,6 +1203,9 @@ class ReadAnythingAppModel {
   // Track if a readability distillation has already been completed for the
   // current active AX tree.
   bool readability_distillation_complete_for_current_tree_ = false;
+
+  // When readability has content and has been drawn.
+  bool readability_content_drawn_ = false;
 
   // Track the URL of the last successfully distilled page on the active tree.
   GURL last_readability_distilled_url_;

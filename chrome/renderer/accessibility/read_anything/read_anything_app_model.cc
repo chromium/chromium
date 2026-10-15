@@ -203,8 +203,6 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   UpdateSelectionEndpoints();
 
   // TODO: crbug.com/505770261 - Implement selection_mode for readability.
-  // AXtree mapping is needed first and is_empty() must be redefined since a
-  // readability distillation doesn't use display_node_ids.
   if (is_readability_next_distillation_method()) {
     return false;
   }

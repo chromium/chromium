@@ -5621,6 +5621,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
             ReadAnythingAppModel::DistillationMethod::kReadability);
 
   EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
+  EXPECT_TRUE(model().readability_content_drawn());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -5640,6 +5641,26 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 
   EXPECT_EQ(model().current_content_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_FALSE(model().readability_content_drawn());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_UpdatesReadabilityContentDrawn) {
+  EXPECT_FALSE(model().readability_content_drawn());
+
+  controller().UpdateContent("Title", "Some valid content");
+  EXPECT_TRUE(model().readability_content_drawn());
+
+  controller().UpdateContent("Title", "");
+  EXPECT_FALSE(model().readability_content_drawn());
+
+  controller().UpdateContent("Title", "Some valid content");
+  EXPECT_TRUE(model().readability_content_drawn());
+
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  EXPECT_FALSE(model().readability_content_drawn());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -7962,4 +7983,18 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
 
   EXPECT_EQ(active_distiller()->GetDistillationMethod(),
             ReadAnythingAppModel::DistillationMethod::kScreen2x);
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsInSelectionMode) {
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+  EXPECT_FALSE(controller().IsInSelectionMode());
+
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+  EXPECT_TRUE(controller().IsInSelectionMode());
+
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+  EXPECT_FALSE(controller().IsInSelectionMode());
 }

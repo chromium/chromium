@@ -4352,3 +4352,59 @@ TEST_F(ReadAnythingAppModelScreen2xTest,
   EXPECT_TRUE(model().requires_distillation());
 }
 #endif
+
+TEST_F(ReadAnythingAppModelTest, IsEmpty_ReadabilityMainContent) {
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  model().set_readability_content_drawn(false);
+  EXPECT_TRUE(model().is_empty());
+
+  model().set_readability_content_drawn(true);
+  EXPECT_FALSE(model().is_empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, IsEmpty_SelectionMode) {
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+
+  model().set_selection_node_ids_for_testing({});
+  EXPECT_TRUE(model().is_empty());
+
+  model().set_selection_node_ids_for_testing({1});
+  EXPECT_FALSE(model().is_empty());
+
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+  model().set_readability_content_drawn(false);
+  model().set_selection_node_ids_for_testing({1});
+  EXPECT_FALSE(model().is_empty());
+
+  model().set_selection_node_ids_for_testing({});
+  EXPECT_TRUE(model().is_empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, IsEmpty_Screen2x) {
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  model().set_display_node_ids_for_testing({});
+  model().set_selection_node_ids_for_testing({});
+  EXPECT_TRUE(model().is_empty());
+
+  model().set_display_node_ids_for_testing({1});
+  model().set_selection_node_ids_for_testing({});
+  EXPECT_FALSE(model().is_empty());
+
+  model().set_display_node_ids_for_testing({});
+  model().set_selection_node_ids_for_testing({2});
+  EXPECT_FALSE(model().is_empty());
+
+  model().set_display_node_ids_for_testing({1});
+  model().set_selection_node_ids_for_testing({2});
+  EXPECT_FALSE(model().is_empty());
+}
