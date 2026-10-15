@@ -29,15 +29,22 @@
 
 #include "chrome/browser/download/download_history.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +60,10 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
@@ -274,6 +285,131 @@ bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
          download::GetOverwrittenDownloadDeleteTime();
 }
 
+// Minimum number of loaded downloads in a time window required to emit
+// Download.History.HeavyProfile.* histograms for that window.
+size_t g_heavy_profile_download_count_threshold = 1000;
+
+// Returns `path` with any trailing " (<number>)" uniquifier before the
+// extension removed (e.g. "/foo/bar (1).pdf" -> "/foo/bar.pdf").
+base::FilePath::StringType GetPathWithoutUniquifier(
+    const base::FilePath& path) {
+  if (!path.value().contains(FILE_PATH_LITERAL(" ("))) {
+    return path.value();
+  }
+  const base::FilePath::StringType without_ext = path.RemoveExtension().value();
+  const size_t open_pos = without_ext.rfind(FILE_PATH_LITERAL(" ("));
+  if (open_pos == base::FilePath::StringType::npos ||
+      !without_ext.ends_with(FILE_PATH_LITERAL(")"))) {
+    return path.value();
+  }
+  const base::FilePath::StringViewType digits =
+      base::FilePath::StringViewType(without_ext)
+          .substr(open_pos + 2, without_ext.size() - open_pos - 3);
+  if (digits.empty() ||
+      !std::ranges::all_of(digits,
+                           &base::IsAsciiDigit<base::FilePath::CharType>)) {
+    return path.value();
+  }
+  return base::StrCat(
+      {base::FilePath::StringViewType(without_ext).substr(0, open_pos),
+       path.Extension()});
+}
+
+// Returns the first valid non-opaque origin among `row.tab_url`,
+// `row.referrer_url`, `row.site_url`, and `row.url_chain`.
+std::optional<url::Origin> GetDownloadOrigin(const history::DownloadRow& row) {
+  for (const GURL& url : {row.tab_url, row.referrer_url, row.site_url}) {
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.opaque()) {
+      return origin;
+    }
+  }
+  for (const GURL& url : row.url_chain) {
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.opaque()) {
+      return origin;
+    }
+  }
+  return std::nullopt;
+}
+
+// Records Download.History.HeavyProfile.*{window_suffix} histograms for `rows`.
+void RecordHeavyProfileMetrics(
+    base::span<const history::DownloadRow* const> rows,
+    std::string_view window_suffix) {
+  CHECK_GE(rows.size(), g_heavy_profile_download_count_threshold);
+
+  size_t num_by_extension = 0;
+  size_t num_by_web_app = 0;
+  size_t num_blob_or_data_url = 0;
+  size_t num_incomplete = 0;
+  size_t num_opened = 0;
+  size_t num_uniquified_duplicates = 0;
+
+  absl::flat_hash_map<std::string, size_t> origin_counts;
+  size_t max_origin_count = 0;
+
+  absl::flat_hash_set<base::FilePath::StringType> unique_stripped_paths;
+
+  absl::flat_hash_map<int64_t, size_t> downloads_per_day;
+  size_t max_downloads_in_a_day = 0;
+
+  for (const history::DownloadRow* row : rows) {
+    if (!row->by_ext_id.empty()) {
+      ++num_by_extension;
+    }
+    if (!row->by_web_app_id.empty()) {
+      ++num_by_web_app;
+    }
+    if (!row->url_chain.empty() &&
+        (row->url_chain.back().SchemeIsBlob() ||
+         row->url_chain.back().SchemeIs(url::kDataScheme))) {
+      ++num_blob_or_data_url;
+    }
+    if (row->state != DownloadState::COMPLETE) {
+      ++num_incomplete;
+    }
+    if (row->opened) {
+      ++num_opened;
+    }
+    if (!row->target_path.empty() &&
+        !unique_stripped_paths
+             .insert(GetPathWithoutUniquifier(row->target_path))
+             .second) {
+      ++num_uniquified_duplicates;
+    }
+    if (std::optional<url::Origin> origin = GetDownloadOrigin(*row)) {
+      max_origin_count =
+          std::max(max_origin_count, ++origin_counts[origin->Serialize()]);
+    }
+    const int64_t day_index =
+        row->start_time.ToDeltaSinceWindowsEpoch().InDaysFloored();
+    max_downloads_in_a_day =
+        std::max(max_downloads_in_a_day, ++downloads_per_day[day_index]);
+  }
+
+  auto record_percentage = [&](std::string_view characteristic, size_t count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"Download.History.HeavyProfile.Percent", characteristic,
+                      window_suffix}),
+        base::checked_cast<int>(count * 100 / rows.size()));
+  };
+
+  record_percentage("BlobOrDataUrl", num_blob_or_data_url);
+  record_percentage("ByExtension", num_by_extension);
+  record_percentage("ByWebApp", num_by_web_app);
+  record_percentage("FromTopOrigin", max_origin_count);
+  record_percentage("Incomplete", num_incomplete);
+  record_percentage("InPeakDay", max_downloads_in_a_day);
+  record_percentage("Opened", num_opened);
+  record_percentage("UniquifiedDuplicates", num_uniquified_duplicates);
+
+  base::UmaHistogramCounts100000(
+      base::StrCat(
+          {"Download.History.HeavyProfile.MaxDownloadsPerDay", window_suffix}),
+      base::saturated_cast<int>(max_downloads_in_a_day));
+}
+
 }  // anonymous namespace
 
 DownloadHistory::HistoryAdapter::HistoryAdapter(
@@ -310,6 +446,13 @@ DownloadHistory::Observer::~Observer() = default;
 bool DownloadHistory::IsPersisted(const download::DownloadItem* item) {
   const DownloadHistoryData* data = DownloadHistoryData::Get(item);
   return data && (data->state() == DownloadHistoryData::PERSISTED);
+}
+
+// static
+base::AutoReset<size_t> DownloadHistory::SetHeavyProfileThresholdForTesting(
+    size_t threshold) {
+  return base::AutoReset<size_t>(&g_heavy_profile_download_count_threshold,
+                                 threshold);
 }
 
 DownloadHistory::DownloadHistory(content::DownloadManager* manager,
@@ -411,6 +554,14 @@ void DownloadHistory::LoadHistoryDownloads(
   int num_loaded = 0;
   int num_loaded_last_30_days = 0;
   int num_loaded_last_90_days = 0;
+  const bool may_be_heavy_profile =
+      rows.size() >= g_heavy_profile_download_count_threshold;
+  std::vector<const history::DownloadRow*> loaded_rows;
+  std::vector<const history::DownloadRow*> loaded_rows_last_30_days;
+  std::vector<const history::DownloadRow*> loaded_rows_last_90_days;
+  if (may_be_heavy_profile) {
+    loaded_rows.reserve(rows.size());
+  }
 
   for (const history::DownloadRow& row : rows) {
     if (ShouldSkipLoadingDownload(row, &file_name_count)) {
@@ -477,11 +628,20 @@ void DownloadHistory::LoadHistoryDownloads(
              base::NotFatalUntil::M161);
 
     ++num_loaded;
+    if (may_be_heavy_profile) {
+      loaded_rows.push_back(&row);
+    }
     if (now - row.start_time <= base::Days(30)) {
       ++num_loaded_last_30_days;
+      if (may_be_heavy_profile) {
+        loaded_rows_last_30_days.push_back(&row);
+      }
     }
     if (now - row.start_time <= base::Days(90)) {
       ++num_loaded_last_90_days;
+      if (may_be_heavy_profile) {
+        loaded_rows_last_90_days.push_back(&row);
+      }
     }
 
     // The download might have been in the terminal state without informing
@@ -538,6 +698,17 @@ void DownloadHistory::LoadHistoryDownloads(
   base::UmaHistogramCounts100000(
       "Download.History.DownloadCount.PostRemoval.Last90Days",
       num_loaded_last_90_days);
+  if (loaded_rows.size() >= g_heavy_profile_download_count_threshold) {
+    RecordHeavyProfileMetrics(loaded_rows, "");
+  }
+  if (loaded_rows_last_30_days.size() >=
+      g_heavy_profile_download_count_threshold) {
+    RecordHeavyProfileMetrics(loaded_rows_last_30_days, ".Last30Days");
+  }
+  if (loaded_rows_last_90_days.size() >=
+      g_heavy_profile_download_count_threshold) {
+    RecordHeavyProfileMetrics(loaded_rows_last_90_days, ".Last90Days");
+  }
 
   initial_history_query_complete_ = true;
   for (Observer& observer : observers_) {

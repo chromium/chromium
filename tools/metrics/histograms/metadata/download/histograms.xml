@@ -67,6 +67,14 @@ chromium-metrics-reviews@google.com.
   <variant name="UserValidated"/>
 </variants>
 
+<variants name="DownloadHistoryWindow">
+  <variant name="" summary="in total"/>
+  <variant name=".Last30Days"
+      summary="restricted to downloads started in the last 30 days"/>
+  <variant name=".Last90Days"
+      summary="restricted to downloads started in the last 90 days"/>
+</variants>
+
 <variants name="DownloadSource">
   <variant name=".ContextMenu" summary="ContextMenu."/>
   <variant name=".DragAndDrop" summary="DragAndDrop."/>
@@ -430,13 +438,59 @@ chromium-metrics-reviews@google.com.
     kDeleteOverwrittenDownloads). Used to evaluate the impact of limiting the
     number and age of downloads kept in history.
   </summary>
-  <token key="Window">
-    <variant name="" summary="in total"/>
-    <variant name=".Last30Days"
-        summary="restricted to downloads started in the last 30 days"/>
-    <variant name=".Last90Days"
-        summary="restricted to downloads started in the last 90 days"/>
+  <token key="Window" variants="DownloadHistoryWindow"/>
+</histogram>
+
+<histogram name="Download.History.HeavyProfile.MaxDownloadsPerDay{Window}"
+    units="downloads" expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the maximum number of loaded downloads {Window} that started within
+    a single 24-hour day bucket. Recorded in
+    DownloadHistory::LoadHistoryDownloads only when at least 1,000 downloads are
+    loaded {Window}. Used to understand whether large download histories are
+    accumulated via single-day bursts or steady daily activity.
+  </summary>
+  <token key="Window" variants="DownloadHistoryWindow"/>
+</histogram>
+
+<histogram name="Download.History.HeavyProfile.Percent{Characteristic}{Window}"
+    units="%" expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the percentage of loaded downloads {Window} {Characteristic}.
+    Recorded in DownloadHistory::LoadHistoryDownloads only when at least 1,000
+    downloads are loaded {Window}. Used to understand why some profiles
+    accumulate a large number of downloads.
+  </summary>
+  <token key="Characteristic">
+    <variant name="BlobOrDataUrl"
+        summary="whose final URL has a blob: or data: scheme"/>
+    <variant name="ByExtension"
+        summary="that were initiated by an extension (non-empty by_ext_id)"/>
+    <variant name="ByWebApp"
+        summary="that were initiated by a web app (non-empty by_web_app_id)"/>
+    <variant name="FromTopOrigin"
+        summary="that share the single most frequent non-opaque origin
+                 (resolved from the first valid non-opaque URL among tab_url,
+                 referrer_url, site_url, and url_chain)"/>
+    <variant name="Incomplete"
+        summary="that are not in the COMPLETE state (e.g. CANCELLED or
+                 INTERRUPTED)"/>
+    <variant name="InPeakDay"
+        summary="that started on the single 24-hour day bucket with the most
+                 downloads"/>
+    <variant name="Opened" summary="that have been opened from the browser"/>
+    <variant name="UniquifiedDuplicates"
+        summary="whose target path (after stripping a trailing '
+                 (&lt;number&gt;)' uniquifier before the extension)
+                 duplicates another loaded download in the same window"/>
   </token>
+  <token key="Window" variants="DownloadHistoryWindow"/>
 </histogram>
 
 <histogram name="Download.History.LoadedInSession" enum="BooleanLoaded"

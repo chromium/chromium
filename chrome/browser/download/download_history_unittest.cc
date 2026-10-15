@@ -485,6 +485,7 @@ class DownloadHistoryTest : public testing::Test {
     EXPECT_CALL(manager(), GetDownload(row->id))
         .WillRepeatedly(Return(&item(index)));
     EXPECT_CALL(item(index), IsTemporary()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), UpdateObservers()).Times(testing::AnyNumber());
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     new extensions::DownloadedByExtension(&item(index), row->by_ext_id,
                                           row->by_ext_name);
@@ -666,6 +667,128 @@ TEST_F(DownloadHistoryTest, DownloadCountPostRemovalHistograms) {
       "Download.History.DownloadCount.PostRemoval.Last30Days", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "Download.History.DownloadCount.PostRemoval.Last90Days", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Download.History.HeavyProfile.MaxDownloadsPerDay", 0);
+  histogram_tester.ExpectTotalCount(
+      "Download.History.HeavyProfile.PercentByExtension", 0);
+}
+
+// Test that Download.History.HeavyProfile.* histograms are emitted only for
+// time windows that meet the heavy profile threshold.
+TEST_F(DownloadHistoryTest, HeavyProfileHistograms) {
+  auto scoped_threshold =
+      DownloadHistory::SetHeavyProfileThresholdForTesting(4);
+  base::HistogramTester histogram_tester;
+  const base::Time now = base::Time::Now();
+  // Anchor timestamps to the start of a 24-hour Windows-epoch day bucket so
+  // `recent1` and `recent2` always fall in the same day bucket.
+  const base::Time yesterday = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Days(now.ToDeltaSinceWindowsEpoch().InDaysFloored() - 1));
+
+  history::DownloadRow removed, recent1, recent2, recent3, last_90_days, old;
+  InitDownloadRow(FILE_PATH_LITERAL("/foo/removed.pdf"),
+                  "blob:https://alpha.example.com/removed",
+                  "https://alpha.example.com/referrer.html",
+                  download::DownloadItem::CANCELLED, &removed);
+  removed.id = 101;
+  removed.by_ext_id = "ext";
+  removed.by_web_app_id = "app";
+  removed.opened = true;
+  removed.start_time = yesterday + base::Hours(1);
+
+  InitBasicItem(FILE_PATH_LITERAL("/foo/report.pdf"),
+                "blob:https://alpha.example.com/1",
+                "https://alpha.example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &recent1);
+  recent1.tab_url = GURL("https://alpha.example.com/page1");
+  recent1.start_time = yesterday + base::Hours(1);
+  recent1.by_ext_id = "ext_1";
+  recent1.by_ext_name = "ext_name_1";
+  recent1.opened = true;
+
+  InitBasicItem(FILE_PATH_LITERAL("/foo/report (1).pdf"),
+                "data:text/plain,hello",
+                "https://alpha.example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &recent2);
+  recent2.tab_url = GURL("https://alpha.example.com/page2");
+  recent2.start_time = yesterday + base::Hours(2);
+  recent2.by_web_app_id = "app_1";
+
+  InitBasicItem(FILE_PATH_LITERAL("/foo/dir (1)/other.pdf"), "about:blank", "",
+                download::DownloadItem::CANCELLED, &recent3);
+  recent3.tab_url = GURL();
+  recent3.start_time = yesterday - base::Days(10) + base::Hours(1);
+
+  InitBasicItem(FILE_PATH_LITERAL("/foo/report (2).pdf"),
+                "https://alpha.example.com/report.pdf", "",
+                download::DownloadItem::COMPLETE, &last_90_days);
+  last_90_days.tab_url = GURL();
+  last_90_days.start_time = yesterday - base::Days(60) + base::Hours(1);
+  last_90_days.opened = true;
+
+  InitBasicItem(FILE_PATH_LITERAL("/foo/archive (copy).zip"),
+                "https://gamma.example.com/archive.zip",
+                "https://gamma.example.com/referrer.html",
+                download::DownloadItem::INTERRUPTED, &old);
+  old.tab_url = GURL("https://gamma.example.com/page");
+  old.start_time = yesterday - base::Days(200) + base::Hours(1);
+  old.by_ext_id = "ext_2";
+  old.by_ext_name = "ext_name_2";
+
+  CreateDownloadHistory({CreateDownloadHistoryEntry(
+                             removed, LoadDownloadRowResult::kRemoveDownload),
+                         CreateDownloadHistoryEntry(recent1),
+                         CreateDownloadHistoryEntry(recent2),
+                         CreateDownloadHistoryEntry(recent3),
+                         CreateDownloadHistoryEntry(last_90_days),
+                         CreateDownloadHistoryEntry(old)});
+
+  // Only 3 downloads were started in the last 30 days (< threshold of 4).
+  histogram_tester.ExpectTotalCount(
+      "Download.History.HeavyProfile.MaxDownloadsPerDay.Last30Days", 0);
+  histogram_tester.ExpectTotalCount(
+      "Download.History.HeavyProfile.PercentByExtension.Last30Days", 0);
+
+  // 4 downloads were started in the last 90 days (>= threshold of 4).
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.MaxDownloadsPerDay.Last90Days", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentBlobOrDataUrl.Last90Days", 50, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentByExtension.Last90Days", 25, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentByWebApp.Last90Days", 25, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentFromTopOrigin.Last90Days", 75, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentIncomplete.Last90Days", 25, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentInPeakDay.Last90Days", 50, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentOpened.Last90Days", 50, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentUniquifiedDuplicates.Last90Days",
+      50, 1);
+
+  // 5 downloads were loaded in total (>= threshold of 4).
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.MaxDownloadsPerDay", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentBlobOrDataUrl", 40, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentByExtension", 40, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentByWebApp", 20, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentFromTopOrigin", 60, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentIncomplete", 40, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentInPeakDay", 40, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentOpened", 40, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.HeavyProfile.PercentUniquifiedDuplicates", 40, 1);
 }
 
 // Test that the OnHistoryQueryComplete() observer method is invoked for an
