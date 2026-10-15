@@ -1381,6 +1381,7 @@ def GenerateLicenseFileCsv(
         readme_dir,
         is_open_source_project=is_open_source,
         android_compatible=m.get("License Android Compatible"),
+        is_shipped=(m.get("Shipped", "yes").lower() == "yes"),
       )
     except Exception as e:
       logging.warning(
