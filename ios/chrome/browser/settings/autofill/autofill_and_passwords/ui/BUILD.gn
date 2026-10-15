@@ -65,6 +65,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_and_passwords_table_view_controller_unittest.mm",
     "autofill_settings_table_view_controller_unittest.mm",
+    "shopping_table_view_controller_unittest.mm",
   ]
   deps = [
     ":autofill_and_passwords",
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
