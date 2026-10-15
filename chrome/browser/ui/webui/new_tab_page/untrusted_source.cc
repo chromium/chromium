@@ -30,14 +30,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_untrusted_resources.h"
-#include "components/contextual_tasks/public/features.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/search/ntp_features.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -52,11 +49,6 @@ using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
 namespace {
 
 constexpr int kMaxUriDecodeLen = 2048;
-
-// Google Search page shown in the NTP's left-hand side (LHS) panel, relative
-// to the Google base URL.
-constexpr char kLhsRelativeUrl[] = "/search?nem=341";
-constexpr char kLhsExpandedParam[] = "&atvm=3";
 
 std::string FormatTemplate(int resource_id,
                            const ui::TemplateReplacements& replacements) {
@@ -246,25 +238,6 @@ void UntrustedSource::StartDataRequest(
         FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_IMAGE_HTML, replacements)));
     return;
   }
-  if (path == "expanded-lhs") {
-    ui::TemplateReplacements replacements;
-    std::string lhs_relative_url = kLhsRelativeUrl;
-    if (ntp_features::kNtpThreadsRailHybridParam.Get()) {
-      lhs_relative_url += kLhsExpandedParam;
-    }
-    GURL lhs_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
-                            ->search_terms_data()
-                            .GoogleBaseURLValue())
-                       .Resolve(lhs_relative_url);
-    if (auto forced_host = contextual_tasks::GetForcedEmbeddedPageHost()) {
-      lhs_url = forced_host->ApplyToUrl(lhs_url);
-    }
-    replacements["url"] = lhs_url.spec();
-    std::move(callback).Run(
-        base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
-            IDR_NEW_TAB_PAGE_UNTRUSTED_EXPANDED_LHS_HTML, replacements)));
-    return;
-  }
   if (path == "background_image") {
     ServeBackgroundImage(url_param, GURL(), "cover", "no-repeat", "no-repeat",
                          "center", "center", "inherit", std::move(callback));
@@ -347,9 +320,8 @@ bool UntrustedSource::ShouldServiceRequest(
   std::string_view path = url.path().substr(1);
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "one_google_bar_api.js" || path == "image" ||
-         path == "expanded-lhs" || path == "background_image" ||
-         path == "custom_background_image" || path == "background_image.js" ||
-         IsValidBackgroundImagePath(path);
+         path == "background_image" || path == "custom_background_image" ||
+         path == "background_image.js" || IsValidBackgroundImagePath(path);
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {

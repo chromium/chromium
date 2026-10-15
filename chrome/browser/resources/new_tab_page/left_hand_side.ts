@@ -4,9 +4,9 @@
 
 import 'chrome://resources/cr_components/composebox/threads_rail.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from './i18n_setup.js';
 import {getCss} from './left_hand_side.css.js';
 import {getHtml} from './left_hand_side.html.js';
 
@@ -26,11 +26,14 @@ export class LeftHandSideElement extends CrLitElement {
   static override get properties() {
     return {
       enableThreadsRailHybrid_: {type: Boolean},
+      expandedLhsUrl_: {type: String},
     };
   }
 
   protected accessor enableThreadsRailHybrid_: boolean =
       loadTimeData.getBoolean('enableThreadsRailHybrid');
+  protected accessor expandedLhsUrl_: string =
+      loadTimeData.getString('expandedLhsUrl');
 }
 
 declare global {

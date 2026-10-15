@@ -16,12 +16,17 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
+const EXPANDED_LHS_URL = 'https://www.google.com/search?nem=341';
+
 suite('NewTabPageLeftHandSideTest', () => {
   let leftHandSide: LeftHandSideElement;
   let windowProxy: TestMock<WindowProxy>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      expandedLhsUrl: EXPANDED_LHS_URL,
+    });
     windowProxy = installMock(WindowProxy);
     // Prevents the iframe from actually loading the LHS page.
     windowProxy.setResultFor('createIframeSrc', '');
@@ -61,7 +66,8 @@ suite('NewTabPageLeftHandSideTest', () => {
           leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
       assertTrue(!!iframe);
       assertEquals('NTP-IFRAME', iframe.tagName);
-      assertEquals('chrome-untrusted://new-tab-page/expanded-lhs', iframe.src);
+      assertEquals(EXPANDED_LHS_URL, iframe.src);
+      assertEquals('unbounded-element', iframe.allow);
     });
   });
 });
