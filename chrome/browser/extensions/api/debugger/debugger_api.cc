@@ -289,13 +289,48 @@ bool ExtensionIsTrusted(const Extension& extension) {
              ::switches::kAllowUnpackedPerfettoExtension);
 }
 
+// Returns whether the extension may attach to an embedder frame.
+bool ExtensionMayAttachToEmbedderFrame(const Extension& extension,
+                                       Profile* extension_profile,
+                                       content::RenderFrameHost* embedder_frame,
+                                       const GURL& page_url,
+                                       std::string* error) {
+  CHECK(embedder_frame);
+  if (embedder_frame->GetWebUI()) {
+    *error = manifest_errors::kCannotAccessChromeUrl;
+    return false;
+  }
+  if (content::WebContents::FromRenderFrameHost(embedder_frame)
+          ->IsPrivileged()) {
+    *error = manifest_errors::kCannotAccessPage;
+    return false;
+  }
+  return ExtensionMayAttachToURLOrInnerURL(
+             extension, extension_profile,
+             embedder_frame->GetLastCommittedURL(), &page_url, error) &&
+         ExtensionMayAttachToURLOrInnerURL(extension, extension_profile,
+                                           embedder_frame->GetSiteInstance()
+                                               ->GetSecurityPrincipal()
+                                               .GetDeprecatedSiteURL(),
+                                           &page_url, error);
+}
+
 bool ExtensionMayAttachToRenderFrameHost(
     const Extension& extension,
     Profile* extension_profile,
     content::RenderFrameHost* render_frame_host,
     std::string* error) {
+  const GURL& page_url = render_frame_host->GetOutermostMainFrameOrEmbedder()
+                             ->GetLastCommittedURL();
+  for (content::RenderFrameHost* frame =
+           render_frame_host->GetParentOrOuterDocumentOrEmbedder();
+       frame; frame = frame->GetParentOrOuterDocumentOrEmbedder()) {
+    if (!ExtensionMayAttachToEmbedderFrame(extension, extension_profile, frame,
+                                           page_url, error)) {
+      return false;
+    }
+  }
   bool result = true;
-  const GURL& page_url = render_frame_host->GetLastCommittedURL();
   render_frame_host->ForEachRenderFrameHostWithAction(
       [&page_url, &extension, extension_profile, error,
        &result](content::RenderFrameHost* render_frame_host) {
@@ -368,6 +403,28 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
                                      Profile* extension_profile,
                                      WebContents& web_contents,
                                      std::string* error) {
+  content::RenderFrameHost* main = web_contents.GetPrimaryMainFrame();
+  content::RenderFrameHost* outer = main->GetOutermostMainFrameOrEmbedder();
+  if (outer != main) {
+    content::WebContents* outer_wc =
+        content::WebContents::FromRenderFrameHost(outer);
+    if (auto* helper = security_interstitials::SecurityInterstitialTabHelper::
+            FromWebContents(outer_wc);
+        helper && helper->IsDisplayingInterstitial()) {
+      *error = kRestrictedError;
+      return false;
+    }
+    if (!ExtensionMayAttachToURL(extension, extension_profile,
+                                 outer_wc->GetLastCommittedURL(), error)) {
+      return false;
+    }
+    if (outer_wc->GetController().GetPendingEntry() &&
+        !ExtensionMayAttachToURL(
+            extension, extension_profile,
+            outer_wc->GetController().GetPendingEntry()->GetURL(), error)) {
+      return false;
+    }
+  }
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
           SecurityInterstitialTabHelper::FromWebContents(&web_contents);
@@ -1307,6 +1364,14 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
     if (content::WebContents* web_contents = host->GetWebContents();
         web_contents && web_contents->IsPrivileged()) {
       continue;
+    }
+    if (host->GetType() == DevToolsAgentHost::kTypeGuest && extension()) {
+      std::string error;
+      if (auto* wc = host->GetWebContents();
+          wc && !ExtensionMayAttachToWebContents(*extension(), profile, *wc,
+                                                 &error)) {
+        continue;
+      }
     }
 #if BUILDFLAG(ENABLE_PDF)
     // OOPIF PDF viewer only. Don't list the `content::DevToolsAgentHost`s for

@@ -51,6 +51,7 @@
 #include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -88,6 +89,24 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/base_window.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "base/memory/ref_counted_memory.h"
+#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/message_enums.h"
@@ -1968,4 +1987,208 @@ IN_PROC_BROWSER_TEST_F(
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+
+namespace {
+
+// Allow-listed WebUI for <webview> in chrome/.../_api_features.json.
+constexpr const char* kTestWebUIHost = chrome::kChromeUIChromeSigninHost;
+constexpr const char* kTestWebUIURL = chrome::kChromeUIChromeSigninURL;
+
+// A custom WebUIController hosting a <webview> to test debugger restrictions.
+class TestWebUIController : public content::WebUIController {
+ public:
+  explicit TestWebUIController(content::WebUI* web_ui)
+      : content::WebUIController(web_ui) {
+    web_ui->SetBindings(
+        content::BindingsPolicySet({content::BindingsPolicyValue::kWebUi}));
+    content::WebContents* wc = web_ui->GetWebContents();
+    extensions::TabHelper::CreateForWebContents(wc);
+    content::WebUIDataSource* s = content::WebUIDataSource::CreateAndAdd(
+        wc->GetBrowserContext(), kTestWebUIHost);
+    s->SetRequestFilter(
+        base::BindRepeating([](const std::string& p) { return p.empty(); }),
+        base::BindRepeating(
+            [](const std::string&,
+               content::WebUIDataSource::GotDataCallback cb) {
+              std::move(cb).Run(base::MakeRefCounted<base::RefCountedString>(
+                  "<!DOCTYPE html><webview src=\"about:blank\"></webview>"));
+            }));
+  }
+
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
+
+class TestWebUIConfig
+    : public content::DefaultWebUIConfig<TestWebUIController> {
+ public:
+  TestWebUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme, kTestWebUIHost) {}
+};
+
+class TestGuestViewManagerDelegate
+    : public extensions::ExtensionsGuestViewManagerDelegate {
+ public:
+  bool IsGuestAvailableToContext(const guest_view::GuestViewBase*)
+      const override {
+    return true;
+  }
+};
+
+}  // namespace
+
+// Tests chrome.debugger access to <webview> guests inside privileged WebUI.
+class WebViewGuestDebuggerApiTest : public DebuggerApiTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  WebViewGuestDebuggerApiTest() {
+    guest_view_feature_list_.InitWithFeatureState(features::kGuestViewMPArch,
+                                                  GetParam());
+  }
+
+  void SetUpOnMainThread() override {
+    DebuggerApiTest::SetUpOnMainThread();
+    web_ui_config_registration_ =
+        std::make_unique<content::ScopedWebUIConfigRegistration>(
+            std::make_unique<TestWebUIConfig>());
+  }
+
+ protected:
+  guest_view::TestGuestViewManager* GetGuestViewManager() {
+    return factory_.GetOrCreateTestGuestViewManager(
+        profile(), std::make_unique<TestGuestViewManagerDelegate>());
+  }
+
+  scoped_refptr<content::DevToolsAgentHost> GetGuestAgentHost() {
+    auto hosts = content::DevToolsAgentHost::GetOrCreateAll();
+    auto it = std::ranges::find(hosts, content::DevToolsAgentHost::kTypeGuest,
+                                &content::DevToolsAgentHost::GetType);
+    return it != hosts.end() ? *it : nullptr;
+  }
+
+  void CreateWebUiGuestView() {
+    auto* manager = GetGuestViewManager();
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL(kTestWebUIURL)));
+    auto* view = manager->WaitForSingleGuestViewCreated();
+    ASSERT_TRUE(view && manager->WaitUntilAttachedAndLoaded(view));
+  }
+
+  bool HasTargetId(const std::string& target_id) {
+    auto fn = base::MakeRefCounted<DebuggerGetTargetsFunction>();
+    fn->set_extension(extension());
+    auto val = api_test_utils::RunFunctionAndReturnSingleResult(fn.get(), "[]",
+                                                                profile());
+    return val && val->is_list() &&
+           std::ranges::any_of(val->GetList(), [&](const auto& item) {
+             const std::string* id = item.GetDict().FindString("id");
+             return id && *id == target_id;
+           });
+  }
+
+ private:
+  base::test::ScopedFeatureList guest_view_feature_list_;
+  guest_view::TestGuestViewManagerFactory factory_;
+  std::unique_ptr<content::ScopedWebUIConfigRegistration>
+      web_ui_config_registration_;
+};
+
+// Tests that attach() refuses to attach to a WebUI-hosted <webview> guest.
+IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
+                       CannotAttachToWebUiWebViewGuest) {
+  CreateWebUiGuestView();
+  auto attach = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach->set_extension(extension());
+  EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl,
+            api_test_utils::RunFunctionAndReturnError(
+                attach.get(),
+                base::StringPrintf(R"([{"targetId": "%s"}, "1.1"])",
+                                   GetGuestAgentHost()->GetId().c_str()),
+                profile()));
+}
+
+// Tests that chrome.debugger.getTargets() omits WebUI <webview> guests.
+IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
+                       WebUiWebViewGuestExcludedFromGetTargets) {
+  CreateWebUiGuestView();
+  EXPECT_FALSE(HasTargetId(GetGuestAgentHost()->GetId()));
+}
+
+// Verifies attached session cannot reach WebUI guest via Target.attachToTarget.
+IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
+                       AlreadyAttachedSessionCannotReachWebUiWebViewGuest) {
+  CreateWebUiGuestView();
+  auto* new_wc = content::WebContents::FromRenderFrameHost(
+      NavigateToURLInNewTab(GURL("about:blank")));
+  int tab_id = sessions::SessionTabHelper::IdForTab(new_wc).id();
+
+  auto attach = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach->set_extension(extension());
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      attach.get(), base::StringPrintf(R"([{"tabId": %d}, "1.3"])", tab_id),
+      profile()));
+
+  auto send_cmd = base::MakeRefCounted<DebuggerSendCommandFunction>();
+  send_cmd->set_extension(extension());
+  EXPECT_THAT(
+      api_test_utils::RunFunctionAndReturnError(
+          send_cmd.get(),
+          base::StringPrintf(
+              R"([{"tabId": %d}, "Target.attachToTarget", )"
+              R"({"targetId": "%s", "flatten": true}])",
+              tab_id, GetGuestAgentHost()->GetId().c_str()),
+          profile()),
+      testing::HasSubstr("Not allowed"));
+}
+
+// Control test: verifies that a <webview> guest embedded in an ordinary
+// extension page (not restricted WebUI) is enumerable and attachable by its
+// own extension.
+// Because the <webview> HTML tag is restricted to apps/allowlisted WebUIs,
+// this attaches a WebViewGuest directly to a subframe via GuestViewManager.
+IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
+                       ControlExtensionWebViewGuestAllowed) {
+  content::WebContents* wc = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(wc, extension()->GetResourceURL("test_file.html")));
+  ASSERT_TRUE(content::ExecJs(
+      wc, "document.body.appendChild(document.createElement('iframe'));"));
+  auto* main = wc->GetPrimaryMainFrame();
+  auto* frame = content::ChildFrameAt(main, 0);
+  ASSERT_TRUE(frame);
+
+  auto* guest_manager = GetGuestViewManager();
+  base::test::TestFuture<std::unique_ptr<guest_view::GuestViewBase>> future;
+  guest_manager->CreateGuestAndTransferOwnership(
+      extensions::WebViewGuest::Type, main, nullptr, base::DictValue(),
+      future.GetCallback());
+  auto owned = future.Take();
+  auto* raw = owned.get();
+  base::DictValue params;
+  params.Set("src", "about:blank");
+  static_cast<guest_view::GuestViewManager*>(guest_manager)
+      ->AttachGuest(main->GetProcess()->GetID(), frame->GetRoutingID(),
+                    raw->guest_instance_id(), params);
+  base::RunLoop loop;
+  raw->AttachToOuterWebContentsFrame(std::move(owned), frame,
+                                     frame->GetRoutingID(), false,
+                                     loop.QuitClosure());
+  loop.Run();
+  ASSERT_TRUE(guest_manager->WaitUntilAttachedAndLoaded(raw));
+
+  EXPECT_TRUE(HasTargetId(GetGuestAgentHost()->GetId()));
+
+  auto attach = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach->set_extension(extension());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach.get(),
+      base::StringPrintf(R"([{"targetId": "%s"}, "1.1"])",
+                         GetGuestAgentHost()->GetId().c_str()),
+      profile()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, WebViewGuestDebuggerApiTest, testing::Bool());
+
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 }  // namespace extensions
