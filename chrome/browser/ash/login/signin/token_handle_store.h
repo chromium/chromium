@@ -2,28 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_IMPL_H_
-#define CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_H_
+#define CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_H_
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
-#include "ash/public/cpp/token_handle_store.h"
 #include "base/containers/flat_map.h"
-#include "base/no_destructor.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/signin/token_handle_checker.h"
 #include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace account_manager {
+class AccountManager;
+}  // namespace account_manager
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 
 // This class is responsible for orchestrating token handle checks and fetches.
 // It is the sole writer to the token handle pref.
-// TODO(387248794): Rename to `TokenHandleStore` as part of cleanup.
-class TokenHandleStoreImpl : public TokenHandleStore {
+// Token Handle is an access token associated with OAuth refresh token that has
+// exactly the same lifetime. It is not secure, and its only purpose is checking
+// validity of corresponding refresh token in an insecure environment, eg. login
+// screen.
+class TokenHandleStore {
  public:
+  // `account_id`: The account for which the token handle check was performed.
+  // `token`: The token which was checked. Empty if we could not find a token
+  // handle for `account_id`.
+  // `reauth_required`: Result of `IsReauthRequired()`. `true` means that
+  // reauthentication is required for `account_id`.
+  using TokenValidationCallback =
+      base::OnceCallback<void(const AccountId& account_id,
+                              const std::string& token,
+                              bool reauth_required)>;
+
   // Takes an account id, and a callback.
   // Responds on the callback with -
   // `true` if the given account id uses Gaia password for authentication.
@@ -33,34 +55,59 @@ class TokenHandleStoreImpl : public TokenHandleStore {
   using DoesUserHaveGaiaPasswordCallback = base::RepeatingCallback<
       void(const AccountId&, base::OnceCallback<void(std::optional<bool>)>)>;
 
-  TokenHandleStoreImpl(
+  TokenHandleStore(
       std::unique_ptr<user_manager::KnownUser> known_user,
       DoesUserHaveGaiaPasswordCallback does_user_have_gaia_password);
-  ~TokenHandleStoreImpl() override;
+  ~TokenHandleStore();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  TokenHandleStoreImpl(const TokenHandleStoreImpl&) = delete;
-  TokenHandleStoreImpl& operator=(const TokenHandleStoreImpl&) = delete;
+  TokenHandleStore(const TokenHandleStore&) = delete;
+  TokenHandleStore& operator=(const TokenHandleStore&) = delete;
 
-  // TokenHandleStore:
-  bool HasToken(const AccountId& account_id) const override;
-  bool IsRecentlyChecked(const AccountId& account_id) const override;
-  bool ShouldObtainHandle(const AccountId& account_id) const override;
+  // Returns true if UserManager has token handle associated with `account_id`.
+  bool HasToken(const AccountId& account_id) const;
+
+  // Returns true if the token status for `account_id` was checked recently.
+  bool IsRecentlyChecked(const AccountId& account_id) const;
+
+  // Indicates if token handle for `account_id` is missing, marked as invalid,
+  // or stale.
+  bool ShouldObtainHandle(const AccountId& account_id) const;
+
+  // Performs token handle check for `account_id`. Will call `callback` with
+  // corresponding result. See `TokenValidationCallback` for details.
   void IsReauthRequired(
       const AccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      TokenValidationCallback callback) override;
-  void StoreTokenHandle(const AccountId& account_id,
-                        const std::string& handle) override;
-  void SetTokenHandleStale(const AccountId& account_id) override;
-  void SetInvalidTokenForTesting(const char* token) override;
+      TokenValidationCallback callback);
+
+  // Given the token `handle` store it for `account_id`.
+  void StoreTokenHandle(const AccountId& account_id, const std::string& handle);
+
+  // Sets the token handle to stale.
+  void SetTokenHandleStale(const AccountId& account_id);
+
+  // Depending on the state of the current token handle, execute a token handle
+  // fetch and store it.
   void MaybeFetchTokenHandle(
       PrefService* token_handle_mapping_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const AccountId& account_id,
       const std::string& access_token,
-      const std::string& refresh_token_hash) override;
+      const std::string& refresh_token_hash);
+
+  // Records whether or not the current refresh-token-hash stored in account
+  // manager matches the refresh-token-hash for `token`. This helps with
+  // diagnosing token handle checks performed on older token handles.
+  void DiagnoseTokenHandleMapping(
+      PrefService* token_handle_mapping_store,
+      account_manager::AccountManager* account_manager,
+      const AccountId& account_id,
+      const std::string& token) const;
+
+  // Testing methods:
+  void SetInvalidTokenForTesting(const char* token);
 
  private:
   void OnCheckToken(const AccountId& account_id,
@@ -103,12 +150,6 @@ class TokenHandleStoreImpl : public TokenHandleStore {
                                const std::string& token_handle,
                                const std::string& refresh_token_hash);
 
-  void DiagnoseTokenHandleMapping(
-      PrefService* token_handle_mapping_store,
-      account_manager::AccountManager* account_manager,
-      const AccountId& account_id,
-      const std::string& token) const override;
-
   void OnGetTokenHash(PrefService* token_handle_mapping_store,
                       const std::string& token,
                       const std::string& account_manager_stored_hash) const;
@@ -134,9 +175,9 @@ class TokenHandleStoreImpl : public TokenHandleStore {
 
   std::optional<std::string> invalid_token_for_testing_;
 
-  base::WeakPtrFactory<TokenHandleStoreImpl> weak_factory_{this};
+  base::WeakPtrFactory<TokenHandleStore> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_STORE_H_

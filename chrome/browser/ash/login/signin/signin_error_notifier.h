@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/token_handle_store.h"
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/signin/token_handle_store.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/keyed_service/core/keyed_service.h"

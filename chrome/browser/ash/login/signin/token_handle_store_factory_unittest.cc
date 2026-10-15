@@ -8,9 +8,9 @@
 #include <memory>
 #include <optional>
 
-#include "ash/public/cpp/token_handle_store.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/signin/token_handle_store.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -223,7 +223,7 @@ TEST_F(TokenHandleStoreFactoryTest, ConcurrentReauthRequestsArePooled) {
   // At this point, the DBus call for check 1 is in flight.
 
   // Start second reauth check. This will cancel the (already completed)
-  // check 1 in TokenHandleStoreImpl, and start check 2.
+  // check 1 in TokenHandleStore, and start check 2.
   token_handle_store_->IsReauthRequired(
       account_id, url_loader_factory_.GetSafeWeakWrapper(),
       future2.GetCallback());

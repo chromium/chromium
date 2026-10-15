@@ -9,10 +9,10 @@
 
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/token_handle_store.h"
 #include "base/check_deref.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
+#include "chrome/browser/ash/login/signin/token_handle_store.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -54,7 +54,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    // Required to initialize TokenHandleStoreImpl.
+    // Required to initialize TokenHandleStore.
     ash::UserDataAuthClient::InitializeFake();
 
     token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>(

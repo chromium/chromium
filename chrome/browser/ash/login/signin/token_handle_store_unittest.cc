@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/signin/token_handle_store.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -129,7 +130,7 @@ class TokenHandleStoreTest : public ::testing::Test {
             base::OnceCallback<void(std::optional<bool>)> continuation) {
           std::move(continuation).Run(user_has_gaia_password);
         };
-    return std::make_unique<TokenHandleStoreImpl>(
+    return std::make_unique<TokenHandleStore>(
         std::move(known_user),
         base::BindLambdaForTesting(std::move(does_user_have_gaia_password)));
   }
@@ -142,7 +143,7 @@ class TokenHandleStoreTest : public ::testing::Test {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(std::move(continuation), true));
         };
-    return std::make_unique<TokenHandleStoreImpl>(
+    return std::make_unique<TokenHandleStore>(
         std::move(known_user),
         base::BindLambdaForTesting(std::move(does_user_have_gaia_password)));
   }

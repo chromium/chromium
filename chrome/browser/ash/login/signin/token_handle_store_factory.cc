@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
+#include "chrome/browser/ash/login/signin/token_handle_store.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -131,19 +131,19 @@ TokenHandleStoreFactory* TokenHandleStoreFactory::Get() {
 }
 
 std::unique_ptr<TokenHandleStore>
-TokenHandleStoreFactory::CreateTokenHandleStoreImpl() {
+TokenHandleStoreFactory::CreateTokenHandleStore() {
   if (!does_user_have_gaia_password_) {
     does_user_have_gaia_password_ = std::make_unique<DoesUserHaveGaiaPassword>(
         std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get()));
   }
-  return std::make_unique<TokenHandleStoreImpl>(
+  return std::make_unique<TokenHandleStore>(
       std::make_unique<user_manager::KnownUser>(&local_state_.get()),
       does_user_have_gaia_password_->CreateRepeatingCallback());
 }
 
 TokenHandleStore* TokenHandleStoreFactory::GetTokenHandleStore() {
   if (token_handle_store_ == nullptr) {
-    token_handle_store_ = CreateTokenHandleStoreImpl();
+    token_handle_store_ = CreateTokenHandleStore();
   }
 
   return token_handle_store_.get();
