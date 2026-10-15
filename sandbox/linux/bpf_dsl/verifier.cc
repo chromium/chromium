@@ -4,11 +4,12 @@
 
 #include "sandbox/linux/bpf_dsl/verifier.h"
 
+#include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/numerics/byte_conversions.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_filter.h"
@@ -44,9 +45,8 @@ void Ld(State* state, const struct sock_filter& insn, const char** err) {
   }
   if (insn.k < sizeof(struct arch_seccomp_data) && (insn.k & 3) == 0) {
     // We only allow loading of properly aligned 32bit quantities.
-    UNSAFE_TODO(memcpy(&state->accumulator,
-                       reinterpret_cast<const char*>(&*state->data) + insn.k,
-                       4));
+    state->accumulator = base::U32FromNativeEndian(
+        base::byte_span_from_ref(*state->data).subspan(insn.k).first<4>());
   } else {
     *err = "Invalid operand in BPF_LD instruction";
     return;
