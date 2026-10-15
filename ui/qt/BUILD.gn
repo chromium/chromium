@@ -150,7 +150,6 @@ component("qt") {
     "//base",
     "//cc/paint",
     "//printing/buildflags",
-    "//ui/base/glib",
     "//ui/base/ime/linux",
     "//ui/color",
     "//ui/color:mixers",
