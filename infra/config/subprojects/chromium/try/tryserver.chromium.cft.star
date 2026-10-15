@@ -51,6 +51,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "browser-automation-staff@google.com",
     cq_settings = try_.cq_settings(
         location_filters = _LOCATION_FILTER,
@@ -70,6 +71,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "browser-automation-staff@google.com",
     siso_remote_linking = True,
 )

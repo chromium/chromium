@@ -16,6 +16,7 @@ try_.defaults.set(
     pool = try_constants.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     compilator_cores = 16,
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
