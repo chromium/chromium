@@ -51,7 +51,6 @@
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
-#include "components/omnibox/browser/location_bar_model_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -546,16 +545,6 @@ bool IsAndroidLargeFormFactor() {
 #else
   return false;
 #endif
-}
-
-GURL GetContextualTasksFunctionalURL(content::WebContents* web_contents) {
-  auto* ui = GetWebUiInterface(web_contents);
-  return ui ? ui->GetInnerFrameUrl() : GURL();
-}
-
-GURL GetContextualTasksDisplayURL(content::WebContents* web_contents) {
-  GURL inner_frame_url = GetContextualTasksFunctionalURL(web_contents);
-  return location_bar_model::GetContextualTasksDisplayURL(inner_frame_url);
 }
 
 bool IsUrlValidForContextSharing(const GURL& url) {

@@ -182,15 +182,6 @@ bool IsAndroidLargeFormFactor();
 // Returns whether the provided URL is to a contextual tasks WebUI page.
 bool IsContextualTasksUrl(const GURL& url);
 
-// Returns the functional URL (usually the inner frame URL) for the given
-// WebContents if it is a Contextual Tasks page; otherwise returns an empty
-// GURL.
-GURL GetContextualTasksFunctionalURL(content::WebContents* web_contents);
-
-// Returns the pretty display URL (e.g. chrome://google.com/search) for the
-// given WebContents if it is a Contextual Tasks page.
-GURL GetContextualTasksDisplayURL(content::WebContents* web_contents);
-
 // Returns true if the given URL is valid for sharing as tab context with AI
 // Mode (matches the composebox '+' menu tab picker eligibility).
 bool IsUrlValidForContextSharing(const GURL& url);
