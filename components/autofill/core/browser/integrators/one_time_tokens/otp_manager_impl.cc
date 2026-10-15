@@ -484,9 +484,9 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
           weak_ptr_factory_.GetWeakPtr(), std::move(token), frame_token);
       break;
     case OneTimeTokenSource::kOnDeviceSms:
-      show_suggestions =
-          base::BindOnce(&OtpManagerImpl::MaybeShowOtpSuggestionsForSms,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(token));
+      show_suggestions = base::BindOnce(
+          &OtpManagerImpl::MaybeShowOtpSuggestionsForSms,
+          weak_ptr_factory_.GetWeakPtr(), std::move(token), frame_token);
       break;
     case OneTimeTokenSource::kUnknown:
       NOTREACHED();
@@ -535,6 +535,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
 
 void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     OneTimeToken token,
+    LocalFrameToken frame_token,
     OneTimeTokensPhishGuardVerdict verdict) {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
@@ -547,6 +548,14 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "No pending callback, skipping further processing.";
+    return;
+  }
+
+  // If a new suggestion request was started for a different frame while this
+  // PhishGuard check was in flight, ignore this stale result so we neither
+  // deliver an OTP to an unverified frame nor cancel the new frame's pending
+  // callback.
+  if (last_pending_frame_token_ != frame_token) {
     return;
   }
 

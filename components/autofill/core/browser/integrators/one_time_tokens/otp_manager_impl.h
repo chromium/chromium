@@ -141,6 +141,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // performed) and delivers or triggers OTP suggestions for SMS and Gmail
   // respectively.
   void MaybeShowOtpSuggestionsForSms(one_time_tokens::OneTimeToken token,
+                                     LocalFrameToken frame_token,
                                      OneTimeTokensPhishGuardVerdict verdict);
   void MaybeShowOtpSuggestionsForGmail(one_time_tokens::OneTimeToken token,
                                        LocalFrameToken frame_token,

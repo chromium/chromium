@@ -1803,6 +1803,116 @@ class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
     EXPECT_FALSE(future.IsReady());
   }
 
+  void VerifyIgnoresStaleFrameVerdictWhenFrameChanges(
+      one_time_tokens::OneTimeTokenType token_type,
+      one_time_tokens::OneTimeTokenSource token_source) {
+    LocalFrameToken frame_a = autofill_driver().GetFrameToken();
+    LocalFrameToken frame_b = test::MakeLocalFrameToken();
+    const FormStructure* multi_frame_form = AddForm({
+        .fields =
+            {
+                {.server_type = ONE_TIME_CODE,
+                 .host_frame = frame_a,
+                 .label = u"OTP1",
+                 .name = u"otp1"},
+                {.server_type = ONE_TIME_CODE,
+                 .host_frame = frame_b,
+                 .label = u"OTP2",
+                 .name = u"otp2"},
+            },
+        .host_frame = frame_a,
+    });
+    ASSERT_TRUE(multi_frame_form);
+    ASSERT_EQ(multi_frame_form->fields().size(), 2u);
+
+    base::OnceCallback<void(bool is_phishing)> phish_guard_callback_a_safe;
+    base::OnceCallback<void(bool is_phishing)> phish_guard_callback_a_phishing;
+    base::OnceCallback<void(bool is_phishing)> phish_guard_callback_b;
+
+    EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck(frame_a, _))
+        .WillOnce([&](LocalFrameToken,
+                      base::OnceCallback<void(bool is_phishing)> callback) {
+          phish_guard_callback_a_safe = std::move(callback);
+        })
+        .WillOnce([&](LocalFrameToken,
+                      base::OnceCallback<void(bool is_phishing)> callback) {
+          phish_guard_callback_a_phishing = std::move(callback);
+        });
+    EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck(frame_b, _))
+        .WillOnce([&](LocalFrameToken,
+                      base::OnceCallback<void(bool is_phishing)> callback) {
+          phish_guard_callback_b = std::move(callback);
+        });
+
+    std::optional<std::string> sender_address =
+        token_type == one_time_tokens::OneTimeTokenType::kGmail
+            ? std::optional<std::string>("sender@example.com")
+            : std::nullopt;
+
+    // Start request 1 on `frame_a` and trigger two in-flight PhishGuard checks
+    // on `frame_a` (to test both stale safe and stale phishing verdicts).
+    base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future_a;
+    otp_manager().GetOtpSuggestions(
+        *multi_frame_form, *multi_frame_form->field(0), future_a.GetCallback());
+    EXPECT_FALSE(future_a.IsReady());
+
+    test_api(otp_manager())
+        .OnOneTimeTokenReceived(
+            token_source,
+            one_time_tokens::OneTimeToken(
+                token_type, "111111", base::TimeTicks::Now(), sender_address));
+    test_api(otp_manager())
+        .OnOneTimeTokenReceived(
+            token_source,
+            one_time_tokens::OneTimeToken(
+                token_type, "111111", base::TimeTicks::Now(), sender_address));
+    ASSERT_FALSE(phish_guard_callback_a_safe.is_null());
+    ASSERT_FALSE(phish_guard_callback_a_phishing.is_null());
+
+    // Before the `frame_a` checks finish, start request 2 on `frame_b` (cancels
+    // `future_a` with empty suggestions) and receive an OTP for `frame_b`.
+    base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future_b;
+    otp_manager().GetOtpSuggestions(
+        *multi_frame_form, *multi_frame_form->field(1), future_b.GetCallback());
+    EXPECT_TRUE(future_a.IsReady());
+    EXPECT_TRUE(future_a.Get().empty());
+    EXPECT_FALSE(future_b.IsReady());
+
+    test_api(otp_manager())
+        .OnOneTimeTokenReceived(
+            token_source,
+            one_time_tokens::OneTimeToken(
+                token_type, "222222", base::TimeTicks::Now(), sender_address));
+    ASSERT_FALSE(phish_guard_callback_b.is_null());
+
+    // Stale safe verdict from `frame_a` must not resolve `future_b`, cache the
+    // token, or mutate `last_triggered_otp_value_`.
+    std::move(phish_guard_callback_a_safe).Run(/*is_phishing=*/false);
+    EXPECT_FALSE(future_b.IsReady());
+    EXPECT_EQ(test_api(otp_manager()).SelectMostRecentToken(), std::nullopt);
+    EXPECT_TRUE(test_api(otp_manager()).last_triggered_otp_value().empty());
+
+    // Stale phishing verdict from `frame_a` must not suppress/cancel
+    // `future_b`.
+    std::move(phish_guard_callback_a_phishing).Run(/*is_phishing=*/true);
+    EXPECT_FALSE(future_b.IsReady());
+
+    // Check B completes with a safe verdict; `future_b` resolves with the
+    // second token.
+    std::move(phish_guard_callback_b).Run(/*is_phishing=*/false);
+    EXPECT_TRUE(future_b.IsReady());
+    EXPECT_THAT(
+        future_b.Get(),
+        ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "222222")));
+
+    histogram_tester_.ExpectBucketCount(
+        kPhishGuardVerdictHistogram,
+        OneTimeTokensPhishGuardVerdict::kNotPhishing, 2);
+    histogram_tester_.ExpectBucketCount(
+        kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kPhishing,
+        1);
+  }
+
  private:
   std::optional<OtpManagerImpl> otp_manager_;
   raw_ptr<const FormStructure> form_ = nullptr;
@@ -2011,81 +2121,24 @@ TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
   histogram_tester_.ExpectTotalCount(kPhishGuardLatencyHistogram, 2);
 }
 
-// Tests that if a new `GetOtpSuggestions` request is made for a different frame
-// while a Gmail PhishGuard check is in flight, completing the first frame's
-// PhishGuard check neither delivers the OTP to the second frame nor cancels
-// the second frame's pending callback.
+// Tests that if a new suggestion request is started for a different frame
+// while PhishGuard checks are in flight, stale safe and phishing verdicts from
+// the first frame are ignored and neither resolve nor cancel the new frame's
+// pending callback.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForSms_IgnoresStaleFrameVerdictWhenFrameChanges) {
+  VerifyIgnoresStaleFrameVerdictWhenFrameChanges(
+      one_time_tokens::OneTimeTokenType::kSmsOtp,
+      one_time_tokens::OneTimeTokenSource::kOnDeviceSms);
+}
+
 TEST_F(
     OtpManagerImplDeliveryTest,
     MaybeShowOtpSuggestionsForGmail_IgnoresStalePhishGuardResultFromDifferentFrame) {
-  FormFieldData field_a = test_field_;
-  LocalFrameToken frame_a = field_a.host_frame();
-  LocalFrameToken frame_b = test::MakeLocalFrameToken();
-  const FormStructure* form_b = AddForm({
-      .fields =
-          {
-              {.server_type = ONE_TIME_CODE,
-               .host_frame = frame_b,
-               .label = u"OTP",
-               .name = u"otp"},
-          },
-      .host_frame = frame_b,
-  });
-  ASSERT_TRUE(form_b);
-  ASSERT_GT(form_b->field_count(), 0u);
-
-  base::OnceCallback<void(bool is_phishing)> phish_guard_callback_a;
-  base::OnceCallback<void(bool is_phishing)> phish_guard_callback_b;
-
-  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck(frame_a, _))
-      .WillOnce([&](LocalFrameToken,
-                    base::OnceCallback<void(bool is_phishing)> callback) {
-        phish_guard_callback_a = std::move(callback);
-      });
-  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck(frame_b, _))
-      .WillOnce([&](LocalFrameToken,
-                    base::OnceCallback<void(bool is_phishing)> callback) {
-        phish_guard_callback_b = std::move(callback);
-      });
-
-  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future_a;
-  otp_manager().GetOtpSuggestions(form(), field_a, future_a.GetCallback());
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(
-          one_time_tokens::OneTimeTokenSource::kGmail,
-          one_time_tokens::OneTimeToken(
-              one_time_tokens::OneTimeTokenType::kGmail, "111111",
-              base::TimeTicks::Now(), "sender1@example.com"));
-  EXPECT_FALSE(future_a.IsReady());
-
-  // Start a new request for `frame_b` before `frame_a`'s PhishGuard check
-  // finishes.
-  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future_b;
-  otp_manager().GetOtpSuggestions(*form_b, *form_b->field(0),
-                                  future_b.GetCallback());
-  EXPECT_TRUE(future_a.IsReady());
-  EXPECT_TRUE(future_a.Get().empty());
-
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(
-          one_time_tokens::OneTimeTokenSource::kGmail,
-          one_time_tokens::OneTimeToken(
-              one_time_tokens::OneTimeTokenType::kGmail, "222222",
-              base::TimeTicks::Now(), "sender2@example.com"));
-  EXPECT_FALSE(future_b.IsReady());
-
-  // Completing `frame_a`'s stale PhishGuard check must not resolve `future_b`
-  // or cache token "111111".
-  std::move(phish_guard_callback_a).Run(/*is_phishing=*/false);
-  EXPECT_FALSE(future_b.IsReady());
-  EXPECT_FALSE(test_api(otp_manager()).SelectMostRecentToken().has_value());
-
-  // Completing `frame_b`'s PhishGuard check resolves `future_b` with "222222".
-  std::move(phish_guard_callback_b).Run(/*is_phishing=*/false);
-  ASSERT_TRUE(future_b.IsReady());
-  EXPECT_THAT(
-      future_b.Get(),
-      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "222222")));
+  VerifyIgnoresStaleFrameVerdictWhenFrameChanges(
+      one_time_tokens::OneTimeTokenType::kGmail,
+      one_time_tokens::OneTimeTokenSource::kGmail);
+  EXPECT_EQ(test_api(otp_manager()).last_triggered_otp_value(), "222222");
 }
 
 class OtpManagerImplProactiveTriggerTest : public OtpManagerImplTest {
