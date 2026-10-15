@@ -618,15 +618,8 @@ void ActionAppMenu::OnSearchQueryChanged() {
 }
 
 void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
-                                 actions::BaseAction* base_action_item) {
-  PopulateMenuStartingAt(view_parent, base_action_item,
-                         /*starting_index=*/0);
-}
-
-void ActionAppMenu::PopulateMenuStartingAt(
-    views::MenuItemView* view_parent,
-    actions::BaseAction* base_action_item,
-    size_t starting_index) {
+                                 actions::BaseAction* base_action_item,
+                                 size_t starting_index) {
   const auto& children_action_items =
       base_action_item->GetChildren().children();
   const size_t child_count = children_action_items.size();
@@ -683,7 +676,7 @@ void ActionAppMenu::PopulateItemsBelowSearchBar() {
     const auto display_type = children[i]->GetProperty(
         AppMenuActionItem::kDisplayTypeKey);
     if (display_type == AppMenuActionItem::DisplayType::kSearch) {
-      PopulateMenuStartingAt(root_, app_menu_root, i + 1);
+      PopulateMenu(root_, app_menu_root, i + 1);
       return;
     }
   }
@@ -855,8 +848,14 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
       &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
                           base::Unretained(this)),
-      base::BindRepeating(&ActionAppMenu::PopulateMenu,
-                          base::Unretained(this)));
+      // The footer's callback doesn't take `starting_index`, so wrap
+      // PopulateMenu() to use its default.
+      base::BindRepeating(
+          [](ActionAppMenu* menu, views::MenuItemView* view_parent,
+             actions::BaseAction* base_action_item) {
+            menu->PopulateMenu(view_parent, base_action_item);
+          },
+          base::Unretained(this)));
 
   auto* footer_item = view_parent->AppendMenuItemImpl(
       0, /*label=*/std::u16string(), /*icon=*/ui::ImageModel(),

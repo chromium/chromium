@@ -110,15 +110,10 @@ class ActionAppMenu : public views::MenuDelegate,
   void OnSearchQueryChanged();
 
   // Recursively populates the menu item with the `base_action_item`'s
-  // children.
+  // children, starting from the child at `starting_index`.
   void PopulateMenu(views::MenuItemView* view_parent,
-                    actions::BaseAction* base_action_item);
-
-  // Populates `view_parent` with `base_action_item`'s children from
-  // `starting_index` onward.
-  void PopulateMenuStartingAt(views::MenuItemView* view_parent,
-                              actions::BaseAction* base_action_item,
-                              size_t starting_index);
+                    actions::BaseAction* base_action_item,
+                    size_t starting_index = 0);
 
   // Adds the normal menu rows that go below the search bar.
   void PopulateItemsBelowSearchBar();
