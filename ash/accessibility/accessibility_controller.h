@@ -42,6 +42,10 @@ enum class Gesture;
 }  // namespace mojom
 }  // namespace ax
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace display {
 enum class TabletState;
 }  // namespace display
@@ -565,8 +569,8 @@ class ASH_EXPORT AccessibilityController
   // Shows a nudge explaining that a user's dictation language was upgraded to
   // work offline.
   void ShowDictationLanguageUpgradedNudge(
-      const std::string& dictation_locale,
-      const std::string& application_locale);
+      const base::i18n::LanguageTag& dictation_locale,
+      const base::i18n::LanguageTag& application_locale);
 
   // Called when the Automatic Clicks extension finds scrollable bounds.
   void HandleAutoclickScrollableBoundsFound(const gfx::Rect& bounds_in_screen);

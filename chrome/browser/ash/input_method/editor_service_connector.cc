@@ -47,7 +47,7 @@ void EditorServiceConnector::BindEditor(
       std::move(editor_client_connector), std::move(editor_event_sink),
       BuildConfigFor(
           InputMethodToLanguageCategory(context_->active_engine_id()),
-          application_locale_storage_->Get()));
+          application_locale_storage_->GetTag()));
 }
 
 bool EditorServiceConnector::IsBound() {

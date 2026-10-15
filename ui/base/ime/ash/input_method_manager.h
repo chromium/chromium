@@ -22,6 +22,10 @@
 
 class Profile;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace ash {
 
 class ComponentExtensionIMEManager;
@@ -171,7 +175,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // several keyboard layouts for Germany would be enabled.
     // Only layouts suitable for login screen are enabled.
     virtual void EnableLoginLayouts(
-        const std::string& language_code,
+        const base::i18n::LanguageTag& language_code,
         const std::vector<std::string>& initial_layouts) = 0;
 
     // Enables OOBE-eligible (based on the allowlist) input methods that are
@@ -183,7 +187,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // together with the "fuzzy" Japanese input methods will be enabled as they
     // are part of the allowlist.
     virtual void EnableOobeInputMethods(
-        const std::string& language_code,
+        const base::i18n::LanguageTag& language_code,
         const std::vector<std::string>& initial_input_methods) = 0;
 
     // Filters current state layouts and leaves only suitable for lock screen.

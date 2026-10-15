@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -717,10 +718,10 @@ void InputMethodUtil::GetFirstLoginInputMethodIds(
   }
 }
 
-void InputMethodUtil::GetLanguageCodesFromInputMethodIds(
-    const std::vector<std::string>& input_method_ids,
-    std::vector<std::string>* out_language_codes) const {
-  out_language_codes->clear();
+std::vector<base::i18n::LanguageTag>
+InputMethodUtil::GetLanguageCodesFromInputMethodIds(
+    const std::vector<std::string>& input_method_ids) const {
+  std::vector<base::i18n::LanguageTag> language_tags;
 
   for (const auto& i : input_method_ids) {
     const std::string& input_method_id = i;
@@ -731,12 +732,19 @@ void InputMethodUtil::GetLanguageCodesFromInputMethodIds(
       continue;
     }
     DCHECK(!input_method->language_codes().empty());
-    const std::string language_code = input_method->language_codes().at(0);
+    const std::string& language_code = input_method->language_codes().at(0);
+    std::optional<base::i18n::LanguageTag> language_tag =
+        base::i18n::GetLanguageTagFromString(language_code);
+    if (!language_tag) {
+      DVLOG(1) << "Invalid language code: " << language_code;
+      continue;
+    }
     // Add it if it's not already present.
-    if (!std::ranges::contains(*out_language_codes, language_code)) {
-      out_language_codes->push_back(language_code);
+    if (!std::ranges::contains(language_tags, *language_tag)) {
+      language_tags.push_back(*std::move(language_tag));
     }
   }
+  return language_tags;
 }
 
 std::string InputMethodUtil::GetLanguageDefaultInputMethodId(

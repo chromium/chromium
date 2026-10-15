@@ -35,6 +35,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -363,11 +364,11 @@ void InitLocaleAndInputMethodsForNewUser(
   // hardware keyboard layout xkb:us::eng is used for logging in, but the
   // UI language is set to French. In this case, we should set "fr,en"
   // to the preferred languages preference.
-  std::vector<std::string> candidates;
-  manager->GetInputMethodUtil()->GetLanguageCodesFromInputMethodIds(
-      input_method_ids, &candidates);
-  for (size_t i = 0; i < candidates.size(); ++i) {
-    const std::string& candidate = candidates[i];
+  const std::vector<base::i18n::LanguageTag> candidates =
+      manager->GetInputMethodUtil()->GetLanguageCodesFromInputMethodIds(
+          input_method_ids);
+  for (const base::i18n::LanguageTag& candidate_tag : candidates) {
+    const std::string candidate(candidate_tag.tag_string());
     // Add a candidate if it's not yet in language_codes and is allowed.
     if (!std::ranges::contains(language_codes, candidate) &&
         locale_util::IsAllowedLanguage(candidate, prefs)) {

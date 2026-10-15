@@ -42,10 +42,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
     bool EnableInputMethod(
         const std::string& new_enabled_input_method_id) override;
     void EnableLoginLayouts(
-        const std::string& language_code,
+        const base::i18n::LanguageTag& language_code,
         const std::vector<std::string>& initial_layouts) override;
     void EnableOobeInputMethods(
-        const std::string& language_code,
+        const base::i18n::LanguageTag& language_code,
         const std::vector<std::string>& initial_input_methods) override;
     void DisableNonLockScreenLayouts() override;
     void GetInputMethodExtensions(InputMethodDescriptors* result) override;

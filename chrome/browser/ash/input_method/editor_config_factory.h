@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONFIG_FACTORY_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONFIG_FACTORY_H_
 
-#include <string>
-
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace ash::input_method {
 
-orca::mojom::EditorConfigPtr BuildConfigFor(LanguageCategory language,
-                                            std::string locale);
+orca::mojom::EditorConfigPtr BuildConfigFor(
+    LanguageCategory language,
+    const base::i18n::LanguageTag& locale);
 
 }  // namespace ash::input_method
 

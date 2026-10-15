@@ -61,6 +61,7 @@ component("ash") {
   defines = [ "IS_UI_BASE_IME_ASH_IMPL" ]
 
   public_deps = [
+    "//base/i18n:language_tag",
     "//third_party/abseil-cpp:absl",
     "//ui/base/ime",
     "//url",

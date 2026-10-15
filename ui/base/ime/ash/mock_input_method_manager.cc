@@ -42,11 +42,11 @@ bool MockInputMethodManager::State::EnableInputMethod(
 }
 
 void MockInputMethodManager::State::EnableLoginLayouts(
-    const std::string& language_code,
+    const base::i18n::LanguageTag& language_code,
     const std::vector<std::string>& initial_layouts) {}
 
 void MockInputMethodManager::State::EnableOobeInputMethods(
-    const std::string& language_code,
+    const base::i18n::LanguageTag& language_code,
     const std::vector<std::string>& initial_input_methods) {}
 
 void MockInputMethodManager::State::DisableNonLockScreenLayouts() {}

@@ -23,7 +23,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/string_compare.h"
+#include "base/i18n/tag_converters.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -253,7 +255,7 @@ InputMethodManagerImpl::StateImpl::GetInputMethodFromId(
 }
 
 void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
-    const std::string& language_code,
+    const base::i18n::LanguageTag& language_code,
     const std::vector<std::string>& initial_layouts) {
   if (IsShuttingDown()) {
     return;
@@ -267,7 +269,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
   // Add input methods associated with the language.
   std::vector<std::string> layouts_from_locale;
   manager_->util_.GetInputMethodIdsFromLanguageCode(
-      language_code, kKeyboardLayoutsOnly, &layouts_from_locale);
+      language_code.tag_string(), kKeyboardLayoutsOnly, &layouts_from_locale);
   candidates.insert(candidates.end(), layouts_from_locale.begin(),
                     layouts_from_locale.end());
 
@@ -311,7 +313,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
 }
 
 void InputMethodManagerImpl::StateImpl::EnableOobeInputMethods(
-    const std::string& language_code,
+    const base::i18n::LanguageTag& language_code,
     const std::vector<std::string>& initial_input_methods) {
   if (IsShuttingDown()) {
     return;
@@ -325,7 +327,7 @@ void InputMethodManagerImpl::StateImpl::EnableOobeInputMethods(
   // Add input methods associated with the language.
   std::vector<std::string> input_methods_from_locale;
   manager_->util_.GetInputMethodIdsFromLanguageCode(
-      language_code, kAllInputMethods, &input_methods_from_locale);
+      language_code.tag_string(), kAllInputMethods, &input_methods_from_locale);
   candidates.insert(candidates.end(), input_methods_from_locale.begin(),
                     input_methods_from_locale.end());
 
@@ -801,7 +803,9 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
   manager_->util_.UpdateHardwareLayoutCache();
 
   // This function is called only during system setup in OOBE.
-  EnableOobeInputMethods(locale, input_method_ids);
+  EnableOobeInputMethods(base::i18n::GetLanguageTagFromString(locale).value_or(
+                             base::i18n::GetKnownLanguageTag("und")),
+                         input_method_ids);
   LoadNecessaryComponentExtensions();
 }
 
@@ -809,7 +813,8 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault(
     bool is_in_oobe_context) {
   // Set up keyboards. For example, when |locale| is "en-US", enable US qwerty
   // and US dvorak keyboard layouts.
-  const std::string locale = manager_->application_locale_storage_->Get();
+  const base::i18n::LanguageTag locale =
+      manager_->application_locale_storage_->GetTag();
   std::vector<std::string> input_method_ids_to_be_enabled;
   if (!GetAllowedInputMethodIds().empty()) {
     // Prefer policy-set input methods.

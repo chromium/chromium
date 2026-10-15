@@ -113,7 +113,7 @@ void PushFrontImIfNotExists(const std::string& input_method_id,
 }
 
 void SetGaiaInputMethods(PrefService& local_state,
-                         const std::string& application_locale,
+                         const base::i18n::LanguageTag& application_locale,
                          const AccountId& account_id) {
   input_method::InputMethodManager* imm =
       input_method::InputMethodManager::Get();
@@ -764,7 +764,7 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   if (GetExistingUserController()->IsSigninInProgress()) {
     return;
   }
-  SetGaiaInputMethods(local_state_.get(), application_locale_storage_->Get(),
+  SetGaiaInputMethods(local_state_.get(), application_locale_storage_->GetTag(),
                       prefilled_account);
 
   if (!prefilled_account.is_valid()) {

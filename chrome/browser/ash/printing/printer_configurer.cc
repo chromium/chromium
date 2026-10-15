@@ -184,7 +184,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     printscanmgr::CupsAddAutoConfiguredPrinterRequest request;
     request.set_name(printer.id());
     request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
-    request.set_language(application_locale_storage_->Get());
+    request.set_language(application_locale_storage_->GetTag().tag_string());
     PrintscanmgrClient::Get()->CupsAddAutoConfiguredPrinter(
         std::move(request),
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter<
@@ -225,7 +225,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     request.set_name(printer.id());
     request.set_uri(printer.uri().GetNormalized(/*always_print_port=*/true));
     request.set_ppd_contents(ppd_contents);
-    request.set_language(application_locale_storage_->Get());
+    request.set_language(application_locale_storage_->GetTag().tag_string());
     PrintscanmgrClient::Get()->CupsAddManuallyConfiguredPrinter(
         std::move(request),
         base::BindOnce(

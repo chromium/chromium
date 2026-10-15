@@ -6,12 +6,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
@@ -100,10 +102,13 @@ void LogPrinterSetup(const chromeos::Printer& printer,
 
 // This runs on a ThreadPoolForegroundWorker and not the UI thread.
 std::optional<::printing::PrinterSemanticCapsAndDefaults>
-FetchCapabilitiesOnBlockingTaskRunner(const std::string& application_locale,
-                                      const std::string& printer_id) {
-  auto print_backend =
-      ::printing::PrintBackend::CreateInstance(application_locale);
+FetchCapabilitiesOnBlockingTaskRunner(
+    const base::i18n::LanguageTag& application_locale,
+    const std::string& printer_id) {
+  // TODO(crbug.com/537371481): Migrate PrintBackend::CreateInstance() to take
+  // a base::i18n::LanguageTag for type safety.
+  auto print_backend = ::printing::PrintBackend::CreateInstance(
+      std::string(application_locale.tag_string()));
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -170,7 +175,7 @@ void CapabilitiesFetchedFromService(
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-void FetchCapabilities(const std::string& application_locale,
+void FetchCapabilities(const base::i18n::LanguageTag& application_locale,
                        const std::string& printer_id,
                        GetPrinterCapabilitiesCallback cb) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
@@ -218,7 +223,7 @@ void OnPrinterInstalled(
     return;
   }
   // Fetch settings off of the UI thread and invoke callback.
-  FetchCapabilities(application_locale_storage->Get(), printer.id(),
+  FetchCapabilities(application_locale_storage->GetTag(), printer.id(),
                     std::move(cb));
 }
 
@@ -239,7 +244,7 @@ void SetUpPrinter(const ApplicationLocaleStorage* application_locale_storage,
   if (printers_manager->IsPrinterInstalled(printer)) {
     // Skip setup if the printer does not need to be installed.
     // Fetch settings off of the UI thread and invoke callback.
-    FetchCapabilities(application_locale_storage->Get(), printer.id(),
+    FetchCapabilities(application_locale_storage->GetTag(), printer.id(),
                       std::move(cb));
     return;
   }

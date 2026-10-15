@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,7 +15,8 @@
 namespace ash::input_method {
 namespace {
 
-constexpr char kDefaultLocale[] = "en-US";
+constexpr base::i18n::LanguageTag kDefaultLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 using base::test::ScopedFeatureList;
 using orca::mojom::PresetTextQueryType;
@@ -24,7 +26,7 @@ TEST(EditorConfigFactoryTest, BuildsCorrectlyForEnglish) {
   orca::mojom::EditorConfigPtr config =
       BuildConfigFor(LanguageCategory::kEnglish, kDefaultLocale);
 
-  EXPECT_EQ(config->language_code, kDefaultLocale);
+  EXPECT_EQ(config->language_code, kDefaultLocale.tag_string());
   EXPECT_THAT(
       config->allowed_query_types,
       UnorderedElementsAre(orca::mojom::PresetTextQueryType::kShorten,
@@ -131,8 +133,8 @@ TEST(EditorConfigFactoryTest, EnglishWithProofreadDisabled) {
 }
 
 TEST(EditorConfigFactoryTest, BuildsCorrectlyForFrench) {
-  orca::mojom::EditorConfigPtr config =
-      BuildConfigFor(LanguageCategory::kFrench, "fr");
+  orca::mojom::EditorConfigPtr config = BuildConfigFor(
+      LanguageCategory::kFrench, base::i18n::GetKnownLanguageTag("fr"));
 
   EXPECT_EQ(config->language_code, "fr");
   EXPECT_THAT(

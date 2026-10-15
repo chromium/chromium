@@ -430,7 +430,8 @@ TEST_F(InputMethodManagerImplTest, TestObserver) {
   EXPECT_EQ(0, observer.input_method_changed_count_);
   EXPECT_EQ(0, observer.input_method_extension_added_count_);
   EXPECT_EQ(0, observer.input_method_extension_removed_count_);
-  manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
+  manager_->GetActiveIMEState()->EnableLoginLayouts(
+      base::i18n::GetKnownLanguageTag("en-US"), keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetEnabledInputMethods().size());
   EXPECT_EQ(1, observer.input_method_changed_count_);
   // Menu change is triggered only if current input method was actually changed.
@@ -497,13 +498,14 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayouts) {
   // ibus_input_method.txt.
   std::vector<std::string> keyboard_layouts;
 
-  manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
+  manager_->GetActiveIMEState()->EnableLoginLayouts(
+      base::i18n::GetKnownLanguageTag("en-US"), keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 
   // For http://crbug.com/40979322#comment12 - (5)
   // The hardware keyboard layout "xkb:us::eng" is always active, hence 2U.
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "ja", keyboard_layouts);  // Japanese
+      base::i18n::GetKnownLanguageTag("ja"), keyboard_layouts);  // Japanese
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 }
 
@@ -512,7 +514,8 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsAndCurrentInputMethod) {
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:se::swe"));
 
-  manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
+  manager_->GetActiveIMEState()->EnableLoginLayouts(
+      base::i18n::GetKnownLanguageTag("en-US"), keyboard_layouts);
   const std::string im_id =
       manager_->GetActiveIMEState()->GetCurrentInputMethod().id();
   EXPECT_EQ(ImeIdFromEngineId("xkb:se::swe"), im_id);
@@ -523,7 +526,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:fr::fra");
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "en-US",
+      base::i18n::GetKnownLanguageTag("en-US"),
       manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
   EXPECT_EQ(9U,
             manager_->GetActiveIMEState()
@@ -532,7 +535,8 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:jp::jpn");
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "ja", manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
+      base::i18n::GetKnownLanguageTag("ja"),
+      manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
   // "xkb:us::eng" is not needed, hence 1.
   EXPECT_EQ(1U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 
@@ -540,7 +544,8 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:ru::rus");
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "ru", manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
+      base::i18n::GetKnownLanguageTag("ru"),
+      manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
   // "xkb:us::eng" only.
   EXPECT_EQ(1U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
@@ -552,7 +557,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableMultipleHardwareKeyboardLayout) {
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:fr::fra,xkb:hu::hun");
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "en-US",
+      base::i18n::GetKnownLanguageTag("en-US"),
       manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
   // 8 + French + Hungarian
   EXPECT_EQ(10U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
@@ -564,7 +569,8 @@ TEST_F(InputMethodManagerImplTest,
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:us::eng,xkb:ru::rus");
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "ru", manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
+      base::i18n::GetKnownLanguageTag("ru"),
+      manager_->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
   // xkb:us:eng
   EXPECT_EQ(1U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
 }
@@ -572,7 +578,7 @@ TEST_F(InputMethodManagerImplTest,
 TEST_F(InputMethodManagerImplTest, TestEnabledInputMethods) {
   std::vector<std::string> keyboard_layouts;
   manager_->GetActiveIMEState()->EnableLoginLayouts(
-      "ja", keyboard_layouts);  // Japanese
+      base::i18n::GetKnownLanguageTag("ja"), keyboard_layouts);  // Japanese
   EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   InputMethodDescriptors methods =
       manager_->GetActiveIMEState()->GetEnabledInputMethods();
@@ -968,7 +974,8 @@ TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:us::eng"));
 
   // For http://crbug.com/40979322#comment12 - (1)
-  manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
+  manager_->GetActiveIMEState()->EnableLoginLayouts(
+      base::i18n::GetKnownLanguageTag("en-US"), keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   InputMethodDescriptors sorted_enabled_input_methods =
       manager_->GetActiveIMEState()
@@ -1048,7 +1055,8 @@ TEST_F(InputMethodManagerImplTest, TestLastUsedInputMethod) {
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(us_id);
 
-  manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
+  manager_->GetActiveIMEState()->EnableLoginLayouts(
+      base::i18n::GetKnownLanguageTag("en-US"), keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumEnabledInputMethods());
   EXPECT_EQ(us_id, manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->GetCurrentKeyboardLayoutName());

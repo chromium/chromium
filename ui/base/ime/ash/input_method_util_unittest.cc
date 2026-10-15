@@ -358,12 +358,12 @@ TEST_F(InputMethodUtilTest, TestGetLanguageCodesFromInputMethodIds) {
   input_method_ids.push_back(Id("xkb:us:dvorak:eng"));  // English US Dvorak.
   input_method_ids.push_back(Id(pinyin_ime_id));        // Pinyin
   input_method_ids.push_back(Id("xkb:fr::fra"));        // French France.
-  std::vector<std::string> language_codes;
-  util_.GetLanguageCodesFromInputMethodIds(input_method_ids, &language_codes);
+  std::vector<base::i18n::LanguageTag> language_codes =
+      util_.GetLanguageCodesFromInputMethodIds(input_method_ids);
   ASSERT_EQ(3U, language_codes.size());
-  EXPECT_EQ("en", language_codes[0]);
-  EXPECT_EQ("zh-CN", language_codes[1]);
-  EXPECT_EQ("fr", language_codes[2]);
+  EXPECT_EQ(base::i18n::GetKnownLanguageTag("en"), language_codes[0]);
+  EXPECT_EQ(base::i18n::GetKnownLanguageTag("zh-CN"), language_codes[1]);
+  EXPECT_EQ(base::i18n::GetKnownLanguageTag("fr"), language_codes[2]);
 }
 
 // Test the input method ID migration.

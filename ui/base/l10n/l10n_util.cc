@@ -557,6 +557,19 @@ std::vector<std::string> GetAcceptLanguagesForLocale(
   return result;
 }
 
+std::vector<LanguageTag> GetAcceptLanguageTagsForLocale(
+    const LanguageTag& display_locale) {
+  std::vector<LanguageTag> result;
+  for (const LanguageTag& tag : GetAcceptLanguageTags()) {
+    if (!l10n_util::IsLocaleNameTranslated(tag.tag_string(),
+                                           display_locale.tag_string())) {
+      continue;
+    }
+    result.push_back(tag);
+  }
+  return result;
+}
+
 void GetAcceptLanguages(std::vector<std::string>* locale_codes) {
   for (const LanguageTag& tag : GetAcceptLanguageTags()) {
     locale_codes->emplace_back(tag.tag_string());

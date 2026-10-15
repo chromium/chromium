@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_H_
 
-#include <string>
-
 #include "base/containers/flat_map.h"
 
 class Profile;
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace ash {
 
@@ -27,14 +28,15 @@ class Dictation {
   // uses the application language. Otherwise uses previous method of
   // determining Dictation language with default IME language.
   // This is guaranteed to return a supported BCP-47 locale.
-  static std::string DetermineDefaultSupportedLocale(
+  static base::i18n::LanguageTag DetermineDefaultSupportedLocale(
       Profile* profile,
       bool new_user,
-      const std::string& application_locale);
+      const base::i18n::LanguageTag& application_locale);
 
   // Gets all possible BCP-47 style locale codes supported by Dictation,
   // and whether they are available offline.
-  static const base::flat_map<std::string, LocaleData> GetAllSupportedLocales();
+  static const base::flat_map<base::i18n::LanguageTag, LocaleData>
+  GetAllSupportedLocales();
 
   Dictation() = default;
   ~Dictation() = default;

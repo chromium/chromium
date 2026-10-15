@@ -15,6 +15,8 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_runner.h"
@@ -62,7 +64,7 @@ void CheckAndResolveInputMethodIDs(
 
 // Checks whether each language is supported, replacing locales with variants
 // if they are available. Must be called on a thread that allows IO.
-std::string CheckAndResolveLocales(const std::string& app_locale,
+std::string CheckAndResolveLocales(const base::i18n::LanguageTag& app_locale,
                                    const std::string& languages) {
   if (languages.empty()) {
     return languages;
@@ -71,16 +73,22 @@ std::string CheckAndResolveLocales(const std::string& app_locale,
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Remove unsupported language values.
-  base::flat_set<std::string> accept_language_codes(
-      l10n_util::GetAcceptLanguagesForLocale(app_locale));
-  std::erase_if(values, [&accept_language_codes](const std::string& value) {
-    if (accept_language_codes.contains(value)) {
+  base::flat_set<base::i18n::LanguageTag> accept_language_tags(
+      l10n_util::GetAcceptLanguageTagsForLocale(app_locale));
+  std::erase_if(values, [&accept_language_tags](const std::string& value) {
+    const std::optional<base::i18n::LanguageTag> value_tag =
+        base::i18n::GetLanguageTagFromString(value);
+    if (value_tag && accept_language_tags.contains(*value_tag)) {
       return false;
     }
     const std::optional<std::string> resolved_locale =
         l10n_util::CheckAndResolveLocale(value);
-    return !resolved_locale ||
-           !accept_language_codes.contains(*resolved_locale);
+    if (!resolved_locale) {
+      return true;
+    }
+    const std::optional<base::i18n::LanguageTag> resolved_tag =
+        base::i18n::GetLanguageTagFromString(*resolved_locale);
+    return !resolved_tag || !accept_language_tags.contains(*resolved_tag);
   });
   return base::JoinString(values, ",");
 }
@@ -217,13 +225,13 @@ void InputMethodSyncer::MergeSyncedPrefs() {
       ash::prefs::kLanguageEnabledImes));
 
   // Remove unsupported locales before updating the local languages preference.
-  const std::string& app_locale = application_locale_storage_->Get();
   std::string languages(AddSupportedInputMethodValues(
       preferred_languages_.GetValue(), preferred_languages_syncable,
       language::prefs::kPreferredLanguages));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CheckAndResolveLocales, app_locale, languages),
+      base::BindOnce(&CheckAndResolveLocales,
+                     application_locale_storage_->GetTag(), languages),
       base::BindOnce(&InputMethodSyncer::FinishMerge,
                      weak_factory_.GetWeakPtr()));
 }

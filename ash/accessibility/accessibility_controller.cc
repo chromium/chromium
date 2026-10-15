@@ -78,6 +78,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -2294,18 +2296,19 @@ void AccessibilityController::ShowDictationKeyboardDialog() {
 
   dictation_keyboard_dialog_showing_for_testing_ = true;
 
-  std::string dictation_locale;
-  if (active_user_prefs_->GetString(prefs::kAccessibilityDictationLocale)
-          .empty()) {
-    dictation_locale = client_->GetDictationDefaultLocale(/*new_user=*/true);
-  } else {
-    dictation_locale =
-        active_user_prefs_->GetString(prefs::kAccessibilityDictationLocale);
-  }
+  const std::string& dictation_locale_pref =
+      active_user_prefs_->GetString(prefs::kAccessibilityDictationLocale);
+  const std::optional<base::i18n::LanguageTag> dictation_locale =
+      dictation_locale_pref.empty()
+          ? client_->GetDictationDefaultLocale(/*new_user=*/true)
+          : base::i18n::GetLanguageTagFromString(dictation_locale_pref);
 
-  std::u16string display_locale = l10n_util::GetDisplayNameForLocale(
-      /*locale=*/dictation_locale, /*display_locale=*/dictation_locale,
-      /*is_for_ui=*/true);
+  std::u16string display_locale =
+      dictation_locale
+          ? l10n_util::GetDisplayNameForLocale(
+                /*locale=*/*dictation_locale,
+                /*display_locale=*/*dictation_locale, /*is_for_ui=*/true)
+          : std::u16string();
   std::vector<std::u16string> replacements{display_locale};
   std::u16string title =
       l10n_util::GetStringUTF16(IDS_ASH_DICTATION_KEYBOARD_DIALOG_TITLE);
@@ -2386,8 +2389,8 @@ void AccessibilityController::OnSelectToSpeakKeyboardDialogDismissed() {
 }
 
 void AccessibilityController::ShowDictationLanguageUpgradedNudge(
-    const std::string& dictation_locale,
-    const std::string& application_locale) {
+    const base::i18n::LanguageTag& dictation_locale,
+    const base::i18n::LanguageTag& application_locale) {
   const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
       dictation_locale, application_locale, /*is_for_ui=*/true);
   const std::u16string body_text = l10n_util::GetStringFUTF16(

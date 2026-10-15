@@ -95,7 +95,7 @@ void FinishSwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
         // first hardware keyboard layout since the input method currently in
         // use may not be supported by the new locale.
         ime_state->EnableLoginLayouts(
-            data->result.loaded_locale,
+            application_locale_storage->GetTag(),
             manager->GetInputMethodUtil()->GetHardwareLoginInputMethodIds());
       } else {
         // Enable all hardware keyboard layouts. This will also switch to the

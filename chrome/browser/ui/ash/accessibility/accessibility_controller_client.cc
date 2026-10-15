@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/grit/generated_resources.h"
@@ -187,8 +188,8 @@ void AccessibilityControllerClient::SetA11yOverrideWindow(
       a11y_override_window);
 }
 
-std::string AccessibilityControllerClient::GetDictationDefaultLocale(
-    bool new_user) {
+base::i18n::LanguageTag
+AccessibilityControllerClient::GetDictationDefaultLocale(bool new_user) {
   return AccessibilityManager::Get()->GetDictationDefaultLocale(new_user);
 }
 

@@ -46,6 +46,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -958,14 +959,18 @@ TEST_F(AccessibilityControllerTest, DictationTrayMenuVisibility) {
 
 TEST_F(AccessibilityControllerTest, DictationLanguageUpgradedNudge) {
   struct {
-    std::string locale;
-    std::string application_locale;
+    base::i18n::LanguageTag locale;
+    base::i18n::LanguageTag application_locale;
     std::string label;
   } kTestCases[] = {
-      {"en-US", "en-US", "English"},
-      {"es-ES", "en-US", "Spanish"},
-      {"en-US", "es-ES", "inglés"},
-      {"es-ES", "es-ES", "español"},
+      {base::i18n::GetKnownLanguageTag("en-US"),
+       base::i18n::GetKnownLanguageTag("en-US"), "English"},
+      {base::i18n::GetKnownLanguageTag("es-ES"),
+       base::i18n::GetKnownLanguageTag("en-US"), "Spanish"},
+      {base::i18n::GetKnownLanguageTag("en-US"),
+       base::i18n::GetKnownLanguageTag("es-ES"), "inglés"},
+      {base::i18n::GetKnownLanguageTag("es-ES"),
+       base::i18n::GetKnownLanguageTag("es-ES"), "español"},
   };
 
   auto* nudge_manager = Shell::Get()->anchored_nudge_manager();

@@ -19,8 +19,10 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -530,7 +532,9 @@ base::ListValue GetAndActivateOobeInputMethods(
 
   DCHECK(IsSigninBrowserContext(ProfileManager::GetActiveUserProfile()));
   input_method_manager->GetActiveIMEState()->EnableOobeInputMethods(
-      locale, hardware_input_methods);
+      base::i18n::GetLanguageTagFromString(locale).value_or(
+          base::i18n::GetKnownLanguageTag("und")),
+      hardware_input_methods);
 
   input_method::InputMethodDescriptors input_methods(
       input_method_manager->GetActiveIMEState()->GetEnabledInputMethods());

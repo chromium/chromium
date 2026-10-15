@@ -35,6 +35,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1302,14 +1304,16 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
     // this is an upgrade (Dictation was enabled at start-up and the toggle was
     // not triggered by a user) or a new user (Dictation was just enabled in
     // settings) and pick the language accordingly.
-    const std::string locale = Dictation::DetermineDefaultSupportedLocale(
-        profile_, /*new_user=*/triggered_by_user,
-        application_locale_storage_->Get());
+    const base::i18n::LanguageTag locale =
+        Dictation::DetermineDefaultSupportedLocale(
+            profile_, /*new_user=*/triggered_by_user,
+            application_locale_storage_->GetTag());
 
     // Ensure we don't trigger nudges, downloads or notifications for the locale
     // pref upgrade. If these need to occur they will occur below.
     ignore_dictation_locale_pref_change_ = true;
-    pref_service->SetString(prefs::kAccessibilityDictationLocale, locale);
+    pref_service->SetString(prefs::kAccessibilityDictationLocale,
+                            locale.tag_string());
     pref_service->CommitPendingWrite();
   }
 
@@ -1406,8 +1410,11 @@ void AccessibilityManager::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale) {
   // Show the nudge, then set the pref to indicate that it has been shown
   // for this particular locale.
-  AccessibilityController::Get()->ShowDictationLanguageUpgradedNudge(
-      dictation_locale, application_locale_storage_->Get());
+  if (std::optional<base::i18n::LanguageTag> dictation_locale_tag =
+          base::i18n::GetLanguageTagFromString(dictation_locale)) {
+    AccessibilityController::Get()->ShowDictationLanguageUpgradedNudge(
+        *dictation_locale_tag, application_locale_storage_->GetTag());
+  }
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAccessibilityDictationLocaleOfflineNudge);
   update->Set(dictation_locale, true);
@@ -2412,10 +2419,11 @@ bool AccessibilityManager::ToggleDictation() {
   return dictation_active_;
 }
 
-std::string AccessibilityManager::GetDictationDefaultLocale(bool new_user) {
+base::i18n::LanguageTag AccessibilityManager::GetDictationDefaultLocale(
+    bool new_user) {
   return Dictation::DetermineDefaultSupportedLocale(
       ProfileManager::GetActiveUserProfile(), new_user,
-      application_locale_storage_->Get());
+      application_locale_storage_->GetTag());
 }
 
 void AccessibilityManager::OpenSettingsSubpage(const std::string& subpage) {
@@ -2920,11 +2928,15 @@ bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
 void AccessibilityManager::UpdateDictationNotification() {
   const std::string locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+  std::optional<base::i18n::LanguageTag> locale_tag =
+      base::i18n::GetLanguageTagFromString(locale);
   // Get the display name of |locale| in the application locale.
-  const std::u16string display_name = l10n_util::GetDisplayNameForLocale(
-      /*locale=*/locale,
-      /*display_locale=*/application_locale_storage_->Get(),
-      /*is_ui=*/true);
+  const std::u16string display_name =
+      locale_tag ? l10n_util::GetDisplayNameForLocale(
+                       /*locale=*/*locale_tag,
+                       /*display_locale=*/application_locale_storage_->GetTag(),
+                       /*is_for_ui=*/true)
+                 : std::u16string();
 
   bool soda_installed = false;
   if (::features::IsDictationOfflineAvailable()) {

@@ -248,6 +248,12 @@ COMPONENT_EXPORT(UI_BASE)
 std::vector<std::string> GetAcceptLanguagesForLocale(
     std::string_view display_locale);
 
+// Same as `GetAcceptLanguagesForLocale()`, but takes and returns
+// `LanguageTag`s.
+COMPONENT_EXPORT(UI_BASE)
+std::vector<base::i18n::LanguageTag> GetAcceptLanguageTagsForLocale(
+    const base::i18n::LanguageTag& display_locale);
+
 // Returns a vector of untranslated locale codes usable for accept-languages.
 COMPONENT_EXPORT(UI_BASE)
 void GetAcceptLanguages(std::vector<std::string>* locale_codes);

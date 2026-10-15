@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/input_method/editor_config_factory.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
@@ -14,7 +16,8 @@
 namespace ash::input_method {
 namespace {
 
-orca::mojom::EditorConfigPtr EnglishConfig(std::string locale) {
+orca::mojom::EditorConfigPtr EnglishConfig(
+    const base::i18n::LanguageTag& locale) {
   std::vector<orca::mojom::PresetTextQueryType> allowed;
   if (base::FeatureList::IsEnabled(features::kOrcaElaborate)) {
     allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
@@ -36,10 +39,11 @@ orca::mojom::EditorConfigPtr EnglishConfig(std::string locale) {
   }
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
-      /*language_code=*/std::move(locale));
+      /*language_code=*/std::string(locale.tag_string()));
 }
 
-orca::mojom::EditorConfigPtr InternationalizedConfig(std::string locale) {
+orca::mojom::EditorConfigPtr InternationalizedConfig(
+    const base::i18n::LanguageTag& locale) {
   std::vector<orca::mojom::PresetTextQueryType> allowed;
   if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeElaborate)) {
     allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
@@ -61,13 +65,14 @@ orca::mojom::EditorConfigPtr InternationalizedConfig(std::string locale) {
   }
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
-      /*language_code=*/std::move(locale));
+      /*language_code=*/std::string(locale.tag_string()));
 }
 
 }  // namespace
 
-orca::mojom::EditorConfigPtr BuildConfigFor(LanguageCategory language,
-                                            std::string locale) {
+orca::mojom::EditorConfigPtr BuildConfigFor(
+    LanguageCategory language,
+    const base::i18n::LanguageTag& locale) {
   switch (language) {
     case LanguageCategory::kDanish:
     case LanguageCategory::kDutch:
@@ -80,10 +85,10 @@ orca::mojom::EditorConfigPtr BuildConfigFor(LanguageCategory language,
     case LanguageCategory::kPortugese:
     case LanguageCategory::kSpanish:
     case LanguageCategory::kSwedish:
-      return InternationalizedConfig(std::move(locale));
+      return InternationalizedConfig(locale);
     case LanguageCategory::kEnglish:
     default:
-      return EnglishConfig(std::move(locale));
+      return EnglishConfig(locale);
   }
 }
 

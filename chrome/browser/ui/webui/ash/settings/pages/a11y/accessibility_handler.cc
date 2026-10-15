@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
@@ -229,23 +230,21 @@ void AccessibilityHandler::OnSodaInstallError(
 }
 
 void AccessibilityHandler::MaybeAddDictationLocales() {
-  base::flat_map<std::string, Dictation::LocaleData> locales =
+  base::flat_map<base::i18n::LanguageTag, Dictation::LocaleData> locales =
       Dictation::GetAllSupportedLocales();
 
   // Get application locale.
-  std::string_view application_locale =
-      application_locale_storage_->GetTag().tag_string();
-  std::pair<std::string_view, std::string_view> application_lang_and_locale =
-      language::SplitIntoMainAndTail(application_locale);
+  const base::i18n::LanguageTag application_locale =
+      application_locale_storage_->GetTag();
 
   // Get IME locales
   input_method::InputMethodManager* ime_manager =
       input_method::InputMethodManager::Get();
   std::vector<std::string> input_method_ids =
       ime_manager->GetActiveIMEState()->GetEnabledInputMethodIds();
-  std::vector<std::string> ime_languages;
-  ime_manager->GetInputMethodUtil()->GetLanguageCodesFromInputMethodIds(
-      input_method_ids, &ime_languages);
+  const std::vector<base::i18n::LanguageTag> ime_languages =
+      ime_manager->GetInputMethodUtil()->GetLanguageCodesFromInputMethodIds(
+          input_method_ids);
 
   // Get enabled preferred UI languages.
   std::string preferred_languages =
@@ -256,9 +255,9 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
 
   // Combine these into one set for recommending Dication languages.
   std::set<std::string_view> ui_languages;
-  ui_languages.insert(application_lang_and_locale.first);
-  for (auto& ime_language : ime_languages) {
-    ui_languages.insert(language::SplitIntoMainAndTail(ime_language).first);
+  ui_languages.insert(application_locale.language_subtag());
+  for (const auto& ime_language : ime_languages) {
+    ui_languages.insert(ime_language.language_subtag());
   }
   for (auto& enabled_language : enabled_languages) {
     ui_languages.insert(language::SplitIntoMainAndTail(enabled_language).first);
@@ -267,18 +266,16 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
   base::ListValue locales_list;
   for (auto& locale : locales) {
     base::DictValue option;
-    option.Set("value", locale.first);
-    option.Set("name",
-               l10n_util::GetDisplayNameForLocale(
-                   locale.first, application_locale, /*is_for_ui=*/true));
+    option.Set("value", locale.first.tag_string());
+    option.Set("name", l10n_util::GetDisplayNameForLocale(locale.first,
+                                                          application_locale,
+                                                          /*is_for_ui=*/true));
     option.Set("worksOffline", locale.second.works_offline);
     option.Set("installed", locale.second.installed);
 
     // We can recommend languages that match the current application
     // locale, IME languages or enabled preferred languages.
-    std::pair<std::string_view, std::string_view> lang_and_locale =
-        language::SplitIntoMainAndTail(locale.first);
-    bool is_recommended = ui_languages.contains(lang_and_locale.first);
+    bool is_recommended = ui_languages.contains(locale.first.language_subtag());
 
     option.Set("recommended", is_recommended);
     locales_list.Append(std::move(option));
@@ -297,11 +294,15 @@ speech::LanguageCode AccessibilityHandler::GetDictationLocale() {
 std::u16string AccessibilityHandler::GetDictationLocaleDisplayName() {
   const std::string dictation_locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+  std::optional<base::i18n::LanguageTag> dictation_locale_tag =
+      base::i18n::GetLanguageTagFromString(dictation_locale);
 
-  return l10n_util::GetDisplayNameForLocale(
-      /*locale=*/dictation_locale,
-      /*display_locale=*/application_locale_storage_->GetTag().tag_string(),
-      /*is_ui=*/true);
+  return dictation_locale_tag
+             ? l10n_util::GetDisplayNameForLocale(
+                   /*locale=*/*dictation_locale_tag,
+                   /*display_locale=*/application_locale_storage_->GetTag(),
+                   /*is_for_ui=*/true)
+             : std::u16string();
 }
 
 }  // namespace ash::settings

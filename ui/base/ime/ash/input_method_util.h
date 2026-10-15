@@ -15,6 +15,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -80,11 +81,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
       const InputMethodDescriptor& preferred_input_method,
       std::vector<std::string>* out_input_method_ids) const;
 
-  // Gets the language codes associated with the given input method IDs.
-  // The returned language codes won't have duplicates.
-  void GetLanguageCodesFromInputMethodIds(
-      const std::vector<std::string>& input_method_ids,
-      std::vector<std::string>* out_language_codes) const;
+  // Gets the language tags associated with the given input method IDs.
+  // The returned language tags won't have duplicates. Input methods whose
+  // language code can't be parsed as a language tag are skipped.
+  std::vector<base::i18n::LanguageTag> GetLanguageCodesFromInputMethodIds(
+      const std::vector<std::string>& input_method_ids) const;
 
   // Gets first input method associated with the language.
   // Returns empty string on error.

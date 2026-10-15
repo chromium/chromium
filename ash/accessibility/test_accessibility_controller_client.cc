@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "base/i18n/language_tag.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -89,9 +90,9 @@ void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
 void TestAccessibilityControllerClient::SetA11yOverrideWindow(
     aura::Window* a11y_override_window) {}
 
-std::string TestAccessibilityControllerClient::GetDictationDefaultLocale(
-    bool new_user) {
-  return "";
+base::i18n::LanguageTag
+TestAccessibilityControllerClient::GetDictationDefaultLocale(bool new_user) {
+  return base::i18n::GetKnownLanguageTag("en-US");
 }
 
 void TestAccessibilityControllerClient::
