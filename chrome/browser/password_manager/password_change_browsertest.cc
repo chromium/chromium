@@ -157,10 +157,8 @@ class PasswordChangeBrowserTest : public base::test::WithFeatureOverride,
                 kPasswordChangeWithPrivateInferenceLoginCheck) {
     // kShowDomNodeIDs is required in order to extract the dom_node_id for
     // the submission step.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::debug::kShowDomNodeIDs,
-                              password_manager::features::kUseDetachedWidget},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::debug::kShowDomNodeIDs);
   }
 
   bool IsPrivateInferenceLoginCheckEnabled() const {

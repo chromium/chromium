@@ -27,7 +27,7 @@ class DetachedWebContents {
   DetachedWebContents(Profile* profile, const GURL& url);
 
   // Constructor for testing purposes only which avoids creating a widget.
-  DetachedWebContents(base::PassKey<class PasswordChangeDelegateImplTest>,
+  DetachedWebContents(base::PassKey<class ScriptPasswordChangeActuatorTest>,
                       Profile* profile,
                       const GURL& url);
   ~DetachedWebContents();

@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/password_change/detached_web_contents.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -58,17 +57,14 @@ std::unique_ptr<views::Widget> CreateWidgetAndAttachWebContents(
 
 DetachedWebContents::DetachedWebContents(Profile* profile, const GURL& url)
     : web_contents_(CreateWebContents(profile, url)) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUseDetachedWidget)) {
-    widget_ = CreateWidgetAndAttachWebContents(profile, GetWebContents());
-    closure_runner_ = GetWebContents()->IncrementCapturerCount(
-        {kWebContentsWidth, kWebContentsHeight}, /*stay_hidden=*/false,
-        /*stay_awake=*/true, /*is_activity=*/true);
-  }
+  widget_ = CreateWidgetAndAttachWebContents(profile, GetWebContents());
+  closure_runner_ = GetWebContents()->IncrementCapturerCount(
+      {kWebContentsWidth, kWebContentsHeight}, /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
 }
 
 DetachedWebContents::DetachedWebContents(
-    base::PassKey<class PasswordChangeDelegateImplTest>,
+    base::PassKey<class ScriptPasswordChangeActuatorTest>,
     Profile* profile,
     const GURL& url)
     : web_contents_(CreateWebContents(profile, url)) {}

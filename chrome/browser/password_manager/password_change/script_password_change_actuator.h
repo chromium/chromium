@@ -63,6 +63,10 @@ class ScriptPasswordChangeActuator : public PasswordChangeActuator {
   ModelQualityLogsUploader* GetLogsUploaderForTesting() {
     return logs_uploader_.get();
   }
+  void inject_hidden_executor_for_testing(
+      std::unique_ptr<DetachedWebContents> detached_web_contents) {
+    hidden_executor_ = std::move(detached_web_contents);
+  }
 #endif
 
  private:

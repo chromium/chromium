@@ -234,11 +234,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 // saved on the current site.
 BASE_DECLARE_FEATURE(kUnifiedPasswordLeakDialog);
 
-// The feature enables the use of detached Widget during password change
-// to which WebContents is attached. This helps to resolve the problem
-// that requestAnimationFrame() is not fired on a detached WebContents.
-BASE_DECLARE_FEATURE(kUseDetachedWidget);
-
 // Controls rollout of storing `PasswordString` password values encrypted in
 // memory via `crypto::ProcessBoundU16String`. When disabled, `PasswordString`
 // keeps the password as a plaintext `std::u16string`; when enabled, it uses
