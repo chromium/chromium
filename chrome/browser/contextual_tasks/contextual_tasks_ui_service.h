@@ -155,7 +155,7 @@ class ContextualTasksUiService : public KeyedService {
 
   // Determines if a new tab should be allowed to open for a thread link click.
   // Returns false if the link can be handled by focusing an existing tab or
-  // scrolling a citation.
+  // scrolling/highlighting a citation.
   bool ShouldAllowNewTabOpen(const GURL& url,
                              BrowserWindowInterface* browser,
                              const base::Uuid& task_id);
@@ -719,6 +719,13 @@ class ContextualTasksUiService : public KeyedService {
   bool MaybeHandleVideoCitation(const GURL& url,
                                 tabs::TabInterface* tab,
                                 const base::Uuid& task_id);
+
+  // Handles text fragment citation links by searching and highlighting matching
+  // text on the tab if applicable. Returns true if handled.
+  bool MaybeHandleTextFragmentCitation(const GURL& url,
+                                       tabs::TabInterface* tab,
+                                       const base::Uuid& task_id,
+                                       BrowserWindowInterface* browser);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Called when back button expands side panel.

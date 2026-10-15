@@ -149,6 +149,19 @@ BASE_DECLARE_FEATURE(kContextualTasksEnableStickyConversation);
 // tab next to the side panel instead of opening a new tab.
 BASE_DECLARE_FEATURE(kContextualTasksClobberActiveTab);
 
+// Enables tab-specific side panel state and navigation improvements across
+// standard Chrome tab actions.
+BASE_DECLARE_FEATURE(kContextualTasksSidePanelTabState);
+
+// Controls whether clicking links in the contextual tasks side panel always
+// opens a new tab instead of focusing an existing affiliated tab (except for
+// citations on the active tab).
+extern const base::FeatureParam<bool> kOpenNewTabOnSidePanelLinkClick;
+
+// Returns whether clicking links in the contextual tasks side panel should
+// always open a new tab instead of focusing an existing affiliated tab.
+bool ShouldOpenNewTabOnSidePanelLinkClick();
+
 // When enabled, allows AIM search URLs to be created and navigated immediately
 // upon starting contextual input uploads without waiting for background
 // network uploads to complete.

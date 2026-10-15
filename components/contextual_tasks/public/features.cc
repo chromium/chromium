@@ -259,6 +259,19 @@ BASE_FEATURE(kContextualTasksEnableStickyConversation,
 BASE_FEATURE(kContextualTasksClobberActiveTab,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksSidePanelTabState,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kOpenNewTabOnSidePanelLinkClick(
+    &kContextualTasksSidePanelTabState,
+    "open_new_tab_on_side_panel_link_click",
+    true);
+
+bool ShouldOpenNewTabOnSidePanelLinkClick() {
+  return base::FeatureList::IsEnabled(kContextualTasksSidePanelTabState) &&
+         kOpenNewTabOnSidePanelLinkClick.Get();
+}
+
 BASE_FEATURE(kContextualTasksNonBlockingUrlNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
