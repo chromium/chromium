@@ -1431,6 +1431,7 @@
                         "AutofillAtMemoryPreviouslyFilled",
                         "AutofillAtMemorySearchStatefulness",
                         "AutofillAtMemorySupportContenteditableOnAndroid",
+                        "AutofillAtMemorySupportTextAreaOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
                         "AutofillEnableKeyboardAccessoryOnSearchFields",
                         "AutofillSupportContentEditableIos",
