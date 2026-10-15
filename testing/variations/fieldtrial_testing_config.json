@@ -10634,6 +10634,24 @@
             ]
         }
     ],
+    "InfoBarQueuedCountPill": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InfoBarQueuedCountPill"
+                    ]
+                }
+            ]
+        }
+    ],
     "InhibitMessagePumpWakeupCounter": [
         {
             "platforms": [
