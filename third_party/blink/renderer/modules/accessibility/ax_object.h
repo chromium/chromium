@@ -1723,6 +1723,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 #endif
 
  private:
+  void SetParentInternal(AXObject* parent) {
+    parent_ = parent;
+    if (parent_) {
+      parent_->may_have_attached_children_ = true;
+    }
+  }
   void NotifyCanvasIgnoredStateChanged(bool is_ignored);
   bool ComputeCanSetFocusAttribute();
   String KeyboardShortcut() const;
@@ -1748,6 +1754,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool is_node_object_ : 1 = false;
 
   bool children_dirty_ : 1 = false;
+  // True if any child AXObject has set its `parent_` to this object since the
+  // last `ClearChildren()` call.
+  bool may_have_attached_children_ : 1 = false;
 
   // Do the rest of the cached_* member variables need to be recomputed?
   bool cached_values_need_update_ : 1 = true;

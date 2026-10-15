@@ -3552,5 +3552,51 @@ TEST_F(AccessibilityTest, InterestForRichHintIncrementalUpdates) {
   EXPECT_EQ(ax::mojom::blink::Role::kGroup, ax_other_popover->role);
 }
 
+TEST_F(AccessibilityTest, ClearChildrenDetachesIncludedAndUnincludedChildren) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="parent" role="group">
+        <span id="unincluded" role="none">
+          <button id="grandchild">Grandchild</button>
+        </span>
+        <button id="included">Included</button>
+      </div>
+      )HTML");
+
+  AXObject* parent = GetAXObjectByElementId("parent");
+  ASSERT_NE(nullptr, parent);
+  AXObject* unincluded = GetAXObjectByElementId("unincluded");
+  ASSERT_NE(nullptr, unincluded);
+  AXObject* included = GetAXObjectByElementId("included");
+  ASSERT_NE(nullptr, included);
+
+  ASSERT_TRUE(parent->IsIncludedInTree());
+  ASSERT_FALSE(unincluded->IsIncludedInTree());
+  ASSERT_TRUE(included->IsIncludedInTree());
+  EXPECT_EQ(parent, unincluded->ParentObjectIfPresent());
+  EXPECT_EQ(parent, included->ParentObjectIfPresent());
+
+  // First `ClearChildren()` detaches both included and unincluded DOM children.
+  parent->ClearChildren();
+  EXPECT_EQ(nullptr, unincluded->ParentObjectIfPresent());
+  EXPECT_EQ(nullptr, included->ParentObjectIfPresent());
+
+  // Calling `ClearChildren()` again when no children are attached is a no-op.
+  parent->ClearChildren();
+  EXPECT_EQ(nullptr, unincluded->ParentObjectIfPresent());
+  EXPECT_EQ(nullptr, included->ParentObjectIfPresent());
+
+  // Re-adding children via `UpdateAXForAllDocuments()` re-attaches existing
+  // child AXObjects via `SetParent()`, and a subsequent `ClearChildren()` must
+  // again detach both included and unincluded DOM children.
+  parent->ChildrenChangedWithCleanLayout();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+  EXPECT_EQ(parent, unincluded->ParentObjectIfPresent());
+  EXPECT_EQ(parent, included->ParentObjectIfPresent());
+
+  parent->ClearChildren();
+  EXPECT_EQ(nullptr, unincluded->ParentObjectIfPresent());
+  EXPECT_EQ(nullptr, included->ParentObjectIfPresent());
+}
+
 }  // namespace test
 }  // namespace blink

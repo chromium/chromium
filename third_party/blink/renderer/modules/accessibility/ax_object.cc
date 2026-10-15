@@ -560,7 +560,7 @@ void AXObject::Init(AXObject* parent) {
   // for the role and cached value. We will set it again at the end of the
   // method using SetParent(), to ensure all of the normal code paths for
   // setting the parent are followed.
-  parent_ = parent;
+  SetParentInternal(parent);
 
   // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
@@ -626,6 +626,7 @@ void AXObject::Detach() {
   SetCachedValuesNeedUpdate(false);
   ax_object_cache_ = nullptr;
   children_dirty_ = false;
+  may_have_attached_children_ = false;
   child_cached_values_need_update_ = false;
   has_dirty_descendants_ = false;
   id_ = 0;
@@ -689,7 +690,7 @@ void AXObject::SetParent(AXObject* new_parent) {
   }
 
 #endif
-  parent_ = new_parent;
+  SetParentInternal(new_parent);
   if (AXObjectCache().IsUpdatingTree()) {
     // If updating tree, tell the newly included parent to iterate through
     // all of its children to look for the has dirty descendants flag.
@@ -7336,8 +7337,23 @@ void AXObject::ClearChildren() {
 
   Node* node = GetNode();
   if (!node) {
+    may_have_attached_children_ = false;
     return;
   }
+
+  // On clearing of children, ensure that our plugin serializer, if it exists,
+  // is properly reset.
+  if (IsA<HTMLEmbedElement>(node)) {
+    AXObjectCache().ResetPluginTreeSerializer();
+  }
+
+  // If no child AXObject has set its `parent_` to this object since the last
+  // `ClearChildren()` call, no DOM child can point to `this` as its parent, so
+  // the DOM traversal below can be skipped.
+  if (!may_have_attached_children_) {
+    return;
+  }
+  may_have_attached_children_ = false;
 
   // Detach unincluded children from their parent (this).
   // These are children that were not cleared from first loop, as well as
@@ -7354,12 +7370,6 @@ void AXObject::ClearChildren() {
         ax_child_from_node->ParentObjectIfPresent() == this) {
       ax_child_from_node->DetachFromParentNoNotify();
     }
-  }
-
-  // On clearing of children, ensure that our plugin serializer, if it exists,
-  // is properly reset.
-  if (IsA<HTMLEmbedElement>(node)) {
-    AXObjectCache().ResetPluginTreeSerializer();
   }
 }
 
