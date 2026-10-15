@@ -143,10 +143,13 @@ ItemIndexPath NewItemIndexPath(const ItemIndexPath& item_below_index_path,
 
 GridLanesRunningPositions::AlignmentCandidate::AlignmentCandidate(
     GridItemData* item,
+    LayoutUnit original_stacking_size,
     wtf_size_t item_index,
     GridLayoutSubtree* layout_subtree,
     const ItemIndexPath* item_index_path)
-    : item(item), layout_subtree(layout_subtree) {
+    : item(item),
+      layout_subtree(layout_subtree),
+      original_stacking_size(original_stacking_size) {
   if (item_index_path) {
     CHECK(!item_index_path->empty());
     this->item_index_path = *item_index_path;
@@ -206,6 +209,7 @@ GridSpan GridLanesRunningPositions::GetFirstEligibleLine(
 void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
     GridItemData& grid_lanes_item,
     LayoutUnit new_running_position,
+    LayoutUnit original_stacking_size,
     std::optional<LayoutUnit> max_running_position_for_span,
     wtf_size_t item_index,
     GridLayoutSubtree* layout_subtree,
@@ -268,7 +272,8 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
       if (is_stacking_axis_alignment_set_) {
         track_collection_openings_[track_idx].back().alignment_candidate =
             AlignmentCandidate(
-                &grid_lanes_item, item_index, layout_subtree,
+                &grid_lanes_item, original_stacking_size, item_index,
+                layout_subtree,
                 grid_lanes ? &item_index_path_in_start_lane : nullptr);
       }
     } else {
@@ -276,7 +281,8 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
       // opening in this track to the placed item.
       if (is_stacking_axis_alignment_set_) {
         last_track_opening.alignment_candidate = AlignmentCandidate(
-            &grid_lanes_item, item_index, layout_subtree,
+            &grid_lanes_item, original_stacking_size, item_index,
+            layout_subtree,
             grid_lanes ? &item_index_path_in_start_lane : nullptr);
       }
 
@@ -543,6 +549,7 @@ std::optional<LayoutUnit>
 GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     wtf_size_t start_offset,
     const LayoutUnit item_stacking_axis_contribution,
+    LayoutUnit original_stacking_size,
     const LayoutUnit auto_placement_stacking_axis_offset,
     const GridLayoutTrackCollection& track_collection,
     GridItemData& grid_lanes_item,
@@ -733,7 +740,7 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     // The dense item is directly above the lower remainder.
     if (is_stacking_axis_alignment_set_) {
       lower_opening.alignment_candidate = AlignmentCandidate(
-          &grid_lanes_item, item_index, layout_subtree,
+          &grid_lanes_item, original_stacking_size, item_index, layout_subtree,
           parent_item_index_path_per_lane ? &item_index_path_in_start_lane
                                           : nullptr);
     }

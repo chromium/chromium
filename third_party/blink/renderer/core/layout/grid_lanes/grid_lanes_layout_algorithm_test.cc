@@ -3731,9 +3731,8 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
 
-  // Available alignment space is only stored for auto-sized stretch items.
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit());
+  // Non-stretch items do not persist a fixed stretch size.
+  EXPECT_FALSE(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis());
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3757,9 +3756,8 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(20), LayoutUnit()}));
 
-  // Non-stretch items do not persist the available alignment space.
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit());
+  // Non-stretch items do not persist a fixed stretch size.
+  EXPECT_FALSE(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis());
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3781,15 +3779,12 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
 
-  // Stretch preserves the initial offset and persists the space for the later
-  // fragmented layout.
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             LogicalOffset());
 
-  // Explicitly sized stretch items do not need alignment space persisted for
-  // later fragmentation layout.
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit());
+  // Explicitly sized stretch items do not need a fixed size persisted for
+  // later fragmentation.
+  EXPECT_FALSE(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis());
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3811,15 +3806,12 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
 
-  // Stretch preserves the initial offset and persists the inline space for the
-  // later fragmented layout.
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             LogicalOffset());
 
-  // Explicitly sized stretch items do not need alignment space persisted for
+  // Explicitly sized stretch items do not need a fixed size persisted for
   // later fragmentation layout.
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit());
+  EXPECT_FALSE(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis());
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3837,14 +3829,14 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 
   const auto grid_lanes = GetFragmentedGridLanesData();
 
-  // The spanner creates 20px of space below the auto-sized stretch item.
+  // The spanner bounds the full 40px opening for the auto-sized stretch item.
   ASSERT_EQ(grid_lanes.size(), 2u);
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             LogicalOffset());
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(20));
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(40));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3862,15 +3854,15 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 
   const auto grid_lanes = GetFragmentedGridLanesData();
 
-  // For row grid-lanes, the spanner creates 20px of inline space below the
+  // For row grid-lanes, the spanner bounds the full 40px inline opening for the
   // auto-sized stretch item.
   ASSERT_EQ(grid_lanes.size(), 2u);
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             LogicalOffset());
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(20));
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(40));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3888,14 +3880,14 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 
   const auto grid_lanes = GetFragmentedGridLanesData();
 
-  // The lower three-lane spanner creates 20px of stretch space below both
-  // entries for the auto-sized upper spanner.
+  // The lower three-lane spanner bounds the full 40px stretch opening for both
+  // entries of the auto-sized upper spanner.
   ASSERT_EQ(grid_lanes.size(), 3u);
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[2]->item_data.size(), 2u);
 
-  // Both entries share the initial offset and alignment space that will be used
+  // Both entries share the initial offset and fixed size that will be used
   // to stretch the spanner during fragmented layout.
   EXPECT_EQ(grid_lanes[0]->item_data[0]->grid_lanes_placement_data,
             grid_lanes[1]->item_data[0]->grid_lanes_placement_data);
@@ -3903,10 +3895,10 @@ TEST_F(GridLanesLayoutAlgorithmTest,
             LogicalOffset());
   EXPECT_EQ(grid_lanes[1]->item_data[0]->PlacementData().offset,
             LogicalOffset());
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(20));
-  EXPECT_EQ(grid_lanes[1]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(20));
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(40));
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(40));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3924,14 +3916,14 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 
   const auto grid_lanes = GetFragmentedGridLanesData();
 
-  // The lower three-lane spanner creates 20px of inline stretch space below
-  // both entries for the auto-sized upper spanner.
+  // The lower three-lane spanner bounds the full 40px inline stretch opening
+  // for both entries of the auto-sized upper spanner.
   ASSERT_EQ(grid_lanes.size(), 3u);
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[2]->item_data.size(), 2u);
 
-  // Both entries share the initial offset and alignment space that will be used
+  // Both entries share the initial offset and fixed size that will be used
   // to stretch the spanner during fragmented layout.
   EXPECT_EQ(grid_lanes[0]->item_data[0]->grid_lanes_placement_data,
             grid_lanes[1]->item_data[0]->grid_lanes_placement_data);
@@ -3939,10 +3931,10 @@ TEST_F(GridLanesLayoutAlgorithmTest,
             LogicalOffset());
   EXPECT_EQ(grid_lanes[1]->item_data[0]->PlacementData().offset,
             LogicalOffset());
-  EXPECT_EQ(grid_lanes[0]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(20));
-  EXPECT_EQ(grid_lanes[1]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(20));
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(40));
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(40));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3968,11 +3960,11 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(180)}));
 
-  // Stretch preserves the same space for relayout instead of changing offset.
+  // Stretch fixes the size to the full opening instead of changing the offset.
   EXPECT_EQ(grid_lanes[1]->item_data[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
-  EXPECT_EQ(grid_lanes[1]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(180));
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(200));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
@@ -3999,11 +3991,11 @@ TEST_F(GridLanesLayoutAlgorithmTest,
   EXPECT_EQ(grid_lanes[0]->item_data[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(180), LayoutUnit()}));
 
-  // Stretch preserves the same space for relayout instead of changing offset.
+  // Stretch preserves the full opening instead of changing the offset.
   EXPECT_EQ(grid_lanes[1]->item_data[0]->PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(50)}));
-  EXPECT_EQ(grid_lanes[1]->item_data[0]->AvailableStackingAxisAlignmentSpace(),
-            LayoutUnit(180));
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->StretchSizeInStackingAxis(),
+            LayoutUnit(200));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,

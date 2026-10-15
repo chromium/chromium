@@ -41,6 +41,7 @@ class CORE_EXPORT GridLanesRunningPositions {
    public:
     AlignmentCandidate() = default;
     AlignmentCandidate(GridItemData* item,
+                       LayoutUnit original_stacking_size,
                        wtf_size_t item_index,
                        GridLayoutSubtree* layout_subtree,
                        const ItemIndexPath* item_index_path);
@@ -61,6 +62,10 @@ class CORE_EXPORT GridLanesRunningPositions {
     // relaid out once we know the final alignment candidate for a given track
     // opening.
     Member<GridLayoutSubtree> layout_subtree;
+    // The candidate's stacking axis size before any stretch alignment
+    // adjustments.
+    LayoutUnit original_stacking_size;
+
     LayoutUnit available_alignment_space;
   };
 
@@ -166,6 +171,7 @@ class CORE_EXPORT GridLanesRunningPositions {
   void UpdateRunningPositionsForSpan(
       GridItemData& grid_lanes_item,
       LayoutUnit new_running_position,
+      LayoutUnit original_stacking_size,
       std::optional<LayoutUnit> max_running_position_for_span = std::nullopt,
       wtf_size_t item_index = kNotFound,
       GridLayoutSubtree* layout_subtree = nullptr,
@@ -209,6 +215,7 @@ class CORE_EXPORT GridLanesRunningPositions {
   std::optional<LayoutUnit> GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
       const LayoutUnit item_stacking_axis_contribution,
+      LayoutUnit original_stacking_size,
       const LayoutUnit auto_placement_stacking_axis_offset,
       const GridLayoutTrackCollection& track_collection,
       GridItemData& grid_lanes_item,

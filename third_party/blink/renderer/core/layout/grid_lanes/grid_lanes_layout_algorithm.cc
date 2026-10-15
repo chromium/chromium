@@ -1051,13 +1051,21 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     //
     // TODO(almaher): Determine whether this item should encompass its intrinsic
     // block size when fragmented, using the same eligibility checks as grid.
+    LogicalSize fixed_available_size = kIndefiniteLogicalSize;
+    if (const auto stretch_size =
+            grid_lanes_item->StretchSizeInStackingAxis()) {
+      (is_columns ? fixed_available_size.block_size
+                  : fixed_available_size.inline_size) = *stretch_size;
+    }
+
     LogicalRect containing_grid_area;
     const ConstraintSpace child_space = CreateConstraintSpaceForLayout(
         SubgriddedItemData(item, &layout_data, container_writing_mode),
         child_layout_subtree, &containing_grid_area,
         /*unavailable_block_size=*/LayoutUnit(),
         /*min_block_size_should_encompass_intrinsic_size=*/false,
-        offset.block_offset);
+        offset.block_offset, /*opt_fixed_inline_size=*/std::nullopt,
+        fixed_available_size);
 
     // Unlike flex lines, row tracks may be sized independently of their items.
     // As a result of this and spanner support, a grid lanes item may fragment
@@ -1262,12 +1270,28 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
         continue;
       }
 
-      // During pre-fragmentation collection, persist the available alignment
-      // space so the item can be stretched during its per-fragment layout.
+      LogicalOffset item_offset =
+          is_fragmentation_collection
+              ? grid_lanes_placement_data->placement_data.offset
+              : container_builder_.Children()[builder_child_index].offset;
+      if (is_fill_reverse) {
+        // In `fill-reverse`, items have been reflected to the end of the
+        // container, so stretching should grow the item toward the container
+        // start.
+        (is_for_columns ? item_offset.block_offset
+                        : item_offset.inline_offset) -=
+            candidate->available_alignment_space;
+      }
+
+      // During pre-fragmentation collection, persist the total stretch size
+      // in the stacking axis so the item can be stretched during its
+      // per-fragment layout.
       if (is_fragmentation_collection) {
         CHECK(grid_lanes_placement_data);
-        grid_lanes_placement_data->available_stacking_axis_alignment_space =
+        grid_lanes_placement_data->stretch_size_in_stacking_axis =
+            candidate->original_stacking_size +
             candidate->available_alignment_space;
+        grid_lanes_placement_data->placement_data.offset = item_offset;
         continue;
       }
 
@@ -1281,7 +1305,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
       // item such that it no longer is in a position where it needs to be
       // stretched.
       RelayoutStackingAxisStretchItem(*candidate, builder_child_index,
-                                      running_positions);
+                                      item_offset);
       continue;
     }
 
@@ -1352,17 +1376,14 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForStretch(
     wtf_size_t builder_child_index) {
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
+  const LayoutUnit stretched_size =
+      candidate.original_stacking_size + candidate.available_alignment_space;
 
-  // Get the original fragment from the builder to compute the stretched size.
+  // Get the original fragment from the builder for its grid-axis size.
   const auto& fragment = To<PhysicalBoxFragment>(
       *container_builder_.Children()[builder_child_index].fragment);
   const LogicalBoxFragment original_fragment(
       GetConstraintSpace().GetWritingDirection(), fragment);
-  const LayoutUnit original_stacking_size =
-      is_for_columns ? original_fragment.BlockSize()
-                     : original_fragment.InlineSize();
-  const LayoutUnit stretched_size =
-      original_stacking_size + candidate.available_alignment_space;
 
   // Build the containing size using the item's original grid-axis size
   // and the stretched stacking-axis size.
@@ -1379,29 +1400,16 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForStretch(
 void GridLanesLayoutAlgorithm::RelayoutStackingAxisStretchItem(
     const GridLanesRunningPositions::AlignmentCandidate& candidate,
     wtf_size_t builder_child_index,
-    GridLanesRunningPositions& running_positions) {
-  const auto& child = container_builder_.Children()[builder_child_index];
+    const LogicalOffset item_offset) {
   const ConstraintSpace stretched_space =
       CreateConstraintSpaceForStretch(candidate, builder_child_index);
 
   const LayoutResult* stretched_result =
       candidate.item->node.Layout(stretched_space);
 
-  // In `fill-reverse`, items have been reflected to the end of the container,
-  // so stretching should grow the item toward the container start.
-  LogicalOffset stretched_offset = child.offset;
-  if (Style().IsReverseGridLanesFillDirection()) {
-    const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
-    if (grid_axis_direction == kForColumns) {
-      stretched_offset.block_offset -= candidate.available_alignment_space;
-    } else {
-      stretched_offset.inline_offset -= candidate.available_alignment_space;
-    }
-  }
-
   container_builder_.ReplaceChild(builder_child_index,
                                   stretched_result->GetPhysicalFragment(),
-                                  stretched_offset);
+                                  item_offset);
 }
 
 void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
@@ -1612,6 +1620,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
+    const LayoutUnit stacking_size =
+        is_for_columns ? fragment.BlockSize() : fragment.InlineSize();
 
     // Margins can affect the visual placement of the item, but should not cause
     // the running position to move backwards. If the margin size is greater
@@ -1647,7 +1657,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
               grid_axis_start_offset,
               /*item_stacking_axis_contribution=*/
-              fragment_stacking_axis_contribution,
+              fragment_stacking_axis_contribution, stacking_size,
               /*auto_placement_stacking_axis_offset=*/
               start_offset_in_stacking_axis, track_collection, grid_lanes_item,
               item_index, child_layout_subtree, out_grid_lanes,
@@ -1776,7 +1786,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       // so that we can account for any new openings that may form.
       //
       running_positions.UpdateRunningPositionsForSpan(
-          grid_lanes_item, new_running_position,
+          grid_lanes_item, new_running_position, stacking_size,
           (is_dense_packing || running_positions.IsStackingAxisAlignmentSet())
               ? std::make_optional(
                     /*max_running_position=*/start_offset_in_stacking_axis)
@@ -3501,7 +3511,8 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
     LayoutUnit unavailable_block_size,
     bool min_block_size_should_encompass_intrinsic_size,
     std::optional<LayoutUnit> opt_child_block_offset,
-    std::optional<LayoutUnit> opt_fixed_inline_size) const {
+    std::optional<LayoutUnit> opt_fixed_inline_size,
+    LogicalSize fixed_available_size) const {
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const bool is_for_columns =
       Style().GridLanesTrackSizingDirection() == kForColumns;
@@ -3528,7 +3539,6 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
   // block/inline constraint for orthogonal items. This logic ensures we enforce
   // the same constraint at layout, as well. Otherwise, we can end up with odd
   // layout and overflow of items that we don't get in grid.
-  LogicalSize fixed_available_size = kIndefiniteLogicalSize;
   if (opt_fixed_inline_size) {
     const auto item_writing_mode =
         subgridded_item->node.Style().GetWritingMode();

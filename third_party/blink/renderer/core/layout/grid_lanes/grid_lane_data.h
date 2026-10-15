@@ -28,9 +28,10 @@ struct GridLanesItemPlacementData
   GridItemPlacementData placement_data;
   LayoutUnit margin_block_end;
 
-  // Space available for alignment in the stacking axis. Fragmentation may
-  // increase this if the track opening expands.
-  LayoutUnit available_stacking_axis_alignment_space;
+  // Total border-box size for stacking-axis stretch during fragmentation.
+  // This size may expand as a result of fragmentation break rules. An unset
+  // value means no stretch, unlike a fixed size of zero.
+  std::optional<LayoutUnit> stretch_size_in_stacking_axis;
 
   // Start of the item's opening in forward stacking order. Self-alignment and
   // fill-reverse may move the item without changing this position.
@@ -57,8 +58,8 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
     return grid_lanes_placement_data->placement_data;
   }
 
-  LayoutUnit AvailableStackingAxisAlignmentSpace() const {
-    return grid_lanes_placement_data->available_stacking_axis_alignment_space;
+  std::optional<LayoutUnit> StretchSizeInStackingAxis() const {
+    return grid_lanes_placement_data->stretch_size_in_stacking_axis;
   }
 
   LayoutUnit ForwardStackingStart() const {

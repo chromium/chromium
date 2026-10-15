@@ -87,7 +87,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
       std::optional<LayoutUnit> opt_child_block_offset = std::nullopt,
-      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
+      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
+      LogicalSize fixed_available_size = kIndefiniteLogicalSize) const;
 
   LogicalSize GetGridAvailableSize() const {
     return grid_lanes_available_size_;
@@ -226,7 +227,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   void RelayoutStackingAxisStretchItem(
       const GridLanesRunningPositions::AlignmentCandidate& candidate,
       wtf_size_t builder_child_index,
-      GridLanesRunningPositions& running_positions);
+      LogicalOffset item_offset);
 
   // Finalizes track opening sizes, computes and applies stacking axis alignment
   // offsets, and relayouts items that are stretch aligned with their stretched
