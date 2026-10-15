@@ -86,6 +86,7 @@ class OtpManagerLegacyImpl : public OtpManager,
   // Evaluates the PhishGuard `verdict` (or `kUnknown` if no check was
   // performed) and delivers OTP suggestions for SMS.
   void MaybeShowOtpSuggestionsForSms(one_time_tokens::OneTimeToken token,
+                                     LocalFrameToken frame_token,
                                      OneTimeTokensPhishGuardVerdict verdict);
 
   // Returns true if an OTP must not be delivered to the caller in an autofill
