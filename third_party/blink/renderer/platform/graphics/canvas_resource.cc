@@ -398,30 +398,6 @@ void CanvasResourceSharedImage::OnMemoryDump(
 
 // ExternalCanvasResource
 //==============================================================================
-scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
-    scoped_refptr<gpu::ClientSharedImage> client_si,
-    const gpu::SyncToken& sync_token,
-    viz::TransferableResource::ResourceSource resource_source,
-    const gfx::HDRMetadata& hdr_metadata,
-    viz::ReleaseCallback release_callback,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
-  if (!context_provider_wrapper) {
-    if (release_callback) {
-      std::move(release_callback).Run(gpu::SyncToken(), false);
-    }
-    return nullptr;
-  }
-
-  TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
-  CHECK(client_si);
-  auto resource = AdoptRef(new ExternalCanvasResource(
-      std::move(client_si), sync_token, resource_source, hdr_metadata,
-      std::move(release_callback), std::move(context_provider_wrapper)));
-
-  return resource;
-}
-
 ExternalCanvasResource::~ExternalCanvasResource() {
   if (is_cross_thread()) {
     // Destroyed on wrong thread. This can happen when the thread of origin was

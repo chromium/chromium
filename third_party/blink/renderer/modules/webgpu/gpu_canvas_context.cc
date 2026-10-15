@@ -340,14 +340,18 @@ scoped_refptr<CanvasResource> GPUCanvasContext::GetResourceForPushFrame(
     return nullptr;
   }
 
-  auto canvas_resource = ExternalCanvasResource::Create(
+  auto context_provider_wrapper = GetContextProviderWeakPtr();
+
+  if (!context_provider_wrapper) {
+    std::move(release_callback).Run(gpu::SyncToken(), false);
+    return nullptr;
+  }
+
+  auto canvas_resource = base::MakeRefCounted<ExternalCanvasResource>(
       std::move(client_si), sync_token,
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer,
       swap_buffers_->GetHDRMetadata(), std::move(release_callback),
-      GetContextProviderWeakPtr());
-  if (!canvas_resource) {
-    return nullptr;
-  }
+      context_provider_wrapper);
 
   should_call_push_frame = true;
   return canvas_resource;
