@@ -37,6 +37,24 @@ VP9 video with alpha channel and yuv 444 subsampling.
 ffmpeg -c:v libvpx-vp9 -i bear-vp9a.webm -pix_fmt yuva444p -strict experimental bear-vp9a-444.webm
 ```
 
+#### bear-vp9a-420-10bit.webm
+VP9 10-bit video with alpha channel and yuv 420 subsampling.
+```
+ffmpeg -c:v libvpx-vp9 -i bear-vp9a.webm -pix_fmt yuva420p10le -strict experimental bear-vp9a-420-10bit.webm
+```
+
+#### bear-vp9a-422-10bit.webm
+VP9 10-bit video with alpha channel and yuv 422 subsampling.
+```
+ffmpeg -c:v libvpx-vp9 -i bear-vp9a.webm -pix_fmt yuva422p10le -strict experimental bear-vp9a-422-10bit.webm
+```
+
+#### bear-vp9a-444-10bit.webm
+VP9 10-bit video with alpha channel and yuv 444 subsampling.
+```
+ffmpeg -c:v libvpx-vp9 -i bear-vp9a.webm -pix_fmt yuva444p10le -strict experimental bear-vp9a-444-10bit.webm
+```
+
 #### bear-vp9-opus.webm
 VP9 Video with Opus Audio.
 

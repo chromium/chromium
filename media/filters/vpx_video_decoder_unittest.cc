@@ -199,6 +199,37 @@ class VpxVideoDecoderTest : public testing::Test {
     }
     return buffer;
   }
+
+  // Initializes the decoder with alpha enabled, decodes the first frame of the
+  // WebM file named |test_file_name| and verifies that the output frame has
+  // |expected_format|.
+  void DecodeFirstAlphaFrameAndVerifyFormat(const std::string& test_file_name,
+                                            VideoPixelFormat expected_format) {
+    VideoDecoderConfig config = TestVideoConfig::Normal(VideoCodec::kVP9);
+    config.Initialize(config.codec(), config.profile(),
+                      VideoDecoderConfig::AlphaMode::kHasAlpha,
+                      config.color_space_info(), config.video_transformation(),
+                      config.coded_size(), config.visible_rect(),
+                      config.natural_size(), config.extra_data(),
+                      config.encryption_scheme());
+    InitializeWithConfig(config);
+
+    scoped_refptr<DecoderBuffer> data = ReadTestDataFile(test_file_name);
+    InMemoryUrlProtocol protocol(*data, false);
+    FFmpegGlue glue(&protocol);
+    ASSERT_TRUE(glue.OpenContext());
+
+    auto packet = ScopedAVPacket::Allocate();
+    ASSERT_GE(av_read_frame(glue.format_context(), packet.get()), 0);
+    auto buffer = CreateBufferWithAlphaFromPacket(packet.get());
+    av_packet_unref(packet.get());
+    ASSERT_TRUE(buffer->side_data());
+    ASSERT_FALSE(buffer->side_data()->alpha_data.empty());
+    ASSERT_TRUE(Decode(std::move(buffer)).is_ok());
+
+    ASSERT_EQ(1u, output_frames_.size());
+    EXPECT_EQ(expected_format, output_frames_.front()->format());
+  }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
   MOCK_METHOD1(DecodeDone, void(DecoderStatus));
@@ -530,6 +561,26 @@ TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
 
   Destroy();
 }
+
+#if !defined(LIBVPX_NO_HIGH_BIT_DEPTH)
+// Verify that VP9 10-bit 420 video with alpha channel can be decoded.
+TEST_F(VpxVideoDecoderTest, DecodeFrame_VP9A_420_10bit) {
+  DecodeFirstAlphaFrameAndVerifyFormat("bear-vp9a-420-10bit.webm",
+                                       PIXEL_FORMAT_YUV420AP10);
+}
+
+// Verify that VP9 10-bit 422 video with alpha channel can be decoded.
+TEST_F(VpxVideoDecoderTest, DecodeFrame_VP9A_422_10bit) {
+  DecodeFirstAlphaFrameAndVerifyFormat("bear-vp9a-422-10bit.webm",
+                                       PIXEL_FORMAT_YUV422AP10);
+}
+
+// Verify that VP9 10-bit 444 video with alpha channel can be decoded.
+TEST_F(VpxVideoDecoderTest, DecodeFrame_VP9A_444_10bit) {
+  DecodeFirstAlphaFrameAndVerifyFormat("bear-vp9a-444-10bit.webm",
+                                       PIXEL_FORMAT_YUV444AP10);
+}
+#endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH)
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 }  // namespace media
