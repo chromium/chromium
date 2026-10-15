@@ -171,6 +171,13 @@ class WebFrameWidget : public WebWidget {
   virtual void NotifyPresentationTime(
       base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) = 0;
 
+  // Returns true if a main frame update has been requested but has not yet
+  // started. A DOM mutation made while a main frame update is already running
+  // (e.g. inside a requestAnimationFrame or ResizeObserver callback) does not
+  // request a new one, so this may read false there even though the running
+  // update will include the mutation.
+  virtual bool RequestedMainFramePending() = 0;
+
 #if BUILDFLAG(IS_APPLE)
   virtual void NotifyCoreAnimationErrorCode(
       base::OnceCallback<void(gfx::CALayerResult)> callback) = 0;

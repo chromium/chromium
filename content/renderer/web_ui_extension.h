@@ -36,6 +36,7 @@ class WebUIExtension {
                                            v8::Local<v8::Object> chrome);
   static void Send(gin::Arguments* args);
   static std::string GetVariableValue(const std::string& name);
+  static v8::Local<v8::Value> RequestPresentationTime(gin::Arguments* args);
 };
 
 }  // namespace content

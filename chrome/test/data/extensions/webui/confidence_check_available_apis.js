@@ -21,6 +21,7 @@ const expected = [
   'loadTimes',
   'management',
   'metricsPrivate',
+  'requestPresentationTime',
   'runtime',
   'send',
   'test',

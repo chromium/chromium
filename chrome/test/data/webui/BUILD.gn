@@ -103,6 +103,7 @@ source_set("browser_tests") {
       "actor_overlay/actor_overlay_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
       "chrome_apis/chrome_histograms_browsertest.cc",
+      "chrome_apis/chrome_request_presentation_time_browsertest.cc",
       "chrome_apis/chrome_timeticks_browsertest.cc",
       "content_settings/content_settings_browsertest.cc",
       "context_hub/context_hub_browsertest.cc",
