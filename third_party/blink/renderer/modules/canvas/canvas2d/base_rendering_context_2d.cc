@@ -1847,8 +1847,8 @@ void BaseRenderingContext2D::DrawElementInternal(
     return;
   }
 
-  // The filter needs to be resolved before calling Draw, because it
-  // immediately checks IsFilterResolved() and uses a null canvas if not.
+  // Resolving a filter can synchronously update style and layout, which may
+  // resize the canvas. Resolve it before reading `Host()->Size()` below.
   StateGetFilter();
 
   // The ideal size is the source content size, represented in canvas grid

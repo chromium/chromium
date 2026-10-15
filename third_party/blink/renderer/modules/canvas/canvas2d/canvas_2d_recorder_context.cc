@@ -485,6 +485,13 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
     }
   }
 
+  if (GetState().IsFilterUnresolved()) [[unlikely]] {
+    // Resolving a filter can synchronously execute script (via style and
+    // layout updates), which may reset the canvas recorder or state stack.
+    // Resolve the filter before acquiring `layer_canvas` and `state`.
+    StateGetFilter();
+  }
+
   // Create the `PaintCanvas` AFTER parsing the filter. It's possible for
   // filters to reset the canvas, using a custom object property getter for
   // instance.
@@ -592,7 +599,8 @@ Canvas2DRecorderContext::SaveLayerForState(
 
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
-  sk_sp<PaintFilter> context_filter = StateGetFilter();
+  sk_sp<PaintFilter> context_filter =
+      state.IsFilterResolved() ? StateGetFilter() : nullptr;
 
   // The "copy" globalCompositeOperation replaces everything that was in the
   // canvas. We therefore have to clear the canvas before proceeding. Since the

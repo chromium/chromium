@@ -540,8 +540,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   AffineTransform GetTransform() const override;
 
-  bool StateHasFilter();
-
   // When the canvas is stroked or filled with a pattern, which is assumed to
   // have a transparent background, the shadow needs to be applied with
   // DropShadowPaintFilter for kNonOpaqueImageType
@@ -565,7 +563,7 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
     if (BlendModeRequiresCompositedDraw(state)) {
       return true;
     }
-    if (StateHasFilter()) {
+    if (state.IsFilterResolved()) {
       return true;
     }
     if (state.ShouldDrawShadows() &&
@@ -579,7 +577,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                           SkBlendMode blend_mode,
                           const gfx::RectF* bounds = nullptr);
 
-  // `paint_canvas` is null if this function is called asynchronously.
   template <OverdrawOp CurrentOverdrawOp,
             typename DrawFunc,
             typename DrawCoversClipBoundsFunc>
@@ -794,13 +791,7 @@ void Canvas2DRecorderContext::DrawInternal(
     CanvasRenderingContext2DState::ImageType image_type,
     const SkIRect& clip_bounds,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (!paint_canvas) [[unlikely]] {
-    // This is the async draw case.
-    paint_canvas = GetPaintCanvas();
-    if (!paint_canvas) {
-      return;
-    }
-  }
+  CHECK(paint_canvas);
   const CanvasRenderingContext2DState& state = GetState();
   SkBlendMode global_composite = state.GlobalComposite();
   if (ShouldUseCompositedDraw(paint_type, image_type)) {
@@ -855,22 +846,25 @@ void Canvas2DRecorderContext::Draw(
     return;
   }
 
+  if (GetState().IsFilterUnresolved()) [[unlikely]] {
+    // Resolving a filter can synchronously execute script (via style and
+    // layout updates), which may reset the canvas recorder or state stack.
+    // Resolve the filter before acquiring `paint_canvas` and `clip_bounds`.
+    StateGetFilter();
+    if (!IsTransformInvertible()) [[unlikely]] {
+      return;
+    }
+  }
+
   SkIRect clip_bounds;
   MemoryManagedPaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
   if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds)) {
     return;
   }
 
-  if (GetState().IsFilterUnresolved()) [[unlikely]] {
-    // Resolving a filter requires allocating garbage-collected objects.
-    DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
-        nullptr, draw_func, draw_covers_clip_bounds, bounds, paint_type,
-        image_type, clip_bounds, draw_type);
-  } else {
-    DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
-        paint_canvas, draw_func, draw_covers_clip_bounds, bounds, paint_type,
-        image_type, clip_bounds, draw_type);
-  }
+  DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
+      paint_canvas, draw_func, draw_covers_clip_bounds, bounds, paint_type,
+      image_type, clip_bounds, draw_type);
 }
 
 template <typename DrawFunc>
@@ -893,8 +887,9 @@ void Canvas2DRecorderContext::CompositedDraw(
   cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
       static_cast<cc::RecordPaintCanvas*>(c));
 
-  sk_sp<PaintFilter> canvas_filter = StateGetFilter();
   const CanvasRenderingContext2DState& state = GetState();
+  sk_sp<PaintFilter> canvas_filter =
+      state.IsFilterResolved() ? StateGetFilter() : nullptr;
   DCHECK(ShouldUseCompositedDraw(paint_type, image_type));
   SkM44 ctm = c->getLocalToDevice();
   c->setMatrix(SkM44());
@@ -957,15 +952,6 @@ ALWAYS_INLINE bool Canvas2DRecorderContext::IsFullCanvasCompositeMode(
   // platforms already implement the specification's behavior.
   return op == SkBlendMode::kSrcIn || op == SkBlendMode::kSrcOut ||
          op == SkBlendMode::kDstIn || op == SkBlendMode::kDstATop;
-}
-
-ALWAYS_INLINE bool Canvas2DRecorderContext::StateHasFilter() {
-  const CanvasRenderingContext2DState& state = GetState();
-  if (state.IsFilterUnresolved()) [[unlikely]] {
-    return !!StateGetFilter();
-  }
-  // The fast path avoids the virtual call overhead of StateGetFilter
-  return state.IsFilterResolved();
 }
 
 ALWAYS_INLINE bool Canvas2DRecorderContext::ComputeDirtyRect(
