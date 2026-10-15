@@ -20,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/fake_local_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/api_test_utils.h"
@@ -37,6 +38,7 @@ namespace extensions {
 namespace {
 
 constexpr char kApcExtensionId[] = "bbnmkciocedkjdlapchelmdflhahacpa";
+constexpr char kPageChangedError[] = "Page changed during data collection.";
 constexpr char kPolicyError[] = "Host access is restricted by policy.";
 
 // Fake only tab lookup, screenshot access, and the fetch operation. The API's
@@ -382,7 +384,7 @@ TEST_F(ExperimentalAiDataApcTest, RejectsPageReplacementDuringSerialization) {
   auto function = CreateFunction();
   function->after_fetch = base::BindLambdaForTesting(
       [&] { NavigateAndCommit(GURL("https://other.test/")); });
-  EXPECT_EQ("Page changed during data collection.", RunError(function.get()));
+  EXPECT_EQ(kPageChangedError, RunError(function.get()));
 }
 
 TEST_F(ExperimentalAiDataApcTest, RejectsTabClosureDuringSerialization) {
@@ -391,7 +393,7 @@ TEST_F(ExperimentalAiDataApcTest, RejectsTabClosureDuringSerialization) {
     function->set_web_contents(nullptr);
     DeleteContents();
   });
-  EXPECT_EQ("Page changed during data collection.", RunError(function.get()));
+  EXPECT_EQ(kPageChangedError, RunError(function.get()));
 }
 
 TEST_F(ExperimentalAiDataApcTest, ReportsCaptureFailure) {
@@ -454,6 +456,198 @@ TEST_F(ExperimentalAiDataApcTest, ScreenshotRestrictionDoesNotBlockApcOnly) {
   auto function = CreateFunction();
   function->screenshot_access_error = ScreenshotAccessError::kDisabledByDlp;
   EXPECT_TRUE(Run(function.get())) << function->GetError();
+}
+
+class FakeSurroundingTextLocalFrame : public content::FakeLocalFrame {
+ public:
+  explicit FakeSurroundingTextLocalFrame(content::RenderFrameHost* rfh) {
+    Init(rfh->GetRemoteAssociatedInterfaces());
+  }
+
+  void GetTextSurroundingSelection(
+      uint32_t max_length,
+      GetTextSurroundingSelectionCallback callback) override {
+    received_max_length = max_length;
+    const bool should_drop = drop_callback;
+    if (on_request) {
+      std::move(on_request).Run();
+    }
+    if (should_drop) {
+      return;
+    }
+    std::move(callback).Run(surrounding_text, start_offset, end_offset);
+  }
+
+  std::u16string surrounding_text;
+  uint32_t start_offset = 0;
+  uint32_t end_offset = 0;
+  std::optional<uint32_t> received_max_length;
+  bool drop_callback = false;
+  base::OnceClosure on_request;
+};
+
+class TestGetTextSurroundingSelectionFunction
+    : public ExperimentalAiDataGetTextSurroundingSelectionFunction {
+ public:
+  void set_web_contents(content::WebContents* contents) {
+    contents_ = contents;
+  }
+
+  int resolved_tab_id = -1;
+
+ protected:
+  ~TestGetTextSurroundingSelectionFunction() override = default;
+
+  content::WebContents* GetTabById(int tab_id,
+                                   bool include_incognito) override {
+    resolved_tab_id = tab_id;
+    return contents_;
+  }
+
+ private:
+  raw_ptr<content::WebContents> contents_ = nullptr;
+};
+
+class ExperimentalAiDataSurroundingTextTest
+    : public ChromeRenderViewHostTestHarness {
+ protected:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    main_local_frame_ =
+        std::make_unique<FakeSurroundingTextLocalFrame>(main_rfh());
+    NavigateAndCommit(GURL("https://example.test/"));
+    extension_ = ExtensionBuilder("AI Data Extension")
+                     .SetID("hpkopmikdojpadgmioifjjodbmnjjjca")
+                     .AddAPIPermission("experimentalAiData")
+                     .Build();
+  }
+
+  scoped_refptr<TestGetTextSurroundingSelectionFunction> CreateFunction() {
+    auto function =
+        base::MakeRefCounted<TestGetTextSurroundingSelectionFunction>();
+    function->set_extension(extension_);
+    function->set_web_contents(web_contents());
+    return function;
+  }
+
+  void BlockHost(const char* pattern = "*://example.test/*") {
+    extension_->permissions_data()->SetPolicyHostRestrictions(
+        URLPatternSet({URLPattern(URLPattern::SCHEME_ALL, pattern)}), {});
+  }
+
+  std::optional<base::Value> Run(
+      TestGetTextSurroundingSelectionFunction* function,
+      const std::string& args) {
+    return api_test_utils::RunFunctionAndReturnSingleResult(function, args,
+                                                            profile());
+  }
+
+  std::string RunError(TestGetTextSurroundingSelectionFunction* function,
+                       const std::string& args) {
+    return api_test_utils::RunFunctionAndReturnError(function, args, profile());
+  }
+
+  std::unique_ptr<FakeSurroundingTextLocalFrame> main_local_frame_;
+  ScopedCurrentChannel channel_{version_info::Channel::DEV};
+  scoped_refptr<const Extension> extension_;
+};
+
+TEST_F(ExperimentalAiDataSurroundingTextTest,
+       FetchesSurroundingTextFromMainFrameWhenUnfocused) {
+  main_local_frame_->surrounding_text = u"Hello world surrounding text";
+  main_local_frame_->start_offset = 6;
+  main_local_frame_->end_offset = 11;
+
+  auto function = CreateFunction();
+  auto result = Run(function.get(), "[7, 50]");
+  ASSERT_TRUE(result) << function->GetError();
+  ASSERT_TRUE(result->is_dict());
+  const auto& dict = result->GetDict();
+  ASSERT_TRUE(dict.FindString("content"));
+  EXPECT_EQ("Hello world surrounding text", *dict.FindString("content"));
+  EXPECT_EQ(6, dict.FindInt("startOffset"));
+  EXPECT_EQ(11, dict.FindInt("endOffset"));
+  EXPECT_EQ(7, function->resolved_tab_id);
+  EXPECT_EQ(50u, main_local_frame_->received_max_length);
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest,
+       FetchesSurroundingTextFromFocusedFrame) {
+  auto* child =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+  FakeSurroundingTextLocalFrame child_local_frame(child);
+  child = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.test/subframe.html"), child);
+  FocusWebContentsOnFrame(child);
+
+  main_local_frame_->surrounding_text = u"Main frame text";
+  child_local_frame.surrounding_text = u"Focused child frame text";
+  child_local_frame.start_offset = 8;
+  child_local_frame.end_offset = 13;
+
+  auto function = CreateFunction();
+  auto result = Run(function.get(), "[7, 25]");
+  ASSERT_TRUE(result) << function->GetError();
+  ASSERT_TRUE(result->is_dict());
+  const auto& dict = result->GetDict();
+  ASSERT_TRUE(dict.FindString("content"));
+  EXPECT_EQ("Focused child frame text", *dict.FindString("content"));
+  EXPECT_EQ(8, dict.FindInt("startOffset"));
+  EXPECT_EQ(13, dict.FindInt("endOffset"));
+  EXPECT_EQ(25u, child_local_frame.received_max_length);
+  EXPECT_FALSE(main_local_frame_->received_max_length.has_value());
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest, RejectsNegativeMaxLength) {
+  auto function = CreateFunction();
+  EXPECT_EQ("maxLength must not be negative.",
+            RunError(function.get(), "[7, -1]"));
+  EXPECT_FALSE(main_local_frame_->received_max_length.has_value());
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest, RejectsInvalidTab) {
+  auto function = CreateFunction();
+  function->set_web_contents(nullptr);
+  EXPECT_EQ("Invalid target tab passed in.",
+            RunError(function.get(), "[7, 100]"));
+  EXPECT_FALSE(main_local_frame_->received_max_length.has_value());
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest, RejectsBlockedHost) {
+  BlockHost();
+  auto function = CreateFunction();
+  EXPECT_EQ(kPolicyError, RunError(function.get(), "[7, 100]"));
+  EXPECT_FALSE(main_local_frame_->received_max_length.has_value());
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest,
+       RejectsPageReplacementDuringRequest) {
+  main_local_frame_->on_request = base::BindLambdaForTesting(
+      [&] { NavigateAndCommit(GURL("https://other.test/")); });
+  auto function = CreateFunction();
+  EXPECT_EQ(kPageChangedError, RunError(function.get(), "[7, 100]"));
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest,
+       RejectsDroppedCallbackOnTabClosure) {
+  auto function = CreateFunction();
+  main_local_frame_->drop_callback = true;
+  main_local_frame_->on_request = base::BindLambdaForTesting([&] {
+    function->set_web_contents(nullptr);
+    DeleteContents();
+    main_local_frame_.reset();
+  });
+  EXPECT_EQ(kPageChangedError, RunError(function.get(), "[7, 100]"));
+}
+
+TEST_F(ExperimentalAiDataSurroundingTextTest,
+       RejectsDroppedCallbackWithoutPageChange) {
+  main_local_frame_->drop_callback = true;
+  main_local_frame_->on_request =
+      base::BindLambdaForTesting([&] { main_local_frame_.reset(); });
+  auto function = CreateFunction();
+  EXPECT_EQ("Data collection failed likely due to browser state change.",
+            RunError(function.get(), "[7, 100]"));
 }
 
 }  // namespace

@@ -31,7 +31,8 @@ chrome.test.getConfig(config => {
     check(!!api, 'API missing in isolated world');
     // Capture remains a browser API for privileged extension contexts.
     for (const method
-             of ['getAiData', 'getAiDataWithSpecifier', 'getApcSnapshot']) {
+             of ['getAiData', 'getAiDataWithSpecifier', 'getApcSnapshot',
+                 'getTextSurroundingSelection']) {
       check(!api[method], `${method} exposed to content scripts`);
     }
     if (expectedError) {
@@ -278,6 +279,26 @@ chrome.test.getConfig(config => {
       chrome.test.assertThrows(
           () => capture({type: 'unknown'}),
           /Value must be one of apc, apc_and_screenshot, screenshot/);
+      chrome.test.succeed();
+    },
+    async function getsTextSurroundingSelection() {
+      await chrome.scripting.executeScript({
+        target: {tabId},
+        func: () => {
+          const textNode = document.body.firstChild;
+          const range = document.createRange();
+          range.setStart(textNode, 4);
+          range.setEnd(textNode, 12);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        },
+      });
+      const result =
+          await chrome.experimentalAiData.getTextSurroundingSelection(tabId, 8);
+      chrome.test.assertEq('APC snapshot bro', result.content);
+      chrome.test.assertEq(4, result.startOffset);
+      chrome.test.assertEq(12, result.endOffset);
       chrome.test.succeed();
     },
   ]);

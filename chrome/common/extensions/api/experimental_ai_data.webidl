@@ -44,6 +44,19 @@ dictionary ApcSnapshot {
   DOMString screenshotBase64;
 };
 
+// The text surrounding the current selection and the selection offsets within
+// that text.
+dictionary TextSurroundingSelection {
+  // The text surrounding the current selection.
+  required DOMString content;
+
+  // The start offset of the selection within |content|.
+  required long startOffset;
+
+  // The end offset of the selection within |content|.
+  required long endOffset;
+};
+
 [implemented_in="chrome/browser/extensions/api/experimental_ai_data/experimental_ai_data_api.h"]
 interface ExperimentalAiData {
   // |PromiseValue|: data
@@ -77,6 +90,13 @@ interface ExperimentalAiData {
   // also apply.
   // |PromiseValue|: snapshot
   static Promise<ApcSnapshot> getApcSnapshot(long tabId, ApcOptions options);
+
+  // Fetches the text surrounding the current selection in the target tab up to
+  // |maxLength| characters, along with the selection's start and end offsets.
+  // |PromiseValue|: result: fetched text result
+  static Promise<TextSurroundingSelection> getTextSurroundingSelection(
+      long tabId,
+      long maxLength);
 };
 
 partial interface Browser {

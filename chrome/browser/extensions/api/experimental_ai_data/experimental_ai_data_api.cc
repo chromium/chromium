@@ -14,7 +14,9 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version_info/channel.h"
@@ -37,6 +39,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -59,6 +62,7 @@ constexpr char kPolicyBlockedHostError[] =
     "Host access is restricted by policy.";
 constexpr char kInvalidMaxMetaElementsError[] =
     "maxMetaElements must not be negative.";
+constexpr char kInvalidMaxLengthError[] = "maxLength must not be negative.";
 constexpr char kApcSerializationError[] = "Failed to serialize APC.";
 constexpr char kScreenshotDisabledByPreferencesError[] =
     "Failed to capture tab: screenshots disabled";
@@ -310,12 +314,11 @@ ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
 ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
   auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  content::WebContents* web_contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
-                                    &web_contents)) {
+  content::WebContents* web_contents =
+      GetTabById(params->tab_id, /*include_incognito=*/true);
+  if (!web_contents) {
     return RespondNow(Error(kInvalidTabError));
   }
-  CHECK(web_contents, base::NotFatalUntil::M161);
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
@@ -347,12 +350,11 @@ ExperimentalAiDataGetAiDataWithSpecifierFunction::Run() {
   auto params =
       api::experimental_ai_data::GetAiDataWithSpecifier::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  content::WebContents* web_contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(), true,
-                                    &web_contents)) {
+  content::WebContents* web_contents =
+      GetTabById(params->tab_id, /*include_incognito=*/true);
+  if (!web_contents) {
     return RespondNow(Error(kInvalidTabError));
   }
-  CHECK(web_contents, base::NotFatalUntil::M161);
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
@@ -453,7 +455,7 @@ ExperimentalAiDataGetApcSnapshotFunction::Run() {
   return RespondLater();
 }
 
-content::WebContents* ExperimentalAiDataGetApcSnapshotFunction::GetTabById(
+content::WebContents* ExperimentalAiDataApiFunction::GetTabById(
     int tab_id,
     bool include_incognito) {
   content::WebContents* web_contents = nullptr;
@@ -566,6 +568,72 @@ void ExperimentalAiDataGetApcSnapshotFunction::OnSnapshotSerialized(
     }
   }
   Respond(ArgumentList(std::move(result).value()));
+}
+
+ExperimentalAiDataGetTextSurroundingSelectionFunction::
+    ExperimentalAiDataGetTextSurroundingSelectionFunction() = default;
+
+ExperimentalAiDataGetTextSurroundingSelectionFunction::
+    ~ExperimentalAiDataGetTextSurroundingSelectionFunction() = default;
+
+ExtensionFunction::ResponseAction
+ExperimentalAiDataGetTextSurroundingSelectionFunction::Run() {
+  auto params =
+      api::experimental_ai_data::GetTextSurroundingSelection::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (params->max_length < 0) {
+    return RespondNow(Error(kInvalidMaxLengthError));
+  }
+
+  content::WebContents* web_contents = GetTabById(
+      params->tab_id, /*include_incognito=*/include_incognito_information());
+  if (!web_contents) {
+    return RespondNow(Error(kInvalidTabError));
+  }
+
+  if (auto error = StartDataCollection(web_contents)) {
+    return RespondNow(Error(*error));
+  }
+
+  content::RenderFrameHost* rfh = web_contents->GetFocusedFrame();
+  if (!rfh) {
+    rfh = web_contents->GetPrimaryMainFrame();
+  }
+  rfh->RequestTextSurroundingSelection(
+      mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(
+              &ExperimentalAiDataGetTextSurroundingSelectionFunction::
+                  OnSurroundingTextReceived,
+              this),
+          base::BindOnce(
+              &ExperimentalAiDataGetTextSurroundingSelectionFunction::
+                  OnSurroundingTextRequestDropped,
+              this)),
+      params->max_length);
+  return RespondLater();
+}
+
+void ExperimentalAiDataGetTextSurroundingSelectionFunction::
+    OnSurroundingTextReceived(const std::u16string& content,
+                              uint32_t start_offset,
+                              uint32_t end_offset) {
+  if (auto error = GetDataCollectionError()) {
+    Respond(Error(*error));
+    return;
+  }
+  api::experimental_ai_data::TextSurroundingSelection response;
+  response.content = base::UTF16ToUTF8(content);
+  response.start_offset = base::saturated_cast<int>(start_offset);
+  response.end_offset = base::saturated_cast<int>(end_offset);
+  Respond(ArgumentList(
+      api::experimental_ai_data::GetTextSurroundingSelection::Results::Create(
+          response)));
+}
+
+void ExperimentalAiDataGetTextSurroundingSelectionFunction::
+    OnSurroundingTextRequestDropped() {
+  Respond(Error(GetDataCollectionError().value_or(kDataCollectionError)));
 }
 
 }  // namespace extensions

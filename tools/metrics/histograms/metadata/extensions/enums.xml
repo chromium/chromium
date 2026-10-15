@@ -2941,6 +2941,7 @@ Called by update_extension_histograms.py.-->
   <int value="1990" label="AUTOFILLPRIVATE_GETDETAILSFORUPSERTPASS"/>
   <int value="1991" label="AUTOFILLPRIVATE_PRELOADDETAILSFORUPSERTPASS"/>
   <int value="1992" label="EXPERIMENTALAIDATA_GETAPCSNAPSHOT"/>
+  <int value="1993" label="EXPERIMENTALAIDATA_GETTEXTSURROUNDINGSELECTION"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

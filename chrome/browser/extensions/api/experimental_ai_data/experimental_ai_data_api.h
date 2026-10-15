@@ -48,6 +48,10 @@ class ExperimentalAiDataApiFunction : public ExtensionFunction {
   void OnDataCollected(AiDataKeyedService::AiData browser_collected_data);
   bool PreRunValidation(std::string* error) override;
 
+  // Resolves the target tab. Virtual so unit tests can supply a WebContents
+  // without a browser window.
+  virtual content::WebContents* GetTabById(int tab_id, bool include_incognito);
+
  private:
   class CollectionPageGuard;
   std::vector<std::unique_ptr<CollectionPageGuard>> collection_page_guards_;
@@ -110,10 +114,6 @@ class ExperimentalAiDataGetApcSnapshotFunction
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  // Resolves the target tab, excluding incognito tabs. Virtual so
-  // unit tests can supply a WebContents without a browser window.
-  virtual content::WebContents* GetTabById(int tab_id, bool include_incognito);
-
   // Checks screenshot preferences and DLP restrictions. Virtual so unit tests
   // can simulate restrictions changing during capture.
   virtual base::expected<void, ScreenshotAccessError> CheckScreenshotAccess(
@@ -148,6 +148,33 @@ class ExperimentalAiDataGetApcSnapshotFunction
 
   DECLARE_EXTENSION_FUNCTION("experimentalAiData.getApcSnapshot",
                              EXPERIMENTALAIDATA_GETAPCSNAPSHOT)
+};
+
+// Fetches the text surrounding the current selection in the target tab.
+class ExperimentalAiDataGetTextSurroundingSelectionFunction
+    : public ExperimentalAiDataApiFunction {
+ public:
+  ExperimentalAiDataGetTextSurroundingSelectionFunction();
+
+  ExperimentalAiDataGetTextSurroundingSelectionFunction(
+      const ExperimentalAiDataGetTextSurroundingSelectionFunction&) = delete;
+  ExperimentalAiDataGetTextSurroundingSelectionFunction& operator=(
+      const ExperimentalAiDataGetTextSurroundingSelectionFunction&) = delete;
+
+ protected:
+  ~ExperimentalAiDataGetTextSurroundingSelectionFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnSurroundingTextReceived(const std::u16string& content,
+                                 uint32_t start_offset,
+                                 uint32_t end_offset);
+  void OnSurroundingTextRequestDropped();
+
+  DECLARE_EXTENSION_FUNCTION("experimentalAiData.getTextSurroundingSelection",
+                             EXPERIMENTALAIDATA_GETTEXTSURROUNDINGSELECTION)
 };
 
 }  // namespace extensions
