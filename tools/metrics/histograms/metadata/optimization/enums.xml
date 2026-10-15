@@ -729,6 +729,32 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(OptimizationGuideStreamingConnectionStatus) -->
+
+<enum name="OptimizationGuideStreamingConnectionStatus">
+  <int value="0" label="Connected"/>
+  <int value="1" label="Access token failure"/>
+  <int value="2" label="Handshake failed"/>
+  <int value="3" label="Client error during connect"/>
+  <int value="4" label="Mojo pipe disconnected during connect"/>
+  <int value="5" label="Cancelled by destruction"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/remote_model_execution_session_impl.h:StreamingConnectionStatus) -->
+
+<!-- LINT.IfChange(OptimizationGuideStreamingDisconnectReason) -->
+
+<enum name="OptimizationGuideStreamingDisconnectReason">
+  <int value="0" label="Session destroyed"/>
+  <int value="1" label="Idle timeout"/>
+  <int value="2" label="Server drop (clean)"/>
+  <int value="3" label="Server drop (unclean)"/>
+  <int value="4" label="Client error"/>
+  <int value="5" label="Mojo pipe disconnected"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/remote_model_execution_session_impl.h:StreamingDisconnectReason) -->
+
 <enum name="OptimizationGuideUserFeedback">
   <int value="0" label="Unknown"/>
   <int value="1" label="Thumbs Down"/>

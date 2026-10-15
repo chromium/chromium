@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -29,6 +30,36 @@ class IdentityManager;
 }  // namespace signin
 
 namespace optimization_guide {
+
+// The status of establishing a streaming WebSocket connection. Only used for
+// UMA logging. Entries should not be renumbered and numeric values should never
+// be reused.
+// LINT.IfChange(StreamingConnectionStatus)
+enum class StreamingConnectionStatus {
+  kConnected = 0,
+  kAccessTokenFailure = 1,
+  kHandshakeFailed = 2,
+  kClientErrorDuringConnect = 3,
+  kMojoPipeDisconnectedDuringConnect = 4,
+  kCancelledByDestruction = 5,
+  kMaxValue = kCancelledByDestruction,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideStreamingConnectionStatus)
+
+// The reason an active streaming WebSocket connection disconnected. Only used
+// for UMA logging. Entries should not be renumbered and numeric values should
+// never be reused.
+// LINT.IfChange(StreamingDisconnectReason)
+enum class StreamingDisconnectReason {
+  kSessionDestroyed = 0,
+  kIdleTimeout = 1,
+  kServerDropClean = 2,
+  kServerDropUnclean = 3,
+  kClientError = 4,
+  kMojoPipeDisconnected = 5,
+  kMaxValue = kMojoPipeDisconnected,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideStreamingDisconnectReason)
 
 // RemoteModelExecutionSession implementation that communicates with MES
 // via WebSocket using StreamingWebSocketClient.
@@ -84,7 +115,9 @@ class RemoteModelExecutionSessionImpl
  private:
   void NotifyObservers();
   void HandleDisconnection(
-      std::optional<OptimizationGuideModelExecutionError> error);
+      std::optional<OptimizationGuideModelExecutionError> error,
+      std::variant<StreamingConnectionStatus, StreamingDisconnectReason>
+          disconnect_metric);
   void ResetIdleTimer();
   void OnIdleTimeout();
   void StartConnection();

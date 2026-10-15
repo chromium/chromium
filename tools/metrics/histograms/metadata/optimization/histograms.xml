@@ -1565,6 +1565,33 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.ModelExecution.Streaming.ConnectionStatus.Ttc"
+    enum="OptimizationGuideStreamingConnectionStatus"
+    expires_after="2027-04-14">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the status of establishing a streaming WebSocket connection for TTC
+    to the Optimization Guide Service. Recorded once per connection attempt when
+    it resolves (either succeeding, failing, or being cancelled on session
+    destruction).
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.Streaming.DisconnectReason.Ttc"
+    enum="OptimizationGuideStreamingDisconnectReason"
+    expires_after="2027-04-14">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the reason an active (connected) streaming WebSocket session for TTC
+    disconnected. Recorded every time a session transitions out of the connected
+    state.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.ModelExecutionFetcher.NetErrorCode"
     enum="NetErrorCodes" expires_after="2027-04-14">
   <owner>freedjm@google.com</owner>

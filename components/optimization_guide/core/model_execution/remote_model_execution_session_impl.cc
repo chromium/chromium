@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -16,6 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
@@ -25,6 +28,7 @@
 #include "components/optimization_guide/core/optimization_guide_common.mojom-shared.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -52,6 +56,24 @@ GURL GetModelExecutionServiceStreamURL(ModelBasedCapabilityKey feature) {
         url, "key", features::GetOptimizationGuideServiceAPIKey());
   }
   return url;
+}
+
+void RecordConnectionStatusHistogram(ModelBasedCapabilityKey feature,
+                                     StreamingConnectionStatus status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.Streaming.ConnectionStatus.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      status);
+}
+
+void RecordDisconnectReasonHistogram(ModelBasedCapabilityKey feature,
+                                     StreamingDisconnectReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.Streaming.DisconnectReason.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      reason);
 }
 
 }  // namespace
@@ -124,6 +146,13 @@ RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
 
 RemoteModelExecutionSessionImpl::~RemoteModelExecutionSessionImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (connection_state_ == ConnectionState::kConnecting) {
+    RecordConnectionStatusHistogram(
+        feature_, StreamingConnectionStatus::kCancelledByDestruction);
+  } else if (connection_state_ == ConnectionState::kConnected) {
+    RecordDisconnectReasonHistogram(
+        feature_, StreamingDisconnectReason::kSessionDestroyed);
+  }
   idle_timer_.Stop();
   client_.reset();
 }
@@ -206,7 +235,8 @@ void RemoteModelExecutionSessionImpl::OnAccessTokenReceived(
           kOptimizationGuideServiceModelExecutionURLSwitch)) {
     HandleDisconnection(
         OptimizationGuideModelExecutionError::FromModelExecutionError(
-            ModelExecutionError::kPermissionDenied));
+            ModelExecutionError::kPermissionDenied),
+        StreamingConnectionStatus::kAccessTokenFailure);
     return;
   }
 
@@ -232,6 +262,8 @@ void RemoteModelExecutionSessionImpl::OnConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(connection_state_, ConnectionState::kConnecting);
   connection_state_ = ConnectionState::kConnected;
+  RecordConnectionStatusHistogram(feature_,
+                                  StreamingConnectionStatus::kConnected);
   ResetIdleTimer();
   base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
@@ -306,7 +338,8 @@ void RemoteModelExecutionSessionImpl::OnConnectionError(
           ? OptimizationGuideModelExecutionError::FromHttpStatusCode(
                 static_cast<net::HttpStatusCode>(response_code))
           : OptimizationGuideModelExecutionError::FromModelExecutionError(
-                ModelExecutionError::kGenericFailure));
+                ModelExecutionError::kGenericFailure),
+      StreamingConnectionStatus::kHandshakeFailed);
 }
 
 void RemoteModelExecutionSessionImpl::OnDropChannel(
@@ -320,21 +353,36 @@ void RemoteModelExecutionSessionImpl::OnDropChannel(
           ? std::nullopt
           : std::make_optional(
                 OptimizationGuideModelExecutionError::FromModelExecutionError(
-                    ModelExecutionError::kGenericFailure)));
+                    ModelExecutionError::kGenericFailure)),
+      was_clean ? StreamingDisconnectReason::kServerDropClean
+                : StreamingDisconnectReason::kServerDropUnclean);
 }
 
 void RemoteModelExecutionSessionImpl::OnError(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleDisconnection(
+  const auto error =
       OptimizationGuideModelExecutionError::FromModelExecutionError(
-          ModelExecutionError::kGenericFailure));
+          ModelExecutionError::kGenericFailure);
+  if (connection_state_ == ConnectionState::kConnecting) {
+    HandleDisconnection(error,
+                        StreamingConnectionStatus::kClientErrorDuringConnect);
+  } else {
+    HandleDisconnection(error, StreamingDisconnectReason::kClientError);
+  }
 }
 
 void RemoteModelExecutionSessionImpl::OnClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleDisconnection(
+  const auto error =
       OptimizationGuideModelExecutionError::FromModelExecutionError(
-          ModelExecutionError::kGenericFailure));
+          ModelExecutionError::kGenericFailure);
+  if (connection_state_ == ConnectionState::kConnecting) {
+    HandleDisconnection(
+        error, StreamingConnectionStatus::kMojoPipeDisconnectedDuringConnect);
+  } else {
+    HandleDisconnection(error,
+                        StreamingDisconnectReason::kMojoPipeDisconnected);
+  }
 }
 
 std::vector<network::mojom::HttpHeaderPtr>
@@ -372,10 +420,19 @@ void RemoteModelExecutionSessionImpl::NotifyObservers() {
 }
 
 void RemoteModelExecutionSessionImpl::HandleDisconnection(
-    std::optional<OptimizationGuideModelExecutionError> error) {
+    std::optional<OptimizationGuideModelExecutionError> error,
+    std::variant<StreamingConnectionStatus, StreamingDisconnectReason>
+        disconnect_metric) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (connection_state_ == ConnectionState::kDisconnected) {
     return;
+  }
+  if (std::holds_alternative<StreamingConnectionStatus>(disconnect_metric)) {
+    RecordConnectionStatusHistogram(
+        feature_, std::get<StreamingConnectionStatus>(disconnect_metric));
+  } else {
+    RecordDisconnectReasonHistogram(
+        feature_, std::get<StreamingDisconnectReason>(disconnect_metric));
   }
   idle_timer_.Stop();
   pending_requests_.clear();
@@ -405,7 +462,8 @@ void RemoteModelExecutionSessionImpl::ResetIdleTimer() {
 void RemoteModelExecutionSessionImpl::OnIdleTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_->Close();
-  HandleDisconnection(/*error=*/std::nullopt);
+  HandleDisconnection(/*error=*/std::nullopt,
+                      StreamingDisconnectReason::kIdleTimeout);
 }
 
 void RemoteModelExecutionSessionImpl::DispatchResponse(
