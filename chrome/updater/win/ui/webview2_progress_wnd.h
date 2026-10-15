@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/webview2ui.h"
@@ -37,10 +38,15 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
   void SetEventSink(ProgressWndEvents* events);
 
   // Checks that the WebView2 UI can be used on this thread: the thread must be
-  // a COM single-threaded apartment, and the WebView2 runtime must be
-  // installed. Returns a failure `HRESULT` otherwise, in which case the window
-  // must not be shown, and the caller should use a different UI instead.
+  // a COM single-threaded apartment, the WebView2 runtime must be installed,
+  // and the embedded page must be available. Returns a failure
+  // `HRESULT` otherwise, in which case the window must not be shown, and the
+  // caller should use a different UI instead.
   HRESULT Initialize();
+
+  // Loads and decodes the embedded progress page. Returns a failure `HRESULT`
+  // if the resource is missing or is not valid UTF-8.
+  static base::expected<std::wstring, HRESULT> LoadProgressPage();
 
   // Creates and shows the window, and starts creating the WebView2 inside it.
   // `Initialize()` must have succeeded, and the creation failed callback must
@@ -117,6 +123,8 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
                 bool is_marquee);
 
   std::unique_ptr<WebView2UI> browser_;
+  // The embedded progress page, loaded by `Initialize()`.
+  std::wstring html_content_;
   std::u16string bundle_name_;
   raw_ptr<ProgressWndEvents> events_ = nullptr;
 

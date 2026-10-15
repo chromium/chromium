@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -21,12 +22,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/current_module.h"
+#include "base/win/resource_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/util/path_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/ui/webview2ui.h"
 #include "third_party/webview2/include/WebView2.h"
@@ -47,6 +52,27 @@ void WebView2ProgressWnd::SetEventSink(ProgressWndEvents* events) {
   events_ = events;
 }
 
+// static
+base::expected<std::wstring, HRESULT> WebView2ProgressWnd::LoadProgressPage() {
+  // The page is maintained independently and embedded in the executable.
+  void* html_data = nullptr;
+  size_t html_size = 0;
+  if (!base::win::GetResourceFromModule(CURRENT_MODULE(),
+                                        IDR_WEBVIEW2_PROGRESS_HTML, RT_HTML,
+                                        &html_data, &html_size) ||
+      html_size == 0) {
+    LOG(ERROR) << "Failed to load the WebView2 progress page.";
+    return base::unexpected(HRESULT_FROM_WIN32(ERROR_RESOURCE_DATA_NOT_FOUND));
+  }
+  std::wstring html_content;
+  if (!base::UTF8ToWide(static_cast<const char*>(html_data), html_size,
+                        &html_content)) {
+    LOG(ERROR) << "The WebView2 progress page is not valid UTF-8.";
+    return base::unexpected(HRESULT_FROM_WIN32(ERROR_NO_UNICODE_TRANSLATION));
+  }
+  return html_content;
+}
+
 HRESULT WebView2ProgressWnd::Initialize() {
   // WebView2 requires the calling thread to be a single-threaded apartment
   // (STA), so a thread already initialized as MTA can't host it.
@@ -54,6 +80,12 @@ HRESULT WebView2ProgressWnd::Initialize() {
     LOG(ERROR) << "Thread apartment failed to initialize as STA.";
     return CO_E_NOTINITIALIZED;
   }
+
+  auto page = LoadProgressPage();
+  if (!page.has_value()) {
+    return page.error();
+  }
+  html_content_ = std::move(page.value());
 
   // Fail early if the WebView2 runtime is not installed, instead of finding
   // out asynchronously after the window has been shown.
@@ -217,125 +249,17 @@ void WebView2ProgressWnd::OnWebViewCreated(HRESULT result) {
     OnWebViewCreationFailed(result);
     return;
   }
-  is_webview_ready_ = true;
-
   browser_->SetWebMessageHandler(
       base::BindRepeating(&WebView2ProgressWnd::OnWebMessageReceived,
                           msg_handler_weak_factory_.GetWeakPtr()));
 
-  browser_->NavigateToString(
-      std::wstring(LR"DDDD(
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromium Updater</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff;
-            color: #333333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden; /* Prevent scrollbars during resize. */
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        .container {
-            width: 80%;
-            max-width: 400px;
-            text-align: center;
-        }
-        #status-text {
-            margin-bottom: 20px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%;
-            background-color: #1a73e8; /* Blue. */
-            transition: width 0.3s ease;
-        }
-        button {
-            padding: 8px 16px;
-            background-color: #ffffff;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            color: #1a73e8;
-            font-weight: 500;
-        }
-        button:hover {
-            background-color: #f8f9fa;
-        }
-        .marquee { animation: marquee 2s infinite linear;
-          width: 30% !important; }
-        @keyframes marquee { from { margin-left: -30%; } to
-          { margin-left: 100%; } }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div id="status-text">Initializing...</div>
-
-        <div class="progress-bar-container">
-            <div id="progress-bar" class="progress-bar-fill"></div>
-        </div>
-
-        <button id="cancel-btn">Cancel</button>
-    </div>
-
-    <script>
-        // Let the C++ backend know the DOM is ready and functions are exposed.
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage("ui_ready");
-            } else {
-                console.warn("WebView2 API not found!");
-            }
-        });
-
-        // Handle the cancel button click.
-        document.getElementById('cancel-btn').addEventListener('click', () => {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage("cancel_installation");
-
-                document.getElementById('status-text').innerText =
-                    "Cancelling...";
-                document.getElementById('cancel-btn').disabled = true;
-            }
-        });
-
-        // C++ `ExecuteScript` can call the below functions.
-        window.updateUI = (status, pos, isMarquee) => {
-            document.getElementById('status-text').innerText = status;
-            const bar = document.getElementById('progress-bar');
-            bar.style.width = pos + '%';
-            if (isMarquee) bar.classList.add('marquee');
-            else bar.classList.remove('marquee');
-            if (pos >= 100)
-                document.getElementById('cancel-btn').style.display = 'none';
-        };
-    </script>
-</body>
-</html>
-)DDDD"));
+  if (const HRESULT hr = browser_->NavigateToString(html_content_);
+      FAILED(hr)) {
+    LOG(ERROR) << "Failed to navigate to the progress page: " << std::hex << hr;
+    OnWebViewCreationFailed(hr);
+    return;
+  }
+  is_webview_ready_ = true;
 }
 
 void WebView2ProgressWnd::OnWebMessageReceived(const std::wstring& message) {

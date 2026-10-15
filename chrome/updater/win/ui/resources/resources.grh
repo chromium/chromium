@@ -33,6 +33,9 @@
 #define IDD_YES_NO 2018
 #define IDC_YES_NO_TEXT 2020
 
+// WebView2 pages.
+#define IDR_WEBVIEW2_PROGRESS_HTML 3000
+
 // Typelibs.
 #define TYPELIB_UPDATER_IDL_USER               1
 #define TYPELIB_UPDATER_INTERNAL_IDL_USER      2

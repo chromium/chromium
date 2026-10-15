@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!-- Copyright 2026 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!-- TODO(crbug.com/409590312): Localize the page's language and direction
+     attributes and user-visible text. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chromium Updater</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars during resize. */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .container {
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+        #status-text {
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #1a73e8; /* Blue. */
+            transition: width 0.3s ease;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #f8f9fa;
+        }
+        .marquee { animation: marquee 2s infinite linear;
+          width: 30% !important; }
+        @keyframes marquee { from { margin-left: -30%; } to
+          { margin-left: 100%; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="status-text">Initializing...</div>
+
+        <div class="progress-bar-container">
+            <div id="progress-bar" class="progress-bar-fill"></div>
+        </div>
+
+        <button id="cancel-btn">Cancel</button>
+    </div>
+
+    <script>
+        // Let the C++ backend know the DOM is ready and functions are exposed.
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage("ui_ready");
+            } else {
+                console.warn("WebView2 API not found!");
+            }
+        });
+
+        // Handle the cancel button click.
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage("cancel_installation");
+
+                document.getElementById('status-text').innerText =
+                    "Cancelling...";
+                document.getElementById('cancel-btn').disabled = true;
+            }
+        });
+
+        // C++ `ExecuteScript` can call the below functions.
+        window.updateUI = (status, pos, isMarquee) => {
+            document.getElementById('status-text').innerText = status;
+            const bar = document.getElementById('progress-bar');
+            bar.style.width = pos + '%';
+            if (isMarquee) bar.classList.add('marquee');
+            else bar.classList.remove('marquee');
+            if (pos >= 100)
+                document.getElementById('cancel-btn').style.display = 'none';
+        };
+    </script>
+</body>
+</html>

@@ -31,6 +31,12 @@ class WebView2ProgressWndTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
+TEST_F(WebView2ProgressWndTest, EmbeddedProgressPageIsAvailable) {
+  auto page = WebView2ProgressWnd::LoadProgressPage();
+  ASSERT_TRUE(page.has_value()) << std::hex << page.error();
+  EXPECT_FALSE(page->empty());
+}
+
 // The window can't be used if the WebView2 runtime is not installed. This is
 // detected by `Initialize()`, before any window is created, so that the caller
 // can fall back to a different UI.

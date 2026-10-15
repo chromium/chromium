@@ -47,3 +47,5 @@ BEGIN
     CTEXT           "",IDC_INSTALL_STOPPED_TEXT,7,17,244,34
 END
 
+IDR_WEBVIEW2_PROGRESS_HTML HTML "chrome/updater/win/ui/resources/webview2_progress.html"
+
