@@ -80,8 +80,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
 
   // The page has closed, so no matter what all events are no longer listened
   // to. Assertions for normal events:
-  EXPECT_FALSE(
-      event_router->ExtensionHasEventListener(id, "browserAction.onClicked"));
+  EXPECT_FALSE(event_router->ExtensionHasEventListener(id, "action.onClicked"));
   EXPECT_FALSE(
       event_router->ExtensionHasEventListener(id, "runtime.onStartup"));
   EXPECT_FALSE(

@@ -13,7 +13,7 @@
 //
 
 // A single listener.
-chrome.browserAction.onClicked.addListener(function() {});
+chrome.action.onClicked.addListener(function() {});
 // Multiple listeners for the same event.
 chrome.runtime.onStartup.addListener(function() {});
 chrome.runtime.onStartup.addListener(function() {});

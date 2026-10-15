@@ -1,0 +1,10 @@
+{
+  "name": "Action Runtime Error",
+  "description": "An extension which causes a JS runtime error when the action is triggered.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {}
+}

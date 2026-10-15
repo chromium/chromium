@@ -1,8 +1,8 @@
 {
-  "browser_action": {},
-  "description": "events_are_unregistered",
-  "manifest_version": 2,
   "name": "events_are_unregistered",
-  "permissions": ["webNavigation"],
-  "version": "1"
+  "version": "1",
+  "manifest_version": 3,
+  "description": "events_are_unregistered",
+  "action": {},
+  "permissions": ["webNavigation"]
 }

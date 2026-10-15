@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -211,7 +212,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Simulate a browser action click.
     // TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
-    ACTION_BROWSER_ACTION,
+    ACTION_TOOLBAR_ACTION,
 #endif
     // Navigate to the new tab page.
     ACTION_NEW_TAB,
@@ -262,7 +263,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
         break;
       }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      case ACTION_BROWSER_ACTION: {
+      case ACTION_TOOLBAR_ACTION: {
         ExtensionActionRunner::GetForWebContents(web_contents)
             ->RunAction(*extension, true);
         break;
@@ -434,39 +435,27 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
 // Catch an error from a BrowserAction; this is more complex than a content
 // script error, since browser actions are routed through our own code.
 // TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
-IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
+IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, ActionRuntimeError) {
   const Extension* extension = nullptr;
-  LoadExtensionAndCheckErrors(
-      "browser_action_runtime_error", {.ignore_manifest_warnings = false},
-      // Two errors: An error for running a deprecated manifest version and
-      // a reference error from within the browser action.
-      2u, ACTION_BROWSER_ACTION, &extension);
+  LoadExtensionAndCheckErrors("action_runtime_error", {}, 1u,
+                              ACTION_TOOLBAR_ACTION, &extension);
 
-  std::string script_url =
-      extension->GetResourceURL("browser_action.js").spec();
+  std::string script_url = extension->GetResourceURL("background.js").spec();
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
 
-  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
+  std::string message = base::StringPrintf(
+      "Error in event handler: ReferenceError: baz is not defined\n"
+      "    at %s:7:3",
+      script_url.c_str());
 
-  // TODO(devlin): The specific event name (here, 'browserAction.onClicked')
-  // may or may not be worth preserving. In most cases, it's unnecessary with
-  // the line number, but it could be useful in some cases.
-  std::string message =
-      "Error in event handler: ReferenceError: baz is not defined";
-
-  CheckRuntimeError(errors[1].get(), extension->id(), script_url,
+  CheckRuntimeError(errors[0].get(), extension->id(), /*source=*/"",
                     false,  // not incognito
-                    message, logging::LOGGING_ERROR,
-                    extension->GetResourceURL(kBackgroundPageName), 1u);
+                    message, logging::LOGGING_ERROR, GURL(), 1u);
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
-  // Note: This test used to have a stack trace of length 6 that contains stack
-  // frames in the extension code, but since crbug.com/40379861 was fixed only
-  // stack frames within user-defined extension code are printed.
-
-  CheckStackFrame(stack_trace[0], script_url, kAnonymousFunction);
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  CheckStackFrame(stack_trace[0], /*source=*/"", kAnonymousFunction);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

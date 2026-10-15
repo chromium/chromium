@@ -165,10 +165,6 @@ const tests = [
       });
     });
   },
-  function testBrowserActionWithCustomSendRequest() {
-    // browserAction.setIcon uses a custom hook that calls sendRequest().
-    chrome.browserAction.setIcon({path: 'icon.png'}, chrome.test.succeed);
-  },
   function testChromeSetting() {
     chrome.test.assertTrue(!!chrome.privacy, 'privacy');
     chrome.test.assertTrue(!!chrome.privacy.websites, 'websites');

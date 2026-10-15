@@ -13,6 +13,5 @@
   "content_scripts": [{
     "matches": ["*://*/*messaging_test.html"],
     "js": ["content_script.js"]
-  }],
-  "browser_action": {}
+  }]
 }

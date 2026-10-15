@@ -1,11 +1,10 @@
 {
-   "name": "permissions failure apitest",
-   "description": "permissions failure extension",
-   "version": "0.1",
-   "manifest_version": 2,
-   "browser_action": {"default_title": "apitest"},
-   "background": {
-     "scripts": ["background.js"]
-   },
-   "permissions": [ ]
+  "name": "events apitest",
+  "description": "events extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "action": {"default_title": "apitest"},
+  "background": {
+    "service_worker": "background.js"
+  }
 }

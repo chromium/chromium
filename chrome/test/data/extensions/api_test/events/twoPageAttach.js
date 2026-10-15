@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 // Should not cause a DCHECK.
-chrome.browserAction.onClicked.addListener(function() {});
+chrome.action.onClicked.addListener(function() {});
 chrome.test.succeed();
