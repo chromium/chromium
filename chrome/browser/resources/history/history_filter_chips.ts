@@ -57,6 +57,23 @@ export class HistoryFilterChipsElement extends CrLitElement {
     return this.actorVisits && !this.userVisits;
   }
 
+  protected onActorSelectChange_(e: Event) {
+    const value = (e.target as HTMLSelectElement).value;
+    if (value === 'user') {
+      this.userVisits = true;
+      this.actorVisits = false;
+    } else if (value === 'actor') {
+      this.userVisits = false;
+      this.actorVisits = true;
+    } else {
+      this.userVisits = true;
+      this.actorVisits = true;
+    }
+
+    this.recordMetrics_(this.userVisits, this.actorVisits);
+    this.fireChange_(this.userVisits, this.actorVisits);
+  }
+
   protected onUserVisitsClick_() {
     this.userVisits = true;
     this.actorVisits = !this.actorVisits;

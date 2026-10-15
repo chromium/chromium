@@ -71,6 +71,68 @@ suite('HistoryFilterChipsTest', function() {
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
     });
+
+    test('SelectActorOptions', async () => {
+      element.showActorFilter = true;
+      await microtasksFinished();
+      const actorSelect =
+          element.shadowRoot.querySelector<HTMLSelectElement>('#actorSelect');
+      assertTrue(!!actorSelect);
+
+      let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      // Select 'User' visits only.
+      actorSelect.value = 'user';
+      actorSelect.dispatchEvent(new Event('change'));
+      const action1 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertFalse(eventDetail.actorVisits);
+      assertFalse(actorSelect.options[0]!.selected);
+      assertTrue(actorSelect.options[1]!.selected);
+      assertFalse(actorSelect.options[2]!.selected);
+      eventDetail =
+          undefined as {userVisits: boolean, actorVisits: boolean} | undefined;
+
+      // Select 'Actor' visits only.
+      actorSelect.value = 'actor';
+      actorSelect.dispatchEvent(new Event('change'));
+      const action2 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowActorOnlyEnabled', action2);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertFalse(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertFalse(actorSelect.options[0]!.selected);
+      assertFalse(actorSelect.options[1]!.selected);
+      assertTrue(actorSelect.options[2]!.selected);
+      eventDetail =
+          undefined as {userVisits: boolean, actorVisits: boolean} | undefined;
+
+      // Select 'All sources' (both user and actor visits).
+      actorSelect.value = 'all';
+      actorSelect.dispatchEvent(new Event('change'));
+      const action3 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ShowAllEnabled', action3);
+      await microtasksFinished();
+      browserService.resetResolver('recordAction');
+
+      assertTrue(!!eventDetail);
+      assertTrue(eventDetail.userVisits);
+      assertTrue(eventDetail.actorVisits);
+      assertTrue(actorSelect.options[0]!.selected);
+      assertFalse(actorSelect.options[1]!.selected);
+      assertFalse(actorSelect.options[2]!.selected);
+    });
   });
 
   suite('ActorFilterAsChips', function() {
