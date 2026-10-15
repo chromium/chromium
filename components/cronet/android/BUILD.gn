@@ -879,6 +879,10 @@ template("collect_proguard_configs") {
         ]
       }
     }
+    if (defined(invoker.strip_allowoptimization) &&
+        invoker.strip_allowoptimization) {
+      args += [ "--strip-allowoptimization" ]
+    }
     args += [ rebase_path(_build_config, root_build_dir) ]
   }
 
@@ -963,6 +967,7 @@ collect_proguard_configs("package_shared_proguard_flags") {
          ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
+  strip_allowoptimization = true
 }
 
 collect_proguard_configs("package_impl_common_proguard_flags") {
@@ -972,6 +977,7 @@ collect_proguard_configs("package_impl_common_proguard_flags") {
       cronet_impl_common_java_deps_to_package + [ ":cronet_impl_common_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
+  strip_allowoptimization = true
 }
 
 collect_proguard_configs("package_impl_native_proguard_flags") {
@@ -983,6 +989,12 @@ collect_proguard_configs("package_impl_native_proguard_flags") {
          ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
+
+  # Standalone Cronet consumers may use non-R8 optimizers (e.g. DexGuard) where
+  # `allowoptimization` can alter method signatures and break JNI lookups (see
+  # https://crbug.com/571496921). AOSP (`httpengine_combine_proguard_flags`) is
+  # guaranteed to use R8, so we only strip `allowoptimization` here.
+  strip_allowoptimization = true
 }
 
 collect_proguard_configs("package_impl_platform_proguard_flags") {
@@ -991,6 +1003,7 @@ collect_proguard_configs("package_impl_platform_proguard_flags") {
   deps = [ ":cronet_impl_platform_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
+  strip_allowoptimization = true
 }
 
 collect_proguard_configs("package_impl_fake_proguard_flags") {
@@ -999,6 +1012,7 @@ collect_proguard_configs("package_impl_fake_proguard_flags") {
   deps = [ ":cronet_impl_fake_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
+  strip_allowoptimization = true
 }
 
 collect_proguard_configs("package_httpengine_native_provider_proguard_flags") {
@@ -1007,6 +1021,7 @@ collect_proguard_configs("package_httpengine_native_provider_proguard_flags") {
   deps = [ ":httpengine_native_provider_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
+  strip_allowoptimization = true
 }
 
 _package_dir = "$root_out_dir/cronet"

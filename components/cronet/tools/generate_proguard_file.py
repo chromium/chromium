@@ -44,6 +44,11 @@ def _post_process_concatenated_rules(rules: str, rename_map: dict) -> str:
     return rules
 
 
+def _strip_allowoptimization(rules: str) -> str:
+    """Strips the `allowoptimization` modifier from ProGuard keep rules."""
+    return re.sub(r",\s*allowoptimization\b", "", rules)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -55,6 +60,11 @@ def main():
         default=[],
         help='Renaming rules in the format "source_package=dest_package". '
         'Can be repeated.',
+    )
+    parser.add_argument(
+        '--strip-allowoptimization',
+        action='store_true',
+        help='Strip the allowoptimization modifier from keep rules.',
     )
     parser.add_argument(
         '--dep_file', help='Depfile path to write the implicit inputs'
@@ -89,6 +99,8 @@ def main():
         str_output += _ReadFile(proguard_config_path)
     if rename_map:
         str_output = _post_process_concatenated_rules(str_output, rename_map)
+    if args.strip_allowoptimization:
+        str_output = _strip_allowoptimization(str_output)
     with open(args.output_file, 'w') as target:
         target.write(str_output)
     action_helpers.write_depfile(
