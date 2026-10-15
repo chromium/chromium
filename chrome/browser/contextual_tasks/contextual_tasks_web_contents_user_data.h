@@ -125,7 +125,11 @@ class ContextualTasksWebContentsUserData
   bool HasBoundExtensionFrame() const;
 
   // Service Worker Port connection and search communication lifecycle.
-  void OnDocumentConnected(content::RenderFrameHost* main_rfh);
+  using ServiceWorkerPostMessageCallback =
+      base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
+  void OnDocumentConnected(
+      content::RenderFrameHost* main_rfh,
+      ServiceWorkerPostMessageCallback post_message_cb = base::NullCallback());
   bool IsServiceWorkerPortConnected() const;
   bool IsHandshakeCompleteForTesting() const;
   const std::string& GetConnectedDocumentIdForTesting() const;

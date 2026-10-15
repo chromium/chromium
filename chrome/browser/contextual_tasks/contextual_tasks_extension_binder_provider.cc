@@ -10,11 +10,13 @@
 #include "base/functional/bind.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/public/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -24,6 +26,26 @@
 #endif
 
 namespace contextual_tasks {
+
+namespace {
+
+// Routes `mojom::ExtensionPageHandlerFactory` requests from the extension's
+// service worker (`background.ts`) to the profile-scoped
+// `ContextualTasksExtensionServiceWorkerHandler`. Unlike extension iframes, the
+// service worker has no `RenderFrameHost` and cannot bind to the
+// document-scoped `ContextualTasksExtensionHandler`.
+void BindServiceWorkerFactoryReceiver(
+    content::BrowserContext* context,
+    const content::ServiceWorkerVersionBaseInfo& info,
+    mojo::PendingReceiver<mojom::ExtensionPageHandlerFactory> receiver) {
+  auto* bridge =
+      ContextualTasksExtensionBridge::Get(Profile::FromBrowserContext(context));
+  if (bridge) {
+    bridge->service_worker_handler().BindFactory(std::move(receiver));
+  }
+}
+
+}  // namespace
 
 // static
 void ContextualTasksExtensionBinderProvider::Register(
@@ -43,6 +65,14 @@ ContextualTasksExtensionBinderProvider::
     ~ContextualTasksExtensionBinderProvider() = default;
 
 bool ContextualTasksExtensionBinderProvider::IsMojoJsEnabledForFrame() const {
+  return true;
+}
+
+bool ContextualTasksExtensionBinderProvider::IsMojoJsEnabledForServiceWorker()
+    const {
+  // Exposes the `Mojo` JS bindings object inside the extension service worker
+  // execution context (`background.ts`), which is checked separately from
+  // extension document frames (`IsMojoJsEnabledForFrame()`).
   return true;
 }
 
@@ -73,6 +103,22 @@ void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
             ->BindComposeboxFactory(std::move(receiver));
       }));
 #endif
+}
+
+void ContextualTasksExtensionBinderProvider::PopulateServiceWorkerBinders(
+    mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>&
+        binder_map,
+    content::BrowserContext* browser_context,
+    const extensions::Extension& extension) {
+  // Even though the service worker reuses `mojom::ExtensionPageHandlerFactory`,
+  // service worker `BrowserInterfaceBroker` requests are dispatched here rather
+  // than `PopulateFrameBinders()` and must be bound to the profile-scoped
+  // `ContextualTasksExtensionServiceWorkerHandler`.
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksRearchitecture)) {
+    binder_map.Add<mojom::ExtensionPageHandlerFactory>(base::BindRepeating(
+        &BindServiceWorkerFactoryReceiver, browser_context));
+  }
 }
 
 }  // namespace contextual_tasks

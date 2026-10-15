@@ -232,7 +232,8 @@ void ContextualTasksExtensionHandler::SetTaskId(const base::Uuid& uuid) {
 }
 
 void ContextualTasksExtensionHandler::OnWebviewMessage(
-    const std::vector<uint8_t>& message) {
+    const std::vector<uint8_t>& message,
+    const std::optional<std::string>& document_id) {
   if (!contextual_tasks_page_.is_bound()) {
     return;
   }
@@ -281,6 +282,7 @@ void ContextualTasksExtensionHandler::RecordTimeToHandshakeComplete() {
 }
 
 void ContextualTasksExtensionHandler::GetHandshakeMessage(
+    const std::optional<std::string>& document_id,
     GetHandshakeMessageCallback callback) {
   std::move(callback).Run(
       mojo_base::ProtoWrapper(contextual_tasks::GetHandshakeMessageProto()));
@@ -649,7 +651,8 @@ void ContextualTasksExtensionHandler::PostAimMessage(
 void ContextualTasksExtensionHandler::SendSearchMessageToBoundPage(
     const lens::ClientToSearchMessage& message) {
   if (contextual_tasks_page_.is_bound()) {
-    contextual_tasks_page_->PostSearchMessage(mojo_base::ProtoWrapper(message));
+    contextual_tasks_page_->PostSearchMessage(mojo_base::ProtoWrapper(message),
+                                              std::nullopt);
   }
 }
 

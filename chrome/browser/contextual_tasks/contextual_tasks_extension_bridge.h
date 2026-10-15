@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_BRIDGE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_BRIDGE_H_
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_extension_service_worker_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -23,7 +24,17 @@ class ContextualTasksExtensionBridge : public KeyedService {
       const ContextualTasksExtensionBridge&) = delete;
   ~ContextualTasksExtensionBridge() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   static ContextualTasksExtensionBridge* Get(Profile* profile);
+
+  ContextualTasksExtensionServiceWorkerHandler& service_worker_handler() {
+    return service_worker_handler_;
+  }
+
+ private:
+  ContextualTasksExtensionServiceWorkerHandler service_worker_handler_;
 };
 
 }  // namespace contextual_tasks

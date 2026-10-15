@@ -98,7 +98,8 @@ export class ExtensionPostMessageHandler {
 
     let messageArray: Uint8Array;
     try {
-      const {message} = await this.browserProxy_.handler.getHandshakeMessage();
+      const {message} =
+          await this.browserProxy_.handler.getHandshakeMessage(null);
       if (this.isDestroyed_) {
         return;
       }
@@ -196,7 +197,7 @@ export class ExtensionPostMessageHandler {
         return;
       }
 
-      this.browserProxy_.handler.onWebviewMessage(Array.from(dataBytes));
+      this.browserProxy_.handler.onWebviewMessage(Array.from(dataBytes), null);
     };
 
     window.addEventListener('message', this.messageListener_);

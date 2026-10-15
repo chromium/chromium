@@ -95,10 +95,21 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
               PostAimMessage,
               (const std::vector<uint8_t>& message),
               (override));
+  MOCK_METHOD(void, PostSearchMessage, (mojo_base::ProtoWrapper message), ());
   MOCK_METHOD(void,
-              PostSearchMessage,
-              (mojo_base::ProtoWrapper message),
-              (override));
+              PostSearchMessageWithDocumentId,
+              (mojo_base::ProtoWrapper message,
+               const std::optional<std::string>& document_id),
+              ());
+  void PostSearchMessage(
+      mojo_base::ProtoWrapper message,
+      const std::optional<std::string>& document_id) override {
+    if (document_id.has_value()) {
+      PostSearchMessageWithDocumentId(std::move(message), document_id);
+    } else {
+      PostSearchMessage(std::move(message));
+    }
+  }
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
   MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
   MOCK_METHOD(void, OnLensCropUpdated, (const GURL& data_uri), (override));
