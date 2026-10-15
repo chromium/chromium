@@ -244,6 +244,43 @@ TEST_F(DownloadDBCacheTest, FilePathChange) {
             test_path);
 }
 
+TEST_F(DownloadDBCacheTest, DangerTypeChangeUpdatesImmediately) {
+  DownloadDBEntry entry = CreateDownloadDBEntry();
+  InProgressInfo info;
+  info.current_path = base::FilePath(FILE_PATH_LITERAL("/tmp/test.apk"));
+  info.danger_type = DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT;
+  entry.download_info->in_progress_info = info;
+  db_entries_.insert(
+      std::make_pair(GetKey(entry.GetGuid()),
+                     DownloadDBConversions::DownloadDBEntryToProto(entry)));
+  CreateDBCache();
+  std::vector<DownloadDBEntry> loaded_entries;
+  db_cache_->Initialize(base::BindOnce(&DownloadDBCacheTest::InitCallback,
+                                       base::Unretained(this),
+                                       &loaded_entries));
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  db_->LoadCallback(true);
+  ASSERT_EQ(loaded_entries.size(), 1u);
+  ASSERT_EQ(loaded_entries[0].download_info->in_progress_info->danger_type,
+            DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
+
+  loaded_entries[0].download_info->in_progress_info->danger_type =
+      DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT;
+  db_cache_->AddOrReplaceEntry(loaded_entries[0]);
+  EXPECT_EQ(task_runner_->GetPendingTaskCount(), 0u);
+  db_->UpdateCallback(true);
+
+  loaded_entries.clear();
+  DownloadDB* download_db = GetDownloadDB();
+  download_db->LoadEntries(base::BindOnce(&DownloadDBCacheTest::InitCallback,
+                                          base::Unretained(this),
+                                          &loaded_entries));
+  db_->LoadCallback(true);
+  ASSERT_EQ(loaded_entries.size(), 1u);
+  EXPECT_EQ(loaded_entries[0].download_info->in_progress_info->danger_type,
+            DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT);
+}
+
 TEST_F(DownloadDBCacheTest, RemoveEntry) {
   PrepopulateSampleEntries();
   CreateDBCache();
