@@ -29,6 +29,7 @@ import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -117,7 +118,10 @@ import java.util.function.Supplier;
 /** Tests for {@link TabStripDragHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
-@DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
+@DisableFeatures({
+    ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP,
+    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
+})
 public class TabStripDragHandlerTest {
 
     private static final int CURR_INSTANCE_ID = 100;
@@ -2109,6 +2113,176 @@ public class TabStripDragHandlerTest {
                     .moveTabsToWindowByIdChecked(
                             eq(ANOTHER_INSTANCE_ID), any(), eq(index), eq(-1), eq(true));
         }
+    }
+
+    private static final String LINK_URL = "https://example.com/";
+
+    private static DragEvent mockLinkDragEvent(
+            int action, float x, float y, String mimeType, ClipData clipData) {
+        DragEvent event = mock(DragEvent.class);
+        when(event.getAction()).thenReturn(action);
+        when(event.getX()).thenReturn(x);
+        when(event.getY()).thenReturn(y);
+        when(event.getClipDescription())
+                .thenReturn(new ClipDescription(/* label= */ null, new String[] {mimeType}));
+        when(event.getClipData()).thenReturn(clipData);
+        return event;
+    }
+
+    private static ClipData createClipData(Item item) {
+        return new ClipData(
+                /* label= */ null, new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+    }
+
+    private static Intent createLinkIntent(String url) {
+        Intent intent = new Intent();
+        intent.setData(Uri.parse(url));
+        return intent;
+    }
+
+    /** Starts a link drag on the destination strip and drops the given item at the given y. */
+    private boolean startAndDropLink(Item item, float dropY) {
+        mDestInstance.onDrag(
+                mTabsToolbarView,
+                mockLinkDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        POS_X,
+                        mPosY,
+                        ClipDescription.MIMETYPE_TEXT_PLAIN,
+                        /* clipData= */ null));
+        return mDestInstance.onDrag(
+                mTabsToolbarView,
+                mockLinkDragEvent(
+                        DragEvent.ACTION_DROP,
+                        POS_X,
+                        dropY,
+                        ClipDescription.MIMETYPE_TEXT_PLAIN,
+                        createClipData(item)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP)
+    public void testLinkDragStart_acceptedForLinkMimeTypes() {
+        for (String mimeType :
+                new String[] {
+                    ClipDescription.MIMETYPE_TEXT_PLAIN,
+                    ClipDescription.MIMETYPE_TEXT_URILIST,
+                    ClipDescription.MIMETYPE_TEXT_INTENT
+                }) {
+            assertTrue(
+                    "Link drag should be accepted for " + mimeType,
+                    mDestInstance.onDrag(
+                            mTabsToolbarView,
+                            mockLinkDragEvent(
+                                    DragEvent.ACTION_DRAG_STARTED,
+                                    POS_X,
+                                    mPosY,
+                                    mimeType,
+                                    /* clipData= */ null)));
+        }
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP)
+    public void testLinkDragStart_rejectedWhenFlagDisabled() {
+        assertFalse(
+                "Link drag should be rejected when the flag is disabled.",
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockLinkDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED,
+                                POS_X,
+                                mPosY,
+                                ClipDescription.MIMETYPE_TEXT_PLAIN,
+                                /* clipData= */ null)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP)
+    public void testLinkDrag_locationEvents_forwardedToStrip() {
+        String mimeType = ClipDescription.MIMETYPE_TEXT_PLAIN;
+        mDestInstance.onDrag(
+                mTabsToolbarView,
+                mockLinkDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        POS_X,
+                        mPosY,
+                        mimeType,
+                        /* clipData= */ null));
+
+        // Drag onto the strip.
+        assertTrue(
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockLinkDragEvent(
+                                DragEvent.ACTION_DRAG_LOCATION,
+                                POS_X,
+                                mPosY,
+                                mimeType,
+                                /* clipData= */ null)));
+        verify(mDestStripLayoutHelper).handleLinkDragEnter(anyFloat());
+
+        // Drag within the strip.
+        assertTrue(
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockLinkDragEvent(
+                                DragEvent.ACTION_DRAG_LOCATION,
+                                POS_X + 10,
+                                mPosY,
+                                mimeType,
+                                /* clipData= */ null)));
+        verify(mDestStripLayoutHelper).handleLinkDragWithin(anyFloat());
+
+        // Drag off the strip onto the toolbar.
+        assertTrue(
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockLinkDragEvent(
+                                DragEvent.ACTION_DRAG_LOCATION,
+                                POS_X,
+                                mTabStripHeight + 10,
+                                mimeType,
+                                /* clipData= */ null)));
+        verify(mDestStripLayoutHelper).handleLinkDragExit();
+
+        // End the drag.
+        assertTrue(
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockLinkDragEvent(
+                                DragEvent.ACTION_DRAG_ENDED,
+                                POS_X,
+                                mPosY,
+                                mimeType,
+                                /* clipData= */ null)));
+        verify(mDestStripLayoutHelper, times(2)).handleLinkDragExit();
+        verify(mDestStripLayoutHelper, never())
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP)
+    public void testLinkDrop_inStrip_opensLink() {
+        assertTrue(
+                "Link drop in the strip should be handled.",
+                startAndDropLink(
+                        new Item("title\n" + LINK_URL, createLinkIntent(LINK_URL), null), mPosY));
+
+        ArgumentCaptor<GURL> urlCaptor = ArgumentCaptor.forClass(GURL.class);
+        verify(mDestStripLayoutHelper).handleLinkDrop(anyFloat(), urlCaptor.capture());
+        assertEquals(LINK_URL, urlCaptor.getValue().getSpec());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP)
+    public void testLinkDrop_outsideStrip_ignored() {
+        assertFalse(
+                "Link drop outside the strip should not be handled.",
+                startAndDropLink(
+                        new Item(LINK_URL, createLinkIntent(LINK_URL), null),
+                        mTabStripHeight + 10));
+        verify(mDestStripLayoutHelper, never()).handleLinkDrop(anyFloat(), any());
     }
 
     private void verifyToast(String expectedText) {

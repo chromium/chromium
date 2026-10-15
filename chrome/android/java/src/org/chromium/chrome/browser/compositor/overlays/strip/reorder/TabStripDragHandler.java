@@ -73,6 +73,9 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private final float mPxToDp;
     private final Supplier<Integer> mTabStripHeightSupplier;
 
+    // TODO(crbug.com/570681883): Move the tab drag logic into a matching mTabDragDelegate.
+    private final TabStripLinkDragDelegate mLinkDragDelegate;
+
     /** Handler and runnable to post/cancel an #onDragExit when the drag starts. */
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -91,6 +94,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     // Tracks whether the current drag has ever left the source strip.
     private boolean mDragEverLeftStrip;
+
+    private boolean mIsLinkDrag;
 
     private boolean mWasCancelled;
 
@@ -129,6 +134,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mBrowserControlStateProvider = browserControlStateProvider;
+        mLinkDragDelegate = new TabStripLinkDragDelegate(stripLayoutHelperSupplier);
     }
 
     /**
@@ -315,9 +321,12 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     }
 
     private boolean onDragStart(float xPx, ClipDescription clipDescription) {
-        // Only proceed if browser content is being dragged; otherwise, skip the operations.
+        mIsLinkDrag = false;
+        // Only proceed if browser content or a link is being dragged; otherwise, skip the
+        // operations.
         if (!isDraggingBrowserContent(clipDescription)) {
-            return false;
+            mIsLinkDrag = mLinkDragDelegate.canHandle(clipDescription);
+            return mIsLinkDrag && Boolean.TRUE.equals(mStripLayoutVisibilitySupplier.get());
         }
 
         // Return true only when the tab strip is visible.
@@ -346,6 +355,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     private boolean onDragEnter(float xPx) {
         mHoveringInStrip = true;
+        if (mIsLinkDrag) return mLinkDragDelegate.onDragEnter(xPx * mPxToDp);
         boolean isDragSource = isDragSource();
         if (isDragSource || DeviceInfo.isXr()) {
             mHandler.removeCallbacks(mOnDragExitRunnable);
@@ -387,6 +397,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private boolean onDragLocationInStrip(float xPx, float yPx) {
         float xDp = xPx * mPxToDp;
         float yDp = yPx * mPxToDp;
+        if (mIsLinkDrag) return mLinkDragDelegate.onDragWithin(xDp);
         mStripLayoutHelperSupplier
                 .get()
                 .handleDragWithin(xDp, yDp, xDp - mLastXDp, isDraggedItemIncognito());
@@ -405,15 +416,23 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         if (didOccurInTabStrip(dropEvent.getY())) {
             res = onDropInStrip(dropEvent);
         } else {
-            DragDropMetricUtils.recordDragDropResult(
-                    DragDropResult.IGNORED_TOOLBAR, isTabGroupDrop(), isMultiTabDrop());
+            if (!mIsLinkDrag) {
+                DragDropMetricUtils.recordDragDropResult(
+                        DragDropResult.IGNORED_TOOLBAR, isTabGroupDrop(), isMultiTabDrop());
+            }
             res = false;
         }
-        if (res) DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
+        if (res && DragDropGlobalState.hasValue()) {
+            DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
+        }
         return res;
     }
 
     private boolean onDropInStrip(DragEvent dropEvent) {
+        if (mIsLinkDrag) {
+            return mLinkDragDelegate.onDrop(dropEvent, dropEvent.getX() * mPxToDp);
+        }
+
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
         helper.stopReorderMode(false);
         if (isDragSource()) {
@@ -582,6 +601,11 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private boolean onDragEnd(boolean dropHandled) {
         mHoveringInStrip = false;
 
+        if (mIsLinkDrag) {
+            mIsLinkDrag = false;
+            return mLinkDragDelegate.onDragExit();
+        }
+
         // No-op for destination strip.
         if (!isDragSource()) {
             return false;
@@ -634,6 +658,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private boolean onDragExit() {
         mHoveringInStrip = false;
         mDragEverLeftStrip = true;
+        if (mIsLinkDrag) return mLinkDragDelegate.onDragExit();
         if (DeviceInfo.isXr()) {
             showDragShadow(/* show= */ true);
         }
