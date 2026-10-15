@@ -43,6 +43,9 @@ using GetAccessTokenRequestCallback = base::RepeatingCallback<void(
 // The avatar cached for the associated SystemIdentity. May be nil.
 @property(nonatomic, strong) UIImage* cachedAvatar;
 
+// The hosted domain cached for the associated SystemIdentity. May be nil.
+@property(nonatomic, copy) NSString* cachedHostedDomain;
+
 // Returns YES when `cachedAvatar` has been updated. This property needs to be
 // reset to NO after the avatar has been fetched (see
 // `FakeSystemIdentityManager`).

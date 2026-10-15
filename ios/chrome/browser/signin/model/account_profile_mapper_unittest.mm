@@ -1050,7 +1050,12 @@ TEST_F(AccountProfileMapperTest,
 TEST_F(AccountProfileMapperTest, FetchesHostedDomainAsynchronously) {
   // Setup FakeSystemIdentityManager to *not* synchronously return hosted
   // domains.
-  system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
+  system_identity_manager_->OverrideGetHostedDomainImplementation(
+      base::BindRepeating(
+          [](id<SystemIdentity> identity,
+             SystemIdentityManager::HostedDomainCallback callback) {
+            std::move(callback).Run(@"google.com", nil);
+          }));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get(),
@@ -1098,11 +1103,19 @@ TEST_F(AccountProfileMapperTest, FetchesHostedDomainAsynchronously) {
 TEST_F(AccountProfileMapperTest, RetriesHostedDomainFetchWithBackoff) {
   // Setup FakeSystemIdentityManager to *not* synchronously return hosted
   // domains, and to fail hosted domain fetches for now.
-  system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
   NSError* error = [NSError errorWithDomain:@"Fetch failed"
                                        code:123
                                    userInfo:nil];
-  system_identity_manager_->SetGetHostedDomainError(error);
+  size_t num_hosted_domain_errors_returned = 0;
+  system_identity_manager_->OverrideGetHostedDomainImplementation(
+      base::BindRepeating(
+          [](NSError* error, size_t* num_errors_returned,
+             id<SystemIdentity> identity,
+             SystemIdentityManager::HostedDomainCallback callback) {
+            ++(*num_errors_returned);
+            std::move(callback).Run(nil, error);
+          },
+          error, &num_hosted_domain_errors_returned));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get(),
@@ -1114,17 +1127,17 @@ TEST_F(AccountProfileMapperTest, RetriesHostedDomainFetchWithBackoff) {
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   ASSERT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
 
-  ASSERT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 0u);
+  ASSERT_EQ(num_hosted_domain_errors_returned, 0u);
   // Wait for one GetHostedDomain() attempt to happen, but not long enough for
   // a retry (the initial delay is 1 second).
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 1u);
+  EXPECT_EQ(num_hosted_domain_errors_returned, 1u);
   // Wait for one retry.
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 2u);
+  EXPECT_EQ(num_hosted_domain_errors_returned, 2u);
 
   // Now let the next retry succeed.
-  system_identity_manager_->SetGetHostedDomainError(nil);
+  system_identity_manager_->OverrideGetHostedDomainImplementation({});
   task_environment_.FastForwardBy(base::Seconds(2));
 
   // A managed profile should have been created, and the account assigned to it.
@@ -1141,11 +1154,19 @@ TEST_F(AccountProfileMapperTest, RetriesHostedDomainFetchWithBackoff) {
 TEST_F(AccountProfileMapperTest, StopsRetryingHostedDomainFetches) {
   // Setup FakeSystemIdentityManager to *not* synchronously return hosted
   // domains, and to fail hosted domain fetches.
-  system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
   NSError* error = [NSError errorWithDomain:@"Fetch failed"
                                        code:123
                                    userInfo:nil];
-  system_identity_manager_->SetGetHostedDomainError(error);
+  size_t num_hosted_domain_errors_returned = 0;
+  system_identity_manager_->OverrideGetHostedDomainImplementation(
+      base::BindRepeating(
+          [](NSError* error, size_t* num_errors_returned,
+             id<SystemIdentity> identity,
+             SystemIdentityManager::HostedDomainCallback callback) {
+            ++(*num_errors_returned);
+            std::move(callback).Run(nil, error);
+          },
+          error, &num_hosted_domain_errors_returned));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get(),
@@ -1161,9 +1182,11 @@ TEST_F(AccountProfileMapperTest, StopsRetryingHostedDomainFetches) {
   // rather, AccountProfileMapper should give up eventually, after a total of
   // five attempts.
   task_environment_.FastForwardBy(base::Hours(10));
-  EXPECT_EQ(system_identity_manager_->GetNumHostedDomainErrorsReturned(), 5u);
+  EXPECT_EQ(num_hosted_domain_errors_returned, 5u);
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
+
+  system_identity_manager_->OverrideGetHostedDomainImplementation({});
 }
 
 }  // namespace
