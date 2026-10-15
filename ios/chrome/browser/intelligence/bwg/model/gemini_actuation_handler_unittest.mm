@@ -95,8 +95,8 @@ class GeminiActuationHandlerTest : public PlatformTest {
     actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
     GeminiYieldAction* yield_action =
-        [[GeminiYieldAction alloc] initWithReason:reason
-                                    messageToUser:@"User intervention needed."];
+        [[GeminiYieldAction alloc] initWithReason:reason];
+    yield_action.messageToUser = @"User intervention needed.";
     GeminiActuationRequest* request =
         [[GeminiActuationRequest alloc] initWithActionProtos:nil
                                                   taskUpdate:nil
@@ -115,8 +115,8 @@ class GeminiActuationHandlerTest : public PlatformTest {
   // Returns a `kConfirmation` yield request carrying `message`.
   GeminiActuationRequest* CreateConfirmationRequest(NSString* message) {
     GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
-        initWithReason:GeminiYieldReason::kConfirmation
-         messageToUser:message];
+        initWithReason:GeminiYieldReason::kConfirmation];
+    yield_action.messageToUser = message;
     return [[GeminiActuationRequest alloc] initWithActionProtos:nil
                                                      taskUpdate:nil
                                                     yieldAction:yield_action];
@@ -375,11 +375,14 @@ TEST_F(GeminiActuationHandlerTest,
 
 // Tests that `GeminiYieldAction` stores initialized properties correctly.
 TEST_F(GeminiActuationHandlerTest, GeminiYieldAction_Initialization) {
+  NSArray<NSString*>* suggestions = @[ @"Yes", @"No" ];
   GeminiYieldAction* action = [[GeminiYieldAction alloc]
-      initWithReason:GeminiYieldReason::kClarification
-       messageToUser:@"Please confirm"];
-  EXPECT_EQ(GeminiYieldReason::kClarification, action.reason);
+      initWithReason:GeminiYieldReason::kConfirmation];
+  action.messageToUser = @"Please confirm";
+  action.suggestedResponses = suggestions;
+  EXPECT_EQ(GeminiYieldReason::kConfirmation, action.reason);
   EXPECT_NSEQ(@"Please confirm", action.messageToUser);
+  EXPECT_NSEQ(suggestions, action.suggestedResponses);
 }
 
 // Tests that `GeminiActuationRequest` stores initialized properties correctly.
@@ -393,9 +396,9 @@ TEST_F(GeminiActuationHandlerTest, GeminiActuationRequest_Initialization) {
   EXPECT_NSEQ(@"Task Update", action_request.taskUpdate);
   EXPECT_EQ(nil, action_request.yieldAction);
 
-  GeminiYieldAction* yield_action =
-      [[GeminiYieldAction alloc] initWithReason:GeminiYieldReason::kUserTakeover
-                                  messageToUser:@"Please confirm"];
+  GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
+      initWithReason:GeminiYieldReason::kUserTakeover];
+  yield_action.messageToUser = @"Please confirm";
   GeminiActuationRequest* yield_request =
       [[GeminiActuationRequest alloc] initWithActionProtos:nil
                                                 taskUpdate:@"Yield Update"
@@ -520,9 +523,9 @@ TEST_F(GeminiActuationHandlerTest,
   GeminiActuationHandler* handler = CreateHandler();
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
-  GeminiYieldAction* yield_action =
-      [[GeminiYieldAction alloc] initWithReason:GeminiYieldReason::kConfirmation
-                                  messageToUser:@"Confirm"];
+  GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
+      initWithReason:GeminiYieldReason::kConfirmation];
+  yield_action.messageToUser = @"Confirm";
 
   GeminiActuationRequest* both_request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[]
@@ -858,9 +861,8 @@ TEST_F(GeminiActuationHandlerTest,
   GeminiActuationHandler* handler = CreateHandler();
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
-  GeminiYieldAction* yield_action =
-      [[GeminiYieldAction alloc] initWithReason:GeminiYieldReason::kTaskComplete
-                                  messageToUser:nil];
+  GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
+      initWithReason:GeminiYieldReason::kTaskComplete];
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:nil
                                                 taskUpdate:nil
@@ -894,8 +896,7 @@ TEST_F(GeminiActuationHandlerTest,
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
   GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
-      initWithReason:GeminiYieldReason::kIrrelevantUserInput
-       messageToUser:nil];
+      initWithReason:GeminiYieldReason::kIrrelevantUserInput];
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:nil
                                                 taskUpdate:nil
@@ -929,8 +930,7 @@ TEST_F(GeminiActuationHandlerTest,
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
   GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
-      initWithReason:GeminiYieldReason::kUnknownReason
-       messageToUser:nil];
+      initWithReason:GeminiYieldReason::kUnknownReason];
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:nil
                                                 taskUpdate:nil
