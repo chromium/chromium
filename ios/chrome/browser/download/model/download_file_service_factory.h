@@ -5,28 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_FILE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_FILE_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class DownloadFileService;
-class ProfileIOS;
+#import "ios/chrome/browser/download/model/download_file_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for DownloadFileService.
-class DownloadFileServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class DownloadFileServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<DownloadFileServiceFactory,
+                                                DownloadFileService> {
  public:
-  static DownloadFileService* GetForProfile(ProfileIOS* profile);
-  static DownloadFileServiceFactory* GetInstance();
-
-  DownloadFileServiceFactory(const DownloadFileServiceFactory&) = delete;
-  DownloadFileServiceFactory& operator=(const DownloadFileServiceFactory&) =
-      delete;
+  explicit DownloadFileServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<DownloadFileServiceFactory>;
-
-  DownloadFileServiceFactory();
-  ~DownloadFileServiceFactory() override;
-
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };

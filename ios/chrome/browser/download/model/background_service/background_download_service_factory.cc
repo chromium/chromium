@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -43,25 +42,9 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 }  // anonymous namespace
 
-// static
-download::BackgroundDownloadService*
-BackgroundDownloadServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<download::BackgroundDownloadService>(
-          profile, /*create=*/true);
-}
-
-// static
-BackgroundDownloadServiceFactory*
-BackgroundDownloadServiceFactory::GetInstance() {
-  static base::NoDestructor<BackgroundDownloadServiceFactory> instance;
-  return instance.get();
-}
-
-BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BackgroundDownloadService") {}
-
-BackgroundDownloadServiceFactory::~BackgroundDownloadServiceFactory() = default;
+BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "BackgroundDownloadService") {}
 
 std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceInstanceFor(

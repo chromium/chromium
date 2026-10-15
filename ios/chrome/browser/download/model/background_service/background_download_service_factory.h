@@ -7,30 +7,21 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
+#import "components/download/public/background_service/background_download_service.h"
 #import "components/download/public/background_service/clients.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace download {
-class BackgroundDownloadService;
-}  // namespace download
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all BackgroundDownloadServiceFactory and associates them
 // with profiles.
-class BackgroundDownloadServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class BackgroundDownloadServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          BackgroundDownloadServiceFactory,
+          download::BackgroundDownloadService> {
  public:
-  static download::BackgroundDownloadService* GetForProfile(
-      ProfileIOS* profile);
-  static BackgroundDownloadServiceFactory* GetInstance();
+  explicit BackgroundDownloadServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<BackgroundDownloadServiceFactory>;
   friend class BackgroundDownloadServiceTest;
-
-  BackgroundDownloadServiceFactory();
-  ~BackgroundDownloadServiceFactory() override;
 
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
