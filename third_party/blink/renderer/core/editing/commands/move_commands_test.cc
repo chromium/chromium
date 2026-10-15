@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/editing/commands/move_commands.h"
+
 #include <string>
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/editing/commands/move_commands.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -16,6 +17,8 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
@@ -399,6 +402,62 @@ TEST_F(MoveCommandsTest, ReadOnlyTextAreaMoveCommands) {
 
   const SelectionInDomTree& selection = Selection().GetSelectionInDomTree();
   EXPECT_TRUE(selection.IsCaret());
+}
+
+TEST_F(MoveCommandsTest, CaretBrowsingSequentialFocusNavigationStartingPoint) {
+  SetBodyContent(
+      "<div>"
+      "Hello world.<br>"
+      "<a id=\"link1\" href=\"#\" tabindex=\"0\">Link 1</a><br>"
+      "This is a test.<br>"
+      "<a id=\"link2\" href=\"#\" tabindex=\"0\">Link 2</a><br>"
+      "I like tests.<br>"
+      "<a id=\"link3\" href=\"#\" tabindex=\"0\">Link 3</a><br>"
+      "The end."
+      "</div>");
+  GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
+  UpdateAllLifecyclePhasesForTest();
+
+  GetPage().GetFocusController().AdvanceFocus(
+      mojom::blink::FocusType::kForward);
+  EXPECT_EQ(QuerySelector("#link1"), GetDocument().FocusedElement());
+  GetPage().GetFocusController().AdvanceFocus(
+      mojom::blink::FocusType::kForward);
+  EXPECT_EQ(QuerySelector("#link2"), GetDocument().FocusedElement());
+
+  MoveCommands::ExecuteMoveToBeginningOfDocument(
+      *GetDocument().GetFrame(), nullptr,
+      EditorCommandSource::kMenuOrKeyBinding, String());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+
+  GetPage().GetFocusController().AdvanceFocus(
+      mojom::blink::FocusType::kForward);
+  EXPECT_EQ(QuerySelector("#link1"), GetDocument().FocusedElement());
+
+  // Move down to "This is a test." (non-focusable), then to the beginning of
+  // the document ("Hello world.", also non-focusable), and verify that Tab
+  // still focuses #link1 instead of #link2.
+  MoveCommands::ExecuteMoveDown(*GetDocument().GetFrame(), nullptr,
+                                EditorCommandSource::kMenuOrKeyBinding,
+                                String());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  MoveCommands::ExecuteMoveToBeginningOfDocument(
+      *GetDocument().GetFrame(), nullptr,
+      EditorCommandSource::kMenuOrKeyBinding, String());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  GetPage().GetFocusController().AdvanceFocus(
+      mojom::blink::FocusType::kForward);
+  EXPECT_EQ(QuerySelector("#link1"), GetDocument().FocusedElement());
+
+  // Move to the end of the document ("The end.") and verify Shift+Tab focuses
+  // #link3.
+  MoveCommands::ExecuteMoveToEndOfDocument(
+      *GetDocument().GetFrame(), nullptr,
+      EditorCommandSource::kMenuOrKeyBinding, String());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  GetPage().GetFocusController().AdvanceFocus(
+      mojom::blink::FocusType::kBackward);
+  EXPECT_EQ(QuerySelector("#link3"), GetDocument().FocusedElement());
 }
 
 }  // namespace blink
