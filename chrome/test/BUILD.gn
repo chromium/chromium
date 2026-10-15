@@ -146,11 +146,12 @@ if (is_android) {
   }
 }
 
-# Use a static library here because many test binaries depend on this but don't
-# require many files from it. This makes linking more efficient.
-static_library("test_support") {
+# This target no longer has any sources of its own; it only aggregates
+# dependencies. It must be a source_set (not a static_library) because an empty
+# static_library produces an empty archive, which the Windows librarian
+# (lld-link /lib) rejects with "lib failed".
+source_set("test_support") {
   testonly = true
-  defines = []
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process_impl",
@@ -183,8 +184,6 @@ static_library("test_support") {
     "//chrome/browser/search_engines:test_support",
     "//chrome/browser/signin:identity_test_support",
   ]
-
-  sources = []
 
   if (enable_guest_view) {
     public_deps += [ "//components/guest_view/browser:test_support" ]
@@ -239,8 +238,6 @@ static_library("test_support") {
       "//google_apis/drive",
     ]
   }
-
-  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps += [
     "//base/i18n:test_support",
@@ -470,10 +467,6 @@ static_library("test_support") {
   }
 
   if (is_mac) {
-    sources += [
-      "//chrome/app/chrome_crash_reporter_client.cc",
-      "//chrome/app/chrome_crash_reporter_client_mac.mm",
-    ]
     deps += [
       "//build:branding_buildflags",
       "//chrome/app_shim",
@@ -485,7 +478,6 @@ static_library("test_support") {
   }
 
   if (is_win) {
-    sources += [ "//chrome/app/chrome_crash_reporter_client_win.cc" ]
     public_deps += [
       "//chrome/chrome_elf:crash",
       "//chrome/install_static/test:test_support",
@@ -648,9 +640,9 @@ static_library("test_support") {
     deps += [ "//chrome/browser/compose:test_support" ]
   }
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  # All test_support sources have been migrated into per-feature
+  # targets. Do not add new sources to //chrome/test:test_support.
+  sources = []
 }
 
 if (is_android) {

@@ -203,23 +203,40 @@ static_library("test_support") {
 
   if (is_mac) {
     sources += [
+      "chrome_crash_reporter_client.cc",
+      "chrome_crash_reporter_client_mac.mm",
       "chrome_main_mac.h",
       "chrome_main_mac.mm",
     ]
 
     deps += [
+      "//build:branding_buildflags",
       "//chrome/browser:chrome_browser_application_mac",
       "//chrome/browser/mac",
+      "//chrome/common:non_code_constants",
+      "//chrome/installer/util:with_no_strings",
+      "//components/crash/core/common",
+      "//components/metrics:client_info",
+      "//components/policy:generated",
+      "//components/version_info",
     ]
 
     data_deps = [ "//chrome:chrome_framework" ]
   }
 
   if (is_win) {
+    sources += [
+      "chrome_crash_reporter_client_win.cc",
+      "chrome_crash_reporter_client_win.h",
+    ]
     deps += [
       "//chrome/browser/win/isolated_browser:isolated_browser_support",
+      "//chrome/chrome_elf:constants",
       "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
+      "//components/crash/core/common",
+      "//components/metrics:client_info",
+      "//components/version_info",
       "//sandbox/win:sandbox",
     ]
   }
