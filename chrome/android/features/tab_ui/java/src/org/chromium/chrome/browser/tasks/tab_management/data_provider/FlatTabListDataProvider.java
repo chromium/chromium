@@ -62,7 +62,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                         // mTabGroupObserver; moveTabItem reorders standalone tabs when matching the
                         // active filter.
                         if (tab.getTabGroupId() == null) {
-                            moveTabItem(tab.getId());
+                            moveTabItem(tab);
                         }
                     }
 
@@ -117,7 +117,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     @Override
                     public void didMoveWithinGroup(
                             Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                        moveTabItem(movedTab.getId());
+                        moveTabItem(movedTab);
                     }
 
                     @Override
@@ -144,7 +144,12 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     }
 
     @Override
-    protected boolean shouldShowTab(Tab tab) {
+    protected boolean isTabInScope(Tab tab) {
         return mFilter == null || mFilter.test(tab);
+    }
+
+    @Override
+    protected boolean shouldShowTab(Tab tab) {
+        return isTabInScope(tab);
     }
 }

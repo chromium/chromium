@@ -126,6 +126,17 @@ public abstract class TabListDataProvider {
     protected abstract void rebuildItems();
 
     /**
+     * Returns whether {@code tab} is in scope for this data provider surface (either directly as a
+     * {@link TabItem} or inside a composite group item). Subclasses with a filter predicate
+     * override this to restrict surface scope.
+     *
+     * @param tab The {@link Tab} to evaluate.
+     */
+    protected boolean isTabInScope(Tab tab) {
+        return true;
+    }
+
+    /**
      * Returns whether {@code tab} should have a visible {@link TabItem} in {@link #mItems}.
      *
      * @param tab The {@link Tab} to evaluate.
@@ -190,15 +201,20 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Moves the {@link TabItem} for {@code tabId} to its updated {@link TabModel} position and
-     * notifies observers via {@link TabListDataObserver#onItemsMoved}.
+     * Moves the {@link TabItem} for {@code tab} to its updated {@link TabModel} position and
+     * notifies observers via {@link TabListDataObserver#onItemsMoved}. No-ops if the tab should not
+     * have a visible {@link TabItem} or is not present in {@link #mItems}.
      *
-     * @param tabId The ID of the tab to move.
+     * @param tab The {@link Tab} to move.
      */
-    protected void moveTabItem(@TabId int tabId) {
+    protected void moveTabItem(Tab tab) {
+        // Ignore tabs moving out of scope; dedicated lifecycle events handle removal.
+        if (!shouldShowTab(tab)) return;
+
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
+        @TabId int tabId = tab.getId();
         int fromIndex = indexOfTabId(tabId);
         if (fromIndex == TabList.INVALID_TAB_INDEX) return;
 
@@ -293,22 +309,22 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Notifies observers that a tab closure was undone if shown by this provider.
+     * Notifies observers that a tab closure was undone if the tab is in scope.
      *
      * @param tab The {@link Tab} whose closure was undone.
      */
     protected void notifyTabClosureUndone(Tab tab) {
-        if (!shouldShowTab(tab)) return;
+        if (!isTabInScope(tab)) return;
         notifyObservers(obs -> obs.onTabClosureUndone(tab.getId()));
     }
 
     /**
-     * Notifies observers that a tab closure was committed if shown by this provider.
+     * Notifies observers that a tab closure was committed if the tab is in scope.
      *
      * @param tab The {@link Tab} whose closure was committed.
      */
     protected void notifyTabClosureCommitted(Tab tab) {
-        if (!shouldShowTab(tab)) return;
+        if (!isTabInScope(tab)) return;
         notifyObservers(obs -> obs.onTabClosureCommitted(tab.getId()));
     }
 

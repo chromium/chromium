@@ -844,11 +844,14 @@ public class FlatTabListDataProviderUnitTest {
         setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
         assertItems(item(TAB1_ID), item(TAB2_ID));
 
-        // Moving mTab1 out of the group makes it fail the filter and removes it.
+        // Ungrouping mTab1 clears its group ID and moves it after the group before firing
+        // didMoveTabOutOfGroup; didMoveTab must not emit onItemsMoved before removal.
         groupTabs(/* groupId= */ null, mTab1);
+        moveTab(mTab1, /* newIndex= */ 1);
         mTabGroupObserver.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID)));
+        verifyNoMoreInteractions(mObserver);
         assertItems(item(TAB2_ID));
     }
 
@@ -865,6 +868,37 @@ public class FlatTabListDataProviderUnitTest {
 
         verifyNoInteractions(mObserver);
         assertItems(item(TAB2_ID));
+    }
+
+    // ============================================================================================
+    // TabListDataProvider: Scope & Projection Decoupling
+    // ============================================================================================
+
+    @Test
+    public void testBaseProvider_InScopeTabNotProjected_NotifiesClosureEventsAndNoOpsMove() {
+        TabListDataProvider testProvider =
+                new TabListDataProvider(mTabModelSupplier) {
+                    @Override
+                    protected void rebuildItems() {}
+
+                    @Override
+                    protected boolean shouldShowTab(Tab tab) {
+                        return false;
+                    }
+                };
+        testProvider.addObserver(mObserver);
+
+        // moveTabItem no-ops when shouldShowTab is false.
+        testProvider.moveTabItem(mTab1);
+        verify(mObserver, never()).onItemsMoved(any(), any());
+
+        // notifyTabClosureUndone and notifyTabClosureCommitted notify because isTabInScope defaults
+        // to true even when shouldShowTab is false.
+        testProvider.notifyTabClosureUndone(mTab1);
+        verify(mObserver).onTabClosureUndone(TAB1_ID);
+
+        testProvider.notifyTabClosureCommitted(mTab1);
+        verify(mObserver).onTabClosureCommitted(TAB1_ID);
     }
 
     // ============================================================================================
