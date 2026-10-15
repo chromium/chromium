@@ -10,6 +10,7 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
@@ -90,6 +91,54 @@ TEST_F(ConverterTest, Bool) {
                                         test_data[i].input, &result));
     EXPECT_EQ(test_data[i].expected, result);
   }
+}
+
+TEST_F(ConverterTest, String) {
+  v8::Isolate* isolate = instance_->isolate();
+
+  HandleScope handle_scope(isolate);
+
+  auto one_byte = [isolate](std::string_view latin1) {
+    return String::NewFromOneByte(
+               isolate, reinterpret_cast<const uint8_t*>(latin1.data()),
+               v8::NewStringType::kNormal, static_cast<int>(latin1.size()))
+        .ToLocalChecked();
+  };
+
+  std::string result;
+  EXPECT_FALSE(
+      Converter<std::string>::FromV8(isolate, v8::False(isolate), &result));
+
+  // One-byte ASCII strings, including a cons string that has to be flattened
+  // (the halves are long enough that Concat does not just copy them).
+  ASSERT_TRUE(
+      Converter<std::string>::FromV8(isolate, String::Empty(isolate), &result));
+  EXPECT_EQ(result, "");
+  ASSERT_TRUE(
+      Converter<std::string>::FromV8(isolate, one_byte("hello"), &result));
+  EXPECT_EQ(result, "hello");
+  ASSERT_TRUE(Converter<std::string>::FromV8(
+      isolate,
+      String::Concat(isolate, one_byte("the first half, "),
+                     one_byte("the second half")),
+      &result));
+  EXPECT_EQ(result, "the first half, the second half");
+
+  // One-byte strings outside ASCII are Latin-1 and must be re-encoded.
+  ASSERT_TRUE(
+      Converter<std::string>::FromV8(isolate, one_byte("caf\xe9"), &result));
+  EXPECT_EQ(result, "caf\xc3\xa9");
+  ASSERT_TRUE(Converter<std::string>::FromV8(
+      isolate,
+      String::Concat(isolate, one_byte("caf\xe9 au lait, "),
+                     one_byte("\xe0 la cr\xe8me")),
+      &result));
+  EXPECT_EQ(result, "caf\xc3\xa9 au lait, \xc3\xa0 la cr\xc3\xa8me");
+
+  // Two-byte string.
+  ASSERT_TRUE(Converter<std::string>::FromV8(
+      isolate, StringToV8(isolate, "\xe2\x98\x83 snowman"), &result));
+  EXPECT_EQ(result, "\xe2\x98\x83 snowman");
 }
 
 TEST_F(ConverterTest, String16) {

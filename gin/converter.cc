@@ -6,9 +6,14 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <optional>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-external.h"
@@ -154,9 +159,33 @@ bool Converter<std::string>::FromV8(Isolate* isolate,
   if (!val->IsString())
     return false;
   Local<String> str = Local<String>::Cast(val);
-  size_t length = str->Utf8LengthV2(isolate);
-  out->resize(length);
-  str->WriteUtf8V2(isolate, out->data(), length);
+  // Read one-byte strings straight from V8's buffer: all-ASCII content is
+  // already UTF-8 and is copied as is, otherwise each byte above 0x7F adds one
+  // to the UTF-8 length and only the encoding pass is needed. IsOneByte() is
+  // a cheap filter so two-byte strings skip the view; the view itself reports
+  // the flattened contents, which an indirect string's flag need not match.
+  std::optional<size_t> length;
+  if (str->IsOneByte()) {
+    String::ValueView view(isolate, str);
+    if (view.is_one_byte()) {
+      // SAFETY: ValueView only exposes a pointer and a length. It guarantees
+      // that data8() addresses length() bytes while the view is alive.
+      std::string_view latin1 = base::as_string_view(
+          UNSAFE_BUFFERS(base::span(view.data8(), view.length())));
+      if (base::IsStringASCII(latin1)) {
+        out->assign(latin1);
+        return true;
+      }
+      length = latin1.size() + std::ranges::count_if(latin1, [](char c) {
+                 return static_cast<unsigned char>(c) >= 0x80;
+               });
+    }
+  }
+  if (!length) {
+    length = str->Utf8Length(isolate);
+  }
+  out->resize(*length);
+  str->WriteUtf8(isolate, out->data(), *length);
   return true;
 }
 
