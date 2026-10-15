@@ -33,7 +33,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -75,6 +74,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/cross_origin_isolation_info.h"
@@ -376,20 +376,6 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
 
   *follow_symlinks_anywhere =
       (extension.creation_flags() & Extension::FOLLOW_SYMLINKS_ANYWHERE) != 0;
-}
-
-bool IsPathEqualTo(const GURL& url, std::string_view test) {
-  std::string_view path_piece = url.path();
-  return path_piece.size() > 1 && path_piece.substr(1) == test;
-}
-
-bool IsFaviconURL(const GURL& url) {
-  return IsPathEqualTo(url, kFaviconSourcePath) ||
-         IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"}));
-}
-
-bool IsBackgroundPageURL(const GURL& url) {
-  return IsPathEqualTo(url, kGeneratedBackgroundPageFilename);
 }
 
 ExtensionConfigProvider* GetDynamicResourceProvider(
@@ -892,8 +878,9 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       }
     }
 
-    const bool is_background_page_url = IsBackgroundPageURL(request_.url);
-    const bool is_favicon_url = IsFaviconURL(request_.url);
+    const bool is_background_page_url =
+        IsGeneratedBackgroundPageURL(request_.url);
+    const bool is_favicon_url = IsGeneratedFaviconURL(request_.url);
     if (is_background_page_url &&
         base::FeatureList::IsEnabled(
             extensions_features::

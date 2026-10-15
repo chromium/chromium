@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -21,6 +20,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "url/url_constants.h"
@@ -176,20 +176,6 @@ GURL GetInitiatorUrl(const std::optional<url::Origin>& initiator_origin) {
   return initiator_url;
 }
 
-bool IsPathEqualTo(const GURL& url, std::string_view test) {
-  std::string_view path_piece = url.path();
-  return path_piece.size() > 1 && path_piece.substr(1) == test;
-}
-
-bool IsFaviconURL(const GURL& url) {
-  return IsPathEqualTo(url, kFaviconSourcePath) ||
-         IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"}));
-}
-
-bool IsGeneratedBackgroundPageURL(const GURL& url) {
-  return IsPathEqualTo(url, kGeneratedBackgroundPageFilename);
-}
-
 // Returns true if `pattern` explicitly references the favicon path.
 // Generated paths like _favicon are not exposed by blanket wildcards (e.g.
 // "*").
@@ -244,7 +230,8 @@ bool IsResourceWebAccessibleImpl(
     return false;
   }
 
-  const bool is_favicon = restrict_generated_paths && IsFaviconURL(target_url);
+  const bool is_favicon =
+      restrict_generated_paths && IsGeneratedFaviconURL(target_url);
 
   GURL initiator_url = GetInitiatorUrl(initiator_origin);
   std::string relative_path = target_url.GetPath();
@@ -367,7 +354,8 @@ bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
   if (restrict_generated_paths && IsGeneratedBackgroundPageURL(target_url)) {
     return false;
   }
-  const bool is_favicon = restrict_generated_paths && IsFaviconURL(target_url);
+  const bool is_favicon =
+      restrict_generated_paths && IsGeneratedFaviconURL(target_url);
   for (const auto& entry : info->web_accessible_resources) {
     bool matches =
         is_favicon

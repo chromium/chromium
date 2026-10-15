@@ -4,7 +4,11 @@
 
 #include "extensions/common/extension_urls.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace extension_urls {
 
@@ -33,3 +37,48 @@ TEST(ExtensionWebstoreURLsTest, GetWebstoreBlockStatusURL) {
 }
 
 }  // namespace extension_urls
+
+namespace extensions {
+namespace {
+
+GURL ExtensionURLWithPath(std::string_view path) {
+  return GURL(base::StrCat(
+      {"chrome-extension://abcdefghijklmnopabcdefghijklmnop", path}));
+}
+
+}  // namespace
+
+// Tests that IsGeneratedFaviconURL() matches only the generated favicon
+// endpoint.
+TEST(ExtensionURLsTest, IsGeneratedFaviconURL) {
+  EXPECT_TRUE(IsGeneratedFaviconURL(ExtensionURLWithPath("/_favicon")));
+  EXPECT_TRUE(IsGeneratedFaviconURL(ExtensionURLWithPath("/_favicon/")));
+  EXPECT_TRUE(IsGeneratedFaviconURL(
+      ExtensionURLWithPath("/_favicon?pageUrl=https://example.com")));
+  EXPECT_TRUE(IsGeneratedFaviconURL(
+      ExtensionURLWithPath("/_favicon/?pageUrl=https://example.com")));
+  EXPECT_FALSE(IsGeneratedFaviconURL(ExtensionURLWithPath("/")));
+  EXPECT_FALSE(IsGeneratedFaviconURL(ExtensionURLWithPath("/_favicon//")));
+  EXPECT_FALSE(IsGeneratedFaviconURL(ExtensionURLWithPath("/_favicon/foo")));
+  EXPECT_FALSE(IsGeneratedFaviconURL(ExtensionURLWithPath("/_faviconfoo")));
+  EXPECT_FALSE(IsGeneratedFaviconURL(ExtensionURLWithPath("/_Favicon")));
+  EXPECT_FALSE(IsGeneratedFaviconURL(ExtensionURLWithPath("/dir/_favicon")));
+}
+
+// Tests that IsGeneratedBackgroundPageURL() matches only the generated
+// background page.
+TEST(ExtensionURLsTest, IsGeneratedBackgroundPageURL) {
+  EXPECT_TRUE(IsGeneratedBackgroundPageURL(
+      ExtensionURLWithPath("/_generated_background_page.html")));
+  EXPECT_TRUE(IsGeneratedBackgroundPageURL(
+      ExtensionURLWithPath("/_generated_background_page.html?query")));
+  EXPECT_FALSE(IsGeneratedBackgroundPageURL(ExtensionURLWithPath("/")));
+  EXPECT_FALSE(
+      IsGeneratedBackgroundPageURL(ExtensionURLWithPath("/background.html")));
+  EXPECT_FALSE(IsGeneratedBackgroundPageURL(
+      ExtensionURLWithPath("/_generated_background_page.html/")));
+  EXPECT_FALSE(IsGeneratedBackgroundPageURL(
+      ExtensionURLWithPath("/dir/_generated_background_page.html")));
+}
+
+}  // namespace extensions

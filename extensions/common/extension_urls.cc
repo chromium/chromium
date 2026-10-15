@@ -22,10 +22,32 @@
 
 namespace extensions {
 
+namespace {
+
+// Returns true if `path` is "/" followed by exactly `test`.
+bool IsPathEqualTo(std::string_view path, std::string_view test) {
+  return path.starts_with('/') && path.substr(1) == test;
+}
+
+}  // namespace
+
 bool IsSourceFromAnExtension(const std::u16string& source) {
   return GURL(source).SchemeIs(kExtensionScheme) ||
          base::StartsWith(source, u"extensions::",
                           base::CompareCase::SENSITIVE);
+}
+
+bool IsGeneratedFaviconURL(const GURL& url) {
+  // Accept both "/_favicon" and "/_favicon/" without allocating.
+  std::string_view path = url.path();
+  if (path.ends_with('/')) {
+    path.remove_suffix(1);
+  }
+  return IsPathEqualTo(path, kFaviconSourcePath);
+}
+
+bool IsGeneratedBackgroundPageURL(const GURL& url) {
+  return IsPathEqualTo(url.path(), kGeneratedBackgroundPageFilename);
 }
 
 }  // namespace extensions

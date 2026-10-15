@@ -25,6 +25,15 @@ namespace extensions {
 // or internal (e.g., "event_bindings" or "schemaUtils").
 bool IsSourceFromAnExtension(const std::u16string& source);
 
+// Returns true if `url` targets the generated favicon endpoint, i.e. its path
+// is "/_favicon" or "/_favicon/". Only the path is checked; callers are
+// expected to pass an extension URL.
+bool IsGeneratedFaviconURL(const GURL& url);
+
+// Returns true if `url` targets the generated background page. Only the path
+// is checked; callers are expected to pass an extension URL.
+bool IsGeneratedBackgroundPageURL(const GURL& url);
+
 }  // namespace extensions
 
 namespace extension_urls {
