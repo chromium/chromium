@@ -218,7 +218,7 @@ crbug.com/572663742 GeminiMultiTabTestCase/testTabPersistenceWithBlockedPage [ P
 crbug.com/572663742 GeminiMultiTabTestCase/testTabTitleUpdatesAfterNavigation [ Pass Failure ]
 crbug.com/572663742 GeminiPageContextTestCase/testPageSharingDisabledThenEnabledInFloaty [ Pass Failure ]
 crbug.com/572663742 GeminiPageContextTestCase/testRemoveAndEnablePageContextFromFloaty [ Pass Failure ]
-crbug.com/572663691 [ iPad Simulator ] HistoryUITestCase/testContextMenuOpenInNewWindow [ Pass Failure ]
+crbug.com/572663691 [ iPad Simulator ] HistoryUITestCase/testContextMenuOpenInNewWindow [ Skip ]
 crbug.com/572662973 [ Simulator ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
 crbug.com/572663884 [ Device ] FullscreenSmoothScrollingTestCase/testCollapseToolbarOnScrollAndRotate [ Pass Failure ]
 crbug.com/572663884 [ Device ] FullscreenSmoothScrollingTestCase/testFullscreenTimingHistograms [ Pass Failure ]
@@ -251,3 +251,8 @@ crbug.com/573630697 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Skip ]
 crbug.com/573630697 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Skip ]
 crbug.com/573630697 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
 
+# Gardening suppression 2026-10-15
+crbug.com/573994066 [ Device ] TracingTestCase/testStartupTracing [ Pass Failure ]
+crbug.com/573995191 TabGridTestCase/testHistorySuggestedActionInRegularTabsSearch [ Pass Failure ]
+crbug.com/573994751 StartSurfaceTestCase/testOpenNewWindowDoesNotReopenNTP [ Pass Failure ]
+crbug.com/573993705 AssistantAIMTestCase/testInputPlateHiddenOnPlusMenu [ Pass Failure ]
