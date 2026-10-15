@@ -7535,6 +7535,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         desc="Label for a button that guides the user to composebox's context menu using a suggestion like label.">
         Ask about your tabs
       </message>
+      <message name="IDS_OMNIBOX_ASKG_LENS_ICON_IPH_ACCESSIBLE_TEXT" desc="Screen reader text announced when the promo highlighting the Google Lens button in the address bar dropdown appears. The visible promo text is 'Select any text or image to search with Google Lens'.">
+        Use Google Lens to ask about any text or image on the page
+      </message>
       <if expr="is_macosx">
         <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="In Title Case: Label for customizing keyboard shortcut item in the Search in Chrome status tray context menu.">
           Customize Keyboard Shortcut

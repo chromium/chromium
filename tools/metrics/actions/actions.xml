@@ -744,6 +744,8 @@ should be able to be added at any place in this file.
   <variant name="_NewTabTip" summary="For NewTabTip feature."/>
   <variant name="_NotificationPermissionPromo"
       summary="For the OS notification permission prompt on Android."/>
+  <variant name="_OmniboxAskGLensIcon"
+      summary="In product help for the Lens icon in the omnibox popup."/>
   <variant name="_OmniboxEverywhereLensPromo"
       summary="In product help for the Lens search feature in Omnibox
                Everywhere."/>

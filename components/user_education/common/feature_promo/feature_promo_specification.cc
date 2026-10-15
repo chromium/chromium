@@ -146,10 +146,13 @@ bool IsAllowedPreconditionExemption(const base::Feature& promo_feature) {
   }
 
   // Add the text names of allowlisted promos here:
-  // static constexpr auto kAllowedPromoNames =
-  //     base::MakeFixedFlatSet<std::string_view>({ });
-  // return kAllowedPromoNames.contains(promo_feature.name);
-  return false;
+  static constexpr auto kAllowedPromoNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          // Anchored inside the omnibox popup, so it can only show while the
+          // omnibox is open (exempt from `kOmniboxNotOpenPrecondition`).
+          "IPH_OmniboxAskGLensIcon",
+      });
+  return kAllowedPromoNames.contains(promo_feature.name);
 }
 
 // Common check logic for gating reshow-ability of promos. Generates an error if

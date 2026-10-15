@@ -113,6 +113,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -1962,6 +1963,27 @@ void MaybeRegisterChromeFeaturePromos(
               154, "abhmadan@google.com",
               "Triggered to inform users of the Lens search feature in "
               "Omnibox Everywhere.")));
+
+  // kIPHOmniboxAskGLensIconFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHOmniboxAskGLensIconFeature,
+          kOmniboxPopupLensIconElementId,
+          IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED,
+          IDS_OMNIBOX_ASKG_LENS_ICON_IPH_ACCESSIBLE_TEXT,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+          // The anchor lives in the WebUI omnibox popup, so the promo can only
+          // show while the omnibox is open.
+          .AddPreconditionExemption(kOmniboxNotOpenPrecondition)
+          // The omnibox popup is a separate widget with its own element
+          // context, so the anchor isn't in the browser window's context.
+          .SetInAnyContext(true)
+          .SetMetadata(
+              157, "caitc@google.com",
+              "Triggered when the Lens icon is shown in the omnibox "
+              "popup for the Ask Google about this page experiment.",
+              Metadata::FeatureSet{&omnibox::kWebUIOmniboxAskGAboutThisPage})));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)

@@ -165,6 +165,9 @@ const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchBlockPatterns{
     &kIPHLensOverlayFeature, "x_url_path_match_block_patterns", "[]"};
 const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime{
     &kIPHLensOverlayFeature, "x_wait_time", base::Seconds(7)};
+BASE_FEATURE(kIPHOmniboxAskGLensIconFeature,
+             "IPH_OmniboxAskGLensIcon",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHOmniboxEverywhereLensPromoFeature,
              "IPH_OmniboxEverywhereLensPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);

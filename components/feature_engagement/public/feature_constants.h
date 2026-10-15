@@ -108,6 +108,7 @@ extern const base::FeatureParam<std::string>
     kIPHLensOverlayUrlPathMatchBlockPatterns;
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime;
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHOmniboxAskGLensIconFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHOmniboxEverywhereLensPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabAudioMutingFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordsSavePrimingPromoFeature);

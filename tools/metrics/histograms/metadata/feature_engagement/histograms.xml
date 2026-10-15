@@ -571,6 +571,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_NotificationPermissionPromo"
       summary="OS notification permission prompt on Android"/>
+  <variant name="IPH_OmniboxAskGLensIcon"
+      summary="the Lens icon in the omnibox popup"/>
   <variant name="IPH_OmniboxEverywhereLensPromo"
       summary="the Lens search feature in Omnibox Everywhere"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
