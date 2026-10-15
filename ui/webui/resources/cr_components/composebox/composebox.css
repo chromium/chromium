@@ -470,10 +470,6 @@ search-animated-glow {
   padding-top: 14px;
 }
 
-:host([upload-button-disabled]) .upload-button {
-  color: var(--color-composebox-upload-button-disabled);
-}
-
 :host([searchbox-layout-mode='Compact'])
     #contextEntrypoint::part(context-menu-entrypoint-icon) {
   position: absolute;

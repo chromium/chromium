@@ -336,9 +336,6 @@ void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) 
       dark_mode ? SkColorSetRGB(0x4E, 0x50, 0x59)
                 : SkColorSetRGB(0xF0, 0xF2, 0xF5)};
   mixer[kColorComposeboxUploadButton] = {ui::kColorRefNeutral10};
-  mixer[kColorComposeboxUploadButtonDisabled] = {
-      dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)
-                : SkColorSetRGB(0xAD, 0xAF, 0xB8)};
   mixer[kColorComposeboxFileChipBackground] = {kColorSysSurface3_Light};
   mixer[kColorComposeboxFileChipFaviconBackground] = {kColorSysSurface_Light};
   mixer[kColorComposeboxFileChipText] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};

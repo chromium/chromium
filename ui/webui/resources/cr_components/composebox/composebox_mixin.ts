@@ -192,10 +192,6 @@ export const ComposeboxEmbedderMixin =
             aimThreadRestoredTabs: {type: Array},
             tabDeselectionEnabled: {type: Boolean},
             transcript: {type: String},
-            uploadButtonDisabled: {
-              type: Boolean,
-              reflect: true,
-            },
             hasVoiceSearchError: {type: Boolean},
             voiceSearchCoherenceEnabled: {type: Boolean},
             isListening: {type: Boolean, reflect: true},
@@ -387,7 +383,6 @@ export const ComposeboxEmbedderMixin =
         accessor tabSuggestionsState: TabSuggestionsState =
             TabSuggestionsState.NOT_STARTED;
         accessor transcript: string = '';
-        accessor uploadButtonDisabled: boolean = false;
         private fuseboxChipHint_: string|null = null;
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
@@ -2352,8 +2347,6 @@ export const ComposeboxEmbedderMixin =
 
         resetModes() {
           const previousTool = this.inputState?.activeTool;
-          this.uploadButtonDisabled = false;
-
           if (previousTool !== ToolMode.kUnspecified) {
             this.showContextMenuDescription =
                 this.contextMenuDescriptionEnabled;
@@ -3460,7 +3453,6 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   tabSuggestionsState: TabSuggestionsState;
   tabDeselectionEnabled: boolean;
   transcript: string;
-  uploadButtonDisabled: boolean;
   composeboxNoFlickerSuggestionsFix: boolean;
   unselectMatchOnTabExit: boolean;
   searchboxListenerIds: number[];

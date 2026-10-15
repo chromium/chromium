@@ -51,7 +51,6 @@ export function getHtml(this: NtpComposeboxElement) {
       .glifAnimationState="${this.glifAnimationState}"
       .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
       .disableFallbackGlifAnimation="${true}"
-      ?upload-button-disabled="${this.uploadButtonDisabled}"
       ?show-context-menu-description="${this.showContextMenuDescription}">
   </cr-composebox-contextual-entrypoint-and-menu>
 </div>

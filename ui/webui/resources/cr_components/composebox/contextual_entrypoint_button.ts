@@ -51,7 +51,6 @@ export class ContextualEntrypointButtonElement extends
       showContextMenuDescription: {type: Boolean},
       inputState: {type: Object},
       glifAnimationState: {type: String, reflect: true},
-      uploadButtonDisabled: {type: Boolean},
       hasVirtualFocus: {type: Boolean, reflect: true},
       applyContextButtonBackground: {type: Boolean, reflect: true},
       isOblongShape: {type: Boolean, reflect: true},
@@ -76,7 +75,6 @@ export class ContextualEntrypointButtonElement extends
   accessor restoredTabs: TabInfo[] = [];
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
-  accessor uploadButtonDisabled: boolean = false;
   accessor hasVirtualFocus: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
