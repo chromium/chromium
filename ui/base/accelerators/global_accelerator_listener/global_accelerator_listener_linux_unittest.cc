@@ -4,16 +4,22 @@
 
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_linux.h"
 
+#include <algorithm>
+#include <map>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/dbus/utils/read_value.h"
 #include "components/dbus/utils/variant.h"
 #include "components/dbus/utils/write_value.h"
@@ -28,6 +34,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/linux/linux_ui_delegate.h"
 
@@ -753,6 +760,406 @@ TEST(GlobalAcceleratorListenerLinuxTest, BindsCommandAddedAfterUpToDateList) {
                       GlobalAcceleratorListenerLinux::kMethodCloseSession),
           _, _));
   listener.reset();
+}
+
+namespace {
+
+struct BindCall {
+  // In the order they were sent, so duplicates can be detected.
+  std::vector<std::string> ids;
+  std::map<std::string, std::string> descriptions;
+  std::map<std::string, std::string> triggers;
+};
+
+constexpr uint32_t kResponseCancelled = 1;
+constexpr char kRequestInterface[] = "org.freedesktop.portal.Request";
+constexpr char kResponseSignal[] = "Response";
+
+// Returns the portal shortcut ID of `command_name` for `kExtensionId` in
+// `kProfileId`. This uses the hard-coded `kSessionId` so that tests fail if the
+// ID ever changes.
+std::string Id(std::string_view command_name) {
+  return base::StrCat({kSessionId, "-", command_name});
+}
+
+}  // namespace
+
+// Tests the bind flow against a fake portal that records BindShortcuts calls.
+class GlobalAcceleratorListenerLinuxBindTest : public testing::Test {
+ public:
+  GlobalAcceleratorListenerLinuxBindTest() = default;
+  ~GlobalAcceleratorListenerLinuxBindTest() override = default;
+
+  void SetUp() override {
+    dbus_xdg::SetPortalStateForTesting(
+        dbus_xdg::PortalRegistrarState::kSuccess);
+
+    mock_bus_ = base::MakeRefCounted<testing::NiceMock<dbus::MockBus>>(
+        dbus::Bus::Options());
+    global_shortcuts_proxy_ =
+        base::MakeRefCounted<testing::NiceMock<dbus::MockObjectProxy>>(
+            mock_bus_.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
+            dbus::ObjectPath(
+                GlobalAcceleratorListenerLinux::kPortalObjectPath));
+
+    ON_CALL(*mock_bus_, GetConnectionName()).WillByDefault(Return(kBusName));
+    ON_CALL(*mock_bus_, GetObjectProxy(_, _))
+        .WillByDefault([this](std::string_view service_name,
+                              const dbus::ObjectPath& object_path) {
+          return GetProxy(service_name, object_path);
+        });
+    ON_CALL(*global_shortcuts_proxy_, CallMethodWithErrorResponse(_, _, _))
+        .WillByDefault(
+            [this](dbus::MethodCall* method_call, int,
+                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+              HandleMethodCall(method_call, std::move(callback));
+            });
+  }
+
+  void TearDown() override {
+    listener_.reset();
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+  }
+
+ protected:
+  using BindState = GlobalAcceleratorListenerLinux::BindState;
+
+  static ui::Command MakeCommand(const std::string& name,
+                                 bool global,
+                                 ui::KeyboardCode key = ui::VKEY_7,
+                                 std::u16string description = u"Description") {
+    ui::Command command(name, description, global);
+    command.set_accelerator(
+        ui::Accelerator(key, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
+    return command;
+  }
+
+  // Simulates a browser start.
+  void CreateListener() {
+    listener_.reset();
+    listener_ = std::make_unique<GlobalAcceleratorListenerLinux>(mock_bus_,
+                                                                 kSessionToken);
+  }
+
+  // Loads `commands` the same way ExtensionCommandsGlobalRegistry does.
+  void LoadCommands(const std::string& profile_id,
+                    std::vector<ui::Command> commands) {
+    ui::CommandMap command_map;
+    for (auto& command : commands) {
+      std::string name = command.command_name();
+      command_map[name] = std::move(command);
+    }
+    GlobalAcceleratorListener* listener = listener_.get();
+    listener->OnCommandsChanged(kExtensionId, profile_id, command_map,
+                                gfx::kNullAcceleratedWidget, base::DoNothing());
+    WaitForPortalIdle();
+  }
+
+  // Waits until every non-deferred portal request has been responded to. The
+  // fake posts each response to the main thread without delay, and the
+  // listener's follow-up steps (including Session posting its creation
+  // callback) are also posted without delay or run synchronously. So once the
+  // main thread is idle, the listener has no further requests to make until a
+  // deferred bind is responded to or the test calls into it again.
+  void WaitForPortalIdle() {
+    EXPECT_TRUE(base::test::RunUntil([&] { return pending_responses_ == 0; }));
+  }
+
+  // Responds to the BindShortcuts call that was deferred because
+  // `defer_bind_responses_` was set. Call WaitForPortalIdle() afterwards.
+  void RespondToDeferredBind() {
+    ASSERT_TRUE(deferred_bind_response_);
+    PostResponse(std::move(deferred_bind_response_));
+  }
+
+  size_t CountCreateSessionCalls() const {
+    return std::ranges::count(
+        method_calls_, GlobalAcceleratorListenerLinux::kMethodCreateSession);
+  }
+
+  BindState bind_state() const { return listener_->bind_state_; }
+
+  bool IsBound() const { return bind_state() == BindState::kBound; }
+
+  void ClearCalls() {
+    method_calls_.clear();
+    bind_calls_.clear();
+  }
+
+  base::test::ScopedFeatureList feature_list_{
+      features::kGlobalShortcutsPortalPreferredTrigger};
+  content::BrowserTaskEnvironment task_environment_;
+  scoped_refptr<dbus::MockBus> mock_bus_;
+  scoped_refptr<dbus::MockObjectProxy> global_shortcuts_proxy_;
+  std::unique_ptr<GlobalAcceleratorListenerLinux> listener_;
+
+  // IDs returned by ListShortcuts. Successfully bound IDs are appended, like a
+  // real portal persists them.
+  std::vector<std::string> listed_ids_;
+  // Response codes for successive BindShortcuts calls. Success if empty.
+  std::vector<uint32_t> bind_response_codes_;
+  // If set, BindShortcuts responses are held until RespondToDeferredBind().
+  bool defer_bind_responses_ = false;
+
+  std::vector<std::string> method_calls_;
+  std::vector<BindCall> bind_calls_;
+
+ private:
+  dbus::ObjectProxy* GetProxy(std::string_view service_name,
+                              const dbus::ObjectPath& object_path) {
+    if (object_path ==
+        dbus::ObjectPath(GlobalAcceleratorListenerLinux::kPortalObjectPath)) {
+      return global_shortcuts_proxy_.get();
+    }
+    auto& proxy = proxies_[object_path.value()];
+    if (!proxy) {
+      proxy = base::MakeRefCounted<testing::NiceMock<dbus::MockObjectProxy>>(
+          mock_bus_.get(), std::string(service_name), object_path);
+      ON_CALL(*proxy, ConnectToSignal(kRequestInterface, kResponseSignal, _, _))
+          .WillByDefault(
+              [this, path = object_path.value()](
+                  const std::string& interface_name,
+                  const std::string& signal_name,
+                  dbus::ObjectProxy::SignalCallback signal_callback,
+                  dbus::ObjectProxy::OnConnectedCallback on_connected) {
+                response_callbacks_[path] = signal_callback;
+                std::move(on_connected).Run(interface_name, signal_name, true);
+              });
+    }
+    return proxy.get();
+  }
+
+  void HandleMethodCall(dbus::MethodCall* method_call,
+                        dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+    const std::string method = method_call->GetMember();
+    method_calls_.push_back(method);
+
+    dbus::MessageReader reader(method_call);
+    uint32_t response_code = kResponseSuccess;
+    DbusDictionary results;
+    std::vector<std::string> bound_ids;
+    const bool is_bind =
+        method == GlobalAcceleratorListenerLinux::kMethodBindShortcuts;
+    if (method == GlobalAcceleratorListenerLinux::kMethodCreateSession) {
+      results.emplace(
+          "session_handle",
+          dbus_utils::Variant::Wrap<"s">(
+              base::nix::XdgDesktopPortalSessionPath(kBusName, kSessionToken)));
+    } else if (method == GlobalAcceleratorListenerLinux::kMethodListShortcuts) {
+      dbus::ObjectPath session_path;
+      ASSERT_TRUE(reader.PopObjectPath(&session_path));
+      DbusShortcuts shortcuts;
+      for (const std::string& id : listed_ids_) {
+        DbusDictionary props;
+        props.emplace("description",
+                      dbus_utils::Variant::Wrap<"s">(std::string("Listed")));
+        shortcuts.emplace_back(id, std::move(props));
+      }
+      results.emplace("shortcuts", dbus_utils::Variant::Wrap<"a(sa{sv})">(
+                                       std::move(shortcuts)));
+    } else if (is_bind) {
+      dbus::ObjectPath session_path;
+      ASSERT_TRUE(reader.PopObjectPath(&session_path));
+      auto shortcuts = dbus_utils::ReadValue<DbusShortcuts>(reader);
+      ASSERT_TRUE(shortcuts);
+      std::string parent_window;
+      ASSERT_TRUE(reader.PopString(&parent_window));
+      BindCall bind_call;
+      for (auto& [id, props] : *shortcuts) {
+        bind_call.ids.push_back(id);
+        if (auto it = props.find("description"); it != props.end()) {
+          bind_call.descriptions[id] =
+              std::move(it->second).Take<std::string>().value_or("");
+        }
+        if (auto it = props.find("preferred_trigger"); it != props.end()) {
+          bind_call.triggers[id] =
+              std::move(it->second).Take<std::string>().value_or("");
+        }
+      }
+      bound_ids = bind_call.ids;
+      bind_calls_.push_back(std::move(bind_call));
+      if (!bind_response_codes_.empty()) {
+        response_code = bind_response_codes_.front();
+        bind_response_codes_.erase(bind_response_codes_.begin());
+      }
+    } else {
+      ADD_FAILURE() << "Unexpected method " << method;
+      return;
+    }
+
+    auto options = dbus_utils::ReadValue<DbusDictionary>(reader);
+    ASSERT_TRUE(options);
+    auto token_it = options->find("handle_token");
+    ASSERT_NE(token_it, options->end());
+    auto token = std::move(token_it->second).Take<std::string>();
+    ASSERT_TRUE(token);
+    const std::string request_path =
+        base::nix::XdgDesktopPortalRequestPath(kBusName, *token);
+
+    base::OnceClosure respond = base::BindOnce(
+        &GlobalAcceleratorListenerLinuxBindTest::Respond,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback), request_path,
+        response_code, std::move(results), std::move(bound_ids));
+    if (is_bind && defer_bind_responses_) {
+      ASSERT_FALSE(deferred_bind_response_);
+      deferred_bind_response_ = std::move(respond);
+      return;
+    }
+    PostResponse(std::move(respond));
+  }
+
+  // Responds asynchronously like a real portal.
+  void PostResponse(base::OnceClosure respond) {
+    ++pending_responses_;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GlobalAcceleratorListenerLinuxBindTest::RunResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(respond)));
+  }
+
+  void RunResponse(base::OnceClosure respond) {
+    std::move(respond).Run();
+    // Decrement after the listener has handled the response, since it may
+    // make another request synchronously.
+    --pending_responses_;
+  }
+
+  void Respond(dbus::ObjectProxy::ResponseOrErrorCallback callback,
+               const std::string& request_path,
+               uint32_t response_code,
+               DbusDictionary results,
+               std::vector<std::string> bound_ids) {
+    if (response_code == kResponseSuccess) {
+      for (std::string& id : bound_ids) {
+        if (!std::ranges::contains(listed_ids_, id)) {
+          listed_ids_.push_back(std::move(id));
+        }
+      }
+    }
+
+    auto response = dbus::Response::CreateEmpty();
+    dbus::MessageWriter response_writer(response.get());
+    response_writer.AppendObjectPath(dbus::ObjectPath(request_path));
+    std::move(callback).Run(response.get(), nullptr);
+
+    auto it = response_callbacks_.find(request_path);
+    if (it != response_callbacks_.end()) {
+      dbus::Signal signal(kRequestInterface, kResponseSignal);
+      dbus::MessageWriter writer(&signal);
+      writer.AppendUint32(response_code);
+      dbus_utils::WriteValue(writer, results);
+      it->second.Run(&signal);
+    }
+  }
+
+  std::map<std::string, scoped_refptr<dbus::MockObjectProxy>> proxies_;
+  int pending_responses_ = 0;
+  base::OnceClosure deferred_bind_response_;
+  std::map<std::string, dbus::ObjectProxy::SignalCallback> response_callbacks_;
+
+  base::WeakPtrFactory<GlobalAcceleratorListenerLinuxBindTest>
+      weak_ptr_factory_{this};
+};
+
+// Tests that a global command is bound with its description and trigger.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, BindsGlobalCommand) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  const std::string id = Id("global");
+  EXPECT_THAT(bind_calls_[0].ids, testing::ElementsAre(id));
+  EXPECT_THAT(bind_calls_[0].descriptions,
+              testing::Contains(testing::Pair(id, "Description")));
+  EXPECT_THAT(bind_calls_[0].triggers,
+              testing::Contains(testing::Pair(id, "CTRL+SHIFT+7")));
+  EXPECT_TRUE(IsBound());
+}
+
+// Tests that no preferred trigger is sent when the feature is disabled.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, NoPreferredTriggerIfDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kGlobalShortcutsPortalPreferredTrigger);
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids, testing::ElementsAre(Id("global")));
+  EXPECT_TRUE(bind_calls_[0].triggers.empty());
+}
+
+// Commands that the portal already lists are not bound again.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, DoesNotBindListedCommands) {
+  listed_ids_ = {Id("global")};
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+
+  EXPECT_TRUE(bind_calls_.empty());
+  EXPECT_TRUE(IsBound());
+}
+
+// Shortcuts bound before a browser restart are not bound again.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, DoesNotRebindAfterRestart) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  ASSERT_TRUE(IsBound());
+
+  ClearCalls();
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+
+  EXPECT_EQ(CountCreateSessionCalls(), 1u);
+  EXPECT_TRUE(bind_calls_.empty());
+  EXPECT_TRUE(IsBound());
+}
+
+// Documents the current behavior when the user cancels the bind dialog.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, CancelledBind) {
+  bind_response_codes_ = {kResponseCancelled};
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("first", /*global=*/true)});
+
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_TRUE(listed_ids_.empty());
+  // TODO(crbug.com/404298968): The bind state isn't reset after a failed bind,
+  // so later command changes are never bound.
+  EXPECT_EQ(bind_state(), BindState::kBindCalled);
+
+  LoadCommands(kProfileId,
+               {MakeCommand("first", /*global=*/true),
+                MakeCommand("second", /*global=*/true, ui::VKEY_8)});
+  EXPECT_EQ(bind_calls_.size(), 1u);
+  EXPECT_EQ(bind_state(), BindState::kNeedsRebind);
+}
+
+// Adding a command while a bind is in flight binds the complete set once the
+// first bind finishes.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, CommandAddedDuringBind) {
+  defer_bind_responses_ = true;
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("first", /*global=*/true)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  ASSERT_EQ(bind_state(), BindState::kBindCalled);
+
+  LoadCommands(kProfileId,
+               {MakeCommand("first", /*global=*/true),
+                MakeCommand("second", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_state(), BindState::kNeedsRebind);
+  EXPECT_EQ(bind_calls_.size(), 1u);
+
+  defer_bind_responses_ = false;
+  RespondToDeferredBind();
+  WaitForPortalIdle();
+
+  EXPECT_EQ(CountCreateSessionCalls(), 2u);
+  ASSERT_EQ(bind_calls_.size(), 2u);
+  // TODO(crbug.com/404298968): "first" is sent twice since it's both listed by
+  // the portal and a bound command.
+  EXPECT_THAT(bind_calls_[1].ids, testing::UnorderedElementsAre(
+                                      Id("first"), Id("first"), Id("second")));
+  EXPECT_TRUE(IsBound());
 }
 
 }  // namespace ui
