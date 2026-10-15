@@ -219,8 +219,10 @@ ntp-searchbox[shown] {
   border-radius: 8px;
   bottom: 16px;
   color: var(--color-new-tab-page-attribution-foreground);
+  /* 100cqw = width of the rhsWrapper (query container). */
+  inset-inline-start: calc(100% - 100cqw + 16px);
   line-height: 20px;
-  max-width: 50vw;
+  max-width: 50cqw;
   padding: 8px;
   position: fixed;
   z-index: -1;
@@ -230,14 +232,6 @@ ntp-searchbox[shown] {
 
 #backgroundImageAttribution:hover {
   background-color: var(--ntp-protected-icon-background-color-hovered);
-}
-
-:host-context([dir='ltr']) #backgroundImageAttribution {
-  left: 16px;
-}
-
-:host-context([dir='rtl']) #backgroundImageAttribution {
-  right: 16px;
 }
 
 #backgroundImageAttribution1Container {

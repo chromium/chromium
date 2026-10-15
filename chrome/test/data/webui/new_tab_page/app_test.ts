@@ -3739,6 +3739,16 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('LeftHandSide', () => {
+    setup(() => {
+      // Like new_tab_page.html, so that the LHS and RHS span the window, which
+      // position: fixed elements in the RHS rely on.
+      document.body.style.margin = '0';
+    });
+
+    teardown(() => {
+      document.body.style.margin = '';
+    });
+
     async function setThreadsRailEnabled(enabled: boolean) {
       loadTimeData.overrideValues({enableThreadsRail: enabled});
       await recreateApp();
@@ -3754,6 +3764,14 @@ suite('NewTabPageAppTest', () => {
       for (let i = 0; i < 2; i++) {
         await new Promise(resolve => requestAnimationFrame(resolve));
       }
+      await microtasksFinished();
+    }
+
+    async function showBackgroundImageAttribution() {
+      const theme = createTheme();
+      theme.backgroundImageAttribution1 = 'foo';
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
       await microtasksFinished();
     }
 
@@ -3818,6 +3836,38 @@ suite('NewTabPageAppTest', () => {
           assertFalse(searchbox.canShowSecondarySide);
           assertStyle(rhsContent, '--ntp-search-box-width', '561px');
         });
+
+    test(
+        'attribution starts at the window edge when feature disabled',
+        async () => {
+          await setThreadsRailEnabled(false);
+          await showBackgroundImageAttribution();
+
+          const attribution = $$(app, '#backgroundImageAttribution');
+          assertTrue(!!attribution);
+          assertNear(
+              16, parseFloat(getComputedStyle(attribution).left),
+              LAYOUT_TOLERANCE_PX);
+        });
+
+    test('attribution starts at the RHS when feature enabled', async () => {
+      await setThreadsRailEnabled(true);
+      await showBackgroundImageAttribution();
+      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+      assertTrue(!!rhsWrapper);
+
+      // The LHS doesn't take up space yet, so make room for it by hand.
+      rhsWrapper.style.marginInlineStart = '200px';
+
+      const attribution = $$(app, '#backgroundImageAttribution');
+      assertTrue(!!attribution);
+      const attributionStyle = getComputedStyle(attribution);
+      assertNear(216, parseFloat(attributionStyle.left), LAYOUT_TOLERANCE_PX);
+      // Not offsetWidth, which is rounded to a whole px.
+      assertNear(
+          rhsWrapper.getBoundingClientRect().width / 2,
+          parseFloat(attributionStyle.maxWidth), LAYOUT_TOLERANCE_PX);
+    });
 
     suite('Modules', () => {
       suiteSetup(() => {
