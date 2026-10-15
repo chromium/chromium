@@ -53,6 +53,9 @@ class EnterpriseWebrtcApiObserver
       const std::string& id,
       const std::vector<std::string>& matched_client_ids) override;
   void OnCaptureStopped(const std::string& stopped_client_id) override;
+  void OnSnapshotTruncated(int dropped_log,
+                           int dropped_stats,
+                           int dropped_media) override;
 
   static EnterpriseWebrtcApiObserver* Get(content::BrowserContext* context);
 

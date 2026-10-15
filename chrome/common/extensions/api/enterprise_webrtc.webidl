@@ -64,6 +64,15 @@ dictionary PeerConnectionRecord {
   required double timestamp;
 };
 
+// Counts of entries dropped due to ring-buffer truncation, cumulative since
+// WebRTC-internals began tracking state for this profile. They can include
+// drops that happened before this extension's own capture session started.
+dictionary TruncationInfo {
+  required long droppedLogEntries;
+  required long droppedStatsEntries;
+  required long droppedMediaEntries;
+};
+
 callback OnCaptureStoppedListener = undefined ();
 
 interface OnCaptureStoppedEvent : ExtensionEvent {
@@ -92,6 +101,17 @@ interface OnPeerConnectionRemovedEvent : ExtensionEvent {
   static undefined addListener(OnPeerConnectionRemovedListener listener);
   static undefined removeListener(OnPeerConnectionRemovedListener listener);
   static boolean hasListener(OnPeerConnectionRemovedListener listener);
+};
+
+// |truncationInfo|: Counts of entries dropped since WebRTC-internals began
+// tracking this profile, not since this session started.
+callback OnSnapshotTruncatedListener =
+    undefined (TruncationInfo truncationInfo);
+
+interface OnSnapshotTruncatedEvent : ExtensionEvent {
+  static undefined addListener(OnSnapshotTruncatedListener listener);
+  static undefined removeListener(OnSnapshotTruncatedListener listener);
+  static boolean hasListener(OnSnapshotTruncatedListener listener);
 };
 
 // Programmatic access to WebRTC diagnostic information equivalent to
@@ -139,6 +159,16 @@ interface Webrtc {
   // session never saw $(ref:onPeerConnectionAdded) for, if the connection
   // already existed when the session started.
   static attribute OnPeerConnectionRemovedEvent onPeerConnectionRemoved;
+
+  // Fired when WebRTC-internals data is dropped because a buffer filled.
+  // Rate limited to one event every five seconds per profile; counts are the
+  // totals at the time the event fires, and a drop within five seconds of a
+  // previous event is only reported if another drop happens afterward. This
+  // is the only way to learn about dropped entries: $(ref:getSnapshot) does
+  // not expose the drop counts. Fires for every extension capturing in this
+  // profile, regardless of its origin filter, even when the drop happened
+  // outside that filter.
+  static attribute OnSnapshotTruncatedEvent onSnapshotTruncated;
 };
 
 partial interface Enterprise {

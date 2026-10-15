@@ -144,6 +144,27 @@ void EnterpriseWebrtcApiObserver::DispatchCaptureStopped(
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
 
+void EnterpriseWebrtcApiObserver::OnSnapshotTruncated(int dropped_log,
+                                                      int dropped_stats,
+                                                      int dropped_media) {
+  api::enterprise_webrtc::TruncationInfo info;
+  info.dropped_log_entries = dropped_log;
+  info.dropped_stats_entries = dropped_stats;
+  info.dropped_media_entries = dropped_media;
+
+  EventRouter* router = EventRouter::Get(browser_context_);
+  for (const std::string& extension_id :
+       content::WebRtcDiagnostics::GetInstance()->GetCapturingClients(
+           browser_context_)) {
+    auto event = std::make_unique<Event>(
+        events::ENTERPRISE_WEBRTC_ON_SNAPSHOT_TRUNCATED,
+        api::enterprise_webrtc::OnSnapshotTruncated::kEventName,
+        api::enterprise_webrtc::OnSnapshotTruncated::Create(info),
+        browser_context_);
+    router->DispatchEventToExtension(extension_id, std::move(event));
+  }
+}
+
 // static
 EnterpriseWebrtcApiObserverFactory*
 EnterpriseWebrtcApiObserverFactory::GetInstance() {
