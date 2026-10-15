@@ -469,10 +469,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   auto* page_content_extraction_service = page_content_annotations::
       PageContentExtractionServiceFactory::GetForProfile(profile);
   if (page_content_extraction_service) {
-    AnnotatedPageContentRequest::CreateForWebContents(
-        tab.GetContents(), *page_content_extraction_service,
-        base::BindRepeating(&page_content_annotations::FetchPageContext),
-        base::BindRepeating(&GetPageContentAnnotationsTabId));
+    annotated_page_content_request_ =
+        GetUserDataFactory().CreateInstance<AnnotatedPageContentRequest>(
+            tab, tab, tab.GetContents(), *page_content_extraction_service,
+            base::BindRepeating(&page_content_annotations::FetchPageContext),
+            base::BindRepeating(&GetPageContentAnnotationsTabId));
   }
 
   InitializePageLoadMetricsForWebContents(tab.GetContents());
@@ -1516,11 +1517,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   auto* page_content_extraction_service = page_content_annotations::
       PageContentExtractionServiceFactory::GetForProfile(profile);
+  annotated_page_content_request_.reset();
   if (page_content_extraction_service) {
-    AnnotatedPageContentRequest::CreateForWebContents(
-        new_contents, *page_content_extraction_service,
-        base::BindRepeating(&page_content_annotations::FetchPageContext),
-        base::BindRepeating(&GetPageContentAnnotationsTabId));
+    annotated_page_content_request_ =
+        GetUserDataFactory().CreateInstance<AnnotatedPageContentRequest>(
+            *tab, *tab, new_contents, *page_content_extraction_service,
+            base::BindRepeating(&page_content_annotations::FetchPageContext),
+            base::BindRepeating(&GetPageContentAnnotationsTabId));
   }
 
   InitializePageLoadMetricsForWebContents(new_contents);

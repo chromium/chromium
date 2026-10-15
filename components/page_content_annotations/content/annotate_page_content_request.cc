@@ -40,6 +40,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/pdf/common/constants.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -187,13 +188,15 @@ bool ShouldExtractPageContent(content::NavigationHandle* navigation_handle) {
 
 }  // namespace
 
+DEFINE_USER_DATA(AnnotatedPageContentRequest);
+
 AnnotatedPageContentRequest::AnnotatedPageContentRequest(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents,
     PageContentExtractionService& page_content_extraction_service,
     FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<AnnotatedPageContentRequest>(*web_contents),
       page_content_extraction_service_(page_content_extraction_service),
       options_(CreateOptions()),
       include_inner_text_(
@@ -203,7 +206,8 @@ AnnotatedPageContentRequest::AnnotatedPageContentRequest(
       use_page_settled_monitor_(base::FeatureList::IsEnabled(
           features::kPageContentExtractionUsingPageSettledMonitor)),
       fetch_page_context_callback_(std::move(fetch_page_context_callback)),
-      get_tab_id_callback_(std::move(get_tab_id_callback)) {
+      get_tab_id_callback_(std::move(get_tab_id_callback)),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   // Post to a background thread to avoid blocking the set up of the overlay.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
@@ -218,15 +222,17 @@ AnnotatedPageContentRequest::~AnnotatedPageContentRequest() {
 }
 
 // static
-std::unique_ptr<AnnotatedPageContentRequest>
-AnnotatedPageContentRequest::CreateForTesting(  // IN-TEST
-    content::WebContents* web_contents,
-    PageContentExtractionService& page_content_extraction_service,
-    FetchPageContextCallback fetch_page_context_callback,
-    GetTabIdCallback get_tab_id_callback) {
-  return base::WrapUnique(new AnnotatedPageContentRequest(
-      web_contents, page_content_extraction_service,
-      std::move(fetch_page_context_callback), std::move(get_tab_id_callback)));
+AnnotatedPageContentRequest* AnnotatedPageContentRequest::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+AnnotatedPageContentRequest* AnnotatedPageContentRequest::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
 }
 
 void AnnotatedPageContentRequest::PrimaryPageChanged(content::Page& page) {
@@ -1098,7 +1104,5 @@ void AnnotatedPageContentRequest::SetPageSettledCallbackForTesting(  // IN-TEST
     base::OnceClosure callback) {
   page_settled_callback_for_testing_ = std::move(callback);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AnnotatedPageContentRequest);
 
 }  // namespace page_content_annotations

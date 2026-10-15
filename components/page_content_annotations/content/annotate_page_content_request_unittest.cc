@@ -37,6 +37,8 @@
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -251,6 +253,8 @@ class AnnotatePageContentRequestTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
 
     extraction_service_.emplace(os_crypt_async_.get(),
@@ -288,10 +292,9 @@ class AnnotatePageContentRequestTest
   }
 
   void RecreateRequest() {
-    request_ = nullptr;
-    web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-    AnnotatedPageContentRequest::CreateForWebContents(
-        web_contents(), extraction_service_.value(),
+    request_.reset();
+    request_ = std::make_unique<AnnotatedPageContentRequest>(
+        tab_, web_contents(), extraction_service_.value(),
         base::BindRepeating(
             [](AnnotatePageContentRequestTest* test, content::WebContents&,
                const FetchPageContextOptions& options,
@@ -326,7 +329,6 @@ class AnnotatePageContentRequestTest
         base::BindRepeating([](content::WebContents* web_contents) {
           return std::make_optional(reinterpret_cast<int64_t>(web_contents));
         }));
-    request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
   }
 
   std::unique_ptr<content::MockNavigationHandle> CreateHandle(
@@ -412,7 +414,8 @@ class AnnotatePageContentRequestTest
   base::test::ScopedFeatureList triggering_mode_feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<TestPageContentExtractionService> extraction_service_;
-  raw_ptr<AnnotatedPageContentRequest> request_ = nullptr;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<AnnotatedPageContentRequest> request_;
   blink::mojom::AIPageContentOptionsPtr previous_options_;
 };
 
@@ -813,14 +816,12 @@ TEST_P(AnnotatePageContentRequestTest,
       async_callback);
 
   // Overwrite the synchronous request with our manual mock.
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(), manual_callback,
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(), manual_callback,
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
 
@@ -899,10 +900,9 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
   // Override the request with an async fetcher to test batching.
   FetchPageContextResultCallback saved_callback;
   base::RunLoop run_loop;
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(),
       base::BindRepeating(
           [](FetchPageContextResultCallback* saved,
              base::RepeatingClosure quit_closure, content::WebContents&,
@@ -916,7 +916,6 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
   run_loop.Run();
@@ -994,10 +993,9 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
   SetTriggeringMode("on_load");
 
   // Override the request with a failing fetcher.
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(),
       base::BindRepeating([](content::WebContents&,
                              const FetchPageContextOptions&,
                              std::unique_ptr<FetchPageProgressListener>,
@@ -1009,7 +1007,6 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
 
@@ -1027,10 +1024,9 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
   // Override the request with an async fetcher.
   FetchPageContextResultCallback saved_callback;
   base::RunLoop run_loop;
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(),
       base::BindRepeating(
           [](FetchPageContextResultCallback* saved,
              base::RepeatingClosure quit_closure, content::WebContents&,
@@ -1044,7 +1040,6 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
   run_loop.Run();
@@ -1162,10 +1157,9 @@ TEST_P(AnnotatePageContentRequestTest, GetContent_OnHiddenMode) {
 
   int fetch_count = 0;
   // Override request to count successful fetches.
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(),
       base::BindRepeating(
           [](int* count, content::WebContents&,
              const FetchPageContextOptions& options,
@@ -1183,7 +1177,6 @@ TEST_P(AnnotatePageContentRequestTest, GetContent_OnHiddenMode) {
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
 
@@ -1216,10 +1209,9 @@ TEST_P(AnnotatePageContentRequestTest, GetContent_NoRetryOnFailure) {
 
   int fetch_count = 0;
   // Override the request with a failing fetcher that counts calls.
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(),
       base::BindRepeating(
           [](int* count, content::WebContents&, const FetchPageContextOptions&,
              std::unique_ptr<FetchPageProgressListener>,
@@ -1233,7 +1225,6 @@ TEST_P(AnnotatePageContentRequestTest, GetContent_NoRetryOnFailure) {
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
 
@@ -1352,10 +1343,9 @@ TEST_P(AnnotatePageContentRequestTest,
   // Override the request with an async fetcher to control completion.
   FetchPageContextResultCallback saved_callback;
   base::RunLoop run_loop;
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
+  request_.reset();
+  request_ = std::make_unique<AnnotatedPageContentRequest>(
+      tab_, web_contents(), extraction_service(),
       base::BindRepeating(
           [](FetchPageContextResultCallback* saved,
              base::RepeatingClosure quit_closure, content::WebContents&,
@@ -1369,7 +1359,6 @@ TEST_P(AnnotatePageContentRequestTest,
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
 
@@ -2127,8 +2116,7 @@ TEST_P(AnnotatePageContentRequestTest,
   task_environment()->FastForwardBy(base::Seconds(1));
 
   // Simulate PDF goes away by destroying the request and the web contents.
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  request_.reset();
   DeleteContents();
 
   EXPECT_EQ(extraction_service().extraction_count(), 0);

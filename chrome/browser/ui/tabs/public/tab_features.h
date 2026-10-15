@@ -295,6 +295,7 @@ class PageActionController;
 }  // namespace page_actions
 
 namespace page_content_annotations {
+class AnnotatedPageContentRequest;
 class PageContentAnnotationsWebContentsObserver;
 }  // namespace page_content_annotations
 
@@ -1076,6 +1077,9 @@ class TabFeatures {
 
   std::unique_ptr<site_engagement::SiteEngagementService::Helper>
       site_engagement_helper_;
+
+  std::unique_ptr<page_content_annotations::AnnotatedPageContentRequest>
+      annotated_page_content_request_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

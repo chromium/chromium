@@ -289,11 +289,14 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     auto* page_content_extraction_service = page_content_annotations::
         PageContentExtractionServiceFactory::GetForProfile(profile);
     if (page_content_extraction_service) {
-      page_content_annotations::AnnotatedPageContentRequest::
-          CreateForWebContents(
-              web_contents, *page_content_extraction_service,
-              base::BindRepeating(&page_content_annotations::FetchPageContext),
-              base::BindRepeating(&GetPageContentAnnotationsTabId));
+      annotated_page_content_request_ =
+          GetUserDataFactory()
+              .CreateInstance<
+                  page_content_annotations::AnnotatedPageContentRequest>(
+                  *tab, *tab, web_contents, *page_content_extraction_service,
+                  base::BindRepeating(
+                      &page_content_annotations::FetchPageContext),
+                  base::BindRepeating(&GetPageContentAnnotationsTabId));
     }
   }
   InitializePageLoadMetricsForWebContents(web_contents);

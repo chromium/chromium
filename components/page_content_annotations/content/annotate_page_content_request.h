@@ -25,13 +25,17 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace base {
 class ScopedClosureRunner;
 }
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace optimization_guide {
 class PageContextEligibility;
@@ -79,10 +83,10 @@ using GetTabIdCallback =
 // TODO(b/487632737): Rename this class to reflect that it requests either:
 // - `AnnotatedPageContent` for non-PDF pages.
 // - Text for PDF pages.
-class AnnotatedPageContentRequest
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<AnnotatedPageContentRequest> {
+class AnnotatedPageContentRequest : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(AnnotatedPageContentRequest);
+
   // LINT.IfChange(TriggerSource)
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -94,16 +98,10 @@ class AnnotatedPageContentRequest
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuidePageContentExtractionTriggerSource)
 
-  static std::unique_ptr<AnnotatedPageContentRequest> Create(
-      content::WebContents* web_contents,
-      PageContentExtractionService& page_content_extraction_service,
-      FetchPageContextCallback fetch_page_context_callback,
-      GetTabIdCallback get_tab_id_callback);
-
   AnnotatedPageContentRequest(
+      tabs::TabInterface& tab,
       content::WebContents* web_contents,
       PageContentExtractionService& page_content_extraction_service,
-      blink::mojom::AIPageContentOptionsPtr request,
       FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
 
@@ -112,12 +110,9 @@ class AnnotatedPageContentRequest
       delete;
   ~AnnotatedPageContentRequest() override;
 
-  // Creates an instance for testing that is not attached as UserData.
-  static std::unique_ptr<AnnotatedPageContentRequest> CreateForTesting(
-      content::WebContents* web_contents,
-      PageContentExtractionService& page_content_extraction_service,
-      FetchPageContextCallback fetch_page_context_callback,
-      GetTabIdCallback get_tab_id_callback);
+  static AnnotatedPageContentRequest* From(tabs::TabInterface* tab);
+  static AnnotatedPageContentRequest* FromWebContents(
+      content::WebContents* web_contents);
   // Returns the cached APC for `page` and whether it is eligible for
   // server upload. Will return nullopt if not available or not supported (e.g.
   // for PDFs, the text extraction result is never cached).
@@ -154,14 +149,7 @@ class AnnotatedPageContentRequest
       GetExtractedPageContentAndEligibilityCallback callback);
 
  private:
-  friend class content::WebContentsUserData<AnnotatedPageContentRequest>;
   friend class AnnotatePageContentRequestTest;
-
-  AnnotatedPageContentRequest(
-      content::WebContents* web_contents,
-      PageContentExtractionService& page_content_extraction_service,
-      FetchPageContextCallback fetch_page_context_callback,
-      GetTabIdCallback get_tab_id_callback);
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -329,9 +317,10 @@ class AnnotatedPageContentRequest
 
   base::OnceClosure page_settled_callback_for_testing_;
 
-  base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
+  ui::ScopedUnownedUserData<AnnotatedPageContentRequest>
+      scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
 };
 
 }  // namespace page_content_annotations
