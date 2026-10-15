@@ -48,8 +48,8 @@ public class TabBottomSheetPeekViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_GLIC)
-                    .setRevision(0)
-                    .setDescription("Initial render tests for TabBottomSheetPeekView")
+                    .setRevision(1)
+                    .setDescription("Show the 4-color Gemini spark peek icon")
                     .build();
 
     private Activity mActivity;
@@ -75,13 +75,20 @@ public class TabBottomSheetPeekViewRenderTest {
                                                     R.layout.tab_bottom_sheet_peek_layout,
                                                     mParentView,
                                                     false);
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            mActivity.getResources().getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total));
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                    mActivity
+                                            .getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen.tab_bottom_sheet_peek_height_total));
                     mParentView.addView(mPeekView, params);
 
                     mModel =
                             new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                                    .with(
+                                            TabBottomSheetPeekProperties.PEEK_ICON_ID,
+                                            R.drawable.ic_spark_4c_16dp)
                                     .build();
                     mChangeProcessor =
                             PropertyModelChangeProcessor.create(

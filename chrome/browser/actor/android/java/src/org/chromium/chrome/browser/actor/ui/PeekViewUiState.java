@@ -34,7 +34,7 @@ public class PeekViewUiState {
         int DEFAULT = 3;
     }
 
-    private static final @DrawableRes int PEEK_ICON = R.drawable.ic_spark_blue_16dp;
+    private static final @DrawableRes int PEEK_ICON = R.drawable.ic_spark_4c_16dp;
     private static final @DrawableRes int BUTTON_ICON_ACTING = R.drawable.ic_pause_white_24dp;
     private static final @DrawableRes int BUTTON_ICON_PAUSED = R.drawable.ic_play_arrow_white_24dp;
     private static final @DrawableRes int BUTTON_ICON_WAITING = Resources.ID_NULL;
