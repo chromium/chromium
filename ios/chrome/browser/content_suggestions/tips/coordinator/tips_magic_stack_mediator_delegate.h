@@ -7,6 +7,8 @@
 
 #import "base/ios/block_types.h"
 
+enum class ContentSuggestionsModuleType;
+
 // Handles Tips module events.
 @protocol TipsMagicStackMediatorDelegate
 
@@ -16,6 +18,9 @@
 // Indicates to receiver that the Tips module should be removed.
 // The `completion` is called after the removal is finished.
 - (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion;
+
+// Logs a user Magic Stack engagement for module `type`.
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
 @end
 

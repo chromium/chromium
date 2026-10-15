@@ -22,6 +22,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/features.h"
+#import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/ntp_theme_actionable_tip_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
@@ -148,10 +149,16 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - TipsModuleAudience
 
 - (void)didSelectTip:(TipIdentifier)tip {
+  // Log engagement before forwarding the selection, as handling the tip
+  // selection removes the module from the Magic Stack.
+  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
   [self.presentationAudience didSelectTip:tip];
 }
 
 - (void)didSelectNTPThemePhotoPicker {
+  // Log engagement before forwarding the selection to the presentation
+  // audience.
+  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
   [self.presentationAudience didSelectNTPThemePhotoPicker];
 }
 

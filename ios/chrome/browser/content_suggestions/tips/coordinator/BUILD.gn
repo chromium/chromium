@@ -23,6 +23,7 @@ source_set("coordinator") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/tips/model",
     "//ios/chrome/browser/content_suggestions/tips/ui",
     "//ios/chrome/browser/content_suggestions/ui:public",

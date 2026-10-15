@@ -104,14 +104,39 @@ TEST_F(TipsMagicStackMediatorTest, CallsRemoveModuleOnDelegate) {
   EXPECT_OCMOCK_VERIFY(delegate);
 }
 
-// Tests that the mediator forwards `-didSelectNTPThemePhotoPicker` to its
-// `presentationAudience`.
-TEST_F(TipsMagicStackMediatorTest, ForwardsDidSelectNTPThemePhotoPicker) {
+// Tests that the mediator logs Magic Stack engagement and forwards
+// `-didSelectTip:` to its `presentationAudience`.
+TEST_F(TipsMagicStackMediatorTest, ForwardsDidSelectTipAndLogsEngagement) {
+  id delegate =
+      OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
+  mediator_.delegate = delegate;
   id audience = OCMStrictProtocolMock(
       @protocol(ContentSuggestionsViewControllerAudience));
   mediator_.presentationAudience = audience;
+
+  OCMExpect([delegate
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::kTips]);
+  OCMExpect([audience didSelectTip:TipIdentifier::kSavePasswords]);
+  [(id<TipsModuleAudience>)mediator_
+      didSelectTip:TipIdentifier::kSavePasswords];
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_OCMOCK_VERIFY(audience);
+}
+
+// Tests that the mediator logs Magic Stack engagement and forwards
+// `-didSelectNTPThemePhotoPicker` to its `presentationAudience`.
+TEST_F(TipsMagicStackMediatorTest, ForwardsDidSelectNTPThemePhotoPicker) {
+  id delegate =
+      OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
+  mediator_.delegate = delegate;
+  id audience = OCMStrictProtocolMock(
+      @protocol(ContentSuggestionsViewControllerAudience));
+  mediator_.presentationAudience = audience;
+  OCMExpect([delegate
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::kTips]);
   OCMExpect([audience didSelectNTPThemePhotoPicker]);
   [(id<TipsModuleAudience>)mediator_ didSelectNTPThemePhotoPicker];
+  EXPECT_OCMOCK_VERIFY(delegate);
   EXPECT_OCMOCK_VERIFY(audience);
 }
 
