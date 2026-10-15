@@ -2725,6 +2725,14 @@
       status: "stable",
     },
     {
+      // When enabled, the cursor needs to move past the drag start threshold in
+      // absolute screen coordinates rather than window relative coordinates.
+      // See https://crbug.com/40943926 and
+      // https://html.spec.whatwg.org/multipage/dnd.html#security-risks-in-the-drag-and-drop-model
+      name: "DragThresholdRequiresMouseMovement",
+      status: "test"
+    },
+    {
       // See: crrev.com/c/7874048
       // Diagnostic flag to gather data for a case when compositable animations lack snapshots without a known reason.
       name: "DumpForAbsentKeyframeSnapshots",

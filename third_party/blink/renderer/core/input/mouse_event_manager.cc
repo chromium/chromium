@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
 
+#include <cmath>
+
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -51,6 +53,7 @@
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -969,8 +972,10 @@ DragHandlingResult MouseEventManager::HandleDrag(
                                  : DragHandlingResult::kNotHandled;
   }
 
-  if (initiated_by_button_press && !DragThresholdExceeded(gfx::ToFlooredPoint(
-                                       event.Event().PositionInRootFrame()))) {
+  if (initiated_by_button_press &&
+      !DragThresholdExceeded(
+          gfx::ToFlooredPoint(event.Event().PositionInRootFrame()),
+          event.Event().PositionInScreen())) {
     ResetDragSource();
     return DragHandlingResult::kHandledDragNotStarted;
   }
@@ -1230,10 +1235,29 @@ void MouseEventManager::ResetDragSource() {
 }
 
 bool MouseEventManager::DragThresholdExceeded(
-    const gfx::Point& drag_location_in_root_frame) const {
+    const gfx::Point& drag_location_in_root_frame,
+    const gfx::PointF& drag_location_in_screen) const {
   LocalFrameView* view = frame_->View();
   if (!view)
     return false;
+
+  if (RuntimeEnabledFeatures::DragThresholdRequiresMouseMovementEnabled()) {
+    // A script moving, resizing the window, or scrolling the
+    // content while the mouse button is held shifts the content under a
+    // stationary cursor, causing a relative mouse shift when the user didn't
+    // actually intend one. We eliminate this issue by comparing screen
+    // absolute positions instead of window-relative.
+    const gfx::Vector2dF screen_delta =
+        drag_location_in_screen - mouse_down_.PositionInScreen();
+    const bool screen_threshold_exceeded =
+        std::abs(screen_delta.x()) >= kDragThresholdX ||
+        std::abs(screen_delta.y()) >= kDragThresholdY;
+    // PositionInScreen() is in DIPs, so the threshold is measured in logical
+    // pixels. Unlike content pixels, this is unaffected by pinch-zoom and CSS
+    // transforms.
+    return screen_threshold_exceeded;
+  }
+
   gfx::Point drag_location =
       view->ConvertFromRootFrame(drag_location_in_root_frame);
   gfx::Vector2d delta = drag_location - mouse_down_pos_;

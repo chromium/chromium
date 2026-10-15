@@ -206,7 +206,12 @@ class CORE_EXPORT MouseEventManager final
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:DragAndDropToolType)
 
-  bool DragThresholdExceeded(const gfx::Point&) const;
+  // Root-frame coordinates preserve the legacy content-space threshold when
+  // DragThresholdRequiresMouseMovement is disabled; screen coordinates measure
+  // movement in DIPs when enabled, without counting content or window movement
+  // as pointer movement.
+  bool DragThresholdExceeded(const gfx::Point& drag_location_in_root_frame,
+                             const gfx::PointF& drag_location_in_screen) const;
   DragHandlingResult HandleDrag(const MouseEventWithHitTestResults&,
                                 DragAndDropToolType);
   bool TryStartDrag(const MouseEventWithHitTestResults&);

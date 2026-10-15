@@ -1536,6 +1536,149 @@ TEST_F(EventHandlerTest, FakeMouseMoveNotStartDrag) {
                                   .DragDataTransferLocationForTesting());
 }
 
+// ChromeClient that records whether a drag was initiated, i.e. StartDragging
+// was invoked after the drag-start threshold was exceeded.
+class DragStartRecordingChromeClient : public EmptyChromeClient {
+ public:
+  void StartDragging(LocalFrame*,
+                     const WebDragData&,
+                     DragOperationsMask,
+                     const SkBitmap&,
+                     const gfx::Vector2d&,
+                     const gfx::Rect&) override {
+    drag_started_ = true;
+  }
+
+  bool DragStarted() const { return drag_started_; }
+
+ private:
+  bool drag_started_ = false;
+};
+
+class DragThresholdTest : public EventHandlerTest {
+ public:
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<DragStartRecordingChromeClient>();
+    SetupPageWithClients(chrome_client_);
+  }
+
+ protected:
+  // Presses at kPositionInWidget/kPositionInScreen on a draggable element,
+  // dispatches a single mouse move to the given widget/screen position, and
+  // returns whether a drag was initiated. A high-DPI display is simulated by
+  // moving the widget position by a multiple of the screen position.
+  // `frame_scale` simulates pinch-zoom: widget positions are divided by it to
+  // compute root-frame positions.
+  bool PressThenMoveStartsDrag(const gfx::PointF& move_in_widget,
+                               const gfx::PointF& move_in_screen,
+                               float frame_scale = 1) {
+    SetHtmlInnerHTML(
+        "<style>body { margin: 0; }"
+        "span { display: inline-block; width: 300px; height: 100px; }</style>"
+        "<span draggable='true'>abcd</span>");
+
+    WebMouseEvent mouse_down(WebMouseEvent::Type::kMouseDown, kPositionInWidget,
+                             kPositionInScreen,
+                             WebPointerProperties::Button::kLeft, 1,
+                             WebInputEvent::Modifiers::kLeftButtonDown,
+                             WebInputEvent::GetStaticTimeStampForTests());
+    mouse_down.SetFrameScale(frame_scale);
+    GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+        mouse_down);
+
+    WebMouseEvent mouse_move(WebMouseEvent::Type::kMouseMove, move_in_widget,
+                             move_in_screen,
+                             WebPointerProperties::Button::kLeft, 1,
+                             WebInputEvent::Modifiers::kLeftButtonDown,
+                             WebInputEvent::GetStaticTimeStampForTests());
+    mouse_move.SetFrameScale(frame_scale);
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        mouse_move, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+    return chrome_client_->DragStarted();
+  }
+
+  Persistent<DragStartRecordingChromeClient> chrome_client_;
+  // Position of the mouse down that starts each drag. Widget positions are in
+  // physical pixels and screen positions are in DIPs.
+  static constexpr gfx::PointF kPositionInWidget{50, 50};
+  static constexpr gfx::PointF kPositionInScreen{150, 150};
+};
+
+// Content shifting under a stationary cursor (e.g. a script that moves or
+// resizes the window while the button is held) should not start a drag when the
+// DragThresholdRequiresMouseMovement feature is enabled, even if the
+// content-relative position moved past the threshold.
+TEST_F(DragThresholdTest, ScreenDipsWindowMoveDoesNotStartDrag) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(true);
+  EXPECT_FALSE(PressThenMoveStartsDrag(
+      kPositionInWidget + gfx::Vector2dF(30, 0), kPositionInScreen));
+}
+
+// With DragThresholdRequiresMouseMovement enabled, real pointer movement (the
+// screen position changes) still starts a drag.
+TEST_F(DragThresholdTest, ScreenDipsRealPointerMoveStartsDrag) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(true);
+  EXPECT_TRUE(
+      PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(30, 0),
+                              kPositionInScreen + gfx::Vector2dF(30, 0)));
+}
+
+// With DragThresholdRequiresMouseMovement disabled the threshold is measured in
+// content pixels, so content shifting under a stationary cursor is treated as a
+// drag.
+TEST_F(DragThresholdTest, ContentPixelsWindowMoveStartsDrag) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(false);
+  EXPECT_TRUE(PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(30, 0),
+                                      kPositionInScreen));
+}
+
+// The threshold is in logical pixels, so its physical distance scales with the
+// display DPI. At 200%, 4 physical pixels is only 2 DIPs, which is below the
+// threshold on every platform.
+TEST_F(DragThresholdTest, ScreenDipsBelowThresholdAtHighDpi) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(true);
+  EXPECT_FALSE(
+      PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(4, 0),
+                              kPositionInScreen + gfx::Vector2dF(2, 0)));
+}
+
+// At 200%, 8 physical pixels is 4 DIPs, which exceeds the threshold on every
+// platform.
+TEST_F(DragThresholdTest, ScreenDipsExceedThresholdAtHighDpi) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(true);
+  EXPECT_TRUE(
+      PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(8, 0),
+                              kPositionInScreen + gfx::Vector2dF(4, 0)));
+}
+
+// The legacy content-pixel threshold is measured in physical pixels, so at
+// 200% the same 4 physical pixels (2 DIPs) already starts a drag.
+TEST_F(DragThresholdTest, ContentPixelsUsePhysicalPixelsAtHighDpi) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(false);
+  EXPECT_TRUE(
+      PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(4, 0),
+                              kPositionInScreen + gfx::Vector2dF(2, 0)));
+}
+
+// With pinch-zoom at 2x, 4 physical pixels of movement is only 2 root-frame
+// pixels, so the legacy content-pixel threshold does not start a drag.
+TEST_F(DragThresholdTest, ContentPixelsAffectedByPinchZoom) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(false);
+  EXPECT_FALSE(PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(4, 0),
+                                       kPositionInScreen + gfx::Vector2dF(4, 0),
+                                       /*frame_scale=*/2));
+}
+
+// The screen-DIP threshold is independent of pinch-zoom: the same 4 DIPs of
+// movement starts a drag.
+TEST_F(DragThresholdTest, ScreenDipsUnaffectedByPinchZoom) {
+  ScopedDragThresholdRequiresMouseMovementForTest scoped_feature(true);
+  EXPECT_TRUE(PressThenMoveStartsDrag(kPositionInWidget + gfx::Vector2dF(4, 0),
+                                      kPositionInScreen + gfx::Vector2dF(4, 0),
+                                      /*frame_scale=*/2));
+}
+
 class TooltipCapturingChromeClient : public EmptyChromeClient {
  public:
   TooltipCapturingChromeClient() = default;
