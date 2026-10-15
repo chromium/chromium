@@ -91,6 +91,8 @@ class BASE_EXPORT File {
   // FILE_ERROR_ACCESS_DENIED is returned when a call fails because of a
   // filesystem restriction. FILE_ERROR_SECURITY is returned when a browser
   // policy doesn't allow the operation to be executed.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: FileError
   enum Error {
     FILE_OK = 0,
     FILE_ERROR_FAILED = -1,

@@ -5795,9 +5795,20 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/VirtualDocumentPath.java" ]
   }
 
+  # Separate from base_java so virtual_document_path_java can depend on it.
+  java_cpp_enum("file_error_enum_srcjar") {
+    sources = [ "files/file.h" ]
+  }
+
+  android_library("file_error_java") {
+    srcjar_deps = [ ":file_error_enum_srcjar" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
   android_library("virtual_document_path_java") {
     srcjar_deps = [ ":virtual_document_path_jni" ]
     deps = [
+      ":file_error_java",
       ":log_java",
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_jvm_java",
@@ -6061,6 +6072,7 @@ if (is_android) {
       ":base_java",
       ":base_java_test_support",
       ":base_java_test_support_uncommon",
+      ":file_error_java",
       ":virtual_document_path_java",
       "//base/test:test_support_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

@@ -58,6 +58,22 @@ public class TestDocumentsProvider extends DocumentsProvider {
                 DocumentsContract.Document.COLUMN_FLAGS,
             };
 
+    private static volatile boolean sSimulateLoading;
+    private static volatile String sDuplicateDisplayName;
+    private static volatile boolean sThrowSecurityException;
+
+    public static void setSimulateLoadingForTesting(boolean simulateLoading) {
+        sSimulateLoading = simulateLoading;
+    }
+
+    public static void setDuplicateDisplayNameForTesting(String displayName) {
+        sDuplicateDisplayName = displayName;
+    }
+
+    public static void setThrowSecurityExceptionForTesting(boolean throwSecurityException) {
+        sThrowSecurityException = throwSecurityException;
+    }
+
     // The authority cannot be static as its initialization depends on a Context. A ContentProvider
     // can be created before Application.onCreate() is called, which is where the static
     // application context in ContextUtils is set. Therefore, we must wait until the provider's
@@ -115,37 +131,61 @@ public class TestDocumentsProvider extends DocumentsProvider {
      * https://developer.android.com/reference/android/provider/DocumentsProvider.
      */
     public Cursor query(String[] projection, File[] files) {
+        if (sThrowSecurityException) {
+            throw new SecurityException("Simulated security exception");
+        }
         String[] resolvedProjection = projection == null ? DEFAULT_PROJECTION_FOR_TEST : projection;
         MatrixCursor cursor = new MatrixCursor(resolvedProjection);
-        for (File file : files) {
-            if (file.exists()) {
-                Object[] row = new Object[resolvedProjection.length];
-                for (int i = 0; i < resolvedProjection.length; i++) {
-                    String colName = resolvedProjection[i];
-                    if (DocumentsContract.Document.COLUMN_DOCUMENT_ID.equals(colName)) {
-                        row[i] = getDocumentId(file);
-                    } else if (DocumentsContract.Document.COLUMN_DISPLAY_NAME.equals(colName)) {
-                        row[i] = file.toPath().getFileName();
-                    } else if (DocumentsContract.Document.COLUMN_MIME_TYPE.equals(colName)) {
-                        row[i] = file.isDirectory() ? DocumentsContract.Document.MIME_TYPE_DIR : "";
-                    } else if (DocumentsContract.Document.COLUMN_SIZE.equals(colName)) {
-                        row[i] = file.length();
-                    } else if (DocumentsContract.Document.COLUMN_LAST_MODIFIED.equals(colName)) {
-                        row[i] = file.lastModified();
-                    } else if (DocumentsContract.Document.COLUMN_FLAGS.equals(colName)) {
-                        int flags = DocumentsContract.Document.FLAG_SUPPORTS_DELETE;
-                        if (file.isDirectory()) {
-                            flags |= DocumentsContract.Document.FLAG_DIR_SUPPORTS_CREATE;
-                        } else {
-                            flags |= DocumentsContract.Document.FLAG_SUPPORTS_WRITE;
-                        }
-                        row[i] = flags;
+        if (sSimulateLoading) {
+            Bundle extras = new Bundle();
+            extras.putBoolean(DocumentsContract.EXTRA_LOADING, true);
+            cursor.setExtras(extras);
+        }
+        if (files != null) {
+            for (File file : files) {
+                if (file.exists()) {
+                    addRowForFile(cursor, resolvedProjection, file, getDocumentId(file));
+                    String duplicateName = sDuplicateDisplayName;
+                    if (duplicateName != null
+                            && duplicateName.equals(file.toPath().getFileName().toString())) {
+                        addRowForFile(
+                                cursor,
+                                resolvedProjection,
+                                file,
+                                getDocumentId(file) + "#duplicate");
                     }
                 }
-                cursor.addRow(row);
             }
         }
         return cursor;
+    }
+
+    private void addRowForFile(
+            MatrixCursor cursor, String[] resolvedProjection, File file, String docId) {
+        Object[] row = new Object[resolvedProjection.length];
+        for (int i = 0; i < resolvedProjection.length; i++) {
+            String colName = resolvedProjection[i];
+            if (DocumentsContract.Document.COLUMN_DOCUMENT_ID.equals(colName)) {
+                row[i] = docId;
+            } else if (DocumentsContract.Document.COLUMN_DISPLAY_NAME.equals(colName)) {
+                row[i] = file.toPath().getFileName().toString();
+            } else if (DocumentsContract.Document.COLUMN_MIME_TYPE.equals(colName)) {
+                row[i] = file.isDirectory() ? DocumentsContract.Document.MIME_TYPE_DIR : "";
+            } else if (DocumentsContract.Document.COLUMN_SIZE.equals(colName)) {
+                row[i] = file.length();
+            } else if (DocumentsContract.Document.COLUMN_LAST_MODIFIED.equals(colName)) {
+                row[i] = file.lastModified();
+            } else if (DocumentsContract.Document.COLUMN_FLAGS.equals(colName)) {
+                int flags = DocumentsContract.Document.FLAG_SUPPORTS_DELETE;
+                if (file.isDirectory()) {
+                    flags |= DocumentsContract.Document.FLAG_DIR_SUPPORTS_CREATE;
+                } else {
+                    flags |= DocumentsContract.Document.FLAG_SUPPORTS_WRITE;
+                }
+                row[i] = flags;
+            }
+        }
+        cursor.addRow(row);
     }
 
     @Override

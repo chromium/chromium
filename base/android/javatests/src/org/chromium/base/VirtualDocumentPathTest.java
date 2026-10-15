@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.VirtualDocumentPath.ResolveResult;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 
@@ -31,6 +32,9 @@ public class VirtualDocumentPathTest {
 
     @After
     public void tearDown() {
+        TestDocumentsProvider.setSimulateLoadingForTesting(false);
+        TestDocumentsProvider.setDuplicateDisplayNameForTesting(null);
+        TestDocumentsProvider.setThrowSecurityExceptionForTesting(false);
         FileUtils.recursivelyDeleteFile(ContextUtils.getApplicationContext().getCacheDir(), null);
     }
 
@@ -62,6 +66,9 @@ public class VirtualDocumentPathTest {
             "SAF/" + DOCPROV_AUTHORITY + "/tree/dir-id", // Missing leading slash
             "/SAF//tree/dir-id", // Missing authority
             "/SAF/" + DOCPROV_AUTHORITY + "/tree/dir-id/a//b", // Empty subpath component
+            "/SAF/" + DOCPROV_AUTHORITY + "/tree/dir-id/a/../b", // Parent traversal
+            "/SAF/" + DOCPROV_AUTHORITY + "/tree/dir-id/./a", // Current-dir segment
+            "/SAF/" + DOCPROV_AUTHORITY + "/tree/dir-id/a\0b", // NUL in segment
             "content://" + DOCPROV_AUTHORITY + "/document/dir-id", // Not a tree URI
             // Tree URI with a document ID
             "content://" + DOCPROV_AUTHORITY + "/tree/dir-id/document/dir-id%2Fchild",
@@ -202,5 +209,67 @@ public class VirtualDocumentPathTest {
 
         Assert.assertFalse(a.writeFile(new byte[] {'a'}));
         Assert.assertFalse(btxt.writeFile(new byte[] {'a'}));
+    }
+
+    @Test
+    @SmallTest
+    public void testResolveDocumentMetadataAndErrors() throws IOException {
+        Context context = ContextUtils.getApplicationContext();
+        File root = context.getCacheDir();
+        Assert.assertTrue(new File(root, "dir/subdir").mkdirs());
+        File regularFile = new File(root, "dir/file.txt");
+        Assert.assertTrue(regularFile.createNewFile());
+
+        VirtualDocumentPath dirPath =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/subdir");
+        ResolveResult dirRes = dirPath.resolveDocument();
+        Assert.assertEquals(FileError.FILE_OK, dirRes.getStatus());
+        Assert.assertTrue(dirRes.isDirectory());
+
+        VirtualDocumentPath filePath =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/file.txt");
+        ResolveResult fileRes = filePath.resolveDocument();
+        Assert.assertEquals(FileError.FILE_OK, fileRes.getStatus());
+        Assert.assertFalse(fileRes.isDirectory());
+
+        VirtualDocumentPath childUnderFile =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/file.txt/child");
+        ResolveResult notADirRes = childUnderFile.resolveDocument();
+        Assert.assertEquals(FileError.FILE_ERROR_NOT_A_DIRECTORY, notADirRes.getStatus());
+
+        VirtualDocumentPath childUnderFileTreeRoot =
+                VirtualDocumentPath.parse(
+                        "/SAF/" + DOCPROV_AUTHORITY + "/tree/dir%2Ffile.txt/child");
+        ResolveResult fileTreeRootRes = childUnderFileTreeRoot.resolveDocument();
+        Assert.assertEquals(FileError.FILE_ERROR_NOT_A_DIRECTORY, fileTreeRootRes.getStatus());
+
+        TestDocumentsProvider.setDuplicateDisplayNameForTesting("file.txt");
+        ResolveResult dupRes = filePath.resolveDocument();
+        Assert.assertEquals(FileError.FILE_ERROR_INVALID_OPERATION, dupRes.getStatus());
+        Assert.assertNull(filePath.resolveToContentUri());
+        TestDocumentsProvider.setDuplicateDisplayNameForTesting(null);
+
+        VirtualDocumentPath absentPath =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/absent.txt");
+        VirtualDocumentPath existingTreeRoot =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir");
+        VirtualDocumentPath missingTreeRoot =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/no-such-dir");
+        TestDocumentsProvider.setSimulateLoadingForTesting(true);
+        ResolveResult loadingRes = absentPath.resolveDocument();
+        Assert.assertEquals(FileError.FILE_ERROR_FAILED, loadingRes.getStatus());
+        Assert.assertEquals(FileError.FILE_ERROR_FAILED, filePath.resolveDocument().getStatus());
+        Assert.assertEquals(
+                FileError.FILE_ERROR_FAILED, existingTreeRoot.resolveDocument().getStatus());
+        Assert.assertEquals(
+                FileError.FILE_ERROR_FAILED, missingTreeRoot.resolveDocument().getStatus());
+        Assert.assertFalse(absentPath.writeFile(new byte[] {'x'}));
+        Assert.assertFalse(new File(root, "dir/absent.txt").exists());
+        TestDocumentsProvider.setSimulateLoadingForTesting(false);
+
+        TestDocumentsProvider.setThrowSecurityExceptionForTesting(true);
+        Assert.assertEquals(
+                FileError.FILE_ERROR_ACCESS_DENIED, filePath.resolveDocument().getStatus());
+        TestDocumentsProvider.setThrowSecurityExceptionForTesting(false);
     }
 }

@@ -5,6 +5,7 @@
 #include "base/android/virtual_document_path.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -39,13 +40,32 @@ std::optional<VirtualDocumentPath> VirtualDocumentPath::Parse(
 }
 
 std::optional<std::string> VirtualDocumentPath::ResolveToContentUri() const {
-  JNIEnv* env = android::AttachCurrentThread();
-  std::string uri =
-      Java_VirtualDocumentPath_resolveToContentUriString(env, obj_);
-  if (uri.empty()) {
+  auto resolved = ResolveDocument();
+  if (!resolved.has_value() || resolved->content_uri.empty()) {
     return std::nullopt;
   }
-  return uri;
+  return std::move(resolved->content_uri);
+}
+
+base::expected<ResolvedDocument, base::File::Error>
+VirtualDocumentPath::ResolveDocument() const {
+  JNIEnv* env = android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> result =
+      Java_VirtualDocumentPath_resolveDocument(env, obj_);
+  if (result.is_null()) {
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
+  }
+  base::File::Error error = Java_ResolveResult_getStatus(env, result);
+  if (error != base::File::FILE_OK) {
+    return base::unexpected(error);
+  }
+  ResolvedDocument resolved;
+  resolved.content_uri = Java_ResolveResult_getContentUriString(env, result);
+  resolved.is_directory = Java_ResolveResult_isDirectory(env, result);
+  if (resolved.content_uri.empty()) {
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
+  }
+  return resolved;
 }
 
 std::string VirtualDocumentPath::ToString() const {

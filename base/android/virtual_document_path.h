@@ -12,8 +12,15 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
+#include "base/types/expected.h"
 
 namespace base::files_internal {
+
+struct ResolvedDocument {
+  std::string content_uri;
+  bool is_directory = false;
+};
 
 // Represents and operates on a virtual path for Android's Storage Access
 // Framework (SAF).
@@ -91,9 +98,12 @@ class VirtualDocumentPath {
   // https://developer.android.com/reference/android/provider/DocumentsContract
   // for more about document tree URIs.
   static std::optional<VirtualDocumentPath> Parse(const std::string& path);
-  // Resolves it to a content URI. If the file does not exist, it will return
-  // nullopt. If it returns a value, it will not be an empty string.
+  // Resolves it to a content URI, or returns nullopt if resolution fails. If
+  // it returns a value, it will not be an empty string.
   std::optional<std::string> ResolveToContentUri() const;
+  // Resolves the virtual path into a structured result with `File::Error`
+  // details and directory metadata.
+  base::expected<ResolvedDocument, base::File::Error> ResolveDocument() const;
   // Returns string representation of the instance. See the class level comment
   // for details.
   std::string ToString() const;
