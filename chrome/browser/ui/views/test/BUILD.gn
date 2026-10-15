@@ -44,4 +44,30 @@ if (!is_android) {
 
     deps = [ "//chrome/browser/ui/views/frame:browser_view_header" ]
   }
+
+  source_set("view_event_test_base") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "view_event_test_base.cc",
+      "view_event_test_base.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/test/views",
+      "//ui/accessibility:test_support",
+      "//ui/views",
+    ]
+
+    deps = [
+      "//chrome/test/base:chrome_unit_test_suite",
+      "//chrome/test/base:interactive_test_utils",
+      "//chrome/test/base:testing_browser_process",
+      "//mojo/core/embedder",
+      "//ui/display",
+      "//ui/views:test_support",
+    ]
+  }
 }

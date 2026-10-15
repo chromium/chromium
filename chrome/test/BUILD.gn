@@ -4057,14 +4057,6 @@ if (!is_android && !is_chromeos_device) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
 
-    allow_circular_includes_from = [
-      # These targets include ../browser/ui/views/test/view_event_test_base.h,
-      # which is compiled directly into this target's own sources rather than
-      # a separate one.
-      "//chrome/browser/ui/views:interactive_ui_tests",
-      "//chrome/browser/ui/views/bookmarks:interactive_ui_tests",
-    ]
-
     deps = [
       ":test_support",
       ":test_support_ui",
@@ -4247,11 +4239,6 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (toolkit_views) {
-      sources += [
-        "../browser/ui/views/test/view_event_test_base.cc",
-        "../browser/ui/views/test/view_event_test_base.h",
-      ]
-
       deps += [
         "//chrome/browser/ui/toolbar:interactive_ui_tests",
         "//chrome/browser/ui/user_education:interactive_ui_tests",
