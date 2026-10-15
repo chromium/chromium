@@ -95,6 +95,15 @@ export class OobeCarousel extends OobeCarouselBase {
       unselectedButtonLabel: {
         type: String,
       },
+
+      /**
+       * Array for storing number leading up to totalSlides
+       * Example: [ 0 1 2 3 ... ]
+       */
+      dots: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -104,19 +113,13 @@ export class OobeCarousel extends OobeCarouselBase {
   declare private slideLabel: string;
   declare private selectedButtonLabel: string;
   declare private unselectedButtonLabel: string;
-  private dots: number[];
+  declare private dots: number[];
   private slides: HTMLElement[];
   private totalSlides: number;
   private timerId: number|null;
 
   constructor() {
     super();
-
-    /**
-     * Array for storing number leading up to totalSlides
-     * Example: [ 0 1 2 3 ... ]
-     */
-    this.dots = [];
 
     /**
      * Array of slotted slides.

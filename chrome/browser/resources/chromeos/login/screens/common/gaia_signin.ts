@@ -241,6 +241,14 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       emailDomain: {
         type: String,
       },
+
+      /**
+       * Whether we've processed 'authCompleted' message.
+       */
+      authCompleted: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -260,13 +268,13 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
   declare private isDefaultSsoProvider: boolean;
   declare private isClosable: boolean;
   declare private emailDomain: string;
+  declare private authCompleted: boolean;
   private authenticatorParams: null|any;
   private email: string;
   private loadingTimer: number|undefined;
   private loadAnimationGuardTimer: number|undefined;
   private videoTimer: number|undefined;
   private showViewProcessed: boolean;
-  private authCompleted: boolean;
   private pinDialogResultReported: boolean;
 
   constructor() {
@@ -302,11 +310,6 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
      * guard timer.
      */
     this.showViewProcessed = false;
-
-    /**
-     * Whether we've processed 'authCompleted' message.
-     */
-    this.authCompleted = false;
 
     /**
      * Whether the result was reported to the handler for the most recent PIN

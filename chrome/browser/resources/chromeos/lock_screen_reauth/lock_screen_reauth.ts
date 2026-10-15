@@ -150,6 +150,13 @@ class LockReauthElement extends LockReauthElementBase {
         type: Number,
         value: 0,
       },
+
+      /**
+       * The UI component that hosts IdP pages.
+       */
+      authenticator: {
+        type: Object,
+      },
     };
   }
 
@@ -165,16 +172,12 @@ class LockReauthElement extends LockReauthElementBase {
   declare isPasswordChanged: boolean;
   declare passwordConfirmAttempt: number;
   declare passwordChangeAttempt: number;
+  declare authenticator?: Authenticator;
 
   /**
    * Saved authenticator load params.
    */
   private authenticatorParams: null|AuthParams = null;
-
-  /**
-   * The UI component that hosts IdP pages.
-   */
-  authenticator?: Authenticator;
 
   /**
    * Webview that view IdP page

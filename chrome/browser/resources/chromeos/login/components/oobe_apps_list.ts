@@ -45,13 +45,18 @@ export class OobeAppsList extends OobeAppsListBase {
         value: 0,
         notify: true,
       },
+
+      allSelected: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   declare appList: any[];
   declare appsSelected: number;
+  declare allSelected: boolean;
   private loadingTimer: number|undefined;
-  allSelected: boolean;
   loadedImagesCount: number;
 
   constructor() {
@@ -60,7 +65,6 @@ export class OobeAppsList extends OobeAppsListBase {
      * Timer id of pending load.
      */
     this.loadingTimer = undefined;
-    this.allSelected = false;
     this.loadedImagesCount = 0;
   }
 
