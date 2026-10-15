@@ -327,11 +327,13 @@ TEST_F(ActuationWorklogMediatorTest, TestUserInterventionFlow) {
   ASSERT_NE(fake_consumer_.intervention, nil);
   EXPECT_NSEQ(fake_consumer_.intervention.title, @"Intervention Title");
   EXPECT_NSEQ(fake_consumer_.intervention.subtitle, @"Intervention Subtitle");
-  EXPECT_NSEQ(fake_consumer_.intervention.primaryButtonText, @"Continue");
+  ASSERT_EQ(fake_consumer_.intervention.actions.count, 1u);
+  ActuationInterventionAction* action =
+      fake_consumer_.intervention.actions.firstObject;
+  EXPECT_NSEQ(action.title, @"Continue");
   EXPECT_FALSE(completion_called);
 
-  [mediator_
-      didTriggerInterventionAction:ActuationInterventionAction::kPrimary];
+  [mediator_ didTriggerInterventionAction:action];
   EXPECT_TRUE(completion_called);
   EXPECT_EQ(fake_consumer_.intervention, nil);
 }
@@ -425,8 +427,8 @@ TEST_F(ActuationWorklogMediatorTest,
   EXPECT_NSEQ(fake_consumer_.intervention.title, @"Input needed");
   EXPECT_NSEQ(fake_consumer_.intervention.subtitle, @(kConfirmationMessage));
 
-  [mediator_
-      didTriggerInterventionAction:ActuationInterventionAction::kPrimary];
+  [mediator_ didTriggerInterventionAction:fake_consumer_.intervention.actions
+                                              .firstObject];
   EXPECT_EQ(fake_consumer_.intervention, nil);
   // The intervention completion is posted back to the task.
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kWaitingOnUser);

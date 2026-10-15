@@ -336,7 +336,7 @@ using intelligence::actor::kSpacingLarge;
 #pragma mark - ActuationInterventionViewDelegate
 
 - (void)interventionView:(ActuationInterventionView*)view
-        didTriggerAction:(ActuationInterventionAction)action {
+        didTriggerAction:(ActuationInterventionAction*)action {
   [self.mutator didTriggerInterventionAction:action];
 }
 

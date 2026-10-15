@@ -20,15 +20,21 @@ const CGFloat kShowcaseCornerRadius = 24.0;
 // the segment index to `ActuationInterventionType` mapping.
 constexpr std::array kLayouts = {
     ActuationInterventionType::kCard,
-    ActuationInterventionType::kSingleButton,
-    ActuationInterventionType::kDualButton,
+    ActuationInterventionType::kRow,
 };
+
+// Identifiers of the showcased intervention actions.
+constexpr NSInteger kPrimaryActionIdentifier = 0;
+constexpr NSInteger kSecondaryActionIdentifier = 1;
 
 // Default intervention texts.
 NSString* const kDefaultTitle = @"Confirm purchase";
 NSString* const kDefaultSubtitle = @"3 tickets to Project Hail Mary, $45.00";
 NSString* const kDefaultPrimaryButtonText = @"Continue";
 NSString* const kDefaultSecondaryButtonText = @"Cancel";
+
+// Placeholder of the secondary button field, which is optional in a row.
+NSString* const kSecondaryButtonPlaceholder = @"Empty for a single button";
 
 // Action name displayed until an action is triggered.
 NSString* const kNoActionName = @"none";
@@ -50,14 +56,10 @@ UITextField* TextField(NSString* text) {
   return textField;
 }
 
-// Returns a human readable name for `action`.
-NSString* ActionName(ActuationInterventionAction action) {
-  switch (action) {
-    case ActuationInterventionAction::kPrimary:
-      return @"Primary";
-    case ActuationInterventionAction::kSecondary:
-      return @"Secondary";
-  }
+// Returns a human readable name for `action`, based on its identifier.
+NSString* ActionName(ActuationInterventionAction* action) {
+  return action.identifier == kPrimaryActionIdentifier ? @"Primary"
+                                                       : @"Secondary";
 }
 
 // Returns the text reporting `actionName` as the last triggered action.
@@ -70,10 +72,8 @@ NSString* LayoutName(ActuationInterventionType layout) {
   switch (layout) {
     case ActuationInterventionType::kCard:
       return @"Card";
-    case ActuationInterventionType::kSingleButton:
-      return @"Single";
-    case ActuationInterventionType::kDualButton:
-      return @"Dual";
+    case ActuationInterventionType::kRow:
+      return @"Row";
   }
 }
 
@@ -134,7 +134,7 @@ NSString* LayoutName(ActuationInterventionType layout) {
 #pragma mark - ActuationInterventionViewDelegate
 
 - (void)interventionView:(ActuationInterventionView*)view
-        didTriggerAction:(ActuationInterventionAction)action {
+        didTriggerAction:(ActuationInterventionAction*)action {
   _lastActionLabel.text = LastActionText(ActionName(action));
 }
 
@@ -189,6 +189,7 @@ NSString* LayoutName(ActuationInterventionType layout) {
                                                titled:@"Primary button"]];
 
   _secondaryButtonField = TextField(kDefaultSecondaryButtonText);
+  _secondaryButtonField.placeholder = kSecondaryButtonPlaceholder;
   _secondaryButtonRow = [self rowWithControl:_secondaryButtonField
                                       titled:@"Secondary button"];
   [_mainStack addArrangedSubview:_secondaryButtonRow];
@@ -214,7 +215,7 @@ NSString* LayoutName(ActuationInterventionType layout) {
   BOOL isCard = layout == ActuationInterventionType::kCard;
   _titleRow.hidden = !isCard;
   _subtitleRow.hidden = !isCard;
-  _secondaryButtonRow.hidden = layout != ActuationInterventionType::kDualButton;
+  _secondaryButtonRow.hidden = layout != ActuationInterventionType::kRow;
 
   [_interventionView configureWithData:[self interventionDataForLayout:layout]];
 }
@@ -222,22 +223,30 @@ NSString* LayoutName(ActuationInterventionType layout) {
 // Returns the intervention data for `layout`, filled from the text fields.
 - (ActuationInterventionData*)interventionDataForLayout:
     (ActuationInterventionType)layout {
+  ActuationInterventionAction* primaryAction =
+      [[ActuationInterventionAction alloc]
+          initWithIdentifier:kPrimaryActionIdentifier
+                       title:_primaryButtonField.text];
   switch (layout) {
     case ActuationInterventionType::kCard: {
       NSString* subtitle =
           _subtitleField.text.length > 0 ? _subtitleField.text : nil;
-      return [ActuationInterventionData
-          cardItemWithTitle:_titleField.text
-                   subtitle:subtitle
-          primaryButtonText:_primaryButtonField.text];
+      return [ActuationInterventionData cardItemWithTitle:_titleField.text
+                                                 subtitle:subtitle
+                                                   action:primaryAction];
     }
-    case ActuationInterventionType::kSingleButton:
+    case ActuationInterventionType::kRow: {
+      if (_secondaryButtonField.text.length == 0) {
+        return
+            [ActuationInterventionData rowItemWithActions:@[ primaryAction ]];
+      }
+      ActuationInterventionAction* secondaryAction =
+          [[ActuationInterventionAction alloc]
+              initWithIdentifier:kSecondaryActionIdentifier
+                           title:_secondaryButtonField.text];
       return [ActuationInterventionData
-          singleButtonItemWithPrimaryButtonText:_primaryButtonField.text];
-    case ActuationInterventionType::kDualButton:
-      return [ActuationInterventionData
-          dualButtonItemWithPrimaryButtonText:_primaryButtonField.text
-                          secondaryButtonText:_secondaryButtonField.text];
+          rowItemWithActions:@[ secondaryAction, primaryAction ]];
+    }
   }
 }
 

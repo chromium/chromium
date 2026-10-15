@@ -5,6 +5,14 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
+
+namespace {
+
+// Maximum number of actions displayed by an `ActuationInterventionType::kRow`.
+constexpr NSUInteger kMaxRowActionCount = 2;
+
+}  // namespace
 
 @implementation ActuationWorklogAccessoryItem
 
@@ -141,14 +149,29 @@
 
 @end
 
+@implementation ActuationInterventionAction
+
+- (instancetype)initWithIdentifier:(NSInteger)identifier
+                             title:(NSString*)title {
+  CHECK(title);
+
+  self = [super init];
+  if (self) {
+    _identifier = identifier;
+    _title = [title copy];
+  }
+  return self;
+}
+
+@end
+
 @interface ActuationInterventionData ()
 
 // Designated initializer.
 - (instancetype)initWithType:(ActuationInterventionType)type
                        title:(NSString*)title
                     subtitle:(NSString*)subtitle
-           primaryButtonText:(NSString*)primaryButtonText
-         secondaryButtonText:(NSString*)secondaryButtonText
+                     actions:(NSArray<ActuationInterventionAction*>*)actions
     NS_DESIGNATED_INITIALIZER;
 
 @end
@@ -158,17 +181,15 @@
 - (instancetype)initWithType:(ActuationInterventionType)type
                        title:(NSString*)title
                     subtitle:(NSString*)subtitle
-           primaryButtonText:(NSString*)primaryButtonText
-         secondaryButtonText:(NSString*)secondaryButtonText {
-  CHECK(primaryButtonText);
+                     actions:(NSArray<ActuationInterventionAction*>*)actions {
+  CHECK_GT(actions.count, 0u);
   switch (type) {
     case ActuationInterventionType::kCard:
       CHECK(title);
+      CHECK_EQ(actions.count, 1u);
       break;
-    case ActuationInterventionType::kSingleButton:
-      break;
-    case ActuationInterventionType::kDualButton:
-      CHECK(secondaryButtonText);
+    case ActuationInterventionType::kRow:
+      CHECK_LE(actions.count, kMaxRowActionCount);
       break;
   }
 
@@ -177,8 +198,7 @@
     _type = type;
     _title = [title copy];
     _subtitle = [subtitle copy];
-    _primaryButtonText = [primaryButtonText copy];
-    _secondaryButtonText = [secondaryButtonText copy];
+    _actions = [actions copy];
   }
   return self;
 }
@@ -187,34 +207,22 @@
 
 + (instancetype)cardItemWithTitle:(NSString*)title
                          subtitle:(NSString*)subtitle
-                primaryButtonText:(NSString*)primaryButtonText {
+                           action:(ActuationInterventionAction*)action {
+  CHECK(action);
   return [[ActuationInterventionData alloc]
-             initWithType:ActuationInterventionType::kCard
-                    title:title
-                 subtitle:subtitle
-        primaryButtonText:primaryButtonText
-      secondaryButtonText:nil];
+      initWithType:ActuationInterventionType::kCard
+             title:title
+          subtitle:subtitle
+           actions:@[ action ]];
 }
 
-+ (instancetype)singleButtonItemWithPrimaryButtonText:
-    (NSString*)primaryButtonText {
++ (instancetype)rowItemWithActions:
+    (NSArray<ActuationInterventionAction*>*)actions {
   return [[ActuationInterventionData alloc]
-             initWithType:ActuationInterventionType::kSingleButton
-                    title:nil
-                 subtitle:nil
-        primaryButtonText:primaryButtonText
-      secondaryButtonText:nil];
-}
-
-+ (instancetype)dualButtonItemWithPrimaryButtonText:(NSString*)primaryButtonText
-                                secondaryButtonText:
-                                    (NSString*)secondaryButtonText {
-  return [[ActuationInterventionData alloc]
-             initWithType:ActuationInterventionType::kDualButton
-                    title:nil
-                 subtitle:nil
-        primaryButtonText:primaryButtonText
-      secondaryButtonText:secondaryButtonText];
+      initWithType:ActuationInterventionType::kRow
+             title:nil
+          subtitle:nil
+           actions:actions];
 }
 
 @end

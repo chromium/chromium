@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view.h"
 
-#import <optional>
-
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -17,13 +15,12 @@
 
 @interface FakeActuationInterventionViewDelegate
     : NSObject <ActuationInterventionViewDelegate>
-@property(nonatomic, assign) std::optional<ActuationInterventionAction>
-    triggeredAction;
+@property(nonatomic, strong) ActuationInterventionAction* triggeredAction;
 @end
 
 @implementation FakeActuationInterventionViewDelegate
 - (void)interventionView:(ActuationInterventionView*)view
-        didTriggerAction:(ActuationInterventionAction)action {
+        didTriggerAction:(ActuationInterventionAction*)action {
   _triggeredAction = action;
 }
 @end
@@ -31,6 +28,9 @@
 namespace {
 
 using chrome_test_util::FindViewById;
+
+// Arbitrary identifier for the test actions.
+constexpr NSInteger kActionIdentifier = 0;
 
 class ActuationInterventionViewTest : public PlatformTest {
  protected:
@@ -41,22 +41,23 @@ class ActuationInterventionViewTest : public PlatformTest {
     view_.delegate = delegate_;
   }
 
+  // Returns an action with `title`.
+  ActuationInterventionAction* Action(NSString* title) {
+    return [[ActuationInterventionAction alloc]
+        initWithIdentifier:kActionIdentifier
+                     title:title];
+  }
+
   // Returns the card view inside `view_`.
   UIView* CardView() {
     return FindViewById(view_,
                         kActuationInterventionCardAccessibilityIdentifier);
   }
 
-  // Returns the primary action button inside `view_`.
-  ChromeButton* PrimaryButton() {
+  // Returns the row button displaying the action at `index`, if any.
+  ChromeButton* ActionButton(NSUInteger index) {
     return FindViewById<ChromeButton>(
-        view_, kActuationInterventionPrimaryButtonAccessibilityIdentifier);
-  }
-
-  // Returns the secondary action button inside `view_`.
-  ChromeButton* SecondaryButton() {
-    return FindViewById<ChromeButton>(
-        view_, kActuationInterventionSecondaryButtonAccessibilityIdentifier);
+        view_, ActuationInterventionActionButtonAccessibilityIdentifier(index));
   }
 
   // Returns the action button owned by the card layout of `view_`.
@@ -69,12 +70,13 @@ class ActuationInterventionViewTest : public PlatformTest {
   FakeActuationInterventionViewDelegate* delegate_ = nil;
 };
 
-// Test a card intervention presents the card and dispatches kPrimary.
+// Tests that a card intervention presents the card and dispatches its action.
 TEST_F(ActuationInterventionViewTest, TestCardLayout) {
-  [view_ configureWithData:[ActuationInterventionData
-                               cardItemWithTitle:@"Title"
-                                        subtitle:@"Subtitle"
-                               primaryButtonText:@"Continue"]];
+  ActuationInterventionAction* action = Action(@"Continue");
+  [view_
+      configureWithData:[ActuationInterventionData cardItemWithTitle:@"Title"
+                                                            subtitle:@"Subtitle"
+                                                              action:action]];
 
   UIView* card_view = CardView();
   ASSERT_NE(card_view, nil);
@@ -86,62 +88,57 @@ TEST_F(ActuationInterventionViewTest, TestCardLayout) {
   EXPECT_NSEQ(action_button.title, @"Continue");
 
   [action_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_EQ(delegate_.triggeredAction, ActuationInterventionAction::kPrimary);
+  EXPECT_EQ(delegate_.triggeredAction, action);
 }
 
-// Test a single-button intervention presents only the primary button.
-TEST_F(ActuationInterventionViewTest, TestSingleButtonLayout) {
+// Tests that a two-action row presents the actions in order with equal
+// tertiary emphasis, and dispatches the action of each tapped button.
+TEST_F(ActuationInterventionViewTest, TestTwoActionRowLayout) {
+  ActuationInterventionAction* cancel_action = Action(@"Cancel");
+  ActuationInterventionAction* confirm_action = Action(@"Confirm");
+  [view_ configureWithData:[ActuationInterventionData rowItemWithActions:@[
+           cancel_action, confirm_action
+         ]]];
+
+  EXPECT_TRUE(CardView().hidden);
+
+  ChromeButton* leading_button = ActionButton(0);
+  ASSERT_NE(leading_button, nil);
+  EXPECT_NSEQ(leading_button.title, @"Cancel");
+  EXPECT_EQ(leading_button.style, ChromeButtonStyleTertiary);
+
+  ChromeButton* trailing_button = ActionButton(1);
+  ASSERT_NE(trailing_button, nil);
+  EXPECT_NSEQ(trailing_button.title, @"Confirm");
+  EXPECT_EQ(trailing_button.style, ChromeButtonStyleTertiary);
+
+  [leading_button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(delegate_.triggeredAction, cancel_action);
+
+  [trailing_button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(delegate_.triggeredAction, confirm_action);
+}
+
+// Tests that reconfiguring a row replaces the buttons of the previous
+// configuration, styling a single remaining button as primary.
+TEST_F(ActuationInterventionViewTest, TestReconfigureReplacesRowButtons) {
+  [view_ configureWithData:[ActuationInterventionData rowItemWithActions:@[
+           Action(@"Cancel"), Action(@"Confirm")
+         ]]];
   [view_ configureWithData:[ActuationInterventionData
-                               singleButtonItemWithPrimaryButtonText:@"OK"]];
+                               rowItemWithActions:@[ Action(@"Done") ]]];
 
-  UIView* card_view = CardView();
-  ASSERT_NE(card_view, nil);
-  EXPECT_TRUE(card_view.hidden);
-
-  ChromeButton* primary_button = PrimaryButton();
-  ASSERT_NE(primary_button, nil);
-  EXPECT_FALSE(primary_button.hidden);
-  EXPECT_NSEQ(primary_button.title, @"OK");
-
-  ChromeButton* secondary_button = SecondaryButton();
-  ASSERT_NE(secondary_button, nil);
-  EXPECT_TRUE(secondary_button.hidden);
-
-  [primary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_EQ(delegate_.triggeredAction, ActuationInterventionAction::kPrimary);
+  ChromeButton* button = ActionButton(0);
+  ASSERT_NE(button, nil);
+  EXPECT_NSEQ(button.title, @"Done");
+  EXPECT_EQ(button.style, ChromeButtonStylePrimary);
+  EXPECT_EQ(ActionButton(1), nil);
 }
 
-// Test a dual-button intervention presents both buttons.
-TEST_F(ActuationInterventionViewTest, TestDualButtonLayout) {
-  [view_ configureWithData:[ActuationInterventionData
-                               dualButtonItemWithPrimaryButtonText:@"Confirm"
-                                               secondaryButtonText:@"Cancel"]];
-
-  UIView* card_view = CardView();
-  ASSERT_NE(card_view, nil);
-  EXPECT_TRUE(card_view.hidden);
-
-  ChromeButton* primary_button = PrimaryButton();
-  ASSERT_NE(primary_button, nil);
-  EXPECT_FALSE(primary_button.hidden);
-  EXPECT_NSEQ(primary_button.title, @"Confirm");
-
-  ChromeButton* secondary_button = SecondaryButton();
-  ASSERT_NE(secondary_button, nil);
-  EXPECT_FALSE(secondary_button.hidden);
-  EXPECT_NSEQ(secondary_button.title, @"Cancel");
-
-  [secondary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_EQ(delegate_.triggeredAction, ActuationInterventionAction::kSecondary);
-
-  [primary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_EQ(delegate_.triggeredAction, ActuationInterventionAction::kPrimary);
-}
-
-// Test that passing nil hides the view and collapses it to zero height.
+// Tests that passing nil hides the view and collapses it to zero height.
 TEST_F(ActuationInterventionViewTest, TestNilDataCollapsesView) {
   [view_ configureWithData:[ActuationInterventionData
-                               singleButtonItemWithPrimaryButtonText:@"Done"]];
+                               rowItemWithActions:@[ Action(@"Done") ]]];
   EXPECT_FALSE(view_.hidden);
   CGSize size = UILayoutFittingCompressedSize;
   EXPECT_GT([view_ systemLayoutSizeFittingSize:size].height, 0.0);

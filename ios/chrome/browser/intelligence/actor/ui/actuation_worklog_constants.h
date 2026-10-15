@@ -30,15 +30,10 @@ inline constexpr NSString* const
     kActuationInterventionCardAccessibilityIdentifier =
         @"ActuationInterventionCardAccessibilityIdentifier";
 
-// Accessibility identifier for the primary action button in an intervention.
-inline constexpr NSString* const
-    kActuationInterventionPrimaryButtonAccessibilityIdentifier =
-        @"ActuationInterventionPrimaryButtonAccessibilityIdentifier";
-
-// Accessibility identifier for the secondary action button in an intervention.
-inline constexpr NSString* const
-    kActuationInterventionSecondaryButtonAccessibilityIdentifier =
-        @"ActuationInterventionSecondaryButtonAccessibilityIdentifier";
+// Returns the accessibility identifier of the button displaying the action at
+// `index` of `ActuationInterventionData.actions`.
+NSString* ActuationInterventionActionButtonAccessibilityIdentifier(
+    NSUInteger index);
 
 // TODO(crbug.com/553535673): Remove C++ namespace for UI constants.
 namespace intelligence::actor {

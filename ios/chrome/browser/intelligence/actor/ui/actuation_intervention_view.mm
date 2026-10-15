@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view.h"
 
+#import "base/check_op.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -18,13 +19,14 @@ using intelligence::actor::kSpacingSmall;
 
 @implementation ActuationInterventionView {
   UIStackView* _stackView;
-  //  Used for card layout.
+  // Used for card layout.
   ActuationTaskCardView* _cardView;
 
-  // USed for single and dual buttons layout.
-  ChromeButton* _primaryButton;
-  ChromeButton* _secondaryButton;
+  // Used for row layout. Holds one button per action.
   UIStackView* _buttonStack;
+
+  // Intervention actions, kept to map taps to the action sent to the delegate.
+  NSArray<ActuationInterventionAction*>* _actions;
 
   // Active only when unconfigured to collapse the view to zero height.
   NSLayoutConstraint* _collapsedHeightConstraint;
@@ -43,10 +45,10 @@ using intelligence::actor::kSpacingSmall;
 }
 
 - (void)configureWithData:(ActuationInterventionData*)data {
+  _actions = data.actions;
   _cardView.hidden = YES;
   _buttonStack.hidden = YES;
-  _primaryButton.hidden = YES;
-  _secondaryButton.hidden = YES;
+  [self removeActionButtons];
 
   BOOL hasIntervention = (data != nil);
   if (hasIntervention) {
@@ -54,19 +56,11 @@ using intelligence::actor::kSpacingSmall;
       case ActuationInterventionType::kCard:
         _cardView.title = data.title;
         _cardView.subtitle = data.subtitle;
-        _cardView.buttonTitle = data.primaryButtonText;
+        _cardView.buttonTitle = data.actions.firstObject.title;
         _cardView.hidden = NO;
         break;
-      case ActuationInterventionType::kSingleButton:
-        _primaryButton.title = data.primaryButtonText;
-        _primaryButton.hidden = NO;
-        _buttonStack.hidden = NO;
-        break;
-      case ActuationInterventionType::kDualButton:
-        _primaryButton.title = data.primaryButtonText;
-        _secondaryButton.title = data.secondaryButtonText;
-        _secondaryButton.hidden = NO;
-        _primaryButton.hidden = NO;
+      case ActuationInterventionType::kRow:
+        [self addRowButtonsForActions:data.actions];
         _buttonStack.hidden = NO;
         break;
     }
@@ -91,26 +85,8 @@ using intelligence::actor::kSpacingSmall;
   _cardView.delegate = self;
   _cardView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  _secondaryButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
-  _secondaryButton.accessibilityIdentifier =
-      kActuationInterventionSecondaryButtonAccessibilityIdentifier;
-  _secondaryButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_secondaryButton addTarget:self
-                       action:@selector(didTapSecondaryButton)
-             forControlEvents:UIControlEventTouchUpInside];
-
-  _primaryButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  _primaryButton.accessibilityIdentifier =
-      kActuationInterventionPrimaryButtonAccessibilityIdentifier;
-  _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_primaryButton addTarget:self
-                     action:@selector(didTapPrimaryButton)
-           forControlEvents:UIControlEventTouchUpInside];
-
-  _buttonStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _secondaryButton, _primaryButton ]];
+  // TODO(crbug.com/573145076): Use a vertical axis for the column layout.
+  _buttonStack = [[UIStackView alloc] init];
   _buttonStack.distribution = UIStackViewDistributionFillEqually;
   _buttonStack.spacing = kSpacingSmall;
   _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
@@ -143,22 +119,47 @@ using intelligence::actor::kSpacingSmall;
   ]];
 }
 
-// Handles primary action button taps.
-- (void)didTapPrimaryButton {
-  [self.delegate interventionView:self
-                 didTriggerAction:ActuationInterventionAction::kPrimary];
+// Adds a button per action to `_buttonStack`. A lone action is primary,
+// multiple actions are tertiary.
+- (void)addRowButtonsForActions:
+    (NSArray<ActuationInterventionAction*>*)actions {
+  ChromeButtonStyle style =
+      actions.count == 1 ? ChromeButtonStylePrimary : ChromeButtonStyleTertiary;
+  for (NSUInteger index = 0; index < actions.count; ++index) {
+    ChromeButton* button = [[ChromeButton alloc] initWithStyle:style];
+    button.title = actions[index].title;
+    button.tag = static_cast<NSInteger>(index);
+    button.accessibilityIdentifier =
+        ActuationInterventionActionButtonAccessibilityIdentifier(index);
+    [button addTarget:self
+                  action:@selector(didTapActionButton:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [_buttonStack addArrangedSubview:button];
+  }
 }
 
-// Handles secondary action button taps.
-- (void)didTapSecondaryButton {
-  [self.delegate interventionView:self
-                 didTriggerAction:ActuationInterventionAction::kSecondary];
+// Removes all the buttons from `_buttonStack`.
+- (void)removeActionButtons {
+  for (UIView* button in _buttonStack.arrangedSubviews) {
+    [button removeFromSuperview];
+  }
+}
+
+// Handles taps on the row buttons, tagged with the index of their action.
+- (void)didTapActionButton:(UIButton*)button {
+  [self triggerActionAtIndex:static_cast<NSUInteger>(button.tag)];
+}
+
+// Notifies the delegate that the action at `index` of `_actions` was triggered.
+- (void)triggerActionAtIndex:(NSUInteger)index {
+  CHECK_LT(index, _actions.count);
+  [self.delegate interventionView:self didTriggerAction:_actions[index]];
 }
 
 #pragma mark - ActuationTaskCardViewDelegate
 
 - (void)taskCardViewDidTapActionButton:(ActuationTaskCardView*)view {
-  [self didTapPrimaryButton];
+  [self triggerActionAtIndex:0];
 }
 
 - (void)taskCardView:(ActuationTaskCardView*)view

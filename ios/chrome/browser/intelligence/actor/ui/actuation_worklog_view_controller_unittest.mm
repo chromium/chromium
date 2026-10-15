@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
-#import <optional>
-
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
@@ -19,8 +17,7 @@
 #import "testing/platform_test.h"
 
 @interface FakeActuationWorklogMutator : NSObject <ActuationWorklogMutator>
-@property(nonatomic, assign) std::optional<ActuationInterventionAction>
-    triggeredAction;
+@property(nonatomic, strong) ActuationInterventionAction* triggeredAction;
 @property(nonatomic, assign) BOOL stopActuationCalled;
 @end
 
@@ -29,7 +26,7 @@
   _stopActuationCalled = YES;
 }
 
-- (void)didTriggerInterventionAction:(ActuationInterventionAction)action {
+- (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
   _triggeredAction = action;
 }
 @end
@@ -37,6 +34,9 @@
 namespace {
 
 using chrome_test_util::FindViewById;
+
+// Arbitrary identifier for the test action.
+constexpr NSInteger kActionIdentifier = 0;
 
 class ActuationWorklogViewControllerTest : public PlatformTest {
  protected:
@@ -164,10 +164,13 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
   ASSERT_NE(card_view, nil);
   EXPECT_TRUE(card_view.hidden);
 
+  ActuationInterventionAction* action =
+      [[ActuationInterventionAction alloc] initWithIdentifier:kActionIdentifier
+                                                        title:@"Continue"];
   [consumer() setIntervention:[ActuationInterventionData
                                   cardItemWithTitle:@"Intervention Title"
                                            subtitle:@"Intervention Subtitle"
-                                  primaryButtonText:@"Continue"]];
+                                             action:action]];
   EXPECT_FALSE(card_view.hidden);
 
   // Verify mutator dispatch on button tap. A card intervention renders the
@@ -178,9 +181,7 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
   ASSERT_NE(action_button, nil);
   EXPECT_NSEQ(action_button.title, @"Continue");
   [action_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  ASSERT_TRUE(fake_mutator_.triggeredAction.has_value());
-  EXPECT_EQ(*fake_mutator_.triggeredAction,
-            ActuationInterventionAction::kPrimary);
+  EXPECT_EQ(fake_mutator_.triggeredAction, action);
 
   // Reset clears intervention.
   [consumer() reset];

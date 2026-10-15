@@ -148,21 +148,30 @@ typedef NS_ENUM(NSInteger, ActuationWorklogDisplayMode) {
 
 // Visual layouts for an interactive intervention in the actuation worklog.
 enum class ActuationInterventionType {
-  // Card with `title`, optional `subtitle`, and a primary action button.
+  // Card with `title`, optional `subtitle`, and a single action button.
   kCard,
-  // Standalone full-width primary action button.
-  kSingleButton,
-  // Standalone, side-by-side secondary and primary action buttons.
-  kDualButton,
+  // Row of one or two action buttons, without `title` or `subtitle`.
+  kRow,
 };
 
-// User action triggered on an active worklog intervention.
-enum class ActuationInterventionAction {
-  // The primary confirmation/continuation action.
-  kPrimary,
-  // The secondary cancellation/alternative action.
-  kSecondary,
-};
+// View data object describing an action of an `ActuationInterventionData`.
+@interface ActuationInterventionAction : NSObject
+
+// Caller-defined identifier, passed back when the action is triggered.
+@property(nonatomic, assign, readonly) NSInteger identifier;
+
+// Title of the button triggering the action.
+@property(nonatomic, copy, readonly) NSString* title;
+
+// TODO(crbug.com/573145076): Add an optional `icon` for `columnItem`.
+
+// Designated initializer.
+- (instancetype)initWithIdentifier:(NSInteger)identifier
+                             title:(NSString*)title NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
 
 // View data object describing an intervention in the actuation worklog.
 @interface ActuationInterventionData : NSObject
@@ -176,30 +185,24 @@ enum class ActuationInterventionAction {
 // Optional subtitle text (used if `type == kCard`).
 @property(nonatomic, copy, readonly) NSString* subtitle;
 
-// Mandatory primary action button title.
-@property(nonatomic, copy, readonly) NSString* primaryButtonText;
-
-// Optional secondary action button title (mandatory if `type == kDualButton`).
-@property(nonatomic, copy, readonly) NSString* secondaryButtonText;
+// Actions of the intervention (leading to trailing). Never empty.
+@property(nonatomic, copy, readonly)
+    NSArray<ActuationInterventionAction*>* actions;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Factory Constructors
 
-// Creates a card layout intervention with a single action button.
+// Creates a card layout intervention with a single `action`.
 + (instancetype)cardItemWithTitle:(NSString*)title
                          subtitle:(NSString*)subtitle
-                primaryButtonText:(NSString*)primaryButtonText;
+                           action:(ActuationInterventionAction*)action;
 
-// Creates a single-button layout intervention.
-+ (instancetype)singleButtonItemWithPrimaryButtonText:
-    (NSString*)primaryButtonText;
+// Creates an intervention with a row of one or two `actions`, in display order.
++ (instancetype)rowItemWithActions:
+    (NSArray<ActuationInterventionAction*>*)actions;
 
-// Creates a dual-button layout intervention.
-+ (instancetype)dualButtonItemWithPrimaryButtonText:(NSString*)primaryButtonText
-                                secondaryButtonText:
-                                    (NSString*)secondaryButtonText;
-
+// TODO(crbug.com/573145076): Implement `columnItem`.
 @end
 
 // View data object describing the text displayed in the actuation header.

@@ -7,16 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class ActuationInterventionAction;
 @class ActuationInterventionData;
 @class ActuationInterventionView;
-enum class ActuationInterventionAction;
 
 // Delegate protocol for user interaction events on ActuationInterventionView.
 @protocol ActuationInterventionViewDelegate <NSObject>
 
 // Called when the user triggers `action` on the displayed intervention.
 - (void)interventionView:(ActuationInterventionView*)view
-        didTriggerAction:(ActuationInterventionAction)action;
+        didTriggerAction:(ActuationInterventionAction*)action;
 
 @end
 

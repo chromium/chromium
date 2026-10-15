@@ -21,6 +21,9 @@ namespace {
 // Icon size for SF symbols in chips and labeled items.
 constexpr CGFloat kIconSize = 16.0;
 
+// Identifier of the action resuming the task from a user intervention card.
+constexpr NSInteger kUserInterventionContinueActionIdentifier = 0;
+
 // Generates an `ActuationWorklogChip` based on the executed tool type. Returns
 // `nil` for tool types that don't display a chip.
 ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
@@ -310,10 +313,13 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     _pendingInterventionCompletion = [completionHandler copy];
   }
 
+  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
+      initWithIdentifier:kUserInterventionContinueActionIdentifier
+                   title:buttonText];
   ActuationInterventionData* data =
       [ActuationInterventionData cardItemWithTitle:title
                                           subtitle:subtitle
-                                 primaryButtonText:buttonText];
+                                            action:action];
   [_consumer setIntervention:data];
 }
 
@@ -327,7 +333,10 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                           actor::ActorTaskStoppedReason::kStoppedByUser);
 }
 
-- (void)didTriggerInterventionAction:(ActuationInterventionAction)action {
+- (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
+  // TODO(crbug.com/573145076): Map `action.identifier` to its matching
+  // completion handler and parameters once interventions offer multiple
+  // actions. Every action currently resumes the task.
   [self resolvePendingIntervention];
 }
 
