@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.widget.bottomsheet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -19,6 +20,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,6 +47,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -53,6 +56,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** This class tests the functionality of the {@link BottomSheet}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -416,6 +420,149 @@ public class BottomSheetTest {
 
     @Test
     @MediumTest
+    public void testWrapContent_LayoutChangeDuringDismissalDoesNotInterruptAnimation()
+            throws ExecutionException, TimeoutException {
+        final int startingHeight = 300;
+
+        showWrapContentSheet(startingHeight, HeightMode.DISABLED);
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(startingHeight, mSheetController.getCurrentOffset());
+
+        // Initiate animated dismissal to HIDDEN and trigger a layout pass on the content view
+        // while the settle animation is actively in progress (SCROLLING state).
+        runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup contentView =
+                            (ViewGroup) mSheetController.getCurrentSheetContent().getContentView();
+                    mTestSupport.setSheetState(SheetState.HIDDEN, /* animate= */ true);
+                    assertEquals(SheetState.SCROLLING, mSheetController.getSheetState());
+
+                    View child = contentView.getChildAt(0);
+                    ViewGroup.LayoutParams params = child.getLayoutParams();
+                    params.height = startingHeight / 2;
+                    child.setLayoutParams(params);
+                });
+
+        // The settle animation must proceed to HIDDEN without being canceled or restarted.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
+        assertEquals(0, mSheetController.getCurrentOffset());
+        assertNull(mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @MediumTest
+    public void testWrapContent_LayoutChangeDuringSettleToPeekDoesNotInterruptAnimation()
+            throws ExecutionException, TimeoutException {
+        final int startingHeight = 300;
+        final int peekHeight = 100;
+
+        showWrapContentSheet(startingHeight, peekHeight);
+        runOnUiThreadBlocking(() -> mTestSupport.setSheetState(SheetState.FULL, false));
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(startingHeight, mSheetController.getCurrentOffset());
+
+        // Initiate animated settle to PEEK and trigger a layout pass on the content view
+        // while the settle animation is actively in progress (SCROLLING state).
+        runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup contentView =
+                            (ViewGroup) mSheetController.getCurrentSheetContent().getContentView();
+                    mTestSupport.setSheetState(SheetState.PEEK, /* animate= */ true);
+                    assertEquals(SheetState.SCROLLING, mSheetController.getSheetState());
+
+                    View child = contentView.getChildAt(0);
+                    ViewGroup.LayoutParams params = child.getLayoutParams();
+                    params.height = startingHeight / 2;
+                    child.setLayoutParams(params);
+                });
+
+        // The settle animation must proceed to PEEK without being canceled or restarted.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
+        assertEquals(peekHeight, mSheetController.getCurrentOffset());
+        hideSheet();
+    }
+
+    @Test
+    @MediumTest
+    public void testWrapContent_PeriodicLayoutPassesWhileOpenDoNotTriggerScrolling()
+            throws ExecutionException, TimeoutException {
+        final int contentHeight = 300;
+
+        showWrapContentSheet(contentHeight, HeightMode.DISABLED);
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(contentHeight, mSheetController.getCurrentOffset());
+
+        final AtomicBoolean enteredScrolling = new AtomicBoolean(false);
+        BottomSheetObserver observer =
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        if (newState == SheetState.SCROLLING) {
+                            enteredScrolling.set(true);
+                        }
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(() -> mSheetController.addObserver(observer));
+        try {
+            runOnUiThreadBlocking(
+                    () -> {
+                        ViewGroup contentView =
+                                (ViewGroup)
+                                        mSheetController.getCurrentSheetContent().getContentView();
+                        for (int i = 0; i < 5; i++) {
+                            contentView.requestLayout();
+                        }
+                    });
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            assertFalse(enteredScrolling.get());
+            assertEquals(SheetState.FULL, mSheetController.getSheetState());
+            assertEquals(contentHeight, mSheetController.getCurrentOffset());
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(() -> mSheetController.removeObserver(observer));
+            hideSheet();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testWrapContent_HeightChangeDuringExitAnimationDoesNotInterrupt()
+            throws ExecutionException, TimeoutException {
+        final int startingHeight = 300;
+        final int expandedHeight = 500;
+
+        showWrapContentSheet(startingHeight, HeightMode.DISABLED);
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(startingHeight, mSheetController.getCurrentOffset());
+
+        // Initiate animated dismissal to HIDDEN and trigger a height change (oldHeight !=
+        // newHeight)
+        // on the content view while the settle animation is actively in progress (SCROLLING state).
+        runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup contentView =
+                            (ViewGroup) mSheetController.getCurrentSheetContent().getContentView();
+                    mTestSupport.setSheetState(SheetState.HIDDEN, /* animate= */ true);
+                    assertEquals(SheetState.SCROLLING, mSheetController.getSheetState());
+
+                    View child = contentView.getChildAt(0);
+                    ViewGroup.LayoutParams params = child.getLayoutParams();
+                    params.height = expandedHeight;
+                    child.setLayoutParams(params);
+                });
+
+        // The settle animation must proceed to HIDDEN without being canceled or restarted.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
+        assertEquals(0, mSheetController.getCurrentOffset());
+        assertNull(mSheetController.getCurrentSheetContent());
+    }
+
+    @Test
+    @MediumTest
     @DisabledTest(message = "crbug.com/503771877")
     public void testAdditionalBottomOffset() {
         final int height = 300;
@@ -479,6 +626,31 @@ public class BottomSheetTest {
 
     private @SheetState int simulateScrollTo(float targetHeightInPx, float yUpwardsVelocity) {
         return mTestSupport.forceScrolling(targetHeightInPx, yUpwardsVelocity);
+    }
+
+    private TestBottomSheetContent showWrapContentSheet(int height, int peekHeight) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
+                    View child = new View(mTestRule.getActivity());
+                    child.setLayoutParams(
+                            new ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, height));
+                    contentView.addView(child);
+
+                    TestBottomSheetContent content =
+                            new TestBottomSheetContent(
+                                    mTestRule.getActivity(),
+                                    ContentPriority.HIGH,
+                                    false,
+                                    contentView);
+                    content.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+                    content.setHalfHeightRatio(HeightMode.DISABLED);
+                    content.setPeekHeight(peekHeight);
+
+                    mSheetController.requestShowContent(content, false);
+                    return content;
+                });
     }
 
     /**
