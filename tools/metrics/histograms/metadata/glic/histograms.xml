@@ -3858,7 +3858,9 @@ chromium-metrics-reviews@google.com.
     Logs when the Glic context menu item was shown and ignored, or executed when
     the user opened the context menu on {GlicContextType}. Recorded when the
     menu closes, once for each Glic item shown in it. Recorded on desktop for
-    all variants except Link, and on Android for Image, Link and Page.
+    all variants except Link, and on Android for Image, Link, Page and
+    TextSelection. On Android, Ask Gemini counts as shown even when the text
+    selection toolbar moves it into the overflow menu.
   </summary>
   <token key="GlicContextType">
     <variant name="Image"

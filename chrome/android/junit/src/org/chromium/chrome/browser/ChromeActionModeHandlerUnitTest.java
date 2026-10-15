@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -48,11 +49,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
+import org.chromium.chrome.browser.selection.GlicSelectionMenuTracker;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -61,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BooleanSupplier;
 
 /** Unit tests for the {@link ChromeActionModeHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -77,12 +81,16 @@ public class ChromeActionModeHandlerUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private WeakReference<Activity> mWeakActivityRef;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeJniMock;
+    @Mock private GlicSelectionMenuTracker mGlicSelectionMenuTracker;
 
     private Activity mActivity;
 
     private class TestChromeActionModeCallback
             extends ChromeActionModeHandler.ChromeActionModeCallback {
-        TestChromeActionModeCallback(Tab tab, ActionModeCallbackHelper helper) {
+        TestChromeActionModeCallback(
+                Tab tab,
+                ActionModeCallbackHelper helper,
+                GlicSelectionMenuTracker glicSelectionMenuTracker) {
             super(
                     tab,
                     null,
@@ -90,7 +98,8 @@ public class ChromeActionModeHandlerUnitTest {
                     true,
                     () -> mShareDelegate,
                     mControlsState,
-                    () -> mReadAloudController);
+                    () -> mReadAloudController,
+                    glicSelectionMenuTracker);
         }
 
         @Override
@@ -109,7 +118,9 @@ public class ChromeActionModeHandlerUnitTest {
         Mockito.when(mDataProtectionBridgeJniMock.isSearchWithAllowed(any())).thenReturn(true);
 
         mActionModeCallback =
-                Mockito.spy(new TestChromeActionModeCallback(mTab, mActionModeCallbackHelper));
+                Mockito.spy(
+                        new TestChromeActionModeCallback(
+                                mTab, mActionModeCallbackHelper, mGlicSelectionMenuTracker));
         Mockito.when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
         Mockito.when(mWebContents.isDestroyed()).thenReturn(false);
@@ -493,5 +504,44 @@ public class ChromeActionModeHandlerUnitTest {
                                 .setType("text/plain")
                                 .putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, true)
                                 .setClassName(packageName, "foo"));
+    }
+
+    @Test
+    public void testOnPrepareActionMode_forwardsMenuToGlicSelectionMenuTracker() {
+        mActionModeCallback.onPrepareActionMode(mActionMode, mMenu);
+        verify(mGlicSelectionMenuTracker).onFloatingMenuPrepared(mMenu);
+    }
+
+    @Test
+    public void testOnActionItemClicked_forwardsIdToGlicSelectionMenuTracker() {
+        MenuItem menuItem = Mockito.mock(MenuItem.class);
+        Mockito.when(menuItem.getItemId()).thenReturn(12345);
+        Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
+
+        mActionModeCallback.onActionItemClicked(mActionMode, menuItem);
+        verify(mGlicSelectionMenuTracker).onFloatingItemClicked(12345);
+    }
+
+    @Test
+    public void testOnDropdownItemClicked_doesNotNotifyGlicSelectionMenuTracker() {
+        SelectionMenuItem item = new SelectionMenuItem.Builder("title").setId(54321).build();
+
+        mActionModeCallback.onDropdownItemClicked(item, /* closeMenu= */ true);
+        Mockito.verifyNoInteractions(mGlicSelectionMenuTracker);
+    }
+
+    @Test
+    public void testOnDestroyActionMode_passesActionModeStateToGlicSelectionMenuTracker() {
+        mActionModeCallback.onDestroyActionMode(mActionMode);
+
+        ArgumentCaptor<BooleanSupplier> captor = ArgumentCaptor.forClass(BooleanSupplier.class);
+        verify(mGlicSelectionMenuTracker).onFloatingMenuDestroyed(captor.capture());
+        BooleanSupplier supplier = captor.getValue();
+
+        Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
+        Assert.assertTrue(supplier.getAsBoolean());
+
+        Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(false);
+        Assert.assertFalse(supplier.getAsBoolean());
     }
 }

@@ -62,8 +62,8 @@ public class GlicMetrics {
      * Records, when a web contents context menu closes, whether a Glic item shown in it was
      * clicked. Desktop records the same histogram.
      *
-     * @param source The invocation source of the shown item: a context menu link, page or shared
-     *     image source.
+     * @param source The invocation source of the shown item: a context menu link, page, text
+     *     selection or shared image source.
      * @param executed Whether the user clicked the item.
      */
     public static void recordWebContentsContextMenuResult(
@@ -88,6 +88,8 @@ public class GlicMetrics {
                 return "Link";
             case GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_PAGE:
                 return "Page";
+            case GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION:
+                return "TextSelection";
             case GlicInvocationSource.SHARED_IMAGE:
                 return "Image";
             default:
