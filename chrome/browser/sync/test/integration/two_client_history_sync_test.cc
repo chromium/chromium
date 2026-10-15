@@ -53,14 +53,10 @@ namespace {
 
 class TestBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
-  explicit TestBrowsingHistoryDriver(history::WebHistoryService* web_history)
-      : web_history_(web_history) {}
+  TestBrowsingHistoryDriver() = default;
   ~TestBrowsingHistoryDriver() override = default;
 
   bool AllowHistoryDeletions() override { return true; }
-  history::WebHistoryService* GetWebHistoryService() override {
-    return web_history_;
-  }
 
   void OnRemoveVisits(
       const std::vector<history::ExpireHistoryArgs>& expire_list) override {}
@@ -69,9 +65,6 @@ class TestBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
       const syncer::SyncService* sync_service,
       history::WebHistoryService* history_service,
       base::OnceCallback<void(bool)> callback) override {}
-
- private:
-  const raw_ptr<history::WebHistoryService> web_history_;
 };
 
 class TwoClientHistorySyncTest
@@ -320,11 +313,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   history::WebHistoryService* web_history_service =
       WebHistoryServiceFactory::GetForProfile(GetProfile(0));
-  TestBrowsingHistoryDriver driver(web_history_service);
+  TestBrowsingHistoryDriver driver;
   // No device tracker is needed as the service is not used to call
   // `GetSyncedDevicesForFiltering`.
   history::BrowsingHistoryService browsing_history_service(
-      &driver, history_service, GetSyncService(0),
+      &driver, history_service, web_history_service, GetSyncService(0),
       /*device_info_tracker=*/nullptr);
 
   browsing_history_service.RemoveVisits(items_to_remove);

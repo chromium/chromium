@@ -35,6 +35,7 @@
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
+#include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -462,12 +463,14 @@ BrowsingHistoryHandler::BrowsingHistoryHandler(
       browsing_history_service_(nullptr) {
   HistoryService* local_history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  WebHistoryService* web_history =
+      WebHistoryServiceFactory::GetForProfile(profile_);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   auto* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
-      this, local_history, sync_service,
+      this, local_history, web_history, sync_service,
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr);
 }

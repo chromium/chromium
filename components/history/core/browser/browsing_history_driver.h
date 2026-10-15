@@ -19,8 +19,6 @@ class SyncService;
 
 namespace history {
 
-class WebHistoryService;
-
 // Interface serves as an abstraction layer BrowsingHistoryService and more
 // platform logic and classes, facilitating both sending an receiving data.
 class BrowsingHistoryDriver {
@@ -65,10 +63,6 @@ class BrowsingHistoryDriver {
 
   // If the given url from web history is allowed to be shown to the user.
   virtual bool ShouldHideWebHistoryUrl(const GURL& url) = 0;
-
-  // Retrieve the WebHistory service, which may or may not currently exist or be
-  // accessible.
-  virtual WebHistoryService* GetWebHistoryService() = 0;
 
   // Whether the Clear Browsing Data UI should show a notice about the existence
   // of other forms of browsing history stored in user's account. The response

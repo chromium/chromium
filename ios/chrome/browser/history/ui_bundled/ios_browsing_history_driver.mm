@@ -18,9 +18,8 @@ using history::BrowsingHistoryService;
 #pragma mark - IOSBrowsingHistoryDriver
 
 IOSBrowsingHistoryDriver::IOSBrowsingHistoryDriver(
-    history::WebHistoryService* web_history_service,
     IOSBrowsingHistoryDriverDelegate* delegate)
-    : web_history_service_(web_history_service), delegate_(delegate) {}
+    : delegate_(delegate) {}
 
 IOSBrowsingHistoryDriver::~IOSBrowsingHistoryDriver() = default;
 
@@ -66,15 +65,6 @@ bool IOSBrowsingHistoryDriver::AllowHistoryDeletions() {
 
 bool IOSBrowsingHistoryDriver::ShouldHideWebHistoryUrl(const GURL& url) {
   return !ios::CanAddURLToHistory(url);
-}
-
-history::WebHistoryService* IOSBrowsingHistoryDriver::GetWebHistoryService() {
-  // TODO(crbug.com/573042970): BrowsingHistoryDriver::GetWebHistoryService()
-  // should return the service and the client should check IsEnabled().
-  if (web_history_service_ && web_history_service_->IsEnabled()) {
-    return web_history_service_.get();
-  }
-  return nullptr;
 }
 
 void IOSBrowsingHistoryDriver::ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(

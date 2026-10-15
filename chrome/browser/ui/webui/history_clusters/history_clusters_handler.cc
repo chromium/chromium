@@ -20,6 +20,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
+#include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -267,12 +268,14 @@ void HistoryClustersHandler::CommonInit() {
 
   history_service_ = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history::WebHistoryService* web_history_service =
+      WebHistoryServiceFactory::GetForProfile(profile_);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   auto* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
-      this, history_service_, sync_service,
+      this, history_service_, web_history_service, sync_service,
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr);
 }

@@ -169,12 +169,12 @@ void TabsSearchService::SearchHistory(
   DCHECK(completion);
 
   if (!browsing_history_service_) {
-    history_driver_ =
-        std::make_unique<IOSBrowsingHistoryDriver>(web_history_service_, this);
+    history_driver_ = std::make_unique<IOSBrowsingHistoryDriver>(this);
 
     browsing_history_service_ =
         std::make_unique<history::BrowsingHistoryService>(
-            history_driver_.get(), history_service_.get(), sync_service_.get(),
+            history_driver_.get(), history_service_.get(),
+            web_history_service_.get(), sync_service_.get(),
             device_info_tracker_.get());
   }
 

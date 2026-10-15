@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -73,12 +74,14 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
 
   history::HistoryService* local_history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history::WebHistoryService* web_history =
+      WebHistoryServiceFactory::GetForProfile(profile_);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   auto* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
-      this, local_history, sync_service,
+      this, local_history, web_history, sync_service,
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr);
 

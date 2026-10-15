@@ -26,7 +26,6 @@ class ProfileBasedBrowsingHistoryDriver
       const std::vector<history::ExpireHistoryArgs>& expire_list) override;
   bool AllowHistoryDeletions() override;
   bool ShouldHideWebHistoryUrl(const GURL& url) override;
-  history::WebHistoryService* GetWebHistoryService() override;
   void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
       const syncer::SyncService* sync_service,
       history::WebHistoryService* history_service,

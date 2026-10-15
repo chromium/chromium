@@ -166,10 +166,12 @@ BrowsingHistoryService::QueryResultsInfo::~QueryResultsInfo() = default;
 BrowsingHistoryService::BrowsingHistoryService(
     BrowsingHistoryDriver* driver,
     HistoryService* local_history,
+    WebHistoryService* web_history,
     syncer::SyncService* sync_service,
     syncer::DeviceInfoTracker* device_info_tracker)
     : BrowsingHistoryService(driver,
                              local_history,
+                             web_history,
                              sync_service,
                              std::make_unique<base::OneShotTimer>(),
                              device_info_tracker) {}
@@ -177,12 +179,14 @@ BrowsingHistoryService::BrowsingHistoryService(
 BrowsingHistoryService::BrowsingHistoryService(
     BrowsingHistoryDriver* driver,
     HistoryService* local_history,
+    WebHistoryService* web_history,
     syncer::SyncService* sync_service,
     std::unique_ptr<base::OneShotTimer> web_history_timer,
     syncer::DeviceInfoTracker* device_info_tracker)
     : web_history_timer_(std::move(web_history_timer)),
       driver_(driver),
       local_history_(local_history),
+      web_history_(web_history),
       sync_service_(sync_service),
       device_info_tracker_(device_info_tracker),
       clock_(new base::DefaultClock()) {
@@ -194,18 +198,8 @@ BrowsingHistoryService::BrowsingHistoryService(
   }
 
   // Get notifications when web history is deleted.
-  WebHistoryService* web_history = driver_->GetWebHistoryService();
-  if (web_history) {
-    web_history_service_observation_.Observe(web_history);
-  } else if (sync_service_) {
-    // If `web_history` is not available, it means that history sync is
-    // disabled. If `sync_service_` is not null, it means that syncing is
-    // possible, and that history sync/web history may become enabled later, so
-    // attach start observing. If `sync_service_` is null then we cannot start
-    // observing. This is okay because sync will never start for us, for example
-    // it may be disabled by flag or we're part of an incognito/guest mode
-    // window.
-    sync_service_observation_.Observe(sync_service_.get());
+  if (web_history_) {
+    web_history_service_observation_.Observe(web_history_.get());
   }
 }
 
@@ -214,23 +208,6 @@ BrowsingHistoryService::BrowsingHistoryService() = default;
 BrowsingHistoryService::~BrowsingHistoryService() {
   query_task_tracker_.TryCancelAll();
   web_history_request_.reset();
-}
-
-void BrowsingHistoryService::OnStateChanged(syncer::SyncService* sync) {
-  // If the history sync was enabled, start observing WebHistoryService.
-  // This method should not be called after we already added the observer.
-  WebHistoryService* web_history = driver_->GetWebHistoryService();
-  if (web_history) {
-    DCHECK(!web_history_service_observation_.IsObserving());
-    web_history_service_observation_.Observe(web_history);
-    DCHECK(sync_service_observation_.IsObserving());
-    sync_service_observation_.Reset();
-  }
-}
-
-void BrowsingHistoryService::OnSyncShutdown(syncer::SyncService* sync) {
-  sync_service_observation_.Reset();
-  device_info_tracker_ = nullptr;
 }
 
 void BrowsingHistoryService::WebHistoryTimeout(
@@ -284,13 +261,12 @@ void BrowsingHistoryService::QueryHistoryInternal(
     state->local_status = NO_DEPENDENCY;
   }
 
-  WebHistoryService* web_history = driver_->GetWebHistoryService();
-  if (web_history) {
+  if (web_history_ && web_history_->IsEnabled()) {
     // Test the existence of other forms of browsing history, to display the
     // privacy disclaimer in the UI. This needs to happen independently of
     // whether an actual remote history query is happening (yet).
     driver_->ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
-        sync_service_, web_history,
+        sync_service_, web_history_,
         base::BindOnce(
             &BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete,
             weak_factory_.GetWeakPtr()));
@@ -344,7 +320,7 @@ void BrowsingHistoryService::QueryHistoryInternal(
           !state->search_text.empty()
               ? state->search_text
               : base::UTF8ToUTF16(state->original_options.hostname_suffix);
-      web_history_request_ = web_history->QueryHistory(
+      web_history_request_ = web_history_->QueryHistory(
           remote_query, options,
           base::BindOnce(&BrowsingHistoryService::WebHistoryQueryComplete,
                          weak_factory_.GetWeakPtr(), state, clock_->Now()),
@@ -422,7 +398,6 @@ void BrowsingHistoryService::RemoveVisits(
     return;
   }
 
-  WebHistoryService* web_history = driver_->GetWebHistoryService();
   base::Time now = clock_->Now();
   std::vector<ExpireHistoryArgs> expire_list;
   expire_list.reserve(items.size());
@@ -465,7 +440,7 @@ void BrowsingHistoryService::RemoveVisits(
     expire_args.restrict_app_id = entry.app_id;
 
     // TODO(dubroy): Figure out the proper way to handle an error here.
-    if (web_history && local_history_) {
+    if (local_history_ && web_history_ && web_history_->IsEnabled()) {
       local_history_->ProcessLocalDeleteDirective(delete_directive);
     }
 
@@ -480,7 +455,7 @@ void BrowsingHistoryService::RemoveVisits(
         &delete_task_tracker_);
   }
 
-  if (web_history) {
+  if (web_history_ && web_history_->IsEnabled()) {
     has_pending_delete_request_ = true;
     net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
         net::DefinePartialNetworkTrafficAnnotation("web_history_expire",
@@ -506,7 +481,7 @@ void BrowsingHistoryService::RemoveVisits(
               }
             }
           })");
-    web_history->ExpireHistory(
+    web_history_->ExpireHistory(
         expire_list,
         base::BindOnce(&BrowsingHistoryService::RemoveWebHistoryComplete,
                        weak_factory_.GetWeakPtr()),

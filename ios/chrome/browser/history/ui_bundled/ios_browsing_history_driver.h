@@ -19,8 +19,7 @@ class IOSBrowsingHistoryDriverDelegate;
 // IOSBrowsingHistoryDriverDelegate for most actions.
 class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
-  IOSBrowsingHistoryDriver(history::WebHistoryService* web_history_service,
-                           IOSBrowsingHistoryDriverDelegate* delegate);
+  explicit IOSBrowsingHistoryDriver(IOSBrowsingHistoryDriverDelegate* delegate);
 
   IOSBrowsingHistoryDriver(const IOSBrowsingHistoryDriver&) = delete;
   IOSBrowsingHistoryDriver& operator=(const IOSBrowsingHistoryDriver&) = delete;
@@ -43,14 +42,11 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
                                       bool has_synced_results) override;
   bool AllowHistoryDeletions() override;
   bool ShouldHideWebHistoryUrl(const GURL& url) override;
-  history::WebHistoryService* GetWebHistoryService() override;
   void ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
       const syncer::SyncService* sync_service,
       history::WebHistoryService* history_service,
       base::OnceCallback<void(bool)> callback) override;
 
-  // The current web history service.
-  raw_ptr<history::WebHistoryService> web_history_service_;
   raw_ptr<IOSBrowsingHistoryDriverDelegate> delegate_;
 };
 

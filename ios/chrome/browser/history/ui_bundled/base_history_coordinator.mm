@@ -68,7 +68,6 @@
       std::make_unique<IOSBrowsingHistoryDriverDelegateBridge>(
           self.viewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
-      ios::WebHistoryServiceFactory::GetForProfile(self.profile),
       _browsingHistoryDriverDelegate.get());
   auto* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
@@ -76,6 +75,7 @@
       _browsingHistoryDriver.get(),
       ios::HistoryServiceFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::WebHistoryServiceFactory::GetForProfile(self.profile),
       SyncServiceFactory::GetForProfile(self.profile),
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr);

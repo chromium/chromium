@@ -29,7 +29,6 @@
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/browser/web_history_service_observer.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
@@ -45,8 +44,7 @@ struct QueryOptions;
 // Interacts with HistoryService, WebHistoryService, and SyncService to query
 // history and provide results to the associated BrowsingHistoryDriver.
 class BrowsingHistoryService : public HistoryServiceObserver,
-                               public WebHistoryServiceObserver,
-                               public syncer::SyncServiceObserver {
+                               public WebHistoryServiceObserver {
  public:
   // Represents a history entry to be shown to the user, representing either
   // a local or remote visit. A single entry can represent multiple visits,
@@ -156,6 +154,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
                          HistoryService* local_history,
+                         WebHistoryService* web_history,
                          syncer::SyncService* sync_service,
                          syncer::DeviceInfoTracker* device_info_tracker);
 
@@ -193,14 +192,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // is_local status.
   virtual std::vector<ClientGroup> GetSyncedDevicesForFiltering() const;
 
-  // SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncShutdown(syncer::SyncService* sync) override;
-
  protected:
   // Constructor that allows specifying more dependencies for unit tests.
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
                          HistoryService* local_history,
+                         WebHistoryService* web_history,
                          syncer::SyncService* sync_service,
                          std::unique_ptr<base::OneShotTimer> web_history_timer,
                          syncer::DeviceInfoTracker* device_info_tracker);
@@ -341,10 +337,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   base::ScopedObservation<WebHistoryService, WebHistoryServiceObserver>
       web_history_service_observation_{this};
 
-  // SyncService observer listens to late initialization of history sync.
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observation_{this};
-
   // Whether the last call to Web History returned synced results.
   bool has_synced_results_ = false;
 
@@ -355,9 +347,12 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   raw_ptr<HistoryService, DanglingUntriaged> local_history_;
 
+  raw_ptr<WebHistoryService, DanglingUntriaged> web_history_;
+
   raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
 
-  raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_ = nullptr;
+  raw_ptr<syncer::DeviceInfoTracker, DanglingUntriaged> device_info_tracker_ =
+      nullptr;
 
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;
