@@ -1248,7 +1248,9 @@ std::string SerializeURLImpl(const storage::FileSystemURL& url,
     if (root_permission_path != url_path) {
       bool relative_path_result =
           root_permission_path.AppendRelativePath(url_path, &relative_path);
-      CHECK(relative_path_result, base::NotFatalUntil::M159);
+      // TODO(crbug.com/571653748): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(relative_path_result);
     }
 
     file_data->set_relative_path(SerializePath(relative_path));
