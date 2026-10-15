@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -34,6 +35,9 @@ TtcKeyedService::TtcKeyedService(Profile* profile,
 TtcKeyedService::~TtcKeyedService() = default;
 
 void TtcKeyedService::Shutdown() {
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+  harness_page_handler_.reset();
+#endif
   EndSession();
   // Drop platform bridges (e.g. the Android JNI counterpart) now, during
   // KeyedService shutdown, rather than in the destructor, so nothing can reach
@@ -55,10 +59,12 @@ ServiceState TtcKeyedService::GetState() const {
                              : ServiceState::kSessionInactive;
 }
 
-void TtcKeyedService::StartSession() {
+void TtcKeyedService::StartSession(
+    std::unique_ptr<AudioController> audio_controller) {
   CHECK(IsEnabled());
   CHECK(!session_controller_);
-  session_controller_ = std::make_unique<SessionControllerImpl>(*this);
+  session_controller_ = std::make_unique<SessionControllerImpl>(
+      *this, std::move(audio_controller));
   state_changed_callbacks_.Notify(GetState());
 }
 
@@ -77,10 +83,14 @@ base::CallbackListSubscription TtcKeyedService::RegisterStateChangedCallback(
 
 std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(
     base::PassKey<SessionControllerImpl>,
-    SessionController& session_controller) {
+    SessionController& session_controller,
+    std::unique_ptr<AudioController> audio_controller) {
   std::unique_ptr<Conversation> conversation =
-      conversation_factory_ ? conversation_factory_.Run(session_controller)
-                            : MakeConversationImpl(session_controller);
+      conversation_factory_
+          ? conversation_factory_.Run(session_controller,
+                                      std::move(audio_controller))
+          : MakeConversationImpl(session_controller,
+                                 std::move(audio_controller));
   CHECK(conversation);
   return conversation;
 }

@@ -61,7 +61,17 @@ void HarnessPageHandler::SendAudio(const std::vector<uint8_t>& pcm16_bytes,
     std::move(callback).Run(std::move(result));
     return;
   }
-  eval_harness_->SendAudio(pcm16_bytes, std::move(callback));
+  if (pcm16_bytes.size() % sizeof(int16_t) != 0) {
+    auto result = mojom::TurnResult::New();
+    result->status = mojom::TurnStatus::kError;
+    result->error_message = "PCM16 byte buffer size must be even";
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+  size_t sample_count = pcm16_bytes.size() / sizeof(int16_t);
+  std::vector<int16_t> audio_samples(sample_count);
+  base::as_writable_byte_span(base::span(audio_samples)).copy_from(pcm16_bytes);
+  eval_harness_->SendAudio(audio_samples, std::move(callback));
 }
 
 }  // namespace ttc

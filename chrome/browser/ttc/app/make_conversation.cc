@@ -17,20 +17,12 @@
 namespace ttc {
 
 std::unique_ptr<Conversation> MakeConversationImpl(
-    SessionController& session_controller) {
-  return std::make_unique<ConversationImpl>(
-      std::make_unique<TtcMesClient>(
-          OptimizationGuideKeyedServiceFactory::GetForProfile(
-              session_controller.GetProfile())),
-      std::make_unique<AudioControllerImpl>(
-          AudioControllerImpl::GetDefaultAudioStreamFactoryBinder()),
-      session_controller);
-}
-
-std::unique_ptr<Conversation> MakeConversationImplForTesting(
     SessionController& session_controller,
     std::unique_ptr<AudioController> audio_controller) {
-  CHECK(audio_controller);
+  if (!audio_controller) {
+    audio_controller = std::make_unique<AudioControllerImpl>(
+        AudioControllerImpl::GetDefaultAudioStreamFactoryBinder());
+  }
   return std::make_unique<ConversationImpl>(
       std::make_unique<TtcMesClient>(
           OptimizationGuideKeyedServiceFactory::GetForProfile(

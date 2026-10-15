@@ -1,0 +1,225 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ttc/core/session_controller_impl.h"
+
+#include <memory>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/app/public/audio_controller.h"
+#include "chrome/browser/ttc/app/public/conversation.h"
+#include "chrome/browser/ttc/core/buildflags.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/states.h"
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+#include "chrome/browser/ttc/core/eval_harness.mojom.h"
+#include "chrome/browser/ttc/core/ttc_eval_harness.h"
+#endif
+#include "chrome/browser/ttc/core/test_utils.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace ttc {
+
+class MockSessionControllerObserver : public SessionController::Observer {
+ public:
+  MOCK_METHOD(void, OnSessionLifecycleChanged, (SessionLifecycle), (override));
+  MOCK_METHOD(void, OnModelTurnStarted, (), (override));
+  MOCK_METHOD(void, OnModelTurnComplete, (), (override));
+  MOCK_METHOD(void, OnModelInterrupted, (), (override));
+  MOCK_METHOD(void, OnError, (ErrorCode), (override));
+  MOCK_METHOD(void,
+              OnToolExecutionCompleted,
+              (const std::string&, bool),
+              (override));
+  MOCK_METHOD(void, OnInputTranscription, (const std::string&), (override));
+  MOCK_METHOD(void, OnOutputTranscription, (const std::string&), (override));
+};
+
+class TtcSessionControllerImplTest : public testing::Test {
+ public:
+  TtcSessionControllerImplTest() {
+    scoped_feature_list_.InitAndEnableFeature(kTtc);
+    service_ = static_cast<TtcKeyedService*>(
+        TtcKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            &profile_,
+            base::BindRepeating(&TtcSessionControllerImplTest::CreateService,
+                                base::Unretained(this))));
+  }
+  ~TtcSessionControllerImplTest() override = default;
+
+  std::unique_ptr<KeyedService> CreateService(
+      content::BrowserContext* context) {
+    return std::make_unique<TtcKeyedService>(
+        Profile::FromBrowserContext(context),
+        base::BindRepeating(
+            &TtcSessionControllerImplTest::CreateMockConversation,
+            base::Unretained(this)));
+  }
+
+  std::unique_ptr<Conversation> CreateMockConversation(
+      SessionController&,
+      std::unique_ptr<AudioController> audio_controller) {
+    last_audio_controller_ = std::move(audio_controller);
+    auto conversation = std::make_unique<testing::NiceMock<MockConversation>>();
+    mock_conversation_ = conversation.get();
+    return conversation;
+  }
+
+  void TearDown() override {
+    if (service_) {
+      service_->EndSession();
+    }
+    last_audio_controller_.reset();
+    mock_conversation_ = nullptr;
+    testing::Test::TearDown();
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfile profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<TtcKeyedService> service_ = nullptr;
+  raw_ptr<MockConversation, DisableDanglingPtrDetection> mock_conversation_ =
+      nullptr;
+  std::unique_ptr<AudioController> last_audio_controller_;
+};
+
+TEST_F(TtcSessionControllerImplTest,
+       ObserverNotifiedOfInitialStateAndTurnEvents) {
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(&controller.conversation(), mock_conversation_.get());
+
+  MockSessionControllerObserver observer;
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  controller.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnModelTurnStarted()).Times(1);
+  controller.OnModelTurnStarted();
+
+  EXPECT_CALL(observer, OnModelTurnComplete()).Times(1);
+  controller.OnModelTurnComplete();
+
+  EXPECT_CALL(observer, OnModelInterrupted()).Times(1);
+  controller.OnModelInterrupted();
+
+  EXPECT_CALL(observer, OnInputTranscription("hello")).Times(1);
+  controller.OnInputTranscription("hello");
+
+  EXPECT_CALL(observer, OnOutputTranscription("world")).Times(1);
+  controller.OnOutputTranscription("world");
+
+  EXPECT_CALL(observer, OnToolExecutionCompleted("unknown_tool", false))
+      .Times(1);
+  EXPECT_CALL(observer, OnError(ErrorCode::kInternalBackendError)).Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+
+  ToolRequest req;
+  req.name = "unknown_tool";
+  bool callback_called = false;
+  controller.ProcessToolCall(req, base::BindOnce(
+                                      [](bool* called, ToolResponse response) {
+                                        *called = true;
+                                        EXPECT_FALSE(response.Ok());
+                                      },
+                                      &callback_called));
+  EXPECT_TRUE(callback_called);
+
+  controller.OnError(ErrorCode::kInternalBackendError);
+  EXPECT_EQ(controller.GetSessionLifecycle(), SessionLifecycle::kFinished);
+
+  controller.RemoveObserver(&observer);
+}
+
+TEST_F(TtcSessionControllerImplTest, SendTextInputForwardsToConversation) {
+  SessionControllerImpl controller(*service_);
+  ASSERT_NE(mock_conversation_, nullptr);
+  EXPECT_CALL(*mock_conversation_, SendTextInput("Test text input")).Times(1);
+  controller.SendTextInput("Test text input");
+}
+
+#if BUILDFLAG(ENABLE_TTC_WEBUI)
+TEST_F(TtcSessionControllerImplTest, TtcEvalHarnessStartSessionAndExecuteTurn) {
+  TtcEvalHarness harness(*service_);
+
+  base::test::TestFuture<bool> start_future;
+  harness.StartSession(start_future.GetCallback());
+  EXPECT_TRUE(service_->is_session_active());
+
+  // Set session to kLive
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
+  EXPECT_TRUE(start_future.Get());
+  ASSERT_NE(harness.audio_controller(), nullptr);
+
+  // Execute turn with audio input
+  std::vector<int16_t> samples(1600, 42);
+  base::test::TestFuture<mojom::TurnResultPtr> turn_future;
+  harness.SendAudio(samples, turn_future.GetCallback());
+
+  // Simulate turn events observed from SessionController, including partial
+  // transcriptions that should be concatenated.
+  service_->session_controller()->OnModelTurnStarted();
+  service_->session_controller()->OnInputTranscription("user ");
+  service_->session_controller()->OnInputTranscription("voice");
+  service_->session_controller()->OnOutputTranscription("model ");
+  service_->session_controller()->OnOutputTranscription("voice");
+  harness.OnToolExecutionCompleted("navigate", true);
+  service_->session_controller()->OnModelTurnComplete();
+
+  mojom::TurnResultPtr result = turn_future.Take();
+  EXPECT_EQ(result->status, mojom::TurnStatus::kComplete);
+  EXPECT_EQ(result->error_code, 0);
+  EXPECT_EQ(result->input_transcription, "user voice");
+  EXPECT_EQ(result->transcription, "model voice");
+  ASSERT_EQ(result->tool_calls.size(), 1u);
+  EXPECT_EQ(result->tool_calls[0]->name, "navigate");
+
+  mock_conversation_ = nullptr;
+  harness.EndSession();
+}
+
+TEST_F(TtcSessionControllerImplTest,
+       TtcEvalHarnessRejectsEmptyInputOrInactiveSession) {
+  TtcEvalHarness harness(*service_);
+
+  // Sending text before session is live fails immediately.
+  base::test::TestFuture<mojom::TurnResultPtr> inactive_future;
+  harness.SendText("hello", inactive_future.GetCallback());
+  EXPECT_EQ(inactive_future.Get()->status, mojom::TurnStatus::kError);
+
+  base::test::TestFuture<bool> start_future;
+  harness.StartSession(start_future.GetCallback());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
+  EXPECT_TRUE(start_future.Get());
+
+  // Empty text fails immediately without timing out.
+  base::test::TestFuture<mojom::TurnResultPtr> empty_text_future;
+  harness.SendText("", empty_text_future.GetCallback());
+  EXPECT_EQ(empty_text_future.Get()->status, mojom::TurnStatus::kError);
+
+  // Empty audio fails immediately without timing out.
+  base::test::TestFuture<mojom::TurnResultPtr> empty_audio_future;
+  harness.SendAudio({}, empty_audio_future.GetCallback());
+  EXPECT_EQ(empty_audio_future.Get()->status, mojom::TurnStatus::kError);
+
+  harness.EndSession();
+}
+#endif  // BUILDFLAG(ENABLE_TTC_WEBUI)
+
+}  // namespace ttc

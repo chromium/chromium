@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/session_view.h"
@@ -64,7 +65,9 @@ void DCheckSessionLifecycleTransition(SessionLifecycle from,
 
 }  // namespace
 
-SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
+SessionControllerImpl::SessionControllerImpl(
+    TtcKeyedService& service,
+    std::unique_ptr<AudioController> audio_controller)
     : service_(service),
       session_view_(MakeSessionView(*this)),
       voice_focused_contents_tracker_(
@@ -82,11 +85,19 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
   // Created here rather than in the initializer list because MakeConversation()
   // calls back into GetProfile() on this object.
   conversation_ =
-      service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this);
+      service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this,
+                               std::move(audio_controller));
   conversation_->Start();
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
+  if (session_lifecycle_ != SessionLifecycle::kFinished) {
+    for (SessionController::Observer& observer : observers_) {
+      observer.OnSessionLifecycleChanged(SessionLifecycle::kFinished);
+    }
+  }
+  observers_.Clear();
+
   conversation_->Stop();
 
   GetJournal().Log(
@@ -96,6 +107,16 @@ SessionControllerImpl::~SessionControllerImpl() {
 
 SessionJournal& SessionControllerImpl::GetJournal() {
   return journal_;
+}
+
+void SessionControllerImpl::AddObserver(SessionController::Observer* observer) {
+  observers_.AddObserver(observer);
+  observer->OnSessionLifecycleChanged(session_lifecycle_);
+}
+
+void SessionControllerImpl::RemoveObserver(
+    SessionController::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 SessionLifecycle SessionControllerImpl::GetSessionLifecycle() const {
@@ -115,6 +136,9 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
                        .Add("new_state", lifecycle)
                        .Build());
   session_lifecycle_ = lifecycle;
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnSessionLifecycleChanged(lifecycle);
+  }
 }
 
 Profile* SessionControllerImpl::GetProfile() {
@@ -128,8 +152,21 @@ void SessionControllerImpl::ProcessToolCall(
   // ends but there are currently a few ways for tasks to be stopped
   // externally.
   actor_task_holder_.EnsureTaskCreated();
-  tool_controller_.ProcessToolCall(tool_request,
-                                   std::move(tool_response_callback));
+  std::string tool_name = tool_request.name;
+  tool_controller_.ProcessToolCall(
+      tool_request,
+      base::BindOnce(
+          [](base::WeakPtr<SessionControllerImpl> self, std::string name,
+             ToolResponseCallback cb, ToolResponse response) {
+            if (self) {
+              for (SessionController::Observer& observer : self->observers_) {
+                observer.OnToolExecutionCompleted(name, response.Ok());
+              }
+            }
+            std::move(cb).Run(std::move(response));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(tool_name),
+          std::move(tool_response_callback)));
 }
 
 std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {
@@ -170,6 +207,39 @@ void SessionControllerImpl::OnError(ErrorCode error) {
   }
 
   session_view_->OnError(error);
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnError(error);
+  }
+}
+
+void SessionControllerImpl::OnModelTurnStarted() {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnModelTurnStarted();
+  }
+}
+
+void SessionControllerImpl::OnModelTurnComplete() {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnModelTurnComplete();
+  }
+}
+
+void SessionControllerImpl::OnModelInterrupted() {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnModelInterrupted();
+  }
+}
+
+void SessionControllerImpl::OnInputTranscription(const std::string& text) {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnInputTranscription(text);
+  }
+}
+
+void SessionControllerImpl::OnOutputTranscription(const std::string& text) {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnOutputTranscription(text);
+  }
 }
 
 void SessionControllerImpl::EndSessionAsync() {
@@ -179,6 +249,10 @@ void SessionControllerImpl::EndSessionAsync() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TtcKeyedService::EndSession, service_->GetWeakPtr()));
+}
+
+void SessionControllerImpl::SendTextInput(const std::string& text) {
+  conversation_->SendTextInput(text);
 }
 
 void SessionControllerImpl::OnVoiceFocusedContentsChanged(

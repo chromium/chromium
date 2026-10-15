@@ -40,6 +40,7 @@ class MockRemoteModelExecutionSession;
 
 namespace ttc {
 
+class AudioController;
 class Conversation;
 class ConversationImpl;
 class SessionController;
@@ -126,7 +127,8 @@ class AppBrowserTestBase : public PlatformBrowserTest {
 
  private:
   std::unique_ptr<Conversation> MakeConversation(
-      SessionController& session_controller);
+      SessionController& session_controller,
+      std::unique_ptr<AudioController> audio_controller);
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

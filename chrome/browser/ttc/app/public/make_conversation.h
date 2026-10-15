@@ -7,22 +7,20 @@
 
 #include <memory>
 
+#include "chrome/browser/ttc/app/public/audio_controller.h"
+
 namespace ttc {
 
-class AudioController;
 class Conversation;
 class SessionController;
 
 // Creates the concrete ConversationImpl object for use from outside of app/.
-// The conversation talks to the production (MES) backend and audio devices.
+// The conversation talks to the production (MES) backend. Uses
+// `audio_controller` if non-null, otherwise creates a default
+// AudioControllerImpl talking to real audio devices.
 std::unique_ptr<Conversation> MakeConversationImpl(
-    SessionController& session_controller);
-
-// As above but uses `audio_controller` for audio. Used by tests to inject a
-// mocked/fake version of it. Must be non-null.
-std::unique_ptr<Conversation> MakeConversationImplForTesting(
     SessionController& session_controller,
-    std::unique_ptr<AudioController> audio_controller);
+    std::unique_ptr<AudioController> audio_controller = nullptr);
 
 }  // namespace ttc
 

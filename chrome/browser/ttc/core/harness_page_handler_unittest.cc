@@ -28,7 +28,8 @@ namespace {
 
 class FakeConversation : public Conversation {
  public:
-  FakeConversation() = default;
+  explicit FakeConversation(std::unique_ptr<AudioController> audio_controller)
+      : audio_controller_(std::move(audio_controller)) {}
   ~FakeConversation() override = default;
 
   void Start() override {}
@@ -39,6 +40,9 @@ class FakeConversation : public Conversation {
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
   void OnPageContextInvalidated() override {}
+
+ private:
+  std::unique_ptr<AudioController> audio_controller_;
 };
 
 class FakeHarnessPage : public mojom::HarnessPage {
@@ -72,8 +76,11 @@ class HarnessPageHandlerTest : public testing::Test {
               return std::make_unique<TtcKeyedService>(
                   Profile::FromBrowserContext(context),
                   base::BindRepeating(
-                      [](SessionController&) -> std::unique_ptr<Conversation> {
-                        return std::make_unique<FakeConversation>();
+                      [](SessionController&,
+                         std::unique_ptr<AudioController> audio_controller)
+                          -> std::unique_ptr<Conversation> {
+                        return std::make_unique<FakeConversation>(
+                            std::move(audio_controller));
                       }));
             })));
   }
@@ -101,6 +108,9 @@ TEST_F(HarnessPageHandlerTest, StartSessionSucceeds) {
     EXPECT_TRUE(success);
     run_loop.Quit();
   }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
   run_loop.Run();
 }
 
@@ -110,6 +120,9 @@ TEST_F(HarnessPageHandlerTest, DoubleStartSessionDoesNotCrashAndReturnsFalse) {
     EXPECT_TRUE(success);
     run_loop1.Quit();
   }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
   run_loop1.Run();
 
   base::RunLoop run_loop2;
@@ -127,6 +140,9 @@ TEST_F(HarnessPageHandlerTest, SendTextReturnsResult) {
     EXPECT_TRUE(success);
     start_loop.Quit();
   }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
   start_loop.Run();
 
   base::RunLoop turn_loop;
@@ -138,6 +154,9 @@ TEST_F(HarnessPageHandlerTest, SendTextReturnsResult) {
         EXPECT_EQ(result->error_code, 0);
         turn_loop.Quit();
       }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(handler_->eval_harness());
+  handler_->eval_harness()->OnModelTurnComplete();
   turn_loop.Run();
 }
 
@@ -147,6 +166,9 @@ TEST_F(HarnessPageHandlerTest, SendAudioReturnsResult) {
     EXPECT_TRUE(success);
     start_loop.Quit();
   }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(service_->is_session_active());
+  service_->session_controller()->SetSessionLifecycle(SessionLifecycle::kLive);
   start_loop.Run();
 
   base::RunLoop turn_loop;
@@ -158,6 +180,9 @@ TEST_F(HarnessPageHandlerTest, SendAudioReturnsResult) {
         EXPECT_EQ(result->error_code, 0);
         turn_loop.Quit();
       }));
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(handler_->eval_harness());
+  handler_->eval_harness()->OnModelTurnComplete();
   turn_loop.Run();
 }
 

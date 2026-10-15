@@ -37,7 +37,8 @@ void TtcInteractiveBrowserTestBase::SetUpBrowserContextKeyedServices(
                                        -> std::unique_ptr<KeyedService> {
         return std::make_unique<TtcKeyedService>(
             Profile::FromBrowserContext(context),
-            base::BindRepeating([](SessionController&)
+            base::BindRepeating([](SessionController&,
+                                   std::unique_ptr<AudioController>)
                                     -> std::unique_ptr<Conversation> {
               return std::make_unique<testing::NiceMock<MockConversation>>();
             }));

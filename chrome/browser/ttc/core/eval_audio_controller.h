@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/span.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "media/base/audio_parameters.h"
 
@@ -55,6 +56,10 @@ class EvalAudioController : public AudioController {
   const std::vector<int16_t>& recorded_audio() const { return recorded_audio_; }
   std::vector<int16_t> TakeRecordedAudio();
 
+  base::WeakPtr<EvalAudioController> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   bool is_capturing_ = false;
   bool is_playing_ = false;
@@ -67,6 +72,8 @@ class EvalAudioController : public AudioController {
   base::RepeatingCallbackList<void(float)> energy_callbacks_;
   base::RepeatingCallbackList<void(int64_t)> completion_callbacks_;
   base::RepeatingCallbackList<void(ErrorCode)> error_callbacks_;
+
+  base::WeakPtrFactory<EvalAudioController> weak_factory_{this};
 };
 
 }  // namespace ttc

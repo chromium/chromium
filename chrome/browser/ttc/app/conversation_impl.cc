@@ -115,7 +115,12 @@ void ConversationImpl::OnBackendError(ErrorCode error) {
 void ConversationImpl::OnTranscriptions(
     const std::string& input_transcription,
     const std::string& output_transcription) {
-  NOTIMPLEMENTED();
+  if (!input_transcription.empty()) {
+    session_controller_->OnInputTranscription(input_transcription);
+  }
+  if (!output_transcription.empty()) {
+    session_controller_->OnOutputTranscription(output_transcription);
+  }
 }
 
 void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
@@ -134,6 +139,13 @@ void ConversationImpl::OnGenerationStateChanged(bool started,
                                             .Build());
   if (interrupted) {
     audio_controller_->ClearPlaybackQueue();
+    session_controller_->OnModelInterrupted();
+  }
+  if (started) {
+    session_controller_->OnModelTurnStarted();
+  }
+  if (completed) {
+    session_controller_->OnModelTurnComplete();
   }
 }
 

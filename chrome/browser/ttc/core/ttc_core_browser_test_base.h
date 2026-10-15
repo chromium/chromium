@@ -19,6 +19,7 @@ class WebContents;
 
 namespace ttc {
 
+class AudioController;
 class Conversation;
 class MockConversation;
 class SessionController;
@@ -47,7 +48,8 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
 
  private:
   static std::unique_ptr<Conversation> MakeMockConversation(
-      SessionController& session_controller);
+      SessionController& session_controller,
+      std::unique_ptr<AudioController> audio_controller);
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

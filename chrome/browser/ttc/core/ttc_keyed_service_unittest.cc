@@ -83,7 +83,9 @@ class TtcKeyedServiceUnitTest : public testing::Test {
                             base::Unretained(this)));
   }
 
-  std::unique_ptr<Conversation> CreateFakeConversation(SessionController&) {
+  std::unique_ptr<Conversation> CreateFakeConversation(
+      SessionController&,
+      std::unique_ptr<AudioController>) {
     return std::make_unique<FakeConversation>(
         base::BindRepeating(&TtcKeyedServiceUnitTest::OnConversationStopped,
                             base::Unretained(this)));
