@@ -367,7 +367,7 @@ enum class SigninScreenState {
       [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
       break;
     case signin_ui::CancelationReason::kNotCanceled:
-      [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+      [self.logger logSigninCompletedWithResult:identity
                                    addedAccount:self.addedAccount];
       [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
       break;

@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
+#import "base/notreached.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -38,14 +40,16 @@ using signin_metrics::PromoAction;
   LogSigninAccessPointStarted(self.accessPoint, self.promoAction);
 }
 
-- (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
+- (void)logSigninCompletedWithResult:
+            (SigninCoordinatorResultOrIdentity)signinResult
                         addedAccount:(BOOL)addedAccount {
-  switch (signinResult) {
-    case SigninCoordinatorResultSuccess: {
-      LogSigninAccessPointCompleted(self.accessPoint, self.promoAction);
-      RecordAction(UserMetricsAction("Signin_Signin_WithDefaultSyncSettings"));
-      break;
-    }
+  if (signinResult.has_value()) {
+    CHECK(signinResult.value());
+    LogSigninAccessPointCompleted(self.accessPoint, self.promoAction);
+    RecordAction(UserMetricsAction("Signin_Signin_WithDefaultSyncSettings"));
+    return;
+  }
+  switch (signinResult.error()) {
     case SigninCoordinatorResultCanceledByUser: {
       RecordAction(UserMetricsAction("Signin_Undo_Signin"));
       break;
@@ -62,6 +66,9 @@ using signin_metrics::PromoAction;
     case SigninCoordinatorUINotAvailable: {
       RecordAction(UserMetricsAction("Signin_Abort_Signin_UINotAvailable"));
       break;
+    }
+    case SigninCoordinatorResultSuccess: {
+      NOTREACHED();
     }
   }
 }

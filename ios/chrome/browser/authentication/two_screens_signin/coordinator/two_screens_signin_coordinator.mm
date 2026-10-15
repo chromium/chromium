@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -145,7 +147,7 @@ using base::UserMetricsAction;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:nil];
-  [self finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
+  [self finishWithResult:base::unexpected(SigninCoordinatorResultInterrupted)];
   [_fullscreenSigninPromoLogger disconnect];
   _fullscreenSigninPromoLogger = nil;
   DCHECK(!_navigationController);
@@ -170,11 +172,11 @@ using base::UserMetricsAction;
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   [_navigationController dismissViewControllerAnimated:YES completion:nil];
-  SigninCoordinatorResult result = identity
-                                       ? SigninCoordinatorResultSuccess
-                                       : SigninCoordinatorResultCanceledByUser;
-  [weakSelf finishWithResult:result identity:identity];
-  [weakSelf runCompletionWithSigninResult:result completionIdentity:identity];
+  SigninCoordinatorResultOrIdentity result =
+      identity ? SigninCoordinatorResultOrIdentity(identity)
+               : base::unexpected(SigninCoordinatorResultCanceledByUser);
+  [weakSelf finishWithResult:result];
+  [weakSelf runCompletionWithSigninResult:std::move(result)];
 }
 
 // Presents the screen of certain `type`.
@@ -226,14 +228,13 @@ using base::UserMetricsAction;
   NOTREACHED() << static_cast<int>(type);
 }
 
-// Calls the completion callback with the given `result` and the given
-// `identity`.
-- (void)finishWithResult:(SigninCoordinatorResult)result
-                identity:(id<SystemIdentity>)identity {
+// Logs the sign-in result and stops the child coordinator and navigation
+// controller.
+- (void)finishWithResult:(SigninCoordinatorResultOrIdentity)result {
   if (self.accessPoint == signin_metrics::AccessPoint::kFullscreenSigninPromo) {
     // TODO(crbug.com/40074532): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
-    [_fullscreenSigninPromoLogger logSigninCompletedWithResult:result
+    [_fullscreenSigninPromoLogger logSigninCompletedWithResult:std::move(result)
                                                   addedAccount:NO];
   }
   // When this coordinator is interrupted, `_childCoordinator` needs to be
@@ -269,8 +270,9 @@ using base::UserMetricsAction;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   RecordAction(UserMetricsAction("Signin_TwoScreens_SwipeDismiss"));
-  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
-                   completionIdentity:nil];
+  [self
+      runCompletionWithSigninResult:base::unexpected(
+                                        SigninCoordinatorResultCanceledByUser)];
 }
 
 #pragma mark - NSObject

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 // Logs metrics for sign-in operations.
 @protocol SigninLogger <NSObject>
@@ -18,7 +18,8 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 // Logs sign-in completed. Should be called when the user has attempted sign-in
 // and obtained a result.
-- (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
+- (void)logSigninCompletedWithResult:
+            (SigninCoordinatorResultOrIdentity)signinResult
                         addedAccount:(BOOL)addedAccount;
 
 @end
