@@ -771,6 +771,10 @@ class CORE_EXPORT MinMaxConstraintSpaceBuilder final {
     delegate_.SetPercentageResolutionSize({kIndefiniteSize, block_size});
   }
 
+  void SetPercentageResolutionSize(LogicalSize size) {
+    delegate_.SetPercentageResolutionSize(size);
+  }
+
   void SetReplacedChildPercentageResolutionBlockSize(LayoutUnit block_size) {
     delegate_.SetReplacedChildPercentageResolutionSize(
         {kIndefiniteSize, block_size});

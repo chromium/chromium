@@ -485,7 +485,19 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
     DCHECK(content);
     MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), content,
                                          /* is_new_fc */ true);
-    builder.SetAvailableBlockSize(kIndefiniteSize);
+    LayoutUnit available_block_size = kIndefiniteSize;
+    // A rendered legend may reduce the available block-size. We can't
+    // determine its block-size until we know the fieldset's inline-size.
+    if (!Node().GetRenderedLegend()) {
+      available_block_size =
+          ShrinkLogicalSize(border_box_size_, Borders()).block_size;
+      // Track block-size dependence even while the block-size is indefinite.
+      builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
+    builder.SetAvailableBlockSize(available_block_size);
+    // Resolve percentage padding as for the fieldset itself.
+    builder.SetPercentageResolutionSize(
+        GetConstraintSpace().PercentageResolutionSize());
     const auto space = builder.ToConstraintSpace();
 
     MinMaxSizesResult content_result =
