@@ -1,0 +1,460 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jordan Bayles <jophba@chromium.org>
+Date: Mon, 12 Oct 2026 19:30:00 -0700
+Subject: [PATCH] flac: Support 33-bit Side channels in 32-bit stereo streams
+
+For Left/Side, Mid/Side, and Right/Side stereo decorrelation, the FLAC
+specification (RFC 9639, sections 4.2 and 9.2.3) requires the Side
+channel to be coded with one extra bit per sample. For 32-bit streams,
+the Side channel therefore requires 33 bits per sample, which cannot be
+represented by an i32.
+
+Previously, the decoder read the 33-bit Side subframe into the i32
+sample buffer. As a result:
+ - Warm-up, verbatim, and constant samples were read with
+   read_bits_leq32(33), which (with overflow checks disabled) silently
+   discards the leading bits, corrupting the predictor warm-up.
+ - LPC prediction and Mid/Side reconstruction on 33-bit values are not
+   modular, so truncation to i32 produced incorrect samples.
+The corruption propagates through the IIR predictor for the remainder of
+each block, producing loud bursts of static.
+
+This patch decodes the Side channel into a separate i64 scratch buffer
+when the frame is 32 bits per sample, using 64-bit verbatim, fixed, and
+LPC decoding paths (similar to libFLAC and FFmpeg), and then restores
+the Left and Right channels from it. Streams of 31 bits per sample or
+less are unaffected and continue to use the existing i32 path.
+
+Additionally, the i32 LPC predictor now uses wrapping addition, since for
+32-bit streams the truncated prediction may legitimately overflow before
+the residual is applied.
+
+Note: the 64-bit paths intentionally duplicate the existing i32 subframe
+decoders rather than refactoring them, to minimize the patch delta and
+leave the existing (<= 31 bits per sample) decoding paths untouched. For
+the upstream change, we plan to instead make the subframe decoders
+generic over i32/i64.
+Upstream issue: https://github.com/pdeljanov/Symphonia/issues/585
+Upstream PR: https://github.com/pdeljanov/Symphonia/pull/587
+Chromium bug: https://issues.chromium.org/issues/572363272
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_6/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_6/src/decoder.rs
+index 086c945f8a092..b28bb24ac4471 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_6/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_6/src/decoder.rs
+@@ -22,7 +22,7 @@ use symphonia_core::errors::{Error, Result, decode_error, unsupported_error};
+ use symphonia_core::io::{BitReaderLtr, BufReader, ReadBitsLtr};
+ use symphonia_core::packet::PacketRef;
+ use symphonia_core::support_audio_codec;
+-use symphonia_core::util::bits::sign_extend_leq32_to_i32;
++use symphonia_core::util::bits::{sign_extend_leq32_to_i32, sign_extend_leq64_to_i64};
+ 
+ use log::{debug, log_enabled, warn};
+ 
+@@ -81,12 +81,52 @@ fn decorrelate_right_side(right: &[i32], side: &mut [i32]) {
+     }
+ }
+ 
++// When the frame bits per sample is 32, the Side channel of a stereo pair requires 33 bits per
++// sample and cannot be represented by an i32. In this case, the Side channel is decoded into a
++// separate i64 buffer, and the following functions are used to restore the Left and Right channels.
++// The restored channel that would otherwise replace the Side channel is written into `out`, which is
++// the Side channel's i32 plane.
++
++fn decorrelate_left_side_wide(left: &[i32], side: &[i64], out: &mut [i32]) {
++    for ((o, &l), &s) in out.iter_mut().zip(left).zip(side) {
++        // R = L - S
++        *o = i64::from(l).wrapping_sub(s) as i32;
++    }
++}
++
++fn decorrelate_mid_side_wide(mid: &mut [i32], side: &[i64], out: &mut [i32]) {
++    for ((m, o), &s) in mid.iter_mut().zip(out.iter_mut()).zip(side) {
++        // See decorrelate_mid_side for the derivation. The intermediate values require up-to 34
++        // bits, so the computation must be performed with 64-bit integers.
++        let mid = (i64::from(*m) << 1) | (s & 1);
++        *m = (mid.wrapping_add(s) >> 1) as i32;
++        *o = (mid.wrapping_sub(s) >> 1) as i32;
++    }
++}
++
++fn decorrelate_right_side_wide(right: &[i32], side: &[i64], out: &mut [i32]) {
++    for ((o, &r), &s) in out.iter_mut().zip(right).zip(side) {
++        // L = S + R
++        *o = s.wrapping_add(i64::from(r)) as i32;
++    }
++}
++
++/// Get a mutable slice of `len` samples from the wide (i64) scratch buffer, growing it if required.
++fn wide_scratch(wide: &mut Vec<i64>, len: usize) -> &mut [i64] {
++    if wide.len() < len {
++        wide.resize(len, 0);
++    }
++    &mut wide[..len]
++}
++
+ /// Free Lossless Audio Codec (FLAC) decoder.
+ pub struct FlacDecoder {
+     params: AudioCodecParameters,
+     is_validating: bool,
+     validator: Validator,
+     buf: AudioBuffer<i32>,
++    /// Scratch buffer for decoding 33-bit Side channels. Only allocated for 32-bit streams.
++    wide: Vec<i64>,
+ }
+ 
+ impl FlacDecoder {
+@@ -132,6 +172,7 @@ impl FlacDecoder {
+             is_validating: options.verify,
+             validator: Default::default(),
+             buf,
++            wide: Vec::new(),
+         })
+     }
+ 
+@@ -191,7 +232,9 @@ impl FlacDecoder {
+                     }
+                 }
+                 // For Left/Side, Mid/Side, and Right/Side channel configurations, the Side
+-                // (Difference) channel requires an extra bit per sample.
++                // (Difference) channel requires an extra bit per sample. If the frame is 32 bits per
++                // sample, then the Side channel requires 33 bits per sample and must be decoded into
++                // the wide (i64) scratch buffer.
+                 ChannelAssignment::LeftSide => {
+                     let (left, side) = self
+                         .buf
+@@ -199,9 +242,16 @@ impl FlacDecoder {
+                         .ok_or(Error::DecodeError("flac: unexpected channel assignment"))?;
+ 
+                     read_subframe(&mut bs, bits_per_sample, left)?;
+-                    read_subframe(&mut bs, bits_per_sample + 1, side)?;
+ 
+-                    decorrelate_left_side(left, side);
++                    if bits_per_sample < u32::BITS {
++                        read_subframe(&mut bs, bits_per_sample + 1, side)?;
++                        decorrelate_left_side(left, side);
++                    }
++                    else {
++                        let wide = wide_scratch(&mut self.wide, side.len());
++                        read_subframe_wide(&mut bs, bits_per_sample + 1, side, wide)?;
++                        decorrelate_left_side_wide(left, wide, side);
++                    }
+                 }
+                 ChannelAssignment::MidSide => {
+                     let (mid, side) = self
+@@ -210,9 +260,16 @@ impl FlacDecoder {
+                         .ok_or(Error::DecodeError("flac: unexpected channel assignment"))?;
+ 
+                     read_subframe(&mut bs, bits_per_sample, mid)?;
+-                    read_subframe(&mut bs, bits_per_sample + 1, side)?;
+ 
+-                    decorrelate_mid_side(mid, side);
++                    if bits_per_sample < u32::BITS {
++                        read_subframe(&mut bs, bits_per_sample + 1, side)?;
++                        decorrelate_mid_side(mid, side);
++                    }
++                    else {
++                        let wide = wide_scratch(&mut self.wide, side.len());
++                        read_subframe_wide(&mut bs, bits_per_sample + 1, side, wide)?;
++                        decorrelate_mid_side_wide(mid, wide, side);
++                    }
+                 }
+                 ChannelAssignment::RightSide => {
+                     let (side, right) = self
+@@ -220,10 +277,17 @@ impl FlacDecoder {
+                         .plane_pair_mut(0, 1)
+                         .ok_or(Error::DecodeError("flac: unexpected channel assignment"))?;
+ 
+-                    read_subframe(&mut bs, bits_per_sample + 1, side)?;
+-                    read_subframe(&mut bs, bits_per_sample, right)?;
+-
+-                    decorrelate_right_side(right, side);
++                    if bits_per_sample < u32::BITS {
++                        read_subframe(&mut bs, bits_per_sample + 1, side)?;
++                        read_subframe(&mut bs, bits_per_sample, right)?;
++                        decorrelate_right_side(right, side);
++                    }
++                    else {
++                        let wide = wide_scratch(&mut self.wide, side.len());
++                        read_subframe_wide(&mut bs, bits_per_sample + 1, side, wide)?;
++                        read_subframe(&mut bs, bits_per_sample, right)?;
++                        decorrelate_right_side_wide(right, wide, side);
++                    }
+                 }
+             }
+         }
+@@ -338,7 +402,9 @@ enum SubFrameType {
+     Linear(u32),
+ }
+ 
+-fn read_subframe<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32, buf: &mut [i32]) -> Result<()> {
++/// Reads a subframe header. Returns the subframe type, and the number of dropped (wasted) bits per
++/// sample.
++fn read_subframe_header<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32) -> Result<(SubFrameType, u32)> {
+     // First sub-frame bit must always 0.
+     if bs.read_bool()? {
+         return decode_error("flac: subframe padding is not 0");
+@@ -374,6 +440,17 @@ fn read_subframe<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32, buf: &mut [i32]) ->
+         );
+     }
+ 
++    Ok((subframe_type, dropped_bps))
++}
++
++fn read_subframe<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32, buf: &mut [i32]) -> Result<()> {
++    // Subframes with more than 32 bits per sample must be decoded with `read_subframe_wide`.
++    if frame_bps > u32::BITS {
++        return decode_error("flac: invalid subframe bit width");
++    }
++
++    let (subframe_type, dropped_bps) = read_subframe_header(bs, frame_bps)?;
++
+     // The bits per sample stated in the frame header is for the decoded audio sub-block samples.
+     // However, it is likely that the lower order bits of all the samples are simply 0. Therefore,
+     // the encoder will truncate `dropped_bps` of lower order bits for every sample in a sub-block.
+@@ -399,6 +476,42 @@ fn read_subframe<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32, buf: &mut [i32]) ->
+     Ok(())
+ }
+ 
++/// Reads a subframe with up-to 64 bits per sample into `buf`. In practice, this is only required
++/// for the 33-bit Side channel of a 32-bit stereo stream. `scratch` must be the same length as
++/// `buf`, and is used as temporary storage for the residuals, which are always 32-bit.
++fn read_subframe_wide<B: ReadBitsLtr>(
++    bs: &mut B,
++    frame_bps: u32,
++    scratch: &mut [i32],
++    buf: &mut [i64],
++) -> Result<()> {
++    debug_assert!(scratch.len() == buf.len());
++
++    if frame_bps > u64::BITS {
++        return decode_error("flac: invalid subframe bit width");
++    }
++
++    let (subframe_type, dropped_bps) = read_subframe_header(bs, frame_bps)?;
++
++    let bps = frame_bps - dropped_bps;
++
++    match subframe_type {
++        SubFrameType::Constant => decode_constant_wide(bs, bps, buf)?,
++        SubFrameType::Verbatim => decode_verbatim_wide(bs, bps, buf)?,
++        SubFrameType::FixedLinear(order) => decode_fixed_linear_wide(bs, bps, order, scratch, buf)?,
++        SubFrameType::Linear(order) => decode_linear_wide(bs, bps, order, scratch, buf)?,
++    };
++
++    // Shift the samples to account for the dropped bits.
++    if dropped_bps > 0 {
++        for sample in buf.iter_mut() {
++            *sample = sample.wrapping_shl(dropped_bps);
++        }
++    }
++
++    Ok(())
++}
++
+ #[inline(always)]
+ fn samples_shl(shift: u32, buf: &mut [i32]) {
+     if shift > 0 {
+@@ -510,6 +623,110 @@ fn decode_linear<B: ReadBitsLtr>(bs: &mut B, bps: u32, order: u32, buf: &mut [i3
+     Ok(())
+ }
+ 
++fn decode_constant_wide<B: ReadBitsLtr>(bs: &mut B, bps: u32, buf: &mut [i64]) -> Result<()> {
++    let const_sample = sign_extend_leq64_to_i64(bs.read_bits_leq64(bps)?, bps);
++
++    for sample in buf.iter_mut() {
++        *sample = const_sample;
++    }
++
++    Ok(())
++}
++
++fn decode_verbatim_wide<B: ReadBitsLtr>(bs: &mut B, bps: u32, buf: &mut [i64]) -> Result<()> {
++    for sample in buf.iter_mut() {
++        *sample = sign_extend_leq64_to_i64(bs.read_bits_leq64(bps)?, bps);
++    }
++
++    Ok(())
++}
++
++/// Decodes the residuals into `scratch`, and then widens them into `buf` following the first
++/// `order` warm-up samples.
++fn decode_residual_wide<B: ReadBitsLtr>(
++    bs: &mut B,
++    order: u32,
++    scratch: &mut [i32],
++    buf: &mut [i64],
++) -> Result<()> {
++    decode_residual(bs, order, scratch)?;
++
++    for (sample, &residual) in buf.iter_mut().zip(scratch.iter()).skip(order as usize) {
++        *sample = i64::from(residual);
++    }
++
++    Ok(())
++}
++
++fn decode_fixed_linear_wide<B: ReadBitsLtr>(
++    bs: &mut B,
++    bps: u32,
++    order: u32,
++    scratch: &mut [i32],
++    buf: &mut [i64],
++) -> Result<()> {
++    if order as usize > buf.len() {
++        return decode_error("flac: fixed predictor order is greater than the block size");
++    }
++
++    // The first `order` samples are encoded verbatim to warm-up the LPC decoder.
++    decode_verbatim_wide(bs, bps, &mut buf[..order as usize])?;
++
++    // Decode the residuals for the predicted samples.
++    decode_residual_wide(bs, order, scratch, buf)?;
++
++    // Run the Fixed predictor (appends to residuals).
++    fixed_predict_wide(order, buf);
++
++    Ok(())
++}
++
++fn decode_linear_wide<B: ReadBitsLtr>(
++    bs: &mut B,
++    bps: u32,
++    order: u32,
++    scratch: &mut [i32],
++    buf: &mut [i64],
++) -> Result<()> {
++    if order as usize > buf.len() {
++        return decode_error("flac: predictor order is greater than the block size");
++    }
++
++    // The order of the Linear Predictor should be between 1 and 32.
++    debug_assert!(order > 0 && order <= 32);
++
++    // The first `order` samples are encoded verbatim to warm-up the LPC decoder.
++    decode_verbatim_wide(bs, bps, &mut buf[0..order as usize])?;
++
++    // Quantized linear predictor (QLP) coefficients precision in bits (1-16).
++    let qlp_precision = bs.read_bits_leq32(4)? + 1;
++
++    if qlp_precision > 15 {
++        return decode_error("flac: qlp precision set to reserved value");
++    }
++
++    // QLP coefficients bit shift [-16, 15].
++    let qlp_coeff_shift = sign_extend_leq32_to_i32(bs.read_bits_leq32(5)?, 5);
++
++    if qlp_coeff_shift < 0 {
++        return unsupported_error("flac: lpc shifts less than 0 are not supported");
++    }
++
++    // Coefficients are stored in reverse order such that the first coefficient is applied to the
++    // most recent sample.
++    let mut qlp_coeffs = [0i32; 32];
++
++    for c in qlp_coeffs.iter_mut().rev().take(order as usize) {
++        *c = sign_extend_leq32_to_i32(bs.read_bits_leq32(qlp_precision)?, qlp_precision);
++    }
++
++    decode_residual_wide(bs, order, scratch, buf)?;
++
++    lpc_predict_wide(&qlp_coeffs[32 - order as usize..], qlp_coeff_shift as u32, buf);
++
++    Ok(())
++}
++
+ fn decode_residual<B: ReadBitsLtr>(
+     bs: &mut B,
+     n_prelude_samples: u32,
+@@ -731,7 +948,7 @@ fn lpc_predict<const N: usize>(order: usize, coeffs: &[i32; N], coeff_shift: u32
+             .map(|(&c, &sample)| c as i64 * sample as i64)
+             .sum::<i64>();
+ 
+-        buf[i] += (predicted >> coeff_shift) as i32;
++        buf[i] = buf[i].wrapping_add((predicted >> coeff_shift) as i32);
+     }
+ 
+     // If the pre-fill operation filled the entire sample buffer, return immediately.
+@@ -747,6 +964,78 @@ fn lpc_predict<const N: usize>(order: usize, coeffs: &[i32; N], coeff_shift: u32
+             .map(|(&c, &s)| i64::from(c) * i64::from(s))
+             .sum::<i64>();
+ 
+-        buf[i] += (predicted >> coeff_shift) as i32;
++        // For 32-bit streams, the prediction may exceed the range of an i32 even though the
++        // predicted sample, after adding the residual, will not. Therefore, use wrapping
++        // arithmetic.
++        buf[i] = buf[i].wrapping_add((predicted >> coeff_shift) as i32);
++    }
++}
++
++/// Fixed predictor for samples of up-to 64 bits. See `fixed_predict` for details.
++fn fixed_predict_wide(order: u32, buf: &mut [i64]) {
++    debug_assert!(order <= 4);
++
++    // Wrapping arithmetic is used throughout so that malformed streams cannot cause a panic.
++    match order {
++        0 => (),
++        // s(i) = 1*s(i-1)
++        1 => {
++            for i in 1..buf.len() {
++                buf[i] = buf[i].wrapping_add(buf[i - 1]);
++            }
++        }
++        // s(i) = 2*s(i-1) - 1*s(i-2)
++        2 => {
++            for i in 2..buf.len() {
++                let p = buf[i - 1].wrapping_mul(2).wrapping_sub(buf[i - 2]);
++                buf[i] = buf[i].wrapping_add(p);
++            }
++        }
++        // s(i) = 3*s(i-1) - 3*s(i-2) + 1*s(i-3)
++        3 => {
++            for i in 3..buf.len() {
++                let p = buf[i - 1]
++                    .wrapping_mul(3)
++                    .wrapping_sub(buf[i - 2].wrapping_mul(3))
++                    .wrapping_add(buf[i - 3]);
++                buf[i] = buf[i].wrapping_add(p);
++            }
++        }
++        // s(i) = 4*s(i-1) - 6*s(i-2) + 4*s(i-3) - 1*s(i-4)
++        4 => {
++            for i in 4..buf.len() {
++                let p = buf[i - 1]
++                    .wrapping_mul(4)
++                    .wrapping_sub(buf[i - 2].wrapping_mul(6))
++                    .wrapping_add(buf[i - 3].wrapping_mul(4))
++                    .wrapping_sub(buf[i - 4]);
++                buf[i] = buf[i].wrapping_add(p);
++            }
++        }
++        _ => unreachable!(),
++    };
++}
++
++/// Linear Predictive Coding (LPC) decoder for samples of up-to 64 bits. The order of the predictor
++/// is the length of `coeffs`. Coefficients must be stored in reverse order such that the last
++/// coefficient is applied to the most recent sample. It is expected that the first `coeffs.len()`
++/// samples in `buf` are warm-up samples.
++///
++/// This predictor is only used for the 33-bit Side channel of 32-bit stereo streams, therefore it
++/// is not as optimized as `lpc_predict`. For valid streams, the products of a (up-to) 15-bit
++/// coefficient and a 33-bit sample, and the sum of up-to 32 of such products, cannot overflow an
++/// i64. Wrapping arithmetic is used so that malformed streams cannot cause a panic.
++fn lpc_predict_wide(coeffs: &[i32], coeff_shift: u32, buf: &mut [i64]) {
++    let order = coeffs.len();
++
++    debug_assert!(order <= buf.len());
++
++    for i in order..buf.len() {
++        let predicted = coeffs
++            .iter()
++            .zip(&buf[i - order..i])
++            .fold(0i64, |acc, (&c, &s)| acc.wrapping_add(i64::from(c).wrapping_mul(s)));
++
++        buf[i] = buf[i].wrapping_add(predicted >> coeff_shift);
+     }
+ }
+-- 
+2.42.0.869.gea05f2083d-goog
+

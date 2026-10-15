@@ -780,6 +780,18 @@ constexpr TestParams kCommonTestParams[] = {
     {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
     kFlacStereoParams,
+    // 32-bit stereo FLAC with Left/Side and Mid/Side frames, which require a
+    // 33-bit Side channel. See https://crbug.com/572363272.
+    {AudioCodec::kFLAC,
+     "sine-s32-stereo.flac",
+     {{
+         {0, 92879, "3.91,-0.45,5.67,1.72,7.79,1.35,"},
+         {92879, 92879, "3.58,0.49,4.97,2.79,8.23,2.85,"},
+         {185759, 92879, "-5.03,0.25,-4.34,2.74,-1.47,2.63,"},
+     }},
+     0,
+     44100,
+     CHANNEL_LAYOUT_STEREO},
     {AudioCodec::kPCM,
      "sfx_f32le.wav",
      {{
