@@ -73,10 +73,20 @@ _globally_enabled_crubit_features = [
 #     orphan rule (see
 #     https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule).
 #
-#     Each file becomes a private module at the root of the crate, and all its
-#     items are re-exported (via `pub use`) from the root of the crate.
+#     Each file becomes a private module of the crate, and all its items are
+#     re-exported (via `pub use`) into the parent module.
 #
 #     See `//docs/rust/crubit/rust_api_from_cpp.md` for more info and examples.
+#
+#   extra_rust_sources_mod: (optional)
+#     The Rust module path (e.g. `"foo::bar"` for the C++ namespace `foo::bar`)
+#     where `extra_rust_sources` should be placed.  The module has to exist in
+#     the generated bindings.  By default, `extra_rust_sources` are placed at
+#     the root of the crate.
+#
+#     This should be needed only rarely (e.g. when `extra_rust_sources` need to
+#     provide items that Crubit-generated code expects at a specific module
+#     path).
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
   assert(enable_rust)
@@ -126,10 +136,53 @@ template("rust_api_from_cpp") {
     _bindings_deps = invoker.bindings_deps
   }
 
-  # Optional parameter: extra_rust_sources.
+  # Optional parameters: extra_rust_sources and extra_rust_sources_mod.
+  #
+  # Crubit emits each `--extra_rs_srcs` path into a `#[path = ...]` attribute
+  # in the generated `.rs` file.  Such paths are resolved [1] by `rustc`
+  # relative to the directory of the generated `.rs` file - extended with
+  # subdirectories that correspond to the nested module (e.g. `foo/bar/` for
+  # `--extra_rs_srcs=path=foo::bar`).
+  #
+  # By default, `extra_rust_sources` are placed at the root of the crate, and
+  # therefore their paths are rebased onto `target_gen_dir`.  When placing
+  # `extra_rust_sources` into a nested module, rebasing onto a `foo/bar/`
+  # subdirectory wouldn't work (because the subdirectory doesn't exist), and
+  # therefore the `copy` action below puts the extra sources into such a
+  # subdirectory.
+  #
+  # [1] https://doc.rust-lang.org/reference/items/modules.html#the-path-attribute:~:text=the%20file%20path%20is%20relative%20to%20the%20directory%20the%20source%20file%20is%20located
   _extra_rust_sources = []
+  _extra_rs_srcs_flag_values = []
   if (defined(invoker.extra_rust_sources)) {
-    _extra_rust_sources = invoker.extra_rust_sources
+    if (defined(invoker.extra_rust_sources_mod)) {
+      _mod = invoker.extra_rust_sources_mod
+      _mod_dir = "${target_gen_dir}/" + string_replace(_mod, "::", "/")
+      _extra_rs_srcs_copy_dir = "${_mod_dir}/${_lib_target_name}"
+      _extra_rs_srcs_copy_target_name = "${_lib_target_name}_extra_rust_sources"
+
+      copy(_extra_rs_srcs_copy_target_name) {
+        testonly = _testonly
+        visibility = [ ":${_lib_target_name}" ]
+        sources = invoker.extra_rust_sources
+        outputs = [ "${_extra_rs_srcs_copy_dir}/" +
+                    "{{source_root_relative_dir}}/{{source_file_part}}" ]
+      }
+
+      _extra_rust_sources =
+          get_target_outputs(":${_extra_rs_srcs_copy_target_name}")
+      foreach(_src, _extra_rust_sources) {
+        _extra_rs_srcs_flag_values +=
+            [ rebase_path(_src, _mod_dir) + "=${_mod}" ]
+      }
+    } else {
+      _extra_rust_sources = invoker.extra_rust_sources
+      _extra_rs_srcs_flag_values =
+          rebase_path(_extra_rust_sources, target_gen_dir)
+    }
+  } else {
+    assert(!defined(invoker.extra_rust_sources_mod),
+           "`extra_rust_sources_mod` requires `extra_rust_sources`")
   }
 
   # Various names and paths that are shared across multiple targets defined
@@ -244,6 +297,16 @@ template("rust_api_from_cpp") {
     crate_root = _rs_out_path
     sources = [ crate_root ] + _extra_rust_sources
 
+    if (defined(_extra_rs_srcs_copy_target_name)) {
+      deps += [ ":${_extra_rs_srcs_copy_target_name}" ]
+
+      # Make compiler diagnostics point at the original `extra_rust_sources`
+      # (rather than at their copies).
+      rustflags = [ "--remap-path-prefix=" +
+                    rebase_path(_extra_rs_srcs_copy_dir, root_build_dir) + "=" +
+                    rebase_path("//", root_build_dir) ]
+    }
+
     # Crubit-generated crates are Chromium-agnostic, so they shouldn't use
     # Chromium-specific dependencies nor lints.
     no_allocator_crate = true
@@ -330,22 +393,9 @@ template("rust_api_from_cpp") {
       ]
     }
 
-    if (_extra_rust_sources != []) {
-      # Crubit emits each `--extra_rs_srcs` path into a `#[path = ...]`
-      # attribute at the root of the generated `.rs` file. Such paths are
-      # resolved [1] by `rustc` relative to the directory of the generated `.rs`
-      # file, and therefore the paths are rebased onto `target_gen_dir`.
-      #
-      # This strategy may need some tweaks if we ever need to expose Crubit
-      # support for placing the extra sources into a nested module (e.g. via
-      # `--extra_rs_srcs=path=foo::bar`).  This wouldn't work when passing the
-      # current relative paths below, because `rustc` would then resolve the
-      # path relative to a `foo/bar/` subdirectory (which doesn't exist).
-      #
-      # [1] https://doc.rust-lang.org/reference/items/modules.html#the-path-attribute:~:text=the%20file%20path%20is%20relative%20to%20the%20directory%20the%20source%20file%20is%20located
+    if (_extra_rs_srcs_flag_values != []) {
       args +=
-          [ "--extra_rs_srcs=" +
-            string_join(",", rebase_path(_extra_rust_sources, target_gen_dir)) ]
+          [ "--extra_rs_srcs=" + string_join(",", _extra_rs_srcs_flag_values) ]
     }
 
     # TODO(https://crbug.com/40226863): Use

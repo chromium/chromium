@@ -275,6 +275,9 @@ Notes:
   useful to C++ callers, then add it to the C++ header instead - Crubit will
   generate Rust bindings for it, and both languages will share one
   implementation.
+* Injecting Rust sources into a _nested module_ of the generated bindings is
+  supported via `extra_rust_sources_mod` attribute.  Reaching for this attribute
+  should be needed quite rarely - usually only for `cc_std` or `base` bindings.
 
 ## Troubleshooting
 

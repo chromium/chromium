@@ -13,6 +13,8 @@ chromium::import! {
         as self_contained_target;
     "//build/rust/tests/test_rust_api_from_cpp:target_depending_on_another_rs_api"
         as target_depending_on_another;
+    "//build/rust/tests/test_rust_api_from_cpp:test_extra_rust_sources_mod_rs_api"
+        as test_extra_rust_sources_mod;
     "//build/rust/tests/test_rust_api_from_cpp:test_time_delta_rs_api"
         as test_time_delta;
 }
@@ -80,4 +82,14 @@ fn test_extra_rust_sources() {
 
     let negative_delta = TestTimeDelta::FromMicroseconds(-1);
     assert!(Duration::try_from(negative_delta).is_err());
+}
+
+#[gtest(TestRustApiFromCpp, ExtraRustSourcesMod)]
+fn test_extra_rust_sources_mod() {
+    use ::test_extra_rust_sources_mod::test_outer::test_inner;
+
+    // `double_meters` comes from `extra_rust_sources` placed (via
+    // `extra_rust_sources_mod`) into the `test_outer::test_inner` module.
+    let m = test_inner::double_meters(test_inner::TestMeters { value: 21 });
+    assert_eq!(m.value, 42);
 }
