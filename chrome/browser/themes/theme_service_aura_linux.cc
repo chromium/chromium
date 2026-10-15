@@ -16,6 +16,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 
 namespace {
@@ -178,6 +179,19 @@ ThemeService::BrowserColorScheme ThemeServiceAuraLinux::GetBrowserColorScheme()
     return ThemeService::BrowserColorScheme::kSystem;
   }
   return ThemeService::GetBrowserColorScheme();
+}
+
+bool ThemeServiceAuraLinux::BrowserUsesDarkColors() const {
+  // The system theme (GTK or QT) paints with the toolkit's colors, so use the
+  // color scheme of its native theme, which matches those colors.
+  // GetBrowserColorScheme() is always kSystem in this case.
+  if (UsingSystemTheme()) {
+    if (const auto* native_theme = GetThemeSupplier()->GetNativeTheme()) {
+      return native_theme->preferred_color_scheme() ==
+             ui::NativeTheme::PreferredColorScheme::kDark;
+    }
+  }
+  return ThemeService::BrowserUsesDarkColors();
 }
 
 // static

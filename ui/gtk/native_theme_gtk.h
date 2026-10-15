@@ -5,12 +5,13 @@
 #ifndef UI_GTK_NATIVE_THEME_GTK_H_
 #define UI_GTK_NATIVE_THEME_GTK_H_
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace gtk {
 
-class NativeThemeGtk : public ui::NativeThemeBase {
+class COMPONENT_EXPORT(GTK) NativeThemeGtk : public ui::NativeThemeBase {
  public:
   static NativeThemeGtk* instance();
 
@@ -40,6 +41,10 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       State state,
       const gfx::Rect& rect,
       const FrameTopAreaExtraParams& extra_params) const override;
+
+ protected:
+  // ui::NativeTheme:
+  PreferredColorScheme CalculatePreferredColorScheme() const override;
 
  private:
   friend class base::NoDestructor<NativeThemeGtk>;

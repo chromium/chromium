@@ -727,6 +727,10 @@ void ClearStyleColorCache() {
   cache.separator.clear();
 }
 
+bool IsGtkThemeDark() {
+  return color_utils::IsDark(GetBgColor({}));
+}
+
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,
                                          const gchar* prop_name) {
   GValue layout = G_VALUE_INIT;

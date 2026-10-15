@@ -580,6 +580,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // anything changes or `force_notify` is set, notifies observers.
   virtual void OnToolkitSettingsChanged(bool force_notify);
 
+  // Returns the preferred color scheme for this instance. By default this is
+  // the process-wide override, if any, or else the `OsSettingsProvider` value.
+  // Instances that paint with a toolkit's colors (e.g. GTK or Qt) may override
+  // this so that the color scheme always matches those colors.
+  virtual PreferredColorScheme CalculatePreferredColorScheme() const;
+
   // Instructs this theme instance to mirror various appearance settings to
   // `associated_web_instance` when they change.
   void SetAssociatedWebInstance(NativeTheme* associated_web_instance);
@@ -598,7 +604,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
   // Calculates and returns appropriate values based on flags and toolkit.
   ColorProviderKey::ForcedColors CalculateForcedColors() const;
-  PreferredColorScheme CalculatePreferredColorScheme() const;
   PreferredContrast CalculatePreferredContrast() const;
   bool CalculateUseOverlayScrollbar() const;
 

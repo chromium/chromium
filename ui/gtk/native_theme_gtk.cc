@@ -182,4 +182,18 @@ NativeThemeGtk::NativeThemeGtk() : NativeThemeBase(ui::SystemTheme::kGtk) {
 
 NativeThemeGtk::~NativeThemeGtk() = default;
 
+ui::NativeTheme::PreferredColorScheme
+NativeThemeGtk::CalculatePreferredColorScheme() const {
+  // UI using this theme is painted with the GTK theme's colors, so its color
+  // scheme must match those colors rather than the desktop's color-scheme
+  // preference. The preference still reaches GTK through
+  // `gtk-application-prefer-dark-theme` (see `GtkUi::SetDarkTheme()`), which
+  // switches themes that ship both variants.
+  if (const auto scheme_override = GetPreferredColorSchemeOverride()) {
+    return *scheme_override;
+  }
+  return IsGtkThemeDark() ? PreferredColorScheme::kDark
+                          : PreferredColorScheme::kLight;
+}
+
 }  // namespace gtk

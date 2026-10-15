@@ -40,9 +40,8 @@ OsSettingsProviderGtk::PreferredColorScheme() const {
   // have a light variant and aren't affected by the setting.  Because of this,
   // experimentally check if the theme is dark by checking if the window
   // background color is dark.
-  return color_utils::IsDark(GetBgColor({}))
-             ? ui::NativeTheme::PreferredColorScheme::kDark
-             : ui::NativeTheme::PreferredColorScheme::kLight;
+  return IsGtkThemeDark() ? ui::NativeTheme::PreferredColorScheme::kDark
+                          : ui::NativeTheme::PreferredColorScheme::kLight;
 }
 
 ui::NativeTheme::PreferredContrast OsSettingsProviderGtk::PreferredContrast()
@@ -101,6 +100,10 @@ void OsSettingsProviderGtk::SetColorScheme(std::optional<bool> prefer_dark) {
     return;
   }
   prefer_dark_ = prefer_dark;
+  NotifyOnSettingsChanged();
+}
+
+void OsSettingsProviderGtk::OnThemeChanged() {
   NotifyOnSettingsChanged();
 }
 

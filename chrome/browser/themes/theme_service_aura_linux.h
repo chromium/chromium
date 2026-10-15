@@ -28,6 +28,7 @@ class ThemeServiceAuraLinux : public ThemeService {
   bool UsingSystemTheme() const override;
   void FixInconsistentPreferencesIfNeeded() override;
   BrowserColorScheme GetBrowserColorScheme() const override;
+  bool BrowserUsesDarkColors() const override;
 
   static ui::SystemTheme GetSystemThemeForProfile(const Profile* profile);
 };

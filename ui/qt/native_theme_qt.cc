@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/color/system_theme.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
@@ -29,6 +30,20 @@ NativeThemeQt::~NativeThemeQt() = default;
 
 void NativeThemeQt::OnQtThemeChanged() {
   OnToolkitSettingsChanged(false);
+}
+
+DISABLE_CFI_VCALL
+ui::NativeTheme::PreferredColorScheme
+NativeThemeQt::CalculatePreferredColorScheme() const {
+  // UI using this theme is painted with the Qt palette, so its color scheme
+  // must match that palette rather than the desktop's color-scheme preference.
+  if (const auto scheme_override = GetPreferredColorSchemeOverride()) {
+    return *scheme_override;
+  }
+  return color_utils::IsDark(
+             shim_->GetColor(ColorType::kWindowBg, ColorState::kNormal))
+             ? PreferredColorScheme::kDark
+             : PreferredColorScheme::kLight;
 }
 
 DISABLE_CFI_VCALL

@@ -82,6 +82,8 @@ component("gtk") {
     "gtk_ui_factory.h",
     "gtk_ui_platform_stub.h",
     "gtk_util.h",
+    "native_theme_gtk.h",
+    "os_settings_provider_gtk.h",
     "select_file_dialog_linux_gtk.h",
   ]
 
@@ -208,6 +210,7 @@ if (use_gtk) {
     sources = [
       "gtk_color_mixers_unittest.cc",
       "gtk_util_unittest.cc",
+      "native_theme_gtk_unittest.cc",
       "run_all_unittests.cc",
       "select_file_dialog_linux_gtk_unittest.cc",
     ]
@@ -223,6 +226,7 @@ if (use_gtk) {
       "//ui/events",
       "//ui/gfx",
       "//ui/linux:linux_ui",
+      "//ui/native_theme",
       "//ui/shell_dialogs",
     ]
   }

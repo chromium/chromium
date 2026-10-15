@@ -182,6 +182,12 @@ SkColor GetSeparatorColor(const std::string& css_selector);
 // GTK theme (or anything else that affects theme colors) changes.
 COMPONENT_EXPORT(GTK) void ClearStyleColorCache();
 
+// Returns whether the current GTK theme is dark, judged by its window
+// background color. `gtk-application-prefer-dark-theme` only affects themes
+// that ship a dark variant (e.g. Adwaita); most dark themes have no light
+// variant, so the rendered colors are the only reliable signal.
+bool IsGtkThemeDark();
+
 // Get a GtkSettings property as a C++ string.
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,
                                          const gchar* prop_name);

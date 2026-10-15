@@ -771,6 +771,9 @@ void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   custom_frame_colors_.clear();
   native_frame_colors_.clear();
   LoadGtkValues();
+  // Recompute values derived from the theme (e.g. `NativeThemeGtk`'s color
+  // scheme) now that the cached colors have been cleared.
+  os_settings_provider_->OnThemeChanged();
   native_theme_->NotifyOnNativeThemeUpdated();
 }
 
@@ -863,8 +866,8 @@ void GtkUi::LoadGtkValues() {
   // to the theme bits associated with the NativeThemeGtk instance to ensure
   // we do not regress existing behavior during the transition.
   ui::ColorProviderKey key;
-  if (ui::OsSettingsProvider::Get().PreferredColorScheme() ==
-      ui::NativeTheme::PreferredColorScheme::kDark) {
+  // Match `NativeThemeGtk::CalculatePreferredColorScheme()`.
+  if (IsGtkThemeDark()) {
     key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
   }
   // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color provider

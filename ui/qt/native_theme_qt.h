@@ -24,6 +24,7 @@ class NativeThemeQt : public ui::NativeThemeAura {
 
  protected:
   // ui::NativeThemeAura:
+  PreferredColorScheme CalculatePreferredColorScheme() const override;
   void PaintFrameTopArea(
       cc::PaintCanvas* canvas,
       State state,

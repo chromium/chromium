@@ -202,7 +202,7 @@ class ThemeService : public KeyedService,
 
   // Returns true if either the browser color scheme is dark, or the browser
   // color scheme is "system" and the native theme is dark.
-  bool BrowserUsesDarkColors() const;
+  virtual bool BrowserUsesDarkColors() const;
 
   // Sets/gets the browser user color preference.
   virtual void SetUserColor(std::optional<SkColor> user_color);
