@@ -1330,6 +1330,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       UnorderedListHeuristics) {
+  RunPDFTest(FILE_PATH_LITERAL("unordered-list-heuristics.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
                        ParagraphsAndHeadingUntagged) {
   RunHeuristicsPDFTest(FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"),
                        /*expected_subtext=*/"Page 1");

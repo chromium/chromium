@@ -1,0 +1,13 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='Introductory paragraph line one. Introductory paragraph line two. '
+++++[list]
+++++++[list item]
+++++++++[static]
+++++++++[static] name='First list item line one. First list item line two. '
+++++++[list item]
+++++++++[static]
+++++++++[static] name='Second list item. '
+++++[paragraph]
+++++++[static] name='Trailing paragraph after list.'

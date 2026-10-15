@@ -75,6 +75,9 @@ struct TextRunContext {
 
   // The characters belonging to `run`.
   base::raw_span<const chrome_pdf::AccessibilityCharInfo> chars;
+
+  // The characters belonging to `next_run`, or empty if there is none.
+  base::raw_span<const chrome_pdf::AccessibilityCharInfo> next_chars;
 };
 
 // Tracks the in-progress static text node being accumulated across consecutive
@@ -232,6 +235,15 @@ class PdfAccessibilityTreeBuilderHeuristic {
   // while the block still has a uniform language.
   raw_ptr<ui::AXNodeData> current_block_node_ = nullptr;
   std::vector<raw_ptr<ui::AXNodeData>> current_block_static_text_nodes_;
+
+  // The `kList` node that new `kListItem` blocks are appended to, or nullptr if
+  // the current block is not in a list.
+  raw_ptr<ui::AXNodeData> current_list_node_ = nullptr;
+
+  // The x-coordinate, in page pixels, of the first marker in
+  // `current_list_node_`. Lines starting further left end the current list
+  // item.
+  float current_list_indent_ = 0.0f;
 };
 
 }  // namespace pdf

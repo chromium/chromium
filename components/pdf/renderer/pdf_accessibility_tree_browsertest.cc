@@ -241,6 +241,60 @@ void CheckRootAndStatusNodes(const ui::AXNode* root_node,
   }
 }
 
+void CheckParagraph(const ui::AXNode* node, std::string_view expected_text) {
+  ASSERT_NE(nullptr, node);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, node->GetRole());
+  EXPECT_TRUE(
+      node->GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
+  ASSERT_EQ(1u, node->GetChildCount());
+  const ui::AXNode* static_text = node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  EXPECT_EQ(expected_text,
+            static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+void CheckUnorderedList(const ui::AXNode* list,
+                        base::span<const std::string_view> expected_items) {
+  ASSERT_NE(nullptr, list);
+  EXPECT_EQ(ax::mojom::Role::kList, list->GetRole());
+  EXPECT_EQ("ul",
+            list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_TRUE(
+      list->GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
+  ASSERT_EQ(expected_items.size(), list->GetChildCount());
+
+  for (size_t i = 0; i < expected_items.size(); ++i) {
+    const ui::AXNode* item = list->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, item);
+    EXPECT_EQ(ax::mojom::Role::kListItem, item->GetRole());
+    EXPECT_EQ("li",
+              item->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+    EXPECT_TRUE(item->GetBoolAttribute(
+        ax::mojom::BoolAttribute::kIsLineBreakingObject));
+    ASSERT_EQ(2u, item->GetChildCount());
+
+    const ui::AXNode* marker = item->GetChildAtIndex(0u);
+    ASSERT_NE(nullptr, marker);
+    EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
+    EXPECT_EQ("::marker",
+              marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+    EXPECT_TRUE(
+        marker->GetStringAttribute(ax::mojom::StringAttribute::kName).empty());
+    EXPECT_EQ(0u, marker->GetChildCount());
+    EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
+
+    const ui::AXNode* item_static_text = item->GetChildAtIndex(1u);
+    ASSERT_NE(nullptr, item_static_text);
+    EXPECT_EQ(ax::mojom::Role::kStaticText, item_static_text->GetRole());
+    EXPECT_EQ(expected_items[i], item_static_text->GetStringAttribute(
+                                     ax::mojom::StringAttribute::kName));
+    ASSERT_GE(item_static_text->GetChildCount(), 1u);
+    EXPECT_EQ(ax::mojom::Role::kInlineTextBox,
+              item_static_text->GetChildAtIndex(0u)->GetRole());
+  }
+}
+
 // This class overrides PdfAccessibilityActionHandler to record received
 // action data when tests make an accessibility action call.
 class TestPdfAccessibilityActionHandler
@@ -466,6 +520,26 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     WaitForThreadTasks();
     // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
     WaitForThreadDelayedTasks();
+  }
+
+  // Sets up a heuristic tree with uniform 12pt normal-styled text runs and
+  // returns the page node (or nullptr if not created).
+  const ui::AXNode* SetUpUniformHeuristicPage(
+      const std::vector<std::string>& words,
+      const std::vector<gfx::RectF>& bounds,
+      const std::vector<chrome_pdf::AccessibilityTextDirection>& directions =
+          {}) {
+    const std::vector<float> font_sizes(words.size(), 12.0f);
+    const std::vector<chrome_pdf::AccessibilityTextStyleInfo> styles(
+        words.size(), CreateNormalStyle());
+    SetUpHeuristicAccessibilityTreeDetailed(font_sizes, styles,
+                                            MakeCharVector(words), bounds,
+                                            /*char_counts=*/{}, directions);
+    const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+    if (!pdf_root || pdf_root->GetChildCount() <= 1u) {
+      return nullptr;
+    }
+    return pdf_root->GetChildAtIndex(1u);
   }
 
   std::unique_ptr<chrome_pdf::AccessibilityDocInfo> CreateAccessibilityDocInfo()
@@ -4940,6 +5014,206 @@ TEST_F(PdfAccessibilityTreeTest,
   const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
   ASSERT_NE(nullptr, page);
   ASSERT_EQ(1u, page->GetChildCount());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Shopping list:", "• ", "Apples", "●", "Bananas", "\uF0B7", "Cherries",
+       "\uF0A7", "Dates", "○", "Elderberries"},
+      {
+          gfx::RectF(50.0f, 20.0f, 100.0f, 12.0f),  // "Shopping list:"
+          gfx::RectF(50.0f, 44.0f, 4.0f, 4.0f),     // "• "
+          gfx::RectF(60.0f, 40.0f, 50.0f, 12.0f),   // "Apples"
+          gfx::RectF(50.0f, 57.0f, 4.0f, 4.0f),     // "●"
+          gfx::RectF(60.0f, 53.0f, 50.0f, 12.0f),   // "Bananas"
+          gfx::RectF(50.0f, 70.0f, 4.0f, 4.0f),     // U+F0B7
+          gfx::RectF(60.0f, 66.0f, 50.0f, 12.0f),   // "Cherries"
+          gfx::RectF(50.0f, 83.0f, 4.0f, 4.0f),     // U+F0A7
+          gfx::RectF(60.0f, 79.0f, 50.0f, 12.0f),   // "Dates"
+          gfx::RectF(50.0f, 96.0f, 4.0f, 4.0f),     // "○"
+          gfx::RectF(60.0f, 92.0f, 50.0f, 12.0f),   // "Elderberries"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Shopping list:");
+  CheckUnorderedList(
+      page->GetChildAtIndex(1u),
+      {"Apples", "Bananas", "Cherries", "Dates", "Elderberries"});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "First item line 1", "First item line 2", "•", "Second item",
+       "Following paragraph"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),      // Item 1 marker
+          gfx::RectF(45.0f, 40.0f, 100.0f, 12.0f),   // Item 1 line 1
+          gfx::RectF(45.0f, 53.0f, 100.0f, 12.0f),   // Item 1 line 2
+          gfx::RectF(30.0f, 70.0f, 4.0f, 4.0f),      // Item 2 marker
+          gfx::RectF(45.0f, 66.0f, 100.0f, 12.0f),   // Item 2 text
+          gfx::RectF(45.0f, 101.0f, 120.0f, 12.0f),  // Following paragraph
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u),
+                     {"First item line 1First item line 2", "Second item"});
+  CheckParagraph(page->GetChildAtIndex(1u), "Following paragraph");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByOutdent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Indented item", "Outdented paragraph"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),     // Marker at x = 30
+          gfx::RectF(45.0f, 40.0f, 100.0f, 12.0f),  // Item text at x = 45
+          gfx::RectF(10.0f, 53.0f, 120.0f, 12.0f),  // Outdented at x = 10
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Indented item"});
+  CheckParagraph(page->GetChildAtIndex(1u), "Outdented paragraph");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicUnorderedListItemsAcrossLargeGapStayInOneList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item 1", "•", "Item 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),    // Item 1 marker
+          gfx::RectF(45.0f, 40.0f, 50.0f, 12.0f),  // Item 1 text
+          gfx::RectF(30.0f, 79.0f, 4.0f, 4.0f),    // Item 2 marker (gap = 35)
+          gfx::RectF(45.0f, 75.0f, 50.0f, 12.0f),  // Item 2 text
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRunBreaksItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item 1", "• Item 2", "•", "Item 3"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),    // Item 1 marker
+          gfx::RectF(45.0f, 40.0f, 50.0f, 12.0f),  // Item 1 text
+          gfx::RectF(30.0f, 53.0f, 80.0f, 12.0f),  // Combined "• Item 2"
+          gfx::RectF(30.0f, 70.0f, 4.0f, 4.0f),    // Item 3 marker
+          gfx::RectF(45.0f, 66.0f, 50.0f, 12.0f),  // Item 3 text
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1"});
+  CheckParagraph(page->GetChildAtIndex(1u), "• Item 2");
+  CheckUnorderedList(page->GetChildAtIndex(2u), {"Item 3"});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Apples"}, {
+                           gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                           gfx::RectF(45.0f, 40.0f, 50.0f, 12.0f),
+                       });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "•Apples");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListRtlIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item 1"},
+      {
+          gfx::RectF(200.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(140.0f, 40.0f, 50.0f, 12.0f),
+      },
+      {
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextDirection::kRightToLeft,
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "•Item 1");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListConsecutiveMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // A row of markers with no item text is decorative, not a list.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "•", "•"}, {
+                           gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                           gfx::RectF(40.0f, 44.0f, 4.0f, 4.0f),
+                           gfx::RectF(50.0f, 44.0f, 4.0f, 4.0f),
+                       });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "•••");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicUnorderedListConsecutiveMarkersBeforeText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Only a marker directly followed by item text starts a list item, so a line
+  // that opens with several markers is not a list item.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "•", "•", "Item 1"}, {
+                                     gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                                     gfx::RectF(40.0f, 44.0f, 4.0f, 4.0f),
+                                     gfx::RectF(50.0f, 44.0f, 4.0f, 4.0f),
+                                     gfx::RectF(65.0f, 40.0f, 50.0f, 12.0f),
+                                 });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "•••Item 1");
 }
 
 class PdfAccessibilityTreeHeaderFooterRepetitionTest
