@@ -13,9 +13,9 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <utility>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
@@ -137,16 +137,16 @@ absl::Status ParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
   return absl::OkStatus();
 }
 
-void ParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "  parameter_type= " << absl::StrCat(type_);
-  ABSL_LOG(INFO) << "  parameter_id= " << parameter_id_;
-  ABSL_LOG(INFO) << "  parameter_rate= " << parameter_rate_;
-  ABSL_LOG(INFO) << "  param_definition_mode= "
-                 << absl::StrCat(GetParamDefinitionMode());
-  ABSL_LOG(INFO) << "  reserved= " << absl::StrCat(reserved_);
+std::string ParamDefinition::ToString() const {
+  std::string result = absl::StrCat(
+      "  parameter_type= ", type_, "\n", "  parameter_id= ", parameter_id_,
+      "\n", "  parameter_rate= ", parameter_rate_, "\n",
+      "  param_definition_mode= ", GetParamDefinitionMode(), "\n",
+      "  reserved= ", reserved_);
   if (schedule_.has_value()) {
-    schedule_->Print();
+    absl::StrAppend(&result, "\n", *schedule_);
   }
+  return result;
 }
 
 absl::Status ParamDefinition::Validate() const {

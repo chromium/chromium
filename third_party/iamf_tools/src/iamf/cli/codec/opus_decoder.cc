@@ -60,7 +60,7 @@ absl::Status ValidateDecoderConfig(
 absl::StatusOr<std::unique_ptr<DecoderBase>> OpusDecoder::Create(
     const OpusDecoderConfig& decoder_config,
     SubstreamChannelCount channel_count, uint32_t num_samples_per_frame) {
-  MAYBE_RETURN_IF_NOT_OK(ValidateDecoderConfig(decoder_config));
+  RETURN_IF_NOT_OK(ValidateDecoderConfig(decoder_config));
 
   // Initialize the decoder.
   int opus_error_code;

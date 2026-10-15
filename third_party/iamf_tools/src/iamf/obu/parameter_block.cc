@@ -215,17 +215,17 @@ absl::Status ParameterBlockObu::GetLinearMixGains(
 void ParameterBlockObu::PrintObu() const {
   ABSL_LOG(INFO) << "Parameter Block OBU:";
   ABSL_LOG(INFO) << "  // param_definition:";
-  param_definition_.Print();
+  ABSL_LOG(INFO) << param_definition_;
 
   ABSL_LOG(INFO) << "  parameter_id= " << parameter_id_;
   if (schedule_.has_value()) {
-    schedule_->Print();
+    ABSL_LOG(INFO) << *schedule_;
   }
 
   const DecodedUleb128 num_subblocks = GetNumSubblocks();
   for (DecodedUleb128 i = 0; i < num_subblocks; i++) {
     ABSL_LOG(INFO) << "  subblocks[" << i << "]";
-    subblocks_[i]->Print();
+    ABSL_LOG(INFO) << *subblocks_[i];
   }
 }
 

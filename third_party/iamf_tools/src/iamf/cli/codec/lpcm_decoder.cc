@@ -31,13 +31,10 @@
 
 namespace iamf_tools {
 
-// At this low-level, the roll distance is not important.
-constexpr int16_t kCorrectAudioRollDistance = 0;
-
 absl::StatusOr<std::unique_ptr<DecoderBase>> LpcmDecoder::Create(
     const LpcmDecoderConfig& decoder_config,
     SubstreamChannelCount channel_count, uint32_t num_samples_per_frame) {
-  RETURN_IF_NOT_OK(decoder_config.Validate(kCorrectAudioRollDistance));
+  RETURN_IF_NOT_OK(decoder_config.Validate());
 
   uint8_t bit_depth;
   auto status = decoder_config.GetBitDepthToMeasureLoudness(bit_depth);

@@ -14,6 +14,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -64,9 +65,11 @@ struct ExtensionParameterData : public ParameterData {
    */
   absl::Status Write(WriteBitBuffer& wb) const override;
 
-  /*!\brief Prints the extension parameter data.
+  /*!\brief Returns a string representation of the parameter data.
+   *
+   * \return String representation of the parameter data.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   // `parameter_data_size` is inferred from the size of this vector.
   std::vector<uint8_t> parameter_data_bytes;

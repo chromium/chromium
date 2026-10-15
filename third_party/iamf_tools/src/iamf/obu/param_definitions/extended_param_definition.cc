@@ -12,10 +12,10 @@
 #include "iamf/obu/param_definitions/extended_param_definition.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/types/span.h"
@@ -64,13 +64,12 @@ ExtendedParamDefinition::CreateParameterDataFromBuffer(
   return std::move(parameter_data.value());
 }
 
-void ExtendedParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "ExtendedParamDefinition:";
-  // This class does not read the base class's data, i.e. it doesn't call
-  // `ParamDefinition::Print()`.
-  ABSL_LOG(INFO) << "  param_definition_size= "
-                 << param_definition_bytes_.size();
-  ABSL_LOG(INFO) << "  // Skipped printing param_definition_bytes";
+std::string ExtendedParamDefinition::ToString() const {
+  return absl::StrCat(
+      "ExtendedParamDefinition:\n"
+      "  param_definition_size= ",
+      param_definition_bytes_.size(),
+      "\n  // Skipped printing param_definition_bytes");
 }
 
 }  // namespace iamf_tools

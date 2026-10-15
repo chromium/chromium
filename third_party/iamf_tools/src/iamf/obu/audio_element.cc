@@ -462,8 +462,9 @@ void AudioElementObu::PrintObu() const {
   ABSL_VLOG(1) << "  num_parameters= " << GetNumParameters();
   for (DecodedUleb128 i = 0; i < GetNumParameters(); ++i) {
     ABSL_VLOG(1) << "  params[" << i << "]";
-    std::visit([](const auto& param_definition) { param_definition.Print(); },
-               audio_element_params_[i].param_definition);
+    std::visit(
+        [](const auto& param_definition) { ABSL_VLOG(1) << param_definition; },
+        audio_element_params_[i].param_definition);
   }
   if (std::holds_alternative<ScalableChannelLayoutConfig>(config_)) {
     LogChannelBased(std::get<ScalableChannelLayoutConfig>(config_));

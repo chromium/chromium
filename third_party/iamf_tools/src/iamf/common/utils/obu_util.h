@@ -23,6 +23,7 @@
 
 namespace iamf_tools {
 
+// TODO(b/553298236): Support inter-linear and inter-bezier gains.
 /*!\brief Interpolates a mix gain value in dB.
  *
  * The logic is used to partition parameter block protocol buffers as well as

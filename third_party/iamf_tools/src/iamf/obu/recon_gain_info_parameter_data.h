@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -97,9 +98,11 @@ struct ReconGainInfoParameterData : public ParameterData {
    */
   absl::Status Write(WriteBitBuffer& wb) const override;
 
-  /*!\brief Prints the recon gain info parameter data.
+  /*!\brief Returns a string representation of the parameter data.
+   *
+   * \return String representation of the parameter data.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   // Vector of length `num_layers` in the Audio associated Audio Element OBU.
   // Each element may hold no value if the corresponding

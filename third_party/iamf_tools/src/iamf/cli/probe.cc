@@ -391,7 +391,7 @@ float Q7_8ToFloat(int16_t v) { return static_cast<float>(v) / 256.0f; }
 OpusDecoderConfigReport BuildOpusReport(const OpusDecoderConfig& c) {
   return {
       .version = c.version_,
-      .output_channel_count = c.output_channel_count_,
+      .output_channel_count = OpusDecoderConfig::kOutputChannelCount,
       .pre_skip = c.pre_skip_,
       .input_sample_rate = c.input_sample_rate_,
       .output_gain_q7_8 = c.output_gain_,
@@ -457,10 +457,10 @@ CodecConfigReport BuildCodecConfigReport(uint32_t id,
   const CodecConfig& cc = obu.GetCodecConfig();
   CodecConfigReport r;
   r.id = id;
-  r.codec_id = CodecIdToString(cc.codec_id);
-  r.codec_id_raw = static_cast<uint32_t>(cc.codec_id);
+  r.codec_id = CodecIdToString(cc.GetCodecId());
+  r.codec_id_raw = static_cast<uint32_t>(cc.GetCodecId());
   r.num_samples_per_frame = obu.GetNumSamplesPerFrame();
-  r.audio_roll_distance = cc.audio_roll_distance;
+  r.audio_roll_distance = cc.GetAudioRollDistance().value_or(0);
   r.output_sample_rate = obu.GetOutputSampleRate();
   r.input_sample_rate = obu.GetInputSampleRate();
   r.bit_depth = static_cast<int>(obu.GetBitDepthToMeasureLoudness());

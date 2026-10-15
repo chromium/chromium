@@ -13,6 +13,7 @@
 #define OBU_PARAM_DEFINITIONS_DEMIXING_PARAM_DEFINITION_H_
 
 #include <memory>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -67,9 +68,11 @@ class DemixingParamDefinition : public ParamDefinition {
   absl::StatusOr<std::unique_ptr<ParameterData>> CreateParameterDataFromBuffer(
       ReadBitBuffer& rb) const override;
 
-  /*!\brief Prints the parameter definition.
+  /*!\brief Returns a string representation of the parameter definition.
+   *
+   * \return String representation of the parameter definition.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   DefaultDemixingInfoParameterData default_demixing_info_parameter_data_;
 };

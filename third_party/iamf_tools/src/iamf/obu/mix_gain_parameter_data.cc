@@ -12,16 +12,13 @@
 #include "iamf/obu/mix_gain_parameter_data.h"
 
 #include <cstdint>
+#include <string>
 #include <utility>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
-#include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
-#include "iamf/common/utils/macros.h"
 #include "iamf/common/write_bit_buffer.h"
 #include "iamf/obu/animated_parameter_data.h"
-#include "iamf/obu/types.h"
 
 namespace iamf_tools {
 
@@ -38,28 +35,8 @@ AnimationType MixGainParameterData::GetAnimationType() const {
   return param_data.animation_type();
 }
 
-void MixGainParameterData::Print() const {
-  ABSL_LOG(INFO) << "    animation_type= " << absl::StrCat(GetAnimationType());
-  // TODO(b/552563464): Implement and use AnimatedParameterData::Print().
-  if (param_data.animation_type() == kStep) {
-    ABSL_LOG(INFO) << "     // Step";
-    ABSL_LOG(INFO) << "     start_point_value= "
-                   << *param_data.start_point_value();
-  } else if (param_data.animation_type() == kLinear) {
-    ABSL_LOG(INFO) << "     // Linear";
-    ABSL_LOG(INFO) << "     start_point_value= "
-                   << *param_data.start_point_value();
-    ABSL_LOG(INFO) << "     end_point_value= " << *param_data.end_point_value();
-  } else if (param_data.animation_type() == kBezier) {
-    ABSL_LOG(INFO) << "     // Bezier";
-    ABSL_LOG(INFO) << "     start_point_value= "
-                   << *param_data.start_point_value();
-    ABSL_LOG(INFO) << "     end_point_value= " << *param_data.end_point_value();
-    ABSL_LOG(INFO) << "     control_point_value= "
-                   << *param_data.control_point_value();
-    ABSL_LOG(INFO) << "     control_point_relative_time= "
-                   << absl::StrCat(*param_data.control_point_relative_time());
-  }
+std::string MixGainParameterData::ToString() const {
+  return param_data.ToString();
 }
 
 absl::StatusOr<MixGainParameterData> MixGainParameterData::CreateFromBuffer(

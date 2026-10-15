@@ -69,14 +69,23 @@ struct CodecConfig {
                              human_readable_codec_id, " )"));
   }
 
+  /*!\brief Gets the codec ID inferred from the `decoder_config`.
+   *
+   * \return Codec ID of the underlying `decoder_config`.
+   */
+  CodecId GetCodecId() const;
+
+  /*!\brief Gets the audio roll distance of the codec config.
+   *
+   * \return Audio roll distance based on the underlying `decoder_config`.
+   */
+  absl::StatusOr<int16_t> GetAudioRollDistance() const;
+
   friend bool operator==(const CodecConfig& lhs,
                          const CodecConfig& rhs) = default;
 
-  CodecId codec_id;
   DecodedUleb128 num_samples_per_frame;
-  int16_t audio_roll_distance;
 
-  // Active field depends on `codec_id`.
   DecoderConfig decoder_config;
 };
 
@@ -93,14 +102,13 @@ class CodecConfigObu : public ObuBase {
   /*!\brief Constructor.
    *
    * \param header `ObuHeader` of the OBU.
-   * \param input_codec_config `codec_config_id` in the OBU.
-   * \param codec_config `codec_config` in the OBU.
+   * \param codec_config_id `codec_config_id` in the OBU.
+   * \param input_codec_config `codec_config` in the OBU.
    * \return `CodecConfigObu` on success. A specific status on failure.
    */
   static absl::StatusOr<CodecConfigObu> Create(
       const ObuHeader& header, DecodedUleb128 codec_config_id,
-      const CodecConfig& input_codec_config,
-      bool automatically_override_roll_distance = true);
+      const CodecConfig& input_codec_config);
 
   /*!\brief Creates a `CodecConfigObu` from a `ReadBitBuffer`.
    *
@@ -128,14 +136,13 @@ class CodecConfigObu : public ObuBase {
 
   /*!\brief Sets the codec delay in the underlying `decoder_config`.
    *
-   * In some codecs, like Opus, the codec delay is called "pre-skip".
+   * In some codecs, like Opus, the codec delay is called "pre-skip". This may
+   * be a no-op when the underlying `decoder_config` does not have a codec delay
+   * field.
    *
    * \param codec_delay Codec delay to set in the underlying `decoder_config`.
-   * \return `absl::OkStatus()` on success. Succeed may be a no-op when the
-   *         underlying `decoder_config` does not have a field for codec delay.
-   *         A specific status on failure.
    */
-  absl::Status SetCodecDelay(uint16_t codec_delay);
+  void SetCodecDelay(uint16_t codec_delay);
 
   /*!\brief Gets the output sample rate associated with the OBU.
    *

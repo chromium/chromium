@@ -15,12 +15,16 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
+#include "iamf/common/utils/validation_utils.h"
 #include "iamf/common/write_bit_buffer.h"
 #include "iamf/obu/types.h"
 
@@ -101,8 +105,10 @@ class AnimatedParameterData {
                                  control_val, rel_time);
   }
 
-  /*!\brief Creates an AnimatedParameterData from a ReadBitBuffer.
+  /*!\brief Creates an AnimatedParameterData from a ReadBitBuffer given an
+   *        animation type.
    *
+   * \param animation_type Pre-parsed animation type.
    * \param rb Buffer to read from.
    * \param read_value_func Callable with signature
    *        `absl::Status(ReadBitBuffer&, T&)` to read the start/end/control
@@ -111,12 +117,11 @@ class AnimatedParameterData {
    *         fails.
    */
   template <typename ReadValueFunc>
-  static absl::StatusOr<AnimatedParameterData> CreateFromBuffer(
-      ReadBitBuffer& rb, ReadValueFunc read_value_func) {
-    DecodedUleb128 animation_type;
-    RETURN_IF_NOT_OK(rb.ReadULeb128(animation_type));
-
-    switch (static_cast<AnimationType>(animation_type)) {
+  static absl::StatusOr<AnimatedParameterData>
+  CreateFromBufferGivenAnimationType(AnimationType animation_type,
+                                     ReadBitBuffer& rb,
+                                     ReadValueFunc read_value_func) {
+    switch (animation_type) {
       case kStep: {
         T start_val;
         RETURN_IF_NOT_OK(read_value_func(rb, start_val));
@@ -156,21 +161,34 @@ class AnimatedParameterData {
     }
   }
 
-  /*!\brief Writes the animated parameter data to a WriteBitBuffer.
+  /*!\brief Creates an AnimatedParameterData from a ReadBitBuffer.
+   *
+   * \param rb Buffer to read from.
+   * \param read_value_func Callable with signature
+   *        `absl::Status(ReadBitBuffer&, T&)` to read the start/end/control
+   *        values.
+   * \return Deserialized AnimatedParameterData, or an error status if reading
+   *         fails.
+   */
+  template <typename ReadValueFunc>
+  static absl::StatusOr<AnimatedParameterData> CreateFromBuffer(
+      ReadBitBuffer& rb, ReadValueFunc read_value_func) {
+    DecodedUleb128 animation_type_uleb;
+    RETURN_IF_NOT_OK(rb.ReadULeb128(animation_type_uleb));
+    return CreateFromBufferGivenAnimationType(
+        static_cast<AnimationType>(animation_type_uleb), rb, read_value_func);
+  }
+
+  /*!\brief Writes the animated parameter payload values to a WriteBitBuffer.
    *
    * \param wb Buffer to write to.
    * \param write_value_func Callable to write the parameterized values of
-   *        type `T` into the buffer. `write_value_func` must be callable with
-   *        signature `absl::Status(WriteBitBuffer&, const T&)` or
-   *        `absl::Status(WriteBitBuffer&, T)`.
+   *        type `T` into the buffer.
    * \return `absl::OkStatus()` if successful. A specific status on failure.
    */
   template <typename WriteValueFunc>
-  absl::Status Write(WriteBitBuffer& wb,
-                     WriteValueFunc write_value_func) const {
-    RETURN_IF_NOT_OK(
-        wb.WriteUleb128(static_cast<DecodedUleb128>(animation_type_)));
-
+  absl::Status WritePayload(WriteBitBuffer& wb,
+                            WriteValueFunc write_value_func) const {
     switch (animation_type_) {
       case kStep:
         return write_value_func(wb, *start_point_value_);
@@ -190,6 +208,121 @@ class AnimatedParameterData {
         return wb.WriteUnsignedLiteral(*control_point_relative_time_, 8);
     }
     return absl::InvalidArgumentError("Unknown animation type");
+  }
+
+  /*!\brief Writes the animated parameter data to a WriteBitBuffer.
+   *
+   * \param wb Buffer to write to.
+   * \param write_value_func Callable to write the parameterized values of
+   *        type `T` into the buffer. `write_value_func` must be callable with
+   *        signature `absl::Status(WriteBitBuffer&, const T&)` or
+   *        `absl::Status(WriteBitBuffer&, T)`.
+   * \return `absl::OkStatus()` if successful. A specific status on failure.
+   */
+  template <typename WriteValueFunc>
+  absl::Status Write(WriteBitBuffer& wb,
+                     WriteValueFunc write_value_func) const {
+    RETURN_IF_NOT_OK(
+        wb.WriteUleb128(static_cast<DecodedUleb128>(animation_type_)));
+    return WritePayload(wb, write_value_func);
+  }
+
+  /*!\brief Returns string representation of payload.
+   *
+   * \return String representation of payload.
+   */
+  std::string ToStringPayload() const {
+    switch (animation_type_) {
+      case kStep:
+        return absl::StrCat(
+            "     // Step\n"
+            "     start_point_value= ",
+            absl::StrCat(*start_point_value_));
+      case kLinear:
+        return absl::StrCat(
+            "     // Linear\n"
+            "     start_point_value= ",
+            absl::StrCat(*start_point_value_),
+            "\n"
+            "     end_point_value= ",
+            absl::StrCat(*end_point_value_));
+      case kBezier:
+        return absl::StrCat(
+            "     // Bezier\n"
+            "     start_point_value= ",
+            absl::StrCat(*start_point_value_),
+            "\n"
+            "     end_point_value= ",
+            absl::StrCat(*end_point_value_),
+            "\n"
+            "     control_point_value= ",
+            absl::StrCat(*control_point_value_),
+            "\n"
+            "     control_point_relative_time= ",
+            absl::StrCat(*control_point_relative_time_));
+      case kInterLinear:
+        return absl::StrCat(
+            "     // InterLinear\n"
+            "     end_point_value= ",
+            absl::StrCat(*end_point_value_));
+      case kInterBezier:
+        return absl::StrCat(
+            "     // InterBezier\n"
+            "     end_point_value= ",
+            absl::StrCat(*end_point_value_),
+            "\n"
+            "     control_point_value= ",
+            absl::StrCat(*control_point_value_),
+            "\n"
+            "     control_point_relative_time= ",
+            absl::StrCat(*control_point_relative_time_));
+    }
+    return "";
+  }
+
+  /*!\brief Returns string representation of animated parameter data.
+   *
+   * \return String representation of animated parameter data.
+   */
+  std::string ToString() const {
+    return absl::StrCat(
+        "    animation_type= ", static_cast<DecodedUleb128>(animation_type_),
+        "\n", ToStringPayload());
+  }
+
+  /*!\brief Supports Abseil stringification. */
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const AnimatedParameterData& data) {
+    sink.Append(data.ToString());
+  }
+
+  /*!\brief Validates that all populated points are within [min_val, max_val].
+   *
+   * \param min_val Minimum valid value (inclusive).
+   * \param max_val Maximum valid value (inclusive).
+   * \param name Name of the parameter for error reporting.
+   * \return `absl::OkStatus()` if all populated points are in range, error
+   *         status otherwise.
+   */
+  absl::Status ValidateRange(T min_val, T max_val,
+                             absl::string_view name) const {
+    const std::pair<const T&, const T&> kRange{min_val, max_val};
+
+    if (start_point_value_.has_value()) {
+      RETURN_IF_NOT_OK(
+          ValidateInRange(*start_point_value_, kRange,
+                          absl::StrCat(name, " start_point_value")));
+    }
+    if (end_point_value_.has_value()) {
+      RETURN_IF_NOT_OK(ValidateInRange(*end_point_value_, kRange,
+                                       absl::StrCat(name, " end_point_value")));
+    }
+    if (control_point_value_.has_value()) {
+      RETURN_IF_NOT_OK(
+          ValidateInRange(*control_point_value_, kRange,
+                          absl::StrCat(name, " control_point_value")));
+    }
+    return absl::OkStatus();
   }
 
   /*!\brief Gets the animation type.

@@ -22,7 +22,6 @@
 #include "absl/base/nullability.h"
 #include "absl/functional/function_ref.h"
 #include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
@@ -251,20 +250,6 @@ absl::StatusOr<DecodedUleb128> SubblockSchedule::GetSubblockDuration(
     // The first `num_subblocks_ - 1` subblocks have the constant subblock
     // duration.
     return constant_subblock_duration_;
-  }
-}
-
-void SubblockSchedule::Print() const {
-  ABSL_LOG(INFO) << "  duration= " << duration_;
-  ABSL_LOG(INFO) << "  constant_subblock_duration= "
-                 << constant_subblock_duration_;
-  ABSL_LOG(INFO) << "  num_subblocks= " << num_subblocks_;
-
-  if (constant_subblock_duration_ == 0) {
-    for (size_t i = 0; i < num_subblocks_; i++) {
-      ABSL_LOG(INFO) << "  subblock_durations[" << i
-                     << "]= " << subblock_durations_[i];
-    }
   }
 }
 

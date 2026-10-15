@@ -25,6 +25,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "iamf/cli/audio_element_with_data.h"
@@ -599,6 +600,38 @@ absl::Status CollectChannelLayersAndLabelsForLoudspeakerLayout(
   }
 }
 
+struct LayerSubstreamLabels {
+  ChannelNumbers layer_channels = {0, 0, 0, 0};
+  std::list<ChannelLabel::Label> coupled_substream_labels;
+  std::list<ChannelLabel::Label> non_coupled_substream_labels;
+};
+
+absl::StatusOr<std::vector<LayerSubstreamLabels>>
+CollectSubstreamLabelsForLayers(const ScalableChannelLayoutConfig& config) {
+  ChannelNumbers accumulated_channels = {0, 0, 0, 0};
+  std::vector<LayerSubstreamLabels> layer_labels(config.GetNumLayers());
+  for (size_t i = 0; i < config.GetNumLayers(); ++i) {
+    const auto& layer_config = config.channel_audio_layer_configs[i];
+    if (layer_config.loudspeaker_layout ==
+        ChannelAudioLayerConfig::kLayoutExpanded) {
+      RETURN_IF_NOT_OK(
+          CollectChannelLayersAndLabelsForExpandedLoudspeakerLayout(
+              i, layer_config.expanded_loudspeaker_layout,
+              layer_labels[i].layer_channels,
+              layer_labels[i].coupled_substream_labels,
+              layer_labels[i].non_coupled_substream_labels));
+    } else {
+      RETURN_IF_NOT_OK(CollectChannelLayersAndLabelsForLoudspeakerLayout(
+          i, layer_config.loudspeaker_layout, accumulated_channels,
+          layer_labels[i].layer_channels,
+          layer_labels[i].coupled_substream_labels,
+          layer_labels[i].non_coupled_substream_labels));
+    }
+    accumulated_channels = layer_labels[i].layer_channels;
+  }
+  return layer_labels;
+}
+
 }  // namespace
 
 absl::StatusOr<AudioElementWithData>
@@ -702,6 +735,26 @@ ObuWithDataGenerator::GenerateParameterBlockWithData(
                                 .end_timestamp = end_timestamp};
 }
 
+absl::Status ObuWithDataGenerator::FillSubstreamCounts(
+    ScalableChannelLayoutConfig& config) {
+  ABSL_ASSIGN_OR_RETURN(const std::vector<LayerSubstreamLabels> layer_labels,
+                        CollectSubstreamLabelsForLayers(config));
+  ABSL_CHECK_EQ(layer_labels.size(), config.GetNumLayers());
+  for (size_t i = 0; i < config.GetNumLayers(); ++i) {
+    auto& layer_config = config.channel_audio_layer_configs[i];
+    RETURN_IF_NOT_OK(StaticCastIfInRange<size_t, uint8_t>(
+        "coupled_substream_count",
+        layer_labels[i].coupled_substream_labels.size() / 2,
+        layer_config.coupled_substream_count));
+    RETURN_IF_NOT_OK(StaticCastIfInRange<size_t, uint8_t>(
+        "substream_count",
+        layer_labels[i].non_coupled_substream_labels.size() +
+            layer_config.coupled_substream_count,
+        layer_config.substream_count));
+  }
+  return absl::OkStatus();
+}
+
 absl::Status ObuWithDataGenerator::FinalizeScalableChannelLayoutConfig(
     const std::vector<DecodedUleb128>& audio_substream_ids,
     const ScalableChannelLayoutConfig& config,
@@ -711,39 +764,23 @@ absl::Status ObuWithDataGenerator::FinalizeScalableChannelLayoutConfig(
   RETURN_IF_NOT_OK(ValidateUnique(audio_substream_ids.begin(),
                                   audio_substream_ids.end(),
                                   "audio_substream_ids"));
-  // Starting from no channel at all.
-  ChannelNumbers accumulated_channels = {0, 0, 0, 0};
+  ABSL_ASSIGN_OR_RETURN(const std::vector<LayerSubstreamLabels> layer_labels,
+                        CollectSubstreamLabelsForLayers(config));
+
   int substream_index = 0;
   channel_numbers_for_layers.reserve(config.GetNumLayers());
   for (size_t i = 0; i < config.GetNumLayers(); ++i) {
     const int previous_layer_substream_index = substream_index;
-
-    ChannelNumbers layer_channels = {0, 0, 0, 0};
-    std::list<ChannelLabel::Label> coupled_substream_labels;
-    std::list<ChannelLabel::Label> non_coupled_substream_labels;
     const auto& layer_config = config.channel_audio_layer_configs[i];
-    if (layer_config.loudspeaker_layout ==
-        ChannelAudioLayerConfig::kLayoutExpanded) {
-      RETURN_IF_NOT_OK(
-          CollectChannelLayersAndLabelsForExpandedLoudspeakerLayout(
-              i, layer_config.expanded_loudspeaker_layout, layer_channels,
-              coupled_substream_labels, non_coupled_substream_labels));
-    } else {
-      RETURN_IF_NOT_OK(CollectChannelLayersAndLabelsForLoudspeakerLayout(
-          i, layer_config.loudspeaker_layout, accumulated_channels,
-          layer_channels, coupled_substream_labels,
-          non_coupled_substream_labels));
-    }
-
-    channel_numbers_for_layers.push_back(layer_channels);
+    channel_numbers_for_layers.push_back(layer_labels[i].layer_channels);
 
     RETURN_IF_NOT_OK(AddSubstreamLabels(
-        coupled_substream_labels, non_coupled_substream_labels,
-        audio_substream_ids, substream_id_to_labels, substream_index));
+        layer_labels[i].coupled_substream_labels,
+        layer_labels[i].non_coupled_substream_labels, audio_substream_ids,
+        substream_id_to_labels, substream_index));
     RETURN_IF_NOT_OK(ValidateSubstreamCounts(
-        coupled_substream_labels, non_coupled_substream_labels, layer_config));
-
-    accumulated_channels = layer_channels;
+        layer_labels[i].coupled_substream_labels,
+        layer_labels[i].non_coupled_substream_labels, layer_config));
 
     // Handle output gains.
     if (layer_config.output_gain_is_present_flag) {

@@ -359,7 +359,7 @@ absl::Status FilterProfilesForCodecConfigRules(
                          audio_element.audio_element_id),
             profile_versions);
       }
-      if (it->second.codec_config->GetCodecConfig().codec_id ==
+      if (it->second.codec_config->GetCodecConfig().GetCodecId() ==
           CodecConfig::CodecId::kCodecIdLpcm) {
         found_lpcm = true;
       }

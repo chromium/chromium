@@ -13,6 +13,7 @@
 #define OBU_MIX_GAIN_PARAMETER_DATA_H_
 
 #include <cstdint>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -67,9 +68,11 @@ struct MixGainParameterData : public ParameterData {
    */
   absl::Status Write(WriteBitBuffer& wb) const override;
 
-  /*!\brief Prints the mix gain parameter data.
+  /*!\brief Returns a string representation of the parameter data.
+   *
+   * \return String representation of the parameter data.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   AnimatedParameterData<int16_t> param_data;
 };

@@ -1,7 +1,6 @@
 Name: iamf_tools
 URL: https://github.com/AOMediaCodec/iamf-tools
-Version: N/A
-Revision: 11417e812b68deb86466b78e34ec0e11f5d5bd7b
+Version: v3.0.0
 License: Apache-2.0, BSD-3-Clause, BSD-3-Clause-Clear-with-Alliance-for-Open-Media-Patent
 License File: src/LICENSE
 Shipped: yes

@@ -12,10 +12,11 @@
 #include "iamf/obu/param_definitions/demixing_param_definition.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/write_bit_buffer.h"
@@ -62,10 +63,9 @@ DemixingParamDefinition::CreateParameterDataFromBuffer(
   return std::move(parameter_data.value());
 }
 
-void DemixingParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "DemixingParamDefinition:";
-  ParamDefinition::Print();
-  default_demixing_info_parameter_data_.Print();
+std::string DemixingParamDefinition::ToString() const {
+  return absl::StrCat("DemixingParamDefinition:\n", ParamDefinition::ToString(),
+                      "\n", default_demixing_info_parameter_data_.ToString());
 }
 
 }  // namespace iamf_tools

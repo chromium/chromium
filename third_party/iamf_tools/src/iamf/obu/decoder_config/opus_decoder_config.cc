@@ -50,36 +50,18 @@ absl::Status ValidatePayload(const OpusDecoderConfig& decoder_config) {
   // compatibility and require software updates.
   const uint8_t decoder_config_major_version =
       (decoder_config.version_ & 0xf0) >> 4;
-  MAYBE_RETURN_IF_NOT_OK(
-      ValidateOpusMajorVersion(decoder_config_major_version));
+  RETURN_IF_NOT_OK(ValidateOpusMajorVersion(decoder_config_major_version));
 
   // Various below fields are fixed. The real value is determined from the Audio
   // Element OBU.
-  MAYBE_RETURN_IF_NOT_OK(ValidateEqual(decoder_config.output_channel_count_,
-                                       OpusDecoderConfig::kOutputChannelCount,
-                                       "output_channel_count"));
-  MAYBE_RETURN_IF_NOT_OK(ValidateEqual(decoder_config.output_gain_,
-                                       OpusDecoderConfig::kOutputGain,
-                                       "output_gain"));
-  MAYBE_RETURN_IF_NOT_OK(ValidateEqual(decoder_config.mapping_family_,
-                                       OpusDecoderConfig::kMappingFamily,
-                                       "mapping_family"));
+  RETURN_IF_NOT_OK(ValidateEqual(decoder_config.output_gain_,
+                                 OpusDecoderConfig::kOutputGain,
+                                 "output_gain"));
+  RETURN_IF_NOT_OK(ValidateEqual(decoder_config.mapping_family_,
+                                 OpusDecoderConfig::kMappingFamily,
+                                 "mapping_family"));
 
   return absl::OkStatus();
-}
-
-absl::Status ValidateAudioRollDistance(uint32_t num_samples_per_frame,
-                                       int16_t audio_roll_distance) {
-  const auto expected_roll_distance =
-      OpusDecoderConfig::GetRequiredAudioRollDistance(num_samples_per_frame);
-  if (!expected_roll_distance.ok()) {
-    return expected_roll_distance.status();
-  }
-
-  return ValidateEqual(audio_roll_distance, *expected_roll_distance,
-                       absl::StrCat("actual `audio_roll_distance` vs expected "
-                                    "when `num_samples_per_frame= ",
-                                    num_samples_per_frame));
 }
 
 }  // namespace
@@ -107,14 +89,12 @@ absl::StatusOr<int16_t> OpusDecoderConfig::GetRequiredAudioRollDistance(
   return -1 * expected_r;
 }
 
-absl::Status OpusDecoderConfig::ValidateAndWrite(uint32_t num_samples_per_frame,
-                                                 int16_t audio_roll_distance,
-                                                 WriteBitBuffer& wb) const {
-  MAYBE_RETURN_IF_NOT_OK(
-      ValidateAudioRollDistance(num_samples_per_frame, audio_roll_distance));
+absl::Status OpusDecoderConfig::ValidateAndWrite(WriteBitBuffer& wb) const {
   RETURN_IF_NOT_OK(ValidatePayload(*this));
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(version_, 8));
-  RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(output_channel_count_, 8));
+  // For robust encoding, we follow the spec that `output_channel_count` SHALL
+  // be set to the IAMF default (2).
+  RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(kOutputChannelCount, 8));
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(pre_skip_, 16));
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(input_sample_rate_, 32));
   RETURN_IF_NOT_OK(wb.WriteSigned16(output_gain_));
@@ -123,14 +103,11 @@ absl::Status OpusDecoderConfig::ValidateAndWrite(uint32_t num_samples_per_frame,
   return absl::OkStatus();
 }
 
-absl::Status OpusDecoderConfig::ReadAndValidate(uint32_t num_samples_per_frame,
-                                                int16_t audio_roll_distance,
-                                                ReadBitBuffer& rb) {
-  RETURN_IF_NOT_OK(
-      ValidateAudioRollDistance(num_samples_per_frame, audio_roll_distance));
-
+absl::Status OpusDecoderConfig::ReadAndValidate(ReadBitBuffer& rb) {
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, version_));
-  RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, output_channel_count_));
+  //  For robust decoding, we take the option to ignore invalid values,
+  uint8_t ignored_output_channel_count;
+  RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, ignored_output_channel_count));
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(16, pre_skip_));
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(32, input_sample_rate_));
   RETURN_IF_NOT_OK(rb.ReadSigned16(output_gain_));
@@ -144,7 +121,7 @@ void OpusDecoderConfig::Print() const {
   ABSL_VLOG(1) << "    decoder_config(opus):";
   ABSL_VLOG(1) << "      version= " << absl::StrCat(version_);
   ABSL_VLOG(1) << "      output_channel_count= "
-               << absl::StrCat(output_channel_count_);
+               << absl::StrCat(kOutputChannelCount);
   ABSL_VLOG(1) << "      pre_skip= " << pre_skip_;
   ABSL_VLOG(1) << "      input_sample_rate= " << input_sample_rate_;
   ABSL_VLOG(1) << "      output_gain= " << output_gain_;

@@ -53,7 +53,7 @@ namespace {
 absl::StatusOr<std::unique_ptr<DecoderBase>> CreateDecoder(
     const CodecConfigObu& codec_config, SubstreamChannelCount channel_count) {
   const auto* decoder_config = &codec_config.GetCodecConfig().decoder_config;
-  switch (codec_config.GetCodecConfig().codec_id) {
+  switch (codec_config.GetCodecConfig().GetCodecId()) {
     using enum CodecConfig::CodecId;
     case kCodecIdLpcm: {
       auto* lpcm_decoder_config =
@@ -96,7 +96,7 @@ absl::StatusOr<std::unique_ptr<DecoderBase>> CreateDecoder(
     default:
       return absl::InvalidArgumentError(
           absl::StrCat("Unrecognized or disabled codec_id= ",
-                       codec_config.GetCodecConfig().codec_id));
+                       codec_config.GetCodecConfig().GetCodecId()));
   }
 }
 

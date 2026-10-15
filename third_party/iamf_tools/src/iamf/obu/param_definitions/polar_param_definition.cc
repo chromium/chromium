@@ -14,15 +14,17 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <string>
+#include <utility>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/write_bit_buffer.h"
 #include "iamf/obu/param_definitions/param_definition_base.h"
 #include "iamf/obu/parameter_data.h"
-#include "iamf/obu/polar_parameter_data.h"
+#include "iamf/obu/polar_position_data.h"
 
 namespace iamf_tools {
 namespace {
@@ -60,17 +62,18 @@ absl::Status PolarParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
 
 absl::StatusOr<std::unique_ptr<ParameterData>>
 PolarParamDefinition::CreateParameterDataFromBuffer(ReadBitBuffer& rb) const {
-  return absl::UnimplementedError(
-      "CreateParameterDataFromBuffer for PolarParamDefinition is not "
-      "implemented yet.");
+  auto data = PolarPositionData::CreateFromBuffer(rb, /*is_dual=*/false);
+  if (!data.ok()) {
+    return data.status();
+  }
+  return std::make_unique<PolarPositionData>(*std::move(data));
 }
 
-void PolarParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "PolarParamDefinition:";
-  ParamDefinition::Print();
-  ABSL_LOG(INFO) << "  default_azimuth: " << default_azimuth_;
-  ABSL_LOG(INFO) << "  default_elevation: " << default_elevation_;
-  ABSL_LOG(INFO) << "  default_distance: " << default_distance_;
+std::string PolarParamDefinition::ToString() const {
+  return absl::StrCat("PolarParamDefinition:\n", ParamDefinition::ToString(),
+                      "\n  default_azimuth: ", default_azimuth_,
+                      "\n  default_elevation: ", default_elevation_,
+                      "\n  default_distance: ", default_distance_);
 }
 
 }  // namespace iamf_tools

@@ -30,16 +30,11 @@
 
 namespace iamf_tools {
 
-namespace {
-
-// Returns the common number of time ticks to be rendered for the requested
-// labels or associated demixed label in `labeled_frame`. This represents the
-// number of time ticks in the rendered audio after trimming.
-absl::StatusOr<size_t> GetCommonNumTrimmedTimeTicks(
+absl::Status ValidateTrimming(
     const LabeledFrame& labeled_frame,
     absl::Span<const ChannelLabel::Label> ordered_labels,
-    absl::Span<const InternalSampleType> empty_channel,
-    TrimmingSettings trimming_settings) {
+    size_t num_samples_per_frame, TrimmingSettings trimming_settings,
+    size_t& num_valid_ticks) {
   std::optional<size_t> num_raw_time_ticks;
   for (const auto& label : ordered_labels) {
     if (label == ChannelLabel::kOmitted) {
@@ -62,11 +57,10 @@ absl::StatusOr<size_t> GetCommonNumTrimmedTimeTicks(
     return absl::InvalidArgumentError("No matching channels found.");
   }
 
-  if (empty_channel.size() < *num_raw_time_ticks) {
-    return absl::InvalidArgumentError(absl::StrCat(
-        "`empty_channel` should contain at least as many samples as other "
-        "labels: (",
-        empty_channel.size(), " < ", *num_raw_time_ticks, ")"));
+  if (*num_raw_time_ticks > num_samples_per_frame) {
+    return absl::InvalidArgumentError(
+        absl::StrCat("Labeled frame has more samples than expected: (",
+                     *num_raw_time_ticks, " > ", num_samples_per_frame, ")"));
   }
 
   const uint32_t samples_to_trim_at_start =
@@ -86,11 +80,10 @@ absl::StatusOr<size_t> GetCommonNumTrimmedTimeTicks(
                      ", samples to trim at end: ", samples_to_trim_at_end));
   }
 
-  return *num_raw_time_ticks - samples_to_trim_at_start -
-         samples_to_trim_at_end;
+  num_valid_ticks =
+      *num_raw_time_ticks - samples_to_trim_at_start - samples_to_trim_at_end;
+  return absl::OkStatus();
 }
-
-}  // namespace
 
 absl::Status ArrangeSamples(
     const LabeledFrame& labeled_frame,
@@ -103,12 +96,9 @@ absl::Status ArrangeSamples(
     return absl::OkStatus();
   }
 
-  const auto common_num_trimmed_time_ticks = GetCommonNumTrimmedTimeTicks(
-      labeled_frame, ordered_labels, empty_channel, trimming_settings);
-  if (!common_num_trimmed_time_ticks.ok()) {
-    return common_num_trimmed_time_ticks.status();
-  }
-  num_valid_ticks = *common_num_trimmed_time_ticks;
+  RETURN_IF_NOT_OK(ValidateTrimming(labeled_frame, ordered_labels,
+                                    empty_channel.size(), trimming_settings,
+                                    num_valid_ticks));
 
   const uint32_t samples_to_trim_at_start =
       trimming_settings.trim_beginning ? labeled_frame.samples_to_trim_at_start
@@ -129,8 +119,8 @@ absl::Status ArrangeSamples(
     }
 
     // Return the valid portion after trimming.
-    samples_to_render[c] = channel_samples.subspan(
-        samples_to_trim_at_start, *common_num_trimmed_time_ticks);
+    samples_to_render[c] =
+        channel_samples.subspan(samples_to_trim_at_start, num_valid_ticks);
   }
 
   return absl::OkStatus();

@@ -51,12 +51,6 @@ constexpr int32_t kMaxClassSize = (1 << 28) - 1;
 // extensions are present).
 constexpr int kInternalBufferSize = 32;
 
-absl::Status ValidateAudioRollDistance(int16_t audio_roll_distance) {
-  return ValidateEqual(audio_roll_distance,
-                       AacDecoderConfig::GetRequiredAudioRollDistance(),
-                       "audio_roll_distance");
-}
-
 // Copies all data from `original_wb` to `output_wb` with the corresponding ISO
 // 14496-1:2010 expandable size field prepended.
 absl::Status PrependWithIso14496_1Expanded(const WriteBitBuffer& original_wb,
@@ -236,9 +230,7 @@ absl::Status AudioSpecificConfig::Read(ReadBitBuffer& rb) {
   return absl::OkStatus();
 }
 
-absl::Status AacDecoderConfig::ValidateAndWrite(int16_t audio_roll_distance,
-                                                WriteBitBuffer& wb) const {
-  MAYBE_RETURN_IF_NOT_OK(ValidateAudioRollDistance(audio_roll_distance));
+absl::Status AacDecoderConfig::ValidateAndWrite(WriteBitBuffer& wb) const {
   RETURN_IF_NOT_OK(Validate());
 
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(decoder_config_descriptor_tag_, 8));
@@ -268,8 +260,7 @@ absl::Status AacDecoderConfig::ValidateAndWrite(int16_t audio_roll_distance,
   return absl::OkStatus();
 }
 
-absl::Status AacDecoderConfig::ReadAndValidate(int16_t audio_roll_distance,
-                                               ReadBitBuffer& rb) {
+absl::Status AacDecoderConfig::ReadAndValidate(ReadBitBuffer& rb) {
   // Read top-level fields.
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, decoder_config_descriptor_tag_));
   int64_t end_of_decoder_config_position;
@@ -302,9 +293,7 @@ absl::Status AacDecoderConfig::ReadAndValidate(int16_t audio_roll_distance,
                                            end_of_decoder_config_position,
                                            decoder_config_extension_));
 
-  RETURN_IF_NOT_OK(ValidateAudioRollDistance(audio_roll_distance));
-  RETURN_IF_NOT_OK(Validate());
-  return absl::OkStatus();
+  return Validate();
 }
 
 absl::Status AacDecoderConfig::GetOutputSampleRate(

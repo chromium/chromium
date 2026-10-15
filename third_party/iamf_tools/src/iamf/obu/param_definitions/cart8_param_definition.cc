@@ -12,13 +12,15 @@
 #include "iamf/obu/param_definitions/cart8_param_definition.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
 #include "iamf/common/write_bit_buffer.h"
-#include "iamf/obu/cart8_parameter_data.h"
+#include "iamf/obu/cartesian_position_data.h"
 #include "iamf/obu/param_definitions/param_definition_base.h"
 #include "iamf/obu/parameter_data.h"
 
@@ -49,17 +51,19 @@ absl::Status Cart8ParamDefinition::ReadAndValidate(ReadBitBuffer& rb) {
 
 absl::StatusOr<std::unique_ptr<ParameterData>>
 Cart8ParamDefinition::CreateParameterDataFromBuffer(ReadBitBuffer& rb) const {
-  return absl::UnimplementedError(
-      "CreateParameterDataFromBuffer for Cart8ParamDefinition is not "
-      "implemented yet.");
+  auto data = CartesianPositionData::CreateFromBuffer(
+      rb, CartesianBitDepth::k8Bit, /*is_dual=*/false);
+  if (!data.ok()) {
+    return data.status();
+  }
+  return std::make_unique<CartesianPositionData>(*std::move(data));
 }
 
-void Cart8ParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "Cart8ParamDefinition:";
-  ParamDefinition::Print();
-  ABSL_LOG(INFO) << "  default_x: " << default_x_;
-  ABSL_LOG(INFO) << "  default_y: " << default_y_;
-  ABSL_LOG(INFO) << "  default_z: " << default_z_;
+std::string Cart8ParamDefinition::ToString() const {
+  return absl::StrCat("Cart8ParamDefinition:\n", ParamDefinition::ToString(),
+                      "\n  default_x: ", default_x_,
+                      "\n  default_y: ", default_y_,
+                      "\n  default_z: ", default_z_);
 }
 
 }  // namespace iamf_tools

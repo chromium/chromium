@@ -145,12 +145,6 @@ absl::Status ValidateEncodingRestrictions(
   return absl::OkStatus();
 }
 
-absl::Status ValidateAudioRollDistance(int16_t audio_roll_distance) {
-  return ValidateEqual(audio_roll_distance,
-                       FlacDecoderConfig::GetRequiredAudioRollDistance(),
-                       "audio_roll_distance");
-}
-
 absl::Status WriteStreamInfo(const FlacMetaBlockStreamInfo& stream_info,
                              WriteBitBuffer& wb) {
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(stream_info.minimum_block_size, 16));
@@ -203,10 +197,7 @@ absl::Status ReadStreamInfo(FlacMetaBlockStreamInfo& stream_info,
 }  // namespace
 
 absl::Status FlacDecoderConfig::ValidateAndWrite(uint32_t num_samples_per_frame,
-                                                 int16_t audio_roll_distance,
                                                  WriteBitBuffer& wb) const {
-  MAYBE_RETURN_IF_NOT_OK(ValidateAudioRollDistance(audio_roll_distance));
-
   RETURN_IF_NOT_OK(ValidateEncodingRestrictions(num_samples_per_frame, *this));
 
   for (size_t i = 0; i < metadata_blocks_.size(); ++i) {
@@ -244,10 +235,7 @@ absl::Status FlacDecoderConfig::ValidateAndWrite(uint32_t num_samples_per_frame,
 }
 
 absl::Status FlacDecoderConfig::ReadAndValidate(uint32_t num_samples_per_frame,
-                                                int16_t audio_roll_distance,
                                                 ReadBitBuffer& rb) {
-  RETURN_IF_NOT_OK(ValidateAudioRollDistance(audio_roll_distance));
-
   // We are not given a length field to indicate the number of metadata blocks
   // to read. Instead, we must look at the `last_metadata_block_flag` to
   // determine when to stop reading.  Cap at 128 blocks as a safety measure

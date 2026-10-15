@@ -16,6 +16,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -181,9 +182,18 @@ class ParamDefinition {
   virtual absl::StatusOr<std::unique_ptr<ParameterData>>
   CreateParameterDataFromBuffer(ReadBitBuffer& rb) const = 0;
 
-  /*!\brief Prints the parameter definition.
+  /*!\brief Returns a string representation of the parameter definition.
+   *
+   * \return String representation of the parameter definition.
    */
-  virtual void Print() const;
+  virtual std::string ToString() const;
+
+  /*!\brief Supports Abseil stringification. */
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink,
+                            const ParamDefinition& param_definition) {
+    sink.Append(param_definition.ToString());
+  }
 
   friend bool operator==(const ParamDefinition& lhs,
                          const ParamDefinition& rhs) = default;

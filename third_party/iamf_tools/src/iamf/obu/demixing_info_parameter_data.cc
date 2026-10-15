@@ -14,10 +14,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "absl/base/no_destructor.h"
 #include "absl/container/flat_hash_map.h"
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
@@ -138,9 +138,9 @@ DemixingInfoParameterData::Create(DMixPMode input_dmixp_mode,
   }
 }
 
-void DemixingInfoParameterData::Print() const {
-  ABSL_LOG(INFO) << "    dmixp_mode= " << absl::StrCat(dmixp_mode);
-  ABSL_LOG(INFO) << "    reserved= " << absl::StrCat(reserved);
+std::string DemixingInfoParameterData::ToString() const {
+  return absl::StrCat("    dmixp_mode= ", dmixp_mode, "\n",
+                      "    reserved= ", reserved);
 }
 
 absl::Status DefaultDemixingInfoParameterData::Write(WriteBitBuffer& wb) const {
@@ -192,11 +192,10 @@ DefaultDemixingInfoParameterData::Create(
   }
 }
 
-void DefaultDemixingInfoParameterData::Print() const {
-  DemixingInfoParameterData::Print();
-  ABSL_LOG(INFO) << "    default_w= " << absl::StrCat(default_w);
-  ABSL_LOG(INFO) << "    reserved_for_future_use= "
-                 << absl::StrCat(reserved_for_future_use);
+std::string DefaultDemixingInfoParameterData::ToString() const {
+  return absl::StrCat(DemixingInfoParameterData::ToString(), "\n",
+                      "    default_w= ", default_w, "\n",
+                      "    reserved_for_future_use= ", reserved_for_future_use);
 }
 
 }  // namespace iamf_tools

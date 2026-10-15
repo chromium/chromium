@@ -14,6 +14,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -115,9 +116,11 @@ struct DemixingInfoParameterData : public ParameterData {
    */
   absl::Status Write(WriteBitBuffer& wb) const override;
 
-  /*!\brief Prints the demixing info parameter data.
+  /*!\brief Returns a string representation of the parameter data.
+   *
+   * \return String representation of the parameter data.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   DMixPMode dmixp_mode = kDMixPMode1;  // 3 bits
   uint8_t reserved = 0;                // 5 bits
@@ -171,9 +174,11 @@ struct DefaultDemixingInfoParameterData : public DemixingInfoParameterData {
    */
   absl::Status Write(WriteBitBuffer& wb) const override;
 
-  /*!\brief Prints the default demixing info parameter data.
+  /*!\brief Returns a string representation of the parameter data.
+   *
+   * \return String representation of the parameter data.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   bool friend operator==(const DefaultDemixingInfoParameterData& lhs,
                          const DefaultDemixingInfoParameterData& rhs) = default;

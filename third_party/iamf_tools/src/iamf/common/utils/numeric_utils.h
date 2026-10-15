@@ -96,11 +96,27 @@ absl::Status StaticCastIfInRange(absl::string_view field_name, InputType input,
   // as the "raw bytes" type.
   constexpr bool is_char_to_raw_bytes =
       std::is_same_v<InputType, char> && std::is_same_v<OutputType, uint8_t>;
-  constexpr OutputType kMinOutput = std::numeric_limits<OutputType>::min();
-  constexpr OutputType kMaxOutput = std::numeric_limits<OutputType>::max();
-  bool is_in_range = kMinOutput <= input && input <= kMaxOutput;
+  if (is_char_to_raw_bytes) {
+    output = static_cast<OutputType>(input);
+    return absl::OkStatus();
+  }
 
-  if (is_in_range || is_char_to_raw_bytes) [[likely]] {
+  // Use C++20's built-in `std::in_range` for integral, non-bool, non-char
+  // types, which is safer when casting between signed and unsigned integers.
+  constexpr OutputType kMinOutput = std::numeric_limits<OutputType>::lowest();
+  constexpr OutputType kMaxOutput = std::numeric_limits<OutputType>::max();
+  bool is_in_range = false;
+  if constexpr (std::is_integral_v<InputType> &&
+                !std::is_same_v<InputType, char> &&
+                !std::is_same_v<InputType, bool> &&
+                std::is_integral_v<OutputType> &&
+                !std::is_same_v<OutputType, char> &&
+                !std::is_same_v<OutputType, bool>) {
+    is_in_range = std::in_range<OutputType, InputType>(input);
+  } else {
+    is_in_range = (kMinOutput <= input && input <= kMaxOutput);
+  }
+  if (is_in_range) [[likely]] {
     output = static_cast<OutputType>(input);
     return absl::OkStatus();
   }
@@ -109,9 +125,9 @@ absl::Status StaticCastIfInRange(absl::string_view field_name, InputType input,
       absl::StrCat(field_name, " is outside the expected range of ");
   if constexpr (std::is_same_v<OutputType, char> ||
                 std::is_same_v<OutputType, unsigned char>) {
-    absl::StrAppend(&message, "[0, 255]");
+    absl::StrAppend(&message, "[0, 255]: ", static_cast<int>(input));
   } else {
-    absl::StrAppend(&message, "[", kMinOutput, ", ", kMaxOutput, "]");
+    absl::StrAppend(&message, "[", kMinOutput, ", ", kMaxOutput, "]: ", input);
   }
   return absl::InvalidArgumentError(message);
 }

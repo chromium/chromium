@@ -14,6 +14,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -94,9 +95,11 @@ class ReconGainParamDefinition : public ParamDefinition {
   absl::StatusOr<std::unique_ptr<ParameterData>> CreateParameterDataFromBuffer(
       ReadBitBuffer& rb) const override;
 
-  /*!\brief Prints the parameter definition.
+  /*!\brief Returns a string representation of the parameter definition.
+   *
+   * \return String representation of the parameter definition.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   friend bool operator==(const ReconGainParamDefinition& lhs,
                          const ReconGainParamDefinition& rhs) = default;

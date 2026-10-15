@@ -18,7 +18,6 @@
 #include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
-#include "iamf/common/utils/validation_utils.h"
 #include "iamf/common/write_bit_buffer.h"
 
 namespace iamf_tools {
@@ -51,32 +50,6 @@ absl::Status ValidateSampleRate(uint32_t sample_rate) {
   }
 }
 
-// Validates the `LpcmDecoderConfig`.
-absl::Status ValidatePayload(const LpcmDecoderConfig& decoder_config) {
-  // Only 2 enumerations are defined for the 8-bit `sample_format_flags` field.
-  switch (decoder_config.sample_format_flags_bitmask_) {
-    using enum LpcmDecoderConfig::LpcmFormatFlagsBitmask;
-    case kLpcmBigEndian:
-    case kLpcmLittleEndian:
-      break;
-    default:
-      return absl::UnimplementedError(
-          absl::StrCat("Invalid sample_format_flags= ",
-                       decoder_config.sample_format_flags_bitmask_));
-  }
-
-  RETURN_IF_NOT_OK(ValidateSampleSize(decoder_config.sample_size_));
-  RETURN_IF_NOT_OK(ValidateSampleRate(decoder_config.sample_rate_));
-
-  return absl::OkStatus();
-}
-
-absl::Status ValidateAudioRollDistance(int16_t audio_roll_distance) {
-  return ValidateEqual(audio_roll_distance,
-                       LpcmDecoderConfig::GetRequiredAudioRollDistance(),
-                       "audio_roll_distance");
-}
-
 }  // namespace
 
 bool LpcmDecoderConfig::IsLittleEndian() const {
@@ -84,32 +57,39 @@ bool LpcmDecoderConfig::IsLittleEndian() const {
          LpcmDecoderConfig::LpcmFormatFlagsBitmask::kLpcmLittleEndian;
 }
 
-absl::Status LpcmDecoderConfig::Validate(int16_t audio_roll_distance) const {
-  MAYBE_RETURN_IF_NOT_OK(ValidateAudioRollDistance(audio_roll_distance));
-  RETURN_IF_NOT_OK(ValidatePayload(*this));
+absl::Status LpcmDecoderConfig::Validate() const {
+  // Only 2 enumerations are defined for the 8-bit `sample_format_flags` field.
+  switch (sample_format_flags_bitmask_) {
+    using enum LpcmDecoderConfig::LpcmFormatFlagsBitmask;
+    case kLpcmBigEndian:
+    case kLpcmLittleEndian:
+      break;
+    default:
+      return absl::UnimplementedError(absl::StrCat(
+          "Invalid sample_format_flags= ", sample_format_flags_bitmask_));
+  }
+
+  RETURN_IF_NOT_OK(ValidateSampleSize(sample_size_));
+  RETURN_IF_NOT_OK(ValidateSampleRate(sample_rate_));
 
   return absl::OkStatus();
 }
 
-absl::Status LpcmDecoderConfig::ValidateAndWrite(int16_t audio_roll_distance,
-                                                 WriteBitBuffer& wb) const {
-  RETURN_IF_NOT_OK(Validate(audio_roll_distance));
+absl::Status LpcmDecoderConfig::ValidateAndWrite(WriteBitBuffer& wb) const {
+  RETURN_IF_NOT_OK(Validate());
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(sample_format_flags_bitmask_, 8));
   RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(sample_size_, 8));
-  RETURN_IF_NOT_OK(wb.WriteUnsignedLiteral(sample_rate_, 32));
-
-  return absl::OkStatus();
+  return wb.WriteUnsignedLiteral(sample_rate_, 32);
 }
 
-absl::Status LpcmDecoderConfig::ReadAndValidate(int16_t audio_roll_distance,
-                                                ReadBitBuffer& rb) {
+absl::Status LpcmDecoderConfig::ReadAndValidate(ReadBitBuffer& rb) {
   uint8_t sample_format_flags_bitmask;
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, sample_format_flags_bitmask));
   sample_format_flags_bitmask_ =
       static_cast<LpcmFormatFlagsBitmask>(sample_format_flags_bitmask);
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(8, sample_size_));
   RETURN_IF_NOT_OK(rb.ReadUnsignedLiteral(32, sample_rate_));
-  RETURN_IF_NOT_OK(Validate(audio_roll_distance));
+  RETURN_IF_NOT_OK(Validate());
   return absl::OkStatus();
 }
 

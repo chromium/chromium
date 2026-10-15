@@ -80,10 +80,20 @@ class ObuWithDataGenerator {
       GlobalTimingModule& global_timing_module,
       std::unique_ptr<ParameterBlockObu> parameter_block_obu);
 
-  /*!\brief Populates metadata about the layout config into the output params.
+  /*!\brief Fills substream counts for each layer of the layout config.
+   *
+   * Automatically populates `substream_count` and `coupled_substream_count` in
+   * each layer of `config` based on the loudspeaker layouts.
+   *
+   * \param config Scalable channel layout config to fill in-place.
+   * \return `absl::OkStatus()` on success. A specific status on failure.
+   */
+  static absl::Status FillSubstreamCounts(ScalableChannelLayoutConfig& config);
+
+  /*!\brief Validates substream counts and populates metadata about the config.
    *
    * \param audio_substream_ids Ordered list of substream IDs in the OBU.
-   * \param config Scalable channel layout config to process.
+   * \param config Scalable channel layout config to validate and process.
    * \param substream_id_to_labels `audio_substream_id` to output label map.
    * \param label_to_output_gain Output param populated by this function.
    * \param channel_numbers_for_layers Output param populated by this function.

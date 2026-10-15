@@ -43,30 +43,19 @@ class OpusDecoderConfig {
 
   /*!\brief Validates and writes the `OpusDecoderConfig` to a buffer.
    *
-   * \param num_samples_per_frame `num_samples_per_frame` in the associated
-   *        Codec Config OBU.
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \param wb Buffer to write to.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific error
    *         code on failure.
    */
-  absl::Status ValidateAndWrite(uint32_t num_samples_per_frame,
-                                int16_t audio_roll_distance,
-                                WriteBitBuffer& wb) const;
+  absl::Status ValidateAndWrite(WriteBitBuffer& wb) const;
 
   /*!\brief Validates and reads the `OpusDecoderConfig` from a buffer.
    *
-   * \param num_samples_per_frame `num_samples_per_frame` in the associated
-   *        Codec Config OBU.
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \param rb Buffer to read from.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific error
    *         code on failure.
    */
-  absl::Status ReadAndValidate(uint32_t num_samples_per_frame,
-                               int16_t audio_roll_distance, ReadBitBuffer& rb);
+  absl::Status ReadAndValidate(ReadBitBuffer& rb);
 
   /*!\brief Gets the output sample rate represented within the decoder config.
    *
@@ -103,8 +92,6 @@ class OpusDecoderConfig {
   void Print() const;
 
   uint8_t version_;
-  // Must be set to 2. This field is ignored.
-  uint8_t output_channel_count_ = kOutputChannelCount;
   uint16_t pre_skip_;
   uint32_t input_sample_rate_;
   int16_t output_gain_ = kOutputGain;

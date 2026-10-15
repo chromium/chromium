@@ -147,24 +147,19 @@ class AacDecoderConfig {
 
   /*!\brief Validates and writes the `AacDecoderConfig` to a buffer.
    *
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \param wb Buffer to write to.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific
    *         status on failure.
    */
-  absl::Status ValidateAndWrite(int16_t audio_roll_distance,
-                                WriteBitBuffer& wb) const;
+  absl::Status ValidateAndWrite(WriteBitBuffer& wb) const;
 
   /*!\brief Validates and reads the `AacDecoderConfig` from a buffer.
    *
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \param rb Buffer to read from.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific error
    *         code on failure.
    */
-  absl::Status ReadAndValidate(int16_t audio_roll_distance, ReadBitBuffer& rb);
+  absl::Status ReadAndValidate(ReadBitBuffer& rb);
 
   /*!\brief Gets the output sample rate of the `AacDecoderConfig`.
    *

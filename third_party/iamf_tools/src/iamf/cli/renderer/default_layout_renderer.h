@@ -13,6 +13,7 @@
 #ifndef CLI_RENDERER_DEFAULT_LAYOUT_RENDERER_H_
 #define CLI_RENDERER_DEFAULT_LAYOUT_RENDERER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -22,6 +23,7 @@
 #include "absl/types/span.h"
 #include "iamf/cli/audio_element_with_data.h"
 #include "iamf/cli/demixing_manager.h"
+#include "iamf/cli/labeled_frame.h"
 #include "iamf/cli/parameter_block_with_data.h"
 #include "iamf/cli/renderer/audio_element_renderer_base.h"
 #include "iamf/cli/renderer/layout_renderer_base.h"
@@ -70,23 +72,6 @@ class DefaultLayoutRenderer : public LayoutRendererBase {
   /*!\brief Destructor. */
   ~DefaultLayoutRenderer() override = default;
 
-  /*!\brief Renders all audio elements for a given temporal unit.
-   *
-   * \param id_to_labeled_frame Map from Audio Element ID to its labeled frame.
-   * \param id_to_parameter_block Map from Parameter ID to its parameter block.
-   * \param rendered_samples Output buffer for the mixed and rendered samples.
-   * \param valid_rendered_samples Output span view of the valid rendered
-   *        samples.
-   * \return `absl::OkStatus()` on success. A specific status on failure.
-   */
-  absl::Status Render(
-      const IdLabeledFrameMap& id_to_labeled_frame,
-      const absl::flat_hash_map<DecodedUleb128, const ParameterBlockWithData*>&
-          id_to_parameter_block,
-      std::vector<std::vector<InternalSampleType>>& rendered_samples,
-      std::vector<absl::Span<const InternalSampleType>>& valid_rendered_samples)
-      override;
-
  private:
   /*!\brief Constructor.
    *
@@ -106,6 +91,49 @@ class DefaultLayoutRenderer : public LayoutRendererBase {
       std::vector<std::unique_ptr<AudioElementRendererBase>> renderers,
       int32_t num_channels, uint32_t common_sample_rate,
       uint32_t common_num_samples_per_frame);
+
+  /*!\brief Prepares rendering session state before processing elements.
+   *
+   * \param id_to_labeled_frame Map from audio element ID to labeled frame.
+   * \param id_to_parameter_block Map from parameter ID to parameter block.
+   * \return `absl::OkStatus()` on success, or specific status on failure.
+   */
+  absl::Status PrepareOperation(
+      const IdLabeledFrameMap& id_to_labeled_frame,
+      const absl::flat_hash_map<DecodedUleb128, const ParameterBlockWithData*>&
+          id_to_parameter_block) override;
+
+  /*!\brief Processes single audio element within rendering loop.
+   *
+   * \param index Index of audio element in sub-mix list.
+   * \param audio_element_id ID of audio element.
+   * \param labeled_frame Labeled frame of audio element.
+   * \param element_mix_gain Mix gain parameter definition for audio
+   *        element.
+   * \param id_to_parameter_block Map from parameter ID to parameter block.
+   * \return `absl::OkStatus()` on success, or specific status on failure.
+   */
+  absl::Status PerElementOperation(
+      size_t index, DecodedUleb128 audio_element_id,
+      const LabeledFrame& labeled_frame,
+      const MixGainParamDefinition& element_mix_gain,
+      const absl::flat_hash_map<DecodedUleb128, const ParameterBlockWithData*>&
+          id_to_parameter_block) override;
+
+  /*!\brief Finalizes rendering operation after processing elements.
+   *
+   * \param id_to_parameter_block Map from parameter ID to parameter block.
+   * \param rendered_samples Output buffer for mixed and rendered samples.
+   * \param valid_rendered_samples Output span view of valid rendered
+   *        samples.
+   * \return `absl::OkStatus()` on success, or specific status on failure.
+   */
+  absl::Status FinalizeOperation(
+      const absl::flat_hash_map<DecodedUleb128, const ParameterBlockWithData*>&
+          id_to_parameter_block,
+      std::vector<std::vector<InternalSampleType>>& rendered_samples,
+      std::vector<absl::Span<const InternalSampleType>>& valid_rendered_samples)
+      override;
 
   std::vector<std::unique_ptr<AudioElementRendererBase>> renderers_;
   std::vector<std::vector<std::vector<InternalSampleType>>>

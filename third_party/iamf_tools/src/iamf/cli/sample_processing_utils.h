@@ -32,6 +32,23 @@
 
 namespace iamf_tools {
 
+/*!\brief Validates trimming for incoming labeled frame.
+ *
+ * This function also writes the common number of time ticks after trimming.
+ *
+ * \param labeled_frame Input labeled frame.
+ * \param ordered_labels Arrangement of the output channels.
+ * \param num_samples_per_frame Number of samples per frame.
+ * \param trimming_settings Settings to enable/disable trimming at start/end.
+ * \param num_valid_ticks Output number of valid time ticks after trimming.
+ * \return `absl::OkStatus()` on success. A specific status on failure.
+ */
+absl::Status ValidateTrimming(
+    const LabeledFrame& labeled_frame,
+    absl::Span<const ChannelLabel::Label> ordered_labels,
+    size_t num_samples_per_frame, TrimmingSettings trimming_settings,
+    size_t& num_valid_ticks);
+
 /*!\brief Arranges the input samples to render.
  *
  * \param labeled_frame Input labeled frame.

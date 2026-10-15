@@ -50,8 +50,11 @@ ABSL_FLAG(std::string, adm_profile_version, "base",
           "IAMF version to be used: (base/enhanced). Used only if "
           "--adm_filename is provided.");
 ABSL_FLAG(int32_t, adm_importance_threshold, 0,
-          "Importance value used to skip an audioObject. Clamped to [0, 10]. "
-          "Used only if --adm_filename is provided.");
+          "Importance value below which an audioObject is omitted from the "
+          "generated IAMF metadata. Clamped to [0, 10]. This does not remove "
+          "the object's audio: every channel of the input file is still "
+          "rendered into the output. Used only if --adm_filename is "
+          "provided.");
 ABSL_FLAG(int32_t, adm_frame_duration_ms, 10,
           "Target frame duration in milliseconds. The actual frame duration "
           "may vary slightly. Used only if --adm_filename is provided.");

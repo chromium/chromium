@@ -132,7 +132,7 @@ absl::Status OpusEncoder::SetNumberOfSamplesToDelayAtStart(
   // `lookahead`.
   required_samples_to_delay_at_start_ = static_cast<uint32_t>(lookahead);
   if (validate_codec_delay) {
-    MAYBE_RETURN_IF_NOT_OK(
+    RETURN_IF_NOT_OK(
         ValidateEqual(static_cast<uint32_t>(decoder_config_.pre_skip_),
                       required_samples_to_delay_at_start_, "Opus `pre_skip`"));
   }
@@ -141,7 +141,7 @@ absl::Status OpusEncoder::SetNumberOfSamplesToDelayAtStart(
 }
 
 absl::Status OpusEncoder::InitializeEncoder() {
-  MAYBE_RETURN_IF_NOT_OK(ValidateDecoderConfig(decoder_config_));
+  RETURN_IF_NOT_OK(ValidateDecoderConfig(decoder_config_));
 
   int opus_error_code;
   encoder_ =

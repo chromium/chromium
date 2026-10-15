@@ -108,7 +108,7 @@ absl::Status WriteAmbisonicsProjection(
 absl::StatusOr<AmbisonicsMonoConfig> AmbisonicsMonoConfig::Create(
     uint8_t substream_count, absl::Span<const uint8_t> channel_mapping) {
   const size_t output_channel_count = channel_mapping.size();
-  MAYBE_RETURN_IF_NOT_OK(ValidateOutputChannelCount(output_channel_count));
+  RETURN_IF_NOT_OK(ValidateOutputChannelCount(output_channel_count));
   RETURN_IF_NOT_OK(ValidateContainerSizeEqual(
       "channel_mapping", channel_mapping, output_channel_count));
   RETURN_IF_NOT_OK(ValidateInRange(size_t{substream_count},

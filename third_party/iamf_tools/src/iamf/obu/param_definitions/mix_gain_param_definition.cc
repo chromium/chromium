@@ -13,10 +13,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/strings/str_cat.h"
 #include "iamf/common/q_format_or_floating_point.h"
 #include "iamf/common/read_bit_buffer.h"
 #include "iamf/common/utils/macros.h"
@@ -59,10 +60,9 @@ MixGainParamDefinition::CreateParameterDataFromBuffer(ReadBitBuffer& rb) const {
       std::move(parameter_data.value()));
 }
 
-void MixGainParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "MixGainParamDefinition:";
-  ParamDefinition::Print();
-  ABSL_LOG(INFO) << "  default_mix_gain= " << default_mix_gain_;
+std::string MixGainParamDefinition::ToString() const {
+  return absl::StrCat("MixGainParamDefinition:\n", ParamDefinition::ToString(),
+                      "\n  default_mix_gain= ", default_mix_gain_);
 }
 
 }  // namespace iamf_tools

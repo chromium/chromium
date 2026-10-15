@@ -13,10 +13,10 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "iamf/common/read_bit_buffer.h"
@@ -62,19 +62,19 @@ ReconGainParamDefinition::CreateParameterDataFromBuffer(
   return std::move(parameter_data.value());
 }
 
-void ReconGainParamDefinition::Print() const {
-  ABSL_LOG(INFO) << "ReconGainParamDefinition:";
-  ParamDefinition::Print();
-  ABSL_LOG(INFO) << "  audio_element_id= " << audio_element_id_;
-
-  for (size_t i = 0; i < aux_data_.size(); i++) {
-    ABSL_LOG(INFO) << "  // recon_gain_is_present_flags[" << i << "]= "
-                   << absl::StrCat(aux_data_[i].recon_gain_is_present_flag);
+std::string ReconGainParamDefinition::ToString() const {
+  std::string result =
+      absl::StrCat("ReconGainParamDefinition:\n", ParamDefinition::ToString(),
+                   "\n  audio_element_id= ", audio_element_id_);
+  for (size_t i = 0; i < aux_data_.size(); ++i) {
     const auto& channel_numbers = aux_data_[i].channel_numbers_for_layer;
-    ABSL_LOG(INFO) << "  // channel_numbers_for_layer[" << i
-                   << "]= " << channel_numbers.surround << "."
-                   << channel_numbers.lfe << "." << channel_numbers.height;
+    absl::StrAppend(&result, "\n  // recon_gain_is_present_flags[", i,
+                    "]= ", aux_data_[i].recon_gain_is_present_flag,
+                    "\n  // channel_numbers_for_layer[", i,
+                    "]= ", channel_numbers.surround, ".", channel_numbers.lfe,
+                    ".", channel_numbers.height);
   }
+  return result;
 }
 
 }  // namespace iamf_tools

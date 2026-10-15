@@ -46,35 +46,28 @@ class LpcmDecoderConfig {
   /*!\brief Returns true if the samples are encoded in little-endian format.*/
   bool IsLittleEndian() const;
 
-  /*!\brief Validates the values in `LpcmDecoderConfig` and the roll distance.
+  /*!\brief Validates the values in `LpcmDecoderConfig`.
    *
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific error
    *         code on failure.
    */
-  absl::Status Validate(int16_t audio_roll_distance) const;
+  absl::Status Validate() const;
 
   /*!\brief Validates and writes the `LpcmDecoderConfig` to a buffer.
    *
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \param wb Buffer to write to.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific error
    *         code on failure.
    */
-  absl::Status ValidateAndWrite(int16_t audio_roll_distance,
-                                WriteBitBuffer& wb) const;
+  absl::Status ValidateAndWrite(WriteBitBuffer& wb) const;
 
   /*!\brief Reads and validates the `LpcmDecoderConfig` to a buffer.
    *
-   * \param audio_roll_distance `audio_roll_distance` in the associated Codec
-   *        Config OBU.
    * \param rb Buffer to read from.
    * \return `absl::OkStatus()` if the decoder config is valid. A specific error
    *         code on failure.
    */
-  absl::Status ReadAndValidate(int16_t audio_roll_distance, ReadBitBuffer& rb);
+  absl::Status ReadAndValidate(ReadBitBuffer& rb);
 
   /*!\brief Gets the output sample rate represented within the decoder config.
    *

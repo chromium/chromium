@@ -28,6 +28,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/status/status.h"
+#include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
@@ -386,7 +387,7 @@ absl::Status RenderWriteAndCalculateLoudnessForTemporalUnit(
   return absl::OkStatus();
 }
 
-absl::StatusOr<const LayoutRenderingMetadata*>
+absl::StatusOr<const LayoutRenderingMetadata&>
 GetRenderedSamplesAndPostProcessor(
     const absl::flat_hash_map<DecodedUleb128,
                               std::vector<SubMixRenderingMetadata>>&
@@ -417,7 +418,7 @@ GetRenderedSamplesAndPostProcessor(
       layout_index, std::less<size_t>(),
       rendering_metadata_for_sub_mixes[sub_mix_index].size(),
       absl::StrCat(mix_presentation_id_error_message, "  layout_index <")));
-  return &rendering_metadata_for_sub_mixes[sub_mix_index][layout_index];
+  return rendering_metadata_for_sub_mixes[sub_mix_index][layout_index];
 }
 
 }  // namespace
@@ -513,22 +514,18 @@ absl::StatusOr<absl::Span<const absl::Span<const InternalSampleType>>>
 RenderingMixPresentationFinalizer::GetPostProcessedSamplesAsSpan(
     DecodedUleb128 mix_presentation_id, size_t sub_mix_index,
     size_t layout_index) const {
-  const auto layout_rendering_metadata = GetRenderedSamplesAndPostProcessor(
-      mix_presentation_id_to_sub_mix_rendering_metadata_, mix_presentation_id,
-      sub_mix_index, layout_index);
-  if (!layout_rendering_metadata.ok()) {
-    return layout_rendering_metadata.status();
-  }
-  // `absl::StatusOr<const T*> cannot hold a nullptr.
-  ABSL_CHECK_NE(*layout_rendering_metadata, nullptr);
+  ABSL_ASSIGN_OR_RETURN(
+      const LayoutRenderingMetadata& layout_rendering_metadata,
+      GetRenderedSamplesAndPostProcessor(
+          mix_presentation_id_to_sub_mix_rendering_metadata_,
+          mix_presentation_id, sub_mix_index, layout_index));
 
   // Prioritize returning the post-processed samples if a post-processor is
   // available. Otherwise, return the rendered samples.
-  return (*layout_rendering_metadata)->sample_processor != nullptr
-             ? (*layout_rendering_metadata)
-                   ->sample_processor->GetOutputSamplesAsSpan()
-             : absl::MakeSpan(
-                   (*layout_rendering_metadata)->valid_rendered_samples);
+  return layout_rendering_metadata.sample_processor != nullptr
+             ? layout_rendering_metadata.sample_processor
+                   ->GetOutputSamplesAsSpan()
+             : absl::MakeSpan(layout_rendering_metadata.valid_rendered_samples);
 }
 
 absl::Status RenderingMixPresentationFinalizer::FinalizePushingTemporalUnits() {

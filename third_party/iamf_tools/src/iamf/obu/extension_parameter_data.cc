@@ -13,9 +13,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/types/span.h"
@@ -60,11 +60,10 @@ absl::Status ExtensionParameterData::Write(WriteBitBuffer& wb) const {
   return wb.WriteUint8Span(absl::MakeConstSpan(parameter_data_bytes));
 }
 
-void ExtensionParameterData::Print() const {
-  ABSL_LOG(INFO) << "    parameter_data_size= "
-                 << absl::StrCat(parameter_data_bytes.size());
-  ABSL_LOG(INFO) << "    // parameter_data_bytes.size()= "
-                 << absl::StrCat(parameter_data_bytes.size());
+std::string ExtensionParameterData::ToString() const {
+  return absl::StrCat(
+      "    parameter_data_size= ", parameter_data_bytes.size(),
+      "\n    // parameter_data_bytes.size()= ", parameter_data_bytes.size());
 }
 
 }  // namespace iamf_tools

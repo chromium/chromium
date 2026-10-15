@@ -15,6 +15,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -58,7 +59,7 @@ class PolarParamDefinition : public ParamDefinition {
 
   /*!\brief Creates parameter data from a buffer.
    *
-   * The created instance will be of type `PolarParameterData`.
+   * The created instance will be of type `PolarPositionData`.
    *
    * \param rb Buffer to read from.
    * \return Unique pointer to created parameter data, or specific error
@@ -67,9 +68,11 @@ class PolarParamDefinition : public ParamDefinition {
   absl::StatusOr<std::unique_ptr<ParameterData>> CreateParameterDataFromBuffer(
       ReadBitBuffer& rb) const override;
 
-  /*!\brief Prints the parameter definition.
+  /*!\brief Returns a string representation of the parameter definition.
+   *
+   * \return String representation of the parameter definition.
    */
-  void Print() const override;
+  std::string ToString() const override;
 
   int16_t default_azimuth_ = 0;   // 9 bits.
   int8_t default_elevation_ = 0;  // 8 bits.
