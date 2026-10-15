@@ -131,8 +131,9 @@ class DlpContentManagerAshTest : public testing::Test {
     // `WebContents` from `DlpContentManager`'s list of `WebContents`;
     // instantiate it here to make sure that cleanup happens even in unit
     // tests.
-    DlpContentTabHelper::MaybeCreateForWebContents(web_contents.get());
-    CHECK(DlpContentTabHelper::FromWebContents(web_contents.get()));
+    auto dlp_tab_helper = DlpContentTabHelper::MaybeCreate(web_contents.get());
+    CHECK(dlp_tab_helper);
+    dlp_tab_helpers_.push_back(std::move(dlp_tab_helper));
     return web_contents;
   }
 
@@ -151,6 +152,7 @@ class DlpContentManagerAshTest : public testing::Test {
   }
 
   void TearDown() override {
+    dlp_tab_helpers_.clear();
     helper_.ResetWarnNotifierForTesting();
 
     message_center::MessageCenter::Shutdown();
@@ -230,6 +232,7 @@ class DlpContentManagerAshTest : public testing::Test {
   std::vector<DlpPolicyEvent> events_;
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ = nullptr;
   MockPrivacyScreenHelper mock_privacy_screen_helper_;
+  std::vector<std::unique_ptr<DlpContentTabHelper>> dlp_tab_helpers_;
 
  private:
   void LoginFakeUser() {

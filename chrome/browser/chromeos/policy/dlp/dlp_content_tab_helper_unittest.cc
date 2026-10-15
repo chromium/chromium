@@ -11,6 +11,8 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -46,7 +48,9 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    created_tab_helpers_.clear();
     created_web_contents_.clear();
+    created_tabs_.clear();
     scoped_dlp_content_observer_.reset();
 
     ChromeRenderViewHostTestHarness::TearDown();
@@ -65,7 +69,12 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
       web_contents->WasHidden();
     }
     created_web_contents_.push_back(std::move(test_contents));
-    DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
+    auto tab = std::make_unique<tabs::MockTabInterface>();
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents,
+                                                         tab.get());
+    created_tabs_.push_back(std::move(tab));
+    created_tab_helpers_.push_back(
+        DlpContentTabHelper::MaybeCreate(*created_tabs_.back(), web_contents));
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
                                                                url);
     return web_contents;
@@ -76,7 +85,9 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
   MockDlpContentObserver mock_dlp_content_observer_;
   std::unique_ptr<ScopedDlpContentObserverForTesting>
       scoped_dlp_content_observer_;
+  std::vector<std::unique_ptr<tabs::MockTabInterface>> created_tabs_;
   std::vector<std::unique_ptr<content::WebContents>> created_web_contents_;
+  std::vector<std::unique_ptr<DlpContentTabHelper>> created_tab_helpers_;
 };
 
 TEST_F(DlpContentTabHelperTest, NotCreatedForIncognito) {

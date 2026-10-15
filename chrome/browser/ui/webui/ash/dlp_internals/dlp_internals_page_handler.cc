@@ -19,6 +19,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/clipboard/clipboard.h"

@@ -50,10 +50,6 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # ChromeThinWebViewInitializer, GuestView, PrerenderNewTabHandle, and Android
   # popup WebContents), so the WebContents must own it.
   'content_settings::PageSpecificContentSettings::CreateForWebContents',
-  # DlpContentTabHelper is also attached to non-tab Chrome App window
-  # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
-  # by DlpContentManager, so the WebContents must own it.
-  'policy::DlpContentTabHelper::MaybeCreateForWebContents',
   # extensions::TabHelper is also attached to non-tab and pre-tab WebContents
   # (such as DocumentPipHost, ConstrainedWebDialogUI, NetworkUI, OobeUI,
   # InlineLoginUI, ContextualTasksSidePanelCoordinator, and Prerender /

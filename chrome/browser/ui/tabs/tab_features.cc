@@ -1022,7 +1022,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                                                             tab.GetContents());
   boot_times_recorder_tab_helper_ =
       ash::BootTimesRecorderTabHelper::MaybeCreate(tab.GetContents());
-  policy::DlpContentTabHelper::MaybeCreateForWebContents(tab.GetContents());
+  dlp_content_tab_helper_ =
+      policy::DlpContentTabHelper::MaybeCreate(tab, tab.GetContents());
 #endif
 
   // The controller is created for all tabs but only affects back button
@@ -1776,7 +1777,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
   boot_times_recorder_tab_helper_ =
       ash::BootTimesRecorderTabHelper::MaybeCreate(new_contents);
-  policy::DlpContentTabHelper::MaybeCreateForWebContents(new_contents);
+  dlp_content_tab_helper_.reset();
+  dlp_content_tab_helper_ =
+      policy::DlpContentTabHelper::MaybeCreate(*tab, new_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)

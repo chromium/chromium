@@ -246,7 +246,8 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
+  dlp_content_tab_helper_ =
+      policy::DlpContentTabHelper::MaybeCreate(web_contents);
 #endif
 
   zoom::ZoomController::CreateForWebContents(web_contents);

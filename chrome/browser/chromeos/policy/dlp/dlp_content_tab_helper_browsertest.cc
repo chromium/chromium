@@ -89,8 +89,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
 
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   EXPECT_TRUE(web_contents);
-  EXPECT_NE(nullptr,
-            policy::DlpContentTabHelper::FromWebContents(web_contents));
   EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, GetEmptyRestrictionSet()))
       .Times(1);

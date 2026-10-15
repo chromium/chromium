@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace policy {
 

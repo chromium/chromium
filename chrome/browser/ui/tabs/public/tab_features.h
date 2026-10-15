@@ -250,6 +250,12 @@ namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace policy {
+class DlpContentTabHelper;
+}  // namespace policy
+#endif
+
 namespace predictors {
 class LoadingPredictorTabHelper;
 }  // namespace predictors
@@ -1083,6 +1089,10 @@ class TabFeatures {
 
   std::unique_ptr<FileSystemAccessPermissionRequestManager>
       file_system_access_permission_request_manager_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<policy::DlpContentTabHelper> dlp_content_tab_helper_;
+#endif
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
