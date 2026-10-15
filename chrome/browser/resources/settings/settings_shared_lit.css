@@ -13,9 +13,13 @@
 
 /* Style overrides for Settings Refresh 2026 experiment */
 :host-context([settings-refresh-2026]) {
+  --cr-active-background-color: var(--color-settings-row-background-active);
   --cr-card-border-radius: 16px;
-  --cr-card-background-color: var(--color-settings-section-background);
+  --cr-hover-background-color: var(--color-settings-row-background-hovered);
+  --cr-section-vertical-padding: 16px;
+  --cr-card-background-color: transparent;
   --cr-card-shadow: none;
+  --cr-separator-line: none;
   --cr-title-text-color: var(--color-settings-title-text);
 
   .cr-title-text {
@@ -37,6 +41,21 @@
   cr-input.stroked[disabled] {
     --cr-input-background-color: var(--cr-hover-background-color);
   }
+
+  .cr-row,
+  cr-link-row,
+  .settings-box,
+  settings-toggle-button {
+    --cr-actionable-row-background-color:
+        var(--color-settings-section-background);
+    --cr-section-vertical-padding: 16px;
+    border-radius: 4px;
+  }
+
+  .cr-row {
+    background-color: var(--color-settings-section-background);
+  }
+
 }
 
 /* Common styles for Material Design settings. */

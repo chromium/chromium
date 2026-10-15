@@ -11,6 +11,7 @@
 :host {
   align-items: center;
   align-self: stretch;
+  background-color: var(--cr-actionable-row-background-color, transparent);
   display: flex;
   margin: 0;
   outline: none;

@@ -29,6 +29,12 @@
     margin: 0;
     padding: 16px 20px;
   }
+
+  #card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+  }
 }
 
 #header {

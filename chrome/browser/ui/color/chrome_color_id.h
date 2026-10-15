@@ -877,6 +877,8 @@
   E_CPONLY(kColorSettingsWebuiPageBackground) \
   E_CPONLY(kColorSettingsTitleText) \
   E_CPONLY(kColorSettingsSectionBackground) \
+  E_CPONLY(kColorSettingsRowBackgroundHovered) \
+  E_CPONLY(kColorSettingsRowBackgroundActive) \
   /* Share-this-tab dialog colors. */ \
   E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \
