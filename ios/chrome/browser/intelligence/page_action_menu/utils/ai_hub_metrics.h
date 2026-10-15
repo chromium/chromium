@@ -26,8 +26,8 @@ enum class IOSPageActionMenuFeatureType {
   kPopupBlocker = 1,
   kCameraPermission = 2,
   kMicrophonePermission = 3,
-  kPriceTracking = 4,
-  kMaxValue = kPriceTracking,
+  // kPriceTracking = 4,  // Obsolete.
+  kMaxValue = kMicrophonePermission,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSPageActionMenuFeatureType)
 

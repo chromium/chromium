@@ -17,8 +17,6 @@
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -38,12 +36,10 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
-#import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -319,29 +315,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
 
       return setting == CONTENT_SETTING_BLOCK && hasBlockedPopups;
     }
-    case PageActionMenuPriceTracking: {
-      ContextualPanelTabHelper* tabHelper =
-          ContextualPanelTabHelper::FromWebState(_webState);
-      if (!tabHelper) {
-        return NO;
-      }
-
-      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configs =
-          tabHelper->GetCurrentCachedConfigurations();
-
-      for (const auto& config_weak : configs) {
-        if (!config_weak) {
-          continue;
-        }
-
-        ContextualPanelItemConfiguration* config = config_weak.get();
-        if (config->item_type == ContextualPanelItemType::PriceInsightsItem) {
-          return YES;
-        }
-      }
-
-      return NO;
-    }
   }
 }
 
@@ -416,7 +389,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
     // Only permission rows have a toggle.
     case PageActionMenuTranslate:
     case PageActionMenuPopupBlocker:
-    case PageActionMenuPriceTracking:
       return;
   }
 
@@ -444,7 +416,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
       break;
     case PageActionMenuTranslate:
     case PageActionMenuPopupBlocker:
-    case PageActionMenuPriceTracking:
       // Only handle permissions with domain-level state.
       return;
   }
@@ -542,46 +513,6 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
     [self populatePermissionFeature:micFeature
                       forPermission:web::PermissionMicrophone];
     [features addObject:micFeature];
-  }
-  // Price tracking feature.
-  if ([self isFeatureAvailable:PageActionMenuPriceTracking]) {
-    RecordPageActionMenuFeatureRowShown(
-        IOSPageActionMenuFeatureType::kPriceTracking);
-    PageActionMenuFeature* priceTrackingFeature = [[PageActionMenuFeature alloc]
-        initWithFeatureType:PageActionMenuPriceTracking
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_AI_HUB_PRICE_TRACKING_LABEL)
-                       icon:SymbolWithPointSize(SymbolDownTrend,
-                                                kFeatureRowIconSize)
-                 actionType:PageActionMenuButtonAction];
-    BOOL isSubscribed = NO;
-    ContextualPanelTabHelper* tabHelper =
-        ContextualPanelTabHelper::FromWebState(_webState);
-    if (tabHelper) {
-      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configs =
-          tabHelper->GetCurrentCachedConfigurations();
-      for (const auto& config_weak : configs) {
-        if (!config_weak) {
-          continue;
-        }
-        ContextualPanelItemConfiguration* config = config_weak.get();
-        if (config->item_type == ContextualPanelItemType::PriceInsightsItem) {
-          PriceInsightsItemConfiguration* priceInsightsConfig =
-              static_cast<PriceInsightsItemConfiguration*>(config);
-          isSubscribed = priceInsightsConfig->is_subscribed;
-          break;
-        }
-      }
-    }
-
-    if (isSubscribed) {
-      priceTrackingFeature.actionText =
-          l10n_util::GetNSString(IDS_IOS_AI_HUB_PRICE_TRACKING_BUTTON_LABEL);
-    } else {
-      priceTrackingFeature.actionText = nil;
-    }
-
-    [features addObject:priceTrackingFeature];
   }
 
   return features;
@@ -784,17 +715,6 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   return translate_client->GetTranslateManager()
       ->GetLanguageState()
       ->current_language();
-}
-
-- (void)openPriceInsightsPanel {
-  if (!_contextualSheetHandler) {
-    return;
-  }
-
-  RecordPageActionMenuFeatureRowSettingsOpened(
-      IOSPageActionMenuFeatureType::kPriceTracking);
-
-  [self.contextualSheetHandler openContextualSheet];
 }
 
 - (void)openTranslateOptions {

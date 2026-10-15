@@ -13,7 +13,6 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType) {
   PageActionMenuPopupBlocker,
   PageActionMenuCameraPermission,
   PageActionMenuMicrophonePermission,
-  PageActionMenuPriceTracking,
 };
 
 // Types of actions a feature perform.

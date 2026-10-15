@@ -68,9 +68,6 @@ enum class PageActionMenuPermissionSetting;
 // Reverts the page translation to show the original language.
 - (void)revertTranslation;
 
-// Opens the price insights contextual panel.
-- (void)openPriceInsightsPanel;
-
 // Opens the translation settings modal.
 - (void)openTranslateOptions;
 

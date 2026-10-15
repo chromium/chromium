@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
@@ -109,8 +108,6 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
   _mediator.pageActionMenuHandler = pageActionMenuHandler;
   _mediator.consumer = _viewController;
-  _mediator.contextualSheetHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ContextualSheetCommands);
   // Trigger the workspace policy check if it was skipped at init time.
   // This ensures eligibility data is available or loading by the time
   // the user interacts with Ask Gemini. The spinner handles the case

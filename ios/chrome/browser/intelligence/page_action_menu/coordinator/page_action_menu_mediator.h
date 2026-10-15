@@ -20,7 +20,6 @@ class TemplateURLService;
 class HostContentSettingsMap;
 
 @protocol PageActionMenuCommands;
-@protocol ContextualSheetCommands;
 
 namespace web {
 class WebState;
@@ -55,9 +54,6 @@ class WebState;
 
 // The handler for sending page action menu commands.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
-
-// Command handler for contextual sheet commands.
-@property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;
 
 // Returns YES if the workspace policy check has not yet completed.
 - (BOOL)isGeminiEligibilityLoading;

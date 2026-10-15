@@ -1672,7 +1672,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="PopupBlocker"/>
   <int value="2" label="CameraPermission"/>
   <int value="3" label="MicrophonePermission"/>
-  <int value="4" label="PriceTracking"/>
+  <int value="4" label="(Obsolete) PriceTracking"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSPageActionMenuFeatureType) -->
