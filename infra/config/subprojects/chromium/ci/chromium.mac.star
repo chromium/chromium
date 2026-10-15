@@ -1496,6 +1496,7 @@ ci.builder(
             ),
         },
     ),
+    builderless = True,
     cpu = cpu.ARM64,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
