@@ -11,12 +11,17 @@
 #include <numbers>
 #include <numeric>
 #include <utility>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/channel_mixer.h"
 #include "media/webrtc/voice_isolation/buffered_voice_isolation.h"
@@ -86,6 +91,58 @@ CreateMockComponent() {
   ON_CALL(*mock_component, FramesPerSecond())
       .WillByDefault(testing::Return(kComponentFramesPerSecond));
   return mock_component;
+}
+
+// Returns a signal of `total_samples` samples containing a Hann^2-windowed
+// cosine pulse of length `pulse_length` and frequency `carrier_frequency_hz`
+// starting at `pulse_start_index` (peaking at `pulse_start_index +
+// pulse_length / 2`).
+std::vector<float> MakeTonePulse(size_t total_samples,
+                                 size_t pulse_start_index,
+                                 size_t pulse_length,
+                                 float carrier_frequency_hz) {
+  CHECK_LE(pulse_start_index + pulse_length, total_samples);
+  std::vector<float> signal(total_samples, 0.0f);
+  for (size_t i = 0; i < pulse_length; ++i) {
+    const float sine =
+        std::sin(std::numbers::pi_v<float> * static_cast<float>(i) /
+                 static_cast<float>(pulse_length));
+    const float hann = sine * sine;
+    const float envelope = hann * hann;
+    const float phase =
+        2.0f * std::numbers::pi_v<float> * carrier_frequency_hz *
+        (static_cast<float>(i) - static_cast<float>(pulse_length / 2)) /
+        static_cast<float>(kSampleRateHz);
+    signal[pulse_start_index + i] = envelope * std::cos(phase);
+  }
+  return signal;
+}
+
+// Streams a mono `input` signal (whose length must be a multiple of
+// `kComponentFrameSize`) block by block through `voice_isolation` and returns
+// the concatenated mono output.
+std::vector<float> ProcessInBlocks(VoiceIsolation& voice_isolation,
+                                   base::span<const float> input) {
+  CHECK_EQ(input.size() % kComponentFrameSize, 0u);
+  const size_t num_blocks = input.size() / kComponentFrameSize;
+  std::unique_ptr<AudioBus> input_bus =
+      AudioBus::Create(1, kComponentFrameSize);
+  std::unique_ptr<AudioBus> output_bus =
+      AudioBus::Create(1, kComponentFrameSize);
+  std::vector<float> output(input.size(), 0.0f);
+
+  for (size_t block = 0; block < num_blocks; ++block) {
+    const size_t offset = block * kComponentFrameSize;
+    input_bus->channel(0).copy_from_nonoverlapping(
+        input.subspan(offset, kComponentFrameSize));
+
+    voice_isolation.ProcessAudio(*input_bus, *output_bus);
+
+    base::span(output)
+        .subspan(offset, kComponentFrameSize)
+        .copy_from_nonoverlapping(output_bus->channel(0));
+  }
+  return output;
 }
 
 }  // namespace
@@ -640,6 +697,66 @@ TEST(VoiceIsolationTest, AlgorithmicDelay) {
       VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(vi_model, nullptr);
   EXPECT_EQ(vi_model->AlgorithmicDelay(), base::Milliseconds(20));
+}
+
+// The identity test model passes content below 7.5 kHz unchanged, so a
+// low-band pulse sent through the full VoiceIsolation pipeline comes out as
+// the input waveform delayed by the exact number of frames advertised by
+// AlgorithmicDelay().
+TEST(VoiceIsolationTest,
+     OutputIsInputDelayedByAlgorithmicDelayWithIdentityModel) {
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Mono(), kSampleRateHz,
+                         kComponentFrameSize);
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+  std::unique_ptr<VoiceIsolation> voice_isolation =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(voice_isolation, nullptr);
+
+  // Use a smooth 10 ms low-band pulse (1 kHz under a Hann^2 window) rather
+  // than a single-sample delta: in BandSplitVoiceIsolation,
+  // ComputeHighBandGains() derives both high-band gains of a 20 ms call from
+  // its first DFT, so when that first DFT is silent both gains are 0 and a
+  // broadband transient loses its high band in the DFT where it starts. A
+  // Hann^2-windowed pulse keeps its energy inside the < 7.5 kHz passband of
+  // the identity model (the test passes for carrier frequencies up to ~6.2 kHz
+  // and fails from ~6.5 kHz as sidebands reach the 7.5 kHz crossfade).
+  constexpr size_t kNumBlocks = 8;
+  constexpr size_t kTotalSamples = kNumBlocks * kComponentFrameSize;
+  // 600 makes the pulse straddle the 960-sample boundary between STFT frames
+  // without lining up with the 10 ms blocks.
+  constexpr size_t kPulseStartIndex = 600;
+  constexpr size_t kPulseLength = kSampleRateHz / 100;  // 10 ms.
+  constexpr size_t kPulsePeakIndex = kPulseStartIndex + kPulseLength / 2;
+  constexpr float kCarrierFrequencyHz = 1000.0f;
+
+  // Convert the advertised algorithmic delay into a sample offset at 48 kHz.
+  const size_t delay_frames =
+      base::checked_cast<size_t>(AudioTimestampHelper::TimeToFrames(
+          voice_isolation->AlgorithmicDelay(), kSampleRateHz));
+  ASSERT_GT(delay_frames, 0u);
+  ASSERT_LT(kPulseStartIndex + kPulseLength + delay_frames, kTotalSamples);
+
+  const std::vector<float> input = MakeTonePulse(
+      kTotalSamples, kPulseStartIndex, kPulseLength, kCarrierFrequencyHz);
+  const std::vector<float> output = ProcessInBlocks(*voice_isolation, input);
+
+  // The output peak must appear at `kPulsePeakIndex + delay_frames`.
+  const size_t output_peak_index =
+      static_cast<size_t>(std::ranges::max_element(output) - output.begin());
+  ASSERT_EQ(output_peak_index, kPulsePeakIndex + delay_frames);
+
+  // Every output sample must match the input delayed by `delay_frames`.
+  std::vector<float> expected(kTotalSamples, 0.0f);
+  base::span(expected)
+      .subspan(delay_frames)
+      .copy_from_nonoverlapping(
+          base::span(input).first(kTotalSamples - delay_frames));
+  // 1e-6 covers float rounding through two STFT round trips.
+  constexpr float kTolerance = 1e-6f;
+  EXPECT_THAT(output,
+              testing::Pointwise(testing::FloatNear(kTolerance), expected));
 }
 
 }  // namespace media
