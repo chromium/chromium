@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -93,6 +94,8 @@ class OptimizationGuideLogger {
         optimization_guide::proto::RequestContext request_context);
     LogMessageBuilder& operator<<(
         optimization_guide::proto::OptimizationTarget optimization_target);
+    LogMessageBuilder& operator<<(
+        optimization_guide::ModelBasedCapabilityKey feature);
 
    private:
     const optimization_guide_common::mojom::LogSource log_source_;

@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 
 OptimizationGuideLogger::LogMessageBuilder::LogMessageBuilder(
     optimization_guide_common::mojom::LogSource log_source,
@@ -73,6 +74,14 @@ OptimizationGuideLogger::LogMessageBuilder::operator<<(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   messages_.push_back(
       optimization_guide::proto::OptimizationTarget_Name(optimization_target));
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  messages_.push_back(optimization_guide::proto::ModelExecutionFeature_Name(
+      optimization_guide::ToModelExecutionFeatureProto(feature)));
   return *this;
 }
 
