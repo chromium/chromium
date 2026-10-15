@@ -358,6 +358,13 @@ def bind_callback_local_vars(code_node, cg_context):
             ),
             S("isolate", "v8::Isolate* ${isolate} = ${info}.GetIsolate();"),
             S(
+                "is_in_secure_context",
+                (
+                    "const bool ${is_in_secure_context} = "
+                    "${execution_context}->IsSecureContext();"
+                ),
+            ),
+            S(
                 "non_undefined_argument_length",
                 (
                     "const int ${non_undefined_argument_length} = "

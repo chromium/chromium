@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>navigator.install() is defined on HTTP localhost</title>
+<!--
+This test lives in wpt_internal because it requires the test server to be
+reachable at localhost, which is not guaranteed in upstream WPT environments
+such as wpt.live.
+-->
+<link rel="help" href="https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/WebInstall/explainer.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+
+  const response = new Promise(resolve => {
+    const onMessage = t.step_func(event => {
+      if (event.source !== iframe.contentWindow) {
+        return;
+      }
+      window.removeEventListener('message', onMessage);
+      resolve(event.data);
+    });
+    window.addEventListener('message', onMessage);
+    t.add_cleanup(() => window.removeEventListener('message', onMessage));
+  });
+
+  const helperUrl = new URL(
+      '/web-install/resources/navigator-install-exposure-helper.html',
+      location.href);
+  helperUrl.protocol = 'http:';
+  helperUrl.hostname = 'localhost';
+  helperUrl.port = get_host_info().HTTP_PORT;
+  iframe.src = helperUrl;
+  document.body.appendChild(iframe);
+
+  const result = await response;
+  assert_true(result.isSecureContext,
+      'HTTP localhost must be a secure context');
+  assert_true(result.hasInstall, 'navigator.install should be present');
+  assert_equals(result.installType, 'function',
+      'navigator.install should be a function');
+}, 'navigator.install() is defined on trustworthy HTTP localhost.');
+</script>
+</body>
