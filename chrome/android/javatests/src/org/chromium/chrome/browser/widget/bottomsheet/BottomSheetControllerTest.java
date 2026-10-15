@@ -1171,6 +1171,29 @@ public class BottomSheetControllerTest {
         assertEquals(SheetState.PEEK, mSheetController.getSheetState());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"BottomSheetController"})
+    public void testRapidDismissAndReopen() {
+        requestContentInSheet(mHighPriorityContent, true);
+        assertEquals(mHighPriorityContent, mSheetController.getCurrentSheetContent());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Rapidly dismiss current content and request new content while dismissal
+                    // to HIDDEN is actively in progress (ReadAloud / "Listen to this page"
+                    // pattern).
+                    mSheetController.hideContent(mHighPriorityContent, true);
+                    mSheetController.requestShowContent(mLowPriorityContent, true);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> mSheetController.getCurrentSheetContent() == mLowPriorityContent);
+        assertEquals(mLowPriorityContent, mSheetController.getCurrentSheetContent());
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
+        assertEquals(SheetState.PEEK, mSheetController.getSheetState());
+    }
+
     /**
      * Request content be shown in the bottom sheet and end animations.
      *
