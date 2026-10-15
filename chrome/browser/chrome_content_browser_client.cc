@@ -7198,6 +7198,10 @@ bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
 
 void ChromeContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
+#if BUILDFLAG(IS_ANDROID)
+  content::BoostNetworkThreadPriorityDuringStartup();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   PrefService* local_state;
   if (g_browser_process) {
     DCHECK(g_browser_process->local_state());

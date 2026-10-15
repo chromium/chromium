@@ -143,6 +143,15 @@ CONTENT_EXPORT void CreateNetworkContextInNetworkService(
 // process one, allowing it to shut down. Then, restarts it.
 CONTENT_EXPORT void RestartNetworkService();
 
+#if BUILDFLAG(IS_ANDROID)
+// Boosts the priority of the in-process network service thread during browser
+// startup. Must be called on the UI thread after the network service has been
+// created (e.g. in ContentBrowserClient::OnNetworkServiceCreated), and only the
+// first call will have any effect. This is a no-op when the network service
+// is out-of-process.
+CONTENT_EXPORT void BoostNetworkThreadPriorityDuringStartup();
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_
