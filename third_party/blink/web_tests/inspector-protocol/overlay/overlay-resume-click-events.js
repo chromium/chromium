@@ -19,6 +19,9 @@
   await dp.Overlay.setPausedInDebuggerMessage({ message: 'Paused on debugger statement' });
   testRunner.log('Paused on "debugger" statement.');
 
+  // Wait for the overlay to be painted before querying its geometry.
+  await session.evaluate(() => internals.forceCompositingUpdate(document));
+
   // 2. Find the coordinates of the resume button in the overlay.
   async function getResumeButtonCoordinates() {
     return session.evaluate(() => {
