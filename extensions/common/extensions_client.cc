@@ -14,6 +14,7 @@
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/manifest_handler_registry.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permissions_info.h"
 
@@ -114,6 +115,15 @@ std::set<base::FilePath> ExtensionsClient::GetBrowserImagePaths(
     const Extension* extension) {
   std::set<base::FilePath> paths;
   IconsInfo::GetIcons(extension).GetPaths(&paths);
+
+  if (const IconVariantsInfo* icon_variants_info =
+          IconVariantsInfo::GetIconVariants(*extension)) {
+    icon_variants_info->Get(ExtensionIconVariant::ColorScheme::kLight)
+        .GetPaths(&paths);
+    icon_variants_info->Get(ExtensionIconVariant::ColorScheme::kDark)
+        .GetPaths(&paths);
+  }
+
   return paths;
 }
 

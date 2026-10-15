@@ -34,7 +34,10 @@ class ExtensionIconSet {
   ~ExtensionIconSet();
 
   const IconMap& map() const { return map_; }
-  bool empty() const { return map_.empty(); }
+  bool empty() const { return map_.empty() && any_.empty(); }
+
+  // Size-independent icon path (e.g. an SVG), or empty if unset.
+  const std::string& any() const { return any_; }
 
   // Remove all icons from the set.
   void Clear();
@@ -42,6 +45,10 @@ class ExtensionIconSet {
   // Add an icon path to the set. If a path for the specified size_in_px is
   // already present, it is overwritten.
   void Add(int size_in_px, const std::string& path);
+
+  // Sets a size-independent icon path. Get() returns it as a fallback when
+  // no sized icon satisfies the query.
+  void SetAny(const std::string& path);
 
   // Gets path value of the icon found when searching for `size_in_px` using
   // `match_type`.
@@ -62,6 +69,7 @@ class ExtensionIconSet {
 
  private:
   IconMap map_;
+  std::string any_;
 };
 
 #endif  // EXTENSIONS_COMMON_ICONS_EXTENSION_ICON_SET_H_

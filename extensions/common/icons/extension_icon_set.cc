@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_util.h"
 
 ExtensionIconSet::ExtensionIconSet() = default;
 
@@ -19,6 +18,7 @@ ExtensionIconSet::~ExtensionIconSet() = default;
 
 void ExtensionIconSet::Clear() {
   map_.clear();
+  any_.clear();
 }
 
 void ExtensionIconSet::Add(int size_in_px, const std::string& path) {
@@ -26,13 +26,19 @@ void ExtensionIconSet::Add(int size_in_px, const std::string& path) {
   map_[size_in_px] = path;
 }
 
+void ExtensionIconSet::SetAny(const std::string& path) {
+  DCHECK(!path.empty() && path[0] != '/');
+  any_ = path;
+}
+
 const std::string& ExtensionIconSet::Get(int size_in_px,
                                          Match match_type) const {
   // The searches for kMatchBigger and kSmaller below rely on the fact that
   // std::map is sorted. This is per the spec, so it should be safe to rely on.
+  // `any_` is returned when nothing matches; it's empty if unset.
   if (match_type == Match::kExactly) {
     auto result = map_.find(size_in_px);
-    return result == map_.end() ? base::EmptyString() : result->second;
+    return result == map_.end() ? any_ : result->second;
   }
   if (match_type == Match::kSmaller) {
     auto result = map_.rend();
@@ -42,7 +48,7 @@ const std::string& ExtensionIconSet::Get(int size_in_px,
         break;
       }
     }
-    return result == map_.rend() ? base::EmptyString() : result->second;
+    return result == map_.rend() ? any_ : result->second;
   }
 
   DCHECK(match_type == Match::kBigger);
@@ -53,11 +59,11 @@ const std::string& ExtensionIconSet::Get(int size_in_px,
       break;
     }
   }
-  return result == map_.cend() ? base::EmptyString() : result->second;
+  return result == map_.cend() ? any_ : result->second;
 }
 
 bool ExtensionIconSet::ContainsPath(std::string_view path) const {
-  return GetIconSizeFromPath(path) != 0;
+  return GetIconSizeFromPath(path) != 0 || (!path.empty() && path == any_);
 }
 
 int ExtensionIconSet::GetIconSizeFromPath(std::string_view path) const {
@@ -80,4 +86,7 @@ void ExtensionIconSet::GetPaths(std::set<base::FilePath>* paths) const {
   CHECK(paths);
   for (const auto& iter : map())
     paths->insert(base::FilePath::FromUTF8Unsafe(iter.second));
+  if (!any_.empty()) {
+    paths->insert(base::FilePath::FromUTF8Unsafe(any_));
+  }
 }

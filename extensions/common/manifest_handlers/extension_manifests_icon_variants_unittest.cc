@@ -183,6 +183,18 @@ TEST_F(IconVariantsManifestTest, WarnOnUnrecognizedIconVariants) {
           "empty": "empty.png",
         }
       ])"},
+      {"Mismatched types", R"([
+        {
+          "16": "16.png",
+          "32": "32.jpg"
+        }
+      ])"},
+      {"Mismatched types with any", R"([
+        {
+          "any": "icon.svg",
+          "16": "16.png"
+        }
+      ])"},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
@@ -215,6 +227,32 @@ TEST_F(IconVariantsManifestTest, PreferIconVariantsOverIcons) {
                       ExtensionIconSet::Match::kExactly));
 }
 
+TEST_F(IconVariantsManifestTest, MultipleDictionaries) {
+  scoped_refptr<Extension> extension(LoadAndExpectSuccess(GetManifestData(
+      R"([
+        {"16": "icon16.png", "color_schemes": ["dark"]},
+        {"48": "icon48.png", "color_schemes": ["dark"]}
+      ])")));
+
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(IconVariantsInfo::HasIconVariants(extension.get()));
+
+  const IconVariantsInfo* info =
+      IconVariantsInfo::GetIconVariants(*extension.get());
+  ASSERT_TRUE(info);
+
+  const ExtensionIconSet& dark_icons =
+      info->Get(ExtensionIconVariant::ColorScheme::kDark);
+  EXPECT_EQ("icon16.png",
+            dark_icons.Get(16, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon48.png",
+            dark_icons.Get(48, ExtensionIconSet::Match::kExactly));
+
+  const ExtensionIconSet& light_icons =
+      info->Get(ExtensionIconVariant::ColorScheme::kLight);
+  EXPECT_TRUE(light_icons.empty());
+}
+
 TEST_F(IconVariantsManifestTest, GetIconMethods) {
   ManifestData manifest_data = ManifestData::FromJSON(
       R"({
@@ -226,37 +264,38 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
         },
         "icon_variants": [
           {
-            "16": "icon_variants.16.png"
+            "16": "icon_variants.16.dark.png",
+            "any": "icon_variants.any.dark.png",
+            "color_schemes": ["dark"]
           },
           {
-            "16": "icon_variants.16.dark.png",
-            "color_schemes": ["dark"]
+            "16": "icon_variants.16.png",
+            "any": "icon_variants.any.png"
           }
         ]
       })");
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess(manifest_data));
 
-  static constexpr struct {
+  static const struct {
     const char* title;
-    const std::optional<ExtensionIconVariant::ColorScheme> color_scheme;
+    std::optional<ExtensionIconVariant::ColorScheme> color_scheme;
     const char* expected;
+    int requested_size;
   } test_cases[] = {
-      {
-          "Light theme icons are returned by default sans color scheme.",
-          std::nullopt,
-          "icon_variants.16.png",
-      },
-      {
-          "Light theme specified.",
-          ExtensionIconVariant::ColorScheme::kLight,
-          "icon_variants.16.png",
-      },
-      {
-          "Dark theme specified.",
-          ExtensionIconVariant::ColorScheme::kDark,
-          "icon_variants.16.dark.png",
-      }};
+      {"Dark theme specified.", ExtensionIconVariant::ColorScheme::kDark,
+       "icon_variants.16.dark.png", extension_misc::EXTENSION_ICON_BITTY},
+      {"Light theme specified.", ExtensionIconVariant::ColorScheme::kLight,
+       "icon_variants.16.png", extension_misc::EXTENSION_ICON_BITTY},
+      {"No theme specified.", std::nullopt, "icon_variants.16.png",
+       extension_misc::EXTENSION_ICON_BITTY},
+      {"Any size fallback for dark theme.",
+       ExtensionIconVariant::ColorScheme::kDark, "icon_variants.any.dark.png",
+       extension_misc::EXTENSION_ICON_LARGE},
+      {"Any size fallback for light theme.",
+       ExtensionIconVariant::ColorScheme::kLight, "icon_variants.any.png",
+       extension_misc::EXTENSION_ICON_LARGE},
+  };
 
   // GetIcons.
   for (const auto& test_case : test_cases) {
@@ -265,9 +304,8 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
         !test_case.color_scheme.has_value()
             ? IconsInfo::GetIcons(extension.get())
             : IconsInfo::GetIcons(*extension, test_case.color_scheme.value());
-    EXPECT_EQ(test_case.expected,
-              icons.Get(extension_misc::EXTENSION_ICON_BITTY,
-                        ExtensionIconSet::Match::kExactly));
+    EXPECT_EQ(test_case.expected, icons.Get(test_case.requested_size,
+                                            ExtensionIconSet::Match::kBigger));
   }
 
   // GetIconResource.
@@ -276,11 +314,11 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
     const ExtensionResource& resource =
         !test_case.color_scheme.has_value()
             ? IconsInfo::GetIconResource(extension.get(),
-                                         extension_misc::EXTENSION_ICON_BITTY,
-                                         ExtensionIconSet::Match::kExactly)
+                                         test_case.requested_size,
+                                         ExtensionIconSet::Match::kBigger)
             : IconsInfo::GetIconResource(extension.get(),
-                                         extension_misc::EXTENSION_ICON_BITTY,
-                                         ExtensionIconSet::Match::kExactly,
+                                         test_case.requested_size,
+                                         ExtensionIconSet::Match::kBigger,
                                          test_case.color_scheme.value());
     EXPECT_EQ(test_case.expected, resource.relative_path().AsUTF8Unsafe());
   }
@@ -290,12 +328,10 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
     SCOPED_TRACE(base::StringPrintf("GetIconURL: '%s'", test_case.title));
     const GURL& icon_url =
         !test_case.color_scheme.has_value()
-            ? IconsInfo::GetIconURL(extension.get(),
-                                    extension_misc::EXTENSION_ICON_BITTY,
-                                    ExtensionIconSet::Match::kExactly)
-            : IconsInfo::GetIconURL(extension.get(),
-                                    extension_misc::EXTENSION_ICON_BITTY,
-                                    ExtensionIconSet::Match::kExactly,
+            ? IconsInfo::GetIconURL(extension.get(), test_case.requested_size,
+                                    ExtensionIconSet::Match::kBigger)
+            : IconsInfo::GetIconURL(extension.get(), test_case.requested_size,
+                                    ExtensionIconSet::Match::kBigger,
                                     test_case.color_scheme.value());
     EXPECT_EQ(test_case.expected, icon_url.GetPath().substr(1));
   }
@@ -355,11 +391,11 @@ TEST_F(IconVariantsManifestTest, GetIconUrlWithSpecialChars) {
         },
         "icon_variants": [
           {
-            "16": "#icon_variants.16.png"
-          },
-          {
             "16": "#icon_variants.16.dark.png",
             "color_schemes": ["dark"]
+          },
+          {
+            "16": "#icon_variants.16.png"
           }
         ]
       })");
@@ -382,6 +418,181 @@ TEST_F(IconVariantsManifestTest, GetIconUrlWithSpecialChars) {
       ExtensionIconSet::Match::kExactly,
       ExtensionIconVariant::ColorScheme::kDark);
   EXPECT_EQ("%23icon_variants.16.dark.png", icon_url_dark.GetPath().substr(1));
+}
+
+// Tests loading an extension with only icon_variants defined in manifest.
+TEST_F(IconVariantsManifestTest, OnlyIconVariants) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [{
+          "48": "icon.png"
+        }]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
+  EXPECT_EQ("icon.png", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
+                                  ExtensionIconSet::Match::kExactly));
+}
+
+// Tests icon_variants with "any" SVG key for dark color scheme.
+TEST_F(IconVariantsManifestTest, IconVariantsAnySvg) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "128": "icons/128.png",
+            "color_schemes": ["light"]
+          },
+          {
+            "any": "icons/spool.svg",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  const ExtensionIconSet& dark_icons =
+      IconsInfo::GetIcons(*extension, ExtensionIconVariant::ColorScheme::kDark);
+  EXPECT_EQ("icons/spool.svg",
+            dark_icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
+                           ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/spool.svg",
+            dark_icons.Get(extension_misc::EXTENSION_ICON_LARGE,
+                           ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/spool.svg",
+            dark_icons.Get(38, ExtensionIconSet::Match::kExactly));
+
+  const ExtensionIconSet& light_icons = IconsInfo::GetIcons(
+      *extension, ExtensionIconVariant::ColorScheme::kLight);
+  EXPECT_EQ("icons/128.png",
+            light_icons.Get(extension_misc::EXTENSION_ICON_LARGE,
+                            ExtensionIconSet::Match::kExactly));
+}
+
+// Tests that an earlier "any" icon doesn't prevent later sized icons from
+// being added, and that a "512" icon isn't treated as "any".
+TEST_F(IconVariantsManifestTest, AnyDoesNotShadowSizedIcons) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "any": "icons/any.svg"
+          },
+          {
+            "16": "icons/16.png",
+            "512": "icons/512.png"
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  const ExtensionIconSet& icons = IconsInfo::GetIcons(
+      *extension, ExtensionIconVariant::ColorScheme::kLight);
+  EXPECT_EQ("icons/16.png", icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                                      ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/512.png", icons.Get(extension_misc::EXTENSION_ICON_GIGANTOR,
+                                       ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/any.svg", icons.Get(extension_misc::EXTENSION_ICON_MEDIUM,
+                                       ExtensionIconSet::Match::kExactly));
+}
+
+// Tests that an explicit color scheme overrides a variant without
+// `color_schemes`, and that the first explicit variant wins over later ones.
+TEST_F(IconVariantsManifestTest, ExplicitColorSchemePrecedence) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "16": "icons/default16.png"
+          },
+          {
+            "any": "icons/default_any.svg"
+          },
+          {
+            "16": "icons/dark16_first.png",
+            "color_schemes": ["dark"]
+          },
+          {
+            "any": "icons/dark_any_first.svg",
+            "color_schemes": ["dark"]
+          },
+          {
+            "16": "icons/dark16_second.png",
+            "color_schemes": ["dark"]
+          },
+          {
+            "any": "icons/dark_any_second.svg",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+
+  const ExtensionIconSet& dark_icons =
+      IconsInfo::GetIcons(*extension, ExtensionIconVariant::ColorScheme::kDark);
+  EXPECT_EQ("icons/dark16_first.png",
+            dark_icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                           ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/dark_any_first.svg", dark_icons.any());
+
+  const ExtensionIconSet& light_icons = IconsInfo::GetIcons(
+      *extension, ExtensionIconVariant::ColorScheme::kLight);
+  EXPECT_EQ("icons/default16.png",
+            light_icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                            ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/default_any.svg", light_icons.any());
+}
+
+// Tests that an explicit variant listed before a variant without
+// `color_schemes` isn't overwritten by the later variant.
+TEST_F(IconVariantsManifestTest, ExplicitBeforeDefaultPrecedence) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "16": "icons/dark16.svg",
+            "any": "icons/dark_any.svg",
+            "color_schemes": ["dark"]
+          },
+          {
+            "16": "icons/default16.svg",
+            "any": "icons/default_any.svg"
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+
+  const ExtensionIconSet& dark_icons =
+      IconsInfo::GetIcons(*extension, ExtensionIconVariant::ColorScheme::kDark);
+  EXPECT_EQ("icons/dark16.svg",
+            dark_icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                           ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/dark_any.svg", dark_icons.any());
+
+  const ExtensionIconSet& light_icons = IconsInfo::GetIcons(
+      *extension, ExtensionIconVariant::ColorScheme::kLight);
+  EXPECT_EQ("icons/default16.svg",
+            light_icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                            ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icons/default_any.svg", light_icons.any());
 }
 
 }  // namespace extensions

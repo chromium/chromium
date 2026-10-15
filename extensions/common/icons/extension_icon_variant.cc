@@ -158,7 +158,28 @@ std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
 }
 
 bool ExtensionIconVariant::IsValid() const {
-  return any_.has_value() || !sizes_.empty();
+  if (!any_.has_value() && sizes_.empty()) {
+    return false;
+  }
+
+  // All types must be the same in a single icon group.
+  base::FilePath::StringType expected_extension;
+  if (any_.has_value()) {
+    expected_extension = any_->relative_path().FinalExtension();
+  } else {
+    expected_extension =
+        sizes_.begin()->second.relative_path().FinalExtension();
+  }
+
+  for (const auto& size_entry : sizes_) {
+    if (!base::FilePath::CompareEqualIgnoreCase(
+            size_entry.second.relative_path().FinalExtension(),
+            expected_extension)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace extensions

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "base/lazy_instance.h"
@@ -15,6 +16,7 @@
 #include "extensions/common/api/icon_variants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/gfx/color_utils.h"
@@ -115,26 +117,53 @@ bool IconVariantsInfo::SupportsIconVariants(const Extension& extension) {
 }
 
 void IconVariantsInfo::InitializeIconSets() {
+  // Icons from a variant that lists a color scheme take precedence over icons
+  // from a variant without `color_schemes`. Otherwise, the first variant to
+  // provide an icon for a given size (or "any") wins.
+  struct IconSetState {
+    std::set<ExtensionIconVariant::Size> explicit_sizes;
+    bool explicit_any = false;
+  };
+  IconSetState dark_state;
+  IconSetState light_state;
+
+  auto add_icons = [](const ExtensionIconVariant& icon_variant,
+                      bool is_explicit, ExtensionIconSet& icons,
+                      IconSetState& state) {
+    for (const auto& [size, resource] : icon_variant.GetSizes()) {
+      const bool should_add = is_explicit
+                                  ? state.explicit_sizes.insert(size).second
+                                  : !icons.map().contains(size);
+      if (should_add) {
+        icons.Add(size, resource.relative_path().AsUTF8Unsafe());
+      }
+    }
+
+    const std::optional<ExtensionResource>& any = icon_variant.GetAny();
+    if (!any.has_value()) {
+      return;
+    }
+    const bool should_add_any =
+        is_explicit ? !state.explicit_any : icons.any().empty();
+    if (should_add_any) {
+      icons.SetAny(any->relative_path().AsUTF8Unsafe());
+      state.explicit_any |= is_explicit;
+    }
+  };
+
   for (const auto& icon_variant : icon_variants->GetList()) {
-    const auto color_schemes = icon_variant.GetColorSchemes();
-    const auto sizes = icon_variant.GetSizes();
-    // TODO(crbug.com/344639840): Support any, e.g. any = icon_variant.GetAny();
-
-    for (const auto& size : sizes) {
-      // Add the size path pair to both extension icon sets if unspecified.
-      if (color_schemes.empty()) {
-        dark_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
-        light_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
-        continue;
-      }
-
-      if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kDark)) {
-        dark_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
-      }
-
-      if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kLight)) {
-        light_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
-      }
+    const std::set<ExtensionIconVariant::ColorScheme>& color_schemes =
+        icon_variant.GetColorSchemes();
+    if (color_schemes.empty()) {
+      add_icons(icon_variant, /*is_explicit=*/false, dark_, dark_state);
+      add_icons(icon_variant, /*is_explicit=*/false, light_, light_state);
+      continue;
+    }
+    if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kDark)) {
+      add_icons(icon_variant, /*is_explicit=*/true, dark_, dark_state);
+    }
+    if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kLight)) {
+      add_icons(icon_variant, /*is_explicit=*/true, light_, light_state);
     }
   }
 }
@@ -142,7 +171,7 @@ void IconVariantsInfo::InitializeIconSets() {
 const ExtensionIconSet& IconVariantsInfo::Get(
     std::optional<ExtensionIconVariant::ColorScheme> color_scheme) const {
   if (!icon_variants) {
-    g_empty_icon_set.Get();
+    return g_empty_icon_set.Get();
   }
 
   return color_scheme == ExtensionIconVariant::ColorScheme::kDark ? dark_
