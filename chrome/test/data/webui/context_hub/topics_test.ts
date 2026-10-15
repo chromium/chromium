@@ -914,6 +914,7 @@ suite('TopicFeedbackExportDialog', () => {
     const missingTopics = query<CrTextareaElement>('#missingTopics')!;
     missingTopics.value = ' My trip planning ';
     await click('#acknowledge');
+    const downloadBefore = query('#download')!;
     await click('#download');
 
     const options = await handler.whenCalled('generateTopicsFeedbackBundle');
@@ -925,8 +926,69 @@ suite('TopicFeedbackExportDialog', () => {
         downloads[0]!.fileName));
     assertTrue(!!query('#exportDone'));
 
+    // The form replaces the download as the primary action.
+    const openForm = query('#openForm')!;
+    assertTrue(openForm.classList.contains('action-button'));
+    const download = query<HTMLButtonElement>('#download')!;
+    // The same button is updated in place so keyboard focus is preserved.
+    assertEquals(downloadBefore, download);
+    assertFalse(download.classList.contains('action-button'));
+    // cancel-button gives the button spacing from the primary action.
+    assertTrue(download.classList.contains('cancel-button'));
+    assertEquals('Download again', download.textContent.trim());
+    assertFalse(download.disabled);
+
     await click('#openForm');
     assertEquals(FORM_URL, await openWindowProxy.whenCalled('openUrl'));
+  });
+
+  test('download is the primary action before downloading', async () => {
+    await openDialog(likeTopics(4));
+    assertFalse(!!query('#openForm'));
+    const download = query('#download')!;
+    assertTrue(download.classList.contains('action-button'));
+    assertEquals('Download JSON', download.textContent.trim());
+  });
+
+  test('keeps the form as the next step if a re-download fails', async () => {
+    await openDialog(likeTopics(4));
+    await click('#acknowledge');
+    await click('#download');
+    await handler.whenCalled('generateTopicsFeedbackBundle');
+    await microtasksFinished();
+
+    handler.resetResolver('generateTopicsFeedbackBundle');
+    handler.setResultMapperFor(
+        'generateTopicsFeedbackBundle',
+        () => Promise.reject(new Error('failed')));
+    await click('#download');
+    await handler.whenCalled('generateTopicsFeedbackBundle');
+    await microtasksFinished();
+
+    assertTrue(!!query('#exportError'));
+    assertTrue(query('#openForm')!.classList.contains('action-button'));
+  });
+
+  test('subtitle links to the form before downloading', async () => {
+    await openDialog();
+    await click('#formLink');
+    assertEquals(FORM_URL, await openWindowProxy.whenCalled('openUrl'));
+  });
+
+  test('no form link or button without a form URL', async () => {
+    loadTimeData.overrideValues({kTopicsFeedbackFormUrl: ''});
+    await openDialog(likeTopics(4));
+    assertFalse(!!query('#formLink'));
+    assertTrue(query('#subtitle')!.textContent.includes('feedback form.'));
+
+    await click('#acknowledge');
+    await click('#download');
+    await handler.whenCalled('generateTopicsFeedbackBundle');
+    await microtasksFinished();
+
+    assertTrue(!!query('#exportDone'));
+    assertFalse(!!query('#openForm'));
+    assertTrue(query('#download')!.classList.contains('action-button'));
   });
 
   test('asks to review up to 3 topics, kept for the session', async () => {

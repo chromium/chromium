@@ -40,6 +40,10 @@ cr-dialog {
   margin-block-start: 2px;
 }
 
+#formLink {
+  color: var(--cr-link-color);
+}
+
 .error {
   color: var(--color-textfield-filled-error, var(--cr-fallback-color-error));
   font-size: 13px;
