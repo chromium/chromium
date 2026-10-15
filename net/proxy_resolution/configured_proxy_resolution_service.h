@@ -340,27 +340,30 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // PAC script.
   void OnInitProxyResolverComplete(int result);
 
-  // Returns ERR_IO_PENDING if the request cannot be completed synchronously.
+  // Returns ERR_IO_PENDING if the request cannot be resolved synchronously.
   // Otherwise it fills `result` with the proxy information for `url`.
   // `bypass_override_rules` dictates whether proxy override rules should also
   // be evaluated or not. Currently used by ConfiguredProxyResolutionRequest to
   // re-evaluate synchronous rules after having evaluated override rules with
   // none of them applying.
-  // Completing synchronously means we don't need to query ProxyResolver.
+  // Resolving synchronously means the service is ready and the proxy can be
+  // determined immediately (e.g. via conditionless override rules, dynamic
+  // routing rules, or static/direct proxy rules) without needing asynchronous
+  // DNS probes for override rules or querying `ProxyResolver`.
   // `net_log` will be used if an override rule was applied synchronously.
-  int TryToCompleteSynchronously(const GURL& url,
-                                 bool bypass_override_rules,
-                                 const NetLogWithSource& net_log,
-                                 ProxyInfo* result);
+  int TryResolveSynchronously(const GURL& url,
+                              bool bypass_override_rules,
+                              const NetLogWithSource& net_log,
+                              ProxyInfo* result);
 
   // Cancels all of the requests sent to the ProxyResolver. These will be
-  // restarted when calling SetReady().
+  // restarted when calling SetPacReadyAndResumePendingRequests().
   void SuspendAllPendingRequests();
 
   // Advances the current state to |PacResolverState::kReady|, and resumes any
   // pending requests which had been stalled waiting for initialization to
   // complete.
-  void SetReady();
+  void SetPacReadyAndResumePendingRequests();
 
   // Returns true if |pending_requests_| contains |req|.
   bool ContainsPendingRequest(ConfiguredProxyResolutionRequest* req);
@@ -371,7 +374,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // Called when proxy resolution has completed (either synchronously or
   // asynchronously). Handles logging the result, and cleaning out
   // bad entries from the results list.
-  int DidFinishResolvingProxy(
+  int ProcessResolutionResult(
       const GURL& url,
       const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& method,
@@ -591,15 +594,16 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // Set during destruction to annotate the synchronous teardown path:
   // the destructor aborts pending requests, which synchronously invoke
-  // QueryComplete(ERR_ABORTED), followed by QueryDidComplete and
-  // DidFinishResolvingProxy.
+  // OnAsyncResolutionComplete(ERR_ABORTED), followed by FinalizeRequestResult
+  // and ProcessResolutionResult.
   // When this is true and no current config is set, ERR_ABORTED is mapped to
   // ERR_MANDATORY_PROXY_CONFIGURATION_FAILED to avoid interpreting teardown
   // as a successful DIRECT fallback.
   bool in_destruction_ = false;
 
-  // WeakPtrFactory must be the last member. Used by SetReady() to detect
-  // deletion by synchronous callbacks.
+  // WeakPtrFactory must be the last member. Used by
+  // SetPacReadyAndResumePendingRequests() to detect deletion by synchronous
+  // callbacks.
   base::WeakPtrFactory<ConfiguredProxyResolutionService> weak_ptr_factory_{
       this};
 };

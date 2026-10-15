@@ -63,27 +63,38 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
     return !!resolve_job_.get() || !applicable_override_rules_.empty();
   }
 
-  void StartAndCompleteCheckingForSynchronous();
+  // Resumes a pending proxy resolution request once the service becomes ready
+  // (e.g. after PAC initialization or dynamic route updates).
+  // Attempts to resolve the request synchronously, or starts asynchronous
+  // resolution (DNS probes for override rules or a `ProxyResolver` query) via
+  // `Start()` if needed.
+  // If resolution completes immediately without waiting for async work,
+  // populates `results_` and delivers the final status code to the caller by
+  // invoking `user_callback_` via `OnAsyncResolutionComplete()`.
+  // Otherwise, the request remains pending and this may be called again later
+  // to resume.
+  void ResumeOrCompleteSynchronously();
 
   // Cancels any pending activities (e.g. DNS resolution or proxy resolver
   // requests). The overall request can be resumed by calling
-  // `StartAndCompleteCheckingForSynchronous()`.
-  void Cancel();
+  // `ResumeOrCompleteSynchronously()`.
+  void CancelActiveJob();
 
   // Returns true if the request has been completed.
   bool was_completed() const { return user_callback_.is_null(); }
 
-  // Callback for when the ProxyResolver request has completed.
-  void QueryComplete(int result_code);
+  // Completes a pending request after asynchronous proxy resolution finishes
+  // (e.g. from `ProxyResolver`, override rule DNS resolution, or when a
+  // previously stalled request resolves during
+  // `ResumeOrCompleteSynchronously()`), finalizing `results_` and invoking
+  // `user_callback_`.
+  void OnAsyncResolutionComplete(int result_code);
 
-  // Helper to call after ProxyResolver completion (both synchronous and
-  // asynchronous). Fixes up the result that is to be returned to user.
-  int QueryDidComplete(int result_code);
-
-  // Helper to call if the request completes synchronously, since in that case
-  // the request will not be added to |pending_requests_| (in
-  // |ConfiguredProxyResolutionService|).
-  int QueryDidCompleteSynchronously(int result_code);
+  // Post-processes `results_` after proxy resolution finishes (whether via
+  // override rules, synchronous fallback rules, or `ProxyResolver`, and
+  // whether completed synchronously or asynchronously).
+  // Returns the final result code to be returned to the user.
+  int FinalizeRequestResult(int result_code);
 
   // Called to notify that an asynchronous DNS resolution request was completed
   // for `host` with `result`. This will add an entry in the `dns_results_` map.
@@ -108,8 +119,8 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
 
   // Resets the request's state, which will cancel any pending activities and
   // ensure that `is_started()` returns false. The main difference with
-  // `Cancel()` is the intent and extra logging in cancellation cases.
-  void Reset();
+  // `CancelActiveJob()` is the intent and extra logging in cancellation cases.
+  void ResetActiveJobState();
 
   // Note that Request holds a bare pointer to the
   // ConfiguredProxyResolutionService. Outstanding requests are cancelled during
