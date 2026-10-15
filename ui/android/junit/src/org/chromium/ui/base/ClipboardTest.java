@@ -603,8 +603,13 @@ public class ClipboardTest {
     public void testSetPrimaryClipOversizedOffloadsWebCustomData() {
         mockPrimaryClipTransactionTooLarge(1);
 
-        mClipboard.setClipboardText(
-                Map.of(MIMETYPE_TEXT_HTML, HTML_TEXT, CHROME_WEB_CUSTOM_DATA_MIME_TYPE, "custom"));
+        assertTrue(
+                mClipboard.setClipboardText(
+                        Map.of(
+                                MIMETYPE_TEXT_HTML,
+                                HTML_TEXT,
+                                CHROME_WEB_CUSTOM_DATA_MIME_TYPE,
+                                "custom")));
 
         verify(mMockClipboardManager, Mockito.times(2)).setPrimaryClip(mClipDataCaptor.capture());
         ClipData clip = mClipDataCaptor.getValue();
@@ -615,12 +620,14 @@ public class ClipboardTest {
     }
 
     @Test
-    public void testReadsDoNotThrowWhenClipboardManagerThrows() {
+    public void testOperationsDoNotThrowWhenClipboardManagerThrows() {
         mClipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
         when(mMockClipboardManager.getPrimaryClipDescription()).thenThrow(new RuntimeException());
         when(mMockClipboardManager.getPrimaryClip()).thenThrow(new RuntimeException());
+        doThrow(new RuntimeException()).when(mMockClipboardManager).setPrimaryClip(any());
 
         assertNull(mClipboard.getCoercedText());
         assertNull(mClipboard.getCustomClipData(CHROME_WEB_CUSTOM_DATA_MIME_TYPE));
+        assertFalse(mClipboard.setClipboardText(Map.of(MIMETYPE_TEXT_HTML, HTML_TEXT)));
     }
 }

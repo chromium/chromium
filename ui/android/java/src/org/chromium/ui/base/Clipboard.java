@@ -304,11 +304,13 @@ public class Clipboard {
      * Writes content to the clipboard with multiple MIME types.
      *
      * @param textData The map of MIME types to their String data.
+     * @return True if the content was successfully written to the clipboard, false otherwise.
      */
     @CalledByNative
-    protected void setClipboardText(
+    protected boolean setClipboardText(
             @JniType("std::map<std::string, std::string>") Map<String, String> textData) {
         Log.w(TAG, "setClipboardText is a no-op because Clipboard service isn't available");
+        return false;
     }
 
     /**
