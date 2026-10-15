@@ -196,7 +196,7 @@ export class WebuiGalleryAppElement extends CrLitElement {
     const demoIndex =
         path === '' ? 0 : this.demos_.findIndex(demo => demo.path === path);
     assert(demoIndex !== -1);
-    this.$.selector.selected = demoIndex;
+    this.$.selector.selected = demoIndex.toString();
 
     const demo = this.demos_[demoIndex]!;
 

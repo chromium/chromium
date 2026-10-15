@@ -14,7 +14,7 @@ export function getHtml(this: CrTabsDemoElement) {
       .selected="${this.selectedTabIndex_}"
       @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
   </cr-tabs>
-  <cr-page-selector .selected="${this.selectedTabIndex_}">
+  <cr-page-selector .selected="${this.selectedTabIndex_.toString()}">
     ${this.tabNames_.map(tabName => html`
       <div class="tab-contents">${tabName} contents</div>
     `)}

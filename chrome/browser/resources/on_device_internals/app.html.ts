@@ -13,7 +13,7 @@ export function getHtml(this: OnDeviceInternalsAppElement) {
     .selected="${this.selectedTabIndex_}"
     @selected-changed="${this.onSelectedChanged_}">
 </cr-tabs>
-<cr-page-selector .selected="${this.selectedTabIndex_}">
+<cr-page-selector .selected="${this.selectedTabIndex_.toString()}">
   <on-device-internals-tools class="tab-contents"></on-device-internals-tools>
   <on-device-internals-event-log class="tab-contents">
   </on-device-internals-event-log>

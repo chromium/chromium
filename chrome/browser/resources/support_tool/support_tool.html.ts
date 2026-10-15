@@ -10,7 +10,7 @@ import {SupportToolPageIndex} from './support_tool.js';
 export function getHtml(this: SupportToolElement) {
   return html`<!--html_template_start_-->
 <div id="support-tool-pages">
-  <cr-page-selector .selected="${this.selectedPage_}"
+  <cr-page-selector .selected="${this.selectedPage_.toString()}"
       attr-for-selected="page-index">
     <issue-details id="issueDetails"
         page-index="${SupportToolPageIndex.ISSUE_DETAILS}">

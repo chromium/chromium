@@ -60,14 +60,14 @@ suite('SettingsMenu', function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    assertEquals('/reset', selector.selected.toString());
+    assertEquals('/reset', selector.selected);
   });
 
   test('navigateToAnotherSection', async function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    assertEquals('/reset', selector.selected.toString());
+    assertEquals('/reset', selector.selected);
 
     const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
         'iron-select', selector);
@@ -76,14 +76,14 @@ suite('SettingsMenu', function() {
 
     assertTrue(!!selector.selected);
     assertEquals(settingsMenu.$.people, event.detail.item);
-    assertEquals('/people', selector.selected.toString());
+    assertEquals('/people', selector.selected);
   });
 
   test('navigateToBasic', async function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    assertEquals('/reset', selector.selected.toString());
+    assertEquals('/reset', selector.selected);
 
     Router.getInstance().navigateTo(routes.BASIC);
     await microtasksFinished();
@@ -211,7 +211,7 @@ suite('SettingsMenu', function() {
         'Autofill.YourSavedInfoSettingsPage.VisitReferrer', histogramName);
     assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
     assertTrue(!!selector.selected);
-    assertEquals('/autofill', selector.selected.toString());
+    assertEquals('/autofill', selector.selected);
     assertEquals(
         routes.AUTOFILL, Router.getInstance().getCurrentRoute());
   });

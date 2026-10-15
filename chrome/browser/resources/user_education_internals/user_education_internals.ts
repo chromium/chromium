@@ -611,8 +611,8 @@ export class UserEducationInternalsElement extends
   }
 
   protected onSelectorIronActivate_(event: CustomEvent<{selected: string}>) {
+    this.$.menu.selected = event.detail.selected;
     const index = Number(event.detail.selected);
-    this.$.menu.selected = index;
     if (index >= 0) {
       this.$.selector.removeAttribute('show-all');
       this.selectedTabIndex = index;

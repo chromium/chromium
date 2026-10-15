@@ -64,7 +64,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
 
     accessor attrForSelected: string|null = null;
     accessor selectable: string|undefined;
-    accessor selected: string|number|undefined;
+    accessor selected: string|undefined;
     accessor selectedAttribute: string|null = null;
 
     // Whether to select items when they or their children are clicked. Note:
@@ -117,7 +117,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     /**
      * Selects the given value.
      */
-    select(value: string|number) {
+    select(value: string) {
       this.selected = value;
     }
 
@@ -208,7 +208,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
       this.fire('iron-' + (isSelected ? 'select' : 'deselect'), {item: item});
     }
 
-    private valueToIndex_(value: string|number): number {
+    private valueToIndex_(value: string): number {
       if (!this.attrForSelected) {
         return Number(value);
       }
@@ -218,17 +218,17 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
       return match ? Number(match.dataset['selectionIndex']) : -1;
     }
 
-    private indexToValue_(index: number): string|number {
+    private indexToValue_(index: number): string {
       if (!this.attrForSelected) {
-        return index;
+        return index.toString();
       }
 
       const item = this.items_[index];
       if (!item) {
-        return index;
+        return index.toString();
       }
 
-      return item.getAttribute(this.attrForSelected) || index;
+      return item.getAttribute(this.attrForSelected) || index.toString();
     }
 
     itemsChanged() {
@@ -260,7 +260,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
 
 export interface CrSelectableMixinInterface {
   attrForSelected: string|null;
-  selected?: string|number;
+  selected?: string;
   selectable?: string;
   readonly selectedItem: Element|null;
   selectOnClick: boolean;
@@ -270,7 +270,7 @@ export interface CrSelectableMixinInterface {
   itemsChanged(): void;
   selectNext(): void;
   selectPrevious(): void;
-  select(value: string|number): void;
+  select(value: string): void;
 
   // Methods to override to modify default behavior.
   observeItems(): void;

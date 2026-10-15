@@ -13,7 +13,7 @@ export function getHtml(this: TracesAppElement) {
       @selected-changed="${this.onSelectedChanged_}">
   </cr-tabs>
 
-  <cr-page-selector .selected="${this.selected_}">
+  <cr-page-selector .selected="${this.selected_.toString()}">
     <trace-report-list></trace-report-list>
     <tracing-scenarios-config></tracing-scenarios-config>
     <trace-recorder></trace-recorder>

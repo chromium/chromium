@@ -16,7 +16,7 @@ export function getHtml(this: ExceptionTabbedAddDialogElement) {
     </cr-tabs>
   </div>
   <div id="body" slot="body">
-    <cr-page-selector .selected="${this.selectedTab_}">
+    <cr-page-selector .selected="${this.selectedTab_.toString()}">
       <tab-discard-exception-current-sites-list id="list"
           @sites-populated="${this.onSitesPopulated_}"
           .visible="${this.isAddCurrentSitesTabSelected_()}"

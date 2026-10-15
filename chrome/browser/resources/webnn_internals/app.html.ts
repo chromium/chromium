@@ -14,7 +14,7 @@ export function getHtml(this: WebnnInternalsAppElement) {
     .selected="${this.selectedTabIndex_}"
     @selected-changed="${this.onSelectedChanged_}">
 </cr-tabs>
-<cr-page-selector .selected="${this.selectedTabIndex_}">
+<cr-page-selector .selected="${this.selectedTabIndex_.toString()}">
   <webnn-internals-contexts-viewer class="tab-contents">
   </webnn-internals-contexts-viewer>
   <webnn-internals-info-page class="tab-contents">

@@ -216,13 +216,15 @@ suite('SupportToolTest', function() {
 
     // The selected page index must be 0, which means initial page is
     // IssueDetails.
-    assertEquals(pages.selected, SupportToolPageIndex.ISSUE_DETAILS);
+    assertEquals(pages.selected, SupportToolPageIndex.ISSUE_DETAILS.toString());
     // Only continue button container must be visible in initial page.
     assertFalse(supportTool.$.continueButtonContainer.hidden);
     supportTool.$.continueButton.click();
     await microtasksFinished();
 
-    assertEquals(pages.selected, SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
+    assertEquals(
+        pages.selected,
+        SupportToolPageIndex.DATA_COLLECTOR_SELECTION.toString());
     // Click on continue button to start data collection.
     supportTool.$.continueButton.click();
     const [issueDetails, selectedDataCollectors] =
@@ -286,7 +288,7 @@ suite('SupportToolTest', function() {
     // collection.
     assertEquals(
         supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
-        SupportToolPageIndex.ISSUE_DETAILS);
+        SupportToolPageIndex.ISSUE_DETAILS.toString());
     assertEquals(browserProxy.getCallCount('cancelDataCollection'), 1);
   });
 
@@ -299,7 +301,7 @@ suite('SupportToolTest', function() {
 
     assertEquals(
         supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
-        SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
+        SupportToolPageIndex.DATA_COLLECTOR_SELECTION.toString());
     supportTool.$.continueButton.click();
     await microtasksFinished();
 
@@ -318,7 +320,7 @@ suite('SupportToolTest', function() {
     await microtasksFinished();
     assertEquals(
         supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
-        SupportToolPageIndex.EXPORT_SPINNER);
+        SupportToolPageIndex.EXPORT_SPINNER.toString());
     const exportResult: DataExportResult = {
       success: true,
       path: '/usr/testuser/downloads/fake_support_packet_path.zip',
@@ -328,7 +330,7 @@ suite('SupportToolTest', function() {
     await microtasksFinished();
     assertEquals(
         supportTool.shadowRoot.querySelector('cr-page-selector')!.selected,
-        SupportToolPageIndex.DATA_EXPORT_DONE);
+        SupportToolPageIndex.DATA_EXPORT_DONE.toString());
   });
 });
 
