@@ -217,19 +217,6 @@ void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
                   /*"LayerTreeHostImpl::SetVisible"*/ visibility_track);
 }
 
-void PopulateMetadataContentColorUsage(const LayerTreeImpl* active_tree,
-                                       const FrameData* frame,
-                                       viz::CompositorFrameMetadata* metadata) {
-  metadata->content_color_usage = gfx::ContentColorUsage::kSRGB;
-  for (int layer_id : frame->will_draw_layers) {
-    const LayerImpl* layer = active_tree->LayerById(layer_id);
-    if (layer) {
-      metadata->content_color_usage = std::max(metadata->content_color_usage,
-                                               layer->GetContentColorUsage());
-    }
-  }
-}
-
 // Dump verbose log with
 // --vmodule=layer_tree_host_impl=3 for renderer only, or
 // --vmodule=layer_tree_host_impl=4 for all clients.
@@ -3088,7 +3075,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     }
   }
 
-  PopulateMetadataContentColorUsage(active_tree_.get(), frame, &metadata);
   metadata.has_shared_element_resources = frame->has_shared_element_resources;
   uint32_t frame_deadline = frame->deadline_in_frames.value_or(0u);
   // Set a higher frame deadline for ViewTransitions with `kAnimateRenderer` to

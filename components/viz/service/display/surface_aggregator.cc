@@ -2123,8 +2123,8 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   }
 
   referenced_surfaces_.erase(surface->surface_id());
-  result.content_color_usage =
-      std::max(result.content_color_usage, frame_metadata.content_color_usage);
+  result.content_color_usage = std::max(
+      result.content_color_usage, surface->GetActiveFrameContentColorUsage());
 
   return damage_rect;
 }

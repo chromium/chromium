@@ -26,7 +26,6 @@
 #include "services/viz/public/cpp/compositing/tracked_element_rects_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom-shared.h"
 #include "ui/gfx/mojom/delegated_ink_metadata_mojom_traits.h"
-#include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_transform_mojom_traits.h"
 
 namespace mojo {
@@ -82,11 +81,6 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static gfx::Size visible_viewport_size(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.visible_viewport_size;
-  }
-
-  static gfx::ContentColorUsage content_color_usage(
-      const viz::CompositorFrameMetadata& metadata) {
-    return metadata.content_color_usage;
   }
 
   static bool may_contain_video(const viz::CompositorFrameMetadata& metadata) {

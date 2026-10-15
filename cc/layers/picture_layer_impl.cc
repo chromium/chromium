@@ -2060,17 +2060,6 @@ PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeAllTiles() {
   return updates;
 }
 
-gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
-  if (!raster_source_) {
-    return gfx::ContentColorUsage::kSRGB;
-  }
-  auto display_item_list = raster_source_->GetDisplayItemList();
-  if (!display_item_list)
-    return gfx::ContentColorUsage::kSRGB;
-
-  return display_item_list->content_color_usage();
-}
-
 DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
   DamageReasonSet reasons = GetDamageReasonsFromLayerPropertyChange();
   if (has_animated_image_update_rect_) {

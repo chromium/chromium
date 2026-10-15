@@ -683,6 +683,15 @@ void Surface::RecomputeActiveReferencedSurfaces() {
   UpdateSurfaceReferences();
 }
 
+void Surface::RecomputeActiveFrameContentColorUsage() {
+  gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
+  for (const auto& resource : active_frame_data_->frame.resource_list) {
+    content_color_usage =
+        std::max(content_color_usage, resource.GetContentColorUsage());
+  }
+  active_frame_content_color_usage_ = content_color_usage;
+}
+
 // A frame is activated if all its Surface ID dependencies are active or a
 // deadline has hit and the frame was forcibly activated.
 void Surface::ActivateFrame(FrameData frame_data) {
@@ -714,6 +723,7 @@ void Surface::ActivateFrame(FrameData frame_data) {
   blocking_allocation_groups_.clear();
 
   RecomputeActiveReferencedSurfaces();
+  RecomputeActiveFrameContentColorUsage();
 
   for (auto& copy_request : old_copy_requests)
     RequestCopyOfOutputOnRootRenderPass(std::move(copy_request));
@@ -986,6 +996,7 @@ void Surface::SetActiveFrameForViewTransition(CompositorFrame frame) {
   // We need to recompute these as there can be undrawn surfaces as referenced
   // surfaces for cross-doc view transitions on shared element replacement.
   RecomputeActiveReferencedSurfaces();
+  RecomputeActiveFrameContentColorUsage();
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {

@@ -2093,60 +2093,6 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
-       UpdateContentColorUsage) {
-  constexpr int kLayerId = 2;
-
-  // Initial update: Create TileDisplayLayer with default properties.
-  auto update1 = CreateDefaultUpdate();
-  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTileDisplay,
-                          kLayerId);
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
-
-  cc::LayerImpl* layer_impl_base = GetLayerFromActiveTree(kLayerId);
-  ASSERT_NE(nullptr, layer_impl_base);
-  ASSERT_EQ(layer_impl_base->GetLayerType(),
-            cc::mojom::LayerType::kTileDisplay);
-  auto* tile_display_layer_impl =
-      static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
-
-  EXPECT_EQ(tile_display_layer_impl->GetContentColorUsage(),
-            gfx::ContentColorUsage::kSRGB);
-
-  // Second update: Set content_color_usage to kHDR.
-  auto update2 = CreateDefaultUpdate();
-  auto layer_props2 =
-      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
-  auto tile_extra2 = mojom::TileDisplayLayerExtra::New();
-  tile_extra2->content_color_usage = gfx::ContentColorUsage::kHDR;
-  SetLayerExtra(layer_props2.get(), mojom::LayerExtra::NewTileDisplayLayerExtra(
-                                        std::move(tile_extra2)));
-  update2->layers.push_back(std::move(layer_props2));
-
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
-
-  EXPECT_EQ(tile_display_layer_impl->GetContentColorUsage(),
-            gfx::ContentColorUsage::kHDR);
-
-  // Third update: Set content_color_usage to kWideColorGamut.
-  auto update3 = CreateDefaultUpdate();
-  auto layer_props3 =
-      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
-  auto tile_extra3 = mojom::TileDisplayLayerExtra::New();
-  tile_extra3->content_color_usage = gfx::ContentColorUsage::kWideColorGamut;
-  SetLayerExtra(layer_props3.get(), mojom::LayerExtra::NewTileDisplayLayerExtra(
-                                        std::move(tile_extra3)));
-  update3->layers.push_back(std::move(layer_props3));
-
-  EXPECT_TRUE(
-      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
-
-  EXPECT_EQ(tile_display_layer_impl->GetContentColorUsage(),
-            gfx::ContentColorUsage::kWideColorGamut);
-}
-
-TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
        UpdateRecordedBounds) {
   constexpr int kLayerId = 2;
   const gfx::Rect kBounds1(10, 20, 30, 40);

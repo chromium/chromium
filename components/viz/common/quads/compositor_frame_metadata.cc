@@ -37,8 +37,6 @@ void CompositorFrameMetadata::AsValueInto(
                                  scrollable_viewport_size, value);
   cc::MathUtil::AddToTracedValue("visible_viewport_size", visible_viewport_size,
                                  value);
-  value->SetInteger("content_color_usage",
-                    static_cast<int>(content_color_usage));
   value->SetBoolean("may_contain_video", may_contain_video);
   value->SetBoolean("may_throttle_if_undrawn_frames",
                     may_throttle_if_undrawn_frames);
@@ -146,7 +144,6 @@ CompositorFrameMetadata::CompositorFrameMetadata(
           other.surface_backing_size_scale_factor),
       scrollable_viewport_size(other.scrollable_viewport_size),
       visible_viewport_size(other.visible_viewport_size),
-      content_color_usage(other.content_color_usage),
       may_contain_video(other.may_contain_video),
       is_handling_interaction(other.is_handling_interaction),
       is_handling_animation(other.is_handling_animation),

@@ -19,7 +19,6 @@ import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/latency/mojom/latency_info.mojom";
 
@@ -42,7 +41,6 @@ struct CompositorFrameMetadata {
   float surface_backing_size_scale_factor;
   gfx.mojom.SizeF scrollable_viewport_size;
   gfx.mojom.Size visible_viewport_size;
-  gfx.mojom.ContentColorUsage content_color_usage;
   bool may_contain_video;
   bool may_throttle_if_undrawn_frames;
   bool is_handling_interaction;

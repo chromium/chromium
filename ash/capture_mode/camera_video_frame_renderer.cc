@@ -185,10 +185,6 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata.frame_token = ++compositor_frame_token_generator_;
   compositor_frame.metadata.begin_frame_ack = begin_frame_ack;
-  if (video_frame->ColorSpace().IsValid()) {
-    compositor_frame.metadata.content_color_usage =
-        video_frame->ColorSpace().GetContentColorUsage();
-  }
   compositor_frame.metadata.begin_frame_ack.has_damage = true;
   compositor_frame.metadata.may_contain_video = true;
   const float dsf = host_window_.GetHost()->device_scale_factor();

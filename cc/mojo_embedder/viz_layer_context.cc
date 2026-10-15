@@ -1101,8 +1101,6 @@ void SerializeLayer(LayerImpl& layer,
             picture_layer.has_animated_image_update_rect();
         tile_display_extra->has_non_animated_image_update_rect =
             picture_layer.has_non_animated_image_update_rect();
-        tile_display_extra->content_color_usage =
-            picture_layer.GetContentColorUsage();
         tile_display_extra->recorded_bounds =
             picture_layer.GetRasterSource()->recorded_bounds();
         tile_display_extra->proposed_tiling_scales_for_deletion =

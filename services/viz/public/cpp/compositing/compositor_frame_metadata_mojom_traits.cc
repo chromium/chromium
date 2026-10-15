@@ -15,7 +15,6 @@
 #include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
-#include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
@@ -49,10 +48,6 @@ StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return base::unexpected(DeserializationError());
   }
   out->frame_token = data.frame_token();
-
-  if (!data.ReadContentColorUsage(&out->content_color_usage)) {
-    return base::unexpected(DeserializationError());
-  }
 
   if (!data.ReadRootBackgroundColor(&out->root_background_color)) {
     return base::unexpected(DeserializationError());

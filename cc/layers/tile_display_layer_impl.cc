@@ -199,10 +199,6 @@ gfx::Rect TileDisplayLayerImpl::RecordedBounds() const {
   return recorded_bounds_;
 }
 
-gfx::ContentColorUsage TileDisplayLayerImpl::GetContentColorUsage() const {
-  return content_color_usage_;
-}
-
 DamageReasonSet TileDisplayLayerImpl::GetDamageReasons() const {
   DamageReasonSet reasons =
       LayerImpl::GetDamageReasonsFromLayerPropertyChange();

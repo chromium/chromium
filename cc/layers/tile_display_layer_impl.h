@@ -204,12 +204,7 @@ class CC_EXPORT TileDisplayLayerImpl
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void CopyPropertiesTo(LayerImpl* layer) const override;
-  gfx::ContentColorUsage GetContentColorUsage() const override;
   DamageReasonSet GetDamageReasons() const override;
-
-  void SetContentColorUsage(gfx::ContentColorUsage content_color_usage) {
-    content_color_usage_ = content_color_usage;
-  }
 
   void set_has_animated_image_update_rect() {
     has_animated_image_update_rect_ = true;
@@ -256,7 +251,6 @@ class CC_EXPORT TileDisplayLayerImpl
   bool is_directly_composited_image_ = false;
   bool has_animated_image_update_rect_ = false;
   bool has_non_animated_image_update_rect_ = false;
-  gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
   gfx::Rect recorded_bounds_;
 
   std::vector<std::unique_ptr<TileDisplayLayerTiling>> tilings_;

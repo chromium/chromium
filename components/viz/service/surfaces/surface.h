@@ -35,6 +35,7 @@
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -220,6 +221,9 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   const CompositorFrame& GetActiveFrame() const;
   const CompositorFrameMetadata& GetActiveFrameMetadata() const;
   const FrameIntervalInputs& GetFrameIntervalInputs() const;
+  gfx::ContentColorUsage GetActiveFrameContentColorUsage() const {
+    return active_frame_content_color_usage_;
+  }
 
   // ViewTransition needs to interpolate a new CompositorFrame from the active
   // one of this Surface. The interpolated new frame replaces the currently
@@ -377,6 +381,7 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   // method will also update the observed sinks based on the referenced ranges
   // in the submitted compositor frame.
   void RecomputeActiveReferencedSurfaces();
+  void RecomputeActiveFrameContentColorUsage();
 
   void ActivatePendingFrame();
 
@@ -433,6 +438,8 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   // A set of all valid SurfaceIds contained |last_surface_id_for_range_| to
   // avoid recompution.
   base::flat_set<SurfaceId> active_referenced_surfaces_;
+  gfx::ContentColorUsage active_frame_content_color_usage_ =
+      gfx::ContentColorUsage::kSRGB;
 
   // Allocation groups that this surface references by its active frame.
   base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>>

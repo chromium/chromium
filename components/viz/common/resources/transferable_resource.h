@@ -20,6 +20,7 @@
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -190,6 +191,8 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     return metadata_override_.color_space.value_or(
         shared_image_ ? shared_image_->color_space() : gfx::ColorSpace());
   }
+
+  gfx::ContentColorUsage GetContentColorUsage() const;
 
   // Origin of the underlying resource.
   GrSurfaceOrigin GetOrigin() const {

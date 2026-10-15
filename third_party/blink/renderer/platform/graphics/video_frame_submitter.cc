@@ -988,8 +988,6 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
                       gfx::Rect(frame_size_), gfx::Transform());
 
   if (video_frame) {
-    compositor_frame.metadata.content_color_usage =
-        video_frame->ColorSpace().GetContentColorUsage();
     const bool is_opaque = media::IsOpaque(video_frame->format());
     resource_provider_->AppendQuads(render_pass.get(), std::move(video_frame),
                                     transform, is_opaque);

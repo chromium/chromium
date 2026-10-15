@@ -23,7 +23,6 @@ import "skia/public/mojom/blend_mode.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "skia/public/mojom/skpath.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/mask_filter_info.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "ui/gfx/mojom/transform.mojom";
@@ -127,9 +126,6 @@ struct TileDisplayLayerExtra {
 
   // Indicates whether the PictureLayer has a non-animated image update rect.
   bool has_non_animated_image_update_rect;
-
-  // The color usage of the layer's content.
-  gfx.mojom.ContentColorUsage content_color_usage;
 
   // Valid rectangle in which anything is recorded and can be rastered from.
   // This is also used during AppendQuads to decide if a quad needs to be

@@ -973,7 +973,6 @@ void UpdateTileDisplayLayerExtra(const mojom::TileDisplayLayerExtraPtr& extra,
   if (extra->has_non_animated_image_update_rect) {
     layer.set_has_non_animated_image_update_rect();
   }
-  layer.SetContentColorUsage(extra->content_color_usage);
   layer.SetRecordedBounds(extra->recorded_bounds);
   layer.SetProposedTilingScalesForDeletion(
       extra->proposed_tiling_scales_for_deletion);

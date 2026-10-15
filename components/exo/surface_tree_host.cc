@@ -387,14 +387,10 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   rii->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
 
   prev_frame_verified_tokens_.clear();
-  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (auto& resource : frame.resource_list) {
     if (resource.sync_token().verified_flush()) {
       prev_frame_verified_tokens_.insert(resource.sync_token());
     }
-    frame.metadata.content_color_usage =
-        std::max(frame.metadata.content_color_usage,
-                 resource.GetColorSpace().GetContentColorUsage());
   }
 
   frame.metadata.may_contain_video = root_surface_->ContainsVideo();

@@ -23,7 +23,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/tone_map_util.h"
 
 namespace cc {
 
@@ -216,14 +215,6 @@ void TextureLayerImpl::ReleaseResources() {
   if (!transferable_resource_.GetIsSoftware()) {
     FreeTransferableResource();
   }
-}
-
-gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
-  if (gfx::ToneMapUtil::IsHDR(transferable_resource_.GetColorSpace(),
-                              transferable_resource_.hdr_metadata)) {
-    return gfx::ContentColorUsage::kHDR;
-  }
-  return transferable_resource_.GetColorSpace().GetContentColorUsage();
 }
 
 void TextureLayerImpl::SetBlendBackgroundColor(bool blend) {

@@ -47,7 +47,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   SimpleEnclosedRegion VisibleOpaqueRegion() const override;
   void ReleaseResources() override;
   void OnPurgeMemory() override;
-  gfx::ContentColorUsage GetContentColorUsage() const override;
 
   // These setter methods don't cause any implicit damage, so the texture client
   // must explicitly invalidate if they intend to cause a visible change in the

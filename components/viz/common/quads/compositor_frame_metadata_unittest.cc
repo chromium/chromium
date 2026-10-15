@@ -59,7 +59,6 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.page_scale_factor = 6.7f;
   metadata.surface_backing_size_scale_factor = 8.9f;
   metadata.scrollable_viewport_size = gfx::SizeF(89.0f, 12.3f);
-  metadata.content_color_usage = gfx::ContentColorUsage::kHDR;
   metadata.may_contain_video = true;
   metadata.is_handling_interaction = true;
   metadata.is_handling_animation = true;
@@ -93,7 +92,6 @@ TEST(CompositorFrameMetadata, Clone) {
   EXPECT_FLOAT_EQ(clone.surface_backing_size_scale_factor,
                   metadata.surface_backing_size_scale_factor);
   EXPECT_EQ(clone.scrollable_viewport_size, metadata.scrollable_viewport_size);
-  EXPECT_EQ(clone.content_color_usage, metadata.content_color_usage);
   EXPECT_EQ(clone.may_contain_video, metadata.may_contain_video);
   EXPECT_EQ(clone.is_handling_interaction, metadata.is_handling_interaction);
   EXPECT_EQ(clone.is_handling_animation, metadata.is_handling_animation);

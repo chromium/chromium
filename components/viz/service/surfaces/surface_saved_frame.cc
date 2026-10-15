@@ -139,14 +139,15 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
 
   const auto& active_frame = surface->GetActiveFrame();
   bool is_software = active_frame.metadata.is_software;
+  gfx::ContentColorUsage content_color_usage =
+      surface->GetActiveFrameContentColorUsage();
   for (const auto& render_pass : active_frame.render_pass_list) {
     if (active_frame.render_pass_list.back() == render_pass) {
       continue;
     }
 
-    if (auto request = CreateCopyRequestIfNeeded(
-            *render_pass, is_software,
-            active_frame.metadata.content_color_usage)) {
+    if (auto request = CreateCopyRequestIfNeeded(*render_pass, is_software,
+                                                 content_color_usage)) {
       surface->RequestCopyOfOutputOnActiveFrameRenderPassId(std::move(request),
                                                             render_pass->id);
       copy_request_count_++;

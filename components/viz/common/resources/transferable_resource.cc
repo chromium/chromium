@@ -11,6 +11,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "ui/gfx/tone_map_util.h"
 
 namespace viz {
 
@@ -76,6 +77,17 @@ std::vector<ReturnedResourceViz> TransferableResource::ReturnResourcesViz(
     out.push_back(r.ToReturnedResourceViz());
   }
   return out;
+}
+
+gfx::ContentColorUsage TransferableResource::GetContentColorUsage() const {
+  if (!shared_image_) {
+    return gfx::ContentColorUsage::kSRGB;
+  }
+  const gfx::ColorSpace& color_space = shared_image_->color_space();
+  if (gfx::ToneMapUtil::IsHDR(color_space, hdr_metadata)) {
+    return gfx::ContentColorUsage::kHDR;
+  }
+  return color_space.GetContentColorUsage();
 }
 
 void TransferableResource::AsValueInto(

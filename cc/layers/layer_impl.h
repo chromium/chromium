@@ -552,8 +552,6 @@ class CC_EXPORT LayerImpl {
 
   std::string DebugName() const;
 
-  virtual gfx::ContentColorUsage GetContentColorUsage() const;
-
   virtual void NotifyKnownResourceIdsBeforeAppendQuads(
       const base::flat_set<viz::ViewTransitionElementResourceId>&
           known_resource_ids) {}
