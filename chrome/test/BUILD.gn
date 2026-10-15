@@ -151,7 +151,6 @@ if (is_android) {
 static_library("test_support") {
   testonly = true
   defines = []
-  allow_circular_includes_from = []
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process_impl",
@@ -209,11 +208,6 @@ static_library("test_support") {
       "//components/custom_handlers:test_support",
       "//extensions:test_support",
     ]
-
-    # TODO(crbug.com/521960574): Fix extension_browsertest.cc and eliminate this
-    # circular dependency.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/extensions:test_support" ]
   }
 
   if (enable_extensions) {
@@ -401,8 +395,6 @@ static_library("test_support") {
       "//components/feed/core/v2:feed_core_stubs",
       "//components/supervised_user/core/browser/android",
     ]
-
-    allow_circular_includes_from += [ ":test_support_ui_android" ]
   } else {
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
@@ -471,11 +463,6 @@ static_library("test_support") {
     if (enable_compose) {
       deps += [ "//chrome/browser/compose" ]
     }
-
-    allow_circular_includes_from += [
-      ":test_support_ui",
-      "//chrome/browser/ui/views/tabs/common:impl",
-    ]
   }
 
   if (use_nss_certs) {
@@ -603,12 +590,6 @@ static_library("test_support") {
       "//ui/aura:test_support",
       "//ui/base/ime/init",
       "//ui/chromeos/resources:resources_grit",
-    ]
-
-    allow_circular_includes_from += [
-      "//chrome/browser/ash/login/users:test_support",
-      "//chrome/browser/ash/settings:test_support",
-      "//chrome/browser/ash/system_web_apps/test_support",
     ]
   }
 
