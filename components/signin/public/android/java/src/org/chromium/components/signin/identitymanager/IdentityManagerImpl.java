@@ -13,8 +13,11 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -29,6 +32,9 @@ import java.util.List;
 public class IdentityManagerImpl implements IdentityManager {
     private long mNativeIdentityManager;
     private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
+    // TODO(crbug.com/572579970): Move refresh tokens loading state to native IdentityManager.
+    private @RefreshTokensLoadingState int mRefreshTokensLoadingState =
+            RefreshTokensLoadingState.IN_PROGRESS;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
@@ -37,16 +43,20 @@ public class IdentityManagerImpl implements IdentityManager {
     @VisibleForTesting
     public static IdentityManagerImpl create(
             long nativeIdentityManager,
-            ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
-        return new IdentityManagerImpl(nativeIdentityManager, profileOAuth2TokenServiceDelegate);
+            ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate,
+            IdentityMutator identityMutator) {
+        return new IdentityManagerImpl(
+                nativeIdentityManager, profileOAuth2TokenServiceDelegate, identityMutator);
     }
 
     private IdentityManagerImpl(
             long nativeIdentityManager,
-            ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
+            ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate,
+            IdentityMutator identityMutator) {
         assert nativeIdentityManager != 0;
         mNativeIdentityManager = nativeIdentityManager;
         mProfileOAuth2TokenServiceDelegate = profileOAuth2TokenServiceDelegate;
+        identityMutator.setIdentityManager(this);
     }
 
     /** Called by native upon KeyedService's shutdown */
@@ -132,9 +142,32 @@ public class IdentityManagerImpl implements IdentityManager {
      */
     @Override
     public @RefreshTokensLoadingState int getRefreshTokensLoadingState() {
-        return IdentityManagerImplJni.get().areRefreshTokensLoaded(mNativeIdentityManager)
-                ? RefreshTokensLoadingState.SUCCEEDED
-                : RefreshTokensLoadingState.IN_PROGRESS;
+        ThreadUtils.assertOnUiThread();
+        if (IdentityManagerImplJni.get().areRefreshTokensLoaded(mNativeIdentityManager)) {
+            mRefreshTokensLoadingState = RefreshTokensLoadingState.SUCCEEDED;
+        }
+        return mRefreshTokensLoadingState;
+    }
+
+    /**
+     * Sets the refresh tokens loading state to failed and notifies observers. This method must only
+     * be called when the refresh tokens loading state is IN_PROGRESS.
+     *
+     * <p>TODO(crbug.com/572579970): Move refresh tokens loading state to native IdentityManager.
+     */
+    void setRefreshTokensLoadingFailed() {
+        ThreadUtils.assertOnUiThread();
+        assert SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
+        if (getRefreshTokensLoadingState() != RefreshTokensLoadingState.IN_PROGRESS) {
+            throw new IllegalStateException(
+                    "Setting refresh tokens loading state to FAILED is only allowed when the"
+                            + " current state is IN_PROGRESS, while the current state is "
+                            + mRefreshTokensLoadingState);
+        }
+        mRefreshTokensLoadingState = RefreshTokensLoadingState.FAILED;
+        for (Observer observer : mObservers) {
+            observer.onRefreshTokensLoaded(mRefreshTokensLoadingState);
+        }
     }
 
     /**
@@ -151,8 +184,9 @@ public class IdentityManagerImpl implements IdentityManager {
     /** Called when all refresh tokens are loaded. */
     @CalledByNative
     private void onRefreshTokensLoaded() {
+        mRefreshTokensLoadingState = RefreshTokensLoadingState.SUCCEEDED;
         for (Observer observer : mObservers) {
-            observer.onRefreshTokensLoaded(RefreshTokensLoadingState.SUCCEEDED);
+            observer.onRefreshTokensLoaded(mRefreshTokensLoadingState);
         }
     }
 

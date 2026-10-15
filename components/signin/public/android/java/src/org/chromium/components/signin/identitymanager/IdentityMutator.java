@@ -27,6 +27,9 @@ import java.util.List;
 public class IdentityMutator {
     // Pointer to native IdentityMutator, not final because of destroy().
     private long mNativeIdentityMutator;
+    // TODO(crbug.com/572579970): Remove once refresh tokens loading state is moved to native
+    // IdentityManager.
+    private @Nullable IdentityManagerImpl mIdentityManager;
 
     @CalledByNative
     private IdentityMutator(long nativeIdentityMutator) {
@@ -34,10 +37,21 @@ public class IdentityMutator {
         mNativeIdentityMutator = nativeIdentityMutator;
     }
 
+    /**
+     * Sets the IdentityManagerImpl instance.
+     *
+     * <p>TODO(crbug.com/572579970): Remove once refresh tokens loading state is moved to native
+     * IdentityManager.
+     */
+    void setIdentityManager(IdentityManagerImpl identityManager) {
+        mIdentityManager = identityManager;
+    }
+
     /** Called by native IdentityManager upon KeyedService's shutdown */
     @CalledByNative
     private void destroy() {
         mNativeIdentityMutator = 0;
+        mIdentityManager = null;
     }
 
     /**
@@ -99,6 +113,18 @@ public class IdentityMutator {
                         mNativeIdentityMutator,
                         accounts.toArray(new AccountInfo[0]),
                         primaryAccountId);
+    }
+
+    /**
+     * Marks refresh tokens loading as failed and notifies observers. Must only be called when
+     * refresh tokens have not been loaded yet.
+     *
+     * <p>TODO(crbug.com/572579970): Remove once refresh tokens loading state is moved to native
+     * IdentityManager.
+     */
+    public void setRefreshTokensLoadingFailed() {
+        assert mIdentityManager != null;
+        mIdentityManager.setRefreshTokensLoadingFailed();
     }
 
     @NativeMethods

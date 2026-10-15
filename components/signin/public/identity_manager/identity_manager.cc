@@ -95,9 +95,12 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
                           base::Unretained(this)));
 
 #if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/572579970): Remove passing IdentityMutator Java object once
+  // refresh tokens loading state is moved to native IdentityManager.
   java_identity_manager_ = Java_IdentityManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      token_service_->GetDelegate()->GetJavaObject());
+      token_service_->GetDelegate()->GetJavaObject(),
+      identity_mutator_->GetJavaObject());
 #endif
 }
 
