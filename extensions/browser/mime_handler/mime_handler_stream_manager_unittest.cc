@@ -880,6 +880,7 @@ TEST_P(MimeHandlerStreamManagerPostMessageTest,
   NiceMock<content::MockNavigationHandle> navigation_handle(
       stream_info->stream()->original_url(), content_host);
 
+  navigation_handle.set_has_committed(true);
   ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
   ON_CALL(*delegate_ptr, ShouldSetUpPostMessage())
       .WillByDefault(Return(should_set_up_post_message));
