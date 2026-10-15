@@ -550,6 +550,9 @@ BASE_FEATURE(kIPHFeedCardMenuFeature,
 BASE_FEATURE(kIPHFuseboxAttachmentFeature,
              "IPH_FuseboxAttachment",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHFuseboxPlusButtonHintFeature,
+             "IPH_FuseboxPlusButtonHint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGenericAlwaysTriggerHelpUiFeature,
              "IPH_GenericAlwaysTriggerHelpUiFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

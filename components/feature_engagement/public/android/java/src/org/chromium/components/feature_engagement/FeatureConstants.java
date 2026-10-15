@@ -72,6 +72,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
     FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE,
     FeatureConstants.FUSEBOX_ATTACHMENT_FEATURE,
+    FeatureConstants.FUSEBOX_PLUS_BUTTON_HINT_FEATURE,
     FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
     FeatureConstants.GESTURE_USER_EDUCATION,
     FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
@@ -283,6 +284,9 @@ public @interface FeatureConstants {
 
     /** Used to track user engagement with the fusebox attachment button. */
     String FUSEBOX_ATTACHMENT_FEATURE = "IPH_FuseboxAttachment";
+
+    /** An IPH feature to prompt users to discover the fusebox (+) button. */
+    String FUSEBOX_PLUS_BUTTON_HINT_FEATURE = "IPH_FuseboxPlusButtonHint";
 
     /** A generic IPH feature to always trigger help UI when asked. */
     String GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE = "IPH_GenericAlwaysTriggerHelpUiFeature";

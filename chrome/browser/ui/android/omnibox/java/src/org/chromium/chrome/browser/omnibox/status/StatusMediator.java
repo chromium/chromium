@@ -77,8 +77,10 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Objects;
 
 /** Contains the controller logic of the Status component. */
@@ -102,7 +104,8 @@ public class StatusMediator
         StatusIconType.SECURITY,
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface StatusIconType {
+    @Target(ElementType.TYPE_USE)
+    @interface StatusIconType {
         int NONE = 0;
         int HUB_OR_TAB_SEARCH = 1;
         int PREVIEW_GLOBE = 2;

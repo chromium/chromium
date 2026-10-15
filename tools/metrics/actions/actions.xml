@@ -506,6 +506,8 @@ should be able to be added at any place in this file.
       summary="For the fullscreen sign-in (re-FRE) promo on Android."/>
   <variant name="_FuseboxAttachment"
       summary="For engagement with Fusebox attachments."/>
+  <variant name="_FuseboxPlusButtonHint"
+      summary="For the Omnibox Fusebox (+) attachment button IPH."/>
   <variant name="_GenericAlwaysTriggerHelpUiFeature"
       summary="For generic always show help UI feature."/>
   <variant name="_GestureUserEducation"

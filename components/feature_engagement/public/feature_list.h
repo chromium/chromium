@@ -150,6 +150,8 @@ DEFINE_VARIATION_PARAM(kIPHExtensionsManageToolbarFeature,
                        "IPH_ExtensionsManageToolbar");
 DEFINE_VARIATION_PARAM(kIPHFeedCardMenuFeature, "IPH_FeedCardMenu");
 DEFINE_VARIATION_PARAM(kIPHFuseboxAttachmentFeature, "IPH_FuseboxAttachment");
+DEFINE_VARIATION_PARAM(kIPHFuseboxPlusButtonHintFeature,
+                       "IPH_FuseboxPlusButtonHint");
 DEFINE_VARIATION_PARAM(kIPHGenericAlwaysTriggerHelpUiFeature,
                        "IPH_GenericAlwaysTriggerHelpUiFeature");
 DEFINE_VARIATION_PARAM(kIPHGestureUserEducation, "IPH_GestureUserEducation");
@@ -725,6 +727,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHFeedCardMenuFeature),
         VARIATION_ENTRY(kIPHFeedHeaderMenuFeature),
         VARIATION_ENTRY(kIPHFeedSwipeRefresh),
+        VARIATION_ENTRY(kIPHFuseboxPlusButtonHintFeature),
         VARIATION_ENTRY(kIPHGestureUserEducation),
         VARIATION_ENTRY(kIPHGlicPromoAndroidFeature),
         VARIATION_ENTRY(kIPHIdentityDiscFeature),

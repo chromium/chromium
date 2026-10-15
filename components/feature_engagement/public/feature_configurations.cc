@@ -867,6 +867,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHFuseboxPlusButtonHintFeature.name == feature->name) {
+    // Shows the IPH callout on the fusebox (+) button for users who have
+    // not yet engaged with the fusebox attachment menu.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("fusebox_plus_button_hint_trigger",
+                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("fusebox_attachment_popup_used", Comparator(EQUAL, 0),
+                    k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHAccountSettingsHistorySync.name == feature->name) {
     // A config that allows the history sync opt-in toggle IPH to be shown
     // only once when a user who is signed-in but not syncing history and tabs

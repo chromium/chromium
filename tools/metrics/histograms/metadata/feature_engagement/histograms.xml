@@ -320,6 +320,8 @@ chromium-metrics-reviews@google.com.
       summary="fullscreen sign-in (re-FRE) promo on Android"/>
   <variant name="IPH_FuseboxAttachment"
       summary="engagement with Fusebox attachments"/>
+  <variant name="IPH_FuseboxPlusButtonHint"
+      summary="IPH pointing at the Omnibox Fusebox (+) attachment button"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
   <variant name="IPH_GestureUserEducation"

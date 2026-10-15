@@ -454,6 +454,9 @@
   <message name="IDS_NTP_SEARCH_BOX_HINT_ASK_ABOUT_TAB" desc="Cycling hint text displayed inside the New Tab Page search box to suggest asking about a browser tab." formatter_data="android_java">
     Ask about a tab
   </message>
+  <message name="IDS_FUSEBOX_ATTACHMENT_BUTTON_IPH" desc="Text displayed in the in-product help bubble pointing to the (+) button in the Omnibox." formatter_data="android_java">
+    Add a tab or image to enhance your search
+  </message>
 
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.

@@ -81,6 +81,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHFeedHeaderMenuFeature,
     &kIPHFeedSwipeRefresh,
     &kIPHFuseboxAttachmentFeature,
+    &kIPHFuseboxPlusButtonHintFeature,
     &kIPHGenericAlwaysTriggerHelpUiFeature,
     &kIPHGestureUserEducation,
     &kIPHGlicPromoAndroidFeature,
