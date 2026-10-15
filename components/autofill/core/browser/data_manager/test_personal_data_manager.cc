@@ -18,7 +18,6 @@ TestPersonalDataManager::TestPersonalDataManager()
           /*profile_database=*/nullptr,
           /*account_database=*/nullptr,
           /*pref_service=*/nullptr,
-          /*local_state=*/nullptr,
           /*identity_manager=*/nullptr,
           /*history_service=*/nullptr,
           /*sync_service=*/nullptr,

@@ -14,7 +14,6 @@ namespace autofill {
 TestAddressDataManager::TestAddressDataManager(const std::string& app_locale)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
-                         /*local_state=*/nullptr,
                          /*sync_service=*/nullptr,
                          /*identity_manager=*/nullptr,
                          /*strike_database=*/nullptr,

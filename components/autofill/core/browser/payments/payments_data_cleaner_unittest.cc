@@ -39,7 +39,7 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
                                 sync_service_);
     personal_data_ = std::make_unique<PersonalDataManager>(
         profile_database_service_, account_database_service_, prefs_.get(),
-        prefs_.get(), identity_test_env_.identity_manager(),
+        identity_test_env_.identity_manager(),
         /*history_service=*/nullptr, &sync_service_,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr, "en-US", "US",

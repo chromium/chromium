@@ -30,7 +30,6 @@ PersonalDataManager::PersonalDataManager(
     scoped_refptr<AutofillWebDataService> profile_database,
     scoped_refptr<AutofillWebDataService> account_database,
     PrefService* pref_service,
-    PrefService* local_state,
     signin::IdentityManager* identity_manager,
     history::HistoryService* history_service,
     syncer::SyncService* sync_service,
@@ -41,7 +40,7 @@ PersonalDataManager::PersonalDataManager(
     AutofillOptimizationGuideDecider* autofill_optimization_guide_decider)
     : pref_service_(pref_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database, pref_service, local_state, sync_service,
+      profile_database, pref_service, sync_service,
       identity_manager, strike_database,
       GeoIpCountryCode(variations_country_code), app_locale);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(

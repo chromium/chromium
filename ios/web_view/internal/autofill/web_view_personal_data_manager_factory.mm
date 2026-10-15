@@ -65,7 +65,6 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
 
   return std::make_unique<autofill::PersonalDataManager>(
       profile_db, account_db, browser_state->GetPrefs(),
-      ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
       WebViewAutofillImageFetcherFactory::GetForBrowserState(browser_state),

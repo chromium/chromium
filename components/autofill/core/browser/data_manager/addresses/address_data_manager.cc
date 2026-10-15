@@ -100,7 +100,6 @@ void OrderProfiles(std::vector<const AutofillProfile*>& profiles,
 AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     PrefService* pref_service,
-    PrefService* local_state,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     strike_database::StrikeDatabaseBase* strike_database,

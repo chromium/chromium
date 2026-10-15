@@ -99,7 +99,7 @@ PersonalDataManagerFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, profile->GetPrefs(),
-      g_browser_process->local_state(), identity_manager, history_service,
+      identity_manager, history_service,
       sync_service, strike_database, image_fetcher,
       g_browser_process->GetApplicationLocale(), GetCountryCodeFromVariations(),
       autofill_optimization_guide_decider);

@@ -46,7 +46,6 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
   void CreateAddressDataManager() {
     AddressDataManager(/*webdata_service=*/nullptr,
                        /*pref_service=*/autofill_client().GetPrefs(),
-                       /*local_state=*/nullptr,
                        /*sync_service=*/nullptr,
                        /*identity_manager=*/nullptr,
                        /*strike_database=*/nullptr,
