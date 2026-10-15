@@ -99,12 +99,17 @@ chromium-metrics-reviews@google.com.
   <variant name="ZeroStateSuggestions" summary="GLIC Zero State Suggestions"/>
 </variants>
 
+<!-- LINT.IfChange(ModelExecutionFeature) -->
+
 <variants name="ModelExecutionFeature">
   <variant name="AmountExtraction" summary="Amount Extraction"/>
+  <variant name="AnnotationReducerOnePResolver"
+      summary="Annotation Reducer OneP Resolver"/>
   <variant name="AnnotationReducerQueryClassifier"
       summary="User Query Classification"/>
   <variant name="BlingPrototyping" summary="Bling Prototyping"/>
   <variant name="CardRecommendations" summary="Card Recommendations"/>
+  <variant name="Classifier" summary="Classifier"/>
   <variant name="Compose" summary="Compose"/>
   <variant name="ContentAnnotation" summary="Content Annotation"/>
   <variant name="ContextHub" summary="Context Hub"/>
@@ -114,6 +119,9 @@ chromium-metrics-reviews@google.com.
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsClassifications" summary="Forms Classifications"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
+  <variant name="GeminiAntiscamProtection"
+      summary="Gemini Antiscam Protection"/>
+  <variant name="HistoryQueryIntent" summary="History Query Intent"/>
   <variant name="HistorySearch" summary="History Search"/>
   <variant name="IosSmartTabGrouping" summary="iOS Smart Tab Grouping"/>
   <variant name="OnDeviceSpeechRecognition"
@@ -136,14 +144,19 @@ chromium-metrics-reviews@google.com.
   <variant name="TabOrganization" summary="Tab Organization"/>
   <variant name="Test" summary="Test"/>
   <variant name="TextSafety" summary="Text Safety"/>
+  <variant name="Ttc" summary="TTC"/>
   <variant name="Unknown" summary="Unknown"/>
   <variant name="UpdaterChat" summary="Updater Chat"/>
+  <variant name="WalletablePassExtraction" summary="Extract walletable pass"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
   <variant name="WebRTCNeuralResidualEchoEstimator"
       summary="WebRTC Neural Residual Echo Estimator"/>
   <variant name="WritingAssistance" summary="Writing Assistance APIs"/>
+  <variant name="WritingAssistanceApi" summary="Writing Assistance APIs"/>
   <variant name="ZeroStateSuggestions" summary="GLIC Zero State Suggestions"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/optimization_guide_util.cc:ModelExecutionFeature) -->
 
 <variants name="OptimizationTarget">
   <variant name="AutofillFieldTypeClassification"

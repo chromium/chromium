@@ -67,6 +67,7 @@ std::string_view GetStringNameForModelExecutionFeature(
 
 std::string_view GetStringNameForModelExecutionFeature(
     proto::ModelExecutionFeature feature) {
+  // LINT.IfChange(ModelExecutionFeature)
   switch (feature) {
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
       return "WallpaperSearch";
@@ -165,10 +166,8 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "QuickAnswers";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
-      // Must be in sync with the ModelExecutionFeature variant in
-      // optimization/histograms.xml for metric recording. The output may also
-      // be used for storing other persistent data (e.g., prefs).
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:ModelExecutionFeature)
 }
 
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host) {
