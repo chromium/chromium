@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -354,15 +353,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mHeaderDecoration.setHeaderStartPadding(mResourceProvider.getHeaderStartPadding());
     }
 
-    /**
-     * Sets the branded color scheme for the dropdown.
-     *
-     * @param scheme The {@link BrandedColorScheme} to use.
-     */
-    public void setBrandedColorScheme(@BrandedColorScheme int scheme) {
+    /** Updates the dropdown visuals to reflect the resource provider's color scheme. */
+    public void updateVisualsForState() {
         assert mResourceProvider != null;
-        mResourceProvider.setBrandedColorScheme(scheme);
-        mHeaderDecoration.setIsIncognito(scheme == BrandedColorScheme.INCOGNITO);
+        mHeaderDecoration.setIsIncognito(mResourceProvider.isIncognito());
     }
 
     /**

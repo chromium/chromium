@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -63,8 +62,7 @@ class SuggestionListViewBinder
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
         } else if (propertyKey == SuggestionListProperties.COLOR_SCHEME) {
-            @BrandedColorScheme int scheme = model.get(SuggestionListProperties.COLOR_SCHEME);
-            view.dropdown.setBrandedColorScheme(scheme);
+            view.dropdown.updateVisualsForState();
             updateColorScheme(model, view);
         } else if (propertyKey == SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE) {
             if (model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE)) {
