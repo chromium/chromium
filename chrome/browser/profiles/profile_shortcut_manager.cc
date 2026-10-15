@@ -7,3 +7,8 @@
 ProfileShortcutManager::~ProfileShortcutManager() = default;
 
 ProfileShortcutManager::ProfileShortcutManager() = default;
+
+bool ProfileShortcutManager::CanCreateProfileShortcut(
+    const base::FilePath& profile_path) {
+  return true;
+}

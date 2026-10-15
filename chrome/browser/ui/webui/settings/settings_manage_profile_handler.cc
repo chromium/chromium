@@ -200,6 +200,11 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   ProfileShortcutManager* shortcut_manager =
       g_browser_process->profile_manager()->profile_shortcut_manager();
   DCHECK(shortcut_manager);
+  if (!shortcut_manager->CanCreateProfileShortcut(profile_->GetPath())) {
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(kProfileShortcutSettingHidden));
+    return;
+  }
   shortcut_manager->HasProfileShortcuts(
       profile_->GetPath(),
       base::BindOnce(&ManageProfileHandler::OnHasProfileShortcuts,

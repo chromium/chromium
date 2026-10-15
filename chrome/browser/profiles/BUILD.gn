@@ -217,6 +217,17 @@ source_set("misc") {
       "//chrome/browser/policy:path_parser",
       "//chrome/browser/win",
     ]
+  } else if (is_linux) {
+    sources += [
+      "profile_shortcut_manager_linux.cc",
+      "profile_shortcut_manager_linux.h",
+    ]
+    deps += [
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser:shell_integration_linux",
+      "//skia",
+      "//ui/gfx/codec",
+    ]
   } else {
     sources += [ "profile_shortcut_manager_stub.cc" ]
   }
@@ -1187,6 +1198,11 @@ source_set("unit_tests") {
       "profile_load_tracker_win_unittest.cc",
       "profile_shortcut_manager_unittest_win.cc",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "profile_shortcut_manager_linux_unittest.cc" ]
+    deps += [ "//chrome/browser:shell_integration_linux" ]
   }
 
   if (is_android) {

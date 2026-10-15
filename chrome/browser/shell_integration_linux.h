@@ -96,6 +96,16 @@ std::string GetDesktopFileContentsForCommand(
     std::string_view extra_mime_types,
     std::set<web_app::DesktopActionInfo> action_info);
 
+// Returns contents for the .desktop file that launches the browser with the
+// profile at `profile_path`. `desktop_id` is used as the StartupWMClass, so it
+// must be the profile's per-profile desktop entry ID (see
+// GetPerProfileDesktopId()).
+std::string GetDesktopFileContentsForProfile(const base::FilePath& chrome_exe,
+                                             const base::FilePath& profile_path,
+                                             const std::string& desktop_id,
+                                             const std::u16string& title,
+                                             const base::FilePath& icon_path);
+
 // Returns contents for a .desktop file that launches chrome at the given url
 // using the given profile, referencing the given icon. The file has the given
 // title & icon.

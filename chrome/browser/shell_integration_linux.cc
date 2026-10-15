@@ -669,7 +669,12 @@ std::string GetDesktopFileContents(
       no_display, GetDirectLaunchMimeTypeHandler(), std::move(action_info));
 }
 
-std::string GetDesktopFileContentsForCommand(
+namespace {
+
+// Implements GetDesktopFileContentsForCommand(). If `accepts_uris` is true,
+// the Exec key gets a %U placeholder even if there are no MIME types, so that
+// URLs and files dropped onto the launcher are passed to the browser.
+std::string GetDesktopFileContentsForCommandImpl(
     const base::CommandLine& command_line,
     const std::string& app_name,
     const GURL& url,
@@ -679,7 +684,8 @@ std::string GetDesktopFileContentsForCommand(
     const std::string& mime_type,
     bool no_display,
     std::string_view extra_mime_types,
-    std::set<web_app::DesktopActionInfo> action_info) {
+    std::set<web_app::DesktopActionInfo> action_info,
+    bool accepts_uris) {
 #if defined(USE_GLIB)
   // See http://standards.freedesktop.org/desktop-entry-spec/latest/
   GKeyFile* key_file = g_key_file_new();
@@ -704,7 +710,7 @@ std::string GetDesktopFileContentsForCommand(
   base::CommandLine modified_command_line(command_line);
 
   // Set the "MimeType" key.
-  bool include_U = false;
+  bool include_U = accepts_uris;
   if (!mime_type.empty() && mime_type.find("\n") == std::string::npos &&
       mime_type.find("\r") == std::string::npos) {
     std::string full_mime_type = mime_type;
@@ -769,6 +775,44 @@ std::string GetDesktopFileContentsForCommand(
   NOTIMPLEMENTED();
   return std::string();
 #endif
+}
+
+}  // namespace
+
+std::string GetDesktopFileContentsForCommand(
+    const base::CommandLine& command_line,
+    const std::string& app_name,
+    const GURL& url,
+    const std::u16string& title,
+    const std::string& icon_name,
+    const std::string& categories,
+    const std::string& mime_type,
+    bool no_display,
+    std::string_view extra_mime_types,
+    std::set<web_app::DesktopActionInfo> action_info) {
+  return GetDesktopFileContentsForCommandImpl(
+      command_line, app_name, url, title, icon_name, categories, mime_type,
+      no_display, extra_mime_types, std::move(action_info),
+      /*accepts_uris=*/false);
+}
+
+std::string GetDesktopFileContentsForProfile(const base::FilePath& chrome_exe,
+                                             const base::FilePath& profile_path,
+                                             const std::string& desktop_id,
+                                             const std::u16string& title,
+                                             const base::FilePath& icon_path) {
+  base::CommandLine command_line(chrome_exe);
+  command_line.AppendSwitchPath(switches::kProfileDirectory,
+                                profile_path.BaseName());
+  // StartupWMClass is derived from the app name, which matches the X11
+  // res_name and Wayland app_id of the profile's browser windows. No MIME types
+  // are registered, so the entry doesn't compete with the main browser entry as
+  // a handler, but URLs dropped onto the launcher still open in the profile.
+  return GetDesktopFileContentsForCommandImpl(
+      command_line, /*app_name=*/desktop_id, /*url=*/GURL(), title,
+      icon_path.value(), /*categories=*/"Network;WebBrowser;",
+      /*mime_type=*/"", /*no_display=*/false, /*extra_mime_types=*/"",
+      /*action_info=*/{}, /*accepts_uris=*/true);
 }
 
 std::string GetDesktopFileContentsForUrlShortcut(

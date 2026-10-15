@@ -49,6 +49,10 @@ class ProfileShortcutManager {
                                      std::wstring* name,
                                      base::FilePath* icon_path) = 0;
 
+  // Returns whether a profile shortcut can be created for the profile at
+  // |profile_path|. If false, the shortcut setting isn't shown for the profile.
+  virtual bool CanCreateProfileShortcut(const base::FilePath& profile_path);
+
   // Any time a profile is created this class might do a lot of work in the
   // background that's rarely important to unit tests.
   static void DisableForUnitTests();
