@@ -157,18 +157,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       base::OnceClosure context_lost_callback = {});
-  static std::unique_ptr<Canvas2DResourceProvider>
-  CreateWithClearForSoftwareCompositor(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      base::OnceClosure context_lost_callback = {}) {
-    return CreateWithClearForSoftwareCompositor(
-        size, format, alpha_type, color_space, gfx::HDRMetadata(),
-        shared_image_interface_provider, std::move(context_lost_callback));
-  }
 
   ~Canvas2DResourceProvider() override;
 

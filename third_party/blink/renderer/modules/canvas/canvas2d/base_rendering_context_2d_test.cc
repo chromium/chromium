@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -173,10 +174,6 @@ class TestRenderingContext2D final
     }
     GetState().SetFont(maybe_desc.value(), selector);
     return true;
-  }
-
-  base::ByteSize AllocatedBufferSize() const override {
-    return base::ByteSize();
   }
 
   bool InitializeBacking() override { return false; }
@@ -360,6 +357,20 @@ TEST(BaseRenderingContext2DTest, HdrMetadata) {
   scoped_refptr<StaticBitmapImage> snapshot = context->Snapshot();
   ASSERT_TRUE(snapshot);
   EXPECT_EQ(snapshot->GetHdrMetadata(), hdr_metadata);
+}
+
+TEST(BaseRenderingContext2DTest, AllocatedBufferSizeSoftware) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr gfx::Size kSize(10, 10);
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  context->HostAsHTMLCanvasElement()->SetSize(kSize);
+  context->CreateSoftwareSurface();
+
+  ASSERT_TRUE(context->HasBacking());
+  EXPECT_EQ(context->AllocatedBufferSize(),
+            base::ByteSize(kSize.width() * kSize.height() * 4));
 }
 
 }  // namespace

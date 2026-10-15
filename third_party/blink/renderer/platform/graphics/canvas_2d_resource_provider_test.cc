@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
-#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -444,27 +443,6 @@ TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
   recorder.getRecordingCanvas().clear(SkColors::kBlack);
   provider->RasterRecord(recorder.ReleaseMainRecording(), {});
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
-}
-
-TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesSoftware) {
-  constexpr gfx::Size kSize(20, 20);
-  viz::SharedImageFormat format = viz::SharedImageFormat::N32Format();
-  auto sii_provider =
-      std::make_unique<TestWebGraphicsSharedImageInterfaceProvider>(
-          test_context_provider_->SharedImageInterface());
-
-  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  platform->SetGpuCompositingDisabled(true);
-
-  auto provider =
-      Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
-          kSize, format, kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          gfx::HDRMetadata(), sii_provider.get());
-
-  ASSERT_TRUE(provider && provider->IsValid());
-  EXPECT_TRUE(provider->IsSoftware());
-  EXPECT_EQ(provider->EstimatedSizeInBytes(),
-            base::ByteSize(kSize.width() * kSize.height() * 4));
 }
 
 TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesAccelerated) {
