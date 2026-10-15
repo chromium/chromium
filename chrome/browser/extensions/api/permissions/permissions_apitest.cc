@@ -18,9 +18,12 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/permissions/permissions_api.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/switches.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -244,11 +247,26 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, FileLoad) {
     EXPECT_TRUE(base::PathExists(original_empty_file));
     EXPECT_TRUE(base::CopyFile(original_empty_file, empty_file));
   }
-  EXPECT_TRUE(RunExtensionTest(
-      "permissions/file_load",
-      {.custom_arg = temp_dir.GetPath().MaybeAsASCII().c_str()},
-      {.allow_file_access = true}))
-      << message_;
+  SetCustomArg(temp_dir.GetPath().MaybeAsASCII());
+  ResultCatcher catcher;
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("permissions/file_load"),
+                    {.allow_file_access = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  // The browser activates the extension in the service worker's renderer
+  // process when the worker context is initialized. The renderer applies the
+  // extension's origin access permissions (which allow file: URL fetches) when
+  // it handles that activation on its main thread, which races with the
+  // service worker script running on its worker thread. Flush the pending
+  // renderer messages so the permissions are in place before the extension
+  // tries to fetch file: URLs.
+  RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->FlushAllForTesting();
+  ready_listener.Reply("");
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(temp_dir.Delete());

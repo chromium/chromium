@@ -26,5 +26,12 @@ const tests = [
 
 chrome.test.getConfig(function(config) {
   testDir = `file://${config.customArg}`;
-  chrome.test.runTests(tests);
+  // The renderer only allows this extension to load file: URLs after the
+  // extension has been activated in the renderer process. Activation happens
+  // asynchronously on the renderer main thread while this service worker
+  // script runs on a worker thread, so wait for the C++ side of the test to
+  // signal that activation is complete.
+  chrome.test.sendMessage('ready', function() {
+    chrome.test.runTests(tests);
+  });
 });
