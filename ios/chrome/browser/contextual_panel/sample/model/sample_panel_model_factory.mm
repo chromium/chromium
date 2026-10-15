@@ -4,26 +4,11 @@
 
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model_factory.h"
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-SamplePanelModel* SamplePanelModelFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<SamplePanelModel>(
-      profile, /*create=*/true);
-}
-
-// static
-SamplePanelModelFactory* SamplePanelModelFactory::GetInstance() {
-  static base::NoDestructor<SamplePanelModelFactory> instance;
-  return instance.get();
-}
-
-SamplePanelModelFactory::SamplePanelModelFactory()
-    : ProfileKeyedServiceFactoryIOS("SamplePanelModel") {}
-
-SamplePanelModelFactory::~SamplePanelModelFactory() {}
+SamplePanelModelFactory::SamplePanelModelFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "SamplePanelModel") {}
 
 std::unique_ptr<KeyedService> SamplePanelModelFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

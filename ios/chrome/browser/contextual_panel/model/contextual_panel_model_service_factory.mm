@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"
@@ -15,28 +14,15 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-// static
-ContextualPanelModelService* ContextualPanelModelServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ContextualPanelModelService>(
-      profile, /*create=*/true);
-}
-
-// static
-ContextualPanelModelServiceFactory*
-ContextualPanelModelServiceFactory::GetInstance() {
-  static base::NoDestructor<ContextualPanelModelServiceFactory> instance;
-  return instance.get();
-}
-
-ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ContextualPanelModelService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ContextualPanelModelService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(SamplePanelModelFactory::GetInstance());
   DependsOn(PriceInsightsModelFactory::GetInstance());
 }
-
-ContextualPanelModelServiceFactory::~ContextualPanelModelServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
