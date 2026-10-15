@@ -1630,6 +1630,13 @@ BASE_FEATURE(kMediaFoundationBatchRead, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kBatchReadCount{&kMediaFoundationBatchRead,
                                               "batch_read_count", 1};
 
+// Enables setting MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM to the Chromium
+// compatibility mode attribute on the Media Engine, and the associated
+// OnMFSeekRequested handling. TODO(crbug.com/573570907): Remove when the
+// Chromium compatibility mode rollout is complete.
+BASE_FEATURE(kMediaFoundationChromiumCompatibilityMode,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the use of MediaFoundationRenderer for clear content on supported
 // systems. This is for testing purposes, and is not intended to be enabled
 // more broadly.

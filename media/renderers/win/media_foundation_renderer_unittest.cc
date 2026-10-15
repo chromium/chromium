@@ -564,6 +564,9 @@ TEST_F(MediaFoundationRendererTest,
 // each request should be forwarded to the pipeline as a lost decoder state.
 TEST_F(MediaFoundationRendererTest,
        EngineSeekRequestedReportsDecoderStateLost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kMediaFoundationChromiumCompatibilityMode);
   base::HistogramTester histogram_tester;
   // Use encrypted streams to avoid SetSourceOnMediaEngine() being called
   // automatically during Initialize(). This prevents the MediaEngine from

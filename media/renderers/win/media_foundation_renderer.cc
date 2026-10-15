@@ -751,9 +751,14 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
                                      MF_MEDIA_ENGINE_ENABLE_PROTECTED_CONTENT));
   RETURN_IF_FAILED(creation_attributes->SetUINT32(
       MF_MEDIA_ENGINE_AUDIO_CATEGORY, AudioCategory_Media));
-  RETURN_IF_FAILED(creation_attributes->SetGUID(
-      MF_MEDIA_ENGINE_COMPATIBILITY_MODE,
-      MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM));
+  if (base::FeatureList::IsEnabled(kMediaFoundationChromiumCompatibilityMode)) {
+    // MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM will allow the Media Engine
+    // to raise the new MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED event to
+    // allow Chromium drive seeks generated from Media Engine.
+    RETURN_IF_FAILED(creation_attributes->SetGUID(
+        MF_MEDIA_ENGINE_COMPATIBILITY_MODE,
+        MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM));
+  }
   if (virtual_video_window_) {
     RETURN_IF_FAILED(creation_attributes->SetUINT64(
         MF_MEDIA_ENGINE_OPM_HWND,
@@ -1669,6 +1674,13 @@ void MediaFoundationRenderer::OnMFSeekRequested() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   TRACE_EVENT0("media", "MediaFoundationRenderer::OnMFSeekRequested");
+  if (!base::FeatureList::IsEnabled(
+          kMediaFoundationChromiumCompatibilityMode)) {
+    // If kMediaFoundationChromiumCompatibilityMode is not enabled, the
+    // MF_MEDIA_ENGINE_COMPATIBILITY_MODE_CHROMIUM mode is not set, therefore we
+    // should not handle the MF_MEDIA_ENGINE_EVENT_ENGINE_SEEK_REQUESTED event.
+    return;
+  }
   mf_seek_requested_count_++;
   renderer_client_->OnWaiting(WaitingReason::kDecoderStateLost);
 }
