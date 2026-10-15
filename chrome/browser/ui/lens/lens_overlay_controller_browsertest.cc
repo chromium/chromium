@@ -6489,12 +6489,14 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           GetLensOverlayQueryController());
 
-  // Verify the current number of requests is as expected. Both requests happen
-  // async, so need to wait for both to be sent before continuing to prevent
-  // flakiness.
+  // Verify the current number of requests is as expected. The requests happen
+  // async, so need to wait for all of them to be sent before continuing to
+  // prevent flakiness.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->num_full_image_requests_sent() == 1 &&
-           fake_query_controller->num_page_content_update_requests_sent() == 1;
+           fake_query_controller->num_page_content_update_requests_sent() ==
+               1 &&
+           fake_query_controller->num_partial_page_content_requests_sent() == 1;
   }));
 
   // Cause cluster info to expire.
@@ -6504,17 +6506,30 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // stored page content bytes.
   fake_query_controller->ResetTestingState();
 
-  // Focus the searchbox.
+  // Focus the searchbox. In the overlay state, this should not restart the
+  // query flow.
   controller->OnFocusChangedForTesting(true);
+  EXPECT_EQ(fake_query_controller->num_full_image_requests_sent(), 1);
+  EXPECT_EQ(fake_query_controller->num_page_content_update_requests_sent(), 1);
 
-  // Issue a query.
+  // Issue a query. Because cluster info is expired and the non-blocking privacy
+  // notice is enabled, issuing the contextual query restarts the query flow and
+  // sends the interaction request once page content upload finishes.
   controller->IssueSearchBoxRequestForTesting(
       kTestTime, "red", omnibox::AutocompleteMatchType::kSearchSuggest,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
 
-  // Verify transitions to live page.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kHidden; }));
+  // Verify transitions to live page and wait for the restarted query flow and
+  // pending interaction request to complete before expiring cluster info again.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->state() == State::kHidden &&
+           fake_query_controller->num_full_image_requests_sent() == 2 &&
+           fake_query_controller->num_page_content_update_requests_sent() ==
+               2 &&
+           fake_query_controller->num_partial_page_content_requests_sent() ==
+               2 &&
+           fake_query_controller->num_interaction_requests_sent() == 1;
+  }));
 
   // Cause cluster info to expire again.
   fake_query_controller->ResetRequestClusterInfoStateForTesting();
@@ -6527,11 +6542,13 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   controller->OnFocusChangedForTesting(true);
 
   // Verify a new full image and page content request was sent in the live page
-  // state. Both requests happen async, so need to wait for both to be sent
+  // state. The requests happen async, so need to wait for them to be sent
   // before continuing to prevent flakiness.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_query_controller->num_full_image_requests_sent() == 2 &&
-           fake_query_controller->num_page_content_update_requests_sent() == 2;
+    return fake_query_controller->num_full_image_requests_sent() == 3 &&
+           fake_query_controller->num_page_content_update_requests_sent() ==
+               3 &&
+           fake_query_controller->num_partial_page_content_requests_sent() == 3;
   }));
 }
 
