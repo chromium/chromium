@@ -38,3 +38,15 @@ source_set("color_mixer") {
     "//ui/color",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "eye_dropper_view_unittest.cc" ]
+
+  deps = [
+    ":eye_dropper",
+    "//skia",
+    "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}

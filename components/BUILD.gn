@@ -444,6 +444,10 @@ test("components_unittests") {
     ]
   }
 
+  if (use_aura) {
+    deps += [ "//components/eye_dropper:unit_tests" ]
+  }
+
   if (is_fuchsia) {
     deps += [
       "//components/fuchsia_component_support:unit_tests",

@@ -24,6 +24,8 @@
 #include "ui/aura/window_observer.h"
 #endif
 
+class SkBitmap;
+
 namespace ui {
 class EventHandler;
 }  // namespace ui
@@ -52,6 +54,9 @@ class EyeDropperView : public content::EyeDropper,
   EyeDropperView(const EyeDropperView&) = delete;
   EyeDropperView& operator=(const EyeDropperView&) = delete;
   ~EyeDropperView() override;
+
+  // Copies the captured pixels into an immutable bitmap.
+  static SkBitmap CreateBitmapFromFrame(const webrtc::DesktopFrame& frame);
 
   // Called regularly to notify what the current cursor position is. Cursor
   // position may not have changed between calls.
