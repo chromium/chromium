@@ -69,42 +69,44 @@ static_library("browser") {
   deps = [ "//components/facilitated_payments/core/validation:pix_validator_rs_ffi_glue" ]
 }
 
-# These tests cover Android-only payment flows and prefs, and are only run in
-# the Android `components_unittests`.
-if (is_android) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
+    "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
+    "network_api/facilitated_payments_network_interface_unittest.cc",
+    "network_api/get_details_for_ewallet_account_linking_request_unittest.cc",
+    "network_api/get_details_for_pix_account_linking_request_unittest.cc",
+    "strike_databases/ewallet_account_linking_strike_database_unittest.cc",
+  ]
+
+  # These tests cover the payment flows that are only built on Android.
+  if (is_android) {
+    sources += [
       "ewallet_account_linking_manager_unittest.cc",
       "facilitated_payments_driver_unittest.cc",
       "native_account_linking_handler_unittest.cc",
-      "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
-      "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
-      "network_api/facilitated_payments_network_interface_unittest.cc",
-      "network_api/get_details_for_ewallet_account_linking_request_unittest.cc",
-      "network_api/get_details_for_pix_account_linking_request_unittest.cc",
       "payment_link_manager_unittest.cc",
       "pix_account_linking_manager_unittest.cc",
       "pix_manager_unittest.cc",
-      "strike_databases/ewallet_account_linking_strike_database_unittest.cc",
-    ]
-
-    deps = [
-      ":browser",
-      ":test_support",
-      "//components/autofill/core/browser:test_support",
-      "//components/autofill/core/common",
-      "//components/facilitated_payments/core/utils",
-      "//components/optimization_guide/core",
-      "//components/optimization_guide/core:test_support",
-      "//components/signin/public/identity_manager",
-      "//components/signin/public/identity_manager:test_support",
-      "//components/sync:test_support",
-      "//components/ukm:test_support",
-      "//content/test:test_support",
-      "//testing/gtest",
     ]
   }
+
+  deps = [
+    ":browser",
+    ":test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/facilitated_payments/core/utils",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }
 
 static_library("test_support") {
