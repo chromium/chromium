@@ -5,29 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/personal_context/core/personal_context_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
-
-namespace personal_context {
-class PersonalContextService;
-}
-
-class IOSPersonalContextServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSPersonalContextServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSPersonalContextServiceFactory,
+          personal_context::PersonalContextService> {
  public:
-  static personal_context::PersonalContextService* GetForProfile(
-      ProfileIOS* profile);
-  static IOSPersonalContextServiceFactory* GetInstance();
+  explicit IOSPersonalContextServiceFactory(PassKey key);
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<IOSPersonalContextServiceFactory>;
-
-  IOSPersonalContextServiceFactory();
-  ~IOSPersonalContextServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
