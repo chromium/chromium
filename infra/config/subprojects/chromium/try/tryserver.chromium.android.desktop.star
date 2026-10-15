@@ -199,6 +199,7 @@ try_.builder(
             "ci/android-desktop-arm64-deterministic-rel",
         ],
     ),
+    ssd = True,
     execution_timeout = 6 * time.hour,
 )
 
@@ -224,6 +225,7 @@ try_.builder(
             "ci/android-desktop-x64-deterministic-rel",
         ],
     ),
+    ssd = True,
     execution_timeout = 6 * time.hour,
 )
 
@@ -251,6 +253,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
 )
 
 try_.builder(

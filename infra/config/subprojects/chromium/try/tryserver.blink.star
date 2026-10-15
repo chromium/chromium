@@ -115,6 +115,7 @@ _rebaseline_builder(
         },
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
     main_list_view = "try",
 )
 
@@ -131,6 +132,7 @@ try_.builder(
     ),
     gn_args = "ci/linux-wpt-chromium-rel",
     os = os.LINUX_DEFAULT,
+    ssd = True,
     main_list_view = "try",
 )
 
@@ -139,6 +141,7 @@ try_.builder(
     mirrors = ["ci/linux-blink-tracing-rel"],
     gn_args = "ci/linux-blink-tracing-rel",
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "chrome-product-engprod@google.com",
     main_list_view = "try",
 )
@@ -573,5 +576,6 @@ _rebaseline_builder(
         os_type = targets.os_type.ANDROID,
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
     main_list_view = "try",
 )

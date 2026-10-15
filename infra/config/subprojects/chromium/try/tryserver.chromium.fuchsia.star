@@ -55,6 +55,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -88,6 +89,7 @@ try_.builder(
     ),
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
+    ssd = None if settings.is_main else True,
     cq_settings = try_.cq_settings(
         on_default_cq = True,
     ),
@@ -121,6 +123,7 @@ try_.builder(
             "ci/fuchsia-x64-cast-receiver-dbg",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -154,6 +157,7 @@ try_.builder(
     name = "fuchsia-fyi-arm64-dbg",
     mirrors = ["ci/fuchsia-fyi-arm64-dbg"],
     gn_args = "ci/fuchsia-fyi-arm64-dbg",
+    ssd = True,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
@@ -161,6 +165,7 @@ try_.builder(
     name = "fuchsia-fyi-x64-asan",
     mirrors = ["ci/fuchsia-fyi-x64-asan"],
     gn_args = "ci/fuchsia-fyi-x64-asan",
+    ssd = True,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 10 * time.hour,
 )
@@ -169,6 +174,7 @@ try_.builder(
     name = "fuchsia-fyi-x64-dbg-persistent-emulator",
     mirrors = ["ci/fuchsia-fyi-x64-dbg-persistent-emulator"],
     gn_args = "ci/fuchsia-fyi-x64-dbg-persistent-emulator",
+    ssd = True,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 10 * time.hour,
 )
@@ -247,6 +253,7 @@ try_.builder(
     name = "fuchsia-x64-perf-cast-receiver-rel",
     mirrors = ["ci/fuchsia-x64-perf-cast-receiver-rel"],
     gn_args = "ci/fuchsia-x64-perf-cast-receiver-rel",
+    ssd = True,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
@@ -263,5 +270,6 @@ try_.builder(
     name = "fuchsia-code-coverage",
     mirrors = ["ci/fuchsia-code-coverage"],
     gn_args = "ci/fuchsia-code-coverage",
+    ssd = True,
     execution_timeout = 10 * time.hour,
 )

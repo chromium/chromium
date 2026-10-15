@@ -31,6 +31,8 @@ consoles.list_view(
 )
 
 def _builder(mirror_of = None, **kwargs):
+    if kwargs.get("os", os.LINUX_DEFAULT) == os.LINUX_DEFAULT:
+        kwargs.setdefault("ssd", True)
     try_.builder(
         mirrors = [mirror_of],
         gn_args = mirror_of,
