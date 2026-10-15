@@ -1042,7 +1042,11 @@ class TabImpl implements Tab, TabInternal {
         }
     }
 
-    private @Nullable PdfInfo getPdfInfoForLoadUrl(LoadUrlParams params) {
+    /**
+     * Returns the {@link PdfInfo} for the given {@link LoadUrlParams} if this is an inline PDF
+     * navigation, and updates {@code params} via {@link LoadUrlParams#setIsPdf(boolean)}.
+     */
+    private @Nullable PdfInfo getPdfInfoAndUpdateLoadUrl(LoadUrlParams params) {
         boolean isPdf =
                 PdfUtils.shouldOpenPdfInline(isIncognito())
                         && PdfUtils.isPdfNavigation(params.getUrl(), params);
@@ -1065,11 +1069,14 @@ class TabImpl implements Tab, TabInternal {
                         TabLoadStatus.DEFAULT_PAGE_LOAD, /* navigationHandle= */ null);
             }
 
+            // Call getPdfInfoAndUpdateLoadUrl(params) unconditionally so params.setIsPdf(true) is
+            // set even when a previous native page commit is pending.
+            PdfInfo pdfInfo = getPdfInfoAndUpdateLoadUrl(params);
             // TODO(tedchoc): When showing the android NTP, delay the call to
             // TabImplJni.get().loadUrl until the android view has entirely rendered.
             if (!mIsNativePageCommitPending) {
                 mIsNativePageCommitPending =
-                        maybeShowNativePage(params.getUrl(), false, getPdfInfoForLoadUrl(params));
+                        maybeShowNativePage(params.getUrl(), /* forceReload= */ false, pdfInfo);
             }
 
             if ("chrome://java-crash/".equals(params.getUrl())) {

@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewStructure;
@@ -1761,5 +1762,33 @@ public class TabUnitTest {
                                         httpUrl.equals(params.getUrl())
                                                 && !params.getIsRendererInitiated()
                                                 && params.getInitiatorOrigin() == null));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testLoadUrl_SetsIsPdfWhenNativePageCommitPending() {
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getContext();
+        setUpTabWithWebContents();
+        doReturn(mNativePage)
+                .when(mDelegateFactory)
+                .createNativePage(any(String.class), any(), eq(mTab), any());
+        doReturn(new View(mActivity)).when(mNativePage).getView();
+
+        // First loadUrl shows a native page and sets mIsNativePageCommitPending = true.
+        LoadUrlParams firstParams = new LoadUrlParams("chrome-native://newtab/");
+        mTab.loadUrl(firstParams);
+        verify(mDelegateFactory)
+                .createNativePage(eq("chrome-native://newtab/"), any(), eq(mTab), any());
+
+        // Second loadUrl for a downloaded PDF arrives before the first navigation commits.
+        String pdfUrl = PdfUtils.encodePdfPageUrl("content://media/external/downloads/100");
+        LoadUrlParams secondParams = new LoadUrlParams(pdfUrl);
+        assertFalse(secondParams.getIsPdf());
+
+        mTab.loadUrl(secondParams);
+
+        assertTrue(secondParams.getIsPdf());
+        verify(mNavigationController)
+                .loadUrl(argThat(params -> pdfUrl.equals(params.getUrl()) && params.getIsPdf()));
     }
 }
