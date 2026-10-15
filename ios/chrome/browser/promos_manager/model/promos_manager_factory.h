@@ -5,24 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class PromosManager;
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all PromosManagers and associates them with a Profile.
-class PromosManagerFactory : public ProfileKeyedServiceFactoryIOS {
+class PromosManagerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<PromosManagerFactory,
+                                                PromosManager> {
  public:
-  static PromosManager* GetForProfile(ProfileIOS* profile);
-  static PromosManagerFactory* GetInstance();
+  explicit PromosManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<PromosManagerFactory>;
-
-  PromosManagerFactory();
-  ~PromosManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
