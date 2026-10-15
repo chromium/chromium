@@ -327,5 +327,9 @@ ContentRendererClient::CreateCastStreamingResourceProvider() {
 }
 #endif
 
+bool ContentRendererClient::ShouldUsePerBrowsingInstanceWindowAgent(
+    const url::Origin& origin) {
+  return false;
+}
 
 }  // namespace content

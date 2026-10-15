@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_WINDOW_AGENT_FACTORY_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/agent_cluster_key.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,7 +28,8 @@ class WindowAgent;
 // browsing context, that contains auxiliary browsing contexts.
 // https://html.spec.whatwg.org/C#tlbc-group
 // https://html.spec.whatwg.org/C#auxiliary-browsing-context
-class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
+class CORE_EXPORT WindowAgentFactory final
+    : public GarbageCollected<WindowAgentFactory> {
  public:
   explicit WindowAgentFactory(AgentGroupScheduler& agent_group_scheduler);
 

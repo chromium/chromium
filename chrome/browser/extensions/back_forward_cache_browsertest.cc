@@ -9,7 +9,9 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -27,6 +29,7 @@
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -1187,6 +1190,324 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::kExtensionFrame)));
 }
+
+class ExtensionBackForwardCacheComponentExtensionBrowserTest
+    : public ExtensionBackForwardCacheBrowserTest {
+ public:
+  ExtensionBackForwardCacheComponentExtensionBrowserTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kBackForwardCacheForComponentExtensionFrames};
+};
+
+// Verifies that pages with an allowlisted component extension iframe are
+// eligible for BackForwardCache when
+// kBackForwardCacheForComponentExtensionFrames is enabled.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheComponentExtensionBrowserTest,
+                       AllowlistedComponentExtensionFrameAllowsBFCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  const Extension* extension = LoadExtensionAsComponent(
+      test_data_dir_.AppendASCII("back_forward_cache")
+          .AppendASCII("component_extension_with_iframe"));
+  ASSERT_TRUE(extension);
+
+  content::BackForwardCacheDisabledTester tester;
+
+  // 1) Navigate to A.
+  ExtensionTestMessageListener listener("iframe_loaded");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url_a));
+  content::RenderFrameHostWrapper render_frame_host_a(
+      web_contents->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* extension_iframe =
+      ChildFrameAt(render_frame_host_a.get(), 0);
+  ASSERT_TRUE(extension_iframe);
+
+  // Set stored state in both the main frame and the extension iframe to verify
+  // that they are restored from cache.
+  ASSERT_TRUE(content::ExecJs(render_frame_host_a.get(),
+                              "window.__stored_state = 'main';"));
+  ASSERT_TRUE(
+      content::ExecJs(extension_iframe, "window.__stored_state = 'iframe';"));
+
+  // Verify that BFCache is NOT disabled for the extension frame.
+  EXPECT_FALSE(tester.IsDisabledForFrameWithReason(
+      extension_iframe->GetProcess()->GetDeprecatedID(),
+      extension_iframe->GetRoutingID(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kExtensionFrame)));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(web_contents, url_b));
+
+  // Verify that A was stored in BFCache (confirming BFCache is enabled and not
+  // disabled by any frame).
+  EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 3) Navigate back to A.
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Verify that A is restored from BFCache.
+  EXPECT_EQ(render_frame_host_a.get(), web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  // Verify that both the main frame and the extension iframe retained their
+  // stored state.
+  EXPECT_EQ("main", content::EvalJs(render_frame_host_a.get(),
+                                    "window.__stored_state"));
+  content::RenderFrameHost* restored_extension_iframe =
+      ChildFrameAt(render_frame_host_a.get(), 0);
+  ASSERT_TRUE(restored_extension_iframe);
+  EXPECT_EQ("iframe", content::EvalJs(restored_extension_iframe,
+                                      "window.__stored_state"));
+}
+
+// Verifies that a non-component extension iframe still prevents BFCache even if
+// the features are enabled.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheComponentExtensionBrowserTest,
+                       NonComponentExtensionFramePreventsBFCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_ignore_manifest_warnings(true);
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                               .AppendASCII("component_extension_with_iframe"));
+  ASSERT_TRUE(extension);
+
+  content::BackForwardCacheDisabledTester tester;
+
+  // 1) Navigate to A.
+  ExtensionTestMessageListener listener("iframe_loaded");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url_a));
+  content::RenderFrameHostWrapper render_frame_host_a(
+      web_contents->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* extension_iframe =
+      ChildFrameAt(render_frame_host_a.get(), 0);
+  ASSERT_TRUE(extension_iframe);
+
+  // Verify that non-component extension frames still disable BFCache.
+  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
+      extension_iframe->GetProcess()->GetDeprecatedID(),
+      extension_iframe->GetRoutingID(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kExtensionFrame)));
+}
+
+// Verifies that when an extension frame registers for tabs.onCreated and enters
+// BFCache, events triggered while cached are dropped, and subsequent events
+// triggered after restore are delivered.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheComponentExtensionBrowserTest,
+                       TabsOnCreated_SingleListener_EntersBFCacheAndRestores) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  const Extension* extension = LoadExtensionAsComponent(
+      test_data_dir_.AppendASCII("back_forward_cache")
+          .AppendASCII("component_extension_with_iframe"));
+  ASSERT_TRUE(extension);
+
+  // 1) Navigate to A.
+  ExtensionTestMessageListener listener("iframe_loaded");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url_a));
+  content::RenderFrameHostWrapper rfh_a(web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* extension_iframe = ChildFrameAt(rfh_a.get(), 0);
+  ASSERT_TRUE(extension_iframe);
+
+  // Register listener for chrome.tabs.onCreated in the extension iframe.
+  ASSERT_TRUE(content::ExecJs(extension_iframe, R"(
+    window.createdTabs = [];
+    chrome.tabs.onCreated.addListener((tab) => {
+      window.createdTabs.push(tab.id);
+    });
+  )"));
+
+  // 2) Navigate to B. Page A enters BFCache.
+  ASSERT_TRUE(NavigateToURL(web_contents, url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 3) Create a new tab while Page A is in BFCache. Since the only frame for
+  // this extension in this process is cached, the event is dropped.
+  NavigateToURLInNewTab(GURL(url::kAboutBlankURL));
+
+  // 4) Navigate back to A.
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(rfh_a.get(), web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  // Retrieve the extension iframe on the restored page.
+  content::RenderFrameHost* restored_extension_iframe =
+      ChildFrameAt(rfh_a.get(), 0);
+  ASSERT_TRUE(restored_extension_iframe);
+
+  // 5) Verify that the event fired while in BFCache was dropped.
+  EXPECT_EQ(base::ListValue(),
+            content::EvalJs(restored_extension_iframe, "window.createdTabs"));
+
+  // 6) Verify that subsequent events fired after restore are delivered cleanly.
+  content::RenderFrameHost* new_tab_rfh_2 =
+      NavigateToURLInNewTab(GURL(url::kAboutBlankURL));
+  content::WebContents* new_tab_2 =
+      content::WebContents::FromRenderFrameHost(new_tab_rfh_2);
+  int second_tab_id = sessions::SessionTabHelper::IdForTab(new_tab_2).id();
+
+  EXPECT_EQ(content::ListValueOf(second_tab_id),
+            content::EvalJs(restored_extension_iframe, "window.createdTabs"));
+}
+
+// Verifies event dispatch when dual listeners exist: an active foreground frame
+// receives tabs.onCreated immediately, while a BFCached frame drops the event.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheComponentExtensionBrowserTest,
+                       TabsOnCreated_DualListener_ActiveAndCachedFrames) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  const Extension* extension = LoadExtensionAsComponent(
+      test_data_dir_.AppendASCII("back_forward_cache")
+          .AppendASCII("component_extension_with_iframe"));
+  ASSERT_TRUE(extension);
+
+  // 1) Navigate Tab 1 to A.
+  ExtensionTestMessageListener listener_1("iframe_loaded");
+  content::WebContents* web_contents_1 = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents_1, url_a));
+  content::RenderFrameHostWrapper rfh_a(web_contents_1->GetPrimaryMainFrame());
+  ASSERT_TRUE(listener_1.WaitUntilSatisfied());
+
+  content::RenderFrameHost* iframe_1 = ChildFrameAt(rfh_a.get(), 0);
+  ASSERT_TRUE(iframe_1);
+  ASSERT_TRUE(content::ExecJs(iframe_1, R"(
+    window.createdTabs = [];
+    chrome.tabs.onCreated.addListener((tab) => {
+      window.createdTabs.push(tab.id);
+    });
+  )"));
+
+  // 2) Open Tab 2 to A (active foreground frame).
+  ExtensionTestMessageListener listener_2("iframe_loaded");
+  content::RenderFrameHost* rfh_tab_2 = NavigateToURLInNewTab(url_a);
+  content::WebContents* web_contents_2 =
+      content::WebContents::FromRenderFrameHost(rfh_tab_2);
+  ASSERT_TRUE(listener_2.WaitUntilSatisfied());
+
+  content::RenderFrameHost* iframe_2 =
+      ChildFrameAt(web_contents_2->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe_2);
+  ASSERT_TRUE(content::ExecJs(iframe_2, R"(
+    window.createdTabs = [];
+    chrome.tabs.onCreated.addListener((tab) => {
+      window.createdTabs.push(tab.id);
+    });
+  )"));
+
+  // 3) Clear recorded tabs on rfh_a's iframe so we strictly isolate events
+  // fired while in BFCache.
+  ASSERT_TRUE(content::ExecJs(iframe_1, "window.createdTabs = [];"));
+
+  // Navigate Tab 1 to B. rfh_a enters BFCache.
+  ASSERT_TRUE(NavigateToURL(web_contents_1, url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4) Open Tab 3 while rfh_a is in BFCache.
+  content::RenderFrameHost* rfh_tab_3 =
+      NavigateToURLInNewTab(GURL(url::kAboutBlankURL));
+  content::WebContents* web_contents_3 =
+      content::WebContents::FromRenderFrameHost(rfh_tab_3);
+  int new_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_3).id();
+
+  // 5) Verify that Tab 2 (active foreground frame) received the event
+  // immediately.
+  EXPECT_EQ(content::ListValueOf(new_tab_id),
+            content::EvalJs(iframe_2, "window.createdTabs"));
+
+  // 6) Restore rfh_a from BFCache.
+  web_contents_1->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents_1));
+  EXPECT_EQ(rfh_a.get(), web_contents_1->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  content::RenderFrameHost* restored_iframe_1 = ChildFrameAt(rfh_a.get(), 0);
+  ASSERT_TRUE(restored_iframe_1);
+
+  // 7) Verify that the event fired while rfh_a was in BFCache was dropped.
+  EXPECT_EQ(base::ListValue(),
+            content::EvalJs(restored_iframe_1, "window.createdTabs"));
+
+  // 8) Verify that subsequent events fired after restore are delivered cleanly.
+  content::RenderFrameHost* rfh_tab_4 =
+      NavigateToURLInNewTab(GURL(url::kAboutBlankURL));
+  content::WebContents* web_contents_4 =
+      content::WebContents::FromRenderFrameHost(rfh_tab_4);
+  int fourth_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_4).id();
+
+  EXPECT_EQ(content::ListValueOf(fourth_tab_id),
+            content::EvalJs(restored_iframe_1, "window.createdTabs"));
+}
+
+// Verifies that if an extension frame is in BFCache and the extension is
+// unloaded, the cached frame is evicted and destroyed cleanly.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheComponentExtensionBrowserTest,
+                       CachedFrameEvictedOnExtensionUnload) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  const Extension* extension = LoadExtensionAsComponent(
+      test_data_dir_.AppendASCII("back_forward_cache")
+          .AppendASCII("component_extension_with_iframe"));
+  ASSERT_TRUE(extension);
+
+  // 1) Navigate to A.
+  ExtensionTestMessageListener listener("iframe_loaded");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url_a));
+  content::RenderFrameHostWrapper rfh_a(web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* extension_iframe = ChildFrameAt(rfh_a.get(), 0);
+  ASSERT_TRUE(extension_iframe);
+
+  // 2) Navigate to B. rfh_a enters BFCache.
+  ASSERT_TRUE(NavigateToURL(web_contents, url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 3) Unload extension to evict rfh_a from BFCache.
+  UnloadExtension(extension->id());
+
+  // 4) Verify that the cached frame is destroyed cleanly.
+  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+}
+
+// TODO(crbug.com/543666778): Add tests for chrome.runtime.connect() port
+// lifecycle when entering and restoring from BackForwardCache (e.g. active
+// message port with SW entering BFCache, and SW initiating new port while frame
+// is cached).
 
 class ExtensionBackForwardCacheWithPrerenderBrowserTest
     : public ExtensionBackForwardCacheBrowserTest {

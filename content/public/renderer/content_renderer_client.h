@@ -210,6 +210,12 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual bool ShouldUseCodeCacheWithHashing(
       const blink::WebURL& request_url) const;
 
+  // Returns true if windows with the given origin should allocate isolated
+  // WindowAgents per BrowsingInstance rather than sharing a process-global
+  // agent.
+  virtual bool ShouldUsePerBrowsingInstanceWindowAgent(
+      const url::Origin& origin);
+
   // Called immediately after the sandbox is initialized on the main thread.
   // (If the renderer is run with --no-sandbox, it is still called in
   // RendererMain at about the same time.)

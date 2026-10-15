@@ -820,6 +820,16 @@ void NativeExtensionBindingsSystem::DispatchEventInContext(
     const base::ListValue& event_args,
     const mojom::EventFilteringInfoPtr& filtering_info,
     ScriptContext* context) {
+  // If the context is for an extension frame that is in the BackForwardCache,
+  // drop the event. Content scripts, however, are part of the web page
+  // lifecycle and have events queued by the renderer task runner while cached
+  // (see ExtensionBackForwardCacheBrowserTest.StorageCallbackEvicts).
+  if (context->web_frame() && context->web_frame()->IsInBackForwardCache() &&
+      (context->context_type() == mojom::ContextType::kPrivilegedExtension ||
+       context->context_type() == mojom::ContextType::kUnprivilegedExtension)) {
+    return;
+  }
+
   // Per-context webRequest events need special handling: register the context
   // before the event runs in it, so that a report during the dispatch finds
   // the pending entry. `blocking_dispatch` is nullopt for every other event.

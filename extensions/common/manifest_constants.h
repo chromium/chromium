@@ -33,6 +33,7 @@ inline constexpr char kActionDefaultState[] = "default_state";
 inline constexpr char kActionDefaultTitle[] = "default_title";
 inline constexpr char kApp[] = "app";
 inline constexpr char kAutomation[] = "automation";
+inline constexpr char kBackForwardCache[] = "back_forward_cache";
 inline constexpr char kBackground[] = "background";
 inline constexpr char kBackgroundAllowJsAccess[] = "background.allow_js_access";
 inline constexpr char kBackgroundAsyncListenerRegistration[] =
@@ -288,6 +289,8 @@ inline constexpr char16_t kInvalidActionDefaultState[] =
     u"Invalid value for 'default_state'.";
 inline constexpr char16_t kInvalidActionDefaultTitle[] =
     u"Invalid value for 'default_title'.";
+inline constexpr char16_t kInvalidBackForwardCache[] =
+    u"Invalid value for 'back_forward_cache'.";
 inline constexpr char16_t kInvalidBackground[] =
     u"Invalid value for 'background_page'.";
 inline constexpr char16_t kInvalidBackgroundAllowJsAccess[] =

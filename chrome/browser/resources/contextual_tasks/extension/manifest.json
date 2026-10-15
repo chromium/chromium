@@ -13,6 +13,9 @@
     "metricsPrivate",
     "favicon"
   ],
+  "back_forward_cache": {
+    "supported": true
+  },
   "host_permissions": [
     "chrome://resources/*",
     "https://fonts.googleapis.com/*",

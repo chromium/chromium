@@ -1406,6 +1406,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "back-forward-cache-for-component-extension-frames",
+    "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "background-listening",
     "owners": [
       "jiamingc@chromium.org",

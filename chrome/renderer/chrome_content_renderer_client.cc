@@ -224,6 +224,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest_handlers/back_forward_cache_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
@@ -1692,6 +1693,21 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return true;
+}
+
+bool ChromeContentRendererClient::ShouldUsePerBrowsingInstanceWindowAgent(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (origin.scheme() == extensions::kExtensionScheme) {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::RendererExtensionRegistry::Get()
+            ->GetRefCountedExtensionOrAppByURL(origin.GetURL(),
+                                               /*include_guid=*/true);
+    return extension &&
+           extensions::BackForwardCacheInfo::IsSupported(*extension);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return false;
 }
 
 void ChromeContentRendererClient::DidSetUserAgent(

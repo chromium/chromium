@@ -399,6 +399,13 @@ bool RendererBlinkPlatformImpl::ShouldUseCodeCacheWithHashing(
       request_url);
 }
 
+bool RendererBlinkPlatformImpl::ShouldUsePerBrowsingInstanceWindowAgent(
+    const blink::WebSecurityOrigin& origin) {
+  return GetContentClient()
+      ->renderer()
+      ->ShouldUsePerBrowsingInstanceWindowAgent(origin);
+}
+
 bool RendererBlinkPlatformImpl::IsolateStartsInBackground() {
   if (auto* renderer = GetContentClient()->renderer()) {
     // Isolates start in the background if we do not handle hidden/visibility

@@ -57,6 +57,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest_handlers/back_forward_cache_info.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/renderer.mojom.h"
@@ -239,6 +240,7 @@ void ProcessManager::RegisterRenderFrameHost(
     content::RenderFrameHost* render_frame_host,
     const Extension* extension) {
   DCHECK(render_frame_host->IsRenderFrameLive());
+  CHECK(extension);
   ExtensionRenderFrameData* data = &all_extension_frames_[render_frame_host];
   data->view_type = GetViewType(render_frame_host);
 
@@ -247,10 +249,12 @@ void ProcessManager::RegisterRenderFrameHost(
   // UnregisterRenderFrame.
   AcquireLazyKeepaliveCountForFrame(render_frame_host);
 
-  content::BackForwardCache::DisableForRenderFrameHost(
-      render_frame_host->GetGlobalId(),
-      back_forward_cache::DisabledReason(
-          back_forward_cache::DisabledReasonId::kExtensionFrame));
+  if (!BackForwardCacheInfo::IsSupported(*extension)) {
+    content::BackForwardCache::DisableForRenderFrameHost(
+        render_frame_host->GetGlobalId(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kExtensionFrame));
+  }
 
   for (auto& observer : observer_list_)
     observer.OnExtensionFrameRegistered(extension->id(), render_frame_host);

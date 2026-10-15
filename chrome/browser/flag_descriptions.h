@@ -335,6 +335,13 @@ inline constexpr char kAuxiliarySearchHistoryDonationName[] =
 inline constexpr char kAuxiliarySearchHistoryDonationDescription[] =
     "If enabled, Auxiliary Search donates browsing history to AppSearch.";
 
+inline constexpr char kBackForwardCacheForComponentExtensionFramesName[] =
+    "BackForwardCache for component extension frames";
+inline constexpr char
+    kBackForwardCacheForComponentExtensionFramesDescription[] =
+        "Allows pages embedding opted-in component extension frames to "
+        "enter BackForwardCache.";
+
 inline constexpr char kBackgroundResourceFetchName[] =
     "Background Resource Fetch";
 inline constexpr char kBackgroundResourceFetchDescription[] =

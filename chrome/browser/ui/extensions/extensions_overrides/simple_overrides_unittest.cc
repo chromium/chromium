@@ -42,6 +42,7 @@ constexpr const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kAction,
     extensions::manifest_keys::kApp,
     extensions::manifest_keys::kAutomation,
+    extensions::manifest_keys::kBackForwardCache,
     extensions::manifest_keys::kBackground,
     extensions::manifest_keys::kBackgroundAsyncListenerRegistration,
     extensions::manifest_keys::kBackgroundPage,

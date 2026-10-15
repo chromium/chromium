@@ -281,6 +281,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -3508,6 +3509,10 @@ void WebLocalFrameImpl::SetLCPPHint(
 bool WebLocalFrameImpl::IsFeatureEnabled(
     const network::mojom::PermissionsPolicyFeature& feature) const {
   return GetFrame()->DomWindow()->IsFeatureEnabled(feature);
+}
+
+bool WebLocalFrameImpl::IsInBackForwardCache() const {
+  return GetFrame()->GetPage()->GetPageScheduler()->IsInBackForwardCache();
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

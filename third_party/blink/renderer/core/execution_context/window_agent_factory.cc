@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
 
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -42,13 +44,16 @@ WindowAgent* WindowAgentFactory::GetAgentForAgentClusterKey(
 
   auto* agents = &agents_map_;
 
-  // All chrome extensions need to share the same agent because they can
-  // access each other's windows directly.
+  // Historically, all chrome extensions need to share the same agent because
+  // they can access each other's windows directly. However, component
+  // extensions can opt into bfcache and such an extension will have its own
+  // WindowAgent.
   scoped_refptr<const SecurityOrigin> origin =
       agent_cluster_key.IsOriginKeyed()
           ? scoped_refptr<const SecurityOrigin>(agent_cluster_key.GetOrigin())
           : SecurityOrigin::Create(agent_cluster_key.GetURL());
-  if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii())) {
+  if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii()) &&
+      !Platform::Current()->ShouldUsePerBrowsingInstanceWindowAgent(origin)) {
     using AgentsMapHolder = DisallowNewWrapper<AgentsMap>;
     DEFINE_STATIC_LOCAL(Persistent<AgentsMapHolder>, static_agents_map,
                         (MakeGarbageCollected<AgentsMapHolder>()));

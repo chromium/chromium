@@ -9157,6 +9157,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDrDcDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableDrDc)},
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    {"back-forward-cache-for-component-extension-frames",
+     flag_descriptions::kBackForwardCacheForComponentExtensionFramesName,
+     flag_descriptions::kBackForwardCacheForComponentExtensionFramesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         extensions_features::kBackForwardCacheForComponentExtensionFrames)},
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"api-contextual-tasks-private",
      flag_descriptions::kApiContextualTasksPrivateName,

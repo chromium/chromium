@@ -39,6 +39,7 @@ const base::Feature* kFeatureFlags[] = {
         kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
     &extensions_features::
         kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled,
+    &extensions_features::kBackForwardCacheForComponentExtensionFrames,
 #if BUILDFLAG(IS_CHROMEOS)
     &blink::features::kSmartCard,
 #endif

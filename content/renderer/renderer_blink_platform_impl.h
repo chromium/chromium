@@ -118,6 +118,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   CreateWebSocketHandshakeThrottleProvider() override;
   bool ShouldUseCodeCacheWithHashing(
       const blink::WebURL& request_url) const override;
+  bool ShouldUsePerBrowsingInstanceWindowAgent(
+      const blink::WebSecurityOrigin& origin) override;
   bool IsolateStartsInBackground() override;
   blink::WebString DefaultLocale() override;
   void SetSuddenTerminationAllowed(bool allowed) override;

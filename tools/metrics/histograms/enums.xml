@@ -14899,6 +14899,8 @@ from previous Chrome versions.
   <int value="-29877377" label="TabHoverCardImages:disabled"/>
   <int value="-29847483" label="MemoryAblation:enabled"/>
   <int value="-29507521" label="ContextualNudges:disabled"/>
+  <int value="-28777460"
+      label="BackForwardCacheForComponentExtensionFrames:disabled"/>
   <int value="-28295905" label="AutofillEnableAccountWalletStorage:enabled"/>
   <int value="-28060133" label="AndroidNativePagesInNewTab:enabled"/>
   <int value="-28034521"
@@ -18393,6 +18395,8 @@ from previous Chrome versions.
   <int value="1038906720" label="SharedHighlightingManager:disabled"/>
   <int value="1039085120"
       label="AndroidNoSurfaceSyncForBrowserControls:disabled"/>
+  <int value="1040211374"
+      label="BackForwardCacheForComponentExtensionFrames:enabled"/>
   <int value="1041376342" label="EnableTouchpadsInDiagnosticsApp:enabled"/>
   <int value="1041799151" label="OpenSystemAccountSettingsDirectly:enabled"/>
   <int value="1041839930"

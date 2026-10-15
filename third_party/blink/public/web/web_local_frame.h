@@ -264,6 +264,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual bool IsFeatureEnabled(
       const network::mojom::PermissionsPolicyFeature&) const = 0;
 
+  // Returns true if this frame's page is currently in the BackForwardCache.
+  virtual bool IsInBackForwardCache() const = 0;
+
   // Hierarchy ----------------------------------------------------------
 
   // Returns true if the current frame is a provisional frame.

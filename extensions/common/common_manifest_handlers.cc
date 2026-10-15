@@ -19,6 +19,7 @@
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/manifest_handlers/app_urls_handler.h"
 #include "extensions/common/manifest_handlers/automation.h"
+#include "extensions/common/manifest_handlers/back_forward_cache_info.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
@@ -59,9 +60,10 @@ namespace extensions {
 
 void RegisterCommonManifestHandlers(ManifestHandlerRegistry* registry) {
   registry->RegisterHandler(std::make_unique<AboutPageHandler>());
+  registry->RegisterHandler(std::make_unique<AppDisplayManifestHandler>());
   registry->RegisterHandler(std::make_unique<AppURLsHandler>());
   registry->RegisterHandler(std::make_unique<AutomationHandler>());
-  registry->RegisterHandler(std::make_unique<AppDisplayManifestHandler>());
+  registry->RegisterHandler(std::make_unique<BackForwardCacheHandler>());
   registry->RegisterHandler(std::make_unique<BackgroundManifestHandler>());
   registry->RegisterHandler(std::make_unique<BluetoothManifestHandler>());
   registry->RegisterHandler(std::make_unique<CommandsHandler>());

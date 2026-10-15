@@ -1,0 +1,26 @@
+{
+  "name": "Component extension with iframe supporting BFCache",
+  "version": "0.1",
+  "manifest_version": 3,
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8ZtnRT6hXtjtG5XM7TcKakx9J+37WuK1g1cx2IOh9enerA5VlQBcoHSpGOx5xzebQLxzUtURmNQXSrhOac/z9SVUhHrXrtnBS4ftIUfagTDroowh1b23pIusQaLKprhkS8iFr0nw887BV+yh9LQ7J90qDNzukXn0ss6ZVMxgcaQIDAQAB",
+  "content_scripts": [
+    {
+      "matches": ["http://a.com/*", "https://a.com/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["tabs"],
+  "back_forward_cache": {
+    "supported": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["iframe.html", "iframe.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

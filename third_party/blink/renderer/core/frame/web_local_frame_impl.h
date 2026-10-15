@@ -442,6 +442,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool IsFeatureEnabled(
       const network::mojom::PermissionsPolicyFeature&) const override;
 
+  bool IsInBackForwardCache() const override;
+
   void InitializeCoreFrame(
       Page&,
       FrameOwner*,

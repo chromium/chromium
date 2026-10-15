@@ -876,6 +876,14 @@ class BLINK_PLATFORM_EXPORT Platform {
     return false;
   }
 
+  // Returns true if windows with the given origin should allocate isolated
+  // WindowAgents per BrowsingInstance rather than sharing a process-global
+  // agent.
+  virtual bool ShouldUsePerBrowsingInstanceWindowAgent(
+      const WebSecurityOrigin& origin) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // User Level Memory Pressure Signal Generator ------------------
   virtual void SetPrivateMemoryFootprint(
