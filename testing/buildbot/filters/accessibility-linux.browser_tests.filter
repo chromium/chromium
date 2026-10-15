@@ -2,10 +2,6 @@
 # followed by tests which are also flaky on other bots. Tests which are not
 # appropriate for this bot should be placed at the end of this file.
 
-# Renderer crashes with document_loaded_ DCHECK under forced accessibility:
-# crbug.com/573321448
--All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettingsPrintableArea/*
-
 # Flaky on Linux: crbug.com/483413077
 -AccessCodeCastTest.PasscodeInput
 -AccessCodeCastTest.PasscodeInput__PasscodeInputElementTest_cursor_is_rendered_correctly

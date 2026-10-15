@@ -3118,6 +3118,10 @@ void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
   preview_pages_info_ = base::queue<PreviewPageInfo>();
   preview_document_load_state_ = DocumentLoadState::kComplete;
   document_load_state_ = DocumentLoadState::kLoading;
+  // Reload accessibility once the new document finishes loading.
+  if (accessibility_state_ == AccessibilityState::kLoaded) {
+    accessibility_state_ = AccessibilityState::kPending;
+  }
   last_progress_sent_ = 0;
   LoadUrl(url_, base::BindOnce(&PdfViewWebPlugin::DidOpen,
                                weak_factory_.GetWeakPtr()));

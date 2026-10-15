@@ -3278,6 +3278,34 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,
+       AccessibilityReloadedAfterResetPrintPreviewModeMessage) {
+  plugin_->EnableAccessibility();
+  OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
+      /*id=*/kTestId, /*page_number=*/-1, /*grayscale=*/false,
+      /*page_count=*/0));
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->DocumentLoadComplete();
+  testing::Mock::VerifyAndClearExpectations(accessibility_data_handler_ptr_);
+
+  OnMessageWithEngineUpdate(GenerateResetPrintPreviewModeMessage(
+      /*id=*/kTestId, /*page_number=*/-1, /*grayscale=*/false,
+      /*page_count=*/0));
+
+  // Layout changes while the new document is loading must not load
+  // accessibility.
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
+      .Times(0);
+  DocumentLayout layout;
+  layout.ComputeLayout({gfx::Size(100, 200)});
+  ASSERT_TRUE(layout.dirty());
+  plugin_->ProposeDocumentLayout(layout);
+  testing::Mock::VerifyAndClearExpectations(accessibility_data_handler_ptr_);
+
+  EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
+  plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest,
        DocumentLoadProgressResetByResetPrintPreviewModeMessage) {
   plugin_->DocumentLoadProgress(2, 100);
 
