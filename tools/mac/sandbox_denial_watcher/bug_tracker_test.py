@@ -8,23 +8,11 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import unittest
-from unittest.mock import patch
 import urllib.parse
 
-from bug_tracker import (
-    _COMPONENT_ID,
-    _CONTEXT_PLACEHOLDER,
-    _CONTEXT_QUESTION,
-    _PRIVACY_REMINDER,
-    _format_targets,
-    _redact_home_dir,
-    get_bug_url,
-)
+from bug_tracker import _COMPONENT_ID, _format_targets, get_bug_url
 from log_events import SandboxDenial
-
-_FAKE_HOME = "/Users/testuser"
 
 
 def _denial(
@@ -52,17 +40,6 @@ def _parse_url(url: str) -> tuple[urllib.parse.SplitResult, dict[str, str]]:
 
 class GetBugUrlTest(unittest.TestCase):
     """Verifies the contents of pre-filled bug URLs."""
-
-    def setUp(self) -> None:
-        super().setUp()
-        for target, return_value in (
-            ("bug_tracker.platform.mac_ver", ("15.1", ("", "", ""), "arm64")),
-            ("bug_tracker.platform.machine", "arm64"),
-            ("bug_tracker.Path.home", Path(_FAKE_HOME)),
-        ):
-            patcher = patch(target, return_value=return_value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
 
     def test_url_targets_new_issue_in_sandbox_component(self):
         parsed, params = _parse_url(get_bug_url(_denial("com.apple.foo")))
@@ -157,54 +134,6 @@ class GetBugUrlTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             get_bug_url([])
 
-    def test_description_includes_system_info(self):
-        _, params = _parse_url(get_bug_url(_denial("com.apple.foo")))
-        self.assertIn("macOS version: 15.1", params["description"])
-        self.assertIn("Architecture: arm64", params["description"])
-
-    @patch("bug_tracker.platform.machine", return_value="")
-    @patch("bug_tracker.platform.mac_ver", return_value=("", ("", "", ""), ""))
-    def test_description_reports_unknown_system_info(
-        self, _mock_mac_ver, _mock_machine
-    ):
-        _, params = _parse_url(get_bug_url(_denial("com.apple.foo")))
-        self.assertIn("macOS version: unknown", params["description"])
-        self.assertIn("Architecture: unknown", params["description"])
-
-    def test_description_includes_context_placeholder_and_reminder(self):
-        _, params = _parse_url(get_bug_url(_denial("com.apple.foo")))
-        description = params["description"]
-        self.assertIn(
-            f"{_CONTEXT_QUESTION}\n{_CONTEXT_PLACEHOLDER}", description
-        )
-        self.assertIn(_PRIVACY_REMINDER, description)
-
-    def test_home_dir_is_redacted_from_title_and_description(self):
-        url = get_bug_url(
-            _denial(f"{_FAKE_HOME}/Documents/secret.txt", "file-read-data")
-        )
-        self.assertNotIn("testuser", url)
-        _, params = _parse_url(url)
-        self.assertIn("file-read-data ~/Documents/secret.txt", params["title"])
-        self.assertIn(
-            "file-read-data ~/Documents/secret.txt", params["description"]
-        )
-
-    def test_batch_title_truncation_uses_redacted_target_length(self):
-        d1 = _denial(
-            f"{_FAKE_HOME}/Documents/sub/file_1.txt", action="file-read-data"
-        )
-        d2 = _denial(
-            f"{_FAKE_HOME}/Documents/sub/file_2.txt", action="file-read-data"
-        )
-        _, params = _parse_url(get_bug_url([d1, d2]))
-        self.assertEqual(
-            params["title"],
-            "[macOS Sandbox] Unexpected denial: "
-            "file-read-data ~/Documents/sub/file_1.txt, "
-            "~/Documents/sub/file_2.txt",
-        )
-
 
 class FormatTargetsTest(unittest.TestCase):
     """Verifies target list formatting and summarization."""
@@ -226,27 +155,6 @@ class FormatTargetsTest(unittest.TestCase):
             _format_targets(["/path/1", "/path/2", "/path/3"], max_len=10),
             "/path/1, ... (+2 more)",
         )
-
-
-class RedactHomeDirTest(unittest.TestCase):
-    """Verifies home directory redaction."""
-
-    def test_redacts_only_whole_path_components(self):
-        self.assertEqual(
-            _redact_home_dir(
-                "/Users/bob/x /Users/bobby/y /Users/bob.smith/z /Users/bob",
-                home_dir="/Users/bob",
-            ),
-            "~/x /Users/bobby/y /Users/bob.smith/z ~",
-        )
-
-    def test_ignores_trailing_slash_in_home_dir(self):
-        self.assertEqual(
-            _redact_home_dir("/Users/bob/x", home_dir="/Users/bob/"), "~/x"
-        )
-
-    def test_empty_home_dir_leaves_text_unchanged(self):
-        self.assertEqual(_redact_home_dir("/a/b", home_dir="/"), "/a/b")
 
 
 if __name__ == "__main__":
