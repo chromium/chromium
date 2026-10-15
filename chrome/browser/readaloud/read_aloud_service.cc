@@ -227,12 +227,13 @@ void ReadAloudService::SetLanguageCode(std::string_view language_code) {
     speech_synthesis_broker_->SetLanguageCode(language_code);
   }
 }
-void ReadAloudService::PreviewVoice(std::string_view voice_id) {
+void ReadAloudService::PreviewVoice(std::string_view voice_id,
+                                    std::u16string_view preview_text) {
   // Pause active article playback while previewing a voice.
   Pause();
 
   if (voice_preview_controller_) {
-    voice_preview_controller_->PlayPreview(voice_id);
+    voice_preview_controller_->PlayPreview(voice_id, preview_text);
   }
 }
 

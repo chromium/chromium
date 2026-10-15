@@ -34,13 +34,18 @@ class NativeVoicePreviewPlayback implements Playback {
     private final PlaybackListener.PlaybackData mPlaybackData;
     private final ReadAloudNativeBridge mNativeBridge;
     private final String mVoiceId;
+    private final String mPreviewText;
     private @PlaybackListener.State int mState = PlaybackListener.State.BUFFERING;
 
     NativeVoicePreviewPlayback(
-            ReadAloudNativeBridge nativeBridge, @Nullable String languageCode, String voiceId) {
+            ReadAloudNativeBridge nativeBridge,
+            @Nullable String languageCode,
+            String voiceId,
+            String previewText) {
         ThreadUtils.assertOnUiThread();
         mNativeBridge = nativeBridge;
         mVoiceId = voiceId;
+        mPreviewText = previewText;
         mMetadata =
                 new NativeMetadata(
                         languageCode, /* canonicalUrl= */ null, /* playbackMode= */ null);
@@ -122,7 +127,7 @@ class NativeVoicePreviewPlayback implements Playback {
     @Override
     public void play() {
         ThreadUtils.assertOnUiThread();
-        mNativeBridge.previewVoice(mVoiceId);
+        mNativeBridge.previewVoice(mVoiceId, mPreviewText);
     }
 
     @Override

@@ -240,7 +240,7 @@ TEST_F(VoicePreviewControllerTest,
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
 
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   EXPECT_TRUE(controller()->IsPreviewActive());
   fake_controller()->FlushForTesting();
 
@@ -304,7 +304,7 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller()->initialize_audio_count() == 1; }));
   EXPECT_EQ(fake_controller()->bind_count(), 1);
@@ -329,11 +329,14 @@ TEST_F(VoicePreviewControllerTest,
   fake_controller()->FlushForTesting();
   EXPECT_FALSE(fake_controller()->is_connected());
 
+  constexpr std::u16string_view kSpanishPreviewMessage =
+      u"Hola, esta es una muestra de voz para leer tus textos web.";
   EXPECT_CALL(state_callback(),
               Call(/*voice_id=*/"second-voice-id",
                    read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(/*voice_id=*/"second-voice-id");
+  controller()->PlayPreview(/*voice_id=*/"second-voice-id",
+                            kSpanishPreviewMessage);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller()->initialize_audio_count() == 2; }));
   EXPECT_TRUE(controller()->IsPreviewActive());
@@ -341,6 +344,9 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_EQ(fake_audio_stream_factory()->create_output_stream_called_count(),
             2);
   EXPECT_EQ(fake_controller()->play_count(), 2);
+  ASSERT_EQ(fake_controller()->received_segments().size(), 1u);
+  EXPECT_EQ(fake_controller()->received_segments()[0]->text,
+            std::u16string(kSpanishPreviewMessage));
 
   EXPECT_CALL(state_callback(), Call(/*voice_id=*/"second-voice-id",
                                      read_aloud::mojom::PlaybackState::kPaused))
@@ -357,7 +363,7 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   EXPECT_TRUE(controller()->IsPreviewActive());
 
   EXPECT_CALL(state_callback(),
@@ -382,7 +388,7 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller()->initialize_audio_count() == 1; }));
   EXPECT_EQ(fake_controller()->bind_count(), 1);
@@ -414,7 +420,7 @@ TEST_F(VoicePreviewControllerTest,
   // controller and audio stream without re-emitting kBuffering.
   base::RunLoop resume_loop;
   fake_controller()->set_play_callback(resume_loop.QuitClosure());
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   resume_loop.Run();
   EXPECT_EQ(fake_controller()->bind_count(), 1);
   EXPECT_EQ(fake_audio_stream_factory()->create_output_stream_called_count(),
@@ -440,7 +446,8 @@ TEST_F(VoicePreviewControllerTest,
               Call(/*voice_id=*/"preview-voice-id",
                    read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(/*voice_id=*/"preview-voice-id");
+  controller()->PlayPreview(/*voice_id=*/"preview-voice-id",
+                            kTestPreviewMessage);
 
   // Empty text_chunk must be rejected before calling into the broker.
   base::test::TestFuture<mojo_base::BigBuffer, bool> empty_future;
@@ -537,13 +544,30 @@ TEST_F(VoicePreviewControllerTest, PlayPreviewRejectsEmptyVoiceId) {
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   EXPECT_TRUE(controller()->IsPreviewActive());
 
   EXPECT_CALL(state_callback(),
               Call(/*voice_id=*/"", read_aloud::mojom::PlaybackState::kError))
       .Times(1);
-  controller()->PlayPreview(/*voice_id=*/"");
+  controller()->PlayPreview(/*voice_id=*/"", kTestPreviewMessage);
+  EXPECT_FALSE(controller()->IsPreviewActive());
+}
+
+TEST_F(VoicePreviewControllerTest, PlayPreviewRejectsEmptyPreviewText) {
+  testing::InSequence s;
+  EXPECT_CALL(state_callback(),
+              Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
+      .Times(1);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
+  EXPECT_TRUE(controller()->IsPreviewActive());
+
+  // Empty preview_text cancels active preview for a different voice and emits
+  // kError.
+  EXPECT_CALL(state_callback(), Call(/*voice_id=*/"other-voice",
+                                     read_aloud::mojom::PlaybackState::kError))
+      .Times(1);
+  controller()->PlayPreview(/*voice_id=*/"other-voice", /*preview_text=*/u"");
   EXPECT_FALSE(controller()->IsPreviewActive());
 }
 
@@ -552,7 +576,7 @@ TEST_F(VoicePreviewControllerTest, UtilityErrorEmitsPreviewErrorState) {
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
 
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kError))
@@ -568,7 +592,7 @@ TEST_F(VoicePreviewControllerTest, UtilityDisconnectEmitsPreviewErrorState) {
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
 
   base::RunLoop error_loop;
   EXPECT_CALL(state_callback(),
@@ -594,7 +618,7 @@ TEST_F(VoicePreviewControllerTest,
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kError))
       .WillOnce([&]() { error_loop.Quit(); });
 
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   error_loop.Run();
   EXPECT_FALSE(controller()->IsPreviewActive());
 }
@@ -605,7 +629,7 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
 
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kError))
@@ -626,7 +650,7 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller()->initialize_audio_count() == 1; }));
 
@@ -643,7 +667,8 @@ TEST_F(VoicePreviewControllerTest,
               Call(/*voice_id=*/"second-voice-id",
                    read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(/*voice_id=*/"second-voice-id");
+  controller()->PlayPreview(/*voice_id=*/"second-voice-id",
+                            kTestPreviewMessage);
 
   // Because PlayPreview() resets the previous client receiver and binds a fresh
   // pipe, the queued stale messages from the first preview are dropped and
@@ -670,7 +695,7 @@ TEST_F(VoicePreviewControllerTest,
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  controller()->PlayPreview(kTestVoiceId);
+  controller()->PlayPreview(kTestVoiceId, kTestPreviewMessage);
 
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       held_model_callback;
@@ -728,9 +753,9 @@ TEST_F(VoicePreviewControllerTest,
               Call(/*voice_id=*/"voice-3",
                    read_aloud::mojom::PlaybackState::kBuffering));
 
-  controller()->PlayPreview(/*voice_id=*/"voice-1");
-  controller()->PlayPreview(/*voice_id=*/"voice-2");
-  controller()->PlayPreview(/*voice_id=*/"voice-3");
+  controller()->PlayPreview(/*voice_id=*/"voice-1", kTestPreviewMessage);
+  controller()->PlayPreview(/*voice_id=*/"voice-2", kTestPreviewMessage);
+  controller()->PlayPreview(/*voice_id=*/"voice-3", kTestPreviewMessage);
 
   // Earlier pending audio stream creations were aborted; only "voice-3"
   // initializes audio and transitions to kPlaying.

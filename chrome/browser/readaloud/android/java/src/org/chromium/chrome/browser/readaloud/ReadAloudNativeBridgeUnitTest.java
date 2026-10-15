@@ -132,8 +132,9 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.setLanguageCode("es");
         verify(mNativeBridgeNatives).setLanguageCode(eq(NATIVE_PTR), eq("es"));
 
-        mBridge.previewVoice("voice_1");
-        verify(mNativeBridgeNatives).previewVoice(eq(NATIVE_PTR), eq("voice_1"));
+        mBridge.previewVoice("voice_1", "Preview text");
+        verify(mNativeBridgeNatives)
+                .previewVoice(eq(NATIVE_PTR), eq("voice_1"), eq("Preview text"));
 
         mBridge.pauseVoicePreview();
         verify(mNativeBridgeNatives).pauseVoicePreview(eq(NATIVE_PTR));
@@ -167,7 +168,7 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.setPlaybackRate(1.5f);
         mBridge.setVoice("voice_1");
         mBridge.setLanguageCode("es");
-        mBridge.previewVoice("voice_1");
+        mBridge.previewVoice("voice_1", "Preview text");
         mBridge.pauseVoicePreview();
         mBridge.stopVoicePreview();
         mBridge.setPlaybackMode(1);
@@ -184,7 +185,7 @@ public class ReadAloudNativeBridgeUnitTest {
         verify(mNativeBridgeNatives, never()).setPlaybackRate(anyLong(), anyFloat());
         verify(mNativeBridgeNatives, never()).setVoice(anyLong(), anyString());
         verify(mNativeBridgeNatives, never()).setLanguageCode(anyLong(), anyString());
-        verify(mNativeBridgeNatives, never()).previewVoice(anyLong(), anyString());
+        verify(mNativeBridgeNatives, never()).previewVoice(anyLong(), anyString(), anyString());
         verify(mNativeBridgeNatives, never()).pauseVoicePreview(anyLong());
         verify(mNativeBridgeNatives, never()).stopVoicePreview(anyLong());
         verify(mNativeBridgeNatives, never()).setPlaybackMode(anyLong(), anyInt());

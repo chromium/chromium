@@ -184,7 +184,8 @@ class ReadAloudService
   void SetLanguageCode(std::string_view language_code);
 
   // Plays or resumes a short audio sample of the specified voice.
-  void PreviewVoice(std::string_view voice_id);
+  void PreviewVoice(std::string_view voice_id,
+                    std::u16string_view preview_text);
 
   // Pauses the active voice preview playback.
   void PauseVoicePreview();

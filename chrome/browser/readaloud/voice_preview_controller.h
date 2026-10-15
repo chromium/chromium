@@ -70,10 +70,10 @@ class VoicePreviewController
 
   ~VoicePreviewController() override;
 
-  // Starts synthesizing and playing a short sample for `voice_id`, or resumes
+  // Starts synthesizing and playing `preview_text` for `voice_id`, or resumes
   // playback if `voice_id` is already the active preview. Cancels any
   // previously active preview session for a different voice.
-  void PlayPreview(std::string_view voice_id);
+  void PlayPreview(std::string_view voice_id, std::u16string_view preview_text);
 
   // Pauses the active voice preview playback without tearing down the session.
   void PausePreview();

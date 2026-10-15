@@ -82,7 +82,9 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
   void SetPlaybackRate(JNIEnv* env, jfloat rate);
   void SetVoice(JNIEnv* env, const std::string& voice_id);
   void SetLanguageCode(JNIEnv* env, const std::string& language_code);
-  void PreviewVoice(JNIEnv* env, const std::string& voice_id);
+  void PreviewVoice(JNIEnv* env,
+                    const std::string& voice_id,
+                    const std::u16string& preview_text);
   void PauseVoicePreview(JNIEnv* env);
   void StopVoicePreview(JNIEnv* env);
   void SetPlaybackMode(JNIEnv* env, int32_t mode);

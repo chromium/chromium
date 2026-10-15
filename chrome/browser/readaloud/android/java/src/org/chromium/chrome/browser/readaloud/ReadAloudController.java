@@ -12,7 +12,9 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYI
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
@@ -2025,11 +2027,32 @@ public class ReadAloudController
     private Playback createNativeVoicePreviewPlayback(PlaybackVoice voice) {
         Playback playback =
                 new NativeVoicePreviewPlayback(
-                        mNativeBridge, voice.getLanguage(), voice.getVoiceId());
+                        mNativeBridge,
+                        voice.getLanguage(),
+                        voice.getVoiceId(),
+                        getPreviewMessage(voice));
         mVoicePreviewPlayback = playback;
         playback.addListener(mVoicePreviewPlaybackListener);
         mVoicePreviewPlayback.play();
         return playback;
+    }
+
+    /**
+     * Returns the voice preview text localized to the voice's language.
+     *
+     * @param voice Voice being previewed.
+     */
+    private String getPreviewMessage(PlaybackVoice voice) {
+        String language = voice.getLanguage();
+        if (language == null || language.isEmpty()) {
+            return mActivity.getString(R.string.readaloud_voice_preview_message);
+        }
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.setLocale(Locale.forLanguageTag(language));
+        Context localizedContext = mActivity.createConfigurationContext(config);
+        return localizedContext != null
+                ? localizedContext.getString(R.string.readaloud_voice_preview_message)
+                : mActivity.getString(R.string.readaloud_voice_preview_message);
     }
 
     @Override

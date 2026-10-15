@@ -54,6 +54,7 @@ namespace readaloud {
 namespace {
 
 constexpr char kTestVoiceId[] = "msf00006";
+constexpr std::u16string_view kTestPreviewText = u"Voice preview sample text.";
 
 class TestDistillerPage : public dom_distiller::test::MockDistillerPage {
  public:
@@ -1361,7 +1362,7 @@ TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
               OnVoicePreviewPlaybackStateChanged(
                   kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  service()->PreviewVoice(kTestVoiceId);
+  service()->PreviewVoice(kTestVoiceId, kTestPreviewText);
 
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
@@ -1384,7 +1385,7 @@ TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
   fake_controller()->FlushForTesting();
 
   // Calling PreviewVoice with the same voice ID resumes the paused preview.
-  service()->PreviewVoice(kTestVoiceId);
+  service()->PreviewVoice(kTestVoiceId, kTestPreviewText);
   fake_controller()->FlushForTesting();
   EXPECT_EQ(fake_controller()->play_count(), 2);
 
@@ -1416,7 +1417,7 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
               OnVoicePreviewPlaybackStateChanged(
                   kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
-  service()->PreviewVoice(kTestVoiceId);
+  service()->PreviewVoice(kTestVoiceId, kTestPreviewText);
   fake_controller()->FlushForTesting();
   EXPECT_EQ(fake_controller()->pause_count(), 1);
 
@@ -1437,7 +1438,7 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
 TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
   SetFakeController(std::make_unique<FakePlaybackController>());
   service()->Play(web_contents());
-  service()->PreviewVoice(kTestVoiceId);
+  service()->PreviewVoice(kTestVoiceId, kTestPreviewText);
   fake_controller()->FlushForTesting();
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
@@ -1477,7 +1478,7 @@ TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
 
 TEST_F(ReadAloudServiceTest, InitializeStopsActiveVoicePreview) {
   SetFakeController(std::make_unique<FakePlaybackController>());
-  service()->PreviewVoice(kTestVoiceId);
+  service()->PreviewVoice(kTestVoiceId, kTestPreviewText);
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
   MockDelegate* delegate_ptr = delegate.get();

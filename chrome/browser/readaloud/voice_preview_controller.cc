@@ -20,15 +20,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace readaloud {
-namespace {
-
-// TODO(b/571585458): Resolve the preview text in Java using the voice's
-// language code and pass it to C++ instead of hardcoding it here.
-constexpr std::u16string_view kVoicePreviewMessage =
-    u"Here are the voices you can pick for reading out your web pages. If you "
-    u"like this voice and want me to keep using it just tap the voice name.";
-
-}  // namespace
 
 VoicePreviewController::VoicePreviewController(
     Profile* profile,
@@ -49,7 +40,8 @@ VoicePreviewController::~VoicePreviewController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void VoicePreviewController::PlayPreview(std::string_view voice_id) {
+void VoicePreviewController::PlayPreview(std::string_view voice_id,
+                                         std::u16string_view preview_text) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!voice_id.empty() && voice_id == voice_id_ &&
       utility_player_.is_bound()) {
@@ -58,7 +50,7 @@ void VoicePreviewController::PlayPreview(std::string_view voice_id) {
   }
 
   ResetControllerAndAudio();
-  if (voice_id.empty()) {
+  if (voice_id.empty() || preview_text.empty()) {
     if (state_changed_callback_) {
       state_changed_callback_.Run(voice_id,
                                   read_aloud::mojom::PlaybackState::kError);
@@ -85,7 +77,7 @@ void VoicePreviewController::PlayPreview(std::string_view voice_id) {
   if (utility_player_.is_bound()) {
     std::vector<read_aloud::mojom::TextSegmentPtr> segments;
     segments.push_back(read_aloud::mojom::TextSegment::New(
-        /*segment_index=*/0, std::u16string(kVoicePreviewMessage),
+        /*segment_index=*/0, std::u16string(preview_text),
         read_aloud::mojom::Speaker::kSpeaker1));
     utility_player_->Play();
     utility_player_->SetTextContent(std::move(segments));
