@@ -847,6 +847,7 @@ public abstract class ChromeFeatureList {
             "TabStripHeightTransitionGlitchFix";
     public static final String TAB_STRIP_LAYOUT_TRANSITION_DEBOUNCE_FIX =
             "TabStripLayoutTransitionDebounceFix";
+    public static final String TAB_STRIP_LINK_DRAG_DROP = "TabStripLinkDragDrop";
     public static final String TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP =
             "TabStripStopSpinnerOnLoadStop";
     public static final String TAB_SWITCHER_DRAG_DROP_ANDROID = "TabSwitcherDragDropAndroid";

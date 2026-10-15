@@ -10365,6 +10365,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripLayoutTransitionDebounceFix)},
 
+    {"tab-strip-link-drag-drop", flag_descriptions::kTabStripLinkDragDropName,
+     flag_descriptions::kTabStripLinkDragDropDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripLinkDragDrop)},
+
     {"tab-opener-tracking", flag_descriptions::kTabOpenerTrackingName,
      flag_descriptions::kTabOpenerTrackingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabOpenerTracking)},

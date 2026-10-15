@@ -6730,6 +6730,12 @@ inline constexpr char kTabStripLayoutTransitionDebounceFixName[] =
 inline constexpr char kTabStripLayoutTransitionDebounceFixDescription[] =
     "Flag guard for the tab strip layout transition debounce fix.";
 
+inline constexpr char kTabStripLinkDragDropName[] =
+    "Tab strip link drag and drop";
+inline constexpr char kTabStripLinkDragDropDescription[] =
+    "Enables dragging and dropping links onto the tab strip to open them in a "
+    "new tab or in an existing tab.";
+
 inline constexpr char kThreeDotMenuBackButtonName[] =
     "Three Dot Menu Back Button";
 inline constexpr char kThreeDotMenuBackButtonDescription[] =

@@ -9604,6 +9604,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tab-strip-link-drag-drop",
+    "owners": [ "nemco@google.com" ],
+    "expiry_milestone": 163
+  },
+  {
     "name": "tab-strip-unification",
     "owners": [
       "top-chrome-desktop-ui@google.com",

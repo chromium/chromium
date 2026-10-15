@@ -11229,6 +11229,7 @@ from previous Chrome versions.
   <int value="-1142287295" label="AccessibilityTextChangeTypes:disabled"/>
   <int value="-1142034548" label="BuiltInModuleKvStorage:enabled"/>
   <int value="-1141780291" label="DisplayChangeModal:disabled"/>
+  <int value="-1141777210" label="TabStripLinkDragDrop:enabled"/>
   <int value="-1140923360" label="DeprecateAssistantStylusFeatures:disabled"/>
   <int value="-1140212005" label="ExtensionWebFileHandlers:enabled"/>
   <int value="-1139532878" label="PrivacyGuidePreload:disabled"/>
@@ -15402,6 +15403,7 @@ from previous Chrome versions.
   <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
   <int value="123008918" label="EnableProtoApiForClassifyUrl:disabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
+  <int value="124466324" label="TabStripLinkDragDrop:disabled"/>
   <int value="124590378" label="LensStandalone:disabled"/>
   <int value="125403592" label="PaymentLinkDetection:enabled"/>
   <int value="125500471"
