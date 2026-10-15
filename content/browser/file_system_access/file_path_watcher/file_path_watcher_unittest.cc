@@ -98,11 +98,12 @@ class InotifyReaderTest : public testing::Test {
   void ReadEvents() {
     ASSERT_TRUE(ReadInotifyEventsForTesting(
         reader_.get(),
-        [this](const inotify_event* event, const inotify_event* moved_to) {
+        [this](const InotifyEvent& event, const InotifyEvent* moved_to) {
           if (moved_to) {
-            moves_.emplace_back(event->wd, moved_to->wd);
+            moves_.emplace_back(event.watch_descriptor,
+                                moved_to->watch_descriptor);
           } else {
-            events_.push_back(event->mask);
+            events_.push_back(event.mask);
           }
         }));
   }
@@ -112,6 +113,17 @@ class InotifyReaderTest : public testing::Test {
   std::vector<uint32_t> events_;
   std::vector<std::pair<int, int>> moves_;
 };
+
+TEST_F(InotifyReaderTest, FlushesMoveFromWhenPollTimesOut) {
+  const std::array<inotify_event, 1> batch = {
+      {{.wd = 1, .mask = IN_MOVED_FROM, .cookie = 42, .len = 0}}};
+  ASSERT_NO_FATAL_FAILURE(QueueBatch(batch));
+
+  ReadEvents();
+
+  EXPECT_THAT(events_, testing::ElementsAre(IN_MOVED_FROM));
+  EXPECT_THAT(moves_, testing::IsEmpty());
+}
 
 TEST_F(InotifyReaderTest, FlushesMoveFromWhenAnotherBatchIsReady) {
   const std::array<inotify_event, 1> first = {
@@ -139,7 +151,7 @@ TEST_F(InotifyReaderTest, PairsMovesWithinSameBuffer) {
   EXPECT_THAT(moves_, testing::ElementsAre(std::make_pair(1, 2)));
 }
 
-TEST_F(InotifyReaderTest, DoesNotPairMovesAcrossBuffers) {
+TEST_F(InotifyReaderTest, PairsMovesAcrossBuffers) {
   const std::array<inotify_event, 1> first = {
       {{.wd = 1, .mask = IN_MOVED_FROM, .cookie = 42, .len = 0}}};
   const std::array<inotify_event, 1> second = {
@@ -149,8 +161,8 @@ TEST_F(InotifyReaderTest, DoesNotPairMovesAcrossBuffers) {
 
   ReadEvents();
 
-  EXPECT_THAT(events_, testing::ElementsAre(IN_MOVED_FROM, IN_MOVED_TO));
-  EXPECT_THAT(moves_, testing::IsEmpty());
+  EXPECT_THAT(events_, testing::IsEmpty());
+  EXPECT_THAT(moves_, testing::ElementsAre(std::make_pair(1, 2)));
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
