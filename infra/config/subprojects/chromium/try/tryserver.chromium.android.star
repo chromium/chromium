@@ -100,6 +100,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -115,6 +116,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -130,6 +132,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -145,6 +148,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -161,6 +165,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -177,6 +182,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
 )
 
@@ -192,6 +198,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -208,6 +215,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -224,6 +232,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -240,6 +249,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -256,6 +266,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
@@ -273,6 +284,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -288,6 +300,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -304,6 +317,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -321,6 +335,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -338,6 +353,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -354,6 +370,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -370,6 +387,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -385,6 +403,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -403,6 +422,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -418,6 +438,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     experiments = {
     },
@@ -434,6 +455,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = True,
     contact_team_email = "cbe-compliance@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -443,6 +465,7 @@ try_.builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],
     gn_args = "ci/Android arm Builder (dbg)",
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
 )
 
@@ -465,6 +488,7 @@ try_.builder(
             "android_fastbuild",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
 )
 
@@ -532,6 +556,7 @@ try_.builder(
             "minimal_symbols",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-mte@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -547,6 +572,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -613,6 +639,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -629,6 +656,7 @@ try_.builder(
             "chrome_with_codecs",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -660,6 +688,7 @@ try_.builder(
             "remoteexec",
         ],
     ),
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -697,6 +726,7 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
+    ssd = None if settings.is_main else True,
     contact_team_email = "cronet-team@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
@@ -714,6 +744,7 @@ try_.builder(
     name = "android-cronet-arm64-dbg",
     mirrors = ["ci/android-cronet-arm64-dbg"],
     gn_args = "ci/android-cronet-arm64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -724,6 +755,7 @@ try_.builder(
     # TODO(crbug.com/40462241): Switch this back to debug try builder when cronet's
     # shared library loading is fixed.
     gn_args = "ci/android-cronet-arm64-rel",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -732,6 +764,7 @@ try_.builder(
     name = "android-cronet-riscv64-dbg",
     mirrors = ["ci/android-cronet-riscv64-dbg"],
     gn_args = "ci/android-cronet-riscv64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -740,6 +773,7 @@ try_.builder(
     name = "android-cronet-riscv64-rel",
     mirrors = ["ci/android-cronet-riscv64-rel"],
     gn_args = "ci/android-cronet-riscv64-rel",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -748,6 +782,7 @@ try_.builder(
     name = "android-cronet-x64-rel",
     mirrors = ["ci/android-cronet-x64-rel"],
     gn_args = "ci/android-cronet-x64-rel",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -768,6 +803,7 @@ try_.builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/android-cronet-x64-dbg"],
     gn_args = "ci/android-cronet-x64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -779,6 +815,7 @@ try_.builder(
         "ci/android-cronet-x64-dbg-12-tests",
     ],
     gn_args = "ci/android-cronet-x64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -790,6 +827,7 @@ try_.builder(
         "ci/android-cronet-x64-dbg-13-tests",
     ],
     gn_args = "ci/android-cronet-x64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -801,6 +839,7 @@ try_.builder(
         "ci/android-cronet-x64-dbg-14-tests",
     ],
     gn_args = "ci/android-cronet-x64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -812,6 +851,7 @@ try_.builder(
         "ci/android-cronet-x64-dbg-15-tests",
     ],
     gn_args = "ci/android-cronet-x64-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -830,6 +870,7 @@ try_.builder(
             "partial_code_coverage_instrumentation",
         ],
     ),
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
@@ -852,6 +893,7 @@ try_.builder(
     name = "android-cronet-x86-dbg",
     mirrors = ["ci/android-cronet-x86-dbg"],
     gn_args = "ci/android-cronet-x86-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -860,6 +902,7 @@ try_.builder(
     name = "android-cronet-x86-rel",
     mirrors = ["ci/android-cronet-x86-rel"],
     gn_args = "ci/android-cronet-x86-rel",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -874,6 +917,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = ["ci/android-cronet-x86-dbg"],
     ),
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -885,6 +929,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg-11-tests",
     ],
     gn_args = "ci/android-cronet-x86-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -896,6 +941,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg-oreo-tests",
     ],
     gn_args = "ci/android-cronet-x86-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -907,6 +953,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg-pie-tests",
     ],
     gn_args = "ci/android-cronet-x86-dbg",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -927,6 +974,7 @@ try_.builder(
             "partial_code_coverage_instrumentation",
         ],
     ),
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     coverage_test_types = ["unit", "overall"],
     cq_settings = try_.cq_settings(
@@ -949,6 +997,7 @@ try_.builder(
     name = "android-cronet-code-coverage-native",
     mirrors = ["ci/android-cronet-code-coverage-native"],
     gn_args = "ci/android-cronet-code-coverage-native",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -957,6 +1006,7 @@ try_.builder(
     name = "android-cronet-code-coverage-java",
     mirrors = ["ci/android-cronet-code-coverage-java"],
     gn_args = "ci/android-cronet-code-coverage-java",
+    ssd = True,
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -974,6 +1024,7 @@ try_.builder(
             "arm",
         ],
     ),
+    ssd = True,
     execution_timeout = 6 * time.hour,
     # Do not use remote linking becaues it doesn't download
     # the remote artifacts by default. But, the deterministic recipe
@@ -995,6 +1046,7 @@ try_.builder(
             "arm",
         ],
     ),
+    ssd = True,
     execution_timeout = 6 * time.hour,
     # Do not use remote linking becaues it doesn't download
     # the remote artifacts by default. But, the deterministic recipe
@@ -1012,6 +1064,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = True,
 )
 
 try_.builder(
@@ -1026,6 +1079,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = True,
 )
 
 try_.builder(
@@ -1040,6 +1094,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "woa-engprod@google.com",
 )
 
@@ -1047,6 +1102,7 @@ try_.builder(
     name = "android-15-chrome-wpt-fyi-rel",
     mirrors = ["ci/android-15-chrome-wpt-fyi-rel"],
     gn_args = "ci/android-15-chrome-wpt-fyi-rel",
+    ssd = True,
     contact_team_email = "chrome-product-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1055,6 +1111,7 @@ try_.builder(
     name = "android-15-webview-wpt-fyi-rel",
     mirrors = ["ci/android-15-webview-wpt-fyi-rel"],
     gn_args = "ci/android-15-webview-wpt-fyi-rel",
+    ssd = True,
     contact_team_email = "chrome-product-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1071,6 +1128,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1087,6 +1145,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1102,6 +1161,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "woa-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1249,6 +1309,7 @@ try_.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = True,
 )
 
 try_.builder(
@@ -1258,6 +1319,7 @@ try_.builder(
         "ci/android-cast-arm-dbg",
     ],
     gn_args = "ci/android-cast-arm-dbg",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -1283,6 +1345,7 @@ try_.builder(
         "ci/android-cast-arm-rel",
     ],
     gn_args = "ci/android-cast-arm-rel",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -1308,6 +1371,7 @@ try_.builder(
         "ci/android-cast-arm64-dbg",
     ],
     gn_args = "ci/android-cast-arm64-dbg",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -1334,6 +1398,7 @@ try_.builder(
         "ci/android-cast-arm64-rel",
     ],
     gn_args = "ci/android-cast-arm64-rel",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -1492,6 +1557,7 @@ try_.builder(
         "ci/android-x64-treesinviz-disabled-rel",
     ],
     gn_args = "ci/android-x64-treesinviz-disabled-rel",
+    ssd = True,
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -1549,6 +1615,7 @@ try_.builder(
     name = "android-code-coverage",
     mirrors = ["ci/android-code-coverage"],
     gn_args = "ci/android-code-coverage",
+    ssd = True,
     execution_timeout = 10 * time.hour,
 )
 
@@ -1556,6 +1623,7 @@ try_.builder(
     name = "android-code-coverage-native",
     mirrors = ["ci/android-code-coverage-native"],
     gn_args = "ci/android-code-coverage-native",
+    ssd = True,
     execution_timeout = 10 * time.hour,
 )
 
@@ -1563,6 +1631,7 @@ try_.builder(
     name = "android-x86-code-coverage",
     mirrors = ["ci/android-x86-code-coverage"],
     gn_args = "ci/android-x86-code-coverage",
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 10 * time.hour,
 )

@@ -37,7 +37,9 @@ builders.builder(
     description_html = "Runs Flaky Reproducer strategies to find reliable reproducing steps for flaky tests.",
     executable = "recipe:flakiness/reproducer",
     pool = "luci.chromium.try",
+    cores = 8,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.flakiness",
         category = "flakiness",

@@ -97,6 +97,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = ["ci/Leak Detection Linux", "release_try_builder"],
     ),
+    ssd = True,
 )
 
 try_.builder(
@@ -108,6 +109,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
 )
 
@@ -138,6 +140,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
 )
 
@@ -151,6 +154,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = True,
     contact_team_email = "cbe-compliance@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -162,6 +166,7 @@ try_.builder(
         "ci/linux-cast-arm-rel",
     ],
     gn_args = "ci/linux-cast-arm-rel",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -183,6 +188,7 @@ try_.builder(
         "ci/linux-cast-arm64-rel",
     ],
     gn_args = "ci/linux-cast-arm64-rel",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -221,6 +227,7 @@ try_.builder(
             "ci/Linux Builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-security-architecture@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -245,6 +252,7 @@ try_.builder(
         "ci/linux-bfcache-rel",
     ],
     gn_args = "ci/linux-bfcache-rel",
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -258,6 +266,7 @@ try_.builder(
             "try_builder",
         ],
     ),
+    ssd = True,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -274,6 +283,7 @@ try_.builder(
             "skip_generate_fuzzer_owners",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
@@ -296,6 +306,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-browser-infra-team@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -324,6 +335,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -339,6 +351,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -349,6 +362,7 @@ try_.builder(
         "ci/linux-gcc-rel",
     ],
     gn_args = "ci/linux-gcc-rel",
+    ssd = True,
     contact_team_email = "build@chromium.org",
 )
 
@@ -360,6 +374,7 @@ try_.builder(
             "ci/linux-headless-shell-rel",
         ],
     ),
+    ssd = True,
     cq_settings = try_.cq_settings(
         location_filters = [
             "components/headless/.+",
@@ -374,6 +389,7 @@ try_.builder(
     name = "linux-fieldtrial-rel",
     mirrors = ["ci/linux-fieldtrial-rel"],
     gn_args = "ci/linux-fieldtrial-rel",
+    ssd = True,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -381,6 +397,7 @@ try_.builder(
     name = "linux-surface-embed-rel",
     mirrors = ["ci/linux-surface-embed-rel"],
     gn_args = "ci/linux-surface-embed-rel",
+    ssd = True,
     contact_team_email = "chrome-webium-product-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -391,6 +408,7 @@ try_.builder(
         "ci/linux-multiscreen-fyi-rel",
     ],
     gn_args = "ci/linux-multiscreen-fyi-rel",
+    ssd = True,
     contact_team_email = "web-windowing-team@google.com",
 )
 
@@ -410,6 +428,7 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
+    ssd = None if settings.is_main else True,
     contact_team_email = "chrome-fuzzing-core@google.com",
     cq_settings = try_.cq_settings(
         on_default_cq = True,
@@ -434,6 +453,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = True,
     cq_settings = try_.cq_settings(
         location_filters = [
             "base/trace_event/.+",
@@ -502,6 +522,7 @@ try_.builder(
         "ci/linux-webdriver-bidi-rel",
     ],
     gn_args = "ci/linux-webdriver-bidi-rel",
+    ssd = True,
     contact_team_email = "chrome-devtools@google.com",
     cq_settings = try_.cq_settings(
         includable_only = True,
@@ -517,6 +538,7 @@ try_.builder(
         is_compile_only = True,
     ),
     gn_args = "try/linux-rel",
+    ssd = True,
     contact_team_email = "chrome-build-team@google.com",
     cq_settings = try_.cq_settings(
         # Changes to linux-rel's testing specs would normally have to pass on
@@ -614,6 +636,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    ssd = True,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -623,6 +646,7 @@ try_.builder(
         "ci/linux-blink-asan-rel",
     ],
     gn_args = "ci/linux-blink-asan-rel",
+    ssd = True,
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -633,6 +657,7 @@ try_.builder(
         "ci/linux-blink-leak-rel",
     ],
     gn_args = "ci/linux-blink-leak-rel",
+    ssd = True,
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -643,6 +668,7 @@ try_.builder(
         "ci/linux-blink-msan-rel",
     ],
     gn_args = "ci/linux-blink-msan-rel",
+    ssd = True,
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -654,6 +680,7 @@ try_.builder(
         "ci/linux-cast-x64-dbg",
     ],
     gn_args = "ci/linux-cast-x64-dbg",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -675,6 +702,7 @@ try_.builder(
         "ci/linux-cast-x64-rel",
     ],
     gn_args = "ci/linux-cast-x64-rel",
+    ssd = True,
     contact_team_email = "cast-eng@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -702,6 +730,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-browser-infra-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -836,6 +865,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     execution_timeout = 6 * time.hour,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # Do not use remote linking becaues it doesn't download
@@ -877,6 +907,7 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
+    ssd = None if settings.is_main else True,
     caches = [
         swarming.cache(
             name = "builder",
@@ -919,6 +950,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -939,6 +971,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     caches = [
         swarming.cache(
             name = "builder",
@@ -1025,6 +1058,7 @@ try_.builder(
         "ci/Linux UBSan Tests",
     ],
     gn_args = "ci/Linux UBSan Builder",
+    ssd = True,
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     main_list_view = "try",
 )
@@ -1093,6 +1127,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    ssd = True,
     cq_settings = try_.cq_settings(
         location_filters = [
             cq.location_filter(path_regexp = "media/gpu/chromeos/.+"),
@@ -1115,6 +1150,7 @@ try_.builder(
             "remoteexec",
         ],
     ),
+    ssd = True,
     contact_team_email = "chrome-webium-product-eng@google.com",
 )
 
@@ -1126,6 +1162,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = ["ci/Network Service Linux", "release_try_builder"],
     ),
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -1134,6 +1171,7 @@ try_.builder(
     name = "tricium-metrics-analysis",
     description_html = "Runs Tricium metrics analysis on modified JSON and XML files.",
     executable = "recipe:tricium_metrics",
+    ssd = True,
     cq_settings = try_.cq_settings(
         custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
         disable_reuse = True,
@@ -1148,6 +1186,7 @@ try_.builder(
     name = "tricium-oilpan-analysis",
     description_html = "Runs Tricium Oilpan static analysis on modified C/C++ files.",
     executable = "recipe:tricium_oilpan",
+    ssd = True,
     cq_settings = try_.cq_settings(
         custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
         disable_reuse = True,
@@ -1164,6 +1203,7 @@ try_.builder(
         "ci/linux-treesinviz-enabled-rel",
     ],
     gn_args = "ci/linux-treesinviz-enabled-rel",
+    ssd = True,
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -1209,6 +1249,7 @@ try_.builder(
             "ci/linux-js-code-coverage",
         ],
     ),
+    ssd = True,
     check_for_flakiness = False,
     check_for_flakiness_with_resultdb = False,
     cq_settings = try_.cq_settings(
@@ -1233,6 +1274,7 @@ try_.builder(
             "ci/chromeos-js-code-coverage",
         ],
     ),
+    ssd = True,
     check_for_flakiness = False,
     check_for_flakiness_with_resultdb = False,
     cq_settings = try_.cq_settings(
@@ -1250,6 +1292,7 @@ try_.builder(
     name = "linux-code-coverage",
     mirrors = ["ci/linux-code-coverage"],
     gn_args = "ci/linux-code-coverage",
+    ssd = True,
     execution_timeout = 12 * time.hour,
 )
 
@@ -1257,6 +1300,7 @@ try_.builder(
     name = "linux-chromeos-code-coverage",
     mirrors = ["ci/linux-chromeos-code-coverage"],
     gn_args = "ci/linux-chromeos-code-coverage",
+    ssd = True,
     execution_timeout = 10 * time.hour,
 )
 
@@ -1266,6 +1310,7 @@ try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
     gn_args = "ci/linux-js-code-coverage",
+    ssd = True,
     execution_timeout = 10 * time.hour,
     use_javascript_coverage = True,
 )
@@ -1274,6 +1319,7 @@ try_.builder(
     name = "chromeos-js-code-coverage",
     mirrors = ["ci/chromeos-js-code-coverage"],
     gn_args = "ci/chromeos-js-code-coverage",
+    ssd = True,
     execution_timeout = 10 * time.hour,
     use_javascript_coverage = True,
 )
@@ -1284,6 +1330,7 @@ try_.builder(
     description_html = "Validate README.chromium files.",
     executable = "recipe:security/metadata_validator",
     builderless = True,
+    ssd = True,
     contact_team_email = "chops-security-core@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -1304,6 +1351,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
+    ssd = True,
     contact_team_email = "toyoshim@chromium.org",
     cq_settings = try_.cq_settings(
         includable_only = True,

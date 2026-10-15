@@ -61,6 +61,7 @@ try_.builder(
             "arm",
         ],
     ),
+    ssd = True,
     properties = {
         "recipe_properties": {
             "build_config": "android",
@@ -84,6 +85,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     properties = {
         "recipe_properties": {
             "build_config": "chromeos",
@@ -105,6 +107,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
     properties = {
         "recipe_properties": {
             "build_config": "fuchsia",
@@ -154,6 +157,7 @@ try_.builder(
             "x64",
         ],
     ),
+    ssd = True,
 )
 
 try_.builder(
@@ -196,6 +200,7 @@ try_.builder(
             "arm",
         ],
     ),
+    ssd = True,
     properties = {
         "recipe_properties": {
             "build_config": "webview",

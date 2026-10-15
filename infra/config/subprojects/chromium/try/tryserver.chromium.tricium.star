@@ -82,6 +82,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
 )
 
 try_.builder(
@@ -97,6 +98,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = True,
 )
 
 try_.builder(
