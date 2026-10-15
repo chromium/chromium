@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
       "(async () => {"
          CREATE_PROMISE_AND_RESOLVERS
          GET_FILE(GetTestFileSystemType())
-        "file.remove();"
+        "await file.remove();"
         "const observer = new FileSystemObserver(onChange);"
         "await observer.observe(file);"
          SET_CHANGE_TIMEOUT
