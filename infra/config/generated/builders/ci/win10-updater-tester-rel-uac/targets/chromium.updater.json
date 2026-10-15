@@ -2,6 +2,8 @@
   "win10-updater-tester-rel-uac": {
     "gtest_tests": [
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -23,6 +25,8 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
       },
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

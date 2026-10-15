@@ -13,6 +13,8 @@
           "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -40,6 +42,8 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -68,6 +72,8 @@
     ],
     "isolated_scripts": [
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -97,6 +103,8 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -130,6 +138,8 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -172,6 +182,7 @@
           "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -203,6 +214,8 @@
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -236,6 +249,8 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -278,6 +293,8 @@
           "--jobs=1",
           "--use-webgpu-power-preference=default-high-performance"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -314,6 +331,8 @@
           "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -341,6 +360,8 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -369,6 +390,8 @@
     ],
     "isolated_scripts": [
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -398,6 +421,8 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -431,6 +456,8 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -473,6 +500,7 @@
           "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -504,6 +532,8 @@
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -537,6 +567,8 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -579,6 +611,8 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -621,6 +655,8 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

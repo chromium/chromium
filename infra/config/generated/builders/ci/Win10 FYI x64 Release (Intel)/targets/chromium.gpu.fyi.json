@@ -2,6 +2,8 @@
   "Win10 FYI x64 Release (Intel)": {
     "gtest_tests": [
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -30,6 +32,8 @@
           "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -58,6 +62,8 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -85,6 +91,8 @@
         "test_id_prefix": "ninja://ui/gl:gl_unittests/"
       },
       {
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -111,6 +119,8 @@
           "--gtest_filter=MediaFoundationEncryptedMediaTest*",
           "--use-gpu-in-tests"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -137,6 +147,8 @@
           "--gtest_filter=WebNN*",
           "--use-gpu-in-tests"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -163,6 +175,8 @@
           "--ignore-runtime-requirements=*",
           "--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -199,6 +213,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -243,6 +258,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -287,6 +303,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -326,6 +343,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -368,6 +386,8 @@
           "9bc5",
           "--jobs=4"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -412,6 +432,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -457,6 +478,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -496,6 +518,7 @@
           "--jobs=4"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -534,6 +557,8 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -575,6 +600,7 @@
           "--jobs=1"
         ],
         "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -615,6 +641,8 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_win_runtimes.json",
           "--jobs=1"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -655,6 +683,8 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_win_runtimes.json",
           "--jobs=1"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -694,6 +724,8 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

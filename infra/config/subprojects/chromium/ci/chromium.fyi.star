@@ -502,6 +502,9 @@ ci.thin_tester(
         mixins = [
             "finch-chromium-swarming-pool",
             "mac_default_arm64",
+            # Temporary for ATL97 outage (b/570133826).
+            "ci_only",
+            "experiments",
         ],
     ),
     ssd = None,
@@ -661,6 +664,9 @@ fyi_ios_builder(
             "out_dir_arg",
             "xcode_27_main",
             "xctest",
+            # Temporary for ATL97 outage (b/570133826).
+            "ci_only",
+            "experiments",
         ],
     ),
     builderless = True,

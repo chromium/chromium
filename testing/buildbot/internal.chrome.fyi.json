@@ -10,7 +10,9 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
         "description": "Run with android_30_google_apis_x86",
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -57,7 +59,9 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
         "description": "Run with android_30_google_apis_x86",
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -106,6 +110,8 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -140,6 +146,8 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -175,6 +183,8 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

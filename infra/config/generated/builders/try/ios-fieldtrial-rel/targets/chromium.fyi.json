@@ -16,6 +16,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -71,6 +73,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -128,6 +132,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -185,6 +191,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -242,6 +250,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -299,6 +309,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -354,6 +366,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -409,6 +423,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -464,6 +480,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -518,6 +536,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -574,6 +594,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -631,6 +653,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -686,6 +710,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -741,6 +767,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -796,6 +824,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -850,6 +880,8 @@
           "27a266a",
           "--xctest"
         ],
+        "ci_only": true,
+        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

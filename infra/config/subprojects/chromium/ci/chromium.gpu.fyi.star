@@ -1723,6 +1723,9 @@ ci.thin_tester(
         ],
         mixins = [
             "linux_nvidia_gtx_1660_stable",
+            # Temporary for ATL97 outage (b/570132975).
+            "ci_only",
+            "experiments",
         ],
     ),
     targets_settings = targets.settings(
@@ -1808,6 +1811,9 @@ ci.thin_tester(
         ],
         mixins = [
             "linux_amd_rx_5500_xt",
+            # Temporary for ATL97 outage (b/570132975).
+            "ci_only",
+            "experiments",
         ],
         per_test_modifications = {
             "vulkan_pixel_skia_gold_test": targets.remove(
@@ -1977,6 +1983,9 @@ ci.thin_tester(
         ],
         mixins = [
             "linux_intel_uhd_630_stable",
+            # Temporary for ATL97 outage (b/570132975).
+            "ci_only",
+            "experiments",
         ],
         per_test_modifications = {
             "vulkan_pixel_skia_gold_test": targets.remove(
@@ -2421,6 +2430,9 @@ ci.thin_tester(
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
+            # Temporary for ATL97 outage (b/570133826).
+            "ci_only",
+            "experiments",
         ],
     ),
     targets_settings = targets.settings(
@@ -3038,6 +3050,9 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_intel_uhd_630_stable",
+            # Temporary for ATL97 outage (b/570132975).
+            "ci_only",
+            "experiments",
         ],
         per_test_modifications = {
             "context_lost_passthrough_graphite_tests": targets.remove(
@@ -3204,6 +3219,9 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
+            # Temporary for ATL97 outage (b/570132975).
+            "ci_only",
+            "experiments",
         ],
         per_test_modifications = {
             "media_foundation_browser_tests": targets.remove(
