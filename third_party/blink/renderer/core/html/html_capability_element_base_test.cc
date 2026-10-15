@@ -2120,6 +2120,51 @@ TEST_F(HTMLCapabilityElementBaseIntersectionTest,
 }
 
 TEST_F(HTMLCapabilityElementBaseIntersectionTest,
+       IntersectionVisibleAfterRecentAttachedIntervalExpired) {
+  GetDocument().GetSettings()->SetDefaultFontSize(12);
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+    <div id='cover' style='position: fixed; left: 0px; top: 0px; width: 100px; height: 100px;'></div>
+    <usermedia id='camera' type='camera'></usermedia>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLCapabilityElementBase>(
+      GetDocument().QuerySelector(AtomicString("usermedia")));
+  auto* div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  WaitForPermissionElementRegistration(permission_element);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLCapabilityElementBase::IntersectionVisibility::kOccludedOrDistorted);
+
+  // Repurpose the expire timer for another temporary reason while occluded so
+  // `kRecentlyAttachedToLayoutTree` expires while the element remains occluded,
+  // without calling `IsClickingEnabled()`.
+  permission_element->DisableClickingTemporarily(
+      HTMLCapabilityElementBase::DisableReason::
+          kIntersectionWithViewportChanged,
+      kDefaultTimeout);
+  DeferredChecker checker(permission_element, &MainFrame());
+  checker.CheckNoNewMessagesAfterDelay(kLongerThanDefaultTimeout);
+  EXPECT_FALSE(permission_element->isValid());
+
+  // Un-occluding the element after `kRecentlyAttachedToLayoutTree` has expired
+  // must still enforce `kDefaultDisableTimeout` before clicking is enabled.
+  div->SetInlineStyleProperty(CSSPropertyID::kTop, "100px");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLCapabilityElementBase::IntersectionVisibility::kFullyVisible);
+  EXPECT_FALSE(permission_element->isValid());
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+  EXPECT_TRUE(permission_element->isValid());
+}
+
+TEST_F(HTMLCapabilityElementBaseIntersectionTest,
        IntersectionChangedDisableEnableDisable) {
   GetDocument().GetSettings()->SetDefaultFontSize(12);
   SimRequest main_resource("https://example.test/", "text/html");

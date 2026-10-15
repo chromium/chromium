@@ -1412,27 +1412,23 @@ HTMLCapabilityElementBase::GetClickingEnabledState() const {
 
 void HTMLCapabilityElementBase::RefreshDisableReasonsAndUpdateTimer() {
   base::TimeTicks now = base::TimeTicks::Now();
+  clicking_disabled_reasons_.erase_if(
+      [&now](const auto& it) { return it.value <= now; });
+
   base::TimeTicks max_time_ticks = base::TimeTicks::Min();
   DisableReason reason = DisableReason::kUnknown;
-  HashMap<DisableReason, base::TimeTicks> swap_clicking_disabled_reasons;
-  for (auto it = clicking_disabled_reasons_.begin();
-       it != clicking_disabled_reasons_.end(); ++it) {
-    if (it->value == base::TimeTicks::Max()) {
-      StopTimerDueToIndefiniteReason(it->key);
+  for (const auto& it : clicking_disabled_reasons_) {
+    if (it.value == base::TimeTicks::Max()) {
+      StopTimerDueToIndefiniteReason(it.key);
       return;
     }
 
-    if (it->value < now) {
+    if (it.value <= max_time_ticks) {
       continue;
     }
 
-    swap_clicking_disabled_reasons.Set(it->key, it->value);
-    if (it->value <= max_time_ticks) {
-      continue;
-    }
-
-    max_time_ticks = it->value;
-    reason = it->key;
+    max_time_ticks = it.value;
+    reason = it.key;
   }
   // Restart the timer to match with  "longest alive, not indefinitely disabling
   // reason". That's the one has the max timeticks on
@@ -1442,7 +1438,6 @@ void HTMLCapabilityElementBase::RefreshDisableReasonsAndUpdateTimer() {
                                                           max_time_ticks - now);
   }
 
-  clicking_disabled_reasons_.swap(swap_clicking_disabled_reasons);
   MaybeDispatchValidationChangeEvent();
 }
 
@@ -1719,7 +1714,7 @@ HTMLCapabilityElementBase::GetRecentlyAttachedTimeoutRemaining() const {
   base::TimeTicks now = base::TimeTicks::Now();
   auto it = clicking_disabled_reasons_.find(
       DisableReason::kRecentlyAttachedToLayoutTree);
-  if (it == clicking_disabled_reasons_.end()) {
+  if (it == clicking_disabled_reasons_.end() || it->value <= now) {
     return std::nullopt;
   }
 

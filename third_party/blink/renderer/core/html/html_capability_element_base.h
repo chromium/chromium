@@ -236,6 +236,9 @@ class CORE_EXPORT HTMLCapabilityElementBase
                            IntersectionOccluderLogging);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseIntersectionTest,
                            IntersectionVisibleOverlapsRecentAttachedInterval);
+  FRIEND_TEST_ALL_PREFIXES(
+      HTMLCapabilityElementBaseIntersectionTest,
+      IntersectionVisibleAfterRecentAttachedIntervalExpired);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseFencedFrameTest,
                            NotAllowedInFencedFrame);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseSimTest,
