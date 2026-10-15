@@ -69,7 +69,11 @@ class AtMemoryPersistedStateManager
  public:
   struct ExpiringSuggestion {
     Suggestion suggestion;
-    base::TimeTicks expiration_time;
+    base::Time insertion_time;
+
+    base::Time expiration_time() const {
+      return insertion_time + kDefaultTimeToLive;
+    }
   };
 
   static constexpr size_t kMaxPreviouslyFilledSuggestions = 20;
@@ -200,7 +204,8 @@ class AtMemoryPersistedStateManager
   // * are not Personal Context sourced
   // * `should_prune` returns true for them.
   void PruneSuggestions(
-      base::FunctionRef<bool(const Suggestion::AtMemoryPayload&)> should_prune);
+      base::FunctionRef<bool(const Suggestion::AtMemoryPayload&, base::Time)>
+          should_prune);
 
   void OnPrefChanged();
 

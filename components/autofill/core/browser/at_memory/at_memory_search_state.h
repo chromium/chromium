@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
@@ -44,6 +45,7 @@ struct AtMemorySearchState {
   std::vector<Suggestion> suggestions;
   std::u16string filter;
   AtMemorySearchStatus status = AtMemorySearchStatus::kZeroState;
+  base::Time insertion_time;
 };
 
 }  // namespace autofill
