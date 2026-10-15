@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -47,9 +48,11 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -732,7 +735,15 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
     return false;
   }
 
-  return password_client_->IsReauthBeforeFillingRequiredLegacy(authenticator_.get());
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    return password_client_->IsReauthBeforeFillingRequiredLegacy(
+        authenticator_.get());
+  }
+
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+      password_client_->GetDeviceAuthAvailabilityChecker();
+  return password_client_->IsReauthBeforeFillingRequired(checker.get());
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(
@@ -872,12 +883,25 @@ void PasswordAccessoryControllerImpl::OnAcknowledgementBeforeFillingReceived(
 void PasswordAccessoryControllerImpl::ReauthenticateAndFill(
     const autofill::AccessorySheetField& selection,
     const url::Origin& origin_to_fill_on) {
-  authenticator_ = password_client_->GetDeviceAuthenticator();
-  if (!ShouldTriggerBiometricReauth(selection)) {
+  bool should_reauth = false;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    authenticator_ = password_client_->GetDeviceAuthenticator();
+    should_reauth = ShouldTriggerBiometricReauth(selection);
+  } else {
+    should_reauth = ShouldTriggerBiometricReauth(selection);
+    if (should_reauth) {
+      authenticator_ = password_client_->GetDeviceAuthenticator();
+    }
+  }
+
+  if (!should_reauth) {
     authenticator_.reset();
     FillSelection(selection, origin_to_fill_on);
     return;
   }
+
+  CHECK(authenticator_);
   // |this| cancels the authentication when it is destroyed if one is ongoing,
   // which resets the callback, so it's safe to use base::Unretained(this) here.
   authenticator_->AuthenticateWithMessage(

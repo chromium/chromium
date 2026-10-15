@@ -23,7 +23,9 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -466,12 +468,28 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
     return;
   }
 
-  if (!device_authenticator_) {
-    device_authenticator_ = client->GetDeviceAuthenticator();
+  bool reauth_required = false;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    if (!device_authenticator_) {
+      device_authenticator_ = client->GetDeviceAuthenticator();
+    }
+    reauth_required =
+        device_authenticator_ && client->IsReauthBeforeFillingRequiredLegacy(
+                                     device_authenticator_.get());
+  } else {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        client->GetDeviceAuthAvailabilityChecker();
+    if (client->IsReauthBeforeFillingRequired(checker.get())) {
+      if (!device_authenticator_) {
+        device_authenticator_ = client->GetDeviceAuthenticator();
+      }
+      reauth_required = true;
+    }
   }
 
-  if (device_authenticator_ &&
-      client->IsReauthBeforeFillingRequiredLegacy(device_authenticator_.get())) {
+  if (reauth_required) {
+    CHECK(device_authenticator_);
     std::u16string message;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     url::Origin domain_origin = url::Origin::Create(

@@ -13,6 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -27,6 +29,7 @@
 namespace password_manager {
 
 using testing::_;
+using testing::ByMove;
 using testing::Return;
 
 using webauthn::CredManSupport;
@@ -36,8 +39,16 @@ class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
   MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
+              (override));
+  MOCK_METHOD(bool,
               IsReauthBeforeFillingRequiredLegacy,
               (device_reauth::DeviceAuthenticator*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
@@ -52,7 +63,7 @@ class CredManControllerTest : public testing::Test {
         std::make_unique<device_reauth::MockDeviceAuthenticator>();
     device_authenticator_ = mock_authenticator.get();
     EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-        .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
+        .WillOnce(Return(ByMove(std::move(mock_authenticator))))
         .RetiresOnSaturation();
     controller_ = std::make_unique<CredManController>(
         visibility_controller_.AsWeakPtr(), &password_client_);
@@ -187,9 +198,30 @@ TEST_F(CredManControllerTest, Fill) {
       "PasswordManager.CredMan.PasswordFormSubmissionTriggered", /*true*/ 1, 1);
 }
 
-TEST_F(CredManControllerTest, FillsPasswordIfReauthSuccessful) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipChromeReauthForCredMan);
+class CredManControllerReauthTest : public base::test::WithFeatureOverride,
+                                    public CredManControllerTest {
+ public:
+  CredManControllerReauthTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kDeviceReauthRefactor) {}
+
+  void SetUp() override {
+    CredManControllerTest::SetUp();
+    skip_chrome_reauth_feature_.InitAndDisableFeature(
+        features::kSkipChromeReauthForCredMan);
+    ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+        .WillByDefault(Return(true));
+    ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+        .WillByDefault(Return(true));
+  }
+
+  bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
+
+ private:
+  base::test::ScopedFeatureList skip_chrome_reauth_feature_;
+};
+
+TEST_P(CredManControllerReauthTest, FillsPasswordIfReauthSuccessful) {
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";
 
@@ -205,8 +237,6 @@ TEST_F(CredManControllerTest, FillsPasswordIfReauthSuccessful) {
       /*frame_driver=*/nullptr,
       /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
-  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillByDefault(Return(true));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
   EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
@@ -214,9 +244,7 @@ TEST_F(CredManControllerTest, FillsPasswordIfReauthSuccessful) {
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
 }
 
-TEST_F(CredManControllerTest, DoesNotFillIfReauthFailed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipChromeReauthForCredMan);
+TEST_P(CredManControllerReauthTest, DoesNotFillIfReauthFailed) {
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";
 
@@ -232,13 +260,13 @@ TEST_F(CredManControllerTest, DoesNotFillIfReauthFailed) {
       /*frame_driver=*/nullptr,
       /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
-  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillByDefault(Return(true));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/false));
   EXPECT_CALL(last_filler(), FillUsernameAndPassword).Times(0);
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CredManControllerReauthTest);
 
 // CredMan authenticates the user itself, so Chrome shouldn't re-auth again.
 TEST_F(CredManControllerTest, SkipsChromeReauthWhenCredManAuthenticates) {

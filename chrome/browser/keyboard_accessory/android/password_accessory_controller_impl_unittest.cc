@@ -21,6 +21,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/types/expected.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
@@ -38,6 +39,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -177,6 +179,16 @@ class MockPasswordManagerClient
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
+              (override));
+
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthAvailabilityChecker*),
               (override));
 
   MOCK_METHOD(bool,
@@ -1170,7 +1182,18 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
-TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
+class PasswordAccessoryControllerReauthTest
+    : public base::test::WithFeatureOverride,
+      public PasswordAccessoryControllerTest {
+ public:
+  PasswordAccessoryControllerReauthTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kDeviceReauthRefactor) {}
+
+  bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
+};
+
+TEST_P(PasswordAccessoryControllerReauthTest, FillsPasswordIfNoAuthAvailable) {
   // Auth is required to fill passwords in Android automotive.
   if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
@@ -1196,21 +1219,33 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+  auto* mock_authenticator_ptr = mock_authenticator.get();
+  EXPECT_CALL(*mock_authenticator_ptr, AuthenticateWithMessage).Times(0);
+  EXPECT_CALL(*mock_authenticator_ptr, Cancel).Times(0);
 
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(false));
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
   EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(false));
-  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
+      .Times(is_refactor_enabled() ? 0 : 1);
+  if (is_refactor_enabled()) {
+    EXPECT_CALL(*password_client(), GetDeviceAuthenticator).Times(0);
+  } else {
+    EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+        .WillOnce(Return(ByMove(std::move(mock_authenticator))));
+  }
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
                                    Eq(selected_field.display_text())));
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
-TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
-  features_.Reset();
-  features_.InitWithFeatures(
-      {password_manager::features::kBiometricTouchToFill}, {});
+TEST_P(PasswordAccessoryControllerReauthTest, FillsPasswordIfAuthSuccessful) {
+  features_.InitAndEnableFeature(
+      password_manager::features::kBiometricTouchToFill);
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
@@ -1232,14 +1267,21 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+  auto* mock_authenticator_ptr = mock_authenticator.get();
 
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
   ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*mock_authenticator_ptr, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))))
       .RetiresOnSaturation();
 
   EXPECT_CALL(*driver(),
@@ -1248,10 +1290,9 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
-TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
-  features_.Reset();
-  features_.InitWithFeatures(
-      {password_manager::features::kBiometricTouchToFill}, {});
+TEST_P(PasswordAccessoryControllerReauthTest, DoesntFillPasswordIfAuthFails) {
+  features_.InitAndEnableFeature(
+      password_manager::features::kBiometricTouchToFill);
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
@@ -1273,14 +1314,21 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+  auto* mock_authenticator_ptr = mock_authenticator.get();
 
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
   ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
       .WillByDefault(Return(true));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*mock_authenticator_ptr, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))))
       .RetiresOnSaturation();
 
   EXPECT_CALL(*driver(),
@@ -1289,6 +1337,57 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       .Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
+
+TEST_P(PasswordAccessoryControllerReauthTest, CancelsOngoingAuthIfDestroyed) {
+  features_.InitAndEnableFeature(
+      password_manager::features::kBiometricTouchToFill);
+  CreateSheetController();
+
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
+          .SetDisplayText(u"S3cur3")
+          .SetIsObfuscated(true)
+          .SetSelectable(true)
+          .Build();
+
+  auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
+  auto* mock_authenticator_ptr = mock_authenticator.get();
+
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(true));
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*mock_authenticator_ptr, AuthenticateWithMessage);
+
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))))
+      .RetiresOnSaturation();
+
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(selected_field.is_obfuscated(),
+                                   Eq(selected_field.display_text())))
+      .Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  EXPECT_CALL(*mock_authenticator_ptr, Cancel());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordAccessoryControllerReauthTest);
 
 TEST_F(PasswordAccessoryControllerTest,
        ShowsAcknowledgementBeforeFillingGroupedPassword) {
@@ -1429,50 +1528,6 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
   grouped_credential_sheet_test_helper.DismissSheet(
       AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
-}
-
-TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
-  features_.Reset();
-  features_.InitWithFeatures(
-      {password_manager::features::kBiometricTouchToFill}, {});
-  CreateSheetController();
-
-  std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
-      url::Origin::Create(GURL(kExampleSite)));
-
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  AccessorySheetField selected_field =
-      AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
-          .SetDisplayText(u"S3cur3")
-          .SetIsObfuscated(true)
-          .SetSelectable(true)
-          .Build();
-
-  auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
-  auto* mock_authenticator_ptr = mock_authenticator.get();
-
-  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*mock_authenticator_ptr, AuthenticateWithMessage);
-
-  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
-      .RetiresOnSaturation();
-
-  EXPECT_CALL(*driver(),
-              FillIntoFocusedField(selected_field.is_obfuscated(),
-                                   Eq(selected_field.display_text())))
-      .Times(0);
-  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
-
-  EXPECT_CALL(*mock_authenticator_ptr, Cancel());
 }
 
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {

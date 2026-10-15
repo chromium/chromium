@@ -3,7 +3,9 @@ include_rules = [
   "+chrome/browser/ui/android/favicon/java",
   "+components/browser_ui/bottomsheet/android",
   "+components/favicon/android",
+  "+components/device_reauth/device_auth_availability_checker.h",
   "+components/device_reauth/device_authenticator.h",
+  "+components/device_reauth/mock_device_auth_availability_checker.h",
   "+components/device_reauth/mock_device_authenticator.h",
   "+components/personal_context/first_run",
 ]

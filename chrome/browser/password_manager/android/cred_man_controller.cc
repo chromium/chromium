@@ -5,9 +5,11 @@
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 
 #include "base/android/device_info.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -16,6 +18,20 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 
 namespace password_manager {
+
+namespace {
+
+bool IsReauthBeforeFillingRequired(
+    PasswordManagerClient* client,
+    device_reauth::DeviceAuthenticator* authenticator) {
+  if (!base::FeatureList::IsEnabled(features::kDeviceReauthRefactor)) {
+    return client->IsReauthBeforeFillingRequiredLegacy(authenticator);
+  }
+  return client->IsReauthBeforeFillingRequired(
+      client->GetDeviceAuthAvailabilityChecker().get());
+}
+
+}  // namespace
 
 using webauthn::WebAuthnCredManDelegate;
 
@@ -89,12 +105,14 @@ void CredManController::TriggerFilling(const std::u16string& username,
     return;
   }
   visibility_controller_->SetShown();
+
   if (!base::FeatureList::IsEnabled(features::kSkipChromeReauthForCredMan)) {
-    if (!password_client_->IsReauthBeforeFillingRequiredLegacy(
-            authenticator_.get())) {
+    if (!IsReauthBeforeFillingRequired(password_client_,
+                                       authenticator_.get())) {
       FillUsernameAndPassword(username, password);
       return;
     }
+    CHECK(authenticator_);
     authenticator_->AuthenticateWithMessage(
         u"", base::BindOnce(&CredManController::OnReauthCompleted,
                             base::Unretained(this), username, password));
@@ -105,8 +123,8 @@ void CredManController::TriggerFilling(const std::u16string& username,
   // That setting doesn't exist on automotive, where re-auth is always required,
   // so Chrome still re-authenticates there.
   if (base::android::device_info::is_automotive() &&
-      password_client_->IsReauthBeforeFillingRequiredLegacy(
-          authenticator_.get())) {
+      IsReauthBeforeFillingRequired(password_client_, authenticator_.get())) {
+    CHECK(authenticator_);
     authenticator_->AuthenticateWithMessage(
         u"",
         base::BindOnce(&CredManController::OnReauthCompleted,
