@@ -31,12 +31,16 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   // the gpu channel.
   static std::unique_ptr<Gpu> Create(
       mojo::PendingRemote<mojom::Gpu> remote,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  // The Gpu has to be initialized in the main thread before establishing
+  // the gpu channel.
+  static std::unique_ptr<Gpu> CreateWithMessagePipe(
+      mojo::PendingRemote<mojom::Gpu> remote,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      int client_id = 0,
-      mojo::ScopedMessagePipeHandle channel_handle =
-          mojo::ScopedMessagePipeHandle(),
-      gpu::GpuChannelEstablishedCallback callback =
-          gpu::GpuChannelEstablishedCallback());
+      int client_id,
+      mojo::ScopedMessagePipeHandle channel_handle,
+      gpu::GpuChannelEstablishedCallback callback);
 
   Gpu(const Gpu&) = delete;
   Gpu& operator=(const Gpu&) = delete;
@@ -64,10 +68,11 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   class EstablishRequest;
 
   Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      int client_id,
-      mojo::ScopedMessagePipeHandle channel_handle,
-      gpu::GpuChannelEstablishedCallback callback);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  void PreestablishChannel(int client_id,
+                           mojo::ScopedMessagePipeHandle initial_channel_handle,
+                           gpu::GpuChannelEstablishedCallback callback);
 
   // Sends a request to establish a gpu channel. If a request is currently
   // pending this will do nothing.

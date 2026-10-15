@@ -541,9 +541,10 @@ void RenderThreadImpl::Init() {
     int client_id = 0;
     CHECK(base::StringToInt(
         command_line.GetSwitchValueASCII(switches::kGpuClientId), &client_id));
-    gpu_ = viz::Gpu::Create(std::move(remote_gpu), GetIOTaskRunner(), client_id,
-                            std::move(initial_gpu_channel),
-                            std::move(gpu_channel_established_callback));
+    gpu_ = viz::Gpu::CreateWithMessagePipe(
+        std::move(remote_gpu), GetIOTaskRunner(), client_id,
+        std::move(initial_gpu_channel),
+        std::move(gpu_channel_established_callback));
   } else {
     // In the standard path, we create a new pipe and ask the browser to
     // connect it on demand.

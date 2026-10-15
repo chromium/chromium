@@ -151,10 +151,7 @@ class GpuTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     gpu_impl_ = std::make_unique<TestGpuImpl>();
-    gpu_ = base::WrapUnique(new Gpu(GetRemote(), io_thread_.task_runner(),
-                                    /*client_id=*/0,
-                                    mojo::ScopedMessagePipeHandle(),
-                                    base::NullCallback()));
+    gpu_ = base::WrapUnique(new Gpu(GetRemote(), io_thread_.task_runner()));
   }
 
   void TearDown() override {
@@ -432,8 +429,9 @@ class InitialGpuChannelTest : public GpuTest {
         });
     mojo::MessagePipe message_pipe;
 
-    gpu_ = Gpu::Create(GetRemote(), io_thread().task_runner(), /*client_id=*/1,
-                       std::move(message_pipe.handle0), base::NullCallback());
+    gpu_ = Gpu::CreateWithMessagePipe(
+        GetRemote(), io_thread().task_runner(), /*client_id=*/1,
+        std::move(message_pipe.handle0), base::DoNothingWithBoundArgs());
 
     io_thread().task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&TestGpuImpl::BindGpuChannel,

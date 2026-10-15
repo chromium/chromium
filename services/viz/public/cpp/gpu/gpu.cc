@@ -252,10 +252,7 @@ void Gpu::GpuPtrIO::OnEstablishedGpuChannel(
 }
 
 Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
-         scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-         int client_id,
-         mojo::ScopedMessagePipeHandle initial_channel_handle,
-         gpu::GpuChannelEstablishedCallback callback)
+         scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(std::move(task_runner)),
       gpu_(new GpuPtrIO(), base::OnTaskRunnerDeleter(io_task_runner_)) {
@@ -270,23 +267,25 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
       FROM_HERE,
       base::BindOnce(&GpuPtrIO::Initialize, base::Unretained(gpu_.get()),
                      std::move(gpu_remote)));
+}
 
-  if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly) &&
-      initial_channel_handle.is_valid()) {
-    if (!callback.is_null()) {
-      establish_callbacks_.emplace_back(base::TimeTicks::Now(),
-                                        std::move(callback));
-    }
+void Gpu::PreestablishChannel(
+    int client_id,
+    mojo::ScopedMessagePipeHandle initial_channel_handle,
+    gpu::GpuChannelEstablishedCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(features::kSendGPUChannelEarly));
+  CHECK(initial_channel_handle.is_valid());
+  CHECK(!callback.is_null());
 
-    pending_initial_gpu_channel_builder_ =
-        gpu::GpuChannelHost::Builder::CreateAndGetGPUInfo(
-            base::PassKey<Gpu>(), client_id, std::move(initial_channel_handle),
-            io_task_runner_,
-            base::BindOnce(&Gpu::CompleteInitialChannelCreation,
-                           weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    CHECK(!callback);
-  }
+  establish_callbacks_.emplace_back(base::TimeTicks::Now(),
+                                    std::move(callback));
+
+  pending_initial_gpu_channel_builder_ =
+      gpu::GpuChannelHost::Builder::CreateAndGetGPUInfo(
+          base::PassKey<Gpu>(), client_id, std::move(initial_channel_handle),
+          io_task_runner_,
+          base::BindOnce(&Gpu::CompleteInitialChannelCreation,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 Gpu::~Gpu() {
@@ -303,13 +302,24 @@ Gpu::~Gpu() {
 // static
 std::unique_ptr<Gpu> Gpu::Create(
     mojo::PendingRemote<mojom::Gpu> remote,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  return base::WrapUnique(
+      new Gpu(std::move(remote), std::move(io_task_runner)));
+}
+
+// static
+std::unique_ptr<Gpu> Gpu::CreateWithMessagePipe(
+    mojo::PendingRemote<mojom::Gpu> remote,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     int client_id,
     mojo::ScopedMessagePipeHandle channel_handle,
     gpu::GpuChannelEstablishedCallback callback) {
-  return base::WrapUnique(new Gpu(std::move(remote), std::move(io_task_runner),
-                                  client_id, std::move(channel_handle),
-                                  std::move(callback)));
+  auto gpu =
+      base::WrapUnique(new Gpu(std::move(remote), std::move(io_task_runner)));
+  gpu->PreestablishChannel(client_id, std::move(channel_handle),
+                           std::move(callback));
+
+  return gpu;
 }
 
 void Gpu::CreateVideoEncodeAcceleratorProvider(
