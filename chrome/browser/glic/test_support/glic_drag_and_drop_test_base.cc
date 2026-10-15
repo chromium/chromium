@@ -164,19 +164,28 @@ GlicDragAndDropTestBase::SetupSourceTabWithDraggableImage() {
     return nullptr;
   }
 
-  // Wait for the image to load and lay out before querying its bounds.
+  // Wait for the image to load, lay out, and paint before querying its bounds
+  // or sending input events, so that renderer-side and browser-side
+  // paint-holding do not drop the initial mousedown event.
   auto result = content::EvalJs(
       source_wc,
       "const img = document.querySelector('img');"
       "new Promise(resolve => {"
-      "  if (img.complete && img.naturalWidth > 0) { resolve(true); }"
-      "  else { img.onload = () => resolve(true); img.onerror = () => "
+      "  const waitForPaint = () => {"
+      "    requestAnimationFrame(() => requestAnimationFrame(() => "
+      "resolve(true)));"
+      "  };"
+      "  if (img.complete && img.naturalWidth > 0) { waitForPaint(); }"
+      "  else { img.onload = waitForPaint; img.onerror = () => "
       "resolve(false); }"
       "})");
   if (!result.is_ok() || !result.ExtractBool()) {
     ADD_FAILURE() << "Image did not load successfully";
     return nullptr;
   }
+  content::WaitForCopyableViewInWebContents(source_wc);
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(source_wc);
+  content::WaitForHitTestData(source_wc->GetPrimaryMainFrame());
   return source_wc;
 }
 
