@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] largest-contentful-paint should not expose pseudo-elements
+  assert_equals: expected Element node <div id="target"></div> but got null
+Harness: the test ran to completion.
+
