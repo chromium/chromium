@@ -27,6 +27,11 @@ AutocompleteProviderClient::GetDocumentSuggestionsService() const {
   return nullptr;
 }
 
+sessions::TabRestoreService* AutocompleteProviderClient::GetTabRestoreService()
+    const {
+  return nullptr;
+}
+
 AiModeButtonService* AutocompleteProviderClient::GetAiModeButtonService()
     const {
   return nullptr;

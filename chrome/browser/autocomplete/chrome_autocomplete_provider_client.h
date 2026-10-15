@@ -34,6 +34,10 @@ class StoragePartition;
 class WebContents;
 }  // namespace content
 
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
+
 namespace sync_sessions {
 class SessionSyncService;
 }  // namespace sync_sessions
@@ -104,6 +108,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   ProviderStateService* GetProviderStateService() const override;
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
   sync_sessions::SessionSyncService* GetSessionSyncService() const override;
+  sessions::TabRestoreService* GetTabRestoreService() const override;
   AimEligibilityService* GetAimEligibilityService() const override;
   AiModeButtonService* GetAiModeButtonService() const override;
 

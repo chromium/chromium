@@ -68,6 +68,10 @@ namespace component_updater {
 class ComponentUpdateService;
 }
 
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
+
 namespace signin {
 class IdentityManager;
 }
@@ -126,6 +130,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
       LensOverlaySuggestInputsCallback callback) const = 0;
   virtual tab_groups::TabGroupSyncService* GetTabGroupSyncService() const = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() const = 0;
+  virtual sessions::TabRestoreService* GetTabRestoreService() const;
   virtual AimEligibilityService* GetAimEligibilityService() const = 0;
   virtual AiModeButtonService* GetAiModeButtonService() const;
 

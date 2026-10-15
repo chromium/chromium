@@ -93,6 +93,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",

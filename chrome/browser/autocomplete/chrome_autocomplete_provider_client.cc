@@ -47,6 +47,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -508,6 +509,11 @@ ChromeAutocompleteProviderClient::GetTabGroupSyncService() const {
 sync_sessions::SessionSyncService*
 ChromeAutocompleteProviderClient::GetSessionSyncService() const {
   return SessionSyncServiceFactory::GetForProfile(profile_);
+}
+
+sessions::TabRestoreService*
+ChromeAutocompleteProviderClient::GetTabRestoreService() const {
+  return TabRestoreServiceFactory::GetForProfile(profile_);
 }
 
 AimEligibilityService*
