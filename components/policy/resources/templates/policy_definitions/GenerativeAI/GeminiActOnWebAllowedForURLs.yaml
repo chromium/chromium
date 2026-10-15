@@ -22,6 +22,7 @@ supported_on:
 - android:150-
 - chrome.*:146-
 - chrome_os:146-
+- ios:158-
 features:
   dynamic_refresh: true
   per_profile: true

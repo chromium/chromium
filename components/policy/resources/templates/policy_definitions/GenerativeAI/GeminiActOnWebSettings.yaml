@@ -37,4 +37,5 @@ supported_on:
 - android:150-
 - chrome.*:143-
 - chrome_os:144-
+- ios:158-
 tags: []

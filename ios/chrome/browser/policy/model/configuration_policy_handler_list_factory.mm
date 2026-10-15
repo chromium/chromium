@@ -190,6 +190,9 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kGeminiSettings,
     prefs::kGeminiEnabledByPolicy,
     base::Value::Type::INTEGER },
+  { policy::key::kGeminiActOnWebSettings,
+    prefs::kGeminiActOnWebSettings,
+    base::Value::Type::INTEGER },
   { policy::key::kGenAiDefaultSettings,
     prefs::kGenAiEnabledByPolicy,
     base::Value::Type::INTEGER },
@@ -463,6 +466,14 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(std::make_unique<policy::URLSchemeListPolicyHandler>(
       policy::key::kSaasUsageReportingDomainUrlsForBrowsers,
       enterprise_reporting::kSaasUsageDomainUrlsForBrowser));
+
+  handlers->AddHandler(std::make_unique<policy::URLSchemeListPolicyHandler>(
+      policy::key::kGeminiActOnWebAllowedForURLs,
+      prefs::kGeminiActOnWebAllowedForURLs));
+
+  handlers->AddHandler(std::make_unique<policy::URLSchemeListPolicyHandler>(
+      policy::key::kGeminiActOnWebBlockedForURLs,
+      prefs::kGeminiActOnWebBlockedForURLs));
 
   return handlers;
 }

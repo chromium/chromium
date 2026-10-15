@@ -903,6 +903,17 @@ inline constexpr char kSigninStartupPromoLastShownTimeWithRandomOffset[] =
 // 0 means Gemini is enabled (default), and 1 means it's disabled.
 inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
 
+// An integer pref that holds the policy value for whether Gemini can act on
+// web pages (0 = Enabled, 1 = Disabled).
+inline constexpr char kGeminiActOnWebSettings[] = "ios.actuation_on_web";
+
+// List prefs that hold URL patterns where Gemini is explicitly allowed or
+// blocked from acting on web pages.
+inline constexpr char kGeminiActOnWebAllowedForURLs[] =
+    "ios.actuation_on_web_allowed_for_urls";
+inline constexpr char kGeminiActOnWebBlockedForURLs[] =
+    "ios.actuation_on_web_blocked_for_urls";
+
 // An integer determining the enabled status of Gen Ai by policy.
 // 0 or 1 means all covered generative AI features are enabled, while 2 means
 // that they are disabled.
