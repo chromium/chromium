@@ -715,7 +715,8 @@ enum class ReauthAccessPoint : int {
   kAccountMenu = 0,
   kAccountSettings = 1,
   kRecentTabs = 2,
-  kMaxValue = kRecentTabs,
+  kReauthInfoBar = 3,
+  kMaxValue = kReauthInfoBar,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ReauthAccessPoint)
 #endif  // BUILDFLAG(IS_IOS)
