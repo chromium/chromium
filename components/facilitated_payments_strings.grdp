@@ -170,7 +170,7 @@
     Pay with Pix without switching apps in Google Chrome
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_SUCCESS_SCREEN_VALUE_PROP_MESSAGE_2" desc="Second value prop message in the Pix account linking success screen." formatter_data="android_java">
-    Send Pix to friends and businesses using Wallet
+    Send Pix to friends and businesses using Google Wallet
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_SUCCESS_SCREEN_VALUE_PROP_MESSAGE_3" desc="Third value prop message in the Pix account linking success screen." formatter_data="android_java">
     Enjoy all the convenience and security that you count on from Pix

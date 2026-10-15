@@ -964,10 +964,17 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(primaryButton.getText(), is("Got it"));
 
         TextView valueProp1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
+        assertThat(
+                valueProp1.getText(), is("Pay with Pix without switching apps in Google Chrome"));
         assertNotNull(valueProp1.getCompoundDrawablesRelative()[0]);
         TextView valueProp2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
+        assertThat(
+                valueProp2.getText(), is("Send Pix to friends and businesses using Google Wallet"));
         assertNotNull(valueProp2.getCompoundDrawablesRelative()[0]);
         TextView valueProp3 = mView.getContentView().findViewById(R.id.value_prop_message_3);
+        assertThat(
+                valueProp3.getText(),
+                is("Enjoy all the convenience and security that you count on from Pix"));
         assertNotNull(valueProp3.getCompoundDrawablesRelative()[0]);
     }
 

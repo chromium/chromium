@@ -68,7 +68,7 @@ found in the LICENSE file.
         android:paddingBottom="@dimen/pix_account_linking_prompt_value_prop_vertical_padding"
         android:layout_marginTop="@dimen/pix_account_linking_prompt_inter_value_prop_vertical_margin"
         android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
-        app:drawableStartCompat="@drawable/payments_icon"
+        app:drawableStartCompat="@drawable/facilitated_payments_google_wallet_icon"
         android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
         app:drawableTint="@color/default_icon_color_secondary_tint_list"
         android:text="@string/pix_account_linking_success_screen_value_prop_message_2"
