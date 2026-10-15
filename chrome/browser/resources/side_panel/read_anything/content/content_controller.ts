@@ -13,7 +13,7 @@ import {previousReadHighlightClass} from '../read_aloud/movement.js';
 import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {isDistilledByReadability, isTranslatePdfEnabled, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
+import {isBlockTrackingEnabled, isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
 import {LinkStatus, ReadAnythingLogger} from '../shared/read_anything_logger.js';
 import {getReadingModeTextNodes} from '../shared/tree_traversal.js';
 
@@ -416,9 +416,7 @@ export class ContentController {
       return null;
     }
 
-    const shouldTrackBlocks =
-        isTranslatePdfEnabled() && this.visualBrowserProxy_.isPdf();
-    const node = this.buildSubtree_(rootId, shouldTrackBlocks);
+    const node = this.buildSubtree_(rootId, isBlockTrackingEnabled());
     // If there is no text or images in the tree, do not proceed. The empty
     // state container will show instead.
     // We should only consider images as content when determining whether or
