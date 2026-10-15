@@ -53,6 +53,9 @@ enum AIPageContentAttributeType {
   // Dialogs.
   kDialogModal,
   kDialogModeless,
+
+  // MathML root (<math>) elements.
+  kMath,
 };
 
 enum AIPageContentAnnotatedRole {
@@ -497,6 +500,17 @@ struct AIPageContentTableRowData {
   AIPageContentTableRowType row_type;
 };
 
+struct AIPageContentMathData {
+  // Stripped, sanitized MathML markup for the equation.
+  // Omitted if serialization fails (e.g. exceeds 64 KiB or 128 nesting levels).
+  string? stripped_mathml;
+
+  // Whether the equation is laid out as a block rather than inline (from
+  // computed style, so CSS `display: block math` without a `display="block"`
+  // attribute is also covered).
+  bool is_block;
+};
+
 struct AIPageContentFormData {
   string? form_name;
 
@@ -615,6 +629,9 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kTableRow.
   AIPageContentTableRowData? table_row_data;
+
+  // Only set if attribute_type is kMath.
+  AIPageContentMathData? math_data;
 
   array<AIPageContentAnnotatedRole> annotated_roles;
 
