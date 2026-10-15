@@ -703,7 +703,6 @@ static_library("test_support") {
     "geometry/test/geometry_util.h",
     "image/image_unittest_util.cc",
     "image/image_unittest_util.h",
-    "test/font_fallback_test_data.cc",
     "test/font_fallback_test_data.h",
     "test/scoped_default_font_description.h",
     "test/sk_color_eq.cc",
@@ -744,10 +743,6 @@ static_library("test_support") {
 
     deps += [ "//third_party/harfbuzz" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gfx_unittests") {
