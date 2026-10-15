@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
@@ -174,8 +175,6 @@ size_t FrameDeadlineDecider::SelectDeadline(
                     frame_time, earliest_input_time, is_handling_interaction);
   const auto& selected_deadline =
       possible_deadlines.deadlines[result.deadline_index];
-  UMA_HISTOGRAM_ENUMERATION("Viz.FrameDeadlineDecider.SelectionReason",
-                            result.reason);
 
   const auto& os_preferred_deadline =
       possible_deadlines.GetOSPreferredDeadline();
@@ -187,8 +186,12 @@ size_t FrameDeadlineDecider::SelectDeadline(
       .last_frame_time = frame_time,
       .is_interaction_active = is_handling_interaction,
   };
-  RecordSelectedSustainableDeadlineHistogram(
-      selected_deadline.present_delta, vsync_interval, max_allowed_buffers);
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_ENUMERATION("Viz.FrameDeadlineDecider.SelectionReason2",
+                              result.reason);
+    RecordSelectedSustainableDeadlineHistogram(
+        selected_deadline.present_delta, vsync_interval, max_allowed_buffers);
+  }
   TRACE_EVENT_END(
       "toplevel,graphics.pipeline,viz", [&](perfetto::EventContext ctx) {
         auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
@@ -332,7 +335,7 @@ void FrameDeadlineDecider::RecordSelectedSustainableDeadlineHistogram(
   const base::TimeDelta max_sustainable_delta =
       (max_allowed_buffers * vsync_interval) + base::Milliseconds(1);
   const bool is_sustainable = selected_present_delta <= max_sustainable_delta;
-  UMA_HISTOGRAM_BOOLEAN("Viz.FrameDeadlineDecider.SelectedSustainableDeadline",
+  UMA_HISTOGRAM_BOOLEAN("Viz.FrameDeadlineDecider.SelectedSustainableDeadline2",
                         is_sustainable);
 }
 

@@ -2772,7 +2772,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Viz.FrameDeadlineDecider.SelectedSustainableDeadline"
+<histogram name="Viz.FrameDeadlineDecider.SelectedSustainableDeadline2"
     enum="Boolean" expires_after="2027-02-14">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -2780,17 +2780,18 @@ chromium-metrics-reviews@google.com.
     Records whether the deadline selected by viz::FrameDeadlineDecider has a
     presentation delta that is sustainable with the current number of allowed
     buffers to avoid multiple-vsync swap throttling. Recorded every time a frame
-    is drawn and swapped.
+    is drawn and swapped (subsampled at 1%).
   </summary>
 </histogram>
 
-<histogram name="Viz.FrameDeadlineDecider.SelectionReason"
+<histogram name="Viz.FrameDeadlineDecider.SelectionReason2"
     enum="FrameDeadlineDeciderSelectionReason" expires_after="2027-02-14">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     Records the reason why a specific frame deadline was selected by
-    viz::FrameDeadlineDecider. Recorded every time a frame is drawn and swapped.
+    viz::FrameDeadlineDecider. Recorded every time a frame is drawn and swapped
+    (subsampled at 1%).
   </summary>
 </histogram>
 
