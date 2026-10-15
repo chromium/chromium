@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_LEVEL_UP_MODEL_LEVEL_UP_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_LEVEL_UP_MODEL_LEVEL_UP_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class LevelUpService;
+#import "ios/chrome/browser/level_up/model/level_up_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all LevelUpServices and associates them with
 // profiles.
-class LevelUpServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class LevelUpServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<LevelUpServiceFactory,
+                                                LevelUpService> {
  public:
-  static LevelUpService* GetForProfile(ProfileIOS* profile);
-  static LevelUpServiceFactory* GetInstance();
+  explicit LevelUpServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<LevelUpServiceFactory>;
-
-  LevelUpServiceFactory();
-  ~LevelUpServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
