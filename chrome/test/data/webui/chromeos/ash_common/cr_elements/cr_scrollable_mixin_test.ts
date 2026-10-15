@@ -41,11 +41,14 @@ suite('cr-scrollable-mixin', function() {
 
     static get properties() {
       return {
-        items: Array,
+        items: {
+          type: Array,
+          value: () => ['apple', 'banana', 'cucumber', 'doughnut'],
+        },
       };
     }
 
-    items: string[] = ['apple', 'bannana', 'cucumber', 'doughnut'];
+    declare items: string[];
   }
   customElements.define(TestElement.is, TestElement);
 
@@ -94,7 +97,7 @@ suite('cr-scrollable-mixin', function() {
     assertTrue(container.classList.contains('is-scrolled'));
     const scrollTop = container.scrollTop;
     testElement.saveScroll(ironList);
-    testElement.items = ['apple', 'bannana', 'cactus', 'cucumber', 'doughnut'];
+    testElement.items = ['apple', 'banana', 'cactus', 'cucumber', 'doughnut'];
     testElement.restoreScroll(ironList);
     flush();
     window.setTimeout(() => {
@@ -137,13 +140,19 @@ suite('cr-scrollable-mixin items', function() {
 
     static get properties() {
       return {
-        items: Array,
-        opened: Boolean,
+        items: {
+          type: Array,
+          value: () => ['apple', 'banana', 'cucumber', 'doughnut', 'enchilada'],
+        },
+        opened: {
+          type: Boolean,
+          value: false,
+        },
       };
     }
 
-    items: string[] = ['apple', 'bannana', 'cucumber', 'doughnut', 'enchilada'];
-    opened: boolean = false;
+    declare items: string[];
+    declare opened: boolean;
   }
   customElements.define(TestElement.is, TestElement);
 

@@ -43,11 +43,14 @@ suite('cr-scrollable-behavior', function() {
 
     static get properties() {
       return {
-        items: Array,
+        items: {
+          type: Array,
+          value: () => ['apple', 'banana', 'cucumber', 'doughnut'],
+        },
       };
     }
 
-    items: string[] = ['apple', 'bannana', 'cucumber', 'doughnut'];
+    declare items: string[];
   }
   customElements.define(TestElement.is, TestElement);
 
@@ -96,7 +99,7 @@ suite('cr-scrollable-behavior', function() {
     assertTrue(container.classList.contains('is-scrolled'));
     const scrollTop = container.scrollTop;
     testElement.saveScroll(ironList);
-    testElement.items = ['apple', 'bannana', 'cactus', 'cucumber', 'doughnut'];
+    testElement.items = ['apple', 'banana', 'cactus', 'cucumber', 'doughnut'];
     testElement.restoreScroll(ironList);
     flush();
     window.setTimeout(() => {

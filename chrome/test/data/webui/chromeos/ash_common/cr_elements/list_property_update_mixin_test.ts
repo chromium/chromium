@@ -34,17 +34,23 @@ class ListPropertyUpdateMixinTestElement extends
        * in the array represent an object that maps a list of |words| to the
        * |letter| that they begin with.
        */
-      complexArray: Array,
+      complexArray: {
+        type: Array,
+        value: () => [],
+      },
 
       /**
        * A test array containing objects with numerical |id|s.
        */
-      simpleArray: Array,
+      simpleArray: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
-  complexArray: ComplexArrayEntry[] = [];
-  simpleArray: SimpleArrayEntry[] = [];
+  declare complexArray: ComplexArrayEntry[];
+  declare simpleArray: SimpleArrayEntry[];
 
   constructor() {
     super();

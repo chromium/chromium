@@ -86,6 +86,10 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         type: Boolean,
       },
 
+      isCapturing: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -111,7 +115,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   declare pendingPrerewrittenKeyEvent: KeyEvent|null;
   declare modifiers: Modifier[];
   declare showSeparator: boolean;
-  isCapturing: boolean = false;
+  declare isCapturing: boolean;
   declare updateOnKeyPress: boolean;
   declare displayPrerewrittenKeyEvents: boolean;
   declare ignoreBlur: boolean;

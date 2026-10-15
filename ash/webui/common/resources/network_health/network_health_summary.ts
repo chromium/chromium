@@ -47,24 +47,32 @@ export class NetworkHealthSummaryElement extends
       /**
        * Network Health State object.
        */
-      networkHealthState_: Object,
+      networkHealthState_: {
+        type: Object,
+        value: null,
+      },
 
       /**
        * Network Health mojo remote.
        */
-      networkHealth_: Object,
+      networkHealth_: {
+        type: Object,
+        value: () => NetworkHealthService.getRemote(),
+      },
 
       /**
        * Expanded state per network type.
        */
-      typeExpanded_: Array,
+      typeExpanded_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
-  private networkHealthState_: NetworkHealthState|null = null;
-  private networkHealth_: NetworkHealthServiceRemote =
-      NetworkHealthService.getRemote();
-  private typeExpanded_: boolean[] = [];
+  declare private networkHealthState_: NetworkHealthState|null;
+  declare private networkHealth_: NetworkHealthServiceRemote;
+  declare private typeExpanded_: boolean[];
 
   override connectedCallback() {
     super.connectedCallback();
