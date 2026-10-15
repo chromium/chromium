@@ -38,8 +38,8 @@ mod ffi {
         #[namespace = "base"]
         type UnguessableToken = unguessable_token::UnguessableToken;
 
-        // Gives us access to C++ url::Origin and all methods exposed in the origin
-        // bridge file without having to redefine them here.
+        // Gives us access to C++ url::Origin and all methods exposed in the
+        // origin bridge file without having to redefine them here.
         #[namespace = "url"]
         type Origin = url::origin::ffi::Origin;
         #[namespace = ""]
@@ -196,15 +196,15 @@ mod ffi {
     //
     // This enum combines two distinct forms of isolation:
     // 1. Logical isolation: Whether the agent cluster is origin-keyed in the
-    //    renderer process, affecting web-visible behavior (e.g. document.domain).
-    //    In the absence of an OAC header, this defaults to origin-keyed if
-    //    blink::features::kOriginAgentClusterDefaultEnabled is enabled, and
-    //    site-keyed otherwise.
-    // 2. Process isolation: Whether the origin requires an origin-keyed process in
-    //    the process model. In the absence of an OAC header, this defaults to an
-    //    origin-keyed process if features::kOriginKeyedProcessesByDefault is
-    //    enabled, and a site-keyed process otherwise. If process isolation is true,
-    //    logical isolation must also be true.
+    //    renderer process, affecting web-visible behavior (e.g.
+    //    document.domain). In the absence of an OAC header, this defaults to
+    //    origin-keyed if blink::features::kOriginAgentClusterDefaultEnabled is
+    //    enabled, and site-keyed otherwise.
+    // 2. Process isolation: Whether the origin requires an origin-keyed process
+    //    in the process model. In the absence of an OAC header, this defaults
+    //    to an origin-keyed process if features::kOriginKeyedProcessesByDefault
+    //    is enabled, and a site-keyed process otherwise. If process isolation
+    //    is true, logical isolation must also be true.
     //
     // In the C++ `content::OriginAgentClusterIsolationState` class, these two
     // forms are tracked using two separate `AgentClusterKey::OACStatus` fields.
@@ -307,8 +307,8 @@ fn add_v8_optimization_disabled_state_for_origin_if_not_cached(
     }
 
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    // Get the mapping between origins and whether v8 optimization is enabled (for a
-    // given browsing instance).
+    // Get the mapping between origins and whether v8 optimization is enabled
+    // (for a given browsing instance).
     let optimization_verdicts_by_origin =
         cpsp.v8_optimization_verdict_map.entry(browsing_instance_id).or_default();
     // Only store the verdict if it hasn't been cached yet.
@@ -333,8 +333,8 @@ fn lookup_are_v8_optimizations_disabled(
 ) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
 
-    // Get the mapping between origins and whether v8 optimization is enabled (for a
-    // given browsing instance).
+    // Get the mapping between origins and whether v8 optimization is enabled
+    // (for a given browsing instance).
     if let Some(optimization_verdicts_by_origin) = cpsp
         .v8_optimization_verdict_map
         .get(&browsing_instance_id)
@@ -433,8 +433,8 @@ fn add_origin_agent_cluster_state_for_browsing_instance(
     default_oac_state: ffi::OriginAgentClusterIsolationState,
 ) {
     // We should only be registering an isolation state if it deviates from the
-    // default isolation state (e.g., if it's explicitly requested by a header or
-    // if an ad frame's process isolation is being bypassed).
+    // default isolation state (e.g., if it's explicitly requested by a header
+    // or if an ad frame's process isolation is being bypassed).
     assert!(
         oac_state != default_oac_state,
         "Trying to add invalid OAC state: {:?} (default: {:?})",
@@ -451,8 +451,8 @@ fn add_origin_agent_cluster_state_for_browsing_instance(
     let is_valid_opt_out =
         ffi::IsolatedOriginUtil::is_valid_origin_for_origin_agent_cluster_opt_out(&origin);
 
-    // We ought to have validated the origin prior to getting here.  If the origin
-    // isn't valid at this point, something has gone wrong.
+    // We ought to have validated the origin prior to getting here.  If the
+    // origin isn't valid at this point, something has gone wrong.
     assert!(is_valid_opt_in || is_valid_opt_out, "Trying to isolate invalid origin: {:?}", *origin);
 
     assert_ne!(browsing_instance_id, BrowsingInstanceId(None));
@@ -487,11 +487,11 @@ fn record_default_origin_agent_cluster_origin_if_new(
 
     // Commits of origins that have ever sent the OriginAgentCluster header in
     // this BrowserContext are tracked in every BrowsingInstance in this
-    // BrowserContext, to avoid having to do multiple global walks. If the origin
-    // isn't in the list of such origins (i.e., the common case), return early to
-    // avoid unnecessary work, since this is called on every commit. Skip this
-    // during global walks and frame removals, since we do want to track the
-    // origin's non-isolated status in those cases.
+    // BrowserContext, to avoid having to do multiple global walks. If the
+    // origin isn't in the list of such origins (i.e., the common case),
+    // return early to avoid unnecessary work, since this is called on every
+    // commit. Skip this during global walks and frame removals, since we do
+    // want to track the origin's non-isolated status in those cases.
     if !is_global_walk_or_frame_removal {
         let browser_context_id = BrowserContextId(browser_context_token);
         let has_ever_requested_oac = cpsp
@@ -927,21 +927,17 @@ pub struct ChildProcessSecurityPolicyImpl {
     //
     // Each origin entry stores information about:
     //
-    // 1. Which BrowsingInstances it applies to. This is a combination of a
-    //    BrowsingInstance ID `browsing_instance_id` and a bool flag
-    //    `applies_to_future_browsing_instances` stored in in each origin's
-    //    IsolatedOriginEntry. When `applies_to_future_browsing_instances` is
-    //    true, the origin will be isolated in all BrowsingInstances with IDs
-    //    equal to or greater than `browsing_instance_id`. When
-    //    `applies_to_future_browsing_instances` is false, the origin will be
-    //    isolated only in a single BrowsingInstance with ID
-    //    `browsing_instance_id`.
+    // 1. Which BrowsingInstances it applies to. This is a combination of a BrowsingInstance ID
+    //    `browsing_instance_id` and a bool flag `applies_to_future_browsing_instances` stored in
+    //    in each origin's IsolatedOriginEntry. When `applies_to_future_browsing_instances` is
+    //    true, the origin will be isolated in all BrowsingInstances with IDs equal to or greater
+    //    than `browsing_instance_id`. When `applies_to_future_browsing_instances` is false, the
+    //    origin will be isolated only in a single BrowsingInstance with ID `browsing_instance_id`.
     //
-    // 2. Optionally, which BrowserContext (profile) it applies to.  When the
-    //    `browser_context_id` field in the IsolatedOriginEntry is not None, a
-    //    particular isolated origin entry only applies to that BrowserContext.
-    //    Note that the same origin may be isolated in different profiles,
-    //    possibly with different BrowsingInstance ID cut-offs.  For example:
+    // 2. Optionally, which BrowserContext (profile) it applies to.  When the `browser_context_id`
+    //    field in the IsolatedOriginEntry is not None, a particular isolated origin entry only
+    //    applies to that BrowserContext. Note that the same origin may be isolated in different
+    //    profiles, possibly with different BrowsingInstance ID cut-offs.  For example:
     //
     //        https://foo.com -> { [https://test.foo.com profile_1 4],
     //                             [https://test.foo.com profile_2 7] }
@@ -1097,7 +1093,9 @@ enum IsolatedOriginSource {
     WebTriggered,
     Test,
 }
-// LINT.ThenChange(//content/public/browser/child_process_security_policy.h:IsolatedOriginSource)
+// LINT.ThenChange(
+// //content/public/browser/child_process_security_policy.h:IsolatedOriginSource
+// )
 
 #[allow(unsafe_code)]
 // SAFETY: IsolatedOriginSource is a simple enum with a fixed repr(i32) that
