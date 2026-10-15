@@ -3,18 +3,7 @@
 // found in the LICENSE file.
 
 // Base size in number of elements that the LRU cache can hold before starting to evict elements.
-let kLRUCacheBaseCapacity = 6
-
-// Additional capacity of elements that the LRU cache can hold before starting to evict elements
-// when PinnedTabs feature is enabled.
-//
-// To calculate the cache size number we'll start with the assumption that currently snapshot
-// preloading feature "works fine". In the reality it might not be the case for large screen devices
-// such as iPad. Another assumption here is that pinned tabs feature requires on average 4 more
-// snapshots to be used. Based on that kLRUCacheMaxCapacityForPinnedTabsEnabled is
-// kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed for pinned tabs
-// feature.
-let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
+let kLRUCacheBaseCapacity = 10
 
 // A class providing an in-memory and on-disk storage of tab snapshots.
 // A snapshot is a full-screen image of the contents of the page at the current scroll offset and
@@ -61,16 +50,9 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
 
   // Convenience initialize that uses a default `lruCache`.
   convenience init(storageDirectoryUrl: URL) {
-    var cacheSize = kLRUCacheBaseCapacity
-    if UIDevice.current.userInterfaceIdiom != .pad {
-      // Add more capacity to LRUCache when the pinned tabs feature is enabled.
-      // The pinned tabs feature is fully enabled on iPhone and disabled on iPad. The condition to
-      // determine the cache size should sync with IsPinnedTabsEnabled() in
-      // ios/chrome/browser/tabs/model/features.h.
-      cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled
-    }
     self.init(
-      lruCache: SnapshotLRUCache(size: cacheSize), storageDirectoryUrl: storageDirectoryUrl)
+      lruCache: SnapshotLRUCache(size: kLRUCacheBaseCapacity),
+      storageDirectoryUrl: storageDirectoryUrl)
   }
 
   // Unregisters observers from Notification Center.

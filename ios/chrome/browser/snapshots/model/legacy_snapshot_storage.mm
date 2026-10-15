@@ -13,7 +13,6 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_image_file_manager.h"
@@ -26,19 +25,7 @@ namespace {
 
 // Base size in number of elements that the LRU cache can hold before
 // starting to evict elements.
-const NSUInteger kLRUCacheBaseCapacity = 6;
-
-// Additional capacity of elements that the LRU cache can hold before starting
-// to evict elements when PinnedTabs feature is enabled.
-//
-// To calculate the cache size number we'll start with the assumption that
-// currently snapshot preloading feature "works fine". In the reality it might
-// not be the case for large screen devices such as iPad. Another assumption
-// here is that pinned tabs feature requires on average 4 more snapshots to be
-// used. Based on that kLRUCacheMaxCapacityForPinnedTabsEnabled is
-// kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed
-// for pinned tabs feature.
-const NSUInteger kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4;
+const NSUInteger kLRUCacheBaseCapacity = 10;
 
 // Convert `wrappers` to a vector of SnapshotID.
 std::vector<SnapshotID> ToSnapshotIDs(NSArray<SnapshotIDWrapper*>* wrappers) {
@@ -52,11 +39,8 @@ std::vector<SnapshotID> ToSnapshotIDs(NSArray<SnapshotIDWrapper*>* wrappers) {
 
 // Returns a default LegacySnapshotLRUCache instance.
 LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
-  NSUInteger cacheSize = kLRUCacheBaseCapacity;
-  if (IsPinnedTabsEnabled()) {
-    cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled;
-  }
-  return [[LegacySnapshotLRUCache alloc] initWithCacheSize:cacheSize];
+  return
+      [[LegacySnapshotLRUCache alloc] initWithCacheSize:kLRUCacheBaseCapacity];
 }
 
 }  // namespace

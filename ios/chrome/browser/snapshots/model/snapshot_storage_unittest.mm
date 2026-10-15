@@ -44,6 +44,8 @@ enum class SnapshotStorageKind {
 const NSInteger kSnapshotCount = 10;
 const NSUInteger kSnapshotPixelSize = 8;
 const NSUInteger kSnapshotCacheSize = 3;
+const NSUInteger kDefaultLRUCacheCapacity = 10;
+const NSInteger kDefaultLRUCacheTestInsertionCount = 12;
 
 // Constants used to construct path to test the storage migration.
 const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
@@ -461,4 +463,49 @@ TEST_P(SnapshotStorageTest, RetrieveGreyImageFromColorImageInDisk) {
   FlushRunLoops(storage);
 
   EXPECT_EQ(numberOfCallbacks, kSnapshotCount);
+}
+
+// Tests that the default LRU cache capacity is `kDefaultLRUCacheCapacity`.
+TEST_P(SnapshotStorageTest, DefaultLRUCacheCapacity) {
+  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
+  const base::FilePath storage_path = scoped_temp_directory_.GetPath();
+
+  id<SnapshotStorage> storage = nil;
+  switch (GetParam()) {
+    case SnapshotStorageKind::kLegacy:
+      storage =
+          [[LegacySnapshotStorage alloc] initWithStoragePath:storage_path];
+      break;
+    case SnapshotStorageKind::kSwift:
+      storage = [[SnapshotStorageImpl alloc]
+          initWithStorageDirectoryUrl:base::apple::FilePathToNSURL(
+                                          storage_path)];
+      break;
+  }
+
+  NSMutableArray<SnapshotIDWrapper*>* snapshot_ids =
+      [[NSMutableArray alloc] init];
+  CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
+  for (NSInteger i = 0; i < kDefaultLRUCacheTestInsertionCount; ++i) {
+    SnapshotIDWrapper* snapshot_id = NewSnapshotID();
+    [snapshot_ids addObject:snapshot_id];
+    [storage setImage:GenerateRandomImage(scale) withSnapshotID:snapshot_id];
+  }
+
+  // Only images retained in the in-memory LRU cache invoke the completion
+  // synchronously before the main-thread runloop is flushed.
+  __block NSUInteger cached_in_memory_count = 0;
+  for (SnapshotIDWrapper* snapshot_id in snapshot_ids) {
+    [storage retrieveImageWithSnapshotID:snapshot_id
+                            snapshotKind:SnapshotKindColor
+                              completion:^(UIImage* image) {
+                                ++cached_in_memory_count;
+                              }];
+  }
+
+  EXPECT_EQ(kDefaultLRUCacheCapacity, cached_in_memory_count);
+
+  [storage removeAllImages];
+  FlushRunLoops(storage);
+  [storage shutdown];
 }
