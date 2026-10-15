@@ -1237,9 +1237,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Tools.ExecutionDuration.{ActorMode}.{ActorTaskState}"
-    units="ms" expires_after="2027-03-31">
+    units="ms" expires_after="2027-10-09">
   <owner>bbetini@google.com</owner>
-  <owner>ritkagup@google.com</owner>
+  <owner>ritikagup@google.com</owner>
   <summary>
     Recorded when a task is completed (Finished, Failed, or Cancelled). This
     captures the cumulative duration the task spent in the {ActorTaskState}
@@ -1247,6 +1247,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ActorTaskState" variants="ActorTaskState"/>
   <token key="ActorMode">
+    <variant name="Background" summary="Background"/>
     <variant name="Foreground" summary="standard Foreground"/>
     <variant name="Pip" summary="Picture-in-Picture"/>
   </token>

@@ -176,14 +176,18 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         int PIP = 0;
     }
 
-    /** Represents whether Chrome is in Picture-in-Picture mode or standard Foreground mode. */
-    @IntDef({ActorMode.FOREGROUND, ActorMode.PIP})
+    /**
+     * Represents whether an Actor task is executing in standard Foreground mode, Picture-in-Picture
+     * mode, or Background mode.
+     */
+    @IntDef({ActorMode.FOREGROUND, ActorMode.PIP, ActorMode.BACKGROUND})
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.FIELD})
     public @interface ActorMode {
         int FOREGROUND = 0;
         int PIP = 1;
-        int NUM_ENTRIES = 2;
+        int BACKGROUND = 2;
+        int NUM_ENTRIES = 3;
     }
 
     private static @Nullable ActorMetrics sInstance;
@@ -294,13 +298,21 @@ public class ActorMetrics implements ActorKeyedService.Observer {
      * before cleanup. Background actuation takes precedence over PiP.
      */
     private String getStoppedReasonModeHistogram(@ActorTaskId int taskId) {
-        if (ActorForegroundServiceController.get().hasBackgroundSessionForTask(taskId)) {
+        @ActorMode int mode = getEffectiveModeForTask(taskId);
+        if (mode == ActorMode.BACKGROUND) {
             return ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION;
         }
-        if (mCurrentGlobalMode == ActorMode.PIP) {
+        if (mode == ActorMode.PIP) {
             return ACTOR_TASK_STOPPED_REASON_PIP;
         }
         return ACTOR_TASK_STOPPED_REASON_FOREGROUND;
+    }
+
+    private @ActorMode int getEffectiveModeForTask(@ActorTaskId int taskId) {
+        if (ActorForegroundServiceController.get().hasBackgroundSessionForTask(taskId)) {
+            return ActorMode.BACKGROUND;
+        }
+        return mCurrentGlobalMode;
     }
 
     /**
@@ -525,7 +537,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
      * Records the cumulative execution duration for a given task state and mode.
      *
      * @param state The {@link ActorTaskState} of the task.
-     * @param mode The {@link ActorMode} (Foreground or Pip).
+     * @param mode The {@link ActorMode} (Foreground, Pip, or Background).
      * @param durationMs The cumulative duration in milliseconds.
      */
     public static void recordExecutionDuration(
@@ -533,9 +545,21 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         String stateName = getStateName(state);
         if (stateName.isEmpty()) return;
 
-        String modeName = (mode == ActorMode.PIP) ? "Pip" : "Foreground";
+        String modeName = getModeName(mode);
         String histogramName = "Actor.Tools.ExecutionDuration." + modeName + "." + stateName;
         RecordHistogram.recordLongTimesHistogram(histogramName, durationMs);
+    }
+
+    private static String getModeName(@ActorMode int mode) {
+        switch (mode) {
+            case ActorMode.PIP:
+                return "Pip";
+            case ActorMode.BACKGROUND:
+                return "Background";
+            case ActorMode.FOREGROUND:
+            default:
+                return "Foreground";
+        }
     }
 
     private static String getStateName(@ActorTaskState int state) {
@@ -573,22 +597,32 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         if (mCurrentGlobalMode == newMode) return;
 
         mCurrentGlobalMode = newMode;
-        for (LatencyTracker tracker : mTrackers.values()) {
-            tracker.updateTaskStateAndMode(tracker.getCurrentState(), mCurrentGlobalMode);
+        refreshActiveTaskModes();
+    }
+
+    /**
+     * Re-evaluates the effective {@link ActorMode} for all currently tracked tasks and flushes
+     * elapsed duration for any task whose mode changed.
+     */
+    public void refreshActiveTaskModes() {
+        ThreadUtils.assertOnUiThread();
+        for (Map.Entry<@ActorTaskId Integer, LatencyTracker> entry : mTrackers.entrySet()) {
+            entry.getValue().setMode(getEffectiveModeForTask(entry.getKey()));
         }
     }
 
     @Override
     public void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState) {
+        @ActorMode int effectiveMode = getEffectiveModeForTask(taskId);
         LatencyTracker tracker = mTrackers.get(taskId);
         if (tracker == null) {
             if (!ActorUtils.isCompletedState(newState)) {
                 recordNotificationPermissionState(ActorUtils.getActorNotificationPermissionState());
             }
-            tracker = new LatencyTracker(newState, mCurrentGlobalMode);
+            tracker = new LatencyTracker(newState, effectiveMode);
             mTrackers.put(taskId, tracker);
         } else {
-            tracker.updateTaskStateAndMode(newState, mCurrentGlobalMode);
+            tracker.updateTaskStateAndMode(newState, effectiveMode);
         }
 
         if (ActorUtils.isCompletedState(newState)) {
@@ -620,9 +654,15 @@ public class ActorMetrics implements ActorKeyedService.Observer {
             mLastTransitionTime = SystemClock.elapsedRealtime();
         }
 
-        @ActorTaskState
-        int getCurrentState() {
-            return mCurrentState;
+        /**
+         * Updates the execution mode for the current state, flushing elapsed duration for the
+         * previous mode.
+         *
+         * @param newMode The next {@link ActorMode}.
+         */
+        void setMode(@ActorMode int newMode) {
+            if (mCurrentMode == newMode) return;
+            updateTaskStateAndMode(mCurrentState, newMode);
         }
 
         /**

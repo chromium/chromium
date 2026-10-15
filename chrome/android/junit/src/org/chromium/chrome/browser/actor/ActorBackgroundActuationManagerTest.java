@@ -133,6 +133,7 @@ public class ActorBackgroundActuationManagerTest {
 
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
 
@@ -144,6 +145,7 @@ public class ActorBackgroundActuationManagerTest {
     @After
     public void tearDown() {
         ActorMetrics.resetForTesting();
+        ActorForegroundServiceController.setInstanceForTesting(null);
         ProfileResolverJni.setInstanceForTesting(null);
         ProfileManager.resetForTesting();
         BackgroundTabPoolManager.resetForTesting();
@@ -1510,5 +1512,196 @@ public class ActorBackgroundActuationManagerTest {
         watcher.assertExpected();
         verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
+    }
+
+    @Test
+    public void
+            testTransitionActiveTasksToBackground_AndRestore_RecordsBackgroundExecutionDuration() {
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        when(controller.hasBackgroundSessionForTask(anyInt()))
+                .thenAnswer(inv -> mManager.hasBackgroundSessionForTask(inv.getArgument(0)));
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        setupTransitionMocks();
+
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(500);
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(500);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+
+        // Task starts acting in the foreground for 150ms.
+        ActorMetrics.getInstance().onTaskStateChanged(500, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(150, TimeUnit.MILLISECONDS);
+
+        // Transitioning active tasks to background flushes foreground time and switches to
+        // Background mode for 350ms.
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        ShadowSystemClock.advanceBy(350, TimeUnit.MILLISECONDS);
+
+        // Prepare mocks for restoring the background tab back into the active window.
+        when(mPlaceholderTab.getId()).thenReturn(101);
+        when(mPlaceholderTab.isDestroyed()).thenReturn(false);
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
+        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(0);
+
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        TabWindowManager.INVALID_WINDOW_ID,
+                        mWindowAndroid,
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 0,
+                        /* isColdStart= */ false));
+
+        // Subsequent time (100ms) before completion is accumulated back in Foreground mode
+        // (150ms + 100ms = 250ms total Foreground, 350ms total Background).
+        ShadowSystemClock.advanceBy(100, TimeUnit.MILLISECONDS);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Foreground.Acting", 250)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 350)
+                        .build();
+        ActorMetrics.getInstance().onTaskStateChanged(500, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testProvisionBackgroundTabForTask_RecordsBackgroundExecutionDuration() {
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        when(controller.hasBackgroundSessionForTask(anyInt()))
+                .thenAnswer(inv -> mManager.hasBackgroundSessionForTask(inv.getArgument(0)));
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        @SuppressWarnings("unchecked")
+        Callback<Tab> callback = mock(Callback.class);
+        mManager.provisionBackgroundTabForTask(mProfile, 500, callback);
+        triggerPageLoadFinished();
+
+        ActorMetrics.getInstance().onTaskStateChanged(500, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(300, TimeUnit.MILLISECONDS);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Tools.ExecutionDuration.Background.Acting", 300);
+        ActorMetrics.getInstance().onTaskStateChanged(500, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroy_MessageScopedSession_ClearsTaskBackgroundMode() {
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        when(controller.hasBackgroundSessionForTask(anyInt()))
+                .thenAnswer(inv -> mManager.hasBackgroundSessionForTask(inv.getArgument(0)));
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(600);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mActorKeyedService.getTask(600)).thenReturn(task);
+
+        // Task starts acting in the foreground for 100ms before the message-scoped background
+        // session is created.
+        ActorMetrics.getInstance().onTaskStateChanged(600, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(100, TimeUnit.MILLISECONDS);
+
+        // Starting background actuation creates the message-scoped session and calls
+        // refreshActiveTaskModes(), flushing the 100ms Foreground duration and transitioning
+        // task 600 to Background mode for 200ms.
+        mManager.startBackgroundActuation(mProfile, "msg_session_destroy_test");
+        triggerPageLoadFinished();
+        ShadowSystemClock.advanceBy(200, TimeUnit.MILLISECONDS);
+
+        // Destroying the message-scoped session calls refreshActiveTaskModes(), transitioning
+        // task 600 back to Foreground so subsequent active time (150ms) is attributed to
+        // Foreground (100ms + 150ms = 250ms total Foreground, 200ms total Background).
+        mManager.destroy();
+        ShadowSystemClock.advanceBy(150, TimeUnit.MILLISECONDS);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 200)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Foreground.Acting", 250)
+                        .build();
+        ActorMetrics.getInstance().onTaskStateChanged(600, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void
+            testRestoreActiveWindowBackgroundTabs_MessageScopedSession_PartialRestore_ClearsRestoredTaskBackgroundMode() {
+        MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 2,
+                /* url= */ "https://www.example.com",
+                /* tabCount= */ 1,
+                /* taskId= */ 57);
+
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        when(controller.hasBackgroundSessionForTask(anyInt()))
+                .thenAnswer(inv -> mManager.hasBackgroundSessionForTask(inv.getArgument(0)));
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mTab.hasParentCollection()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getCount()).thenReturn(1);
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(600);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mActorKeyedService.getTask(600)).thenReturn(task);
+
+        mManager.startBackgroundActuation(mProfile, "msg_session_partial_restore_test");
+        triggerPageLoadFinished();
+
+        BackgroundSession session = mManager.getBackgroundSessions().get(0);
+        session.getTabDataList().get(0).setTabWindowId(1);
+        session.getTabDataList().get(0).setPlaceholderTabId(null);
+
+        Tab secondTab = mock(Tab.class);
+        when(secondTab.getId()).thenReturn(200);
+        when(secondTab.getProfile()).thenReturn(mProfile);
+        session.addTab(secondTab);
+        session.getTabDataList().get(1).setTabWindowId(2);
+
+        ActorMetrics.getInstance().onTaskStateChanged(600, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(200, TimeUnit.MILLISECONDS);
+
+        // Restore only window 1's tab (tab 100); tab 200 in window 2 remains in the session.
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        1,
+                        mWindowAndroid,
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 0,
+                        /* isColdStart= */ false));
+
+        assertEquals(1, mManager.getBackgroundSessions().size());
+        assertEquals(1, session.getTabDataList().size());
+        assertEquals(secondTab, session.getTabDataList().get(0).getTab());
+
+        // Even though the message-scoped session is not yet empty, task 600's tab (100) was
+        // restored to the foreground, so subsequent active time should be attributed to Foreground.
+        ShadowSystemClock.advanceBy(150, TimeUnit.MILLISECONDS);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 200)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Foreground.Acting", 150)
+                        .build();
+        ActorMetrics.getInstance().onTaskStateChanged(600, ActorTaskState.FINISHED);
+        watcher.assertExpected();
     }
 }
