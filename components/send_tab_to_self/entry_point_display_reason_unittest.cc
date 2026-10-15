@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -60,9 +58,9 @@ TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSignedOut) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Verifies that the reauth promo is offered when the user is in a sign-in
+// pending state (persistent auth error).
 TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSigninPending) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
   SignIn();
   sync_service()->SetPersistentAuthError();
 
@@ -70,18 +68,6 @@ TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSigninPending) {
       EntryPointDisplayReason::kOfferReauth,
       GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                  send_tab_to_self_model(), pref_service()));
-}
-
-TEST_F(EntryPointDisplayReasonTest,
-       ShouldHidePromoIfSigninPendingWhenEnhancedUiDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSendTabToSelfEnhancedDesktopUI);
-  SignIn();
-  sync_service()->SetPersistentAuthError();
-
-  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
-                                          send_tab_to_self_model(),
-                                          pref_service()));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -19,7 +18,6 @@
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
@@ -31,6 +29,12 @@
 namespace send_tab_to_self {
 
 namespace {
+
+using feature_engagement::kIPHSendTabToSelfTutorialFeature;
+using ::testing::Message;
+using ::testing::NiceMock;
+using ::testing::Return;
+using user_education::test::MatchFeaturePromoParams;
 
 constexpr char kEligibleUrl[] = "https://example.com";
 
@@ -55,9 +59,9 @@ class SendTabToSelfIphControllerTest : public ChromeRenderViewHostTestHarness {
         &test_tab_strip_model_delegate_, profile());
 
     ON_CALL(mock_browser_window_interface_, GetTabStripModel())
-        .WillByDefault(testing::Return(tab_strip_model_.get()));
+        .WillByDefault(Return(tab_strip_model_.get()));
     ON_CALL(mock_browser_window_interface_, GetProfile())
-        .WillByDefault(testing::Return(profile()));
+        .WillByDefault(Return(profile()));
   }
 
   void TearDown() override {
@@ -101,10 +105,8 @@ class SendTabToSelfIphControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      send_tab_to_self::kSendTabToSelfEnhancedDesktopUI};
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
-  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   MockBrowserUserEducationInterface user_education_{
       &mock_browser_window_interface_};
   TestTabStripModelDelegate test_tab_strip_model_delegate_;
@@ -116,8 +118,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownWhenEligibleOnConstruction) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   SendTabToSelfIphController controller(browser_window_interface());
 }
@@ -127,8 +128,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabAdded) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   // Adding the eligible tab triggers the promo via OnTabStripModelChanged.
   AddTab(kEligibleUrl);
@@ -137,8 +137,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabAdded) {
 TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabSelectionChanged) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Start with ineligible entry point.
@@ -158,8 +157,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabSelectionChanged) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   // Switching active tab to tab 1 triggers promo via OnTabStripModelChanged.
   tab_strip_model()->ActivateTabAt(1);
@@ -168,8 +166,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabSelectionChanged) {
 TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabChangedAt) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Add tab with an ineligible entry point initially.
@@ -183,8 +180,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabChangedAt) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   tabs::TabInterface* tab = tab_strip_model()->GetActiveTab();
   controller.OnTabChangedAt(tab, TabChangeType::kAll);
@@ -193,8 +189,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnTabChangedAt) {
 TEST_F(SendTabToSelfIphControllerTest, PromoNotShownOnPartialTabChange) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Add tab with an ineligible entry point initially.
@@ -212,8 +207,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoNotShownOnPartialTabChange) {
 TEST_F(SendTabToSelfIphControllerTest, PromoNotShownOnInactiveTabChange) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Add two tabs with an ineligible entry point initially.
@@ -232,8 +226,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoNotShownOnInactiveTabChange) {
 TEST_F(SendTabToSelfIphControllerTest, PromoShownOnModelReady) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Start with no target device (ineligible entry point).
@@ -244,8 +237,7 @@ TEST_F(SendTabToSelfIphControllerTest, PromoShownOnModelReady) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   // When model becomes ready with a valid target device, promo is shown.
   SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferFeature);
@@ -256,8 +248,7 @@ TEST_F(SendTabToSelfIphControllerTest,
        PromoDeferredWhileDeviceInfoNotYetLoaded) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Simulate startup where an eligible tab is active, but DeviceInfo has not
@@ -278,8 +269,7 @@ TEST_F(SendTabToSelfIphControllerTest,
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   // Once DeviceInfo finishes loading from disk, the model becomes ready and
   // notifies observers via OnModelReady(), triggering the startup promo.
@@ -287,28 +277,10 @@ TEST_F(SendTabToSelfIphControllerTest,
   fake_model->SetIsReady(true);
 }
 
-TEST_F(SendTabToSelfIphControllerTest, PromoNotShownWhenEnhancedUIDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
-
-  EXPECT_CALL(*user_education(),
-              MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
-      .Times(0);
-
-  AddTab(kEligibleUrl);
-
-  SendTabToSelfIphController controller(browser_window_interface());
-  controller.OnModelReady();
-}
-
 TEST_F(SendTabToSelfIphControllerTest, PromoNotShownWithoutTargetDevice) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   SetEntryPointDisplayReason(std::nullopt);
@@ -327,12 +299,11 @@ TEST_F(SendTabToSelfIphControllerTest, PromoNotShownForNonEligibleReasons) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   for (auto reason : non_eligible_reasons) {
-    SCOPED_TRACE(testing::Message() << "Reason: " << static_cast<int>(reason));
+    SCOPED_TRACE(Message() << "Reason: " << static_cast<int>(reason));
     SetEntryPointDisplayReason(reason);
     AddTab(kEligibleUrl);
 
@@ -357,8 +328,7 @@ TEST_F(SendTabToSelfIphControllerTest,
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Model updates or tab switches do not trigger the promo.
@@ -371,8 +341,7 @@ TEST_F(SendTabToSelfIphControllerTest,
        ObserversRemovedWhenReasonTransitionsFromNulloptToNonEligible) {
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Start with std::nullopt (e.g. sync/model still initializing on startup).
@@ -398,16 +367,14 @@ TEST_F(SendTabToSelfIphControllerTest, PromoTriggeredOnlyOnce) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)));
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)));
 
   // First tab triggers the promo and removes the observer.
   AddTab(kEligibleUrl);
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
 
   // Subsequent tab additions or model notifications do not trigger promo again.
@@ -427,8 +394,7 @@ TEST_F(SendTabToSelfIphControllerTest, DestructorSafelyUnregistersObserver) {
 
   EXPECT_CALL(*user_education(),
               MaybeShowStartupFeaturePromo(
-                  user_education::test::MatchFeaturePromoParams(
-                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+                  MatchFeaturePromoParams(kIPHSendTabToSelfTutorialFeature)))
       .Times(0);
   AddTab(kEligibleUrl);
   tab_strip_model()->ActivateTabAt(0);

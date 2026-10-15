@@ -2901,15 +2901,13 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "SendTabToSelfAutoOpen,"
-     "SendTabToSelfExtraEntryPoints,"
-     "SendTabToSelfEnhancedDesktopUI"},
+     "SendTabToSelfExtraEntryPoints"},
     {"Enabled with fast-follows", switches::kEnableFeatures,
      "IPH_SendTabToSelfOmnibox,"
      "IPH_SendTabToSelfTutorial,"
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfEnhancedDesktopUIv2,"
-     "SendTabToSelfEnhancedDesktopUI,"
      "SendTabToSelfDynamicShortcuts,"
      "SendTabToSelfOpenNativeApp,"
      "SendTabToSelfSupportAutoOpenInTabGrid,"
@@ -2920,7 +2918,6 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfEnhancedDesktopUIv2,"
-     "SendTabToSelfEnhancedDesktopUI,"
      "SendTabToSelfDynamicShortcuts,"
      "SendTabToSelfOpenNativeApp,"
      "SendTabToSelfSupportAutoOpenInTabGrid,"

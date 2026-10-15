@@ -38,7 +38,6 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -115,10 +114,8 @@ class TestSendTabToSelfSyncService : public StubSendTabToSelfSyncService {
 class SendTabToSelfTutorialInteractiveUiTest : public InteractiveBrowserTest {
  public:
   SendTabToSelfTutorialInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {feature_engagement::kIPHSendTabToSelfTutorialFeature,
-         send_tab_to_self::kSendTabToSelfEnhancedDesktopUI},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHSendTabToSelfTutorialFeature);
   }
 
   // Step 1 only anchors to an eligible promo tab. The real sync service never
@@ -431,10 +428,8 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
   SendTabToSelfIphInteractiveUiTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHSendTabToSelfTutorialFeature})) {
-    scoped_feature_list_.InitWithFeatures(
-        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         user_education::features::kRaiseMacHelpBubbleAboveMenus},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        user_education::features::kRaiseMacHelpBubbleAboveMenus);
   }
 
   ~SendTabToSelfIphInteractiveUiTest() override = default;

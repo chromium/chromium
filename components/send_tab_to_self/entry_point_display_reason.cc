@@ -4,9 +4,7 @@
 
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 
-#include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -47,10 +45,6 @@ bool ShouldOfferReauth(syncer::SyncService* sync_service,
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
   return false;
 #else
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-    return false;
-  }
-
   return IsSigninPossible(sync_service, pref_service) &&
          sync_service->GetTransportState() ==
              syncer::SyncService::TransportState::PAUSED;

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -25,10 +24,6 @@ SendTabToSelfIphController::SendTabToSelfIphController(
     BrowserWindowInterface* interface)
     : browser_window_interface_(interface),
       scoped_data_(interface->GetUnownedUserDataHost(), *this) {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)) {
-    return;
-  }
   if (TabStripModel* tab_strip_model =
           browser_window_interface_->GetTabStripModel()) {
     tab_strip_model->AddObserver(this);
@@ -99,10 +94,6 @@ void SendTabToSelfIphController::OnModelReady() {
 
 void SendTabToSelfIphController::MaybeShowPromo() {
   if (promo_attempted_) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)) {
     return;
   }
   TabStripModel* tab_strip_model =

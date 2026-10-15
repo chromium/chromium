@@ -29,11 +29,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfAutoOpen);
 BASE_DECLARE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-// If this feature is enabled, several UIs on desktop are enhanced, like showing
-// a list of devices directly in the context menu, the new Desktop device picker
-// flow, and the visually enhanced STTS target device picker bubble.
-BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUI);
-
 // If this feature is enabled, "Send to your device" entry points will be added
 // to the Omnibox context menu.
 BASE_DECLARE_FEATURE(kSendTabToSelfExtraEntryPoints);
