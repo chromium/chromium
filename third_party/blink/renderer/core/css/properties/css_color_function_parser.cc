@@ -399,10 +399,8 @@ namespace {
 const CSSNumericLiteralValue& GetNumericLiteralValue(const CSSValue& value) {
   // We can reach here with calc(NumericLiteral) as per ChannelIsResolvable.
   if (auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
-    const CSSMathExpressionNode* expression = math_value->ExpressionNode();
-    DCHECK(expression->IsNumericLiteral());
-    return *MakeGarbageCollected<CSSNumericLiteralValue>(
-        expression->DoubleValue(), expression->ResolvedUnitType());
+    return To<CSSMathExpressionNumericLiteral>(*math_value->ExpressionNode())
+        .GetValue();
   }
   return To<CSSNumericLiteralValue>(value);
 }
