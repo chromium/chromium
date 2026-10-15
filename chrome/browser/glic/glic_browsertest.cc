@@ -229,8 +229,12 @@ class GlicKeyedServiceSyncBrowserTest : public GlicBrowserTest {
   }
 
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicExperimentalTriggering);
+    // The policy control exemption lets the test profile act on the web, which
+    // is required for experimental triggering to be available.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicExperimentalTriggering,
+                              features::kGlicActorPolicyControlExemption},
+        /*disabled_features=*/{});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

@@ -310,8 +310,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   raw_ptr<Profile> profile_;
 
-  // Never null - GlicActorTaskManager and GlicInstanceCoordinatorImpl hold a
-  // reference to this so it must be destroyed after them.
+  // Never null - GlicActorTaskManager, GlicInstanceCoordinatorImpl and
+  // GlicEnabling hold a reference to this so it must be destroyed after them.
   std::unique_ptr<GlicActorPolicyChecker> actor_policy_checker_;
 
   std::unique_ptr<GlicEnabling> enabling_;

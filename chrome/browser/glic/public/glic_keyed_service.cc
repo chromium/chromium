@@ -178,7 +178,8 @@ GlicKeyedService::GlicKeyedService(
       enabling_(std::make_unique<GlicEnabling>(
           base::PassKey<GlicKeyedService>(),
           profile,
-          &profile_manager->GetProfileAttributesStorage())),
+          &profile_manager->GetProfileAttributesStorage(),
+          actor_policy_checker_.get())),
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       opt_in_controller_(
           std::make_unique<GlicExperimentalOptInController>(profile)),
