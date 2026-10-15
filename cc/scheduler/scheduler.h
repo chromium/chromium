@@ -114,6 +114,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void TearDown();
 
   // BeginFrameObserverBase
+  void OnBeginFrame(const viz::BeginFrameArgs& args) override;
   void OnBeginFrameSourcePausedChanged(bool paused) override;
   bool OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) override;
 
@@ -390,6 +391,21 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Used to drop the pending begin frame before we go idle.
   void CancelPendingBeginFrameTask();
+
+  // Returns the BeginFrameArgs with the latest frame time that the scheduler
+  // knows about. This includes the last used BeginFrame, which can be later
+  // than the last impl frame (e.g. a MISSED BeginFrame that was dropped because
+  // its deadline passed). Frame ids from different sources (including
+  // `viz::BeginFrameArgs::kManualSourceId`) are not comparable, so the frame
+  // time is used to find the latest one.
+  viz::BeginFrameArgs LatestKnownBeginFrameArgs() const;
+
+  // Returns a sequence number for a manual BeginFrame
+  // (`viz::BeginFrameArgs::kManualSourceId`). It is at least `candidate`, and
+  // larger than the sequence number of every manual BeginFrame that the
+  // scheduler knows about, so that the new BeginFrame is not dropped as a
+  // duplicate.
+  uint64_t NextManualSequenceNumber(uint64_t candidate) const;
 
   void DrawIfPossible();
   void DrawForced();

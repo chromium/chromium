@@ -883,35 +883,176 @@ TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_ClearsPendingRetroFrame) {
   client_->Reset();
 
   // 3. Send early last BeginMainFrame.
-  // It should take the max(last_started, pending) and advance.
+  // Since pending_args is usable, it should be used directly instead of
+  // synthesizing a manual BeginFrame.
   scheduler_->SendEarlyFinalBeginMainFrame();
 
-  uint64_t spoofed_seq =
-      client_->last_begin_impl_frame_args().frame_id.sequence_number;
-  EXPECT_GT(spoofed_seq, pending_args.frame_id.sequence_number);
+  EXPECT_EQ(client_->last_begin_impl_frame_args().frame_id,
+            pending_args.frame_id);
   EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
   client_->Reset();
 
-  // 4. Now simulate Viz sending a BeginFrame that clashes with our spoofed one.
-  // It should be dropped.
-  viz::BeginFrameArgs clashing_args =
-      fake_external_begin_frame_source_->CreateBeginFrameArgs(
-          BEGINFRAME_FROM_HERE, task_runner_->GetMockTickClock());
-  clashing_args.frame_id.sequence_number = spoofed_seq;
-  clashing_args.frame_time =
-      std::max(clashing_args.frame_time,
-               client_->last_begin_impl_frame_args().frame_time);
-
-  scheduler_->OnBeginFrame(clashing_args);
-  EXPECT_NO_ACTION();
-
-  // 5. Finish the current spoofed frame.
+  // 4. Finish the current frame.
   task_runner_->RunPendingTasks();
   client_->Reset();
 
-  // 6. Verify no more frames are started (pending retro frame was cleared).
+  // 5. Verify no more frames are started (pending retro frame was consumed and
+  // its task was cancelled).
   EXPECT_NO_ACTION();
 }
+
+TEST_P(SchedulerTest,
+       SendEarlyFinalBeginMainFrame_DropsExpiredMissedPendingBeginFrame) {
+  SetUpScheduler(EXTERNAL_BFS);
+  const base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();
+
+  // 1. Start an impl-only frame and stay inside it.
+  scheduler_->SetNeedsRedraw();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame");
+  const viz::BeginFrameArgs active_args = client_->last_begin_impl_frame_args();
+  client_->Reset();
+
+  // 2. Receive a MISSED BeginFrame while busy inside the impl frame, and
+  // advance past its deadline.
+  const base::TimeTicks missed_frame_time = active_args.frame_time + interval;
+  const base::TimeTicks missed_deadline =
+      missed_frame_time + interval - base::Microseconds(1);
+  viz::BeginFrameArgs pending_missed_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, fake_external_begin_frame_source_->source_id(),
+      active_args.frame_id.sequence_number + 1, missed_frame_time,
+      missed_deadline, interval, viz::BeginFrameArgs::MISSED);
+  scheduler_->OnBeginFrame(pending_missed_args);
+  task_runner_->AdvanceMockTickClock(missed_deadline + base::Microseconds(10) -
+                                     task_runner_->NowTicks());
+  client_->Reset();
+
+  // 3. Send early last BeginMainFrame. The expired MISSED pending BeginFrame
+  // cannot be used, so it must be acked with DidNotProduceFrame (after the
+  // interrupted active impl frame is finished) and superseded by a manual
+  // BeginFrame.
+  scheduler_->SendEarlyFinalBeginMainFrame();
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  EXPECT_EQ(client_->last_begin_frame_ack().frame_id,
+            pending_missed_args.frame_id);
+  EXPECT_EQ(client_->last_frame_skipped_reason(),
+            FrameSkippedReason::kRecoverLatency);
+  EXPECT_EQ(client_->last_begin_impl_frame_args().frame_id.source_id,
+            viz::BeginFrameArgs::kManualSourceId);
+  EXPECT_GT(client_->last_begin_impl_frame_args().frame_time,
+            pending_missed_args.frame_time);
+}
+
+// The scheduler can use a BeginFrame (and record it as the last used
+// BeginFrame) without starting an impl frame for it, e.g. a MISSED BeginFrame
+// that is already past its deadline. Its frame time is not always a whole
+// number of intervals after earlier BeginFrames (e.g. the Mac display link or
+// a time source can restart with a new phase). The early final BeginMainFrame
+// must not have an earlier frame time than this BeginFrame.
+TEST_P(SchedulerTest,
+       SendEarlyFinalBeginMainFrame_NotEarlierThanLastUsedBeginFrame) {
+  SetUpScheduler(EXTERNAL_BFS);
+  const base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();
+  const viz::BeginFrameArgs last_impl_frame_args =
+      client_->last_begin_impl_frame_args();
+  ASSERT_TRUE(last_impl_frame_args.IsValid());
+
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_ACTIONS("AddObserver(this)");
+  client_->Reset();
+
+  // 2.45 intervals after the last impl frame, a MISSED BeginFrame with a
+  // different phase (0.4 interval) arrives after its deadline. The scheduler
+  // uses it, but drops it before it starts an impl frame.
+  const base::TimeTicks now = last_impl_frame_args.frame_time + interval * 2.45;
+  ASSERT_LT(task_runner_->NowTicks(), now);
+  task_runner_->AdvanceMockTickClock(now - task_runner_->NowTicks());
+  const base::TimeTicks missed_frame_time =
+      last_impl_frame_args.frame_time + interval * 2.4;
+  viz::BeginFrameArgs missed_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, fake_external_begin_frame_source_->source_id(),
+      last_impl_frame_args.frame_id.sequence_number + 2, missed_frame_time,
+      /*deadline=*/now - base::Microseconds(1), interval,
+      viz::BeginFrameArgs::MISSED);
+  fake_external_begin_frame_source_->TestOnBeginFrame(missed_args);
+  EXPECT_NO_ACTION();
+  EXPECT_EQ(scheduler_->LastUsedBeginFrameArgs().frame_id,
+            missed_args.frame_id);
+
+  // Without the fix, the early BeginFrame frame time was rounded from the last
+  // impl frame (2 intervals later), which is before `missed_frame_time`.
+  scheduler_->SendEarlyFinalBeginMainFrame();
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  EXPECT_EQ(client_->last_begin_impl_frame_args().frame_id.source_id,
+            viz::BeginFrameArgs::kManualSourceId);
+  EXPECT_GT(client_->last_begin_impl_frame_args().frame_time,
+            missed_frame_time);
+}
+
+// The early final BeginMainFrame frame time can be up to half an interval in
+// the future. A BeginFrame that the BeginFrameSource sent for an earlier vsync,
+// but that arrives later, is stale. The scheduler must drop it (and send an
+// ack) instead of going back in time.
+TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_DropsStaleSourceBeginFrame) {
+  SetUpScheduler(EXTERNAL_BFS);
+  const base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();
+  const viz::BeginFrameArgs last_impl_frame_args =
+      client_->last_begin_impl_frame_args();
+  ASSERT_TRUE(last_impl_frame_args.IsValid());
+
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_ACTIONS("AddObserver(this)");
+  client_->Reset();
+
+  // 1.6 intervals after the last impl frame, the early BeginFrame frame time is
+  // rounded up to 2 intervals after it, which is in the future.
+  const base::TimeTicks now = last_impl_frame_args.frame_time + interval * 1.6;
+  ASSERT_LT(task_runner_->NowTicks(), now);
+  task_runner_->AdvanceMockTickClock(now - task_runner_->NowTicks());
+  scheduler_->SendEarlyFinalBeginMainFrame();
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  const viz::BeginFrameArgs early_args = client_->last_begin_impl_frame_args();
+  EXPECT_EQ(early_args.frame_id.source_id,
+            viz::BeginFrameArgs::kManualSourceId);
+  EXPECT_GT(early_args.frame_time, task_runner_->NowTicks());
+  client_->Reset();
+
+  // Finish the main frame and the impl frame.
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
+  EXPECT_TRUE(client_->HasAction("ScheduledActionDrawIfPossible"));
+  scheduler_->SetNeedsRedraw();
+  client_->Reset();
+
+  // The BeginFrame for the vsync one interval after the last impl frame was in
+  // flight, and arrives now.
+  viz::BeginFrameArgs stale_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, fake_external_begin_frame_source_->source_id(),
+      last_impl_frame_args.frame_id.sequence_number + 1,
+      last_impl_frame_args.frame_time + interval,
+      last_impl_frame_args.frame_time + interval * 2, interval,
+      viz::BeginFrameArgs::NORMAL);
+  ASSERT_LT(stale_args.frame_time, early_args.frame_time);
+  fake_external_begin_frame_source_->TestOnBeginFrame(stale_args);
+  EXPECT_NO_ACTION();
+  EXPECT_EQ(client_->last_begin_frame_ack().frame_id, stale_args.frame_id);
+  EXPECT_EQ(scheduler_->LastUsedBeginFrameArgs().frame_id, early_args.frame_id);
+
+  // The next BeginFrame from the source is used normally.
+  task_runner_->AdvanceMockTickClock(early_args.frame_time + interval -
+                                     task_runner_->NowTicks());
+  viz::BeginFrameArgs next_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, fake_external_begin_frame_source_->source_id(),
+      last_impl_frame_args.frame_id.sequence_number + 3,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(next_args);
+  EXPECT_ACTIONS("WillBeginImplFrame");
+  EXPECT_EQ(client_->last_begin_impl_frame_args().frame_id, next_args.frame_id);
+}
+
 TEST_P(SchedulerTest, Stop) {
   SetUpScheduler(EXTERNAL_BFS);
 
