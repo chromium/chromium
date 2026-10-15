@@ -1,0 +1,15 @@
+upstream {
+  commit: "11417e812b68deb86466b78e34ec0e11f5d5bd7b"
+  artifacts {
+    git {
+      repository: "https://github.com/AOMediaCodec/iamf-tools"
+      commit: "11417e812b68deb86466b78e34ec0e11f5d5bd7b"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

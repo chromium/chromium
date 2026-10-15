@@ -2,7 +2,7 @@ Name: iamf_tools
 URL: https://github.com/AOMediaCodec/iamf-tools
 Version: N/A
 Revision: 11417e812b68deb86466b78e34ec0e11f5d5bd7b
-License: Apache-2.0, BSD-3-Clause-Clear-with-Alliance-for-Open-Media-Patent
+License: Apache-2.0, BSD-3-Clause, BSD-3-Clause-Clear-with-Alliance-for-Open-Media-Patent
 License File: src/LICENSE
 Shipped: yes
 Security Critical: yes
@@ -23,4 +23,4 @@ The library parses untrusted audio streams (IAMF files and packets) from the int
 Local Modifications:
 We have stripped unnecessary error strings in non-debug builds to minimize binary size footprint.
 
-Only part of the upstream code is copied to src, see update.py.
+Only part of the upstream code is copied to src, see copy.bara.sky.

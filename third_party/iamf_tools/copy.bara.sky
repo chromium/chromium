@@ -1,0 +1,31 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob(
+        [
+            "LICENSE",
+            "PATENTS",
+            "iamf/**.c",
+            "iamf/**.cc",
+            "iamf/**.h",
+        ],
+        exclude = [
+            # Exclude directories we don't need in Chromium.
+            "iamf/cli/adm_to_user_metadata/**",
+            "iamf/cli/ambisonic_encoder/**",
+            "iamf/cli/itu_1770_4/**",
+            "iamf/cli/proto_conversion/**",
+            "iamf/cli/user_metadata_builder/**",
+            # Exclude tests and test data.
+            "**/test/**",
+            "**/tests/**",
+            "**/testdata/**",
+            "**_test.*",
+            "**_unittest.*",
+        ],
+    ) + glob([
+        # We want to keep the decoder fuzz test, but exclude other tests.
+        "iamf/api/decoder/tests/iamf_decoder_fuzz_test.cc",
+        "iamf/cli/tests/portable/get_test_path.h",
+    ]),
+)
