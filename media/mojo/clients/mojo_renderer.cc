@@ -60,10 +60,26 @@ void MojoRenderer::Initialize(MediaResource* media_resource,
   media_resource_ = media_resource;
   init_cb_ = std::move(init_cb);
 
-  // Create mojom::DemuxerStream for each demuxer stream and bind its lifetime
-  // to the pipe.
-  std::vector<raw_ptr<DemuxerStream>> streams =
+  // Create mojom::DemuxerStream for the active audio and video stream and bind
+  // its lifetime to the pipe.
+  std::vector<raw_ptr<DemuxerStream>> all_streams =
       media_resource_->GetAllStreams();
+  std::vector<media::DemuxerStream*> streams;
+  bool has_audio = false;
+  bool has_video = false;
+  for (media::DemuxerStream* stream : all_streams) {
+    if (!stream) {
+      continue;
+    }
+    if (stream->type() == DemuxerStream::AUDIO && !has_audio) {
+      has_audio = true;
+      streams.push_back(stream);
+    } else if (stream->type() == DemuxerStream::VIDEO && !has_video) {
+      has_video = true;
+      streams.push_back(stream);
+    }
+  }
+
   std::vector<mojo::PendingRemote<mojom::DemuxerStream>> stream_proxies;
 
   for (media::DemuxerStream* stream : streams) {
@@ -193,6 +209,41 @@ void MojoRenderer::SetVolume(float volume) {
 base::TimeDelta MojoRenderer::GetMediaTime() {
   base::AutoLock auto_lock(lock_);
   return media_time_interpolator_.GetInterpolatedTime();
+}
+
+void MojoRenderer::OnTracksChanged(DemuxerStream::Type track_type,
+                                   DemuxerStream* enabled_track,
+                                   base::OnceClosure change_completed_cb) {
+  DVLOG(1) << __func__ << ": track_type=" << track_type
+           << ", enabled_track=" << enabled_track;
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  MojoDemuxerStreamImpl* target_mojo_stream = nullptr;
+  for (const auto& mojo_stream : streams_) {
+    if (mojo_stream->type() == track_type) {
+      target_mojo_stream = mojo_stream.get();
+      break;
+    }
+  }
+
+  if (!target_mojo_stream) {
+    std::move(change_completed_cb).Run();
+    return;
+  }
+
+  DemuxerStream* previous_stream = target_mojo_stream->stream();
+  if (!enabled_track || enabled_track == previous_stream ||
+      (previous_stream && enabled_track->ManagesTrackSwitchesInternally())) {
+    target_mojo_stream->SetStream(enabled_track);
+    std::move(change_completed_cb).Run();
+    return;
+  }
+
+  target_mojo_stream->PrepareForTrackChange();
+  Flush(base::BindOnce(&MojoRenderer::OnFlushedForTrackChange,
+                       base::Unretained(this), track_type,
+                       base::Unretained(enabled_track), GetMediaTime(),
+                       std::move(change_completed_cb)));
 }
 
 RendererType MojoRenderer::GetRendererType() {
@@ -352,6 +403,23 @@ void MojoRenderer::OnFlushed() {
   DCHECK(flush_cb_);
 
   std::move(flush_cb_).Run();
+}
+
+void MojoRenderer::OnFlushedForTrackChange(
+    DemuxerStream::Type track_type,
+    DemuxerStream* enabled_track,
+    base::TimeDelta time,
+    base::OnceClosure change_completed_cb) {
+  for (const auto& mojo_stream : streams_) {
+    if (mojo_stream->type() == track_type) {
+      mojo_stream->SetStream(enabled_track);
+      break;
+    }
+  }
+  if (!encountered_error_ && remote_renderer_.is_bound()) {
+    StartPlayingFrom(time);
+  }
+  std::move(change_completed_cb).Run();
 }
 
 void MojoRenderer::OnCdmAttached(bool success) {

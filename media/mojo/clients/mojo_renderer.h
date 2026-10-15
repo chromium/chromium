@@ -63,6 +63,9 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
   base::TimeDelta GetMediaTime() override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       DemuxerStream* enabled_track,
+                       base::OnceClosure change_completed_cb) override;
   RendererType GetRendererType() override;
 
  private:
@@ -96,6 +99,10 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   // Callbacks for |remote_renderer_| methods.
   void OnInitialized(media::RendererClient* client, bool success);
   void OnFlushed();
+  void OnFlushedForTrackChange(DemuxerStream::Type track_type,
+                               DemuxerStream* enabled_track,
+                               base::TimeDelta time,
+                               base::OnceClosure change_completed_cb);
   void OnCdmAttached(bool success);
 
   void CancelPendingCallbacks();

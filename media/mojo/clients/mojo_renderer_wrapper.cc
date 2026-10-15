@@ -50,4 +50,12 @@ base::TimeDelta MojoRendererWrapper::GetMediaTime() {
   return mojo_renderer_->GetMediaTime();
 }
 
+void MojoRendererWrapper::OnTracksChanged(
+    DemuxerStream::Type track_type,
+    DemuxerStream* enabled_track,
+    base::OnceClosure change_completed_cb) {
+  mojo_renderer_->OnTracksChanged(track_type, enabled_track,
+                                  std::move(change_completed_cb));
+}
+
 }  // namespace media

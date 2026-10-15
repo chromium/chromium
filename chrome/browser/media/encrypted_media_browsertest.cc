@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
@@ -31,9 +33,11 @@
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "media/media_buildflags.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <mfapi.h>
@@ -1360,6 +1364,206 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
                                 SrcType::MSE, PlayCount::ONCE);
   }
 
+  void TestMediaFoundationTrackSwitchPlayback(const std::string& video_file_0,
+                                              const gfx::Size& video_size_0,
+                                              const std::string& video_file_1,
+                                              const gfx::Size& video_size_1,
+                                              const std::string& audio_file) {
+    ASSERT_TRUE(IsPlayBackPossible(media::kMediaFoundationClearKeyKeySystem));
+
+    base::StringPairs query_params;
+    const auto video_format_0 = media::GetMimeTypeForFile(video_file_0);
+    const auto video_format_1 = media::GetMimeTypeForFile(video_file_1);
+    const auto audio_format = media::GetMimeTypeForFile(audio_file);
+    const auto media_type =
+        media::GetMimeTypeForFile(audio_file + ";" + video_file_0);
+    query_params.emplace_back("keySystem",
+                              media::kMediaFoundationClearKeyKeySystem);
+    query_params.emplace_back("runEncrypted", "1");
+    query_params.emplace_back("useMSE", "1");
+    query_params.emplace_back("playCount", "1");
+    query_params.emplace_back("videoFile", video_file_0);
+    query_params.emplace_back("videoFormat", video_format_0);
+    query_params.emplace_back("secondVideoFile", video_file_1);
+    query_params.emplace_back("secondVideoFormat", video_format_1);
+    query_params.emplace_back("audioFile", audio_file);
+    query_params.emplace_back("audioFormat", audio_format);
+    query_params.emplace_back("mediaType", media_type);
+
+    net::EmbeddedTestServer http_test_server;
+    http_test_server.ServeFilesFromSourceDirectory(media::GetTestDataPath());
+    ASSERT_TRUE(http_test_server.Start());
+
+    content::WebContents* web_contents =
+        browser()->GetTabStripModel()->GetActiveWebContents();
+    content::TitleWatcher title_watcher(web_contents,
+                                        base::ASCIIToUTF16(media::kEndedTitle));
+    AddWaitForTitles(&title_watcher);
+
+    GURL gurl =
+        http_test_server.GetURL("/" + std::string(kDefaultEmePlayer) + "?" +
+                                media::GetURLQueryString(query_params));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+
+    // In MediaFoundationRenderer:
+    // - WebMediaPlayerImpl::SelectedVideoTrackChanged does not update
+    //   video.videoWidth or video.videoHeight.
+    // - MediaFoundationH264VideoStream::AreFormatChangesEnabled() returns
+    //   false, so DemuxerStream::Status::kConfigChanged does not send a format
+    //   change event to IMFMediaEngine.
+    // Therefore, video.videoWidth and video.videoHeight only change when
+    // IMFMediaEngine's H.264 decoder actually decodes the newly selected video
+    // track's bitstream and fires MF_MEDIA_ENGINE_EVENT_FORMATCHANGE ->
+    // MediaFoundationRenderer::OnVideoNaturalSizeChange().
+    //
+    // This helper waits for:
+    // 1. video.videoWidth and video.videoHeight to match `expected_size`, and
+    // 2. video.webkitDecodedFrameCount to increase across two subsequent
+    //    pipeline statistics updates while at `expected_size`.
+    auto wait_for_track_decoding = [&](int baseline_frames,
+                                       const gfx::Size& expected_size) -> int {
+      static constexpr char kWaitForTrackDecodingScript[] = R"(
+        new Promise((resolve, reject) => {
+          const minBaseline = $1;
+          const expectedWidth = $2;
+          const expectedHeight = $3;
+          let sizeMatchedBaseline = null;
+          let firstIncreaseSeen = null;
+          const check = () => {
+            const video = document.querySelector('video');
+            if (!video) {
+              setTimeout(check, 50);
+              return;
+            }
+            video.loop = true;
+            if (video.error) {
+              reject('Video error: ' + video.error.message);
+              return;
+            }
+            if (Utils.titleChanged && document.title !== 'ENDED') {
+              reject('Test failed with title: ' + document.title);
+              return;
+            }
+            if (!video.videoTracks || video.videoTracks.length < 2) {
+              setTimeout(check, 50);
+              return;
+            }
+            if (video.videoWidth !== expectedWidth ||
+                video.videoHeight !== expectedHeight) {
+              sizeMatchedBaseline = null;
+              firstIncreaseSeen = null;
+              setTimeout(check, 50);
+              return;
+            }
+            const count = video.webkitDecodedFrameCount;
+            if (sizeMatchedBaseline === null) {
+              sizeMatchedBaseline = Math.max(minBaseline, count);
+            } else if (firstIncreaseSeen === null) {
+              if (count > sizeMatchedBaseline) {
+                firstIncreaseSeen = count;
+              }
+            } else if (count > firstIncreaseSeen) {
+              resolve(count);
+              return;
+            }
+            setTimeout(check, 50);
+          };
+          check();
+        });
+      )";
+      return content::EvalJs(web_contents,
+                             content::JsReplace(
+                                 kWaitForTrackDecodingScript, baseline_frames,
+                                 expected_size.width(), expected_size.height()))
+          .ExtractInt();
+    };
+
+    // 1. Wait for initial playback to decode frames on video track 0
+    // (640x360).
+    int frames_on_track_0 = wait_for_track_decoding(0, video_size_0);
+    ASSERT_GT(frames_on_track_0, 0);
+    EXPECT_EQ(2, content::EvalJs(
+                     web_contents,
+                     "document.querySelector('video').videoTracks.length;"));
+    EXPECT_EQ(true,
+              content::EvalJs(
+                  web_contents,
+                  "document.querySelector('video').videoTracks[0].selected;"));
+    EXPECT_EQ(video_size_0.width(),
+              content::EvalJs(web_contents,
+                              "document.querySelector('video').videoWidth;"));
+    EXPECT_EQ(video_size_0.height(),
+              content::EvalJs(web_contents,
+                              "document.querySelector('video').videoHeight;"));
+
+    // 2. Switch to video track 1 (1280x720) and verify that the decoded video
+    // resolution changes to 1280x720 and decoded frames keep increasing.
+    // Note: Because each video track is loaded in its own MSE SourceBuffer,
+    // SourceBuffer::InitializationSegmentReceived initially sets
+    // VideoTrack::selected to true on the first video track of each
+    // SourceBuffer before attaching it to HTMLMediaElement (while ChunkDemuxer
+    // only enables video track 0). Clear videoTracks[1].selected to false first
+    // so that setting it to true transitions its state and triggers
+    // HTMLMediaElement::SelectedVideoTrackChanged.
+    ASSERT_TRUE(content::ExecJs(web_contents,
+                                "const video = document.querySelector('video');"
+                                "video.videoTracks[1].selected = false;"
+                                "video.videoTracks[1].selected = true;"));
+    EXPECT_EQ(false,
+              content::EvalJs(
+                  web_contents,
+                  "document.querySelector('video').videoTracks[0].selected;"));
+    EXPECT_EQ(true,
+              content::EvalJs(
+                  web_contents,
+                  "document.querySelector('video').videoTracks[1].selected;"));
+
+    int frames_after_switch_to_track_1 =
+        wait_for_track_decoding(frames_on_track_0, video_size_1);
+    EXPECT_GT(frames_after_switch_to_track_1, frames_on_track_0);
+    EXPECT_EQ(video_size_1.width(),
+              content::EvalJs(web_contents,
+                              "document.querySelector('video').videoWidth;"));
+    EXPECT_EQ(video_size_1.height(),
+              content::EvalJs(web_contents,
+                              "document.querySelector('video').videoHeight;"));
+
+    // 3. Switch back to video track 0 (640x360) and verify that the decoded
+    // video resolution returns to 640x360 and decoded frames keep increasing.
+    ASSERT_TRUE(content::ExecJs(
+        web_contents,
+        "document.querySelector('video').videoTracks[0].selected = true;"));
+    EXPECT_EQ(true,
+              content::EvalJs(
+                  web_contents,
+                  "document.querySelector('video').videoTracks[0].selected;"));
+    EXPECT_EQ(false,
+              content::EvalJs(
+                  web_contents,
+                  "document.querySelector('video').videoTracks[1].selected;"));
+
+    int frames_after_switch_back_to_track_0 =
+        wait_for_track_decoding(frames_after_switch_to_track_1, video_size_0);
+    EXPECT_GT(frames_after_switch_back_to_track_0,
+              frames_after_switch_to_track_1);
+    EXPECT_EQ(video_size_0.width(),
+              content::EvalJs(web_contents,
+                              "document.querySelector('video').videoWidth;"));
+    EXPECT_EQ(video_size_0.height(),
+              content::EvalJs(web_contents,
+                              "document.querySelector('video').videoHeight;"));
+
+    // 4. Disable looping, wait for playback to finish cleanly, and verify EME
+    // key exchange occurred.
+    ASSERT_TRUE(content::ExecJs(
+        web_contents, "document.querySelector('video').loop = false;"));
+    EXPECT_EQ(base::ASCIIToUTF16(media::kEndedTitle),
+              title_watcher.WaitAndGetTitle());
+    EXPECT_EQ(true, content::EvalJs(
+                        web_contents,
+                        "document.querySelector('video').receivedKeyMessage;"));
+  }
+
   void TestMediaFoundationMultipleFilePlayback(const std::string& video_file,
                                                const std::string& audio_file) {
     std::string expected_title = media::kEndedTitle;
@@ -1397,6 +1601,8 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
     EncryptedMediaTestBase::SetUpCommandLine(command_line);
     SetUpCommandLineForKeySystem(media::kMediaFoundationClearKeyKeySystem,
                                  command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AudioVideoTracks");
   }
 
   bool IsMediaFoundationEncryptedPlaybackSupported() {
@@ -1577,6 +1783,18 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   TestMediaFoundationMultipleFilePlayback(
       "bear-640x360-v_frag-cenc.mp4",   // H.264
       "bear-640x360-a_frag-cenc.mp4");  // MP4 AAC
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_EncryptedCencVideoAudio_TrackSwitch) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  TestMediaFoundationTrackSwitchPlayback(
+      "bear-640x360-v_frag-cenc.mp4", gfx::Size(640, 360),    // H.264 640x360
+      "bear-1280x720-v_frag-cenc.mp4", gfx::Size(1280, 720),  // H.264 1280x720
+      "bear-640x360-a_frag-cenc.mp4");                        // MP4 AAC
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,

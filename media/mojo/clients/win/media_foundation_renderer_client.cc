@@ -151,13 +151,11 @@ void MediaFoundationRendererClient::OnTracksChanged(
     DemuxerStream::Type track_type,
     DemuxerStream* enabled_track,
     base::OnceClosure change_completed_cb) {
-  if (track_type != DemuxerStream::VIDEO) {
-    DLOG(WARNING) << "Audio track changes are not supported.";
-    std::move(change_completed_cb).Run();
-    return;
+  if (track_type == DemuxerStream::VIDEO) {
+    renderer_extension_->SetVideoStreamEnabled(enabled_track != nullptr);
   }
-  renderer_extension_->SetVideoStreamEnabled(enabled_track != nullptr);
-  std::move(change_completed_cb).Run();
+  mojo_renderer_->OnTracksChanged(track_type, enabled_track,
+                                  std::move(change_completed_cb));
 }
 
 RendererType MediaFoundationRendererClient::GetRendererType() {

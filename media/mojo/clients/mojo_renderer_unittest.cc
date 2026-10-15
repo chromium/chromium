@@ -543,4 +543,50 @@ TEST_F(MojoRendererTest, ErrorDuringFlush) {
   Flush();
 }
 
+TEST_F(MojoRendererTest, OnTracksChanged) {
+  Initialize();
+  Play();
+
+  // Create a second audio stream to switch to.
+  std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_2 =
+      CreateStream(DemuxerStream::AUDIO);
+  audio_stream_2->set_audio_decoder_config(TestAudioConfig::Normal());
+  EXPECT_CALL(*audio_stream_2, ManagesTrackSwitchesInternally())
+      .WillOnce(Return(false));
+
+  // Switching to a new stream that does not manage track switches internally
+  // should flush and restart playback at the current media time.
+  EXPECT_CALL(*mock_renderer_, OnFlush(_)).WillOnce(RunOnceClosure<0>());
+  EXPECT_CALL(*mock_renderer_, StartPlayingFrom(_)).Times(1);
+
+  bool track_change_completed = false;
+  mojo_renderer_->OnTracksChanged(
+      DemuxerStream::AUDIO, audio_stream_2.get(),
+      base::BindOnce([](bool* completed) { *completed = true; },
+                     &track_change_completed));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(track_change_completed);
+
+  // Switching between active streams where the stream manages track switches
+  // internally (e.g., HLS/MSE) should complete immediately without flushing.
+  EXPECT_CALL(*audio_stream_, ManagesTrackSwitchesInternally())
+      .WillOnce(Return(true));
+  track_change_completed = false;
+  mojo_renderer_->OnTracksChanged(
+      DemuxerStream::AUDIO, audio_stream_.get(),
+      base::BindOnce([](bool* completed) { *completed = true; },
+                     &track_change_completed));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(track_change_completed);
+
+  // Disabling the track (nullptr) should complete immediately without flushing.
+  track_change_completed = false;
+  mojo_renderer_->OnTracksChanged(
+      DemuxerStream::AUDIO, nullptr,
+      base::BindOnce([](bool* completed) { *completed = true; },
+                     &track_change_completed));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(track_change_completed);
+}
+
 }  // namespace media

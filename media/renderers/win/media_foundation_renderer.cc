@@ -1233,7 +1233,7 @@ void MediaFoundationRenderer::SetVideoStreamEnabled(bool enabled) {
     return;
 
   const bool needs_restart = mf_source_->SetVideoStreamEnabled(enabled);
-  if (needs_restart) {
+  if (needs_restart && !awaiting_start_playing_from_) {
     // If the media source indicates that we need to restart playback (e.g due
     // to a newly enabled stream being EOS), queue a pause and play operation.
     PauseInternal();

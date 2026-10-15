@@ -1693,6 +1693,7 @@ if (!is_android) {
       # Media data deps are included individually to prevent runaway isolate
       # size growth.
       "//media/test/data/90rotation.mp4",
+      "//media/test/data/bear-1280x720-v_frag-cenc.mp4",
       "//media/test/data/bear-320x240-audio-only.webm",
       "//media/test/data/bear-320x240-av_enc-a.webm",
       "//media/test/data/bear-320x240-av_enc-av.webm",

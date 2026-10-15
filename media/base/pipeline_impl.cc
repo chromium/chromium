@@ -914,6 +914,10 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     return;
   }
 
+  if (stream) {
+    renderer_ended_ = false;
+  }
+
   shared_state_.media().renderer->OnTracksChanged(
       stream_type, stream, std::move(change_completed_cb));
 }

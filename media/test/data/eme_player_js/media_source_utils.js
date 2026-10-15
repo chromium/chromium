@@ -21,12 +21,12 @@ MediaSourceUtils.loadMediaSource = function(mediaFiles,
 
   var mediaFiles = Utils.convertToArray(mediaFiles);
   var mediaTypes = Utils.convertToArray(mediaTypes);
-  var totalAppended = 0;
   function onSourceOpen(e) {
     Utils.timeLog('onSourceOpen', e);
     // We can load multiple media files using the same media type. However, if
     // more than one media type is used, we expect to have a media type entry
     // for each corresponding media file.
+    var srcBuffers = [];
     var srcBuffer = null;
     for (var i = 0; i < mediaFiles.length; i++) {
       if (i == 0 || mediaFiles.length == mediaTypes.length) {
@@ -38,11 +38,21 @@ MediaSourceUtils.loadMediaSource = function(mediaFiles,
           return;
         }
       }
-      doAppend(mediaFiles[i], srcBuffer);
+      srcBuffers.push(srcBuffer);
     }
+    doAppend(0, srcBuffers);
   }
 
-  function doAppend(mediaFile, srcBuffer) {
+  function doAppend(index, srcBuffers) {
+    if (index >= mediaFiles.length) {
+      if (appendCallbackFn)
+        appendCallbackFn(mediaSource);
+      else
+        mediaSource.endOfStream();
+      return;
+    }
+    var mediaFile = mediaFiles[index];
+    var srcBuffer = srcBuffers[index];
     var xhr = new XMLHttpRequest();
     xhr.open('GET', mediaFile);
     xhr.responseType = 'arraybuffer';
@@ -50,13 +60,7 @@ MediaSourceUtils.loadMediaSource = function(mediaFiles,
       var onUpdateEnd = function(e) {
         Utils.timeLog('End of appending buffer from ' + mediaFile);
         srcBuffer.removeEventListener('updateend', onUpdateEnd);
-        totalAppended++;
-        if (totalAppended == mediaFiles.length) {
-          if (appendCallbackFn)
-            appendCallbackFn(mediaSource);
-          else
-            mediaSource.endOfStream();
-        }
+        doAppend(index + 1, srcBuffers);
       };
       srcBuffer.addEventListener('updateend', onUpdateEnd);
       srcBuffer.appendBuffer(new Uint8Array(e.target.response));

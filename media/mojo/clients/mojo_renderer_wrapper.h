@@ -37,6 +37,9 @@ class MojoRendererWrapper : public Renderer {
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
   base::TimeDelta GetMediaTime() override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       DemuxerStream* enabled_track,
+                       base::OnceClosure change_completed_cb) override;
 
  private:
   std::unique_ptr<MojoRenderer> mojo_renderer_;

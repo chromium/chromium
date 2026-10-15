@@ -47,18 +47,41 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
     receiver_.set_disconnect_handler(std::move(error_handler));
   }
 
+  media::DemuxerStream::Type type() const { return type_; }
+  media::DemuxerStream* stream() const { return stream_; }
+
+  // Updates the underlying DemuxerStream being proxied to the remote endpoint.
+  // When |stream| is non-null, the next Read() will report
+  // Status::kConfigChanged with the new stream's decoder configuration.
+  // |stream| may be nullptr when all tracks of |type_| are disabled, in which
+  // case pending and subsequent Read() calls immediately return an
+  // end-of-stream (EOS) DecoderBuffer.
+  void SetStream(media::DemuxerStream* stream);
+
+  // Detaches the previous stream and holds any incoming Read() requests until
+  // SetStream() is called after a renderer flush completes.
+  void PrepareForTrackChange();
+
  private:
   using Type = media::DemuxerStream::Type;
   using Status = media::DemuxerStream::Status;
 
-  void OnBufferReady(ReadCallback callback,
-                     Status status,
+  void SendConfigChange(ReadCallback callback);
+  void SendEos(ReadCallback callback);
+  void OnBufferReady(Status status,
                      media::DemuxerStream::DecoderBufferVector buffers);
 
   mojo::Receiver<mojom::DemuxerStream> receiver_;
 
-  // See constructor.  We do not own |stream_|.
+  const Type type_;
+
+  // See constructor. We do not own |stream_|.
   raw_ptr<media::DemuxerStream, DanglingUntriaged> stream_;
+
+  bool pending_config_change_ = false;
+  bool waiting_for_track_change_ = false;
+  bool bitstream_converter_enabled_ = false;
+  ReadCallback pending_read_cb_;
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_;
 

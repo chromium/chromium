@@ -186,6 +186,12 @@ void MediaFoundationStreamWrapper::SetEnabled(bool enabled) {
     if (enabled_ == enabled)
       return;
     enabled_ = enabled;
+    // Drop any synthetic EOS buffers queued while the stream was disabled so
+    // they are not treated as real end-of-stream when re-enabled.
+    std::erase_if(buffer_queue_, [](const PendingInputBuffer& item) {
+      return item.status == DemuxerStream::Status::kOk && item.buffer &&
+             item.buffer->end_of_stream();
+    });
   }
   // Restart processing of queued requests when stream is re-enabled.
   ProcessRequestsIfPossible();
@@ -195,6 +201,8 @@ void MediaFoundationStreamWrapper::Flush() {
   DVLOG_FUNC(2);
 
   base::AutoLock auto_lock(lock_);
+
+  stream_ended_ = false;
 
   // buffering_post_flush_samples_ state is only relevant when the stream is
   // selected. No samples should be received until the stream is selected and
@@ -235,37 +243,52 @@ void MediaFoundationStreamWrapper::SetLastStartPosition(
 HRESULT MediaFoundationStreamWrapper::QueueStartedEvent(
     const PROPVARIANT* start_position) {
   DVLOG_FUNC(2);
-  base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock_);
 
-  // Save the new start position in the stream.
-  SetLastStartPosition(start_position);
+    // Save the new start position in the stream.
+    SetLastStartPosition(start_position);
 
-  DVLOG_FUNC(2) << "buffering_post_flush_samples_=false";
-  buffering_post_flush_samples_ = false;
-  state_ = State::kStarted;
-  RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
-      MEStreamStarted, GUID_NULL, S_OK, start_position));
+    DVLOG_FUNC(2) << "buffering_post_flush_samples_=false";
+    buffering_post_flush_samples_ = false;
+    stream_ended_ = false;
+    state_ = State::kStarted;
+    RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
+        MEStreamStarted, GUID_NULL, S_OK, start_position));
+  }
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationStreamWrapper::ProcessRequestsIfPossible,
+                     weak_factory_.GetWeakPtr()));
   return S_OK;
 }
 
 HRESULT MediaFoundationStreamWrapper::QueueSeekedEvent(
     const PROPVARIANT* start_position) {
   DVLOG_FUNC(2);
-  base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock_);
 
-  // Save the new start position in the stream.
-  SetLastStartPosition(start_position);
+    // Save the new start position in the stream.
+    SetLastStartPosition(start_position);
 
-  DVLOG_FUNC(2) << "buffering_post_flush_samples_=false";
-  buffering_post_flush_samples_ = false;
-  state_ = State::kStarted;
-  RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
-      MEStreamSeeked, GUID_NULL, S_OK, start_position));
+    DVLOG_FUNC(2) << "buffering_post_flush_samples_=false";
+    buffering_post_flush_samples_ = false;
+    stream_ended_ = false;
+    state_ = State::kStarted;
+    RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
+        MEStreamSeeked, GUID_NULL, S_OK, start_position));
+  }
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationStreamWrapper::ProcessRequestsIfPossible,
+                     weak_factory_.GetWeakPtr()));
   return S_OK;
 }
 
 HRESULT MediaFoundationStreamWrapper::QueueStoppedEvent() {
   DVLOG_FUNC(2);
+  base::AutoLock auto_lock(lock_);
 
   state_ = State::kStopped;
   RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
@@ -275,6 +298,7 @@ HRESULT MediaFoundationStreamWrapper::QueueStoppedEvent() {
 
 HRESULT MediaFoundationStreamWrapper::QueuePausedEvent() {
   DVLOG_FUNC(2);
+  base::AutoLock auto_lock(lock_);
 
   state_ = State::kPaused;
   RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamVar(
@@ -379,6 +403,11 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers(
             ? std::move(buffers)
             : DemuxerStream::DecoderBufferVector{nullptr};
     for (auto& buffer : pending_buffers) {
+      if (!enabled_ && status == DemuxerStream::Status::kOk && buffer &&
+          buffer->end_of_stream()) {
+        DVLOG_FUNC(2) << "Ignoring EOS buffer for disabled stream";
+        continue;
+      }
       DVLOG_FUNC(3) << "push buffer to buffer_queue_, status="
                     << DemuxerStream::GetStatusName(status) << ", buffer="
                     << (buffer ? buffer->AsHumanReadableString(false) : "null");

@@ -9,6 +9,7 @@
 #include <mfidl.h>
 #include <wrl.h>
 
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <queue>
@@ -206,7 +207,7 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
   // the counter wraps.
   uint32_t flush_generation_ GUARDED_BY(lock_) = 0;
 
-  bool stream_ended_ = false;
+  std::atomic<bool> stream_ended_{false};
   GUID last_key_id_ = GUID_NULL;
 
   static constexpr MFTIME kInvalidTime = -1;
