@@ -479,6 +479,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarButtonIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarButtonIconDisabled] = {ui::kColorSysStateDisabled};
   mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorInfoBarQueuedCountPillBackground] = {
+      ui::kColorSysNeutralContainer};
+  mixer[kColorInfoBarQueuedCountPillForeground] = {
+      ui::kColorSysOnSurfaceSubtle};
   mixer[ui::kColorInfoBarIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorMediaRouterIconActive] =
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,

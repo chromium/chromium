@@ -540,6 +540,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarContentAreaSeparator] =
       ui::AlphaBlend(kColorInfoBarButtonIcon, kColorInfoBarBackground, 0x3A);
   mixer[kColorInfoBarForeground] = {kColorToolbarText};
+  mixer[kColorInfoBarQueuedCountPillBackground] = ui::BlendTowardMaxContrast(
+      kColorInfoBarBackground, gfx::kGoogleGreyAlpha100);
+  mixer[kColorInfoBarQueuedCountPillForeground] = ui::AlphaBlend(
+      kColorInfoBarForeground, kColorInfoBarQueuedCountPillBackground, 0xB3);
   // kColorInfoBarIcon is referenced in //components/infobars, so
   // we can't use a color id from the chrome namespace. Here we're
   // overriding the default color with something more suitable.

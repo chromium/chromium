@@ -14534,6 +14534,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_ACCNAME_INFOBAR" desc="The accessible name for an infobar.">
           Infobar
         </message>
+        <message name="IDS_INFOBAR_PENDING_COUNT" desc="Label on the count badge shown in an infobar next to its close button when more infobars are queued behind it, waiting to be shown. Indicates how many more infobars are queued, e.g. '+2'.">
+          {COUNT, plural,
+           =1 {+1}
+           other {+#}}
+        </message>
+        <message name="IDS_INFOBAR_PENDING_COUNT_TOOLTIP" desc="Tooltip and accessible name for the count badge shown in an infobar when more infobars are queued behind it. Explains that the queued notifications appear once the current infobar is closed.">
+          {COUNT, plural,
+           =1 {1 more infobar will appear when this one is closed}
+           other {# more infobars will appear when this one is closed}}
+        </message>
       </if>
 
       <!-- Used in `HomePageUndoBubble` -->

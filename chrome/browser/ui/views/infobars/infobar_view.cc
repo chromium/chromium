@@ -62,6 +62,11 @@ template void InfoBarView::AssignLabelDetails(views::Link*) const;
 
 namespace {
 const int kInfobarIconSize = 24;
+
+// Pill padding; the horizontal inset keeps the "+N" text clear of the
+// capsule's rounded ends.
+constexpr gfx::Insets kQueuedCountPillPadding = gfx::Insets::VH(2, 8);
+
 int GetElementSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL);
@@ -85,6 +90,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kInfoBarElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kDismissButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kLeftBalancerElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kRightSpacerElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kQueuedCountPillElementId);
 
 InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     : infobars::InfoBar(std::move(delegate)),
@@ -335,6 +341,59 @@ std::unique_ptr<views::Link> InfoBarView::CreateLink(
   }
 
   return link;
+}
+
+std::unique_ptr<views::Label> InfoBarView::CreateQueuedCountPillLabel() const {
+  auto pill = std::make_unique<views::Label>(std::u16string(),
+                                             views::style::CONTEXT_LABEL,
+                                             views::style::STYLE_BODY_5);
+  // Pin the background so auto color readability cannot re-contrast the
+  // deemphasized foreground (same pattern as CreateLabel()).
+  pill->SetEnabledColor(kColorInfoBarQueuedCountPillForeground);
+  pill->SetBackgroundColor(kColorInfoBarQueuedCountPillBackground);
+  pill->SetAutoColorReadabilityEnabled(false);
+  pill->SetBorder(views::CreateEmptyBorder(kQueuedCountPillPadding));
+  // right_side_container_ bottom-aligns children (kEnd); center the
+  // shorter pill against the close button.
+  pill->SetProperty(views::kCrossAxisAlignmentKey,
+                    views::LayoutAlignment::kCenter);
+  pill->SetProperty(views::kElementIdentifierKey, kQueuedCountPillElementId);
+  pill->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  return pill;
+}
+
+void InfoBarView::SetQueuedInfoBarCount(size_t count,
+                                        base::PassKey<InfoBarContainerView>) {
+  if (count == 0) {
+    if (queued_count_pill_) {
+      queued_count_pill_->SetVisible(false);
+      RecalculateLayoutBalancing();
+    }
+    return;
+  }
+
+  if (!queued_count_pill_) {
+    if (!right_side_container_) {
+      return;
+    }
+
+    auto pill = CreateQueuedCountPillLabel();
+    queued_count_pill_ = pill.get();
+    AddViewBeforeCloseButton(std::move(pill));
+  }
+
+  queued_count_pill_->SetText(l10n_util::GetPluralStringFUTF16(
+      IDS_INFOBAR_PENDING_COUNT, static_cast<int>(count)));
+  const std::u16string description = l10n_util::GetPluralStringFUTF16(
+      IDS_INFOBAR_PENDING_COUNT_TOOLTIP, static_cast<int>(count));
+  queued_count_pill_->SetTooltipText(description);
+  queued_count_pill_->GetViewAccessibility().SetName(description);
+  // Radius tracks height so the capsule survives font scaling.
+  queued_count_pill_->SetBackground(views::CreateRoundedRectBackground(
+      kColorInfoBarQueuedCountPillBackground,
+      queued_count_pill_->GetPreferredSize().height() / 2.0f));
+  queued_count_pill_->SetVisible(true);
+  RecalculateLayoutBalancing();
 }
 
 void InfoBarView::AddViewBeforeCloseButton(std::unique_ptr<views::View> view) {

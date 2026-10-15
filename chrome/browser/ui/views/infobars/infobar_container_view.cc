@@ -8,11 +8,17 @@
 #include <memory>
 #include <numeric>
 
+#include "base/containers/adapters.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -159,11 +165,19 @@ void InfoBarContainerView::PlatformSpecificAddInfoBar(
     size_t position) {
   AddChildViewAt(static_cast<InfoBarView*>(infobar),
                  static_cast<int>(position));
+  UpdateQueuedCountPill();
 }
 
 void InfoBarContainerView::PlatformSpecificRemoveInfoBar(
     infobars::InfoBar* infobar) {
-  RemoveChildView(static_cast<InfoBarView*>(infobar));
+  auto* infobar_view = static_cast<InfoBarView*>(infobar);
+  if (queued_pill_host_ == infobar) {
+    queued_pill_host_ = nullptr;
+  }
+
+  infobar_view->SetQueuedInfoBarCount(0, base::PassKey<InfoBarContainerView>());
+  RemoveChildView(infobar_view);
+  UpdateQueuedCountPill(infobar);
 }
 
 void InfoBarContainerView::PlatformSpecificWillRemoveInfoBar(
@@ -224,6 +238,71 @@ void InfoBarContainerView::PlatformSpecificInfoBarShown(
     GetFocusManager()->SetStoredFocusView(view_to_focus);
   } else {
     view_to_focus->RequestFocus();
+  }
+}
+
+void InfoBarContainerView::PlatformSpecificPendingInfoBarCountChanged(
+    size_t count) {
+  UpdateQueuedCountPill();
+}
+
+void InfoBarContainerView::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                            bool animate) {
+  if (infobar == queued_pill_host_) {
+    base::UmaHistogramLongTimes(
+        "InfoBar.PendingIndicator.HostResolveTime",
+        base::TimeTicks::Now() - pill_shown_on_host_at_);
+  }
+
+  InfoBarContainerWithPriority::OnInfoBarRemoved(infobar, animate);
+  UpdateQueuedCountPill(infobar);
+}
+
+void InfoBarContainerView::UpdateQueuedCountPill(infobars::InfoBar* removing) {
+  if (!base::FeatureList::IsEnabled(features::kInfoBarQueuedCountPill)) {
+    return;
+  }
+
+  const size_t count = PendingInfoBarCount();
+  InfoBarView* host = nullptr;
+  if (count > 0) {
+    for (infobars::InfoBar* bar : base::Reversed(infobars())) {
+      if (bar == removing || !bar->owner()) {
+        continue;
+      }
+      const auto priority =
+          bar->delegate()
+              ? bar->delegate()->GetPriority()
+              : infobars::InfoBarDelegate::InfobarPriority::kDefault;
+      // No pending indicator for critical security infobars.
+      if (priority !=
+          infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity) {
+        host = static_cast<InfoBarView*>(bar);
+      }
+      break;
+    }
+  }
+
+  if (queued_pill_host_ && queued_pill_host_ != host) {
+    queued_pill_host_->SetQueuedInfoBarCount(
+        0, base::PassKey<InfoBarContainerView>());
+  }
+
+  const bool newly_shown = host && host != queued_pill_host_;
+  queued_pill_host_ = host;
+  if (!host) {
+    return;
+  }
+
+  host->SetQueuedInfoBarCount(count, base::PassKey<InfoBarContainerView>());
+  if (newly_shown) {
+    pill_shown_on_host_at_ = base::TimeTicks::Now();
+    if (host->delegate()) {
+      base::UmaHistogramSparse("InfoBar.PendingIndicator.Shown",
+                               host->delegate()->GetIdentifier());
+    }
+    base::UmaHistogramExactLinear("InfoBar.PendingIndicator.CountAtShow",
+                                  static_cast<int>(count), 10);
   }
 }
 

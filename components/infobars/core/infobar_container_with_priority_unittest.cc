@@ -32,8 +32,12 @@ class PriorityDelegate : public InfoBarDelegate {
       : priority_(priority), id_(id), closeable_(closeable) {}
   ~PriorityDelegate() override = default;
 
+  // When true, this delegate reports every other delegate as its equal, to
+  // exercise the duplicate-detection paths.
+  void set_equals_everything(bool value) { equals_everything_ = value; }
+
   bool EqualsDelegate(InfoBarDelegate* /*delegate*/) const override {
-    return false;
+    return equals_everything_;
   }
 
   InfoBarIdentifier GetIdentifier() const override { return id_; }
@@ -45,6 +49,7 @@ class PriorityDelegate : public InfoBarDelegate {
   InfobarPriority priority_;
   InfoBarIdentifier id_;
   bool closeable_;
+  bool equals_everything_ = false;
 };
 
 class TestInfoBar : public InfoBar {
@@ -85,6 +90,12 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
   size_t remove_calls() const { return remove_calls_; }
   size_t visible_count() const { return visible_infobars_.size(); }
 
+  // Every pending-count value reported through
+  // PlatformSpecificPendingInfoBarCountChanged(), in order.
+  const std::vector<size_t>& pending_count_notifications() const {
+    return pending_count_notifications_;
+  }
+
   bool IsCurrentlyVisible(const InfoBar* infobar) const {
     return std::ranges::contains(visible_infobars_, infobar);
   }
@@ -102,6 +113,10 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
     if (it != visible_infobars_.end()) {
       visible_infobars_.erase(it);
     }
+  }
+
+  void PlatformSpecificPendingInfoBarCountChanged(size_t count) override {
+    pending_count_notifications_.push_back(count);
   }
 
   size_t GetInfoBarPriorityCapFor(
@@ -123,6 +138,7 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
   size_t add_calls_ = 0;
   size_t remove_calls_ = 0;
   std::vector<raw_ptr<InfoBar>> visible_infobars_;
+  std::vector<size_t> pending_count_notifications_;
   bool use_testing_caps_ = false;
   size_t critical_cap_ = 0;
   size_t default_cap_ = 0;
@@ -531,6 +547,163 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaStarvedCountRecorded) {
   histogram_tester_.ExpectBucketCount(
       "InfoBar.Prioritization.Starved",
       InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE, 3);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest, PendingCountNotifiedOnQueueChanges) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+  EXPECT_TRUE(container.pending_count_notifications().empty());
+
+  // The first default infobar is shown directly; the queue stays empty.
+  auto* default_infobar_1 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  EXPECT_TRUE(container.pending_count_notifications().empty());
+
+  // The next two are queued, notifying counts 1 and 2.
+  auto* default_infobar_2 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* default_infobar_3 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  EXPECT_EQ(2u, container.PendingInfoBarCount());
+  EXPECT_EQ((std::vector<size_t>{1u, 2u}),
+            container.pending_count_notifications());
+
+  // Removing the visible infobar promotes one from the queue.
+  manager.RemoveInfoBar(default_infobar_1);
+  EXPECT_EQ((std::vector<size_t>{1u, 2u, 1u}),
+            container.pending_count_notifications());
+
+  // Removing an infobar straight out of the queue also notifies.
+  manager.RemoveInfoBar(default_infobar_3);
+  EXPECT_EQ((std::vector<size_t>{1u, 2u, 1u, 0u}),
+            container.pending_count_notifications());
+
+  // Removing the last visible infobar leaves the queue empty; no redundant
+  // notification is sent.
+  manager.RemoveInfoBar(default_infobar_2);
+  EXPECT_EQ(4u, container.pending_count_notifications().size());
+}
+
+TEST_F(InfoBarContainerWithPriorityTest, PendingCountNotifiedOnManagerCleared) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+  EXPECT_EQ(2u, container.PendingInfoBarCount());
+
+  // Detaching the manager drops (starves) the queue, which must be reported
+  // so any visual queue indicator is hidden.
+  container.ChangeInfoBarManager(nullptr);
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+  ASSERT_FALSE(container.pending_count_notifications().empty());
+  EXPECT_EQ(0u, container.pending_count_notifications().back());
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReplaceQueuedInfoBarKeepsQueueConsistent) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  auto* visible_default =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* queued_default =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  ASSERT_TRUE(container.IsCurrentlyVisible(visible_default));
+  ASSERT_FALSE(container.IsCurrentlyVisible(queued_default));
+  ASSERT_EQ(1u, container.PendingInfoBarCount());
+
+  // Replace the infobar while it is still queued: the old entry is dropped
+  // and the replacement re-queued, without touching the base container.
+  auto replacement_unique =
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kDefault));
+  auto* replacement = replacement_unique.get();
+  manager.ReplaceInfoBar(queued_default, std::move(replacement_unique));
+
+  EXPECT_TRUE(container.IsCurrentlyVisible(visible_default));
+  EXPECT_FALSE(container.IsCurrentlyVisible(replacement));
+  EXPECT_EQ(1u, container.PendingInfoBarCount());
+
+  // The replacement is promoted normally once the visible infobar goes away.
+  manager.RemoveInfoBar(visible_default);
+  EXPECT_TRUE(container.IsCurrentlyVisible(replacement));
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
+
+  manager.RemoveInfoBar(replacement);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       PendingCountNotifiedOnManagerSwapWithEqualCounts) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager_a;
+  container.ChangeInfoBarManager(&manager_a);
+
+  AddInfoBar(&manager_a, InfoBarDelegate::InfobarPriority::kDefault);
+  AddInfoBar(&manager_a, InfoBarDelegate::InfobarPriority::kDefault);
+  ASSERT_EQ(1u, container.PendingInfoBarCount());
+  ASSERT_EQ((std::vector<size_t>{1u}), container.pending_count_notifications());
+
+  // The second manager holds the same shape before the container observes
+  // it: one bar to admit, one to queue.
+  TestManager manager_b;
+  manager_b.AddInfoBar(
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kDefault)));
+  manager_b.AddInfoBar(
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kDefault)));
+
+  // Swapping managers rebuilds platform state, so the equal pending count is
+  // still reported: once as the teardown's 0, once for the new queue.
+  container.ChangeInfoBarManager(&manager_b);
+  EXPECT_EQ(1u, container.PendingInfoBarCount());
+  EXPECT_EQ((std::vector<size_t>{1u, 0u, 1u}),
+            container.pending_count_notifications());
+
+  container.ChangeInfoBarManager(nullptr);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest,
+       ReplaceQueuedInfoBarTracksDuplicateReplacement) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+
+  auto* visible_default =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* queued_1 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* queued_2 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  ASSERT_EQ(2u, container.PendingInfoBarCount());
+
+  // Make the remaining queued bar consider everything its equal.
+  // ReplaceInfoBar performs no EqualsDelegate dedup, so the container must
+  // keep tracking the replacement rather than dropping it as a duplicate.
+  static_cast<PriorityDelegate*>(queued_1->delegate())
+      ->set_equals_everything(true);
+
+  auto replacement_unique =
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          InfoBarDelegate::InfobarPriority::kDefault));
+  auto* replacement = replacement_unique.get();
+  manager.ReplaceInfoBar(queued_2, std::move(replacement_unique));
+  EXPECT_EQ(2u, container.PendingInfoBarCount());
+
+  // The full queue drains in order with no CHECK failures.
+  manager.RemoveInfoBar(visible_default);
+  EXPECT_TRUE(container.IsCurrentlyVisible(queued_1));
+  manager.RemoveInfoBar(queued_1);
+  EXPECT_TRUE(container.IsCurrentlyVisible(replacement));
+  manager.RemoveInfoBar(replacement);
+  EXPECT_EQ(0u, container.PendingInfoBarCount());
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, NoAnimationOnManagerChange) {

@@ -2233,6 +2233,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InfoBar.PendingIndicator.CountAtShow" units="InfoBars"
+    expires_after="2027-09-01">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the pending-queue depth at the moment the queued-count pill becomes
+    visible on an infobar, or moves to a new host infobar. Also re-recorded when
+    a tab whose bottom infobar hosts the pill is re-activated, since the
+    container re-attaches on every tab switch. The maximum bucket is 10.
+  </summary>
+</histogram>
+
+<histogram name="InfoBar.PendingIndicator.HostResolveTime" units="ms"
+    expires_after="2027-09-01">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The time between the queued-count pill appearing on an infobar and that
+    infobar being removed from its manager (closed or accepted). Not recorded
+    when the infobar is merely detached from the container by a tab switch or
+    window teardown. Measures whether the pill's expectation-setting shortens
+    how long the host infobar stays up.
+  </summary>
+</histogram>
+
+<histogram name="InfoBar.PendingIndicator.Shown" enum="InfoBarIdentifier"
+    expires_after="2027-09-01">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the identifier of the infobar that hosts the queued-count pill, each
+    time the pill becomes visible or moves to a new host infobar. Also
+    re-recorded when a tab whose bottom infobar hosts the pill is re-activated,
+    since the container re-attaches on every tab switch.
+  </summary>
+</histogram>
+
 <histogram name="InfoBar.Prioritization.QueueSize" units="InfoBars"
     expires_after="2027-01-03">
   <owner>koretadaniel@chromium.org</owner>

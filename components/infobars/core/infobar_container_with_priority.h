@@ -47,6 +47,8 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
 
   bool HasPendingInfoBars() const { return !pending_infobars_.empty(); }
 
+  size_t PendingInfoBarCount() const { return pending_infobars_.size(); }
+
  protected:
   // InfoBarContainer overrides:
   void OnInfoBarAdded(InfoBar* infobar) override;
@@ -55,6 +57,12 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
 
   virtual size_t GetInfoBarPriorityCapFor(
       InfoBarDelegate::InfobarPriority priority) const;
+
+  // Invoked whenever the size of the pending queue changes, with the new
+  // number of queued infobars. Platforms can override this to surface the
+  // queue to the user, so the prioritization "virtual stack" is visually
+  // noticeable instead of silent.
+  virtual void PlatformSpecificPendingInfoBarCountChanged(size_t count) {}
 
  private:
   // Represents the description of an infobar entry in the queue.
@@ -79,10 +87,16 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
 
   // Decides whether the infobar can be shown right now
   // (visible slots available, no higher-priority items blocking) or must be
-  // queued for later promotion.
+  // queued for later promotion. Unless `allow_duplicate` is true, an infobar
+  // whose delegate equals one already queued is dropped without being
+  // tracked. The replace path must pass true because
+  // InfoBarManager::ReplaceInfoBar, unlike AddInfoBar, performs no
+  // EqualsDelegate dedup, and an untracked manager-owned infobar crashes on
+  // its eventual removal.
   void AdmitOrQueue(InfoBar* infobar,
                     InfoBarDelegate::InfobarPriority priority,
-                    bool animate);
+                    bool animate,
+                    bool allow_duplicate = false);
 
   // Enqueues an infobar in a deterministic position: first by priority
   // (descending), then by sequence (ascending). This guarantees a stable
@@ -128,6 +142,11 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
   // Helper used to record the infobar pending queue size.
   void RecordInfoBarPendingQueueSize();
 
+  // Calls PlatformSpecificPendingInfoBarCountChanged() if the pending queue
+  // size changed since the last notification. Must be invoked at the end of
+  // every operation that may mutate `pending_infobars_`.
+  void NotifyPendingCountChangedIfNeeded();
+
   // List of infobars that could not be shown immediately because their
   // priority was blocked (e.g. DEFAULT while a CRITICAL is visible). Ordered
   // deterministically by (priority desc, seq asc).
@@ -135,6 +154,11 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
 
   // This represent the list of infobars currently visible.
   std::vector<VisibleEntry> visible_;
+
+  // The pending queue size that was last reported through
+  // PlatformSpecificPendingInfoBarCountChanged(), used to avoid redundant
+  // notifications.
+  size_t last_notified_pending_count_ = 0;
 };
 
 }  // namespace infobars

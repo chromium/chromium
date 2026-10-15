@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,6 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -34,6 +37,8 @@ class MenuRunner;
 class StyledLabel;
 }  // namespace views
 
+class InfoBarContainerView;
+
 class InfoBarView : public infobars::InfoBar,
                     public views::View,
                     public views::ExternalFocusTracker {
@@ -44,6 +49,7 @@ class InfoBarView : public infobars::InfoBar,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDismissButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLeftBalancerElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRightSpacerElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kQueuedCountPillElementId);
 
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
   InfoBarView(const InfoBarView&) = delete;
@@ -61,6 +67,12 @@ class InfoBarView : public infobars::InfoBar,
 
   views::ImageView* icon() { return icon_; }
   views::View* close_button() { return close_button_.get(); }
+
+  // Shows a passive "+N" pill next to the close button, or hides it when
+  // `count` is 0. PassKey-restricted to InfoBarContainerView, which owns
+  // host selection (never a kCriticalSecurity bar).
+  void SetQueuedInfoBarCount(size_t count,
+                             base::PassKey<InfoBarContainerView> key);
 
   void SetInteriorMargin(const gfx::Insets& margin);
 
@@ -80,6 +92,9 @@ class InfoBarView : public infobars::InfoBar,
   std::unique_ptr<views::Link> CreateLink(
       const std::u16string& text,
       const std::optional<std::u16string>& accessible_text = std::nullopt);
+
+  // Creates the "+N" pill label shown by SetQueuedInfoBarCount().
+  std::unique_ptr<views::Label> CreateQueuedCountPillLabel() const;
 
   // Given |views| and the total |available_width| to display them in, sets
   // each view's size so that the longest view shrinks until it reaches the
@@ -163,6 +178,9 @@ class InfoBarView : public infobars::InfoBar,
 
   // The close button at the right edge of the InfoBar.
   raw_ptr<views::ImageButton> close_button_ = nullptr;
+
+  // Lazily created by SetQueuedInfoBarCount(), placed before `close_button_`.
+  raw_ptr<views::Label> queued_count_pill_ = nullptr;
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

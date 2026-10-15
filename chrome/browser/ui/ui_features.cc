@@ -41,6 +41,8 @@ BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInfoBarInlineLinks, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInfoBarQueuedCountPill, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for crbug.com/559656985. When enabled, the press-and-hold Esc
 // timer also exits tab fullscreen (unless browser fullscreen is underneath)
 // when it fires while Esc is locked via the Keyboard Lock API. When disabled,

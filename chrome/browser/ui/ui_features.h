@@ -38,6 +38,10 @@ BASE_DECLARE_FEATURE(kImportExportFlags);
 
 BASE_DECLARE_FEATURE(kInfoBarInlineLinks);
 
+// Shows a "+N" count pill in the bottom-most infobar while lower-priority
+// infobars wait in the prioritization queue.
+BASE_DECLARE_FEATURE(kInfoBarQueuedCountPill);
+
 BASE_DECLARE_FEATURE(kKeyboardLockHeldEscExitsTabFullscreen);
 
 #if BUILDFLAG(IS_LINUX)
