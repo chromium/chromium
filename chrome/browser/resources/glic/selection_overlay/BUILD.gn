@@ -12,6 +12,7 @@ build_webui("build") {
     "prompt_suggestion.svg",
     "selection_overlay.html",
     "spark.svg",
+    "spark_mono.svg",
   ]
 
   ts_files = [

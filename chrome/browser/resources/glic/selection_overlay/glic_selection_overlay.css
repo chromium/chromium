@@ -308,60 +308,64 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
   justify-content: center;
   max-width: 100%;
 }
 
 .action-chip,
 .close-region-button {
-  align-items: center;
-  background-color: #FFF;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
-  color: #3C4043;
-  cursor: pointer;
-  display: inline-flex;
-  flex-shrink: 0;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  gap: 6px;
-  height: 32px;
+  --cr-button-background-color: var(--cr-fallback-color-surface);
+  --cr-button-border: none;
+  --cr-button-height: 30px;
+  --cr-button-text-color: var(--cr-primary-text-color);
+  box-shadow: var(--cr-elevation-1);
+  gap: 4px;
   max-width: calc(100vw - 48px);
-  outline: none;
-  padding: 0 14px;
-  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-  user-select: none;
+  min-width: 0;
+  padding-block: 5px;
+  padding-inline: 10px;
   white-space: nowrap;
 }
 
+.action-chip:has(.chip-icon) {
+  padding-inline-start: 5px;
+}
+
 .close-region-button {
-  border-radius: 50%;
-  justify-content: center;
-  padding: 0;
-  width: 32px;
+  padding: 5px;
+  width: 30px;
 }
 
-.action-chip:hover,
-.close-region-button:hover {
-  background-color: #F8F9FA;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+/* The hover background is a capsule inset from the edge of the button. */
+.action-chip::part(hoverBackground),
+.close-region-button::part(hoverBackground) {
+  background: var(--cr-hover-on-subtle-background-color);
+  border-radius: inherit;
+  inset: 2px;
 }
 
-.action-chip:active,
-.close-region-button:active {
-  background-color: #F1F3F4;
-  transform: scale(0.98);
-}
-
-.chip-icon {
-  align-items: center;
-  display: flex;
+.chip-icon,
+.close-region-icon {
+  background-color: var(--cr-fallback-color-on-surface-subtle);
   flex-shrink: 0;
-  justify-content: center;
+  height: var(--cr-icon-size);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: 16px;
+  width: var(--cr-icon-size);
+}
+
+.chip-icon.explain {
+  mask-image: url('/explain.svg');
+}
+
+.chip-icon.spark {
+  mask-image: url('/spark_mono.svg');
+}
+
+.close-region-icon {
+  mask-image: url('/lens/icon_clear.svg');
 }
 
 #inlineFulfillmentHost {
@@ -444,13 +448,17 @@
   }
 
   #cursorImg,
-  #inlineFulfillmentHost .ask-gemini-icon {
+  #inlineFulfillmentHost .ask-gemini-icon,
+  .chip-icon,
+  .close-region-icon {
     /* Set the icon color to hcm (high contrast mode) value. */
     background-color: ButtonText;
   }
 
   /* Add a border since the shadow is not visible in hcm. */
-  #inlineFulfillmentHost {
+  #inlineFulfillmentHost,
+  .action-chip,
+  .close-region-button {
     border: 1px solid ButtonBorder;
   }
 }

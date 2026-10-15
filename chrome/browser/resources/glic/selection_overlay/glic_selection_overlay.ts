@@ -588,12 +588,12 @@ export class GlicSelectionOverlayElement extends
     event.stopPropagation();
   }
 
-  protected getActionIcon(icon: SuggestedActionIcon): string {
+  protected getActionIconClass(icon: SuggestedActionIcon): string {
     switch (icon) {
       case SuggestedActionIcon.kSpark:
-        return '/spark.svg';
+        return 'spark';
       case SuggestedActionIcon.kExplain:
-        return '/explain.svg';
+        return 'explain';
       case SuggestedActionIcon.kNone:
       default:
         return '';
