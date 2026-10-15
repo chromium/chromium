@@ -113,6 +113,10 @@ class ContextualTasksWebContentsUserData
 
   const std::optional<base::Uuid>& task_id() const { return task_id_; }
   void SetTaskId(const base::Uuid& uuid);
+  // Returns `task_id_` if valid, else the task of this WebContents'
+  // `ContextualSearchWebContentsHelper` (e.g. the side panel's task). The
+  // extension doesn't call `SetTaskId()` yet, so `task_id_` is usually unset.
+  std::optional<base::Uuid> GetEffectiveTaskId() const;
 
   void RegisterExtensionFrame(const void* handler_id);
   void UpdateExtensionFrameBound(

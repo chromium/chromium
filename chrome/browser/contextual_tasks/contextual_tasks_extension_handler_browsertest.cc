@@ -977,9 +977,12 @@ class ContextualTasksExtensionHandlerContextualizerBrowserTest
 
   // Attaches the active tab as if it was uploaded in a previous turn with
   // `viewport_bytes` as content, and makes the task context contain it.
-  // Returns the upload's token.
+  // The task id is set via `SetTaskId()`, or only on the WebContents'
+  // `ContextualSearchWebContentsHelper` (like the side panel) if
+  // `task_id_from_helper`. Returns the upload's token.
   base::UnguessableToken SeedUploadedActiveTab(
-      std::vector<uint8_t> viewport_bytes) {
+      std::vector<uint8_t> viewport_bytes,
+      bool task_id_from_helper = false) {
     const base::UnguessableToken token = base::UnguessableToken::Create();
     AttachActiveTab(token);
     upload_types_[token] = UploadType::CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
@@ -1001,7 +1004,14 @@ class ContextualTasksExtensionHandlerContextualizerBrowserTest
         .WillByDefault(Return(previous_upload_.get()));
 
     task_id_ = base::Uuid::GenerateRandomV4();
-    handler_->SetTaskId(task_id_);
+    if (task_id_from_helper) {
+      // Assigns `task_id_` to the helper's (untasked) session.
+      EXPECT_TRUE(
+          ContextualSearchWebContentsHelper::FromWebContents(web_contents_)
+              ->GetSessionForTask(task_id_));
+    } else {
+      handler_->SetTaskId(task_id_);
+    }
     ON_CALL(mock_tasks_service_, GetContextForTask(task_id_, _, _, _))
         .WillByDefault([this](auto, auto, auto, auto callback) {
           ContextualTask task(task_id_);
@@ -1129,6 +1139,26 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerContextualizerBrowserTest,
   SetActiveTabPageContext({4, 5, 6});
 
   // The response contains the re-upload instead of the superseded upload.
+  EXPECT_THAT(
+      Submit(),
+      testing::ElementsAre(
+          UploadType::CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION));
+  ASSERT_EQ(attached().size(), 1u);
+  EXPECT_NE(attached()[0].context_token, old_token);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerContextualizerBrowserTest,
+                       OnSubmitQueryRequest_ReuploadsWithHelperTaskId) {
+  // Like the side panel: only the helper has the task id.
+  const base::UnguessableToken old_token =
+      SeedUploadedActiveTab({1, 2, 3}, /*task_id_from_helper=*/true);
+  auto* user_data =
+      contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+          web_contents_);
+  ASSERT_FALSE(user_data->task_id().has_value());
+  EXPECT_EQ(user_data->GetEffectiveTaskId(), task_id_);
+  SetActiveTabPageContext({4, 5, 6});
+
   EXPECT_THAT(
       Submit(),
       testing::ElementsAre(
@@ -3308,6 +3338,32 @@ IN_PROC_BROWSER_TEST_F(
       tasks_service->GetContextualTaskForTab(active_tab_id);
   ASSERT_TRUE(updated_task.has_value());
   EXPECT_EQ(updated_task->GetUrlResources().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_UsesHelperTaskId) {
+  auto* tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tasks_service, nullptr);
+  ContextualTask task = tasks_service->CreateTask();
+  SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
+  tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
+  // Like the side panel: only the helper has the task id.
+  ASSERT_TRUE(ContextualSearchWebContentsHelper::FromWebContents(web_contents_)
+                  ->GetSessionForTask(task.GetTaskId()));
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary library;
+  AddWebpageContext(library, 1, "https://example.com/a", "Tab A");
+  SendUpdateThreadContextLibrary(library);
+
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+  std::optional<ContextualTask> updated_task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(updated_task.has_value());
+  ASSERT_EQ(updated_task->GetUrlResources().size(), 1u);
+  EXPECT_EQ(updated_task->GetUrlResources()[0].url,
+            GURL("https://example.com/a"));
 }
 
 IN_PROC_BROWSER_TEST_F(
