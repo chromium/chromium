@@ -73,7 +73,9 @@ export class ChannelProxy {
   static #createChannelProxyEvalStr() {
     const functionStr = String(() => {
       const queue: unknown[] = [];
-      let queueNonEmptyResolver: null | (() => void) = null;
+      // Track pending `getMessage` resolvers in FIFO order so multiple in-flight
+      // `Runtime.callFunctionOn` requests can be fulfilled before navigation.
+      const resolvers: ((message: unknown) => void)[] = [];
 
       return {
         /**
@@ -81,14 +83,14 @@ export class ChannelProxy {
          * in the queue.
          */
         async getMessage(): Promise<unknown> {
-          const onMessage: Promise<void> =
-            queue.length > 0
-              ? Promise.resolve()
-              : new Promise<void>((resolve) => {
-                  queueNonEmptyResolver = resolve;
-                });
-          await onMessage;
-          return queue.shift();
+          // Return the oldest buffered message immediately when non-empty.
+          if (queue.length > 0) {
+            return queue.shift();
+          }
+          // Otherwise suspend until `sendMessage` pushes the next message.
+          return await new Promise<unknown>((resolve) => {
+            resolvers.push(resolve);
+          });
         },
 
         /**
@@ -96,11 +98,14 @@ export class ChannelProxy {
          * Resolves the pending promise if needed.
          */
         sendMessage(message: unknown) {
-          queue.push(message);
-          if (queueNonEmptyResolver !== null) {
-            queueNonEmptyResolver();
-            queueNonEmptyResolver = null;
+          // Fulfill the oldest waiting `getMessage` call directly if one exists.
+          const resolve = resolvers.shift();
+          if (resolve !== undefined) {
+            resolve(message);
+            return;
           }
+          // Otherwise buffer the message for a future `getMessage` call.
+          queue.push(message);
         },
       };
     });
@@ -163,8 +168,20 @@ export class ChannelProxy {
     channelHandle: Script.Handle,
     eventManager: EventManager,
   ) {
-    // noinspection InfiniteLoopJS
-    for (;;) {
+    // Wrap each CDP response or error so pre-fetched commands never cause
+    // unhandled promise rejections when the execution context is destroyed.
+    interface CommandResult {
+      message?: Protocol.Runtime.CallFunctionOnResponse;
+      error?: unknown;
+    }
+    // Keep a pipeline of pending `getMessage` CDP calls in the realm so back-to-back
+    // channel messages sent right before navigation are returned without waiting
+    // for a mapper-to-renderer round-trip.
+    const pendingCommands: Promise<CommandResult>[] = [];
+    const maxPending = 10;
+
+    // Issue a single `getMessage` CDP call and capture its outcome.
+    const createCommand = async (): Promise<CommandResult> => {
       try {
         const message = await realm.cdpClient.sendCommand(
           'Runtime.callFunctionOn',
@@ -189,35 +206,59 @@ export class ChannelProxy {
             },
           },
         );
-
-        if (message.exceptionDetails) {
-          throw new Error('Runtime.callFunctionOn in ChannelProxy', {
-            cause: message.exceptionDetails,
-          });
-        }
-
-        for (const browsingContext of realm.associatedBrowsingContexts) {
-          eventManager.registerEvent(
-            {
-              type: 'event',
-              method: ChromiumBidi.Script.EventNames.Message,
-              params: {
-                channel: this.#properties.channel,
-                data: realm.cdpToBidiValue(
-                  message,
-                  this.#properties.ownership ?? Script.ResultOwnership.None,
-                ),
-                source: realm.source,
-              },
-            },
-            browsingContext.id,
-          );
-        }
+        // Return the resolved CDP response for ordered processing.
+        return {message};
       } catch (error) {
+        // Capture CDP transport/context errors to stop the listener loop cleanly.
+        return {error};
+      }
+    };
+
+    // Pre-populate the pipeline of waiting `getMessage` calls in the realm.
+    for (let i = 0; i < maxPending; i++) {
+      pendingCommands.push(createCommand());
+    }
+
+    // noinspection InfiniteLoopJS
+    for (;;) {
+      // Await the oldest in-flight `getMessage` call to preserve FIFO order.
+      const result = await pendingCommands.shift()!;
+      if (result.error) {
         // If an error is thrown, then the channel is permanently broken, so we
         // exit the loop.
-        this.#logger?.(LogType.debugError)?.(error);
+        this.#logger?.(LogType.debugError)?.(result.error);
         break;
+      }
+      // Replenish the pipeline with a new waiting `getMessage` call.
+      pendingCommands.push(createCommand());
+
+      const message = result.message!;
+      if (message.exceptionDetails) {
+        // Stop listening if `getMessage` threw an exception in the realm.
+        this.#logger?.(LogType.debugError)?.(
+          new Error('Runtime.callFunctionOn in ChannelProxy', {
+            cause: message.exceptionDetails,
+          }),
+        );
+        break;
+      }
+
+      for (const browsingContext of realm.associatedBrowsingContexts) {
+        eventManager.registerEvent(
+          {
+            type: 'event',
+            method: ChromiumBidi.Script.EventNames.Message,
+            params: {
+              channel: this.#properties.channel,
+              data: realm.cdpToBidiValue(
+                message,
+                this.#properties.ownership ?? Script.ResultOwnership.None,
+              ),
+              source: realm.source,
+            },
+          },
+          browsingContext.id,
+        );
       }
     }
   }

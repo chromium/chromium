@@ -1069,3 +1069,74 @@ async def test_preloadScript_channel_respectContexts(
         },
     )
     assert coverage["result"]["result"] == []
+
+
+@pytest.mark.asyncio
+async def test_preloadScript_channel_rapid_messages_before_navigation(
+    websocket, context_id, html, read_messages
+):
+    # Subscribe to channel messages and page load events.
+    await subscribe(websocket, ["script.message", "browsingContext.load"])
+
+    # Register a preload script that sends two back-to-back channel messages
+    # in the same click task right as navigation starts.
+    await execute_command(
+        websocket,
+        {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": """
+                    (channel) => {
+                        window.addEventListener('click', () => {
+                            channel('click');
+                        }, true);
+                        navigation.addEventListener('navigate', () => {
+                            channel('navigate');
+                        });
+                    }""",
+                "arguments": [
+                    {
+                        "type": "channel",
+                        "value": {
+                            "channel": "channel_name",
+                        },
+                    },
+                ],
+                "contexts": [context_id],
+                "sandbox": "probe",
+            },
+        },
+    )
+
+    # Navigate to a page containing a link that triggers a cross-document navigation.
+    target_url = html("<p>Two</p>")
+    initial_url = html(f"<a id='link' href='{target_url}'>Link</a>")
+    await goto_url(websocket, context_id, initial_url)
+
+    # Trigger the link click without consuming incoming events via `execute_command`.
+    command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.getElementById('link').click()",
+                "target": {"context": context_id},
+                "awaitPromise": False,
+            },
+        },
+    )
+
+    # Read the command response, both `script.message` events, and `browsingContext.load`.
+    messages = await read_messages(4)
+    assert any(m.get("id") == command_id for m in messages)
+
+    # Verify both channel messages arrived in order before navigation completed.
+    script_messages = [m for m in messages if m.get("method") == "script.message"]
+    assert len(script_messages) == 2
+    assert script_messages[0]["params"]["channel"] == "channel_name"
+    assert script_messages[0]["params"]["data"] == {"type": "string", "value": "click"}
+    assert script_messages[1]["params"]["channel"] == "channel_name"
+    assert script_messages[1]["params"]["data"] == {
+        "type": "string",
+        "value": "navigate",
+    }
