@@ -120,6 +120,11 @@ export class ShortcutCustomizationAppElement extends
         type: Boolean,
         value: false,
       },
+
+      keyboardSettingsLink: {
+        type: String,
+        value: keyboardSettingsLink,
+      },
     };
   }
 
@@ -130,7 +135,7 @@ export class ShortcutCustomizationAppElement extends
   declare protected dialogAction: number;
   declare protected dialogSource: AcceleratorSource;
   declare protected showEditDialog: boolean;
-  protected keyboardSettingsLink: string = keyboardSettingsLink;
+  declare protected keyboardSettingsLink: string;
   declare protected isCustomizationAllowedByPolicy: boolean;
   protected acceleratorUpdateInProgress: boolean = false;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
