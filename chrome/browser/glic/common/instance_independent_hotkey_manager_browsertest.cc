@@ -17,6 +17,17 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
 #include "ui/aura/window.h"
@@ -124,6 +135,113 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
 
   // Verify that the panel is not showing.
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
+                       CaptureRegionHotkeyOpensGlicWhenPromptBoxDisabled) {
+  CreateAndActivateTab(GetSimpleTestUrl());
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+
+  TriggerHotkey(LocalHotkeyManager::Command::kCaptureRegion);
+
+  ASSERT_OK(WaitForGlicOpen());
+}
+
+class InstanceIndependentHotkeyManagerPromptBoxBrowserTest
+    : public InstanceIndependentHotkeyManagerBrowserTest {
+ public:
+  InstanceIndependentHotkeyManagerPromptBoxBrowserTest() {
+    prompt_box_feature_list_.InitWithFeatures(
+        {::features::kGlicCaptureRegion,
+         features::kGlicSelectionOverlayPromptBox},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                                 false);
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kGlicHotkeyGlobalScopeEnabled, false);
+  }
+
+ private:
+  base::test::ScopedFeatureList prompt_box_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerPromptBoxBrowserTest,
+                       CaptureRegionHotkeyOpensOverlayWithoutPanelWhenClosed) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+
+  base::HistogramTester histogram_tester;
+  TriggerHotkey(LocalHotkeyManager::Command::kCaptureRegion);
+
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+  histogram_tester.ExpectBucketCount(
+      "Glic.Invoke.InvocationSource",
+      mojom::InvocationSource::kCaptureRegionHotkey, 0);
+
+  controller->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerPromptBoxBrowserTest,
+    CaptureRegionHotkeyPreselectsTextSelectionWhenPanelClosed) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+
+  web_contents->SelectAll();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+
+  base::HistogramTester histogram_tester;
+  TriggerHotkey(LocalHotkeyManager::Command::kCaptureRegion);
+
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+  histogram_tester.ExpectBucketCount(
+      "Glic.Invoke.InvocationSource",
+      mojom::InvocationSource::kCaptureRegionHotkey, 0);
+
+  controller->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerPromptBoxBrowserTest,
+                       CaptureRegionHotkeyInvokesGlicWhenPanelOpen) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+  ASSERT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
+
+  base::HistogramTester histogram_tester;
+  TriggerHotkey(LocalHotkeyManager::Command::kCaptureRegion);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Invoke.InvocationSource",
+      mojom::InvocationSource::kCaptureRegionHotkey, 1);
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
 }
 #endif
 
