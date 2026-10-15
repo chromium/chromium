@@ -11,6 +11,8 @@ blink_core_sources_script_tools = [
   "model_context_tool_invocation.h",
   "script_tool_context.h",
   "script_tool_types.h",
+  "tool.cc",
+  "tool.h",
 ]
 
 blink_core_tests_script_tools = [ "model_context_test.cc" ]

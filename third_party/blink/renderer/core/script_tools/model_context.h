@@ -35,7 +35,7 @@ class ModelContextGetToolOptions;
 class ModelContextRegisterToolOptions;
 class ModelContextTool;
 class ModelContextToolInvocation;
-class RegisteredTool;
+class Tool;
 class V8ToolExecuteCallback;
 
 class DeclarativeWebMCPTool : public GarbageCollectedMixin {
@@ -91,9 +91,9 @@ class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
 
   const String& Name() const;
 
-  // The unique, non-web-exposed identifier minted for this tool at
-  // registration time. The browser process uses it to identify the tool upon
-  // unregistration.
+  // The stable, non-web-exposed identifier minted for this tool at
+  // registration time. This is the key that both `ModelContext::tool_map_` and
+  // the browser process use to look the tool up.
   const base::UnguessableToken& Id() const {
     return script_tool_->tool_id.value();
   }
@@ -159,11 +159,11 @@ class CORE_EXPORT ModelContext : public EventTarget,
       ScriptState* state,
       ModelContextTool* tool,
       ModelContextRegisterToolOptions* options);
-  ScriptPromise<IDLSequence<RegisteredTool>> getTools(
+  ScriptPromise<IDLSequence<Tool>> getTools(
       ScriptState* script_state,
       const ModelContextGetToolOptions* options = nullptr);
   ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* script_state,
-                                                    RegisteredTool* tool) {
+                                                    Tool* tool) {
     return executeTool(script_state, tool, ScriptObject());
   }
   // `input_object` is empty when the argument was omitted or explicitly
@@ -171,7 +171,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // constructing a new one in its place.
   ScriptPromise<IDLNullable<IDLString>> executeTool(
       ScriptState* script_state,
-      RegisteredTool* tool,
+      Tool* tool,
       ScriptObject input_object,
       const ExecuteToolOptions* options = nullptr);
   ScriptPromise<IDLUndefined> resumeTool(ScriptState* script_state,
@@ -182,21 +182,30 @@ class CORE_EXPORT ModelContext : public EventTarget,
       ScriptState* script_state,
       const base::UnguessableToken& invocation_id,
       bool& did_request_token);
-  // Unregisters the tool identified by `tool_id`, if it is still registered.
-  // This is the single unregistration entry point for both imperative and
-  // declarative tools. Unlike a name-keyed lookup, this cannot accidentally
-  // unregister a *different* tool that was registered under the same name
-  // (for example, after the intended tool went away, or when the intended
-  // tool's registration was rejected because its name was already taken).
-  void UnregisterTool(const base::UnguessableToken& tool_id);
 
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
 
   bool ExecuteTool(base::UnguessableToken invocation_id,
-                   const String& name,
+                   const base::UnguessableToken& tool_id,
                    const String& input_arguments,
                    ScriptToolExecutedCallback tool_executed_cb);
+  // Like `ExecuteTool()`, but embedders that identify tools by name. If no tool
+  // is currently registered under `name`, this reports the failure in terms of
+  // `name`.
+  //
+  // TODO(https://crbug.com/536063275): Remove this, along with
+  // `FindToolDataByName()`, once all embedders always identify tools by ID.
+  // Two embedders still execute tools by name:
+  //   - DevTools: `WebMCP.invokeTool` accepts a `toolName`, and must keep doing
+  //     so through a deprecation window so that existing CDP clients can
+  //     migrate to `toolId`.
+  //   - Actor: it executes by ID when a prior observation pinned one, but falls
+  //     back to the name when the model acts without one.
+  bool ExecuteToolByName(base::UnguessableToken invocation_id,
+                         const String& name,
+                         const String& input_arguments,
+                         ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(
@@ -206,12 +215,17 @@ class CORE_EXPORT ModelContext : public EventTarget,
   bool CancelTool(base::UnguessableToken invocation_id);
 
   void RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
+  // Unregisters the declarative tool identified by `tool_id`, if it is still
+  // registered. Keying on the ID rather than the name means this can't
+  // unregister a *different* tool that holds the same name, e.g., when this
+  // tool's registration was rejected because its name was already taken.
+  void UnregisterDeclarativeTool(const base::UnguessableToken& tool_id);
   void PauseExecution();
 
   // mojom::blink::ModelContext implementation:
   void NotifyToolChange() override;
   void ExecuteScriptTool(const base::UnguessableToken& invocation_id,
-                         const String& name,
+                         const base::UnguessableToken& tool_id,
                          const String& input_arguments,
                          ExecuteScriptToolCallback callback) override;
   void CancelScriptTool(const base::UnguessableToken& invocation_id) override;
@@ -221,10 +235,19 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // Returns registered tools, sorted by CodeUnitCompareLessThan().
   HeapVector<Member<const ToolData>> ListTools() const;
 
+  // Returns the tool registered under `name`, or null if there is none. Tools
+  // are keyed by `tool_id`, and `name` is only unique among the tools that are
+  // registered at any given moment, so this is a linear scan. The number of
+  // tools a document registers is small.
+  //
+  // TODO(https://crbug.com/536063275): Remove this once all embedders always
+  // identify tools by ID. See `ExecuteToolByName()`.
+  ToolData* FindToolDataByName(const String& name) const;
+
   ExecutionContext* GetExecutionContext() const override;
 
   void OnGetScriptToolsCompleted(
-      ScriptPromiseResolver<IDLSequence<RegisteredTool>>* resolver,
+      ScriptPromiseResolver<IDLSequence<Tool>>* resolver,
       Vector<mojom::blink::ScriptToolPtr> tools);
 
   void OnExecuteScriptToolCompleted(
@@ -239,17 +262,24 @@ class CORE_EXPORT ModelContext : public EventTarget,
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
 
+  // Unregisters the imperative tool identified by `tool_id`. Only called by
+  // the tool's `ToolUnregisterAbortAlgorithm`, which guarantees that the tool
+  // is still registered.
+  void UnregisterImperativeTool(const base::UnguessableToken& tool_id);
+
+  void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
+                              base::UnguessableToken invocation_id,
+                              const base::UnguessableToken& tool_id,
+                              const String& input_arguments,
+                              AbortController* abort_controller,
+                              ScriptToolExecutedCallback tool_executed_cb);
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      base::UnguessableToken invocation_id,
+                     const base::UnguessableToken& tool_id,
                      const String& name,
                      const String& input_arguments,
                      AbortController* abort_controller,
                      ScriptToolExecutedCallback tool_executed_cb);
-  void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
-                              base::UnguessableToken invocation_id,
-                              const String& input_arguments,
-                              AbortController* abort_controller,
-                              ScriptToolExecutedCallback tool_executed_cb);
 
   void OnToolFailed(ScriptToolExecutedCallback callback,
                     const base::UnguessableToken& invocation_id,
@@ -261,7 +291,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   void MaybeRecordToolCount();
 
-  HeapHashMap<String, Member<ToolData>> tool_map_;
+  HeapHashMap<base::UnguessableToken, Member<ToolData>> tool_map_;
 
   struct PendingExecution {
     DISALLOW_NEW();
@@ -269,6 +299,10 @@ class CORE_EXPORT ModelContext : public EventTarget,
    public:
     void Trace(Visitor* visitor) const;
     String tool_name;
+    // The tool being executed. Used to look the tool back up in `tool_map_`,
+    // which `tool_name` cannot safely do, since the name may since have been
+    // taken by a different tool.
+    base::UnguessableToken tool_id;
     ScriptToolExecutedCallback callback;
     // Created for every tool execution; never null.
     Member<AbortController> abort_controller;

@@ -429,20 +429,24 @@ bool WebDocument::ExecuteScriptTool(
   auto* model_context =
       ModelContextSupplement::modelContext(*Unwrap<Document>());
   auto web_tool_declaration = std::make_unique<WebScriptToolDeclaration>();
-  if (auto script_tool_declaration =
-          model_context->GetScriptToolDeclaration(name)) {
-    web_tool_declaration->description =
-        WebString(script_tool_declaration->description);
-    web_tool_declaration->input_schema =
-        WebString(script_tool_declaration->input_schema);
-    web_tool_declaration->read_only = script_tool_declaration->read_only;
-    web_tool_declaration->untrusted_content =
-        script_tool_declaration->untrusted_content;
-    web_tool_declaration->consequential =
-        script_tool_declaration->consequential;
-    web_tool_declaration->debugging = script_tool_declaration->debugging;
+  // Embedders identify tools by name. If no tool currently has this name, the
+  // declaration stays empty and `ExecuteToolByName()` reports the failure
+  // through `tool_result_cb`.
+  ToolData* tool_data = model_context->FindToolDataByName(name);
+  if (tool_data) {
+    const mojom::blink::ScriptTool& script_tool = tool_data->ScriptTool();
+    web_tool_declaration->description = WebString(script_tool.description);
+    web_tool_declaration->input_schema = WebString(script_tool.input_schema);
+    if (script_tool.annotations) {
+      web_tool_declaration->read_only = script_tool.annotations->read_only;
+      web_tool_declaration->untrusted_content =
+          script_tool.annotations->untrusted_content;
+      web_tool_declaration->consequential =
+          script_tool.annotations->consequential;
+      web_tool_declaration->debugging = script_tool.annotations->debugging;
+    }
   }
-  return model_context->ExecuteTool(
+  return model_context->ExecuteToolByName(
       invocation_id, name, input_arguments,
       blink::BindOnce(
           [](WebScriptToolResultCallback tool_result_cb,

@@ -850,6 +850,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/script_tools/model_context_supplement.idl",
   "//third_party/blink/renderer/core/script_tools/model_context_tool.idl",
   "//third_party/blink/renderer/core/script_tools/model_context_tool_invocation.idl",
+  "//third_party/blink/renderer/core/script_tools/tool.idl",
   "//third_party/blink/renderer/core/workers/abstract_worker.idl",
   "//third_party/blink/renderer/core/workers/dedicated_worker_global_scope.idl",
   "//third_party/blink/renderer/core/workers/shared_worker.idl",

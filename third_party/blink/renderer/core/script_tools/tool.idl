@@ -1,0 +1,43 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://webmachinelearning.github.io/webmcp/#tool
+//
+// An immutable snapshot of a tool registered by some document, returned by
+// `ModelContext#getTools()`. Each `Tool` is backed by a non-web-exposed,
+// unguessable identifier that is minted when the tool is registered, so that
+// `executeTool()` always targets the exact tool returned by `getTools()`, even
+// if a tool with the same name is unregistered and re-registered in between.
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=WebMCP
+] interface Tool {
+  readonly attribute DOMString name;
+  readonly attribute DOMString description;
+
+  // `title` is exposed as a non-nullable `DOMString` (rather than
+  // `DOMString?`), so that a tool registered without a title exposes the empty
+  // string rather than `null`. It can be exposed as a `DOMString` since it was
+  // taken in by a `USVString`, meaning all unmatched surrogate processing has
+  // already been done, and there's no need to do it again on tool exposure.
+  //
+  // See https://github.com/webmachinelearning/webmcp/issues/224 for discussion
+  // about how the browser should expose this member if no title was provided
+  // at registration time.
+  readonly attribute DOMString title;
+
+  // The document that registered this tool, and its origin. `window` is null
+  // once that document's frame has navigated away or been removed.
+  readonly attribute Window? window;
+  readonly attribute USVString origin;
+
+  // Both of the below members are null when the tool was registered without
+  // them.
+  //
+  // `[CachedAttribute]` is OK because these are immutable; `IsSnapshotDirty()`
+  // always returns false, and the cache is never invalidated.
+  [CallWith=ScriptState, CachedAttribute=IsSnapshotDirty] readonly attribute object? inputSchema;
+  [CallWith=ScriptState, CachedAttribute=IsSnapshotDirty] readonly attribute object? annotations;
+};

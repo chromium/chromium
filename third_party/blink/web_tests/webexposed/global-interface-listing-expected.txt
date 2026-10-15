@@ -10789,6 +10789,16 @@ interface ToggleEvent : Event
     getter oldState
     getter source
     method constructor
+interface Tool
+    attribute @@toStringTag
+    getter annotations
+    getter description
+    getter inputSchema
+    getter name
+    getter origin
+    getter title
+    getter window
+    method constructor
 interface ToolActivatedEvent : Event
     attribute @@toStringTag
     getter toolName

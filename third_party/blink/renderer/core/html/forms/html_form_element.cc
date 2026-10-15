@@ -411,7 +411,7 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
                           "Tool execution cancelled, since tool definition "
                           "was updated")));
     }
-    model_context->UnregisterTool(active_webmcp_tool_->ToolId());
+    model_context->UnregisterDeclarativeTool(active_webmcp_tool_->ToolId());
 
     active_webmcp_tool_ = nullptr;
     return;
@@ -468,7 +468,7 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
           ScriptToolErrorCode::kToolCancelled,
           "Tool execution cancelled, since tool definition was updated")));
     }
-    model_context->UnregisterTool(active_webmcp_tool_->ToolId());
+    model_context->UnregisterDeclarativeTool(active_webmcp_tool_->ToolId());
     active_webmcp_tool_ = nullptr;
   }
 

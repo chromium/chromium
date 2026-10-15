@@ -24,20 +24,25 @@ struct ScriptTool {
   // registering renderer process. The browser rejects a registration that omits
   // it, or whose `tool_id` collides with an existing one in the same document.
   //
-  // Today this is only used to unregister tools. Unregistering by ID (rather
-  // than by name) ensures that an unregistration only ever affects the exact
-  // tool it was intended for. For example, a declarative (form) tool whose
+  // This is the key that both the browser and the registering renderer use to
+  // look the tool up for unregistration and execution. Using an ID rather than
+  // the name ensures that an operation only ever affects the exact tool it was
+  // intended for. For example, a caller holding a stale reference to an
+  // unregistered tool cannot execute a different tool that has since been
+  // registered with the same name, and a declarative (form) tool whose
   // registration was rejected because its name was already taken must not, when
   // the form is later removed, attempt to unregister another tool that holds
   // that name.
   //
-  // This is optional because `ScriptTool` is also used outside of tool
-  // registration (for example, to describe tools to embedders), where an ID is
-  // not yet always available. See
-  // https://docs.google.com/document/d/1psoB7k71-Dgkxg2tTG62DYJDTg02x8zOS3jCEd0QlbM/edit?pli=1&tab=t.0#heading=h.n6mukb2ajzia
-  // and https://crbug.com/536063275 for more information about making this
-  // member required, once it is populated by all consumers of `ScriptTool` that
-  // execute tools.
+  // This is optional only because some code still constructs `ScriptTool`s
+  // without an ID outside of registration: currently the actor's
+  // `ScriptToolResponse` (and some tests). In particular, the browser creates
+  // that response in `actor::ScriptToolHost::InitializePendingResult()` before
+  // the tool runs, from only the action's tool name, so it can't know the
+  // tool's ID when no prior observation pinned it. Once that response stops
+  // reusing `ScriptTool`, this can be made required. See
+  // https://crbug.com/536063275 and
+  // https://docs.google.com/document/d/1psoB7k71-Dgkxg2tTG62DYJDTg02x8zOS3jCEd0QlbM/edit?pli=1&tab=t.0#heading=h.n6mukb2ajzia.
   mojo_base.mojom.UnguessableToken? tool_id;
   // These directly map to the corresponding fields in the web API.
   string name;
@@ -91,11 +96,13 @@ interface ModelContextHost {
   // only tools that are same-origin with the caller document.
   GetScriptTools(array<url.mojom.Origin> from_origins) => (array<ScriptTool> tools);
 
-  // Executes a ScriptTool hosted in another Document. The tool can be located
-  // based on the unique combination of (`tool_owner_frame_token`, `name`), but
-  // we pass `expected_target_origin` too, since it is possible that
-  // `tool_owner_frame_token` points to a remote frame whose frame tree node's
-  // host has changed since tool registration.
+  // Executes a ScriptTool hosted in another Document. The tool is located by
+  // its `tool_id`, which is unique and unguessable. `tool_owner_frame_token`
+  // and `expected_target_origin` are still passed so that the browser can
+  // confirm the tool lives where the caller believes it does: the lookup is
+  // scoped to the frame named by `tool_owner_frame_token`, and it is possible
+  // that token points to a remote frame whose frame tree node's host has
+  // changed since tool registration.
   //
   // Note that `success` generally
   // controls whether the caller's Promise resolves or rejects:
@@ -109,9 +116,9 @@ interface ModelContextHost {
   // TODO(https://crbug.com/509555636): Consider making `success` more granular
   // in the error case, perhaps by using `ScriptToolErrorCode`.
   ExecuteRemoteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
+                          mojo_base.mojom.UnguessableToken tool_id,
                           blink.mojom.FrameToken tool_owner_frame_token,
                           url.mojom.Origin expected_target_origin,
-                          string name,
                           string input_arguments) => (string? result, bool success);
 
   // Cancels a pending execution of a remote script tool.
@@ -124,15 +131,15 @@ interface ModelContext {
   // Fires the `toolchange` event against the `blink::ModelContext` object.
   NotifyToolChange();
 
-  // Executes a ScriptTool by the name of `name`, hosted in this Document. This
-  // invokes JavaScript and obtains a Promise representing the tool result. The
-  // tool result is always a string for now; but see https://crbug.com/508306795
-  // which tracks the task of changing this.
+  // Executes the ScriptTool identified by `tool_id`, hosted in this Document.
+  // This invokes JavaScript and obtains a Promise representing the tool result.
+  // The tool result is always a string for now; but see
+  // https://crbug.com/508306795 which tracks the task of changing this.
   //
   // Resolution of the JavaScript Promise results in the callback being called
   // with `success=true`, while rejection results in `success=false`.
   ExecuteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
-                    string name, string input_arguments)
+                    mojo_base.mojom.UnguessableToken tool_id, string input_arguments)
       => (string? result, bool success);
 
   // Cancels a pending execution of a script tool in this Document.

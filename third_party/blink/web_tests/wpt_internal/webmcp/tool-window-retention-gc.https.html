@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>A retained Tool does not keep its registering window's Document alive after navigation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+// `Tool` holds a weak reference to the `DOMWindow` of the document that
+// registered the tool (`WeakMember<DOMWindow>` in `tool.h`). So after the
+// registering frame navigates away, script that still holds the `Tool` must not
+// keep the old, now-disconnected window, or its `Document`, alive. This matches
+// the `RegisteredTool` dictionary that `Tool` replaced, where script only ever
+// held the frame's WindowProxy.
+//
+// If `Tool` held a strong reference instead (`Member<DOMWindow>`), the old
+// document would only be freed once the `Tool` itself is released, and the
+// final assertion below would fail.
+
+// Runs GC until the number of live documents stops decreasing, and returns
+// that number. Adapted from web_tests/resources/gc.js.
+function collectUntilStable() {
+  return new Promise(resolve => {
+    const before = internals.numberOfLiveDocuments();
+    GCController.asyncCollectAll(() => {
+      const after = internals.numberOfLiveDocuments();
+      resolve(after < before ? collectUntilStable() : after);
+    });
+  });
+}
+
+function loadIframe(iframe, url) {
+  return new Promise(resolve => {
+    iframe.addEventListener('load', resolve, {once: true});
+    iframe.src = url;
+  });
+}
+
+promise_test(async t => {
+  assert_own_property(window, 'internals', 'Requires window.internals');
+  assert_own_property(window, 'GCController', 'Requires window.GCController');
+
+  const iframe = document.createElement('iframe');
+  document.body.append(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await loadIframe(iframe, '/common/blank.html?registering-document');
+
+  // Register a tool in the same-origin child, without holding onto any
+  // references to its window or document from this realm.
+  await iframe.contentWindow.document.modelContext.registerTool({
+    name: 'retained_tool',
+    description: 'A tool whose registering document navigates away',
+    execute: async () => 'unused',
+  });
+
+  let tools = await document.modelContext.getTools();
+  let tool = tools.find(t => t.name === 'retained_tool');
+  assert_true(!!tool, 'Parent sees the same-origin child\'s tool');
+
+  // Navigate the child to a new document. The tool's registering window is now
+  // disconnected from the frame.
+  await loadIframe(iframe, '/common/blank.html?new-document');
+  assert_equals(tool.window, null,
+      'Tool.window is null once its registering window is disconnected');
+
+  // Collect everything that's collectable while `tool` is still held. Since
+  // `Tool` doesn't keep the old window alive, its document is collected here.
+  const liveWhileHeld = await collectUntilStable();
+
+  // The `Tool` is still usable after its window has been collected: `window`
+  // stays null, and executing it fails cleanly.
+  assert_equals(tool.window, null,
+      'Tool.window is still null after its registering window is collected');
+  await promise_rejects_dom(t, 'InvalidStateError',
+      document.modelContext.executeTool(tool),
+      'executeTool() rejects for a Tool whose registering window is gone');
+
+  // Drop the only references to the `Tool`, and collect again. No additional
+  // document should be freed, since the `Tool` wasn't keeping one alive.
+  tool = null;
+  tools = null;
+  const liveAfterRelease = await collectUntilStable();
+
+  assert_equals(liveAfterRelease, liveWhileHeld,
+      'Releasing the Tool frees no document, i.e., the Tool was not keeping ' +
+      'its registering document alive');
+}, 'A retained Tool does not keep its registering window\'s Document alive ' +
+   'after the registering frame navigates away');
+</script>
+</body>

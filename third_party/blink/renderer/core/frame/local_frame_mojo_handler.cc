@@ -1010,13 +1010,18 @@ void LocalFrameMojoHandler::InvokeScriptToolForInspector(
     InvokeScriptToolForInspectorCallback callback) {
   if (auto* model_context =
           ModelContextSupplement::GetIfExists(*GetDocument())) {
-    if (model_context->GetScriptToolDeclaration(tool_name)) {
+    // DevTools refers to tools by name, but `ExecuteTool()` keys on the tool's
+    // (non-web-exposed) id, so resolve the name here. If the tool is
+    // unregistered before the posted task runs, `ExecuteTool()` simply won't
+    // find the id and will fail, rather than running whatever tool happens to
+    // hold the name by then.
+    if (ToolData* tool_data = model_context->FindToolDataByName(tool_name)) {
       frame_->GetTaskRunner(TaskType::kInternalInspector)
-          ->PostTask(
-              FROM_HERE,
-              blink::BindOnce(base::IgnoreResult(&ModelContext::ExecuteTool),
-                              WrapPersistent(model_context), invocation_id,
-                              tool_name, input_arguments, base::DoNothing()));
+          ->PostTask(FROM_HERE,
+                     blink::BindOnce(
+                         base::IgnoreResult(&ModelContext::ExecuteTool),
+                         WrapPersistent(model_context), invocation_id,
+                         tool_data->Id(), input_arguments, base::DoNothing()));
       std::move(callback).Run(true);
       return;
     }

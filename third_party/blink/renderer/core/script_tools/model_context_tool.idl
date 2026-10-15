@@ -17,7 +17,12 @@ dictionary ModelContextTool {
 };
 
 // https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations.
-dictionary ToolAnnotations {
+//
+// `[ConvertibleToObject]` so that `Tool.annotations` can expose this dictionary
+// back to script. Since that attribute is typed as `object?` (dictionaries
+// can't be attribute types), the bindings generator can't otherwise tell that
+// this dictionary needs a conversion to a script value.
+[ConvertibleToObject] dictionary ToolAnnotations {
   boolean readOnlyHint = false;
   boolean untrustedContentHint = false;
   boolean consequentialHint = false;

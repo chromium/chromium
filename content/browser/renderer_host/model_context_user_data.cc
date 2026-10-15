@@ -275,9 +275,9 @@ void ModelContextUserData::GetScriptTools(
 
 void ModelContextUserData::ExecuteRemoteScriptTool(
     const base::UnguessableToken& invocation_id,
+    const base::UnguessableToken& tool_id,
     const blink::FrameToken& tool_owner_frame_token,
     const url::Origin& expected_target_origin,
-    const std::string& name,
     const std::string& input_arguments,
     ExecuteRemoteScriptToolCallback callback) {
   if (!IsWebMCPEnabled(render_frame_host())) {
@@ -348,11 +348,12 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
   }
 
   auto& tools = target_data->script_tools();
-  auto it = std::find_if(
-      tools.begin(), tools.end(),
-      [&](const blink::mojom::ScriptToolPtr& t) { return t->name == name; });
+  auto it = std::find_if(tools.begin(), tools.end(),
+                         [&](const blink::mojom::ScriptToolPtr& t) {
+                           return t->tool_id == tool_id;
+                         });
 
-  // Don't kill the renderer, since legitimate script can provide the name of a
+  // Don't kill the renderer, since legitimate script can provide the id of a
   // tool that doesn't exist (including one that did exist, but got unregistered
   // by the time the call to invoke it here).
   if (it == tools.end()) {
@@ -380,12 +381,12 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
       static_cast<RenderFrameHostImpl&>(render_frame_host()).GetDocumentToken();
   execution.target_token = target_rfh->GetDocumentToken();
   execution.target_document = target_rfh->GetWeakDocumentPtr();
-  execution.tool_name = name;
+  execution.tool_name = (*it)->name;
   execution.callback = std::move(callback);
   page_data->AddPendingScriptToolExecution(invocation_id, std::move(execution));
 
   target_data->model_context_remote_->ExecuteScriptTool(
-      invocation_id, name, input_arguments,
+      invocation_id, tool_id, input_arguments,
       base::BindOnce(
           [](base::WeakPtr<ModelContextPageUserData> page_data,
              base::UnguessableToken invocation_id,
