@@ -26,6 +26,7 @@
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -364,6 +365,35 @@ class ClientSideDetectionHost
   void AddMiscellaneousMetadataToClientPhishingRequest(
       ClientPhishingRequest* verdict,
       bool is_invalid_ip) override;
+  void MaybeCaptureScreenshotAndStartIntelligentScan(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      std::string inner_text) override;
+
+  // Returns true if the observed WebContents is currently visible and its
+  // committed URL matches `url`.
+  bool IsTabVisibleAndOnUrl(const GURL& url) const;
+
+  // Called when the viewport screenshot capture completes. Validates that the
+  // tab is still visible and on the same URL, then posts a background task to
+  // encode the bitmap as PNG bytes before starting the intelligent scan.
+  void OnScreenshotTaken(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      std::string inner_text,
+      const content::CopyFromSurfaceResult& result);
+
+  // Called when the captured screenshot has been encoded into PNG bytes on a
+  // background thread. Validates that the tab is still visible and on the same
+  // URL before passing the PNG bytes to `StartIntelligentScan`.
+  void OnScreenshotEncoded(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      std::string inner_text,
+      std::string png_bytes);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers. |request_type| is passed in to specify the process that

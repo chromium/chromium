@@ -182,6 +182,14 @@ extern const base::FeatureParam<int>
     kClientSideDetectionServerModelMaxScansPerDayIos;
 #endif
 
+// Controls whether screenshots are captured and sent to the server-side model
+// for scam detection.
+BASE_DECLARE_FEATURE(kClientSideDetectionServerModelMultimodal);
+// Controls whether low-end devices are excluded from capturing screenshots for
+// multimodal scam detection.
+extern const base::FeatureParam<bool>
+    kClientSideDetectionServerModelMultimodalExcludeLowEndDevices;
+
 #if BUILDFLAG(IS_ANDROID)
 // Dedicated long-lived feature flag to control future server model rollout and
 // set the model version. This flag should not be cleaned up after the server

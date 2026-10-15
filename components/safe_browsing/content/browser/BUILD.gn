@@ -317,10 +317,12 @@ if (safe_browsing_mode != 0) {
       "//components/security_interstitials/core:unsafe_resource",
       "//components/site_engagement/content",
       "//components/variations",
+      "//components/viz/common",
       "//components/zoom",
       "//content/public/browser",
       "//mojo/public/mojom/base:protobuf_support",
       "//ui/display",
+      "//ui/gfx/codec",
     ]
 
     if (is_android) {

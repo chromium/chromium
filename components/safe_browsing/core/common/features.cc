@@ -211,6 +211,13 @@ constexpr base::FeatureParam<int>
         /*default_value=*/5};
 #endif
 
+BASE_FEATURE(kClientSideDetectionServerModelMultimodal,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<bool>
+    kClientSideDetectionServerModelMultimodalExcludeLowEndDevices{
+        &kClientSideDetectionServerModelMultimodal, "ExcludeLowEndDevices",
+        /*default_value=*/true};
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kClientSideDetectionServerModelRolloutAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);

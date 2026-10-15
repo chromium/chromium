@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
@@ -59,6 +61,7 @@
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/url_formatter/url_fixer.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -70,6 +73,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
@@ -84,6 +88,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -104,6 +109,25 @@ const int kUserReportCallbackTimer = 30;
 bool HasDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kCsdDebugFeatureDirectoryFlag);
+}
+
+base::FilePath GetDebugFeatureDirectory() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+      switches::kCsdDebugFeatureDirectoryFlag);
+}
+
+std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
+  std::optional<std::vector<uint8_t>> data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  if (!data) {
+    return std::string();
+  }
+  if (HasDebugFeatureDirectory()) {
+    base::WriteFile(
+        GetDebugFeatureDirectory().AppendASCII("multimodal_tab_screenshot.png"),
+        *data);
+  }
+  return std::string(base::as_string_view(data.value()));
 }
 
 bool ShouldSkipCSDAllowlist() {
@@ -1490,6 +1514,82 @@ GURL ClientSideDetectionHost::GetCurrentUrl() const {
     return GURL();
   }
   return web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+bool ClientSideDetectionHost::IsTabVisibleAndOnUrl(const GURL& url) const {
+  return web_contents() &&
+         web_contents()->GetVisibility() == content::Visibility::VISIBLE &&
+         GetCurrentUrl() == url;
+}
+
+void ClientSideDetectionHost::MaybeCaptureScreenshotAndStartIntelligentScan(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    std::string inner_text) {
+  if (ShouldCaptureScreenshotForIntelligentScan() &&
+      IsTabVisibleAndOnUrl(GURL(verdict->url()))) {
+    if (content::RenderWidgetHostView* view =
+            web_contents()->GetRenderWidgetHostView()) {
+      gfx::Rect src_rect =
+#if BUILDFLAG(IS_ANDROID)
+          gfx::Rect(view->GetVisibleViewportSize());
+#else
+          gfx::Rect();
+#endif
+      view->CopyFromSurface(
+          src_rect, gfx::Size(), base::TimeDelta(),
+          base::BindOnce(&ClientSideDetectionHost::OnScreenshotTaken,
+                         weak_factory_.GetWeakPtr(), std::move(verdict),
+                         did_match_high_confidence_allowlist, is_invalid_ip,
+                         std::move(inner_text)));
+      return;
+    }
+  }
+  StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
+                       is_invalid_ip, std::move(inner_text),
+                       /*tab_screenshot=*/std::nullopt);
+}
+
+void ClientSideDetectionHost::OnScreenshotTaken(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    std::string inner_text,
+    const content::CopyFromSurfaceResult& result) {
+  if (!IsTabVisibleAndOnUrl(GURL(verdict->url())) || !result.has_value() ||
+      result->bitmap.drawsNothing()) {
+    StartIntelligentScan(std::move(verdict),
+                         did_match_high_confidence_allowlist, is_invalid_ip,
+                         std::move(inner_text),
+                         /*tab_screenshot=*/std::nullopt);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&EncodePngOnBackgroundThread, result->bitmap),
+      base::BindOnce(&ClientSideDetectionHost::OnScreenshotEncoded,
+                     weak_factory_.GetWeakPtr(), std::move(verdict),
+                     did_match_high_confidence_allowlist, is_invalid_ip,
+                     std::move(inner_text)));
+}
+
+void ClientSideDetectionHost::OnScreenshotEncoded(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    std::string inner_text,
+    std::string png_bytes) {
+  std::optional<std::string> tab_screenshot;
+  if (IsTabVisibleAndOnUrl(GURL(verdict->url())) && !png_bytes.empty()) {
+    tab_screenshot = std::move(png_bytes);
+  }
+  StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
+                       is_invalid_ip, std::move(inner_text),
+                       std::move(tab_screenshot));
 }
 
 }  // namespace safe_browsing

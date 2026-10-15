@@ -7,6 +7,8 @@
 #include <tuple>
 #include <utility>
 
+#include "base/base_switches.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -79,6 +81,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -101,6 +104,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4775,6 +4779,13 @@ class ClientSideDetectionHostScamDetectionTest
                       ? "ClientSideDetectionScamDetectionRequestWithUrl.Enabled"
                       : "ClientSideDetectionScamDetectionRequestWithUrl."
                         "Control"));
+          EXPECT_THAT(
+              request->population().finch_active_groups(),
+              testing::Contains(
+                  base::FeatureList::IsEnabled(
+                      kClientSideDetectionServerModelMultimodal)
+                      ? "ClientSideDetectionServerModelMultimodal.Enabled"
+                      : "ClientSideDetectionServerModelMultimodal.Control"));
           std::move(callback).Run(example_url_, returned_is_phishing,
                                   net::HTTP_OK,
                                   returned_intelligent_scan_verdict);
@@ -4882,6 +4893,17 @@ class ClientSideDetectionHostScamDetectionTest
                                      /*is_invalid_ip=*/false, clock_.NowTicks(),
                                      mojom::PhishingDetectorResult::SUCCESS,
                                      mojo_base::ProtoWrapper(verdict));
+  }
+
+  void OnScreenshotTaken(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      std::string inner_text,
+      const content::CopyFromSurfaceResult& result) {
+    csd_host_->OnScreenshotTaken(std::move(verdict),
+                                 did_match_high_confidence_allowlist,
+                                 is_invalid_ip, std::move(inner_text), result);
   }
 
   void SetExampleUrl(GURL example_url) { example_url_ = example_url; }
@@ -5691,6 +5713,302 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       MultimodalScreenshotCapturedAndEncodedToPng) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
+
+  web_contents()->WasShown();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(example_url_.spec());
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+  viz::CopyOutputBitmapWithMetadata copy_result;
+  copy_result.bitmap = bitmap;
+
+  OnScreenshotTaken(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, "Suspicious inner text", base::ok(copy_result));
+  task_environment()->RunUntilIdle();
+
+  VerifyExpectedCalls();
+  ASSERT_TRUE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                  .has_value());
+  SkBitmap decoded_bitmap = gfx::PNGCodec::Decode(base::as_byte_span(
+      *csd_host_->last_intelligent_scan_tab_screenshot_for_testing()));
+  EXPECT_FALSE(decoded_bitmap.isNull());
+  EXPECT_EQ(decoded_bitmap.width(), 10);
+  EXPECT_EQ(decoded_bitmap.height(), 10);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       MultimodalScreenshotDiscardedWhenTabHidden) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
+
+  web_contents()->WasHidden();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(example_url_.spec());
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+  viz::CopyOutputBitmapWithMetadata copy_result;
+  copy_result.bitmap = bitmap;
+
+  OnScreenshotTaken(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, "Suspicious inner text", base::ok(copy_result));
+  task_environment()->RunUntilIdle();
+
+  VerifyExpectedCalls();
+  EXPECT_FALSE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                   .has_value());
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       MultimodalScreenshotDiscardedWhenUrlChanged) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              StartIntelligentScan(_, "http://otherurl.com/", _))
+      .WillOnce(
+          [this](
+              std::string rendered_text, std::string url,
+              IntelligentScanDelegate::IntelligentScanDoneCallback callback) {
+            IntelligentScanDelegate::IntelligentScanResult response;
+            response.model_type = IntelligentScanDelegate::ModelType::kOnDevice;
+            response.execution_success = true;
+            response.model_version = example_model_version_;
+            response.brand = example_brand_;
+            response.intent = example_intent_;
+            std::move(callback).Run(response);
+            return base::UnguessableToken::Create();
+          });
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(1);
+
+  web_contents()->WasShown();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url("http://otherurl.com/");
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+  viz::CopyOutputBitmapWithMetadata copy_result;
+  copy_result.bitmap = bitmap;
+
+  OnScreenshotTaken(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, "Suspicious inner text", base::ok(copy_result));
+  task_environment()->RunUntilIdle();
+
+  VerifyExpectedCalls();
+  EXPECT_FALSE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                   .has_value());
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       EmptyInnerTextTriggersIntelligentScanWhenMultimodalEnabled) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
+
+  web_contents()->WasShown();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(example_url_.spec());
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+  viz::CopyOutputBitmapWithMetadata copy_result;
+  copy_result.bitmap = bitmap;
+
+  OnScreenshotTaken(std::move(verdict),
+                    /*did_match_high_confidence_allowlist=*/false,
+                    /*is_invalid_ip=*/false, /*inner_text=*/"",
+                    base::ok(copy_result));
+  task_environment()->RunUntilIdle();
+
+  VerifyExpectedCalls();
+  EXPECT_TRUE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                  .has_value());
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       ShortInnerTextTriggersIntelligentScanWhenMultimodalEnabled) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
+
+  web_contents()->WasShown();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(example_url_.spec());
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorBLUE);
+  viz::CopyOutputBitmapWithMetadata copy_result;
+  copy_result.bitmap = bitmap;
+
+  OnScreenshotTaken(std::move(verdict),
+                    /*did_match_high_confidence_allowlist=*/false,
+                    /*is_invalid_ip=*/false, /*inner_text=*/"text",
+                    base::ok(copy_result));
+  task_environment()->RunUntilIdle();
+
+  VerifyExpectedCalls();
+  EXPECT_TRUE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                  .has_value());
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       EmptyInnerTextAndEmptyScreenshotDoesNotTriggerIntelligentScan) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  raw_delegate_->ForceEmptyInnerText();
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_intelligent_scan_available=*/true,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       ShortInnerTextAndEmptyScreenshotDoesNotTriggerIntelligentScan) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  raw_delegate_->SetInnerText("text");
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/IntelligentScanInfo::TEXT_TOO_SHORT,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_intelligent_scan_available=*/true,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       EmptyInnerTextDoesNotTriggerIntelligentScanOnLowEndDeviceWhenExcluded) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kEnableLowEndDeviceMode);
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  raw_delegate_->ForceEmptyInnerText();
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
 }
 
 class ClientSideDetectionHostPriorityTest
