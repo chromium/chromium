@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -295,4 +296,37 @@ TEST_P(OrganizerPanelControllerConfigurationTest, PanelMoved) {
                   ConfigureVerticalTabStrip(!StartInVerticalTabStrip()),
                   TogglePanel(), SetAnimationValue(1.0),
                   ExpectPanel(!StartInVerticalTabStrip()));
+}
+
+TEST(OrganizerPanelUtilsTest, SegmentationControlFeatureParam) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(organizer_panel::kOrganizerPanel);
+    EXPECT_FALSE(organizer_panel::IsOrganizerPanelFeatureEnabled());
+    EXPECT_FALSE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+    EXPECT_TRUE(organizer_panel::IsOrganizerPanelFeatureEnabled());
+    EXPECT_FALSE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        organizer_panel::kOrganizerPanel,
+        {{organizer_panel::kOrganizerPanelUseSegmentationControl.name,
+          "false"}});
+    EXPECT_TRUE(organizer_panel::IsOrganizerPanelFeatureEnabled());
+    EXPECT_FALSE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        organizer_panel::kOrganizerPanel,
+        {{organizer_panel::kOrganizerPanelUseSegmentationControl.name,
+          "true"}});
+    EXPECT_TRUE(organizer_panel::IsOrganizerPanelFeatureEnabled());
+    EXPECT_TRUE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
+  }
 }

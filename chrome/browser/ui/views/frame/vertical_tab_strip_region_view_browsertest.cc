@@ -463,7 +463,10 @@ class VerticalTabStripRegionViewOrganizerPanelTest
       override {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         VerticalTabStripRegionViewTest::GetEnabledFeatures();
-    enabled_features.push_back({organizer_panel::kOrganizerPanel, {}});
+    enabled_features.push_back(
+        {organizer_panel::kOrganizerPanel,
+         {{organizer_panel::kOrganizerPanelUseSegmentationControl.name,
+           "true"}}});
     return enabled_features;
   }
 };

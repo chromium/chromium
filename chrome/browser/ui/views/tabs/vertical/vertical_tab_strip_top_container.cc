@@ -63,7 +63,7 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
                                       ? views::LayoutOrientation::kVertical
                                       : views::LayoutOrientation::kHorizontal);
 
-  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+  if (organizer_panel::IsOrganizerPanelSegmentationControlEnabled()) {
     segmented_control_ = AddChildView(
         std::make_unique<VerticalTabStripSegmentedControl>(browser_));
 
@@ -566,7 +566,7 @@ void VerticalTabStripTopContainer::UpdateControlsVisibility() {
   const bool is_tab_search_pinned =
       prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
   const bool is_segmentation_eligible =
-      organizer_panel::IsOrganizerPanelFeatureEnabled() &&
+      organizer_panel::IsOrganizerPanelSegmentationControlEnabled() &&
       SupportsEmbeddedOrganizerPanel() && is_tab_search_pinned;
 
   if (segmented_control_) {

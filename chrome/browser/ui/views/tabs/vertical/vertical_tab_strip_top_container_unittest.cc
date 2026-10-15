@@ -231,9 +231,43 @@ TEST_F(VerticalTabStripTopContainerTest, DefaultShowsComboButton) {
   EXPECT_EQ(segmented_control(), nullptr);
 }
 
-TEST_F(VerticalTabStripTopContainerTest, ShowsSegmentedControlWhenEligible) {
+TEST_F(VerticalTabStripTopContainerTest,
+       OrganizerPanelDefaultParamShowsComboButton) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  top_container()->UpdateControlsVisibility();
+  LayoutView();
+
+  EXPECT_EQ(segmented_control(), nullptr);
+  EXPECT_TRUE(combo_button()->GetVisible());
+}
+
+TEST_F(VerticalTabStripTopContainerTest,
+       OrganizerPanelParamDisabledShowsComboButton) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "false"}});
+  ResetTopContainer();
+
+  pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  controller()->SetUncollapsedWidth(300);
+  top_container()->UpdateControlsVisibility();
+  LayoutView();
+
+  EXPECT_EQ(segmented_control(), nullptr);
+  EXPECT_TRUE(combo_button()->GetVisible());
+}
+
+TEST_F(VerticalTabStripTopContainerTest, ShowsSegmentedControlWhenEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
   ResetTopContainer();
 
   pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
@@ -261,7 +295,9 @@ TEST_F(VerticalTabStripTopContainerTest, ShowsSegmentedControlWhenEligible) {
 TEST_F(VerticalTabStripTopContainerTest,
        CollapsedExpandOnHoverRendersSegmentedControlAtExpandedWidth) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
   ResetTopContainer();
 
   pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
@@ -308,7 +344,9 @@ TEST_F(VerticalTabStripTopContainerTest,
 TEST_F(VerticalTabStripTopContainerTest,
        CollapsedExpandOnHoverWithCaptionButtonsExclusionZone) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
   ResetTopContainer();
 
   constexpr int kCaptionButtonWidth = 50;
@@ -351,7 +389,9 @@ TEST_F(VerticalTabStripTopContainerTest,
 
 TEST_F(VerticalTabStripTopContainerTest, IsCollapsedOverrideSwitchesControls) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
   ResetTopContainer();
 
   pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
@@ -407,7 +447,9 @@ TEST_F(VerticalTabStripTopContainerTest, IsCollapsedOverrideSwitchesControls) {
 TEST_F(VerticalTabStripTopContainerTest,
        UncollapsedWidthOverrideSwitchesControls) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
   ResetTopContainer();
 
   pref_service()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
@@ -458,7 +500,9 @@ TEST_F(VerticalTabStripTopContainerTest,
 
 TEST_F(VerticalTabStripTopContainerTest, ModeChangedSwitchesControls) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+  feature_list.InitAndEnableFeatureWithParameters(
+      organizer_panel::kOrganizerPanel,
+      {{organizer_panel::kOrganizerPanelUseSegmentationControl.name, "true"}});
   controller()->SetVerticalTabsEnabled(false);
   ResetTopContainer();
 
