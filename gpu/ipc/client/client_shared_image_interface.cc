@@ -289,14 +289,6 @@ void ClientSharedImageInterface::DestroySharedImage(
   proxy_->DestroySharedImage(std::move(sync_tokens), mailbox);
 }
 
-void ClientSharedImageInterface::DestroySharedImage(
-    const SyncToken& sync_token,
-    scoped_refptr<ClientSharedImage> client_shared_image) {
-  CHECK(client_shared_image->HasOneRef());
-  CHECK(client_shared_image->HasHolder());
-  client_shared_image->UpdateDestructionSyncToken(sync_token);
-}
-
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
     ExportedSharedImage exported_shared_image) {
   const auto& mailbox = exported_shared_image.mailbox_;

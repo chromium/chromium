@@ -435,13 +435,6 @@ void SharedImageInterfaceInProcessBase::DestroySharedImage(
       /*sync_token_fences=*/std::move(sync_tokens), SyncToken());
 }
 
-void SharedImageInterfaceInProcessBase::DestroySharedImage(
-    const SyncToken& sync_token,
-    scoped_refptr<ClientSharedImage> client_shared_image) {
-  CHECK(client_shared_image->HasOneRef());
-  client_shared_image->UpdateDestructionSyncToken(sync_token);
-}
-
 void SharedImageInterfaceInProcessBase::DestroySharedImageOnGpuThread(
     const Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

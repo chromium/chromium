@@ -20,6 +20,7 @@
 #include "base/bits.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -57,6 +58,9 @@
 namespace media {
 
 namespace {
+
+BASE_FEATURE(kVideoFrameRetainSharedImageOwnership,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 VideoFrame::ID GetNextID() {
   static std::atomic_uint64_t counter(1u);
@@ -466,7 +470,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
 
   frame->acquire_sync_token_ = sync_token;
   frame->set_color_space(shared_image->color_space());
-  frame->shared_image_ = shared_image->MakeUnowned();
+  if (base::FeatureList::IsEnabled(kVideoFrameRetainSharedImageOwnership)) {
+    frame->shared_image_ = std::move(shared_image);
+  } else {
+    frame->shared_image_ = shared_image->MakeUnowned();
+  }
   if (shared_image_release_cb) {
     frame->SetReleaseMailboxCB(std::move(shared_image_release_cb));
   }

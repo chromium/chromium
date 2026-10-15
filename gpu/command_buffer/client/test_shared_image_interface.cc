@@ -350,13 +350,6 @@ void TestSharedImageInterface::DestroySharedImage(
   }
 }
 
-void TestSharedImageInterface::DestroySharedImage(
-    const SyncToken& sync_token,
-    scoped_refptr<ClientSharedImage> client_shared_image) {
-  CHECK(client_shared_image->HasOneRef());
-  client_shared_image->UpdateDestructionSyncToken(sync_token);
-}
-
 #if BUILDFLAG(IS_FUCHSIA)
 void TestSharedImageInterface::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,

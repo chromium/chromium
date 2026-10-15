@@ -137,12 +137,6 @@ void ArcSharedImageInterface::CreateSharedImageOnGpuThread(
   }
 }
 
-void ArcSharedImageInterface::DestroySharedImage(
-    const SyncToken& sync_token,
-    scoped_refptr<ClientSharedImage> client_shared_image) {
-  NOTREACHED();
-}
-
 scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,

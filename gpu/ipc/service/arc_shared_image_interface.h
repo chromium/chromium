@@ -67,9 +67,6 @@ class GPU_IPC_SERVICE_EXPORT ArcSharedImageInterface
                          const Mailbox& mailbox) override;
   void DestroySharedImage(std::vector<SyncToken> sync_tokens,
                           const Mailbox& mailbox) override;
-  void DestroySharedImage(
-      const SyncToken& sync_token,
-      scoped_refptr<ClientSharedImage> client_shared_image) override;
   scoped_refptr<ClientSharedImage> ImportSharedImage(
       ExportedSharedImage exported_shared_image) override;
   SyncToken GenUnverifiedSyncToken() override;

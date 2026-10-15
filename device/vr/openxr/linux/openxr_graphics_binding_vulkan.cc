@@ -163,7 +163,6 @@ OpenXrGraphicsBindingVulkan::ImportGbmImageAsSharedImage(
   }
   // Not a native pixmap or unusable in Vulkan; drop it so the caller can fall
   // back to the LINEAR export path.
-  sii->DestroySharedImage(gpu::SyncToken(), std::move(client_si));
   return nullptr;
 }
 

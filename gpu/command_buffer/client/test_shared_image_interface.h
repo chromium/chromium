@@ -96,9 +96,6 @@ class TestSharedImageInterface : public SharedImageInterface {
 
   void DestroySharedImage(std::vector<SyncToken> sync_tokens,
                           const Mailbox& mailbox) override;
-  void DestroySharedImage(
-      const SyncToken& sync_token,
-      scoped_refptr<ClientSharedImage> client_shared_image) override;
 
   bool IsLost() const override { return false; }
   bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
