@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -18,8 +17,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
@@ -49,13 +46,6 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay(resolution);
   }
-
-  const BrowserWindowInterface* OpenNewBrowserWindow() {
-    const user_manager::User* const user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-    return CreateBrowser(profile);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, PRE_TwoRuns) {
@@ -76,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, PRE_TwoRuns) {
   EXPECT_FALSE(browser->GetWindow()->IsMaximized());
 
   // Create a second window and check that it is not affected by the policy.
-  const BrowserWindowInterface* const browser1 = OpenNewBrowserWindow();
+  const BrowserWindowInterface* const browser1 =
+      CreateBrowser(GetProfileForActiveUser());
   ASSERT_TRUE(browser1);
   EXPECT_FALSE(browser1->GetWindow()->IsMaximized());
 }
@@ -87,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, TwoRuns) {
                                           true /* check_if_submittable */);
   ash::test::WaitForPrimaryUserSessionStart();
 
-  const BrowserWindowInterface* const browser = OpenNewBrowserWindow();
+  const BrowserWindowInterface* const browser =
+      CreateBrowser(GetProfileForActiveUser());
   ASSERT_TRUE(browser);
   EXPECT_FALSE(browser->GetWindow()->IsMaximized());
 }

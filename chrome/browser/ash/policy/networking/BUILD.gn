@@ -103,7 +103,6 @@ source_set("browser_tests") {
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
-    "//components/session_manager/core",
     "//components/user_manager",
     "//components/user_manager:common",
     "//components/version_info",

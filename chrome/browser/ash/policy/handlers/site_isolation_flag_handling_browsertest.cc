@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -36,6 +35,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -283,10 +283,10 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, PRE_FlagHandlingTest) {
   LogIn();
 
   if (!GetParam().user_flag_internal_names.empty()) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetActiveUser());
-    ASSERT_TRUE(profile);
-    flags_ui::PrefServiceFlagsStorage flags_storage(profile->GetPrefs());
+    user_manager::User* const user =
+        user_manager::UserManager::Get()->FindUserAndModify(account_id_);
+    ASSERT_TRUE(user);
+    flags_ui::PrefServiceFlagsStorage flags_storage(user->GetProfilePrefs());
     std::set<std::string> flags_to_set;
     for (const std::string& flag_to_set : GetParam().user_flag_internal_names)
       flags_to_set.insert(flag_to_set);

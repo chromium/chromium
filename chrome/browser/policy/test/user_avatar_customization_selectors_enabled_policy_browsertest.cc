@@ -9,7 +9,10 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -29,12 +32,20 @@ class UserAvatarCustomizationSelectorsEnabledPolicyTest : public PolicyTest {
     PolicyTest::SetUpOnMainThread();
 
     // Fetch User, which can be used to check the currently set user image
-    user_ = user_manager::UserManager::Get()->GetActiveUser();
+    user_ = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+        chrome_test_utils::GetProfile(this));
+    ASSERT_TRUE(user_);
     // Fetch UserImageManager, which can be used to save a new user image
     user_image_manager_ =
         ash::UserImageManagerRegistry::Get()->GetManager(user_->GetAccountId());
 
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_));
+  }
+
+  void TearDownOnMainThread() override {
+    user_image_manager_ = nullptr;
+    user_ = nullptr;
+    PolicyTest::TearDownOnMainThread();
   }
 
  protected:
@@ -47,8 +58,8 @@ class UserAvatarCustomizationSelectorsEnabledPolicyTest : public PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
-  raw_ptr<ash::UserImageManagerImpl, DanglingUntriaged> user_image_manager_;
-  raw_ptr<const user_manager::User, DanglingUntriaged> user_;
+  raw_ptr<ash::UserImageManagerImpl> user_image_manager_;
+  raw_ptr<const user_manager::User> user_;
   base::FilePath test_data_dir_;
 };
 

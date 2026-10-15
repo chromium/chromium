@@ -14,16 +14,18 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
@@ -94,12 +96,13 @@ std::string LoginPolicyTestBase::GetIdToken() const {
 }
 
 Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-
-  EXPECT_NE(user, nullptr);
-
-  return ash::ProfileHelper::Get()->GetProfileByUser(user);
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  EXPECT_EQ(active_session->account_id(), account_id());
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id()));
 }
 
 void LoginPolicyTestBase::GetPolicySettings(
