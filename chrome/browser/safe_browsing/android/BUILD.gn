@@ -107,6 +107,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentBase.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/tips/EnhancedSafeBrowsingTipsPromoHandler.java",
   ]
   deps = [
     ":java_resources",
@@ -118,7 +119,10 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/privacy:privacy_settings_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:factory_java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/tips/android:java_resources",
+    "//chrome/browser/tips/android:public_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
@@ -146,24 +150,6 @@ android_library("java") {
     "//components/safe_browsing/android:switches_srcjar",
   ]
   resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
-}
-
-# Kept separate from ":java" because //chrome/browser/tips/android:java depends
-# on ":java" for the legacy promo handler, which would otherwise form a cycle.
-# TODO(crbug.com/559296862): Fold into ":java" once the legacy handler is
-# removed and the cycle no longer exists.
-android_library("tips_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/tips/EnhancedSafeBrowsingTipsPromoHandler.java" ]
-  deps = [
-    ":java",
-    "//build/android:build_java",
-    "//chrome/browser/settings:factory_java",
-    "//chrome/browser/tips/android:java",
-    "//chrome/browser/tips/android:java_resources",
-    "//components/browser_ui/settings/android:java",
-    "//ui/android:ui_no_recycler_view_java",
-  ]
-  resources_package = "org.chromium.chrome.browser.safe_browsing.tips"
 }
 
 android_library("javatests") {
@@ -223,7 +209,6 @@ robolectric_library("junit") {
   ]
   deps = [
     ":java",
-    ":tips_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
@@ -231,8 +216,7 @@ robolectric_library("junit") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:factory_java",
-    "//chrome/browser/tips/android:java",
-    "//chrome/browser/tips/android:java_resources",
+    "//chrome/browser/tips/android:public_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",

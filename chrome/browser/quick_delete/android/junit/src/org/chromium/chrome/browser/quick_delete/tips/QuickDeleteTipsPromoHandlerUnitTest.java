@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteControllerProvider;
+import org.chromium.chrome.browser.quick_delete.R;
 import org.chromium.chrome.browser.tips.TipsPromoCustomizer;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.ui.base.WindowAndroid;

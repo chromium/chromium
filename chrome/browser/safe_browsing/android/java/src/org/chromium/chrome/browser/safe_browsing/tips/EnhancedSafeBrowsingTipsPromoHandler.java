@@ -10,6 +10,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
+import org.chromium.chrome.browser.safe_browsing.settings.R;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tips.TipsPromoHandler;

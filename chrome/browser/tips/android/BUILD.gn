@@ -6,18 +6,23 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_enums" ]
+  public_deps = [ ":public_java" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tips/LegacyTipsPromoHandler.java",
     "java/src/org/chromium/chrome/browser/tips/TipsOptInCoordinator.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoCoordinator.java",
-    "java/src/org/chromium/chrome/browser/tips/TipsPromoCustomizer.java",
-    "java/src/org/chromium/chrome/browser/tips/TipsPromoHandler.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoHandlerFactory.java",
-    "java/src/org/chromium/chrome/browser/tips/TipsPromoProperties.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoView.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoViewBinder.java",
     "java/src/org/chromium/chrome/browser/tips/TipsUtils.java",
   ]
+
+  # TODO(crbug.com/559296862): Once all tips have migrated to self-service and
+  # the flag is removed, delete LegacyTipsPromoHandler and the feature-specific
+  # plumbing in TipsPromoCoordinator (LensController, QuickDeleteController
+  # supplier), then drop the feature module deps that only exist for them:
+  # //chrome/browser/lens:java, //chrome/browser/quick_delete:java and
+  # //chrome/browser/safe_browsing/android:java.
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -53,6 +58,23 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.tips"
+}
+
+# The API that feature modules use to implement a tips promo handler. Must not
+# depend on feature modules, so that features can depend on it from their own
+# targets without depending on (or forming a cycle with) the tips
+# implementation in ":java".
+android_library("public_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoCustomizer.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoHandler.java",
+    "java/src/org/chromium/chrome/browser/tips/TipsPromoProperties.java",
+  ]
+  deps = [
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
 }
 
 java_cpp_enum("jni_enums") {

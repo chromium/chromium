@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteControllerProvider;
+import org.chromium.chrome.browser.quick_delete.R;
 import org.chromium.chrome.browser.tips.TipsPromoCustomizer;
 import org.chromium.chrome.browser.tips.TipsPromoHandler;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;

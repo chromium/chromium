@@ -19,6 +19,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteProperties.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteTabsFilter.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/tips/QuickDeleteTipsPromoHandler.java",
   ]
   deps = [
     ":java_resources",
@@ -36,6 +37,8 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tips/android:java_resources",
+    "//chrome/browser/tips/android:public_java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/night_mode:java",
     "//chrome/browser/ui/messages/android:java",
@@ -62,22 +65,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.quick_delete"
-}
-
-# Kept separate from ":java" because //chrome/browser/tips/android:java depends
-# on ":java" for the legacy promo handler, which would otherwise form a cycle.
-# TODO(crbug.com/559296862): Fold into ":java" once the legacy handler is
-# removed and the cycle no longer exists.
-android_library("tips_java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/quick_delete/tips/QuickDeleteTipsPromoHandler.java" ]
-  deps = [
-    ":java",
-    "//build/android:build_java",
-    "//chrome/browser/tips/android:java",
-    "//chrome/browser/tips/android:java_resources",
-    "//ui/android:ui_no_recycler_view_java",
-  ]
-  resources_package = "org.chromium.chrome.browser.quick_delete.tips"
 }
 
 generate_jni("jni_headers") {
@@ -114,7 +101,6 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
-    ":tips_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -127,8 +113,8 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tabmodel:java",
-    "//chrome/browser/tips/android:java",
     "//chrome/browser/tips/android:java_resources",
+    "//chrome/browser/tips/android:public_java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
