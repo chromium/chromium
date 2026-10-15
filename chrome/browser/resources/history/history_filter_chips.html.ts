@@ -15,8 +15,7 @@ export function getHtml(this: HistoryFilterChipsElement) {
     ${this.showActorFilter ? html`
       ${this.showActorFilterDropDownVersion_() ? html`
         <select id="actorSelect" class="md-select">
-          <!-- TODO(b/561606724): Replace hardcoded string with a localized string. -->
-          <option>All sources</option>
+          <option>$i18n{sourceFilterAllActors}</option>
           <option>$i18n{sourceFilterChipUser}</option>
           <option>$i18n{sourceFilterChipActor}</option>
         </select>
@@ -37,8 +36,7 @@ export function getHtml(this: HistoryFilterChipsElement) {
       <div class="filter-chips">
         <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
         <select id="deviceFilterChip" class="md-select">
-          <!-- TODO(b/558659016): Replace hardcoded string with a localized string. -->
-          <option>All devices</option>
+          <option>$i18n{deviceFilterAllDevices}</option>
           ${this.devices.map(device => html`
             <option>${device.name}</option>
           `)}

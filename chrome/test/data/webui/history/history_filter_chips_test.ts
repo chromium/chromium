@@ -52,8 +52,9 @@ suite('HistoryFilterChipsTest', function() {
       assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
       assertEquals(3, actorSelect.options.length);
-      // TODO(b/561606724): Replace hardcoded string with a localized string ID.
-      assertEquals('All sources', actorSelect.options[0]!.textContent.trim());
+      assertEquals(
+          loadTimeData.getString('sourceFilterAllActors'),
+          actorSelect.options[0]!.textContent.trim());
       assertTrue(actorSelect.options[0]!.selected);
       assertEquals(
           loadTimeData.getString('sourceFilterChipUser'),
@@ -303,7 +304,9 @@ suite('HistoryFilterChipsTest', function() {
         '#deviceFilterChip');
     assertTrue(!!deviceChip);
     assertEquals(3, deviceChip.options.length);
-    assertEquals('All devices', deviceChip.options[0]!.textContent.trim());
+    assertEquals(
+        loadTimeData.getString('deviceFilterAllDevices'),
+        deviceChip.options[0]!.textContent.trim());
     assertTrue(deviceChip.options[0]!.selected);
     assertEquals('Device 1', deviceChip.options[1]!.textContent.trim());
     assertFalse(deviceChip.options[1]!.selected);
