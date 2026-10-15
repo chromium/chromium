@@ -8,6 +8,7 @@
 #include <list>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_auth_sspi_win.h"
 
 namespace net {
@@ -113,7 +114,7 @@ class MockSSPILibrary : public SSPILibrary {
   std::list<PackageQuery> expected_package_queries_;
 
   // Set of packages which should be freed.
-  std::set<PSecPkgInfoW> expected_freed_packages_;
+  std::set<raw_ptr<SecPkgInfoW>> expected_freed_packages_;
 
   // These sets keep track of active credentials and contexts.
   std::set<CredHandle> active_credentials_;

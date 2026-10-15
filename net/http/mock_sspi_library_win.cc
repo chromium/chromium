@@ -277,8 +277,7 @@ SECURITY_STATUS MockSSPILibrary::DeleteSecurityContext(PCtxtHandle phContext) {
 
 SECURITY_STATUS MockSSPILibrary::FreeContextBuffer(PVOID pvContextBuffer) {
   PSecPkgInfoW package_info = static_cast<PSecPkgInfoW>(pvContextBuffer);
-  std::set<PSecPkgInfoW>::iterator it = expected_freed_packages_.find(
-      package_info);
+  auto it = expected_freed_packages_.find(package_info);
   EXPECT_TRUE(it != expected_freed_packages_.end());
   expected_freed_packages_.erase(it);
   return SEC_E_OK;
