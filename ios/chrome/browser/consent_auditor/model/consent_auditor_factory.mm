@@ -11,7 +11,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
-#import "base/no_destructor.h"
 #import "base/time/default_clock.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/consent_auditor/consent_auditor_impl.h"
@@ -26,25 +25,10 @@
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
-// static
-consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<consent_auditor::ConsentAuditor>(
-      profile, /*create=*/true);
-}
-
-// static
-ConsentAuditorFactory* ConsentAuditorFactory::GetInstance() {
-  static base::NoDestructor<ConsentAuditorFactory> instance;
-  return instance.get();
-}
-
-ConsentAuditorFactory::ConsentAuditorFactory()
-    : ProfileKeyedServiceFactoryIOS("ConsentAuditor") {
+ConsentAuditorFactory::ConsentAuditorFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "ConsentAuditor") {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
-
-ConsentAuditorFactory::~ConsentAuditorFactory() {}
 
 std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

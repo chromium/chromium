@@ -5,27 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_CONSENT_AUDITOR_MODEL_CONSENT_AUDITOR_FACTORY_H_
 #define IOS_CHROME_BROWSER_CONSENT_AUDITOR_MODEL_CONSENT_AUDITOR_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/consent_auditor/consent_auditor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace consent_auditor {
-class ConsentAuditor;
-}  // namespace consent_auditor
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all ConsentAuditors and associates them with
 // ProfileIOS.
-class ConsentAuditorFactory : public ProfileKeyedServiceFactoryIOS {
+class ConsentAuditorFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                  ConsentAuditorFactory,
+                                  consent_auditor::ConsentAuditor> {
  public:
-  static consent_auditor::ConsentAuditor* GetForProfile(ProfileIOS* profile);
-  static ConsentAuditorFactory* GetInstance();
+  explicit ConsentAuditorFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ConsentAuditorFactory>;
-
-  ConsentAuditorFactory();
-  ~ConsentAuditorFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

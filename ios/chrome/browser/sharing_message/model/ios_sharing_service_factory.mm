@@ -8,7 +8,6 @@
 
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "build/build_config.h"
 #import "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #import "components/gcm_driver/gcm_driver.h"
@@ -59,23 +58,11 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
 
 }  // namespace
 
-// static
-SharingService* IOSSharingServiceFactory::GetForProfile(ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
-  return GetInstance()->GetServiceForProfileAs<SharingService>(profile,
-                                                               /*create=*/true);
-}
-
-// static
-IOSSharingServiceFactory* IOSSharingServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSSharingServiceFactory> instance;
-  return instance.get();
-}
-
-IOSSharingServiceFactory::IOSSharingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SharingService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+IOSSharingServiceFactory::IOSSharingServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SharingService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
@@ -83,8 +70,6 @@ IOSSharingServiceFactory::IOSSharingServiceFactory()
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
 }
-
-IOSSharingServiceFactory::~IOSSharingServiceFactory() {}
 
 std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
