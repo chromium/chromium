@@ -204,7 +204,8 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   UIMenu* _forwardButtonMenu;
   ToolbarButton* _reloadButton;
   ToolbarButton* _stopButton;
-  ToolbarButton* _shareButton;
+  ToolbarButton* _leadingShareButton;
+  ToolbarButton* _trailingShareButton;
   ToolbarButton* _assistantButton;
   UIMenu* _assistantButtonMenu;
   ToolbarTabGridBadgeButton* _tabGridButton;
@@ -333,6 +334,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 
   // Whether the visible page is loading.
   BOOL _isLoading;
+
+  // Whether the share button in this toolbar is enabled.
+  BOOL _shareEnabled;
 
   // Used to record the latest fullscreen progress.
   CGFloat _fullscreenProgress;
@@ -701,10 +705,14 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 }
 
 - (void)setShareEnabled:(BOOL)enabled {
-  if (enabled == _shareButton.isEnabled) {
+  if (enabled == _shareEnabled) {
     return;
   }
-  _shareButton.enabled = enabled;
+  _shareEnabled = enabled;
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    _leadingShareButton.enabled = enabled;
+  }
+  _trailingShareButton.enabled = enabled;
 }
 
 - (void)setHasOmnibox:(BOOL)hasOmnibox {
@@ -1795,10 +1803,19 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   [_stopButton addTarget:self
                   action:@selector(stopButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
-  _shareButton = [self.buttonFactory makeShareButton];
-  [_shareButton addTarget:self
-                   action:@selector(shareButtonTapped:)
-         forControlEvents:UIControlEventTouchUpInside];
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    _leadingShareButton = [self.buttonFactory makeShareButton];
+    _leadingShareButton.visibilityMask = ToolbarButtonVisibility::kCompactWidth;
+    _leadingShareButton.enabled = _shareEnabled;
+    [_leadingShareButton addTarget:self
+                            action:@selector(shareButtonTapped:)
+                  forControlEvents:UIControlEventTouchUpInside];
+  }
+  _trailingShareButton = [self.buttonFactory makeShareButton];
+  _trailingShareButton.enabled = _shareEnabled;
+  [_trailingShareButton addTarget:self
+                           action:@selector(shareButtonTapped:)
+                 forControlEvents:UIControlEventTouchUpInside];
   _assistantButton = [self.buttonFactory makeAssistantButton];
   [_assistantButton addTarget:self
                        action:@selector(assistantButtonTapped)
@@ -1969,7 +1986,12 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 
 // Sets up the hierarchy of the buttons.
 - (void)setUpHierarchy {
-  if (IsNextOldDesignEnabled()) {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    _leadingStackView = [self makeStackViewWithButtons:@[
+      _backButton, _forwardButton, _reloadButton, _stopButton,
+      _leadingShareButton
+    ]];
+  } else if (IsNextOldDesignEnabled()) {
     _leadingStackView = [self makeStackViewWithButtons:@[
       _backButton,
       _forwardButton,
@@ -1984,18 +2006,24 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     ]];
   }
   _trailingStackView = [self makeStackViewWithButtons:@[
-    _assistantButton, _shareButton, _tabGridButton, _toolsMenuButton
+    _assistantButton, _trailingShareButton, _tabGridButton, _toolsMenuButton
   ]];
 
-  if (IsNextOldDesignEnabled()) {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
     _allButtons = @[
-      _backButton, _forwardButton, _reloadButton, _stopButton, _assistantButton,
-      _shareButton, _tabGridButton, _toolsMenuButton
+      _backButton, _forwardButton, _reloadButton, _stopButton,
+      _leadingShareButton, _trailingShareButton, _assistantButton,
+      _tabGridButton, _toolsMenuButton
+    ];
+  } else if (IsNextOldDesignEnabled()) {
+    _allButtons = @[
+      _backButton, _forwardButton, _reloadButton, _stopButton,
+      _trailingShareButton, _assistantButton, _tabGridButton, _toolsMenuButton
     ];
   } else {
     _allButtons = @[
-      _navigationButtonsContainer, _reloadButton, _stopButton, _assistantButton,
-      _shareButton, _tabGridButton, _toolsMenuButton
+      _navigationButtonsContainer, _reloadButton, _stopButton,
+      _trailingShareButton, _assistantButton, _tabGridButton, _toolsMenuButton
     ];
   }
 
@@ -2504,15 +2532,30 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   [self updateGuide:kForwardButtonGuide
            withView:_forwardButton
                hide:hideToolbar];
+
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    // The leading share button in the toolbar is visible in a window with
+    // compact width and regular height).
+    BOOL isLeadingShareVisibleInLayout =
+        !IsCompactHeight(self) && IsCompactWidth(self);
+    BOOL hideLeadingShare = hideToolbar || !isLeadingShareVisibleInLayout ||
+                            _leadingShareButton.forceHidden;
+    [self updateGuide:kShareButtonGuide
+             withView:_leadingShareButton
+                 hide:hideLeadingShare];
+  }
+
   // The toolbar share button is only visible in compact height (or in
   // Regular-Regular when NextOldDesign is enabled); otherwise, the location bar
   // steady view owns `kShareButtonGuide`.
-  BOOL isShareVisibleInLayout =
+  BOOL isTrailingShareVisibleInLayout =
       IsCompactHeight(self) ||
       (IsNextOldDesignEnabled() && IsRegularXRegularSizeClass(self));
-  BOOL hideShare =
-      hideToolbar || !isShareVisibleInLayout || _shareButton.forceHidden;
-  [self updateGuide:kShareButtonGuide withView:_shareButton hide:hideShare];
+  BOOL hideShare = hideToolbar || !isTrailingShareVisibleInLayout ||
+                   _trailingShareButton.forceHidden;
+  [self updateGuide:kShareButtonGuide
+           withView:_trailingShareButton
+               hide:hideShare];
 
   // The assistant button is hidden in non Regular-Regular size classes, but the
   // toolbar button's visibility handler may run after this, so
