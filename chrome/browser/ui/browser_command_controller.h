@@ -86,6 +86,14 @@ class BrowserCommandController : public CommandUpdater,
   // other *Changed() functions will be a NO-OP in this state).
   void LockedFullscreenStateChanged();
 
+  // Called when the OnTask state changes without a pin/unpin, e.g. entering
+  // or leaving the prepared state. Re-derives the commands that depend on the
+  // OnTask state (currently DevTools).
+  // TODO(crbug.com/438540029): Consolidate with LockedFullscreenStateChanged()
+  // and SetTabSwitchCommandsEnabled() into a single notification that
+  // re-derives all command state from LockedStateController.
+  void OnTaskStateChanged();
+
   // Enables or disables all tab switching commands (IDC_SELECT_NEXT_TAB,
   // IDC_SELECT_PREVIOUS_TAB, IDC_CYCLE_*, IDC_SELECT_TAB_0..7, etc.).
   void SetTabSwitchCommandsEnabled(bool enabled);

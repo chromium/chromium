@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -819,9 +821,17 @@ bool BrowserFrameViewChromeOS::ShouldEnableImmersiveModeController() const {
     return false;
   }
 
-  if (IsLockedFullscreen() &&
-      (!frame_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned))) {
-    return false;
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    const auto* locked_state_controller =
+        chromeos::LockedStateController::From(GetBrowserView()->browser());
+    if (locked_state_controller->IsLocked() &&
+        !locked_state_controller->GetCapabilities().use_immersive_mode) {
+      return false;
+    }
+  } else if (IsLockedFullscreen()) {
+    if (!frame_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
+      return false;
+    }
   }
   if (display::Screen::Get()->InTabletMode() &&
       (IsSnapped() || browser_widget()->IsMaximized())) {
@@ -896,9 +906,16 @@ bool BrowserFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview() const {
   // state. This is to show the three dot menu which is a part of caption button
   // container, rather than showing buttons. Only relevant for non-web browser
   // scenarios.
-  if (IsLockedFullscreen() &&
-      frame_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
-    return true;
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    if (chromeos::LockedStateController::From(GetBrowserView()->browser())
+            ->GetCapabilities()
+            .use_immersive_mode) {
+      return true;
+    }
+  } else if (IsLockedFullscreen()) {
+    if (frame_window->GetProperty(chromeos::kUseImmersiveInTrustedPinned)) {
+      return true;
+    }
   }
 
   if (GetHideCaptionButtonsForFullscreen()) {

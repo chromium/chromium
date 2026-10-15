@@ -246,7 +246,8 @@ class BrowserDelegate {
     // physically locked/pinned yet.
     kPrepared,
     // Locked for OnTask (pinned window in locked fullscreen with toolbar and
-    // tab strip enabled).
+    // tab strip enabled). IsOnTaskState(kLocked) is also true while paused,
+    // since paused is a locked state with additional restrictions.
     kLocked,
     // Locked for OnTask but paused (pinned window with tab switching and
     // immersive mode disabled).

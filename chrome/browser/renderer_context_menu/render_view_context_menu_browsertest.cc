@@ -71,6 +71,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1264,6 +1265,12 @@ class ContextMenuForLockedFullscreenBrowserTest
       auto* controller = chromeos::LockedStateController::From(browser());
       ASSERT_TRUE(controller);
       controller->Lock(chromeos::LockedState::kOnTaskLockedPaused);
+    } else {
+      // Legacy has no explicit paused state; paused is OnTask locked with tab
+      // switching disabled.
+      LockForOnTask();
+      chrome::BrowserCommandController::From(browser())
+          ->SetTabSwitchCommandsEnabled(false);
     }
   }
 
@@ -1429,9 +1436,6 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        CriticalItemsAreEnabledWhenLockedForOnTaskPaused) {
-  if (!is_unified_locked_state_controller_enabled_) {
-    return;
-  }
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);

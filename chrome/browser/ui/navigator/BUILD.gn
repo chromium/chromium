@@ -72,6 +72,7 @@ source_set("impl") {
       "//ash",
       "//chrome/browser/ash/boca/on_task",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/chromeos/locked_state",
     ]
   }
 

@@ -92,6 +92,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "components/account_id/account_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
@@ -688,14 +689,18 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
   // TODO(b/365146870): Remove once we consolidate locked fullscreen with
   // OnTask.
   if (source_browser) {
-    bool should_block_navigation =
-        platform_util::IsBrowserLockedFullscreen(source_browser);
-    if (ash::boca::OnTaskLockedController::From(source_browser)
-            ->is_locked_for_on_task()) {
-      should_block_navigation = false;
-    }
-    if (should_block_navigation) {
-      return nullptr;
+    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+      if (!chromeos::LockedStateController::From(source_browser)
+               ->GetCapabilities()
+               .allow_browser_navigation) {
+        return nullptr;
+      }
+    } else {
+      if (platform_util::IsBrowserLockedFullscreen(source_browser) &&
+          !ash::boca::OnTaskLockedController::From(source_browser)
+               ->is_locked_for_on_task()) {
+        return nullptr;
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

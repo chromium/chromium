@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
@@ -238,6 +239,30 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       UnpinSystemWebAppWindowWhenPaused) {
+  // Launch Boca app, then pin and pause it for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/true, boca_app_browser->GetSessionID());
+  system_web_app_manager.SetPauseStateForSystemWebAppWindow(
+      /*paused=*/true, boca_app_browser->GetSessionID());
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+
+  // Unpin the Boca app while paused (e.g. teacher unlock or session end) and
+  // verify it is no longer pinned.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/false, boca_app_browser->GetSessionID());
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
                        UnpinSystemWebAppWindowWhenInFullscreenMode) {
   // Launch Boca app and pin it for testing purposes.
   OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
@@ -383,6 +408,40 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_TRUE(
       ash::CameraPrivacySwitchController::Get()->IsCameraAccessForceDisabled());
   EXPECT_FALSE(ash::CrasAudioHandler::Get()->IsInputMuted());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       ExtensionButtonVisibleWhenUnpaused) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Pin and pause the Boca app.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/true, boca_app_browser->GetSessionID());
+  system_web_app_manager.SetPauseStateForSystemWebAppWindow(
+      /*paused=*/true, boca_app_browser->GetSessionID());
+
+  // Unpause the Boca app and verify result.
+  system_web_app_manager.SetPauseStateForSystemWebAppWindow(
+      /*paused=*/false, boca_app_browser->GetSessionID());
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(boca_app_browser);
+
+  // Wait for any asynchronous state updates.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    browser_view->GetWidget()->LayoutRootViewIfNecessary();
+    WebAppFrameToolbarView* web_app_frame_toolbar =
+        browser_view->web_app_frame_toolbar_for_testing();
+    return web_app_frame_toolbar && web_app_frame_toolbar->GetVisible() &&
+           web_app_frame_toolbar->GetExtensionsContainerViews() != nullptr;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,

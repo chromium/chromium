@@ -47,8 +47,9 @@ constexpr LockedStateCapabilities kExtensionLockedCapabilities = {
     .context_menu_policy = ContextMenuPolicy::kBlockAll,
 };
 
-// Default baseline capabilities for OnTask. Some fields (like tab strip and
-// immersive mode) will be dynamically updated based on window features.
+// Default baseline capabilities for OnTask. Tab strip support is updated based
+// on window features; immersive mode and toolbar focus are enabled only while
+// pinned (kOnTaskLocked).
 constexpr LockedStateCapabilities kDefaultOnTaskCapabilities = {
     .supports_tab_strip = false,
     .allow_find = true,
@@ -150,13 +151,14 @@ bool LockedStateController::Lock(LockedState state) {
     return true;  // No-op
   }
 
-  // Transitions between OnTask locked and OnTask locked paused are allowed.
-  // Also allow transitions from OnTask prepared to OnTask locked/paused.
-  bool is_ontask_transition = (state_ == LockedState::kOnTaskPrepared ||
-                               state_ == LockedState::kOnTaskLocked ||
-                               state_ == LockedState::kOnTaskLockedPaused) &&
-                              (state == LockedState::kOnTaskLocked ||
-                               state == LockedState::kOnTaskLockedPaused);
+  // Once a window enters the OnTask lifecycle (prepared), it cycles between
+  // prepared, locked and locked paused and never leaves that loop while open;
+  // unpinning returns it to prepared rather than unlocked. Hence any transition
+  // between OnTask states is allowed.
+  const bool is_ontask_transition =
+      IsLockedForOnTask() && (state == LockedState::kOnTaskPrepared ||
+                              state == LockedState::kOnTaskLocked ||
+                              state == LockedState::kOnTaskLockedPaused);
 
   if (state_ != LockedState::kUnlocked && !is_ontask_transition) {
     LOG(WARNING)
@@ -185,6 +187,21 @@ bool LockedStateController::Lock(LockedState state) {
         ->LockedFullscreenStateChanged();
   }
 
+  // Must follow LockedFullscreenStateChanged(), which re-initializes the
+  // command state on unpin.
+  // TODO(crbug.com/438540029): Consolidate into a single notification that
+  // re-derives all command state from this controller.
+  auto* const command_controller =
+      chrome::BrowserCommandController::From(browser_window_interface_);
+  command_controller->OnTaskStateChanged();
+  // Tab switching is suspended while paused, matching the legacy
+  // implementation.
+  if (state_ == LockedState::kOnTaskLocked ||
+      state_ == LockedState::kOnTaskLockedPaused) {
+    command_controller->SetTabSwitchCommandsEnabled(state_ ==
+                                                    LockedState::kOnTaskLocked);
+  }
+
   NotifyStateUpdated();
   return true;
 }
@@ -206,16 +223,18 @@ bool LockedStateController::Unlock(LockedState expected_state) {
     return false;
   }
 
-  bool was_pinned = IsTrustedPinnedState(state_);
+  const bool was_pinned = IsTrustedPinnedState(state_);
 
   state_ = LockedState::kUnlocked;
   UpdateCapabilities();
 
+  auto* const command_controller =
+      chrome::BrowserCommandController::From(browser_window_interface_);
   if (was_pinned) {
     ash::UnpinWindow(browser_window_interface_->GetWindow()->GetNativeWindow());
-    chrome::BrowserCommandController::From(browser_window_interface_)
-        ->LockedFullscreenStateChanged();
+    command_controller->LockedFullscreenStateChanged();
   }
+  command_controller->OnTaskStateChanged();
 
   NotifyStateUpdated();
   return true;
@@ -318,14 +337,13 @@ void LockedStateController::UpdateCapabilities() {
                 WindowFeatureController::WindowFeature::kFeatureTabStrip);
     capabilities_.supports_tab_strip = supports_tabs;
 
-    if (state_ == LockedState::kOnTaskLocked ||
-        state_ == LockedState::kOnTaskPrepared) {
+    // The immersive frame and toolbar are only available while locked
+    // (pinned). kOnTaskPrepared is not pinned, and kOnTaskLockedPaused is more
+    // restrictive (the user must stay on the homepage tab), so both keep the
+    // defaults where they are unavailable.
+    if (state_ == LockedState::kOnTaskLocked) {
       capabilities_.use_immersive_mode = supports_tabs;
       capabilities_.focus_toolbar_on_lock = supports_tabs;
-    } else {
-      // kOnTaskLockedPaused
-      capabilities_.use_immersive_mode = false;
-      capabilities_.focus_toolbar_on_lock = false;
     }
     return;
   }
@@ -338,7 +356,12 @@ void LockedStateController::NotifyStateUpdated() {
       browser_window_interface_->GetWindow()->GetNativeWindow();
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(native_window);
-  bool locked = IsLocked();
+  // Minimize and close are unavailable in locked fullscreen and throughout the
+  // OnTask lifecycle. The prepared state is not pinned, so its frame still
+  // shows caption buttons; they must be hidden too so the user cannot dismiss
+  // the OnTask-managed window. This matches the legacy behavior in
+  // BrowserView::OnLockedForOnTaskUpdated().
+  const bool locked = IsLockedFullscreen() || IsLockedForOnTask();
   widget->widget_delegate()->SetCanMinimize(!locked);
   widget->widget_delegate()->SetShowCloseButton(!locked);
 }

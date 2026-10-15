@@ -101,6 +101,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #endif
 
 using base::UserMetricsAction;
@@ -141,10 +142,16 @@ int Center(int size, int item_size) {
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns true if the tab should be locked for the task and false otherwise.
 bool IsLockedForOnTask(BrowserWindowInterface* browser_window_interface) {
-  return browser_window_interface
-             ? ash::boca::OnTaskLockedController::From(browser_window_interface)
-                   ->is_locked_for_on_task()
-             : false;
+  if (!browser_window_interface) {
+    return false;
+  }
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    return !chromeos::LockedStateController::From(browser_window_interface)
+                ->GetCapabilities()
+                .allow_tab_modification;
+  }
+  return ash::boca::OnTaskLockedController::From(browser_window_interface)
+      ->is_locked_for_on_task();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -92,6 +92,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"  // nogncheck
 #endif
@@ -511,9 +513,17 @@ TabDragController::Liveness TabDragController::Init(
       BrowserView::GetBrowserViewForNativeWindow(
           source_context->GetWidget()->GetNativeWindow())
           ->browser();
-  if (ash::boca::OnTaskLockedController::From(source_browser)
-          ->is_locked_for_on_task()) {
-    ref->detach_behavior_ = DetachBehavior::kNotDetachable;
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    if (!chromeos::LockedStateController::From(source_browser)
+             ->GetCapabilities()
+             .allow_tab_modification) {
+      ref->detach_behavior_ = DetachBehavior::kNotDetachable;
+    }
+  } else {
+    if (ash::boca::OnTaskLockedController::From(source_browser)
+            ->is_locked_for_on_task()) {
+      ref->detach_behavior_ = DetachBehavior::kNotDetachable;
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   for (TabSlotView* dragging_view : dragging_views) {

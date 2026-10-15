@@ -110,6 +110,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 namespace {
@@ -1953,9 +1955,17 @@ void TabStrip::MaybeStartDrag(TabSlotView* source,
   // Block drag operation if the web app is locked for OnTask. This prevents the
   // window from moving along with the tab when in locked fullsceeen mode. Only
   // relevant for non-web browser scenarios.
-  if (ash::boca::OnTaskLockedController::From(GetBrowserWindowInterface())
-          ->is_locked_for_on_task()) {
-    return;
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    if (!chromeos::LockedStateController::From(GetBrowserWindowInterface())
+             ->GetCapabilities()
+             .allow_tab_modification) {
+      return;
+    }
+  } else {
+    if (ash::boca::OnTaskLockedController::From(GetBrowserWindowInterface())
+            ->is_locked_for_on_task()) {
+      return;
+    }
   }
 #endif
 

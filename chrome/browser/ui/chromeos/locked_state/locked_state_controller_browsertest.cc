@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace chromeos {
 namespace {
@@ -110,13 +112,21 @@ IN_PROC_BROWSER_TEST_F(LockedStateControllerBrowserTest,
   EXPECT_EQ(controller_->GetState(), LockedState::kOnTaskPrepared);
   EXPECT_FALSE(IsBrowserLockedFullscreen());
 
+  // Minimize and close are unavailable even though the window is not pinned.
+  views::WidgetDelegate* const widget_delegate =
+      views::Widget::GetWidgetForNativeWindow(
+          browser()->GetWindow()->GetNativeWindow())
+          ->widget_delegate();
+  EXPECT_FALSE(widget_delegate->CanMinimize());
+  EXPECT_FALSE(widget_delegate->ShouldShowCloseButton());
+
   LockedStateCapabilities expected_caps{
       .supports_tab_strip = true,
       .allow_find = true,
       .allow_browser_navigation = true,
       .allow_tab_modification = false,
-      .use_immersive_mode = true,
-      .focus_toolbar_on_lock = true,
+      .use_immersive_mode = false,
+      .focus_toolbar_on_lock = false,
       .context_menu_policy = ContextMenuPolicy::kLimited,
   };
   EXPECT_EQ(controller_->GetCapabilities(), expected_caps);
@@ -124,6 +134,8 @@ IN_PROC_BROWSER_TEST_F(LockedStateControllerBrowserTest,
   // Clean up
   EXPECT_TRUE(controller_->Unlock(LockedState::kOnTaskLocked));
   EXPECT_FALSE(IsBrowserLockedFullscreen());
+  EXPECT_TRUE(widget_delegate->CanMinimize());
+  EXPECT_TRUE(widget_delegate->ShouldShowCloseButton());
 }
 
 IN_PROC_BROWSER_TEST_F(LockedStateControllerBrowserTest,
@@ -188,6 +200,26 @@ IN_PROC_BROWSER_TEST_F(LockedStateControllerBrowserTest,
       .context_menu_policy = ContextMenuPolicy::kLimited,
   };
   EXPECT_EQ(controller_->GetCapabilities(), expected_caps);
+
+  ASSERT_TRUE(controller_->Lock(LockedState::kOnTaskLocked));
+  EXPECT_EQ(controller_->GetState(), LockedState::kOnTaskLocked);
+  EXPECT_TRUE(controller_->GetCapabilities().use_immersive_mode);
+  EXPECT_TRUE(IsBrowserLockedFullscreen());
+
+  // Clean up
+  EXPECT_TRUE(controller_->Unlock(LockedState::kOnTaskLocked));
+  EXPECT_FALSE(IsBrowserLockedFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(LockedStateControllerBrowserTest,
+                       TransitionBetweenOnTaskAndPrepared) {
+  ASSERT_TRUE(controller_->Lock(LockedState::kOnTaskLocked));
+  EXPECT_TRUE(IsBrowserLockedFullscreen());
+
+  ASSERT_TRUE(controller_->Lock(LockedState::kOnTaskPrepared));
+  EXPECT_EQ(controller_->GetState(), LockedState::kOnTaskPrepared);
+  EXPECT_FALSE(IsBrowserLockedFullscreen());
+  EXPECT_FALSE(controller_->GetCapabilities().use_immersive_mode);
 
   ASSERT_TRUE(controller_->Lock(LockedState::kOnTaskLocked));
   EXPECT_EQ(controller_->GetState(), LockedState::kOnTaskLocked);

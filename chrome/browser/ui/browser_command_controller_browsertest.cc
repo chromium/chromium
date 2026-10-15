@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -772,9 +773,19 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
                                  : chromeos::LockedState::kExtensionLocked);
       controller->Lock(state);
     } else {
+      // Legacy has no explicit paused state; paused is OnTask locked with tab
+      // switching disabled (see BrowserDelegateImpl::SetOnTaskState()).
+      const bool paused =
+          target_state == chromeos::LockedState::kOnTaskLockedPaused;
+      if (paused) {
+        SetLockedForOnTask(true);
+      }
       ash::PinWindow(browser()->GetWindow()->GetNativeWindow(),
                      /*trusted=*/true);
       command_controller->LockedFullscreenStateChanged();
+      if (paused) {
+        command_controller->SetTabSwitchCommandsEnabled(false);
+      }
     }
 
     // Update the corresponding command controller state as well as other
@@ -788,6 +799,27 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     command_controller->UpdateReloadStopState(
         /*is_loading=*/true,
         /*force=*/false);
+  }
+
+  // Prepares the browser for OnTask without pinning it.
+  void EnterOnTaskPrepared() {
+    if (is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      controller->Lock(chromeos::LockedState::kOnTaskPrepared);
+    } else {
+      SetLockedForOnTask(true);
+    }
+  }
+
+  void ExitOnTaskPrepared() {
+    if (is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      controller->Unlock(chromeos::LockedState::kOnTaskLocked);
+    } else {
+      SetLockedForOnTask(false);
+    }
   }
 
   void ExitLockedFullscreen() {
@@ -988,20 +1020,10 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
       // Find content commands.
       IDC_FIND, IDC_FIND_NEXT, IDC_FIND_PREVIOUS, IDC_CLOSE_FIND_OR_STOP};
 
-  std::vector<int> allowlisted_ids(std::begin(kAllowlistedIds),
-                                   std::end(kAllowlistedIds));
-  const bool use_unified_controller =
-      is_unified_locked_state_controller_enabled_;
-  if (use_unified_controller) {
-    for (int id = IDC_SELECT_TAB_0; id <= IDC_SELECT_TAB_7; ++id) {
-      allowlisted_ids.push_back(id);
-    }
-  }
-
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
   for (int id : command_updater->GetAllIds()) {
-    bool is_command_allowlisted = std::ranges::contains(allowlisted_ids, id);
+    bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_controller->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";
   }
@@ -1013,10 +1035,6 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenLockedForOnTaskPaused) {
-  if (!is_unified_locked_state_controller_enabled_) {
-    // Paused state is only supported in unified LockedStateController.
-    return;
-  }
   CommandUpdater* const command_updater = GetCommandUpdater();
   auto* const command_controller =
       chrome::BrowserCommandController::From(browser());
@@ -1029,29 +1047,20 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
   // IDC_EXIT is not enabled in locked fullscreen.
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_EXIT));
 
+  // Tab navigation commands are disabled while paused, matching the legacy
+  // implementation.
   constexpr int kAllowlistedIds[] = {
       IDC_CUT, IDC_COPY, IDC_PASTE,
       // Page navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD, IDC_RELOAD_BYPASSING_CACHE,
       IDC_RELOAD_CLEARING_CACHE, IDC_STOP,
-      // Tab navigation commands.
-      IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB, IDC_CYCLE_TO_NEXT_TAB,
-      IDC_CYCLE_TO_PREV_TAB, IDC_SELECT_TAB_0, IDC_SELECT_TAB_1,
-      IDC_SELECT_TAB_2, IDC_SELECT_TAB_3, IDC_SELECT_TAB_4, IDC_SELECT_TAB_5,
-      IDC_SELECT_TAB_6, IDC_SELECT_TAB_7, IDC_SELECT_LAST_TAB,
       // Find content commands.
       IDC_FIND, IDC_FIND_NEXT, IDC_FIND_PREVIOUS, IDC_CLOSE_FIND_OR_STOP};
-
-  std::vector<int> allowlisted_ids(std::begin(kAllowlistedIds),
-                                   std::end(kAllowlistedIds));
-  for (int id = IDC_SELECT_TAB_0; id <= IDC_SELECT_TAB_7; ++id) {
-    allowlisted_ids.push_back(id);
-  }
 
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
   for (int id : command_updater->GetAllIds()) {
-    bool is_command_allowlisted = std::ranges::contains(allowlisted_ids, id);
+    bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_controller->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";
   }
@@ -1063,22 +1072,16 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenLockedForOnTaskPrepared) {
-  if (!is_unified_locked_state_controller_enabled_) {
-    // Prepared state is only supported in unified LockedStateController.
-    return;
-  }
-  auto* controller = chromeos::LockedStateController::From(browser());
-  ASSERT_TRUE(controller);
-  controller->Lock(chromeos::LockedState::kOnTaskPrepared);
-  EXPECT_FALSE(controller->IsLocked());
-  EXPECT_TRUE(controller->IsLockedForOnTask());
+  EnterOnTaskPrepared();
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(browser()));
 
   auto* const command_controller =
       chrome::BrowserCommandController::From(browser());
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_EXIT));
 
-  controller->Unlock(chromeos::LockedState::kOnTaskLocked);
-  EXPECT_FALSE(controller->IsLockedForOnTask());
+  ExitOnTaskPrepared();
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(browser()));
+  EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_EXIT));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

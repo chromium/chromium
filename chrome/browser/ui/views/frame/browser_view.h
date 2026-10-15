@@ -820,7 +820,10 @@ class BrowserView : public BrowserWindow,
   TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // This is used only for SWA/PWA scenario.
+  // This is used only for SWA/PWA scenario. Not used when
+  // features::kUseUnifiedLockedStateController is enabled.
+  // TODO(crbug.com/438540029): Remove this when the migration to
+  // LockedStateController is completed.
   void OnLockedForOnTaskUpdated(bool locked_for_on_task);
 
   bool IsLockedFullscreen() const;

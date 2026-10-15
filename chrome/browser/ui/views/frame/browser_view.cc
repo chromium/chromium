@@ -377,9 +377,11 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -695,6 +697,10 @@ class BrowserView::ExclusiveAccessContextImpl
 
   bool CanUserExitFullscreen() const override {
 #if BUILDFLAG(IS_CHROMEOS)
+    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+      return !chromeos::LockedStateController::From(browser_view_->browser())
+                  ->IsLockedFullscreen();
+    }
     return !platform_util::IsBrowserLockedFullscreen(browser_view_->browser());
 #else
     return true;
@@ -775,8 +781,7 @@ class BrowserView::ExclusiveAccessContextImpl
     bool should_close_bubble = false;
 #if BUILDFLAG(IS_CHROMEOS)
     // Trusted pinned mode does not allow to escape. So do not show the bubble.
-    should_close_bubble =
-        platform_util::IsBrowserLockedFullscreen(browser_view_->browser_.get());
+    should_close_bubble = !CanUserExitFullscreen();
 #endif
     if (!params.has_download) {
       // ...TYPE_NONE indicates deleting the bubble, except when used with
@@ -1096,10 +1101,15 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  on_locked_task_subscription_ =
-      ash::boca::OnTaskLockedController::From(browser_)
-          ->AddLockedForOnTaskUpdatedCallback(base::BindRepeating(
-              &BrowserView::OnLockedForOnTaskUpdated, base::Unretained(this)));
+  // With the unified controller, LockedStateController handles the window
+  // updates done in OnLockedForOnTaskUpdated().
+  if (!features::IsUseUnifiedLockedStateControllerEnabled()) {
+    on_locked_task_subscription_ =
+        ash::boca::OnTaskLockedController::From(browser_)
+            ->AddLockedForOnTaskUpdatedCallback(
+                base::BindRepeating(&BrowserView::OnLockedForOnTaskUpdated,
+                                    base::Unretained(this)));
+  }
 #endif
 
   // This must be set before BrowserView::AddedToWidget() which relies on

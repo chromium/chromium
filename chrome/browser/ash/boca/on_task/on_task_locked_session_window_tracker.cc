@@ -22,8 +22,10 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
@@ -141,12 +143,20 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
     // Same instance as the one being tracked. Skip close.
     return;
   }
-  if (!browser_ &&
-      ash::boca::OnTaskLockedController::From(&browser->GetBrowser())
-          ->is_locked_for_on_task()) {
+  if (!browser_) {
     // New instance that has been prepared for OnTask but is not being tracked
     // yet. Skip close because it is a managed instance.
-    return;
+    if (::features::IsUseUnifiedLockedStateControllerEnabled()) {
+      if (chromeos::LockedStateController::From(&browser->GetBrowser())
+              ->IsLockedForOnTask()) {
+        return;
+      }
+    } else {
+      if (ash::boca::OnTaskLockedController::From(&browser->GetBrowser())
+              ->is_locked_for_on_task()) {
+        return;
+      }
+    }
   }
   if (browser->GetType() == ash::BrowserType::kAppPopup && oauth_in_progress_ &&
       browser == authorized_oauth_browser_) {

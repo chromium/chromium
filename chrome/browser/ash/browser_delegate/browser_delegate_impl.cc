@@ -415,7 +415,11 @@ bool BrowserDelegateImpl::IsOnTaskState(OnTaskState state) const {
       case OnTaskState::kPrepared:
         return controller->GetState() == chromeos::LockedState::kOnTaskPrepared;
       case OnTaskState::kLocked:
-        return controller->GetState() == chromeos::LockedState::kOnTaskLocked;
+        // Paused is a locked (pinned) state with additional restrictions, so
+        // it also counts as locked. This matches the legacy implementation.
+        return controller->GetState() == chromeos::LockedState::kOnTaskLocked ||
+               controller->GetState() ==
+                   chromeos::LockedState::kOnTaskLockedPaused;
       case OnTaskState::kPaused:
         return controller->GetState() ==
                chromeos::LockedState::kOnTaskLockedPaused;

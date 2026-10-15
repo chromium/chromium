@@ -7,6 +7,8 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ui/browser_window/public/create_browser_window.h",
+  "+chrome/browser/ui/chromeos/locked_state/locked_state_controller.h",
+  "+chrome/common/chrome_features.h",
 ]
 
 specific_include_rules = {
@@ -38,5 +40,8 @@ specific_include_rules = {
     "+chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h",
     "+chrome/common/chrome_paths.h",
     "+chrome/common/webui_url_constants.h",
+  ],
+  "on_task_system_web_app_manager_impl_browsertest\\.cc": [
+    "+chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h",
   ],
 }

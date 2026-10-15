@@ -301,7 +301,10 @@ source_set("tab_impl") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/boca/on_task" ]
+    deps += [
+      "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ui/chromeos/locked_state",
+    ]
   }
 
   # frame/browser_frame_view.h and frame/browser_view.h are still
@@ -489,6 +492,7 @@ source_set("tab_strip_impl") {
     deps += [
       "//ash/public/cpp",
       "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ui/chromeos/locked_state",
       "//chromeos/ash/experiences/system_web_apps/types",
     ]
   }

@@ -652,7 +652,10 @@ if (!is_android) {
       ]
     }
     if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/boca/on_task" ]
+      deps += [
+        "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ui/chromeos/locked_state",
+      ]
     }
   }
 
