@@ -5734,6 +5734,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_LEARN_MORE" desc="Button label allowing the user to learn more about the Universal Opt-Out error. [iOS only]">
         Learn more
       </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_NOTE" desc="Note displayed in the Universal Opt-Out settings footer when using the web extension solution on earlier iOS versions. [iOS only]">
+        Note: This setting works better with iOS 27 or newer.
+      </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_TITLE" desc="The title of the settings screen about the Universal Opt-Out feature [iOS only]">
+        Opt-out request
+      </message>
       <message name="IDS_IOS_OPTIONS_GENERAL_TAB_LABEL" desc="The title of the Basics section of the Settings page. [iOS only]" meaning="The title of the Basics section of the Settings page.">
         Basics
       </message>

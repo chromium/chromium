@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/universal_opt_out_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -38,8 +39,8 @@ namespace {
 constexpr CGFloat kIconSize = 24.0;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSwitch = kSectionIdentifierEnumZero,
-  SectionIdentifierError,
+  SectionIdentifierError = kSectionIdentifierEnumZero,
+  SectionIdentifierSwitch,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -98,7 +99,7 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
   if (self) {
     _profile = profile;
     self.title =
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT);
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_TITLE);
     _universalOptOutEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:profile->GetPrefs()
                    prefName:universal_optout::prefs::kUniversalOptOutEnabled];
@@ -135,6 +136,15 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
   }
   TableViewModel* model = self.tableViewModel;
 
+  const bool hasError = [self hasExtensionLoadError];
+  if (hasError) {
+    [model addSectionWithIdentifier:SectionIdentifierError];
+    [model addItem:[self errorMessageItem]
+        toSectionWithIdentifier:SectionIdentifierError];
+    [model addItem:[self errorLearnMoreItem]
+        toSectionWithIdentifier:SectionIdentifierError];
+  }
+
   [model addSectionWithIdentifier:SectionIdentifierSwitch];
   _universalOptOutSwitchItem =
       [[TableViewSwitchItem alloc] initWithType:ItemTypeSwitch];
@@ -148,24 +158,20 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
   [model addItem:_universalOptOutSwitchItem
       toSectionWithIdentifier:SectionIdentifierSwitch];
 
-  const bool hasError = [self hasExtensionLoadError];
-  if (hasError) {
-    [model addSectionWithIdentifier:SectionIdentifierError];
-    [model addItem:[self errorMessageItem]
-        toSectionWithIdentifier:SectionIdentifierError];
-    [model addItem:[self errorLearnMoreItem]
-        toSectionWithIdentifier:SectionIdentifierError];
-  }
-
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  footer.text =
+  NSString* footerText =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_DETAILS);
+  if (!base::ios::IsRunningOnIOS27OrLater()) {
+    footerText = [NSString
+        stringWithFormat:@"%@\n\n%@", footerText,
+                         l10n_util::GetNSString(
+                             IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_NOTE)];
+  }
+  footer.text = footerText;
   footer.urls =
       @[ [[CrURL alloc] initWithGURL:GURL(kUniversalOptOutLearnMoreURL)] ];
-  NSInteger footerSectionIdentifier =
-      hasError ? SectionIdentifierError : SectionIdentifierSwitch;
-  [model setFooter:footer forSectionWithIdentifier:footerSectionIdentifier];
+  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierSwitch];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -265,9 +271,9 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
     _universalOptOutErrorMessageItem.verticalAlignment =
         UIStackViewAlignmentTop;
     _universalOptOutErrorMessageItem.iconImage =
-        SymbolWithPointSize(SymbolInfoCircle, kIconSize);
+        SymbolWithPointSize(SymbolErrorCircleFill, kIconSize);
     _universalOptOutErrorMessageItem.iconTintColor =
-        [UIColor colorNamed:kBlueColor];
+        [UIColor colorNamed:kYellow500Color];
     int messageId = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
                         ? IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_IPAD
                         : IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_IPHONE;
