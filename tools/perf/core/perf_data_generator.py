@@ -1609,6 +1609,15 @@ GTEST_BENCHMARKS = {
     ),
     stories=[benchmark_utils.StoryInfo('_gtest_', '', ['all'])],
   ),
+  'partition_alloc_perftests': BenchmarkMetadata(
+    'memory-dev@chromium.org',
+    'Blink>MemoryAllocator>PartitionAlloc',
+    (
+      'https://chromium.googlesource.com/chromium/src/+/HEAD/base/'
+      + 'allocator/partition_allocator/README.md'
+    ),
+    stories=[benchmark_utils.StoryInfo('_gtest_', '', ['all'])],
+  ),
   'tracing_perftests': BenchmarkMetadata(
     'eseckler@chromium.org, khokhlov@chromium.org, kraskevich@chromium.org',
     'Speed>Tracing',

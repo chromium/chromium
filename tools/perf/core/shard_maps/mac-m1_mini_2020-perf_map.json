@@ -246,7 +246,6 @@
                 "abridged": false
             },
             "blink_perf.bindings": {
-                "end": 52,
                 "abridged": false
             },
             "jetstream2": {
@@ -326,10 +325,6 @@
     },
     "7": {
         "benchmarks": {
-            "blink_perf.bindings": {
-                "begin": 52,
-                "abridged": false
-            },
             "blink_perf.css": {
                 "abridged": false
             },
@@ -349,7 +344,7 @@
                 "abridged": false
             },
             "blink_perf.parser": {
-                "end": 16,
+                "end": 17,
                 "abridged": false
             },
             "speedometer3": {
@@ -426,7 +421,7 @@
     "9": {
         "benchmarks": {
             "blink_perf.parser": {
-                "begin": 16,
+                "begin": 17,
                 "abridged": false
             },
             "blink_perf.shadow_dom": {
@@ -611,12 +606,21 @@
                 "pageset_repeat": 5
             },
             "power.desktop": {
-                "end": 3,
+                "end": 1,
                 "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
+            }
+        },
+        "executables": {
+            "partition_alloc_perftests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0"
+                ],
+                "path": "partition_alloc_perftests"
             }
         },
         "crossbench": {
@@ -662,14 +666,14 @@
                 "pageset_repeat": 2
             },
             "power.desktop": {
-                "begin": 3,
+                "begin": 1,
                 "abridged": false
             },
             "rasterize_and_record_micro.top_25": {
                 "abridged": false
             },
             "rendering.desktop": {
-                "end": 13,
+                "end": 10,
                 "abridged": false
             },
             "speedometer3": {
@@ -713,8 +717,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 13,
-                "end": 56,
+                "begin": 10,
+                "end": 52,
                 "abridged": false
             },
             "speedometer3": {
@@ -758,8 +762,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 56,
-                "end": 102,
+                "begin": 52,
+                "end": 98,
                 "abridged": false
             },
             "speedometer3": {
@@ -794,8 +798,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 102,
-                "end": 148,
+                "begin": 98,
+                "end": 145,
                 "abridged": false
             },
             "speedometer3": {
@@ -830,8 +834,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 148,
-                "end": 185,
+                "begin": 145,
+                "end": 183,
                 "abridged": false
             },
             "speedometer3": {
@@ -866,8 +870,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 185,
-                "end": 233,
+                "begin": 183,
+                "end": 231,
                 "abridged": false
             },
             "speedometer3": {
@@ -902,8 +906,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 233,
-                "end": 273,
+                "begin": 231,
+                "end": 272,
                 "abridged": false
             },
             "speedometer3": {
@@ -938,8 +942,8 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 273,
-                "end": 313,
+                "begin": 272,
+                "end": 311,
                 "abridged": false
             },
             "speedometer3": {
@@ -974,7 +978,7 @@
                 "pageset_repeat": 2
             },
             "rendering.desktop": {
-                "begin": 313,
+                "begin": 311,
                 "abridged": false
             },
             "speedometer3": {
@@ -985,7 +989,7 @@
                 "abridged": false
             },
             "system_health.common_desktop": {
-                "end": 8,
+                "end": 7,
                 "abridged": false
             }
         },
@@ -1032,7 +1036,7 @@
                 "pageset_repeat": 2
             },
             "system_health.common_desktop": {
-                "begin": 8,
+                "begin": 7,
                 "end": 50,
                 "abridged": false
             },
@@ -1207,7 +1211,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1293,
+        "num_stories": 1294,
         "predicted_min_shard_time": 2112.0,
         "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 2340.0,
@@ -1217,24 +1221,24 @@
         "shard #2": 2112.0,
         "shard #3": 2249.0,
         "shard #4": 2112.0,
-        "shard #5": 2243.0,
+        "shard #5": 2246.0,
         "shard #6": 2172.0,
-        "shard #7": 2247.0,
+        "shard #7": 2251.0,
         "shard #8": 2172.0,
-        "shard #9": 2251.0,
+        "shard #9": 2244.0,
         "shard #10": 2221.0,
         "shard #11": 2267.0,
-        "shard #12": 2261.0,
-        "shard #13": 2241.0,
-        "shard #14": 2258.0,
-        "shard #15": 2252.0,
-        "shard #16": 2244.0,
-        "shard #17": 2244.0,
-        "shard #18": 2255.0,
-        "shard #19": 2261.0,
-        "shard #20": 2264.0,
-        "shard #21": 2232.0,
-        "shard #22": 2248.0,
+        "shard #12": 2242.0,
+        "shard #13": 2249.0,
+        "shard #14": 2262.0,
+        "shard #15": 2256.0,
+        "shard #16": 2258.0,
+        "shard #17": 2253.0,
+        "shard #18": 2265.0,
+        "shard #19": 2260.0,
+        "shard #20": 2253.0,
+        "shard #21": 2270.0,
+        "shard #22": 2252.0,
         "shard #23": 2221.0,
         "shard #24": 2315.0,
         "shard #25": 2226.0,

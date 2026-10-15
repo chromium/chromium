@@ -381,10 +381,15 @@
                 "begin": 5,
                 "abridged": false,
                 "pageset_repeat": 5
-            },
-            "power.desktop": {
-                "end": 2,
-                "abridged": false
+            }
+        },
+        "executables": {
+            "partition_alloc_perftests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0"
+                ],
+                "path": "partition_alloc_perftests"
             }
         },
         "crossbench": {
@@ -406,13 +411,9 @@
     "12": {
         "benchmarks": {
             "power.desktop": {
-                "begin": 2,
                 "abridged": false
             },
             "rasterize_and_record_micro.top_25": {
-                "abridged": false
-            },
-            "rendering.desktop.notracing": {
                 "abridged": false
             }
         },
@@ -428,6 +429,9 @@
     },
     "13": {
         "benchmarks": {
+            "rendering.desktop.notracing": {
+                "abridged": false
+            },
             "speedometer3": {
                 "abridged": false
             },
@@ -435,7 +439,7 @@
                 "abridged": false
             },
             "system_health.common_desktop": {
-                "end": 34,
+                "end": 20,
                 "abridged": false
             }
         },
@@ -452,8 +456,8 @@
     "14": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 34,
-                "end": 69,
+                "begin": 20,
+                "end": 63,
                 "abridged": false
             }
         },
@@ -470,11 +474,11 @@
     "15": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 69,
+                "begin": 63,
                 "abridged": false
             },
             "system_health.memory_desktop": {
-                "end": 8,
+                "end": 2,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -492,8 +496,8 @@
     "16": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 8,
-                "end": 21,
+                "begin": 2,
+                "end": 19,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -511,8 +515,8 @@
     "17": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 21,
-                "end": 33,
+                "begin": 19,
+                "end": 31,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -530,8 +534,8 @@
     "18": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 33,
-                "end": 48,
+                "begin": 31,
+                "end": 47,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -549,8 +553,8 @@
     "19": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 48,
-                "end": 62,
+                "begin": 47,
+                "end": 61,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -568,7 +572,7 @@
     "20": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 62,
+                "begin": 61,
                 "end": 74,
                 "abridged": false,
                 "pageset_repeat": 3
@@ -626,11 +630,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 829,
-        "predicted_min_shard_time": 823.0,
-        "predicted_min_shard_index": 8,
-        "predicted_max_shard_time": 1037.0,
-        "predicted_max_shard_index": 12,
+        "num_stories": 830,
+        "predicted_min_shard_time": 789.0,
+        "predicted_min_shard_index": 12,
+        "predicted_max_shard_time": 1000.0,
+        "predicted_max_shard_index": 23,
         "shard #0": 991.0,
         "shard #1": 837.0,
         "shard #2": 939.0,
@@ -642,16 +646,16 @@
         "shard #8": 823.0,
         "shard #9": 885.0,
         "shard #10": 941.0,
-        "shard #11": 914.0,
-        "shard #12": 1037.0,
-        "shard #13": 877.0,
-        "shard #14": 853.0,
-        "shard #15": 852.0,
-        "shard #16": 852.0,
-        "shard #17": 888.0,
-        "shard #18": 894.0,
-        "shard #19": 909.0,
-        "shard #20": 858.0,
+        "shard #11": 890.0,
+        "shard #12": 789.0,
+        "shard #13": 929.0,
+        "shard #14": 923.0,
+        "shard #15": 942.0,
+        "shard #16": 867.0,
+        "shard #17": 933.0,
+        "shard #18": 888.0,
+        "shard #19": 918.0,
+        "shard #20": 915.0,
         "shard #21": 936.0,
         "shard #22": 904.0,
         "shard #23": 1000.0

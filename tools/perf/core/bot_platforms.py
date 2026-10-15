@@ -364,6 +364,18 @@ def _base_perftests(
   )
 
 
+@_register('partition_alloc_perftests')
+def _partition_alloc_perftests(
+  estimated_runtime: int = 60, path=None, flags: tuple[str, ...] = ()
+):
+  return ExecutableConfig(
+    'partition_alloc_perftests',
+    path=path,
+    flags=('--test-launcher-jobs=1', '--test-launcher-retry-limit=0', *flags),
+    estimated_runtime=estimated_runtime,
+  )
+
+
 @_register('components_perftests')
 def _components_perftests(
   estimated_runtime: int = 110, flags: tuple[str, ...] = ()

@@ -128,6 +128,7 @@ GTEST_CONVERSION_WHITELIST = [
   'gpu_perftests',
   'load_library_perf_tests',
   'net_perftests',
+  'partition_alloc_perftests',
   'browser_tests',
   'services_perftests',
   # TODO(jmadill): Remove once migrated. http://anglebug.com/5124
