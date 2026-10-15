@@ -142,6 +142,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
     local_state_ = Shell::Get()->local_state();
   }
   void TearDown() override {
+    local_state_ = nullptr;
+    lock_state_test_api_->set_shutdown_controller(nullptr);
     test_shutdown_controller_.reset();
     shutdown_controller_resetter_.reset();
     test_animator_ = nullptr;
