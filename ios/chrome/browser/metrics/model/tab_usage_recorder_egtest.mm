@@ -114,6 +114,9 @@ void SwitchToNormalMode() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:TabGridCellAtIndex(
+                                                       tab_index)];
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_index)]
       performAction:grey_tap()];
 
@@ -125,6 +128,7 @@ void SwitchToNormalMode() {
         base::test::ios::WaitUntilConditionOrTimeout(kWaitElementTimeout, ^{
           return ![ChromeEarlGrey isIncognitoMode];
         });
+    Wait(chrome_test_util::ToolsMenuButton(), @"Tool Menu");
   }
 
   if (!success) {
@@ -263,10 +267,13 @@ void SwitchToNormalMode() {
 
 // Verifies the UMA metric for page loads before a tab eviction by loading
 // some tabs, forcing a tab eviction, then checking the histogram.
-// TODO(crbug.com/567493402): Flaky on ios-simulator.
-- (void)DISABLED_testPageLoadCountBeforeEvictedTab {
+- (void)testPageLoadCountBeforeEvictedTab {
   [ChromeEarlGrey resetTabUsageRecorder];
-  const GURL url1 = self.testServer->GetURL("/memory_usage.html");
+  const std::string testUrl1Path(GURL(kTestUrl1).path());
+  _responses[testUrl1Path] =
+      "<html><body><p>Page with some text and the Chromium logo.</p></body>"
+      "</html>";
+  const GURL url1 = self.testServer->GetURL(testUrl1Path);
   // This test opens three tabs.
   const int numberOfTabs = 3;
   [ChromeEarlGrey closeAllTabsInCurrentMode];
@@ -313,6 +320,7 @@ void SwitchToNormalMode() {
   SwitchToNormalMode();
 
   [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
 
   // Verify that one page-load count has been recorded. It should contain two
