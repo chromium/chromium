@@ -370,6 +370,18 @@ bool ContextualSearchProvider::ShouldShowSidePanelDescription(
 }
 
 // static
+bool ContextualSearchProvider::HasSidePanelDescription(
+    const AutocompleteMatch& match,
+    const AutocompleteProviderClient* client) {
+  // Static contextual suggestions may have no description; see
+  // `AutocompleteController::UpdateKeywordDescriptions()`.
+  return ShouldShowSidePanelDescription(client) &&
+         (match.HasTakeoverAction(
+              OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) ||
+          (match.IsContextualSearchSuggestion() && !match.description.empty()));
+}
+
+// static
 bool ContextualSearchProvider::LensEntrypointEligible(
     const AutocompleteInput& input,
     const AutocompleteProviderClient* client) {

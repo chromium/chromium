@@ -52,6 +52,7 @@ namespace searchbox_internal {
 // subclasses.
 extern const char* kSearchSparkIconResourceName;
 extern const char* kReplyRotated180IconResourceName;
+extern const char* kDockToRightIconResourceName;
 }  // namespace searchbox_internal
 
 namespace gfx {

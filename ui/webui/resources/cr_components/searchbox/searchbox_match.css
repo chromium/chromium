@@ -250,6 +250,32 @@
   display: inline;
 }
 
+/* Icon in front of the description, e.g. the side panel icon for
+ * "Opens in side panel". */
+#secondaryText[has-icon]::before {
+  -webkit-mask-image: var(--description-icon);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px;
+  background-color: var(--color-searchbox-results-foreground-dimmed);
+  content: '';
+  display: inline-block;
+  height: 16px;
+  margin-inline-end: 4px;
+  vertical-align: text-bottom;
+  width: 16px;
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #secondaryText[has-icon]::before {
+  background-color: var(--color-searchbox-results-dim-selected);
+}
+
+/* The cobrowse side panel opens on the opposite side in RTL, so mirror the
+ * icon to match. */
+:host-context([dir=rtl]) #secondaryText[has-icon]::before {
+  transform: scaleX(-1);
+}
+
 .match {
   font-weight: var(--cr-searchbox-match-font-weight, 600);
 }

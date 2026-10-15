@@ -27,6 +27,7 @@ export function createAutocompleteMatch(
     isSearchType: false,
     isEnterpriseSearchAggregatorPeopleType: false,
     showContextualDescription: false,
+    descriptionIconPath: '',
     supportsDeletion: false,
     suggestionGroupId: -1,
     destinationUrl: '',

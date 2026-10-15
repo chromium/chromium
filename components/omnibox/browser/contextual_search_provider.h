@@ -66,6 +66,12 @@ class ContextualSearchProvider : public BaseSearchProvider {
   static bool ShouldShowSidePanelDescription(
       const AutocompleteProviderClient* client);
 
+  // Whether `match` shows the "Opens in side panel" description, i.e. it is
+  // the AskG entrypoint match or a contextual suggestion with a description,
+  // and `ShouldShowSidePanelDescription()` is true.
+  static bool HasSidePanelDescription(const AutocompleteMatch& match,
+                                      const AutocompleteProviderClient* client);
+
  protected:
   ~ContextualSearchProvider() override;
 
