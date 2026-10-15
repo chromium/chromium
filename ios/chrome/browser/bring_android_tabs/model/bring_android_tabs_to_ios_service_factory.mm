@@ -15,37 +15,15 @@
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-// static
-BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BringAndroidTabsToIOSService>(
-      profile, /*create=*/true);
-}
-
-// static
-BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BringAndroidTabsToIOSService>(
-      profile, /*create=*/false);
-}
-
-// static
-BringAndroidTabsToIOSServiceFactory*
-BringAndroidTabsToIOSServiceFactory::GetInstance() {
-  static base::NoDestructor<BringAndroidTabsToIOSServiceFactory> instance;
-  return instance.get();
-}
-
-BringAndroidTabsToIOSServiceFactory::BringAndroidTabsToIOSServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BringAndroidTabsToIOSService") {
+BringAndroidTabsToIOSServiceFactory::BringAndroidTabsToIOSServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "BringAndroidTabsToIOSService") {
   DependsOn(
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
-
-BringAndroidTabsToIOSServiceFactory::~BringAndroidTabsToIOSServiceFactory() {}
 
 void BringAndroidTabsToIOSServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
