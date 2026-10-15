@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundS
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
@@ -1127,8 +1128,7 @@ public class FuseboxViewBinderUnitTest {
     public void popupIconTint_plusMenuUsesSecondaryTint() {
         Activity activity = mActivityController.get();
         ColorStateList secondaryTint =
-                OmniboxResourceProvider.getSecondaryIconTintList(
-                        activity, BrandedColorScheme.APP_DEFAULT);
+                ChromeColors.getSecondaryIconTint(activity, /* forceLightIconTint= */ false);
 
         ImageView tabIcon = mPopup.mTabButton.findViewById(R.id.start_icon);
         assertEquals(secondaryTint, tabIcon.getImageTintList());
@@ -1145,8 +1145,8 @@ public class FuseboxViewBinderUnitTest {
         mBinder.bind(model, viewHolder, FuseboxProperties.COLOR_SCHEME);
 
         ColorStateList primaryTint =
-                OmniboxResourceProvider.getPrimaryIconTintList(
-                        mActivityController.get(), BrandedColorScheme.APP_DEFAULT);
+                ChromeColors.getPrimaryIconTint(
+                        mActivityController.get(), /* isIncognito= */ false);
         ImageView tabIcon = viewHolder.popup.mTabButton.findViewById(R.id.start_icon);
         assertEquals(primaryTint, tabIcon.getImageTintList());
 
@@ -1389,8 +1389,7 @@ public class FuseboxViewBinderUnitTest {
                 activity.getColorStateList(R.color.default_text_color_list),
                 moreOptionsText.getTextColors());
         assertEquals(
-                OmniboxResourceProvider.getSecondaryIconTintList(
-                        activity, BrandedColorScheme.APP_DEFAULT),
+                ChromeColors.getSecondaryIconTint(activity, /* forceLightIconTint= */ false),
                 moreOptionsEndIcon.getImageTintList());
 
         // Verify incognito theme.
@@ -1399,8 +1398,7 @@ public class FuseboxViewBinderUnitTest {
                 activity.getColorStateList(R.color.default_text_color_light_list),
                 moreOptionsText.getTextColors());
         assertEquals(
-                OmniboxResourceProvider.getSecondaryIconTintList(
-                        activity, BrandedColorScheme.INCOGNITO),
+                ChromeColors.getSecondaryIconTint(activity, /* forceLightIconTint= */ true),
                 moreOptionsEndIcon.getImageTintList());
     }
 

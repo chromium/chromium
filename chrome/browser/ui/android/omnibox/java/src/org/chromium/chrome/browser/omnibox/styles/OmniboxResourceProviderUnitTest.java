@@ -418,11 +418,9 @@ public class OmniboxResourceProviderUnitTest {
     @Test
     public void getFuseboxPopupIconTintList() {
         ColorStateList primaryTint =
-                OmniboxResourceProvider.getPrimaryIconTintList(
-                        mContext, BrandedColorScheme.APP_DEFAULT);
+                ChromeColors.getPrimaryIconTint(mContext, /* isIncognito= */ false);
         ColorStateList secondaryTint =
-                OmniboxResourceProvider.getSecondaryIconTintList(
-                        mContext, BrandedColorScheme.APP_DEFAULT);
+                ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false);
         OmniboxResourceProvider provider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
 
@@ -434,8 +432,8 @@ public class OmniboxResourceProviderUnitTest {
     @Test
     public void getFuseboxPopupIconBackgroundTintList() {
         ColorStateList primaryBgTint =
-                OmniboxResourceProvider.getPrimaryIconBackgroundTintList(
-                        mContext, BrandedColorScheme.APP_DEFAULT);
+                IncognitoColors.getColorSurfaceContainerTintList(
+                        mContext, /* isIncognito= */ false);
         OmniboxResourceProvider provider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
 

@@ -662,22 +662,14 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return IncognitoColors.getDefaultIconColor(mContext, isIncognito());
     }
 
-    /**
-     * Get primary icon tint list.
-     *
-     * @see #getPrimaryIconTintList(Context, ...)
-     */
+    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
     public ColorStateList getPrimaryIconTintList() {
-        return getPrimaryIconTintList(mContext, getBrandedColorScheme());
+        return ChromeColors.getPrimaryIconTint(mContext, isIncognito());
     }
 
-    /**
-     * Get secondary icon tint list.
-     *
-     * @see #getSecondaryIconTintList(Context, ...)
-     */
+    /** Resolves the secondary icon tint color. */
     public ColorStateList getSecondaryIconTintList() {
-        return getSecondaryIconTintList(mContext, getBrandedColorScheme());
+        return ChromeColors.getSecondaryIconTint(mContext, isIncognito());
     }
 
     /**
@@ -725,13 +717,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                         : R.dimen.fusebox_bottom_sheet_attachment_icon_size);
     }
 
-    /**
-     * Get primary icon background tint list.
-     *
-     * @see #getPrimaryIconBackgroundTintList(Context, ...)
-     */
+    /** Resolves the background tint for primary icons. */
     public ColorStateList getPrimaryIconBackgroundTintList() {
-        return getPrimaryIconBackgroundTintList(mContext, getBrandedColorScheme());
+        return IncognitoColors.getColorSurfaceContainerTintList(mContext, isIncognito());
     }
 
     /** Resolves the divider line color for the popup. */
@@ -1179,20 +1167,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return sTabFaviconFactory.apply(tab);
     }
 
-    /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
-    public static ColorStateList getPrimaryIconTintList(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
-        return ChromeColors.getPrimaryIconTint(context, isIncognito);
-    }
-
-    /** Resolves the secondary icon tint color. */
-    public static ColorStateList getSecondaryIconTintList(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
-        return ChromeColors.getSecondaryIconTint(context, isIncognito);
-    }
-
     /**
      * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
      * menu, or 24dp for both when popup variations are enabled).
@@ -1206,19 +1180,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                 OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
                         ? R.dimen.fusebox_popup_item_large_icon_size
                         : R.dimen.fusebox_popup_item_icon_size);
-    }
-
-    /**
-     * Resolves the background color for primary icons.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return The primary icon background color.
-     */
-    public static ColorStateList getPrimaryIconBackgroundTintList(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
-        return IncognitoColors.getColorSurfaceContainerTintList(context, isIncognito);
     }
 
     /** Resolves the text appearance for menu items in the popup. */
