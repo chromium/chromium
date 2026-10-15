@@ -35,8 +35,8 @@ class MockResponseParser : public ResponseParser {
               ParseAsync,
               (const std::string& redacted_output,
                ResultCallback result_callback),
-              (const override));
-  MOCK_METHOD(bool, SuppressParsingIncompleteResponse, (), (const override));
+              (const, override));
+  MOCK_METHOD(bool, SuppressParsingIncompleteResponse, (), (const, override));
 };
 
 OnDeviceModelFeatureAdapter::ResponseParserFactory

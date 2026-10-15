@@ -66,46 +66,52 @@ class MockSession : public OnDeviceSession {
   MOCK_METHOD(const TokenLimits&, GetTokenLimits, (), (const, override));
   MOCK_METHOD(void,
               SetInput,
-              (MultimodalMessage request, SetInputCallback callback));
+              (MultimodalMessage request, SetInputCallback callback),
+              (override));
   MOCK_METHOD(void,
               AddContext,
-              (const google::protobuf::MessageLite& request_metadata));
+              (const google::protobuf::MessageLite& request_metadata),
+              (override));
   MOCK_METHOD(void,
               Score,
               (const std::string& text,
-               OptimizationGuideModelScoreCallback callback));
-  MOCK_METHOD(
-      void,
-      ExecuteModel,
-      (const google::protobuf::MessageLite& request_metadata,
-       OptimizationGuideModelExecutionResultStreamingCallback callback));
-  MOCK_METHOD(
-      void,
-      ExecuteModelWithResponseConstraint,
-      (const google::protobuf::MessageLite& request_metadata,
-       on_device_model::mojom::ResponseConstraintPtr constraint,
-       OptimizationGuideModelExecutionResultStreamingCallback callback));
+               OptimizationGuideModelScoreCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ExecuteModel,
+              (const google::protobuf::MessageLite& request_metadata,
+               OptimizationGuideModelExecutionResultStreamingCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ExecuteModelWithResponseConstraint,
+              (const google::protobuf::MessageLite& request_metadata,
+               on_device_model::mojom::ResponseConstraintPtr constraint,
+               OptimizationGuideModelExecutionResultStreamingCallback callback),
+              (override));
   MOCK_METHOD(void,
               GetSizeInTokens,
               (const std::string& text,
-               OptimizationGuideModelSizeInTokenCallback callback));
+               OptimizationGuideModelSizeInTokenCallback callback),
+              (override));
   MOCK_METHOD(void,
               GetExecutionInputSizeInTokens,
               (MultimodalMessageReadView request_metadata,
-               OptimizationGuideModelSizeInTokenCallback callback));
+               OptimizationGuideModelSizeInTokenCallback callback),
+              (override));
   MOCK_METHOD(void,
               GetContextSizeInTokens,
               (MultimodalMessageReadView request_metadata,
-               OptimizationGuideModelSizeInTokenCallback callback));
-  MOCK_METHOD(const SamplingParams, GetSamplingParams, (), (const override));
+               OptimizationGuideModelSizeInTokenCallback callback),
+              (override));
+  MOCK_METHOD(const SamplingParams, GetSamplingParams, (), (const, override));
   MOCK_METHOD(on_device_model::Capabilities,
               GetCapabilities,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(const proto::Any&,
               GetOnDeviceFeatureMetadata,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(std::unique_ptr<OnDeviceSession>, Clone, (), (override));
   MOCK_METHOD(void,
               SetPriority,
