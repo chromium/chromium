@@ -4694,16 +4694,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.NotificationManager.GetPermissionStatusTime" units="ms"
-    expires_after="2024-01-21">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time taken to query the notification permission status. This is recorded
-    each time a sync call is made.
-  </summary>
-</histogram>
-
 <histogram name="Blink.OffscreenCanvas.NewOffscreenCanvas" enum="Boolean"
     expires_after="2025-06-08">
   <owner>aaronhk@chromium.org</owner>

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
@@ -72,8 +71,6 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
     }
   }
 
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Blink.NotificationManager.GetPermissionStatusTime");
   mojom::blink::PermissionStatus permission_status;
   if (!GetNotificationService()->GetPermissionStatus(&permission_status)) {
     // The browser-side Mojo connection was closed, disabling notifications.
