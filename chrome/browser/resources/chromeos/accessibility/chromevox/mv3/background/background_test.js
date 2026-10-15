@@ -314,7 +314,8 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'CaretNavigation', async function() {
+// Flaky on MSAN. https://crbug.com/573664742.
+AX_TEST_F('ChromeVoxBackgroundTest', 'MAYBE_CaretNavigation', async function() {
   // TODO(plundblad): Add braille expectations when crbug.com/41196347 is fixed.
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.linksAndHeadingsDoc);
@@ -339,7 +340,13 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'CaretNavigation', async function() {
   mockFeedback.call(doCmd('previousCharacter')).expectSpeech('t');
   mockFeedback.call(doCmd('nextWord')).expectSpeech('echo', 'Link');
   await mockFeedback.replay();
-});
+}, `
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_CaretNavigation DISABLED_CaretNavigation
+#else
+#define MAYBE_CaretNavigation CaretNavigation
+#endif
+`);
 
 /** Tests that individual buttons are stops for move-by-word functionality. */
 AX_TEST_F(
