@@ -200,25 +200,22 @@ public class TileRenderer {
             // to be added back in the correct order.
             parent.removeAllViews();
 
-            Tile prevTile = null;
+            SuggestionsTileView prevTileView = null;
             for (Tile tile : sectionTiles) {
                 SuggestionsTileView tileView = oldTileViews.remove(tile.getData());
                 if (tileView == null) {
                     tileView = buildTileView(tile, parent, setupDelegate);
                 }
-                // Add divider if sources change between CUSTOM_LINKS and any other type.
-
-                // TODO(crbug.com/549681251): Group the AI Mode tile with custom links here; it is
-                // injected inside the custom link prefix, so this draws a stray divider beside it.
-                // Add divider if sources change between CUSTOM_LINKS and any other type.
-                if (prevTile != null && (prevTile.isCustomLink() != tile.isCustomLink())) {
+                // Add divider at the boundary between the customized section and organic tiles.
+                if (prevTileView != null
+                        && (prevTileView.isDraggable() != tileView.isDraggable())) {
                     parent.addDivider(buildDivider(parent));
                 }
                 parent.addTile(tileView);
                 if (focusedUrl != null && focusedUrl.equals(tile.getUrl().getSpec())) {
                     tileView.requestFocus();
                 }
-                prevTile = tile;
+                prevTileView = tileView;
             }
 
             // Restore parent's original focusability.

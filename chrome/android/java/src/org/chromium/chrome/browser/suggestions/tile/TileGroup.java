@@ -497,6 +497,19 @@ public class TileGroup implements MostVisitedSites.Observer {
         mTileDragDelegate.cancelActiveSession();
     }
 
+    /**
+     * Applies a reorder that was computed in Java without triggering C++ {@link #loadTiles()},
+     * refreshing tile views and reporting success.
+     *
+     * @param visualPos The screen position that the reordered tile ends up in.
+     * @param onSuccessCallback Callback to run once the reorder is applied.
+     */
+    private void applyFrontEndOnlyReorder(int visualPos, Runnable onSuccessCallback) {
+        mObserver.onTileDataChanged();
+        mObserver.onCustomTileReorder(visualPos);
+        onSuccessCallback.run();
+    }
+
     /** Loads tile data from {@link #mPendingChanges.siteSuggestions} and clears it afterwards. */
     private void loadTiles() {
         assert mPendingChanges.siteSuggestions != null;
@@ -715,6 +728,21 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
     }
 
+    private static int findAiModeTile(List<Tile> tiles) {
+        for (int i = 0; i < tiles.size(); ++i) {
+            if (tiles.get(i).isAiMode()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static void moveTile(List<Tile> tiles, Tile tile, int toIndex) {
+        tiles.remove(tile);
+        tiles.add(toIndex, tile);
+        reindexTiles(tiles);
+    }
+
     private boolean tileListAreEqual(
             @Nullable List<Tile> tileList1, @Nullable List<Tile> tileList2) {
         if (tileList1 == null) return tileList2 == null || tileList2.isEmpty();
@@ -806,6 +834,21 @@ public class TileGroup implements MostVisitedSites.Observer {
                     mTileGroupDelegate::hasCustomLink);
         }
 
+        /**
+         * Reorders {@code fromSuggestion} to {@code toSuggestion}'s position in 4 steps:
+         *
+         * <ol>
+         *   <li>If no AI Mode tile is present, delegates directly to C++ {@code
+         *       CustomLinksManager}.
+         *   <li>Computes the AI Mode tile's new screen index after the move and persists it to
+         *       {@code SharedPreferences} (saving the previous preference value for undo).
+         *   <li>If the C++ Custom Links order did not change (moving the AI Mode tile itself, or
+         *       swapping an adjacent Custom Link with the AI Mode tile), updates the tile list and
+         *       refreshes the UI locally in Java.
+         *   <li>Otherwise, translates the visual target index to a C++ Custom Link index, delegates
+         *       to C++, and restores the saved AI Mode index if the native reorder fails.
+         * </ol>
+         */
         @Override
         public boolean reorder(
                 SiteSuggestion fromSuggestion,
@@ -813,10 +856,74 @@ public class TileGroup implements MostVisitedSites.Observer {
                 Runnable onSuccessCallback) {
             @Nullable Tile fromTile = findTile(fromSuggestion);
             @Nullable Tile toTile = findTile(toSuggestion);
-            return fromTile != null
-                    && toTile != null
-                    && reorderCustomLinkAndUpdateOnSuccess(
-                            fromTile.getUrl(), toTile.getIndex(), onSuccessCallback);
+            if (fromTile == null || toTile == null) return false;
+
+            List<Tile> personalTiles =
+                    assumeNonNull(mTileSections.get(TileSectionType.PERSONALIZED));
+            int fromIndex = fromTile.getIndex();
+            int toIndex = toTile.getIndex();
+
+            // Reads the AI Mode tile's actual rendered position from personalTiles rather than
+            // SharedPreferences: injectAiModeTile() clamps savedIndex without writing it back
+            // (e.g., SharedPreferences can still store 5 after custom links are deleted and the
+            // tile is clamped to slot 2).
+            int oldAiIndex = findAiModeTile(personalTiles);
+            if (oldAiIndex < 0) {
+                return reorderCustomLinkAndUpdateOnSuccess(
+                        /* url= */ fromTile.getUrl(),
+                        /* newPos= */ toIndex,
+                        /* visualPos= */ toIndex,
+                        onSuccessCallback);
+            }
+
+            int newAiIndex = oldAiIndex;
+            if (fromIndex == oldAiIndex) {
+                newAiIndex = toIndex;
+            } else if (fromIndex < oldAiIndex && toIndex >= oldAiIndex) {
+                newAiIndex = oldAiIndex - 1;
+            } else if (fromIndex > oldAiIndex && toIndex <= oldAiIndex) {
+                newAiIndex = oldAiIndex + 1;
+            }
+
+            // Persist newAiIndex before calling native: mTileGroupDelegate.reorderCustomLink
+            // synchronously triggers loadTiles() -> injectAiModeTile(), which reads this
+            // preference before reorderCustomLinkAndUpdateOnSuccess() returns.
+            @Nullable Integer savedAiIndex = null;
+            if (newAiIndex != oldAiIndex) {
+                savedAiIndex =
+                        ChromeSharedPreferences.getInstance()
+                                .readInt(
+                                        ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX,
+                                        /* defaultValue= */ 0);
+                ChromeSharedPreferences.getInstance()
+                        .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, newAiIndex);
+            }
+
+            // If the moved tile is (1) the AI Mode tile, or (2) a Custom Link that performed an
+            // adjacent swap with the AI Mode tile, then the relative order of Custom Links in C++
+            // has not changed. Calling native reorderCustomLink would fail as a no-op and return
+            // false without rebuilding tiles, so update the UI in Java.
+            if (fromIndex == oldAiIndex
+                    || (toIndex == oldAiIndex && Math.abs(fromIndex - toIndex) == 1)) {
+                moveTile(personalTiles, fromTile, toIndex);
+                // Kill other drag sessions in flight to prevent race condition.
+                maybeKillDragSession();
+                applyFrontEndOnlyReorder(toIndex, onSuccessCallback);
+                return true;
+            }
+
+            int toCustomLinkIndex = (newAiIndex < toIndex) ? toIndex - 1 : toIndex;
+            boolean success =
+                    reorderCustomLinkAndUpdateOnSuccess(
+                            /* url= */ fromTile.getUrl(),
+                            /* newPos= */ toCustomLinkIndex,
+                            /* visualPos= */ toIndex,
+                            onSuccessCallback);
+            if (!success && savedAiIndex != null) {
+                ChromeSharedPreferences.getInstance()
+                        .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, savedAiIndex);
+            }
+            return success;
         }
 
         @Override
@@ -876,13 +983,26 @@ public class TileGroup implements MostVisitedSites.Observer {
             }
         }
 
+        /**
+         * Reorders a custom link in native {@code CustomLinksManager} and schedules UI updates to
+         * run once the resulting tile reload completes.
+         *
+         * @param url The URL of the custom link being moved.
+         * @param newPos The target 0-based index among custom links only, for C++ {@code
+         *     CustomLinksManager::ReorderLink}.
+         * @param visualPos The target 0-based visual index across all rendered tiles (including the
+         *     AI Mode tile), passed to {@link Observer#onCustomTileReorder(int)} to scroll the
+         *     moved tile into view.
+         * @param onSuccessCallback Callback invoked after the reload to finalize drag/swap visuals.
+         * @return True if the native reorder succeeded.
+         */
         private boolean reorderCustomLinkAndUpdateOnSuccess(
-                GURL url, int newPos, Runnable onSuccessCallback) {
+                GURL url, int newPos, int visualPos, Runnable onSuccessCallback) {
             // On success, onSiteSuggestionsAvailable() triggers.
             Runnable newOnSuccessCallback =
                     () -> {
                         onSuccessCallback.run();
-                        mObserver.onCustomTileReorder(newPos);
+                        mObserver.onCustomTileReorder(visualPos);
                     };
             mPendingChanges.taskToRunAfterTileReload.add(newOnSuccessCallback);
             boolean success = mTileGroupDelegate.reorderCustomLink(url, newPos);

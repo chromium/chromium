@@ -95,7 +95,7 @@ class TileInteractionDelegateImpl
     public boolean onKey(View view, int keyCode, KeyEvent event) {
         if (isCustomizationEnabledForTileSection()
                 && TileUtils.isCustomTileSwapKeyCombo(keyCode, event)) {
-            if (isCustomLink()) {
+            if (isDraggable()) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     // Complete pending reordering, skipping animation if necessary.
                     mTileDragDelegate.reset();
@@ -251,10 +251,12 @@ class TileInteractionDelegateImpl
             case ContextMenuItemId.UNPIN:
                 return isCustomizationItemSupported(/* matchIsCustomLink= */ true);
             case ContextMenuItemId.MOVE_UP:
-                return isCustomizationItemSupported(/* matchIsCustomLink= */ true)
+                return isCustomizationEnabledForTileSection()
+                        && isDraggable()
                         && !mTileDragDelegate.isFirstDraggableTile(mView);
             case ContextMenuItemId.MOVE_DOWN:
-                return isCustomizationItemSupported(/* matchIsCustomLink= */ true)
+                return isCustomizationEnabledForTileSection()
+                        && isDraggable()
                         && !mTileDragDelegate.isLastDraggableTile(mView);
             default:
                 return false;
@@ -319,6 +321,10 @@ class TileInteractionDelegateImpl
 
     boolean isCustomLink() {
         return mTile.isCustomLink();
+    }
+
+    boolean isDraggable() {
+        return mTile.isCustomLink() || mTile.isAiMode();
     }
 
     boolean isCustomizationItemSupported(boolean matchIsCustomLink) {
