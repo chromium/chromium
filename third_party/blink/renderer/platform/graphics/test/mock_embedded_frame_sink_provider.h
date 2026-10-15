@@ -66,13 +66,19 @@ class MockEmbeddedFrameSinkProvider
                               std::move(sink));
   }
 
-  MOCK_METHOD5(
-      CreateSimpleCompositorFrameSink,
-      void(const viz::FrameSinkId&,
-           const viz::FrameSinkId&,
-           mojo::PendingRemote<mojom::blink::EmbeddedFrameSinkClient>,
-           mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>,
-           mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>));
+  void CreateSimpleCompositorFrameSink(
+      const viz::FrameSinkId& parent_frame_sink_id,
+      const viz::FrameSinkId& frame_sink_id,
+      mojo::PendingRemote<mojom::blink::EmbeddedFrameSinkClient>
+          embedded_frame_sink_client,
+      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+          compositor_frame_sink_client,
+      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+          compositor_frame_sink_receiver) override {
+    CreateCompositorFrameSink(frame_sink_id,
+                              std::move(compositor_frame_sink_client),
+                              std::move(compositor_frame_sink_receiver));
+  }
   MOCK_METHOD2(ConnectToEmbedder,
                void(const viz::FrameSinkId&,
                     mojo::PendingReceiver<mojom::blink::SurfaceEmbedder>));

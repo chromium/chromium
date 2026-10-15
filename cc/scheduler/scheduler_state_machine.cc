@@ -47,29 +47,6 @@ bool IsEligibleToThrottleMainFrameRate() {
 #endif
 }
 
-bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
-  if (!features::IsEligibleForThrottleMainFrameTo60Hz()) {
-    return false;
-  }
-#if BUILDFLAG(IS_ANDROID)
-  bool is_webview = settings.using_synchronous_renderer_compositor;
-  return is_webview
-             ? base::FeatureList::IsEnabled(
-                   features::kThrottleMainFrameTo60HzWebView)
-             : base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
-#else
-  // The browser compositor drives the application UI animations, which we want
-  // to be running at the nominal framerate.
-  bool is_browser_compositor =
-      settings.commit_to_active_tree || settings.single_threaded_proxy;
-  if (is_browser_compositor) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 base::TimeDelta ThrottledFrameRateWithSlack(base::TimeDelta frame_interval,
                                             int factor) {
   return kFrameThrottlingSlackFactor * frame_interval * factor;
@@ -1473,9 +1450,10 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
   return false;
 }
 
-void SchedulerStateMachine::FrameIntervalUpdated(
-    base::TimeDelta frame_interval) {
-  unthrottled_frame_interval_ = frame_interval;
+// static
+base::TimeDelta SchedulerStateMachine::GetMainFrameThrottledInterval(
+    base::TimeDelta frame_interval,
+    bool is_webview) {
   // We only want to evaluate the feature on clients that see short VSync
   // intervals, to have the control and experiment only contain high refresh
   // rate clients. This ignores 90Hz displays, on purpose, and adds some
@@ -1484,23 +1462,46 @@ void SchedulerStateMachine::FrameIntervalUpdated(
   // Apply some slack, so that if for some reason the interval is a bit larger
   // than 8.33333333333333ms, then we catch it still.
   bool fast_vsync_interval =
+      frame_interval.is_positive() &&
       frame_interval < base::Hertz(120) * (1 / kFrameThrottlingSlackFactor);
-  if (fast_vsync_interval && IsEligibleToThrottleMainFrameRate()) {
-    features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
+  if (!fast_vsync_interval || !IsEligibleToThrottleMainFrameRate()) {
+    return base::TimeDelta();
   }
-  if (fast_vsync_interval && ShouldThrottleMainFrameRate(settings_)) {
-    // Here as well, use a slack factor, to make sure that small timing
-    // variations don't result in uneven pacing.
-    //
-    // Use interval / 2 rather than an actual interval as refresh rates are
-    // not necessarily 120: it could be something really close, or it could be
-    // 144Hz for instance.
-    main_frame_throttled_interval_ =
-        ThrottledFrameRateWithSlack(frame_interval, 2);
+  features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
+#if BUILDFLAG(IS_ANDROID)
+  const base::Feature& feature = is_webview
+                                     ? features::kThrottleMainFrameTo60HzWebView
+                                     : features::kThrottleMainFrameTo60Hz;
+#else
+  const base::Feature& feature = features::kThrottleMainFrameTo60Hz;
+#endif
+  // Here as well, use a slack factor, to make sure that small timing
+  // variations don't result in uneven pacing.
+  //
+  // Use interval / 2 rather than an actual interval as refresh rates are
+  // not necessarily 120: it could be something really close, or it could be
+  // 144Hz for instance.
+  return base::FeatureList::IsEnabled(feature)
+             ? ThrottledFrameRateWithSlack(frame_interval, 2)
+             : base::TimeDelta();
+}
+
+void SchedulerStateMachine::FrameIntervalUpdated(
+    base::TimeDelta frame_interval) {
+  unthrottled_frame_interval_ = frame_interval;
+#if !BUILDFLAG(IS_ANDROID)
+  // The browser compositor drives the application UI animations, which we want
+  // to be running at the nominal framerate.
+  if (settings_.commit_to_active_tree || settings_.single_threaded_proxy) {
+    main_frame_throttled_interval_ = base::TimeDelta();
+    return;
+  }
+#endif
+  main_frame_throttled_interval_ = GetMainFrameThrottledInterval(
+      frame_interval, settings_.using_synchronous_renderer_compositor);
+  if (!main_frame_throttled_interval_.is_zero()) {
     TRACE_EVENT("cc", "ThrottleMainFrame", "interval",
                 main_frame_throttled_interval_);
-  } else {
-    main_frame_throttled_interval_ = base::TimeDelta();
   }
 }
 

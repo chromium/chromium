@@ -208,6 +208,9 @@ class CC_EXPORT SchedulerStateMachine {
   // Returns the main frame throttle interval computed based on the
   // static throttle feature and the renderer settings.
   base::TimeDelta MainFrameThrottledInterval() const;
+  static base::TimeDelta GetMainFrameThrottledInterval(
+      base::TimeDelta frame_interval,
+      bool is_webview);
 
   // Indicates whether the LayerTreeHostImpl is visible.
   void SetVisible(bool visible);

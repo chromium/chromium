@@ -6,10 +6,14 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
+#include "cc/base/features.h"
+#include "cc/scheduler/scheduler_state_machine.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -102,6 +106,27 @@ void BeginFrameProvider::RequestBeginFrame() {
   compositor_frame_sink_->SetNeedsBeginFrame(true);
 }
 
+// static
+bool BeginFrameProvider::ShouldThrottleBeginFrame(
+    const viz::BeginFrameArgs& args,
+    base::TimeTicks last_begin_frame_time) {
+  if (last_begin_frame_time.is_null()) {
+    return false;
+  }
+  bool is_webview = false;
+#if BUILDFLAG(IS_ANDROID)
+  is_webview =
+      Platform::Current() &&
+      Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView();
+#endif
+  base::TimeDelta throttled_interval =
+      cc::SchedulerStateMachine::GetMainFrameThrottledInterval(args.interval,
+                                                               is_webview);
+  return !throttled_interval.is_zero() &&
+         args.frame_time - last_begin_frame_time < throttled_interval &&
+         base::FeatureList::IsEnabled(features::kThrottleOffscreenCanvasTo60Hz);
+}
+
 void BeginFrameProvider::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const HashMap<uint32_t, viz::FrameTimingDetails>&,
@@ -116,6 +141,12 @@ void BeginFrameProvider::OnBeginFrame(
 
   // If there was no need for a BeginFrame, just skip it.
   if (needs_begin_frame_ && requested_needs_begin_frame_) {
+    if (ShouldThrottleBeginFrame(args, last_begin_frame_time_)) {
+      compositor_frame_sink_->DidNotProduceFrame(
+          viz::BeginFrameAck(args, false));
+      return;
+    }
+    last_begin_frame_time_ = args.frame_time;
     requested_needs_begin_frame_ = false;
     begin_frame_client_->BeginFrame(args);
   } else {

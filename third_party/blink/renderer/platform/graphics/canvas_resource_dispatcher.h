@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -136,6 +137,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   viz::FrameTokenGenerator next_frame_token_;
 
   viz::BeginFrameAck current_begin_frame_ack_;
+  base::TimeTicks last_begin_frame_time_;
 
   WeakPersistent<CanvasResourceDispatcherClient> client_;
 

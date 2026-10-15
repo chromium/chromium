@@ -198,6 +198,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
+// When enabled alongside kThrottleMainFrameTo60Hz (or
+// kThrottleMainFrameTo60HzWebView on WebView), also throttles OffscreenCanvas
+// and Worker requestAnimationFrame() to 60Hz.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleOffscreenCanvasTo60Hz);
+
 #if BUILDFLAG(IS_ANDROID)
 // Same as above, for WebView.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60HzWebView);

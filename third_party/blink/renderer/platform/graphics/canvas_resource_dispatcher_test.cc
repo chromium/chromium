@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
@@ -13,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
+#include "third_party/blink/renderer/platform/graphics/begin_frame_provider_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
@@ -20,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -309,4 +314,184 @@ const TestParams kTestCases[] = {
 INSTANTIATE_TEST_SUITE_P(All,
                          CanvasResourceDispatcherTest,
                          ValuesIn(kTestCases));
+
+namespace {
+
+class MockBeginFrameProviderClient final
+    : public GarbageCollected<MockBeginFrameProviderClient>,
+      public BeginFrameProviderClient {
+ public:
+  MOCK_METHOD(void, BeginFrame, (const viz::BeginFrameArgs&), (override));
+  scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner()
+      override {
+    return scheduler::GetSingleThreadTaskRunnerForTesting();
+  }
+  void Trace(Visitor* visitor) const override {
+    BeginFrameProviderClient::Trace(visitor);
+  }
+};
+
+viz::BeginFrameArgs CreateBeginFrameArgs(uint64_t sequence_number,
+                                         base::TimeTicks frame_time,
+                                         base::TimeDelta interval) {
+  return viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, /*source_id=*/1, sequence_number, frame_time,
+      frame_time + interval, interval, viz::BeginFrameArgs::NORMAL);
+}
+
+}  // namespace
+
+TEST_F(CanvasResourceDispatcherTest, ThrottlesOnBeginFrameTo60HzWhenEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kThrottleMainFrameTo60Hz,
+       features::kThrottleOffscreenCanvasTo60Hz},
+      {});
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
+  auto scoped_override =
+      mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
+          &embedded_frame_sink_provider_receiver);
+
+  CreateDispatcher();
+  dispatcher()->SetAnimationState(
+      OffscreenCanvasPlaceholder::AnimationState::kActive);
+  embedded_frame_sink_provider_receiver.FlushForTesting();
+
+  EXPECT_CALL(MockClient(), BeginFrame())
+      .Times(5)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              DidNotProduceFrame(_))
+      .Times(5);
+
+  const base::TimeDelta interval_120hz = base::Hertz(120);
+  for (uint64_t i = 1; i <= 10; ++i) {
+    dispatcher()->OnBeginFrame(
+        CreateBeginFrameArgs(i, TaskEnvironment().NowTicks(), interval_120hz),
+        /*timing_details=*/{}, /*resources=*/{});
+    TaskEnvironment().FastForwardBy(interval_120hz);
+  }
+  Mock::VerifyAndClearExpectations(&MockClient());
+  Mock::VerifyAndClearExpectations(
+      &mock_embedded_frame_sink_provider.mock_compositor_frame_sink());
+
+  // Frame 10 was throttled (early return). Verify that current_begin_frame_ack_
+  // was invalidated so a subsequent out-of-band frame submission uses a manual
+  // ack rather than reusing the already-acked throttled frame ID.
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              SubmitCompositorFrame_(_))
+      .WillOnce(::testing::WithArg<0>([](const viz::CompositorFrame* frame) {
+        EXPECT_EQ(frame->metadata.begin_frame_ack.frame_id.source_id,
+                  viz::BeginFrameArgs::kManualSourceId);
+      }));
+  DispatchOneFrame();
+  embedded_frame_sink_provider_receiver.FlushForTesting();
+  dispatcher()->DidReceiveCompositorFrameAck(/*resources=*/{});
+  Mock::VerifyAndClearExpectations(
+      &mock_embedded_frame_sink_provider.mock_compositor_frame_sink());
+
+  // If Client()->BeginFrame() returns false (no frame submitted),
+  // last_begin_frame_time_ should not advance, so the very next frame should
+  // not be throttled.
+  EXPECT_CALL(MockClient(), BeginFrame())
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              DidNotProduceFrame(_))
+      .Times(1);
+  dispatcher()->OnBeginFrame(
+      CreateBeginFrameArgs(11, TaskEnvironment().NowTicks(), interval_120hz),
+      /*timing_details=*/{}, /*resources=*/{});
+  TaskEnvironment().FastForwardBy(interval_120hz);
+  dispatcher()->OnBeginFrame(
+      CreateBeginFrameArgs(12, TaskEnvironment().NowTicks(), interval_120hz),
+      /*timing_details=*/{}, /*resources=*/{});
+  TaskEnvironment().FastForwardBy(interval_120hz);
+  Mock::VerifyAndClearExpectations(&MockClient());
+  Mock::VerifyAndClearExpectations(
+      &mock_embedded_frame_sink_provider.mock_compositor_frame_sink());
+
+  // 60Hz and 90Hz intervals should not be throttled.
+  const base::TimeDelta interval_90hz = base::Hertz(90);
+  EXPECT_CALL(MockClient(), BeginFrame())
+      .Times(4)
+      .WillRepeatedly(testing::Return(true));
+  for (uint64_t i = 13; i <= 16; ++i) {
+    dispatcher()->OnBeginFrame(
+        CreateBeginFrameArgs(i, TaskEnvironment().NowTicks(), interval_90hz),
+        /*timing_details=*/{}, /*resources=*/{});
+    TaskEnvironment().FastForwardBy(interval_90hz);
+  }
+  Mock::VerifyAndClearExpectations(&MockClient());
+
+  // Disabling kThrottleOffscreenCanvasTo60Hz should stop throttling 120Hz
+  // frames even when kThrottleMainFrameTo60Hz is enabled.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {features::kThrottleMainFrameTo60Hz},
+      {features::kThrottleOffscreenCanvasTo60Hz});
+  EXPECT_CALL(MockClient(), BeginFrame())
+      .Times(4)
+      .WillRepeatedly(testing::Return(true));
+  for (uint64_t i = 17; i <= 20; ++i) {
+    dispatcher()->OnBeginFrame(
+        CreateBeginFrameArgs(i, TaskEnvironment().NowTicks(), interval_120hz),
+        /*timing_details=*/{}, /*resources=*/{});
+    TaskEnvironment().FastForwardBy(interval_120hz);
+  }
+}
+
+TEST_F(CanvasResourceDispatcherTest,
+       BeginFrameProviderThrottlesTo60HzWhenEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kThrottleMainFrameTo60Hz,
+       features::kThrottleOffscreenCanvasTo60Hz},
+      {});
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
+  mock_embedded_frame_sink_provider
+      .set_num_expected_set_needs_begin_frame_on_sink_construction(1);
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
+  auto scoped_override =
+      mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
+          &embedded_frame_sink_provider_receiver);
+
+  auto* context = MakeGarbageCollected<MockContextLifecycleNotifier>();
+  auto* client = MakeGarbageCollected<MockBeginFrameProviderClient>();
+  BeginFrameProviderParams params;
+  params.parent_frame_sink_id = viz::FrameSinkId(kClientId, kSinkId);
+  params.frame_sink_id = viz::FrameSinkId(kClientId, kSinkId + 1);
+  auto* provider =
+      MakeGarbageCollected<BeginFrameProvider>(params, client, context);
+
+  provider->RequestBeginFrame();
+  embedded_frame_sink_provider_receiver.FlushForTesting();
+
+  EXPECT_CALL(*client, BeginFrame(_))
+      .Times(5)
+      .WillRepeatedly([provider](const viz::BeginFrameArgs& args) {
+        provider->FinishBeginFrame(args);
+        provider->RequestBeginFrame();
+      });
+  // 5 throttled frames + 5 FinishBeginFrame calls = 10 DidNotProduceFrame acks.
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              DidNotProduceFrame(_))
+      .Times(10);
+
+  const base::TimeDelta interval_120hz = base::Hertz(120);
+  for (uint64_t i = 1; i <= 10; ++i) {
+    provider->OnBeginFrame(
+        CreateBeginFrameArgs(i, TaskEnvironment().NowTicks(), interval_120hz),
+        /*timing_details=*/{}, /*resources=*/{});
+    TaskEnvironment().FastForwardBy(interval_120hz);
+  }
+}
+
 }  // namespace blink

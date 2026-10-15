@@ -208,6 +208,8 @@ BASE_FEATURE(kThrottleMainFrameTo60Hz,
 #endif
 );
 
+BASE_FEATURE(kThrottleOffscreenCanvasTo60Hz, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kThrottleMainFrameTo60HzWebView,
              base::FEATURE_DISABLED_BY_DEFAULT);

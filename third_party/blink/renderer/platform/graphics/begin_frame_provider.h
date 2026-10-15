@@ -10,6 +10,7 @@
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
@@ -44,6 +45,8 @@ class PLATFORM_EXPORT BeginFrameProvider
 
   void RequestBeginFrame();
   void FinishBeginFrame(const viz::BeginFrameArgs&);
+  static bool ShouldThrottleBeginFrame(const viz::BeginFrameArgs& args,
+                                       base::TimeTicks last_begin_frame_time);
 
   // viz::mojom::blink::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
@@ -97,6 +100,7 @@ class PLATFORM_EXPORT BeginFrameProvider
   std::optional<base::PlatformThread::RaiseThreadTypeLease> lease_;
   HeapMojoRemote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;
   Member<BeginFrameProviderClient> begin_frame_client_;
+  base::TimeTicks last_begin_frame_time_;
 };
 
 }  // namespace blink
