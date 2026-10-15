@@ -47,6 +47,13 @@ TEST_F(UiEventDebugStringTest, TaskStateChanged) {
             "TaskStateChanged[task_id=8675, state=PausedByActor]");
 }
 
+TEST_F(UiEventDebugStringTest, TaskStepProgressUpdated) {
+  EXPECT_EQ(DebugString(SyncUiEvent(
+                TaskStepProgressUpdated(TaskId(123), "Searching for shoes"))),
+            "TaskStepProgressUpdated[task_id=123, step_progress=Searching for "
+            "shoes]");
+}
+
 TEST_F(UiEventDebugStringTest, StartingToActOnTab) {
   EXPECT_EQ(DebugString(UiEvent(StartingToActOnTab(Handle(), TaskId(123)))),
             "StartingToActOnTab[task_id=123, tab=5555]");

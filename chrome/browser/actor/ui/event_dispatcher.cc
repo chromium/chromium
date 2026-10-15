@@ -201,6 +201,10 @@ constexpr absl::Overload ActorTaskSyncChangeFn{
     [](const UiEventDispatcher::RemoveTab& c) {
       return EventSequence<SyncUiEvent>{StoppedActingOnTab(c.handle)};
     },
+    [](const UiEventDispatcher::UpdateTaskStepProgress& c) {
+      return EventSequence<SyncUiEvent>{
+          TaskStepProgressUpdated(c.task_id, c.step_progress)};
+    },
 };
 
 template <absl::Overload V>
@@ -280,6 +284,11 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
               return absl::StrFormat("RemoveTab task_id=%d tab=%d",
                                      c.task_id.GetUnsafeValue(),
                                      c.handle.raw_value());
+            },
+            [](const UiEventDispatcher::UpdateTaskStepProgress& c) {
+              return absl::StrFormat(
+                  "UpdateTaskStepProgress task_id=%d step_progress=%s",
+                  c.task_id.GetUnsafeValue(), c.step_progress);
             }};
         return std::visit(DebugFn, change);
       };

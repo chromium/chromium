@@ -122,6 +122,8 @@ chromium-metrics-reviews@google.com.
   <variant name="StoppedActingOnTab" summary="StoppedActingOnTab UiEvent"/>
   <variant name="StopTask" summary="StopTask UiEvent"/>
   <variant name="TaskStateChanged" summary="TaskStateChanged UiEvent"/>
+  <variant name="TaskStepProgressUpdated"
+      summary="TaskStepProgressUpdated UiEvent"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/ui_event_debugstring.h:GetUiEventName) -->

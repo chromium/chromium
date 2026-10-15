@@ -249,6 +249,12 @@ TEST_F(EventDispatcherTest, AllUiEventsLogDurationHistograms) {
     EXPECT_CALL(*mock_state_manager_,
                 OnUiEvent(VariantWith<StoppedActingOnTab>(_)));
     dispatcher_->OnActorTaskSyncChange(remove_tab);
+    // This generates a TaskStepProgressUpdated event.
+    EXPECT_CALL(*mock_state_manager_,
+                OnUiEvent(VariantWith<TaskStepProgressUpdated>(_)));
+    dispatcher_->OnActorTaskSyncChange(
+        UiEventDispatcher::UpdateTaskStepProgress{
+            .task_id = TaskId(1), .step_progress = "Searching"});
   }
   // Trigger asynchronous events.
   {
@@ -288,6 +294,8 @@ TEST_F(EventDispatcherTest, AllUiEventsLogDurationHistograms) {
       "Actor.EventDispatcher.TaskStateChanged.Duration", 1);
   histograms_.ExpectTotalCount(
       "Actor.EventDispatcher.StoppedActingOnTab.Duration", 1);
+  histograms_.ExpectTotalCount(
+      "Actor.EventDispatcher.TaskStepProgressUpdated.Duration", 1);
   // Ensure all AsyncUiEvent Durations are logged.
   histograms_.ExpectTotalCount("Actor.EventDispatcher.MouseMove.Duration", 1);
   histograms_.ExpectTotalCount("Actor.EventDispatcher.MouseClick.Duration", 1);
@@ -359,6 +367,17 @@ TEST_F(EventDispatcherTest, SyncActor_RemoveTab) {
       .Times(1);
   dispatcher_->OnActorTaskSyncChange(UiEventDispatcher::RemoveTab{
       .task_id = TaskId(867), .handle = tabs::TabHandle(5309)});
+}
+
+TEST_F(EventDispatcherTest, SyncActor_UpdateTaskStepProgress) {
+  EXPECT_CALL(*mock_state_manager_,
+              OnUiEvent(VariantWith<TaskStepProgressUpdated>(
+                  AllOf(Field(&TaskStepProgressUpdated::task_id, TaskId(867)),
+                        Field(&TaskStepProgressUpdated::step_progress,
+                              "Searching for shoes")))))
+      .Times(1);
+  dispatcher_->OnActorTaskSyncChange(UiEventDispatcher::UpdateTaskStepProgress{
+      .task_id = TaskId(867), .step_progress = "Searching for shoes"});
 }
 
 TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {

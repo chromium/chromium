@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/ui/ui_event.h"
 
+#include <utility>
+
 #include "chrome/common/actor.mojom-shared.h"
 
 namespace actor::ui {
@@ -33,6 +35,15 @@ TaskStateChanged::TaskStateChanged(actor::TaskId id, ActorTask::State state)
     : task_id(id), state(state) {}
 TaskStateChanged::TaskStateChanged(const TaskStateChanged&) = default;
 TaskStateChanged::~TaskStateChanged() = default;
+
+TaskStepProgressUpdated::TaskStepProgressUpdated(actor::TaskId id,
+                                                 std::string step_progress)
+    : task_id(id), step_progress(std::move(step_progress)) {}
+TaskStepProgressUpdated::TaskStepProgressUpdated(
+    const TaskStepProgressUpdated&) = default;
+TaskStepProgressUpdated::TaskStepProgressUpdated(TaskStepProgressUpdated&&) =
+    default;
+TaskStepProgressUpdated::~TaskStepProgressUpdated() = default;
 
 StartingToActOnTab::StartingToActOnTab(tabs::TabInterface::Handle th,
                                        actor::TaskId id)

@@ -44,6 +44,8 @@ namespace {
 
 using ChangeTaskState = ui::UiEventDispatcher::ChangeTaskState;
 using testing::_;
+using testing::AllOf;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
 using testing::Property;
@@ -299,6 +301,58 @@ TEST_F(ActorTaskTest, BasicGetters) {
   EXPECT_EQ(task_->get_task_duration(), ActorTask::TaskDuration::kDefault);
   EXPECT_TRUE(task_->GetEndTime().is_null());
   EXPECT_NE(task_->GetWeakPtr(), nullptr);
+}
+
+TEST_F(ActorTaskTest, SetStepProgressSendsEveryUpdateToUi) {
+  using UpdateTaskStepProgress = ui::UiEventDispatcher::UpdateTaskStepProgress;
+  EXPECT_CALL(
+      *mock_ui_event_dispatcher_,
+      OnActorTaskSyncChange(VariantWith<UpdateTaskStepProgress>(AllOf(
+          Field(&UpdateTaskStepProgress::task_id, Eq(task_->id())),
+          Field(&UpdateTaskStepProgress::step_progress, Eq("Searching"))))))
+      .Times(2);
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnActorTaskSyncChange(VariantWith<UpdateTaskStepProgress>(AllOf(
+                  Field(&UpdateTaskStepProgress::task_id, Eq(task_->id())),
+                  Field(&UpdateTaskStepProgress::step_progress,
+                        Eq("Adding to cart"))))))
+      .Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnActorTaskSyncChange(VariantWith<UpdateTaskStepProgress>(AllOf(
+                  Field(&UpdateTaskStepProgress::task_id, Eq(task_->id())),
+                  Field(&UpdateTaskStepProgress::step_progress, Eq(""))))))
+      .Times(1);
+
+  task_->SetStepProgress("Searching");
+  task_->SetStepProgress("Searching");
+  task_->SetStepProgress("Adding to cart");
+  task_->SetStepProgress("");
+}
+
+TEST_F(ActorTaskTest, SetStepProgressUpdatesStateBeforeUiEvent) {
+  using UpdateTaskStepProgress = ui::UiEventDispatcher::UpdateTaskStepProgress;
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnActorTaskSyncChange(VariantWith<UpdateTaskStepProgress>(_)))
+      .WillOnce([&] { EXPECT_EQ(task_->step_progress(), "Searching"); });
+
+  task_->SetStepProgress("Searching");
+}
+
+TEST_F(ActorTaskTest, SetStepProgressNotifiesObserversOnlyOnChange) {
+  std::vector<std::string> updates;
+  base::CallbackListSubscription subscription =
+      ActorKeyedService::Get(profile_.get())
+          ->AddTaskStepProgressChangedCallback(base::BindLambdaForTesting(
+              [&](ActorTask&, const std::string& step_progress) {
+                updates.push_back(step_progress);
+              }));
+
+  task_->SetStepProgress("Searching");
+  task_->SetStepProgress("Searching");
+  task_->SetStepProgress("Adding to cart");
+
+  EXPECT_THAT(updates, ElementsAre("Searching", "Adding to cart"));
+  EXPECT_EQ(task_->step_progress(), "Adding to cart");
 }
 
 TEST_F(ActorTaskTest, StaticStateHelpers) {

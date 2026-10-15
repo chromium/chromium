@@ -23,6 +23,9 @@ inline constexpr absl::Overload UiEventNameFn{
     [](const TaskStateChanged&) -> std::string_view {
       return "TaskStateChanged";
     },
+    [](const TaskStepProgressUpdated&) -> std::string_view {
+      return "TaskStepProgressUpdated";
+    },
     [](const StartingToActOnTab&) -> std::string_view {
       return "StartingToActOnTab";
     },

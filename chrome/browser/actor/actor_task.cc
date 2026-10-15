@@ -1069,11 +1069,17 @@ std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
 }
 
 void ActorTask::SetStepProgress(std::string step_progress) {
-  if (step_progress_ == step_progress) {
-    return;
-  }
+  const bool changed = step_progress_ != step_progress;
   step_progress_ = std::move(step_progress);
-  service_->NotifyTaskStepProgressChanged(*this, step_progress_);
+  // The UI gets every update, even a repeat, because the cursor chip
+  // clears after each action and the next one may reuse the same text.
+  // Observers get changes only.
+  ui_event_dispatcher_->OnActorTaskSyncChange(
+      ui::UiEventDispatcher::UpdateTaskStepProgress{
+          .task_id = id_, .step_progress = step_progress_});
+  if (changed) {
+    service_->NotifyTaskStepProgressChanged(*this, step_progress_);
+  }
 }
 
 // static

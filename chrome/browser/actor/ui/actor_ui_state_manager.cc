@@ -392,6 +392,9 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
               tab_controller->OnUiTabStateChange(
                   kCompletedUiTabState, base::BindOnce(&LogUiChangeError));
             }
+          },
+          [](const TaskStepProgressUpdated&) {
+            // TODO(b/573229718): Show the text next to the magic cursor.
           }},
       event);
 }

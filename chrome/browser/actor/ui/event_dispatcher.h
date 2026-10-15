@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_EVENT_DISPATCHER_H_
 #define CHROME_BROWSER_ACTOR_UI_EVENT_DISPATCHER_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -53,9 +55,15 @@ class UiEventDispatcher {
     TaskId task_id;
     tabs::TabInterface::Handle handle;
   };
+
+  // Sent on every step progress update, including a repeated one.
+  struct UpdateTaskStepProgress {
+    TaskId task_id;
+    std::string step_progress;
+  };
   // TODO(crbug.com/425784083): Add tab changes from ActorTask.
-  using ActorTaskSyncChange =
-      std::variant<ChangeTaskState, StopTask, RemoveTab>;
+  using ActorTaskSyncChange = std::
+      variant<ChangeTaskState, StopTask, RemoveTab, UpdateTaskStepProgress>;
 
   virtual ~UiEventDispatcher() = default;
 
