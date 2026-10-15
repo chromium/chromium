@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -84,6 +85,24 @@ TEST(PromoCodeMetricsTest, LogStoredPromoCodeMetrics_NoPromoCodes) {
                                       0, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.StoredPromoCodeCount.ExpiredCode", 0, 1);
+}
+
+TEST(PromoCodeMetricsTest, LogOfferNotificationBubbleResult) {
+  base::HistogramTester histogram_tester;
+
+  LogOfferNotificationBubbleResult(PaymentsUiClosedReason::kClosed);
+  histogram_tester.ExpectUniqueSample("Autofill.OfferNotificationBubble.Result",
+                                      PaymentsUiClosedReason::kClosed, 1);
+
+  LogOfferNotificationBubbleResult(PaymentsUiClosedReason::kNotInteracted);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubble.Result",
+                                     PaymentsUiClosedReason::kNotInteracted, 1);
+
+  LogOfferNotificationBubbleResult(PaymentsUiClosedReason::kUnknown);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubble.Result",
+                                     PaymentsUiClosedReason::kUnknown, 1);
+  histogram_tester.ExpectTotalCount("Autofill.OfferNotificationBubble.Result",
+                                    3);
 }
 
 }  // namespace

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -266,6 +267,34 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"5% off on shoes.");
+}
+
+TEST_F(OfferNotificationBubbleControllerImplTest, BubbleClosed_LogsResult) {
+  base::HistogramTester histogram_tester;
+  AutofillOfferData offer =
+      test::GetPromoCodeOfferData(GURL("https://www.example.com"));
+
+  // Verify closing the bubble logs kClosed.
+  ShowBubble(offer);
+  CloseBubble(PaymentsUiClosedReason::kClosed);
+  histogram_tester.ExpectUniqueSample("Autofill.OfferNotificationBubble.Result",
+                                      PaymentsUiClosedReason::kClosed, 1);
+
+  // Verify not interacted logs kNotInteracted.
+  ShowBubble(offer);
+  CloseBubble(PaymentsUiClosedReason::kNotInteracted);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubble.Result",
+                                     PaymentsUiClosedReason::kClosed, 1);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubble.Result",
+                                     PaymentsUiClosedReason::kNotInteracted, 1);
+
+  // Verify other close reason (e.g. kUnknown) logs kUnknown.
+  ShowBubble(offer);
+  CloseBubble(PaymentsUiClosedReason::kUnknown);
+  histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubble.Result",
+                                     PaymentsUiClosedReason::kUnknown, 1);
+  histogram_tester.ExpectTotalCount("Autofill.OfferNotificationBubble.Result",
+                                    3);
 }
 
 namespace {

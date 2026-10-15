@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -132,6 +133,9 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
   promo_code_button_clicked_ = false;
+
+  autofill_metrics::LogOfferNotificationBubbleResult(closed_reason);
+
   UpdatePageActionIcon();
 }
 

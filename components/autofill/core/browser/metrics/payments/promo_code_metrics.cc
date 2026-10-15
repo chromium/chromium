@@ -34,4 +34,9 @@ void LogStoredPromoCodeMetrics(
                               promo_codes.size() - valid_count);
 }
 
+void LogOfferNotificationBubbleResult(PaymentsUiClosedReason closed_reason) {
+  base::UmaHistogramEnumeration("Autofill.OfferNotificationBubble.Result",
+                                closed_reason);
+}
+
 }  // namespace autofill::autofill_metrics

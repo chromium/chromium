@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
+
 namespace autofill {
 
 class AutofillOfferData;
@@ -63,6 +65,9 @@ void LogPromoCodeFormEvent(PromoCodeFormEvent event);
 // have available to autofill.
 void LogStoredPromoCodeMetrics(
     const std::vector<const AutofillOfferData*>& promo_codes);
+
+// Logs the result when the offer notification bubble is closed.
+void LogOfferNotificationBubbleResult(PaymentsUiClosedReason closed_reason);
 
 }  // namespace autofill_metrics
 
