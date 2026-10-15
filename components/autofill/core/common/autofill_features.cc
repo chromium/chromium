@@ -836,7 +836,7 @@ BASE_FEATURE(kAutofillFixIframeOwnership, base::FEATURE_DISABLED_BY_DEFAULT);
 // Prioritizes ADDRESS_HOME_STREET_ADDRESS over postal code in inferred labels.
 // See crbug.com/540151895.
 BASE_FEATURE(kAutofillFixLabelGenerationForStreetAddress,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the rewriter uses updated rewrite rules.
 // TODO(crbug.com/445863287): Cleanup when launched.
