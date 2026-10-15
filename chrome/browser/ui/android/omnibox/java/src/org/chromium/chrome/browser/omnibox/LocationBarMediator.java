@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBarSelectionController.SelectableView;
@@ -172,7 +171,6 @@ public class LocationBarMediator
                 BackPressHandler,
                 PauseResumeWithNativeObserver,
                 AppBannerManager.Observer,
-                WindowFocusChangedObserver,
                 OmniboxSuggestionsDropdownScrollListener {
 
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
@@ -2874,8 +2872,7 @@ public class LocationBarMediator
         return true;
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean windowHasFocus) {
+    private void onWindowFocusChanged(boolean windowHasFocus) {
         updateShowFocusRing();
         updateActivationChip();
         if (windowHasFocus) maybeShowOrClearCursorInLocationBar();
