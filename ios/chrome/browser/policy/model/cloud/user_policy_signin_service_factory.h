@@ -32,15 +32,14 @@ class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactoryIOS {
   // Returns the instance of UserPolicySigninService for the `context`.
   static UserPolicySigninService* GetForProfile(ProfileIOS* profile);
 
- protected:
+ private:
+  friend base::NoDestructor<UserPolicySigninServiceFactory>;
+
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
- private:
-  friend base::NoDestructor<UserPolicySigninServiceFactory>;
 
   UserPolicySigninServiceFactory();
   ~UserPolicySigninServiceFactory() override;

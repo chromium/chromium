@@ -23,13 +23,12 @@ class CloudProfileReportingServiceFactoryIOS
   CloudProfileReportingServiceFactoryIOS& operator=(
       const CloudProfileReportingServiceFactoryIOS&) = delete;
 
- protected:
+ private:
+  friend base::NoDestructor<CloudProfileReportingServiceFactoryIOS>;
+
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
-
- private:
-  friend base::NoDestructor<CloudProfileReportingServiceFactoryIOS>;
 
   CloudProfileReportingServiceFactoryIOS();
   ~CloudProfileReportingServiceFactoryIOS() override;
