@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_LEGACY_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_LEGACY_IMPL_H_
 
-#include <string>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -78,7 +75,6 @@ class OtpManagerLegacyImpl : public OtpManager,
   // TODO(crbug.com/415273270): Update UI (dropdown or keyboard accessory) when
   // a new token is received.
   void OnOneTimeTokenReceived(
-      one_time_tokens::OneTimeTokenSource,
       base::expected<one_time_tokens::OneTimeToken,
                      one_time_tokens::OneTimeTokenRetrievalError>
           token_or_error);

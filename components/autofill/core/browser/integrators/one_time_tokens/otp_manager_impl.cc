@@ -50,7 +50,6 @@ using one_time_tokens::ExpiringSubscriptionHandle;
 using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenRetrievalError;
 using one_time_tokens::OneTimeTokenService;
-using one_time_tokens::OneTimeTokenSource;
 using one_time_tokens::OneTimeTokenType;
 
 namespace autofill {
@@ -140,7 +139,7 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens
           << "Delivering cached Gmail OTP suggestion.";
-      OnOneTimeTokenReceived(OneTimeTokenSource::kGmail, std::move(*token));
+      OnOneTimeTokenReceived(std::move(*token));
     } else {
       MaybeRetrieveGmailOtp();
     }
@@ -152,10 +151,11 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
   // and any unverified Gmail OTPs returned by it are dropped.
   // This may call OnOneTimeTokenReceived() zero times, but ...
   one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
-      [](base::WeakPtr<OtpManagerImpl> self, OneTimeTokenSource source,
+      [](base::WeakPtr<OtpManagerImpl> self,
          base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
-        if (self && source == OneTimeTokenSource::kOnDeviceSms) {
-          self->OnOneTimeTokenReceived(source, std::move(result));
+        if (self && (!result.has_value() ||
+                     result->type() == OneTimeTokenType::kSmsOtp)) {
+          self->OnOneTimeTokenReceived(std::move(result));
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
@@ -177,10 +177,8 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
                 return;
               }
               CHECK(!self->sms_otp_subscription_.IsAlive());
-              self->OnOneTimeTokenReceived(
-                  OneTimeTokenSource::kOnDeviceSms,
-                  base::unexpected(
-                      OneTimeTokenRetrievalError::kSubscriptionExpired));
+              self->OnOneTimeTokenReceived(base::unexpected(
+                  OneTimeTokenRetrievalError::kSubscriptionExpired));
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -429,32 +427,34 @@ void OtpManagerImpl::OnGmailOtpRetrieved(
     return;
   }
 
-  OnOneTimeTokenReceived(OneTimeTokenSource::kGmail, std::move(result->token));
+  OnOneTimeTokenReceived(std::move(result->token));
 }
 
 void OtpManagerImpl::OnOneTimeTokenReceived(
-    OneTimeTokenSource backend_type,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
-  if (backend_type != OneTimeTokenSource::kGmail &&
-      (!last_pending_get_suggestions_callback_ ||
-       is_gmail_phish_guard_pending_)) {
+  // Errors can originate from both the SMS and the Gmail OTP flows. Like SMS
+  // OTPs, they must not consume `last_pending_get_suggestions_callback_` while
+  // a PhishGuard check for a Gmail OTP is pending. Otherwise, the callback is
+  // run with empty suggestions.
+  if (!token_or_error) {
+    if (last_pending_get_suggestions_callback_ &&
+        !is_gmail_phish_guard_pending_) {
+      std::move(last_pending_get_suggestions_callback_).Run({});
+    }
+    return;
+  }
+
+  OneTimeToken& token = *token_or_error;
+  const bool is_gmail_otp = token.type() == OneTimeTokenType::kGmail;
+  if (!is_gmail_otp && (!last_pending_get_suggestions_callback_ ||
+                        is_gmail_phish_guard_pending_)) {
     return;
   }
 
   // Do not process or deliver Gmail OTPs (including previously cached tokens)
   // if the user has not opted into Gmail OTP filling or opted out after a token
   // was cached.
-  if (backend_type == OneTimeTokenSource::kGmail &&
-      !UserOptedIntoGmailOtpFilling()) {
-    if (last_pending_get_suggestions_callback_) {
-      is_gmail_phish_guard_pending_ = false;
-      std::move(last_pending_get_suggestions_callback_).Run({});
-    }
-    return;
-  }
-
-  // If token_or_error holds an error, run the callback with empty otp value.
-  if (!token_or_error) {
+  if (is_gmail_otp && !UserOptedIntoGmailOtpFilling()) {
     if (last_pending_get_suggestions_callback_) {
       is_gmail_phish_guard_pending_ = false;
       std::move(last_pending_get_suggestions_callback_).Run({});
@@ -471,33 +471,29 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
     frame_token = target_field->host_frame();
   }
 
-  OneTimeToken& token = *token_or_error;
   if (!token.value().empty()) {
     owner_->GetOtpFormEventLogger().OnOtpAvailable();
   }
 
   base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)> show_suggestions;
-  switch (backend_type) {
-    case OneTimeTokenSource::kGmail:
+  switch (token.type()) {
+    case OneTimeTokenType::kGmail:
       show_suggestions = base::BindOnce(
           &OtpManagerImpl::MaybeShowOtpSuggestionsForGmail,
           weak_ptr_factory_.GetWeakPtr(), std::move(token), frame_token);
       break;
-    case OneTimeTokenSource::kOnDeviceSms:
+    case OneTimeTokenType::kSmsOtp:
       show_suggestions = base::BindOnce(
           &OtpManagerImpl::MaybeShowOtpSuggestionsForSms,
           weak_ptr_factory_.GetWeakPtr(), std::move(token), frame_token);
       break;
-    case OneTimeTokenSource::kUnknown:
-      NOTREACHED();
   }
 
   // We run PhishGuard check to make sure OTPs are not shown to users on
   // potential phishing sites.
   if (OtpPhishGuardDelegate* delegate =
           owner_->client().GetOtpPhishGuardDelegate()) {
-    if (backend_type == OneTimeTokenSource::kGmail &&
-        last_pending_get_suggestions_callback_) {
+    if (is_gmail_otp && last_pending_get_suggestions_callback_) {
       is_gmail_phish_guard_pending_ = true;
     }
     base::TimeTicks start_time = base::TimeTicks::Now();

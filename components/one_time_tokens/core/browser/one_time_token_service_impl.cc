@@ -54,16 +54,7 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   // that we can deliver the most recent token first.
   std::ranges::sort(recent_tokens, {}, &OneTimeToken::on_device_arrival_time);
   for (const auto& token : std::views::reverse(recent_tokens)) {
-    OneTimeTokenSource source;
-    switch (token.type()) {
-      case OneTimeTokenType::kSmsOtp:
-        source = OneTimeTokenSource::kOnDeviceSms;
-        break;
-      case OneTimeTokenType::kGmail:
-        source = OneTimeTokenSource::kGmail;
-        break;
-    }
-    callback.Run(source, base::ok(token));
+    callback.Run(base::ok(token));
   }
 }
 
@@ -72,10 +63,8 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
     Callback callback,
     base::OnceClosure expiration_callback) {
   if (!sms_.backend) {
-    callback.Run(
-        OneTimeTokenSource::kOnDeviceSms,
-        base::unexpected(
-            OneTimeTokenRetrievalError::kSmsOtpBackendPlatformNotSupported));
+    callback.Run(base::unexpected(
+        OneTimeTokenRetrievalError::kSmsOtpBackendPlatformNotSupported));
     return ExpiringSubscription();
   }
   ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(
@@ -145,8 +134,7 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
     // TODO(crbug.com/415273270) Do proper error handling:
     // - In case of timeout, schedule a refetch if appropriate.
     // - In case of a permission error or API error, report the problems.
-    sms_subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
-                                     base::unexpected(reply.error()));
+    sms_subscription_manager_.Notify(base::unexpected(reply.error()));
     return;
   }
 
@@ -155,8 +143,7 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
   // Instead of notifying subscribers only if the OTP is actually new,
   // subscribers are always notified. This ensures that newly added subscribers
   // who missed notifications from before their subscription are informed.
-  sms_subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
-                                   base::ok(token));
+  sms_subscription_manager_.Notify(base::ok(token));
 
   // It's possible that the SMS OTP backend responded with a stale OTP.
   // Therefore, schedule a new retrieval to see if a new OTP arrives.

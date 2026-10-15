@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -41,7 +40,6 @@
 using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenRetrievalError;
 using one_time_tokens::OneTimeTokenService;
-using one_time_tokens::OneTimeTokenSource;
 using one_time_tokens::OneTimeTokenType;
 
 namespace autofill {
@@ -127,10 +125,8 @@ void OtpManagerLegacyImpl::GetRecentOtpsAndRenewSubscription() {
                 return;
               }
               CHECK(!self->sms_otp_subscription_.IsAlive());
-              self->OnOneTimeTokenReceived(
-                  OneTimeTokenSource::kOnDeviceSms,
-                  base::unexpected(
-                      OneTimeTokenRetrievalError::kSubscriptionExpired));
+              self->OnOneTimeTokenReceived(base::unexpected(
+                  OneTimeTokenRetrievalError::kSubscriptionExpired));
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -213,21 +209,7 @@ void OtpManagerLegacyImpl::OnBeforeFocusOnNonFormField(
 }
 
 void OtpManagerLegacyImpl::OnOneTimeTokenReceived(
-    OneTimeTokenSource backend_type,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
-  switch (backend_type) {
-    case OneTimeTokenSource::kOnDeviceSms:
-      break;
-    case OneTimeTokenSource::kGmail:
-      // `GmailOtpBackend` may be rolled out independently of
-      // `kAutofillShowGmailOtpSuggestions` (e.g., for Actor or pre-launch
-      // metrics), in which case `GetRecentOneTimeTokens()` can emit cached
-      // Gmail tokens. Ignore them in the legacy SMS-only manager.
-      return;
-    case OneTimeTokenSource::kUnknown:
-      NOTREACHED();
-  }
-
   if (!last_pending_get_suggestions_callback_) {
     return;
   }
@@ -239,6 +221,14 @@ void OtpManagerLegacyImpl::OnOneTimeTokenReceived(
   }
 
   OneTimeToken& token = *token_or_error;
+  // `GmailOtpBackend` may be rolled out independently of
+  // `kAutofillShowGmailOtpSuggestions` (e.g., for Actor or pre-launch metrics),
+  // in which case `GetRecentOneTimeTokens()` can emit cached Gmail tokens.
+  // Ignore them in the legacy SMS-only manager.
+  if (token.type() == OneTimeTokenType::kGmail) {
+    return;
+  }
+
   if (!token.value().empty()) {
     owner_->GetOtpFormEventLogger().OnOtpAvailable();
   }

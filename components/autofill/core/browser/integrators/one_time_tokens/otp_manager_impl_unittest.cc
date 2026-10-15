@@ -993,8 +993,7 @@ TEST_F(OtpManagerImplTest,
   ON_CALL(mock_service, GetRecentOneTimeTokens)
       .WillByDefault(
           [&](one_time_tokens::OneTimeTokenService::Callback callback) {
-            callback.Run(one_time_tokens::OneTimeTokenSource::kOnDeviceSms,
-                         base::ok(backend_sms_otp));
+            callback.Run(base::ok(backend_sms_otp));
           });
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
@@ -1805,8 +1804,7 @@ class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
   }
 
   void VerifyIgnoresStaleFrameVerdictWhenFrameChanges(
-      one_time_tokens::OneTimeTokenType token_type,
-      one_time_tokens::OneTimeTokenSource token_source) {
+      one_time_tokens::OneTimeTokenType token_type) {
     LocalFrameToken frame_a = autofill_driver().GetFrameToken();
     LocalFrameToken frame_b = test::MakeLocalFrameToken();
     const FormStructure* multi_frame_form = AddForm({
@@ -1858,15 +1856,11 @@ class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
     EXPECT_FALSE(future_a.IsReady());
 
     test_api(otp_manager())
-        .OnOneTimeTokenReceived(
-            token_source,
-            one_time_tokens::OneTimeToken(
-                token_type, "111111", base::TimeTicks::Now(), sender_address));
+        .OnOneTimeTokenReceived(one_time_tokens::OneTimeToken(
+            token_type, "111111", base::TimeTicks::Now(), sender_address));
     test_api(otp_manager())
-        .OnOneTimeTokenReceived(
-            token_source,
-            one_time_tokens::OneTimeToken(
-                token_type, "111111", base::TimeTicks::Now(), sender_address));
+        .OnOneTimeTokenReceived(one_time_tokens::OneTimeToken(
+            token_type, "111111", base::TimeTicks::Now(), sender_address));
     ASSERT_FALSE(phish_guard_callback_a_safe.is_null());
     ASSERT_FALSE(phish_guard_callback_a_phishing.is_null());
 
@@ -1880,10 +1874,8 @@ class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
     EXPECT_FALSE(future_b.IsReady());
 
     test_api(otp_manager())
-        .OnOneTimeTokenReceived(
-            token_source,
-            one_time_tokens::OneTimeToken(
-                token_type, "222222", base::TimeTicks::Now(), sender_address));
+        .OnOneTimeTokenReceived(one_time_tokens::OneTimeToken(
+            token_type, "222222", base::TimeTicks::Now(), sender_address));
     ASSERT_FALSE(phish_guard_callback_b.is_null());
 
     // Stale safe verdict from `frame_a` must not resolve `future_b`, cache the
@@ -1933,9 +1925,7 @@ TEST_F(OtpManagerImplDeliveryTest,
   one_time_tokens::OneTimeToken token(
       one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
       base::TimeTicks::Now());
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kOnDeviceSms,
-                              std::move(token));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get(),
@@ -1961,9 +1951,7 @@ TEST_F(OtpManagerImplDeliveryTest,
   one_time_tokens::OneTimeToken token(
       one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
       base::TimeTicks::Now());
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kOnDeviceSms,
-                              std::move(token));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -1986,9 +1974,7 @@ TEST_F(OtpManagerImplDeliveryTest,
   one_time_tokens::OneTimeToken token(one_time_tokens::OneTimeTokenType::kGmail,
                                       kDefaultOtpValue, base::TimeTicks::Now(),
                                       "sender@example.com");
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                              std::move(token));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get(),
@@ -2014,9 +2000,7 @@ TEST_F(OtpManagerImplDeliveryTest,
   one_time_tokens::OneTimeToken token(one_time_tokens::OneTimeTokenType::kGmail,
                                       kDefaultOtpValue, base::TimeTicks::Now(),
                                       "sender@example.com");
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                              std::move(token));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -2039,9 +2023,7 @@ TEST_F(OtpManagerImplDeliveryTest,
   one_time_tokens::OneTimeToken empty_token(
       one_time_tokens::OneTimeTokenType::kGmail, "", base::TimeTicks::Now(),
       "sender@example.com");
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                              std::move(empty_token));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(empty_token));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -2061,9 +2043,7 @@ TEST_F(OtpManagerImplDeliveryTest,
   one_time_tokens::OneTimeToken token(one_time_tokens::OneTimeTokenType::kGmail,
                                       kDefaultOtpValue, base::TimeTicks::Now(),
                                       "sender@example.com");
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                              std::move(token));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -2093,9 +2073,7 @@ TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
   one_time_tokens::OneTimeToken token1(
       one_time_tokens::OneTimeTokenType::kGmail, "111111",
       base::TimeTicks::Now(), "sender1@example.com");
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                              std::move(token1));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token1));
 
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future2;
   RequestOtpSuggestions(future2);
@@ -2105,9 +2083,7 @@ TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
   one_time_tokens::OneTimeToken token2(
       one_time_tokens::OneTimeTokenType::kGmail, "222222",
       base::TimeTicks::Now(), "sender2@example.com");
-  test_api(otp_manager())
-      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                              std::move(token2));
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token2));
 
   // Check 1 completes at t=50ms (total latency 50ms).
   task_environment_.AdvanceClock(base::Milliseconds(30));
@@ -2129,16 +2105,14 @@ TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
 TEST_F(OtpManagerImplDeliveryTest,
        MaybeShowOtpSuggestionsForSms_IgnoresStaleFrameVerdictWhenFrameChanges) {
   VerifyIgnoresStaleFrameVerdictWhenFrameChanges(
-      one_time_tokens::OneTimeTokenType::kSmsOtp,
-      one_time_tokens::OneTimeTokenSource::kOnDeviceSms);
+      one_time_tokens::OneTimeTokenType::kSmsOtp);
 }
 
 TEST_F(
     OtpManagerImplDeliveryTest,
     MaybeShowOtpSuggestionsForGmail_IgnoresStalePhishGuardResultFromDifferentFrame) {
   VerifyIgnoresStaleFrameVerdictWhenFrameChanges(
-      one_time_tokens::OneTimeTokenType::kGmail,
-      one_time_tokens::OneTimeTokenSource::kGmail);
+      one_time_tokens::OneTimeTokenType::kGmail);
   EXPECT_EQ(test_api(otp_manager()).last_triggered_otp_value(), "222222");
 }
 
@@ -2162,9 +2136,7 @@ class OtpManagerImplProactiveTriggerTest : public OtpManagerImplTest {
     one_time_tokens::OneTimeToken token(
         one_time_tokens::OneTimeTokenType::kGmail, std::move(value),
         base::TimeTicks::Now(), "sender@example.com");
-    test_api(otp_manager())
-        .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
-                                std::move(token));
+    test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
   }
 
  private:
@@ -2745,11 +2717,9 @@ TEST_F(OtpManagerImplTest, GetRecentOneTimeTokens_IgnoresGmailOtp) {
   ASSERT_FALSE(get_recent_callback.is_null());
   // Delivering a Gmail token through GetRecentOneTimeTokens should be ignored.
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
-  get_recent_callback.Run(
-      one_time_tokens::OneTimeTokenSource::kGmail,
-      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
-                                    "123456", base::TimeTicks::Now(),
-                                    "sender@example.com"));
+  get_recent_callback.Run(one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kGmail, "123456",
+      base::TimeTicks::Now(), "sender@example.com"));
 
   EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(autofill_manager()

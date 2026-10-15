@@ -67,11 +67,10 @@ class OtpManagerImplTestApi {
   }
 
   void OnOneTimeTokenReceived(
-      one_time_tokens::OneTimeTokenSource source,
       base::expected<one_time_tokens::OneTimeToken,
                      one_time_tokens::OneTimeTokenRetrievalError>
           token_or_error) {
-    manager_->OnOneTimeTokenReceived(source, std::move(token_or_error));
+    manager_->OnOneTimeTokenReceived(std::move(token_or_error));
   }
 
   void OnTickleReceived() { manager_->OnTickleReceived(); }
