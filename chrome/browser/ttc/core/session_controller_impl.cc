@@ -263,7 +263,7 @@ void SessionControllerImpl::OnVoiceFocusedContentsChanged(
   page_context_monitor_.reset();
   if (web_contents) {
     page_context_monitor_ = std::make_unique<TtcPageContextMonitor>(
-        *web_contents,
+        *web_contents, GetJournal(),
         base::BindRepeating(&Conversation::OnPageContextInvalidated,
                             base::Unretained(conversation_.get())),
         base::BindRepeating(&SessionControllerImpl::OnPageContextFetched,

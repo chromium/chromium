@@ -16,10 +16,13 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
+#include "chrome/browser/ttc/core/session_journal.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace ttc {
 
@@ -45,9 +48,11 @@ PageContextResult BuildPageContextResult(
 
 TtcPageContextMonitor::TtcPageContextMonitor(
     content::WebContents& web_contents,
+    SessionJournal& journal,
     PageContextInvalidatedCallback on_page_context_invalidated,
     PageContextFetchedCallback on_page_context_fetched)
     : web_contents_(web_contents.GetWeakPtr()),
+      journal_(journal),
       extraction_service_(CHECK_DEREF(
           page_content_annotations::PageContentExtractionServiceFactory::
               GetForProfile(Profile::FromBrowserContext(
@@ -156,11 +161,19 @@ void TtcPageContextMonitor::NotifyPageContextFetched(
     bool is_url_supported) {
   // The URL support check may complete asynchronously, by which time the
   // monitored page may have changed.
-  if (!is_url_supported || !weak_page || !IsMonitoredPage(*weak_page)) {
+  if (!weak_page || !IsMonitoredPage(*weak_page)) {
+    return;
+  }
+  const GURL& url = weak_page->GetMainDocument().GetLastCommittedURL();
+  if (!is_url_supported) {
+    journal_->Log("TtcPageContextBlocked",
+                  actor::JournalDetailsBuilder().Add("url", url).Build());
     // TODO(b/555804152): Figure out how to send specific error messages to
     // the server.
     return;
   }
+  journal_->Log("TtcPageContextUpdated",
+                actor::JournalDetailsBuilder().Add("url", url).Build());
   on_page_context_fetched_.Run(result);
 }
 

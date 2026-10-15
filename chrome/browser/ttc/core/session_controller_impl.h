@@ -100,10 +100,10 @@ class SessionControllerImpl : public SessionController,
                           VoiceFocusedContentsTracker::Observer>
       voice_focused_contents_tracker_observation_{this};
 
-  std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
   ActorTaskHolder actor_task_holder_;
   SessionJournal journal_;
   ToolController tool_controller_;
+  std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
 
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
 

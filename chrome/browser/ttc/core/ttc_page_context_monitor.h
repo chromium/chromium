@@ -20,6 +20,8 @@ class WebContents;
 
 namespace ttc {
 
+class SessionJournal;
+
 // Monitors the primary page of the given WebContents via
 // PageContentExtractionService (PCES), invoking its callbacks when the page
 // changes in ways that invalidate the page context, and when fresh page
@@ -45,6 +47,7 @@ class TtcPageContextMonitor
 
   TtcPageContextMonitor(
       content::WebContents& web_contents,
+      SessionJournal& journal,
       PageContextInvalidatedCallback on_page_context_invalidated,
       PageContextFetchedCallback on_page_context_fetched);
   ~TtcPageContextMonitor() override;
@@ -81,6 +84,8 @@ class TtcPageContextMonitor
   // Weak because the monitored WebContents may be destroyed before the owner
   // of this object learns about it and destroys this object.
   const base::WeakPtr<content::WebContents> web_contents_;
+
+  const raw_ref<SessionJournal> journal_;
 
   const raw_ref<page_content_annotations::PageContentExtractionService>
       extraction_service_;
