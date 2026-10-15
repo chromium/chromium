@@ -5,24 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_VARIATIONS_MODEL_CLIENT_VARIATIONS_CLIENT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_VARIATIONS_MODEL_CLIENT_VARIATIONS_CLIENT_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class VariationsClientService;
-class ProfileIOS;
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/variations/model/client/variations_client_service.h"
 
 // Factory for VariationsClientService.
-class VariationsClientServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class VariationsClientServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<VariationsClientServiceFactory,
+                                                VariationsClientService> {
  public:
-  static VariationsClientService* GetForProfile(ProfileIOS* profile);
-  static VariationsClientServiceFactory* GetInstance();
+  explicit VariationsClientServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<VariationsClientServiceFactory>;
-
-  VariationsClientServiceFactory();
-  ~VariationsClientServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
