@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -396,10 +397,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   // TODO(b/474410401): ActorTask tabs should be explicitly added by the client.
   ActorSurfaceHandleSet actor_surfaces_to_add;
   for (const std::unique_ptr<ToolRequest>& request : actions) {
-    // TODO(b/567721071): Filter on the request's surface handle once requests
-    // carry one. Until then a null handle can't tell "targets no page" from
-    // "targets a tab without a surface", which must still fail.
-    if (request->GetTabHandle() != tabs::TabHandle::Null()) {
+    if (request->GetActorSurfaceHandle() != ActorSurfaceHandle::Null()) {
       actor_surfaces_to_add.insert(request->GetActorSurfaceHandle());
     }
   }
