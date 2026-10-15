@@ -11,13 +11,13 @@
       canvas.width = img.width || 300;
       canvas.height = img.height || 300;
       document.body.appendChild(canvas);
-      // Note: { colorSpace: 'display-p3', pixelFormat: 'float16' } creates a
+      // Note: { colorSpace: 'display-p3', colorType: 'float16' } creates a
       // float16 canvas context to verify that WebElement::ImageContents()
       // converts float16 snapshots to N32 bitmaps for AXCanvasAnnotator.
       const ctx = canvas.getContext('2d', {
         willReadFrequently: true,
         colorSpace: 'display-p3',
-        pixelFormat: 'float16'
+        colorType: 'float16'
       });
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);

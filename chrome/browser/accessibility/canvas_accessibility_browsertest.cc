@@ -315,6 +315,58 @@ IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(CanvasAccessibilityBrowserTest,
+                       BitmapCanvasAnnotation_Large) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui::AXMode mode = ui::kAXModeComplete;
+  mode.set_mode(ui::AXMode::kScreenReader, true);
+  scoped_accessibility_mode_ =
+      std::make_unique<content::ScopedAccessibilityModeOverride>(web_contents,
+                                                                 mode);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/accessibility/canvas_large.html")));
+
+  content::TitleWatcher title_watcher(web_contents, u"loaded");
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), u"loaded");
+
+  bool expect_ocr_annotation = (GetCanvasAccessibilityMode() ==
+                                features::CanvasAccessibilityMode::kAdvanced) &&
+                               IsOcrLibraryAvailable();
+
+  if (expect_ocr_annotation) {
+    std::string annotation;
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      ui::AXTreeUpdate tree_update =
+          content::GetAccessibilityTreeSnapshot(web_contents);
+      const ui::AXNodeData* canvas_node =
+          FindFirstNodeWithRole(tree_update, ax::mojom::Role::kCanvas);
+      if (canvas_node) {
+        annotation = canvas_node->GetStringAttribute(
+            ax::mojom::StringAttribute::kCanvasAnnotation);
+        if (!annotation.empty()) {
+          return true;
+        }
+      }
+      return false;
+    }));
+    EXPECT_EQ(annotation, "ABC\nDEF\nGHI\nJKL");
+  } else {
+    ui::AXTreeUpdate tree_update =
+        content::GetAccessibilityTreeSnapshot(web_contents);
+    const ui::AXNodeData* canvas_node =
+        FindFirstNodeWithRole(tree_update, ax::mojom::Role::kCanvas);
+    if (canvas_node) {
+      std::string annotation = canvas_node->GetStringAttribute(
+          ax::mojom::StringAttribute::kCanvasAnnotation);
+      EXPECT_TRUE(annotation.empty());
+    }
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     CanvasAccessibilityBrowserTest,
