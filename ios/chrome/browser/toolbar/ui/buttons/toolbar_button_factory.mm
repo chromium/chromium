@@ -39,7 +39,9 @@ constexpr CGFloat kLegacySymbolPointSize = 24;
 
 - (ToolbarButton*)makeBackButton {
   ToolbarButton* button = [self toolbarButtonForSymbol:SymbolBack];
-  button.visibilityMask = ToolbarButtonVisibility::kAlways;
+  button.visibilityMask = IsFiveButtonAppBarLayoutEnabled()
+                              ? ToolbarButtonVisibility::kRegularRegular
+                              : ToolbarButtonVisibility::kAlways;
   button.accessibilityIdentifier = kToolbarBackButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
   button.accessibilityHint =
@@ -49,9 +51,13 @@ constexpr CGFloat kLegacySymbolPointSize = 24;
 
 - (ToolbarButton*)makeForwardButton {
   ToolbarButton* button = [self toolbarButtonForSymbol:SymbolForward];
-  button.visibilityMask = IsNextOldDesignEnabled()
-                              ? ToolbarButtonVisibility::kAlways
-                              : ToolbarButtonVisibility::kWhenEnabled;
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
+  } else {
+    button.visibilityMask = IsNextOldDesignEnabled()
+                                ? ToolbarButtonVisibility::kAlways
+                                : ToolbarButtonVisibility::kWhenEnabled;
+  }
   button.accessibilityIdentifier = kToolbarForwardButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_FORWARD);
   button.accessibilityHint =

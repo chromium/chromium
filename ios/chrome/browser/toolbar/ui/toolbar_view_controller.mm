@@ -666,7 +666,10 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     return;
   }
 
-  if (IsNextOldDesignEnabled()) {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    _forwardButton.enabled = canGoForward;
+    return;
+  } else if (IsNextOldDesignEnabled()) {
     _forwardButton.enabled = canGoForward;
     if (IsRegularXRegularSizeClass(self)) {
       _forwardButton.hidden = NO;
@@ -2231,7 +2234,15 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
   [NSLayoutConstraint deactivateConstraints:_regularRegularConstraints];
 
-  if (IsNextOldDesignEnabled()) {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    if (IsRegularXRegularSizeClass(self)) {
+      [NSLayoutConstraint activateConstraints:_regularRegularConstraints];
+    } else if (IsIPhoneLandscape(self)) {
+      [NSLayoutConstraint activateConstraints:_landscapeOrientationConstraints];
+    } else {
+      [NSLayoutConstraint activateConstraints:_portraitOrientationConstraints];
+    }
+  } else if (IsNextOldDesignEnabled()) {
     if (IsRegularXRegularSizeClass(self)) {
       _forwardButton.hidden = NO;
       [NSLayoutConstraint activateConstraints:_regularRegularConstraints];
@@ -2528,10 +2539,13 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   BOOL hideToolbar = [self shouldHideToolbar];
 
   [self updateGuide:kToolsMenuGuide withView:_toolsMenuButton hide:hideToolbar];
-  [self updateGuide:kBackButtonGuide withView:_backButton hide:hideToolbar];
+
+  [self updateGuide:kBackButtonGuide
+           withView:_backButton
+               hide:hideToolbar || _backButton.isHidden];
   [self updateGuide:kForwardButtonGuide
            withView:_forwardButton
-               hide:hideToolbar];
+               hide:hideToolbar || _forwardButton.isHidden];
 
   if (IsFiveButtonAppBarLayoutEnabled()) {
     // The leading share button in the toolbar is visible in a window with
