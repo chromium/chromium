@@ -2064,7 +2064,11 @@ public class LocationBarMediator
         boolean isInAimRequest =
                 mCurrentInput != null && ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
 
-        if (!isSuggestionsPopover || isInAimRequest || mAiModeButtonUiConfig == null) {
+        if (!isSuggestionsPopover
+                || isInAimRequest
+                || mAiModeButtonUiConfig == null
+                || TextUtils.isEmpty(mAiModeButtonUiConfig.contextMenuLabel)) {
+            mUrlCoordinator.setShowAiModeLabel(null);
             mUrlCoordinator.setShowAiModeCallback(null);
             return;
         }
@@ -2072,6 +2076,7 @@ public class LocationBarMediator
         boolean currentPrefValue =
                 UserPrefs.get(profile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
         mUrlCoordinator.setShowAiMode(currentPrefValue);
+        mUrlCoordinator.setShowAiModeLabel(mAiModeButtonUiConfig.contextMenuLabel);
         mUrlCoordinator.setShowAiModeCallback(
                 (newValue) -> {
                     UserPrefs.get(profile).setBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, newValue);

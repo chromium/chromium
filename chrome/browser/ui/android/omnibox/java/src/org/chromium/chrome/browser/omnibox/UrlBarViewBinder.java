@@ -40,6 +40,8 @@ class UrlBarViewBinder {
             view.setCustomSelectionActionModeCallback(callback);
         } else if (propertyKey == UrlBarProperties.AI_MODE_PREF_ENABLED) {
             view.setShowAiMode(model.get(UrlBarProperties.AI_MODE_PREF_ENABLED));
+        } else if (propertyKey == UrlBarProperties.AI_MODE_PREF_LABEL) {
+            view.setShowAiModeLabel(model.get(UrlBarProperties.AI_MODE_PREF_LABEL));
         } else if (propertyKey == UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK) {
             view.setShowAiModeCallback(model.get(UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK));
         } else if (propertyKey == UrlBarProperties.ALLOW_FOCUS) {

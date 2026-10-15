@@ -227,6 +227,11 @@ public class UrlBarCoordinator
         mModel.set(UrlBarProperties.AI_MODE_PREF_ENABLED, showAiMode);
     }
 
+    /** Set the label of the "Always Show AI Mode" context menu option. */
+    public void setShowAiModeLabel(@Nullable String label) {
+        mModel.set(UrlBarProperties.AI_MODE_PREF_LABEL, label);
+    }
+
     /** Set the callback when "Always Show AI Mode" is toggled. */
     public void setShowAiModeCallback(@Nullable Callback<Boolean> callback) {
         mModel.set(UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK, callback);

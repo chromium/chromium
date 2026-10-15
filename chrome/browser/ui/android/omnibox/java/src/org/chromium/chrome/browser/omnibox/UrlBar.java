@@ -130,6 +130,7 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mWrapDetectionScheduled;
     private @Nullable Runnable mManageSearchEnginesCallback;
     private boolean mShowAiMode;
+    private @Nullable String mShowAiModeLabel;
     private @Nullable Callback<Boolean> mShowAiModeCallback;
     private @Nullable UrlBarContextMenuHelper mContextMenuHelper;
 
@@ -376,6 +377,7 @@ public class UrlBar extends AutocompleteEditText {
         mTextContextMenuDelegate = null;
         mTextChangeListener = null;
         mManageSearchEnginesCallback = null;
+        mShowAiModeLabel = null;
         mShowAiModeCallback = null;
         mLastMeasuredText = null;
         mLastMeasuredTextWidth = -1;
@@ -407,6 +409,11 @@ public class UrlBar extends AutocompleteEditText {
     /** Set the state of "Always Show AI Mode" option. */
     public void setShowAiMode(boolean showAiMode) {
         mShowAiMode = showAiMode;
+    }
+
+    /** Set the label of the "Always Show AI Mode" context menu option. */
+    public void setShowAiModeLabel(@Nullable String label) {
+        mShowAiModeLabel = label;
     }
 
     /** Set the callback when "Always Show AI Mode" is toggled. */
@@ -1136,14 +1143,14 @@ public class UrlBar extends AutocompleteEditText {
         // Restore backwards selection if necessary.
         if (start > end) setSelection(start, end);
 
-        if (mShowAiModeCallback != null) {
+        if (mShowAiModeCallback != null && !TextUtils.isEmpty(mShowAiModeLabel)) {
             if (menu.findItem(R.id.url_bar_always_show_ai_mode) == null) {
                 MenuItem alwaysShowItem =
                         menu.add(
                                 Menu.NONE,
                                 R.id.url_bar_always_show_ai_mode,
                                 Menu.CATEGORY_SECONDARY,
-                                getContext().getString(R.string.always_show_ai_mode));
+                                mShowAiModeLabel);
                 alwaysShowItem.setCheckable(true);
                 alwaysShowItem.setChecked(mShowAiMode);
                 alwaysShowItem.setOnMenuItemClickListener(

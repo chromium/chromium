@@ -4316,6 +4316,7 @@ public class LocationBarMediatorUnitTest {
         mProfileSupplier.set(mProfile);
 
         verify(mUrlCoordinator).setShowAiMode(true);
+        verify(mUrlCoordinator).setShowAiModeLabel("Always show AI Mode");
         verify(mUrlCoordinator).setShowAiModeCallback(mCallbackCaptor.capture());
         assertNotNull(mCallbackCaptor.getValue());
 
@@ -4324,6 +4325,14 @@ public class LocationBarMediatorUnitTest {
         mCallbackCaptor.getValue().onResult(false);
         verify(mPrefService).setBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, false);
         verify(mUrlCoordinator).setShowAiMode(false);
+
+        clearInvocations(mUrlCoordinator);
+        mAiModeButtonUiConfigSupplier.set(
+                createTestAiModeButtonUiConfig(
+                        "Always show Bing Copilot",
+                        "https://bing.com/chat?q={searchTerms}",
+                        new GURL("https://bing.com/chat")));
+        verify(mUrlCoordinator).setShowAiModeLabel("Always show Bing Copilot");
     }
 
     @Test
@@ -4333,6 +4342,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
+        verify(mUrlCoordinator).setShowAiModeLabel(null);
         verify(mUrlCoordinator).setShowAiModeCallback(null);
     }
 
@@ -4345,6 +4355,7 @@ public class LocationBarMediatorUnitTest {
         mProfileSupplier.set(mProfile);
 
         verify(mUrlCoordinator).setShowAiMode(true);
+        verify(mUrlCoordinator).setShowAiModeLabel("Always show AI Mode");
         verify(mUrlCoordinator).setShowAiModeCallback(mCallbackCaptor.capture());
         assertNotNull(mCallbackCaptor.getValue());
     }
@@ -5750,11 +5761,17 @@ public class LocationBarMediatorUnitTest {
      */
     private static AiModeButtonUiConfig createTestAiModeButtonUiConfig(
             String navigationUrl, GURL navigationUrlEmpty) {
+        return createTestAiModeButtonUiConfig(
+                "Always show AI Mode", navigationUrl, navigationUrlEmpty);
+    }
+
+    private static AiModeButtonUiConfig createTestAiModeButtonUiConfig(
+            String contextMenuLabel, String navigationUrl, GURL navigationUrlEmpty) {
         return new AiModeButtonUiConfig(
                 "AI Mode",
                 "Ask AI Mode",
                 "AI Mode button",
-                "Always show AI Mode",
+                contextMenuLabel,
                 "Ask AI Mode",
                 GURL.emptyGURL(),
                 navigationUrl,

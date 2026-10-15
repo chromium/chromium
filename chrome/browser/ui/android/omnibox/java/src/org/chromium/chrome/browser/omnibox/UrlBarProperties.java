@@ -127,6 +127,10 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey AI_MODE_PREF_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The label for the "Always Show AI Mode" context menu item. */
+    public static final WritableObjectPropertyKey<String> AI_MODE_PREF_LABEL =
+            new WritableObjectPropertyKey<>();
+
     /** The callback to run when the "Always Show AI Mode" menu item is toggled. */
     public static final WritableObjectPropertyKey<Callback<Boolean>> AI_MODE_PREF_TOGGLE_CALLBACK =
             new WritableObjectPropertyKey<>();
@@ -225,6 +229,7 @@ class UrlBarProperties {
                 ACCESSIBILITY_WARNING,
                 ACTION_MODE_CALLBACK,
                 AI_MODE_PREF_ENABLED,
+                AI_MODE_PREF_LABEL,
                 AI_MODE_PREF_TOGGLE_CALLBACK,
                 ALLOW_FOCUS,
                 ALLOW_MULTILINE_INPUT,

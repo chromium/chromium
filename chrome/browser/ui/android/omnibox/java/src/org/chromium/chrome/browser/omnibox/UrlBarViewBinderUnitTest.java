@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT;
@@ -17,7 +19,10 @@ import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 
@@ -51,6 +56,8 @@ public class UrlBarViewBinderUnitTest {
     @Mock private View.OnKeyListener mOnKeyListener;
     @Mock private OnLongClickListener mOnLongClickListener;
     @Mock private Runnable mRunnable;
+    @Mock private ContextMenu mContextMenu;
+    @Mock private MenuItem mMenuItem;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -168,6 +175,41 @@ public class UrlBarViewBinderUnitTest {
     public void testSetManageSearchEnginesCallback() {
         mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mRunnable);
         assertEquals(mRunnable, mUrlBar.getManageSearchEnginesCallback());
+    }
+
+    @Test
+    public void testAiModeContextMenuProperties() {
+        doReturn(mMenuItem)
+                .when(mContextMenu)
+                .add(
+                        Menu.NONE,
+                        R.id.url_bar_always_show_ai_mode,
+                        Menu.CATEGORY_SECONDARY,
+                        "Always show Copilot");
+
+        mModel.set(UrlBarProperties.AI_MODE_PREF_ENABLED, true);
+        mModel.set(UrlBarProperties.AI_MODE_PREF_LABEL, "Always show Copilot");
+        mModel.set(UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK, _ -> {});
+
+        mUrlBar.onCreateContextMenu(mContextMenu);
+        verify(mContextMenu)
+                .add(
+                        Menu.NONE,
+                        R.id.url_bar_always_show_ai_mode,
+                        Menu.CATEGORY_SECONDARY,
+                        "Always show Copilot");
+        verify(mMenuItem).setCheckable(true);
+        verify(mMenuItem).setChecked(true);
+
+        clearInvocations(mContextMenu);
+        mModel.set(UrlBarProperties.AI_MODE_PREF_LABEL, null);
+        mUrlBar.onCreateContextMenu(mContextMenu);
+        verify(mContextMenu, never())
+                .add(
+                        Menu.NONE,
+                        R.id.url_bar_always_show_ai_mode,
+                        Menu.CATEGORY_SECONDARY,
+                        "Always show Copilot");
     }
 
     @Test
