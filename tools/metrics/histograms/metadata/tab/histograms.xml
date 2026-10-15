@@ -2689,7 +2689,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Selections.Count" units="tabs" expires_after="2026-11-22">
+<histogram name="Tabs.Selections.Count" units="tabs" expires_after="2027-11-22">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
