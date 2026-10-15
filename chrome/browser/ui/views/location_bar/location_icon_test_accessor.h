@@ -44,7 +44,7 @@ class LocationIconTestAccessor {
   LocationIconView* GetLocationIconView() const;
 
  private:
-  content::WebContents* GetWebContents() const;
+  content::WebContents* GetToolbarWebContents() const;
 
   raw_ptr<BrowserWindowInterface> browser_;
 };
