@@ -245,7 +245,7 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
   // Try parsing SearchToClientMessage first via
   // ContextualTasksWebContentsUserData.
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
-    if (user_data->OnSearchMessageReceived(message)) {
+    if (user_data->OnSearchMessageReceived(message, this)) {
       return;
     }
   }
