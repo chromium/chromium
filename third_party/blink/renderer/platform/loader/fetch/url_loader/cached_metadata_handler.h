@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/network/public/mojom/cache_storage_side_data_writer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -44,12 +46,14 @@ class PLATFORM_EXPORT CachedMetadataSender {
       mojom::blink::CodeCacheType,
       scoped_refptr<const SecurityOrigin> requestor_origin);
 
-  static void SendToCodeCacheHost(CodeCacheHost*,
-                                  mojom::blink::CodeCacheType,
-                                  String,
-                                  base::Time,
-                                  const String&,
-                                  base::span<const uint8_t>);
+  static void SendToCodeCacheHost(
+      CodeCacheHost*,
+      mojom::blink::CodeCacheType,
+      String,
+      base::Time,
+      const mojo::SharedRemote<
+          network::mojom::blink::CacheStorageSideDataWriter>&,
+      base::span<const uint8_t>);
 
   virtual ~CachedMetadataSender() = default;
   virtual void Send(CodeCacheHost* code_cache_host,

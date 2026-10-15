@@ -130,14 +130,6 @@ interface CacheStorageCache {
   // Perform a batch of operations, used for PUT and DELETE operations.
   Batch(array<BatchOperation> batch_operations, int64 trace_id)
       => (CacheStorageVerboseError result);
-
-  // Writes the side data (ex: V8 code cache) for the specified cache entry.
-  // If it doesn't exist, or the |expected_response_time| differs from the
-  // entry's, blink::mojom::CacheStorageError::kErrorNotFound is returned.
-  WriteSideData(url.mojom.Url url,
-                mojo_base.mojom.Time expected_response_time,
-                mojo_base.mojom.BigBuffer data,
-                int64 trace_id) => (CacheStorageError result);
 };
 
 // Handles global CacheStorage methods, directly relates to methods available on

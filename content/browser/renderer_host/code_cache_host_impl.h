@@ -26,8 +26,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 
-class GURL;
-
 namespace content {
 
 class GeneratedCodeCache;
@@ -48,13 +46,6 @@ class GeneratedCodeCacheContext;
 //    See: - `DidGenerateCacheableMetadata`
 //         - `FetchCachedCode`
 //         - `ClearCodeCacheEntry`
-//
-//  CacheStorage:
-//    Entries are keyed by URL, cache name, and storage key.
-//    This class only supports writing such data. Data is stored as
-//    "side data" in the cache storage cache.
-//    See: - `DidGenerateCacheableMetadataInCacheStorage`
-//         - `CacheStorageCache::WriteSideData`
 //
 // When PersistentCache is used, there is an independent cache for each origin
 // lock so that renderers can be given read-only access to a cache for lookups
@@ -149,13 +140,6 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   FRIEND_TEST_ALL_PREFIXES(
       CodeCacheHostImplTest,
       PersistentCacheLockedAndUnlockedProcessesShareNoData);
-
-  // blink::mojom::CodeCacheHost:
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const GURL& url,
-      base::Time expected_response_time,
-      mojo_base::BigBuffer data,
-      const std::string& cache_storage_cache_name) override;
 
   // Our render process host ID, used to bind to the correct render process.
   const ChildProcessId render_process_id_;

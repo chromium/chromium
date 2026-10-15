@@ -36,7 +36,7 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
       response->headers, response->mime_type, response->request_method,
       CloneSerializedBlob(response->blob), response->error,
       response->response_time, response->cache_storage_cache_name,
-      response->cors_exposed_header_names,
+      mojo::NullRemote(), response->cors_exposed_header_names,
       CloneSerializedBlob(response->side_data_blob),
       CloneSerializedBlob(response->side_data_blob_for_cache_put),
       mojo::Clone(response->parsed_headers), response->connection_info,

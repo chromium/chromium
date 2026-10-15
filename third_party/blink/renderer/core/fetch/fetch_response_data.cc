@@ -175,6 +175,19 @@ String FetchResponseData::InternalMIMEType() const {
   return mime_type_;
 }
 
+const mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>&
+FetchResponseData::CacheStorageSideDataWriter() const {
+  if (internal_response_) {
+    return internal_response_->CacheStorageSideDataWriter();
+  }
+  if (pending_cache_storage_side_data_writer_.is_valid()) {
+    cache_storage_side_data_writer_ =
+        mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>(
+            std::move(pending_cache_storage_side_data_writer_));
+  }
+  return cache_storage_side_data_writer_;
+}
+
 bool FetchResponseData::RequestIncludeCredentials() const {
   return internal_response_ ? internal_response_->RequestIncludeCredentials()
                             : request_include_credentials_;
@@ -209,6 +222,8 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->request_method_ = request_method_;
   new_response->response_time_ = response_time_;
   new_response->cache_storage_cache_name_ = cache_storage_cache_name_;
+  new_response->cache_storage_side_data_writer_ =
+      cache_storage_side_data_writer_;
   new_response->cors_exposed_header_names_ = cors_exposed_header_names_;
   new_response->connection_info_ = connection_info_;
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
@@ -288,6 +303,8 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
   response->request_method = request_method_;
   response->response_time = response_time_;
   response->cache_storage_cache_name = cache_storage_cache_name_;
+  response->cache_storage_side_data_writer =
+      std::move(pending_cache_storage_side_data_writer_);
   response->cors_exposed_header_names =
       HeaderSetToVector(cors_exposed_header_names_);
   response->connection_info = connection_info_;
@@ -342,6 +359,7 @@ void FetchResponseData::InitFromResourceResponse(
   SetRequestMethod(request_method);
   SetResponseTime(response.ResponseTime());
   SetCacheStorageCacheName(response.CacheStorageCacheName());
+  SetCacheStorageSideDataWriter(response.CacheStorageSideDataWriter());
 
   if (response.WasCached()) {
     SetResponseSource(network::mojom::FetchResponseSource::kHttpCache);

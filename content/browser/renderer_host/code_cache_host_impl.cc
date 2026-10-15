@@ -20,23 +20,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
-#include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "components/persistent_cache/entry_metadata.h"
 #include "components/persistent_cache/pending_backend.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/public/browser/site_isolation_policy.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -45,12 +40,10 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/network_isolation_key.h"
-#include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
-#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -206,73 +199,6 @@ std::optional<GURL> GetOriginLock(ChildProcessId render_process_id) {
   }
 
   return std::nullopt;
-}
-
-void DidGenerateCacheableMetadataInCacheStorageOnUI(
-    const GURL& url,
-    base::Time expected_response_time,
-    mojo_base::BigBuffer data,
-    const std::string& cache_storage_cache_name,
-    ChildProcessId render_process_id,
-    const blink::StorageKey& code_cache_storage_key,
-    storage::mojom::CacheStorageControl* cache_storage_control_for_testing,
-    mojo::ReportBadMessageCallback bad_message_callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
-  auto* render_process_host = RenderProcessHost::FromID(render_process_id);
-  if (!render_process_host)
-    return;
-
-  int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT("CacheStorage",
-              "CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage",
-              perfetto::Flow::Global(trace_id), "url", url.spec());
-
-  mojo::Remote<blink::mojom::CacheStorage> remote;
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
-  network::DocumentIsolationPolicy document_isolation_policy;
-
-  storage::mojom::CacheStorageControl* cache_storage_control =
-      cache_storage_control_for_testing
-          ? cache_storage_control_for_testing
-          : render_process_host->GetStoragePartition()
-                ->GetCacheStorageControl();
-
-  cache_storage_control->AddReceiver(
-      cross_origin_embedder_policy, mojo::NullRemote(),
-      document_isolation_policy, mojo::NullRemote(),
-      storage::BucketLocator::ForDefaultBucket(code_cache_storage_key),
-      storage::mojom::CacheStorageOwner::kCacheAPI,
-      remote.BindNewPipeAndPassReceiver());
-
-  // Call the remote pointer directly so we can pass the remote to the callback
-  // itself to preserve its lifetime.
-  auto* raw_remote = remote.get();
-  raw_remote->Open(
-      base::UTF8ToUTF16(cache_storage_cache_name), trace_id,
-      base::BindOnce(
-          [](const GURL& url, base::Time expected_response_time,
-             mojo_base::BigBuffer data, int64_t trace_id,
-             mojo::Remote<blink::mojom::CacheStorage> preserve_remote_lifetime,
-             blink::mojom::CacheStorage::OpenResult result) {
-            if (!result.has_value()) {
-              // Silently ignore errors.
-              return;
-            }
-
-            mojo::AssociatedRemote<blink::mojom::CacheStorageCache> remote;
-            remote.Bind(std::move(result.value()));
-            remote->WriteSideData(
-                url, expected_response_time, std::move(data), trace_id,
-                base::BindOnce(
-                    [](mojo::Remote<blink::mojom::CacheStorage>
-                           preserve_remote_lifetime,
-                       blink::mojom::CacheStorageError error) {
-                      // Silently ignore errors.
-                    },
-                    std::move(preserve_remote_lifetime)));
-          },
-          url, expected_response_time, std::move(data), trace_id,
-          std::move(remote)));
 }
 
 void AddCodeCacheReceiver(
@@ -918,20 +844,5 @@ CodeCacheHostImpl::CodeCacheHostImpl(
       generated_code_cache_context_(std::move(generated_code_cache_context)),
       network_isolation_key_(nik),
       storage_key_(storage_key) {}
-
-void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
-    const GURL& url,
-    base::Time expected_response_time,
-    mojo_base::BigBuffer data,
-    const std::string& cache_storage_cache_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DidGenerateCacheableMetadataInCacheStorageOnUI, url,
-                     expected_response_time, std::move(data),
-                     cache_storage_cache_name, render_process_id_, storage_key_,
-                     cache_storage_control_for_testing_,
-                     mojo::GetBadMessageCallback()));
-}
 
 }  // namespace content

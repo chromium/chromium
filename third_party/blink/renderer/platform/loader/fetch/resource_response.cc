@@ -168,7 +168,10 @@ bool ResourceResponse::HasMatchingServiceWorkerUrl() const {
 }
 
 bool ResourceResponse::IsServiceWorkerPassThrough() const {
-  return cache_storage_cache_name_.empty() && HasMatchingServiceWorkerUrl();
+  return service_worker_response_source_ !=
+             network::mojom::FetchResponseSource::kCacheStorage &&
+         !cache_storage_side_data_writer_.is_bound() &&
+         HasMatchingServiceWorkerUrl();
 }
 
 const AtomicString& ResourceResponse::MimeType() const {

@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
 import "services/network/public/mojom/auth.mojom";
+import "services/network/public/mojom/cache_storage_side_data_writer.mojom";
 import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/encoded_body_length.mojom";
@@ -36,6 +37,12 @@ import "url/mojom/url.mojom";
 enum NavigationDeliveryType {
   kDefault,
   kNavigationalPrefetch,
+};
+
+// Tag enum used to attach traits_headers for
+// CloneTraits<PendingRemote<CacheStorageSideDataWriter>>.
+enum CacheStorageSideDataWriterTag {
+  kDefault,
 };
 
 struct URLResponseHead {
@@ -186,7 +193,16 @@ struct URLResponseHead {
 
   // The cache name of the CacheStorage from where the response is served via
   // the ServiceWorker. Empty if the response isn't from the CacheStorage.
+  // Only used for DevTools inspection/reporting; not used for code caching
+  // (which uses `cache_storage_side_data_writer` instead).
   string cache_storage_cache_name;
+
+  // Direct Mojo remote to the CacheStorageCache entry from where the response
+  // is served via the ServiceWorker, used for writing code cache side data.
+  // Null if the response isn't from CacheStorage.
+  // Note: `URLResponseHead::Clone()` does NOT clone this remote; the cloned
+  // struct will have a null `cache_storage_side_data_writer`.
+  pending_remote<CacheStorageSideDataWriter>? cache_storage_side_data_writer;
 
   // Bitmask of status info of the SSL certificate. See cert_status_flags.h for
   // values.

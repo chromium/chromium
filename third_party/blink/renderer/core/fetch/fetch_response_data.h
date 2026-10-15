@@ -81,6 +81,8 @@ class CORE_EXPORT FetchResponseData final
   String InternalMIMEType() const;
   base::Time ResponseTime() const { return response_time_; }
   String CacheStorageCacheName() const { return cache_storage_cache_name_; }
+  const mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>&
+  CacheStorageSideDataWriter() const;
   const HTTPHeaderSet& CorsExposedHeaderNames() const {
     return cors_exposed_header_names_;
   }
@@ -111,6 +113,17 @@ class CORE_EXPORT FetchResponseData final
   }
   void SetCacheStorageCacheName(const String& cache_storage_cache_name) {
     cache_storage_cache_name_ = cache_storage_cache_name;
+  }
+  void SetCacheStorageSideDataWriter(
+      mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
+          cache_storage_side_data_writer) {
+    cache_storage_side_data_writer_ = std::move(cache_storage_side_data_writer);
+  }
+  void SetPendingCacheStorageSideDataWriter(
+      mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
+          pending_cache_storage_side_data_writer) {
+    pending_cache_storage_side_data_writer_ =
+        std::move(pending_cache_storage_side_data_writer);
   }
   void SetCorsExposedHeaderNames(const HTTPHeaderSet& header_names) {
     cors_exposed_header_names_ = header_names;
@@ -167,6 +180,10 @@ class CORE_EXPORT FetchResponseData final
   AtomicString request_method_;
   base::Time response_time_;
   String cache_storage_cache_name_;
+  mutable mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
+      pending_cache_storage_side_data_writer_;
+  mutable mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
+      cache_storage_side_data_writer_;
   HTTPHeaderSet cors_exposed_header_names_;
   net::HttpConnectionInfo connection_info_ = net::HttpConnectionInfo::kUNKNOWN;
   AtomicString alpn_negotiated_protocol_;

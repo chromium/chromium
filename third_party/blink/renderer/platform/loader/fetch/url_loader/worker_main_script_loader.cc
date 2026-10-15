@@ -80,6 +80,8 @@ void WorkerMainScriptLoader::Start(
   WebURLResponse response =
       WebURLResponse::Create(WebURL(last_request_url_), *response_head,
                              response_head->ssl_info.has_value(), request_id_);
+  response.SetCacheStorageSideDataWriter(
+      std::move(response_head->cache_storage_side_data_writer));
   resource_response_ = response.ToResourceResponse();
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
       std::move(response_head));

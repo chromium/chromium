@@ -566,6 +566,24 @@ void WebURLResponse::SetCacheStorageCacheName(
   resource_response_->SetCacheStorageCacheName(cache_storage_cache_name);
 }
 
+void WebURLResponse::SetCacheStorageSideDataWriter(
+    mojo::PendingRemote<network::mojom::CacheStorageSideDataWriter> remote) {
+  if (resource_response_->GetServiceWorkerResponseSource() ==
+          network::mojom::FetchResponseSource::kCacheStorage &&
+      remote.is_valid()) {
+    uint32_t version = remote.version();
+    resource_response_->SetCacheStorageSideDataWriter(
+        mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>(
+            mojo::PendingRemote<
+                network::mojom::blink::CacheStorageSideDataWriter>(
+                remote.PassPipe(), version)));
+  } else {
+    resource_response_->SetCacheStorageSideDataWriter(
+        mojo::SharedRemote<
+            network::mojom::blink::CacheStorageSideDataWriter>());
+  }
+}
+
 std::vector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
   return base::ToVector(resource_response_->CorsExposedHeaderNames(),
                         ToWebString);

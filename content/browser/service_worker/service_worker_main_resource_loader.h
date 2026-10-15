@@ -331,6 +331,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // The blob needs to be held while it's read to keep it alive.
   mojo::Remote<blink::mojom::Blob> body_as_blob_;
 
+  mojo::PendingRemote<network::mojom::CacheStorageSideDataWriter>
+      cache_storage_side_data_writer_;
 
   network::mojom::URLResponseHeadPtr response_head_ =
       network::mojom::URLResponseHead::New();
