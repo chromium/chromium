@@ -331,6 +331,11 @@ export class ScanningAppElement extends ScanningAppElementBase implements
         type: Boolean,
         value: false,
       },
+
+      scannerInfoMap: {
+        type: Object,
+        value: () => new Map<string, ScannerInfo>(),
+      },
     };
   }
 
@@ -386,7 +391,7 @@ export class ScanningAppElement extends ScanningAppElementBase implements
   private scanService = getScanService();
   private browserProxy = ScanningBrowserProxyImpl.getInstance();
   declare private sourceTypeMap: Map<string, SourceType>;
-  private scannerInfoMap = new Map<string, ScannerInfo>();
+  declare private scannerInfoMap: Map<string, ScannerInfo>;
 
   constructor() {
     super();
