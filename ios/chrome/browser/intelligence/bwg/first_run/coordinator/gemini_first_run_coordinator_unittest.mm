@@ -53,8 +53,6 @@
 
 namespace {
 
-const std::string kFirstProfileName = "FirstProfile";
-
 constexpr char kGeminiLiveFREOutcomeHistogram[] = "IOS.Gemini.Live.FREOutcome";
 
 std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
@@ -77,15 +75,14 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    builder.SetName(kFirstProfileName);
 
     // Set a default country for the variations service.
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
-    ProfileIOS* profile =
+    ProfileIOS* personal_profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    browser_ = std::make_unique<TestBrowser>(profile);
-    browser_list_ = BrowserListFactory::GetForProfile(profile);
+    browser_ = std::make_unique<TestBrowser>(personal_profile);
+    browser_list_ = BrowserListFactory::GetForProfile(personal_profile);
     browser_list_->AddBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
@@ -141,7 +138,7 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
 TEST_F(GeminiFirstRunCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
   auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
       feature_engagement::TrackerFactory::GetForProfile(
-          profile_manager_.GetProfileWithName(kFirstProfileName)));
+          browser_->GetProfile()));
 
   TestFullscreenController* controller =
       TestFullscreenController::FromBrowser(browser_.get());
@@ -382,7 +379,7 @@ TEST_F(GeminiFirstRunCoordinatorTest, TestChromeNextIaSkipsIPH) {
 TEST_F(GeminiFirstRunCoordinatorTest,
        TestDismissGeminiConsentUI_LiveConsented_MicGranted) {
   base::HistogramTester histogram_tester;
-  ProfileIOS* profile = profile_manager_.GetProfileWithName(kFirstProfileName);
+  ProfileIOS* profile = browser_->GetProfile();
   profile->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
   profile->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting, true);
 
