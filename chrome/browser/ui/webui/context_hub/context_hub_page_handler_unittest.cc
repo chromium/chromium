@@ -1732,7 +1732,9 @@ TEST_F(ContextHubPageHandlerTest, MemoryBankEntryDeltaNotifications) {
   EXPECT_EQ(saved_entry.type, MemoryBankType::kTab);
   EXPECT_EQ(saved_entry.url, GURL("https://example.com/tab"));
   EXPECT_EQ(saved_entry.tab_title, "Tab Title");
-  EXPECT_EQ(saved_entry.selected_text, "Page text");
+  // Caller-provided text is ignored for tab entries saved without a source
+  // WebContents.
+  EXPECT_FALSE(saved_entry.selected_text.has_value());
   EXPECT_THAT(saved_entry.tags, testing::ElementsAre("tag1"));
   EXPECT_EQ(saved_entry.note, "Note");
   EXPECT_EQ(saved_entry.collection, "Collection");

@@ -178,7 +178,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
-#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -5098,40 +5097,15 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
     context_hub_service->SetPendingMemoryBankEntry(context_hub::MemoryBankEntry(
         context_hub::MemoryBankType::kTextSelection, params_.page_url,
         tab_title, selected_text));
-    SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
-        source_web_contents_)
-        ->ShowBubble();
-    return;
+  } else {
+    context_hub_service->SetPendingMemoryBankEntry(
+        context_hub::MemoryBankEntry(context_hub::MemoryBankType::kTab,
+                                     params_.page_url, tab_title),
+        source_web_contents_->GetWeakPtr());
   }
-
-  RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (!render_frame_host) {
-    return;
-  }
-
-  content_extraction::GetInnerText(
-      *render_frame_host, std::nullopt,
-      base::BindOnce(
-          [](base::WeakPtr<content::WebContents> web_contents,
-             base::WeakPtr<context_hub::ContextHubService> service, GURL url,
-             std::string title,
-             std::unique_ptr<content_extraction::InnerTextResult> result) {
-            if (!web_contents || web_contents->IsBeingDestroyed() || !service ||
-                !result || result->inner_text.empty()) {
-              return;
-            }
-            if (web_contents->GetLastCommittedURL() != url) {
-              return;
-            }
-            service->SetPendingMemoryBankEntry(
-                context_hub::MemoryBankEntry(context_hub::MemoryBankType::kTab,
-                                             url, title, result->inner_text));
-            SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
-                web_contents.get())
-                ->ShowBubble();
-          },
-          source_web_contents_->GetWeakPtr(), context_hub_service->GetWeakPtr(),
-          params_.page_url, tab_title));
+  SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
+      source_web_contents_)
+      ->ShowBubble();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

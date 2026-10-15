@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -4677,6 +4678,30 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ContextMenuBrowserTestMenuSimplification,
                          testing::Bool());
 
+// Waits for a memory bank entry to be added to a ContextHubService.
+class MemoryBankEntryAddedWaiter
+    : public context_hub::ContextHubService::Observer {
+ public:
+  explicit MemoryBankEntryAddedWaiter(context_hub::ContextHubService* service) {
+    observation_.Observe(service);
+  }
+
+  // Blocks until an entry is added and returns it.
+  context_hub::MemoryBankEntry Wait() { return future_.Take(); }
+
+  // context_hub::ContextHubService::Observer:
+  void OnMemoryBankEntryAdded(
+      const context_hub::MemoryBankEntry& entry) override {
+    future_.SetValue(entry);
+  }
+
+ private:
+  base::test::TestFuture<context_hub::MemoryBankEntry> future_;
+  base::ScopedObservation<context_hub::ContextHubService,
+                          context_hub::ContextHubService::Observer>
+      observation_{this};
+};
+
 class MemoryBanksContextMenuBrowserTest
     : public ContextMenuBrowserTestMenuSimplification {
  protected:
@@ -4740,7 +4765,10 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
                        SaveToMemoryBanksPage) {
-  GURL url("data:text/html,Hello%20World");
+  GURL url(
+      "data:text/html,<html><head><title>Memory Bank Test Title</title></head>"
+      "<body><p>Hello World this page has enough words for extraction</p>"
+      "</body></html>");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -4751,30 +4779,33 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);
 
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return service->GetPendingMemoryBankEntry().has_value(); }));
-
   std::optional<context_hub::MemoryBankEntry> pending =
       service->GetPendingMemoryBankEntry();
   ASSERT_TRUE(pending.has_value());
   EXPECT_EQ(context_hub::MemoryBankType::kTab, pending->type);
   EXPECT_EQ(url, pending->url);
-  EXPECT_EQ("Hello World", pending->selected_text.value_or(""));
+  EXPECT_EQ("Memory Bank Test Title", pending->tab_title);
+  EXPECT_FALSE(pending->selected_text.has_value());
+
+  MemoryBankEntryAddedWaiter waiter(service);
   EXPECT_TRUE(
       service->SavePendingMemoryBankEntry(/*tags=*/{"page_tag", "research"}));
 
-  base::RunLoop get_entries_run_loop;
-  service->GetAllEntries(base::BindLambdaForTesting(
-      [&](std::vector<context_hub::MemoryBankEntry> entries) {
-        ASSERT_EQ(1u, entries.size());
-        EXPECT_EQ(context_hub::MemoryBankType::kTab, entries[0].type);
-        EXPECT_EQ(url, entries[0].url);
-        EXPECT_EQ("Hello World", entries[0].selected_text.value_or(""));
-        EXPECT_THAT(entries[0].tags,
-                    testing::ElementsAre("page_tag", "research"));
-        get_entries_run_loop.Quit();
-      }));
-  get_entries_run_loop.Run();
+  // The entry is saved asynchronously after page content is extracted.
+  context_hub::MemoryBankEntry saved = waiter.Wait();
+  EXPECT_EQ(context_hub::MemoryBankType::kTab, saved.type);
+  EXPECT_EQ(url, saved.url);
+  EXPECT_EQ("Memory Bank Test Title", saved.tab_title);
+  ASSERT_TRUE(saved.selected_text.has_value());
+  EXPECT_THAT(*saved.selected_text,
+              testing::HasSubstr(
+                  "Hello World this page has enough words for extraction"));
+  EXPECT_THAT(saved.tags, testing::ElementsAre("page_tag", "research"));
+
+  base::test::TestFuture<std::vector<context_hub::MemoryBankEntry>>
+      entries_future;
+  service->GetAllEntries(entries_future.GetCallback());
+  EXPECT_EQ(1u, entries_future.Get().size());
 
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller = SaveToMemoryBankBubbleController::FromWebContents(

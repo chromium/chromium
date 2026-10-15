@@ -279,8 +279,11 @@ class ContextHubService : public KeyedService,
   // Clears all memory bank chat history turns from the LRU cache.
   void ClearMemoryBankChatHistory();
 
-  // Sets the pending memory bank entry waiting to be saved by the user.
-  void SetPendingMemoryBankEntry(MemoryBankEntry entry);
+  // Sets the pending memory bank entry waiting to be saved by the user, along
+  // with an optional weak pointer to the source WebContents for tab entries.
+  void SetPendingMemoryBankEntry(
+      MemoryBankEntry entry,
+      base::WeakPtr<content::WebContents> web_contents = nullptr);
 
   // Retrieves the current pending memory bank entry, if present.
   std::optional<MemoryBankEntry> GetPendingMemoryBankEntry() const;
@@ -294,11 +297,13 @@ class ContextHubService : public KeyedService,
 
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.
-  // Saves an entry in the memory bank. If TabContextSync is enabled and the
-  // entry is a tab, page content (APC) is extracted and saved instead of the
-  // provided selected_text.
-  void SaveMemoryBankEntry(MemoryBankEntry entry,
-                           MemoryBank::OperationCompleteCallback callback);
+  // Saves an entry in the memory bank. If the entry is a tab and `web_contents`
+  // matches the entry's URL, page content (APC) is extracted from
+  // `web_contents` and saved in `selected_text`.
+  void SaveMemoryBankEntry(
+      MemoryBankEntry entry,
+      MemoryBank::OperationCompleteCallback callback,
+      base::WeakPtr<content::WebContents> web_contents = nullptr);
   // Updates an entry in the memory bank with new tags, note, and collection.
   void UpdateMemoryBankEntryAnnotations(
       int64_t id,
@@ -394,16 +399,9 @@ class ContextHubService : public KeyedService,
   std::vector<base::Uuid> AddTabGroupsToSyncService(
       base::span<const TabGroupEntry> entries);
 
-  // Searches open browser tabs for a WebContents matching `url`.
-  // Note: Looking up a WebContents solely by URL is brittle and not
-  // production-safe since there could be multiple open tabs sharing the same
-  // URL or tabs that have navigated away.
-  content::WebContents* FindWebContentsForUrl(const GURL& url) const;
-
   // Handles the async response when APC is extracted for SaveMemoryBankEntry.
   void OnPageContentExtractedForSaveMemoryBankEntry(
       MemoryBankEntry entry,
-      base::WeakPtr<content::WebContents> web_contents,
       base::WeakPtr<content::Page> page,
       MemoryBank::OperationCompleteCallback callback,
       std::optional<page_content_annotations::ExtractedPageContentResult>
@@ -567,6 +565,7 @@ class ContextHubService : public KeyedService,
   // Single pending memory bank entry waiting to be saved by the active WebUI
   // dialog.
   std::optional<MemoryBankEntry> pending_memory_bank_entry_;
+  base::WeakPtr<content::WebContents> pending_memory_bank_web_contents_;
 
   // Backend storage engine for SQLite operations. May be null if DB storage is
   // disabled.
