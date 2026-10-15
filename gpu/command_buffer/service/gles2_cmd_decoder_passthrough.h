@@ -97,7 +97,7 @@ struct PassthroughResources {
    public:
     SharedImageData();
     explicit SharedImageData(
-        const GLES2DecoderPassthroughImpl*,
+        GLES2DecoderPassthroughImpl*,
         std::unique_ptr<GLTexturePassthroughImageRepresentation>);
     SharedImageData(SharedImageData&& other);
 
@@ -115,8 +115,6 @@ struct PassthroughResources {
     // even if access is currently suspended.
     bool is_being_accessed() const { return access_mode_.has_value(); }
 
-    void EnsureClear(const GLES2DecoderPassthroughImpl*);
-
     bool BeginAccess(GLenum mode, gl::GLApi* api);
     void EndAccess();
 
@@ -124,6 +122,8 @@ struct PassthroughResources {
     void SuspendAccessIfNeeded();
 
    private:
+    void EnsureClear(GLES2DecoderPassthroughImpl*);
+
     std::unique_ptr<GLTexturePassthroughImageRepresentation> representation_;
     std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
         scoped_access_;
@@ -383,6 +383,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
  private:
   // Allow unittests to inspect internal state tracking
   friend class GLES2DecoderPassthroughTestBase;
+  // Uses FlushErrors() to detect failures when clearing shared images.
+  friend class PassthroughResources::SharedImageData;
 
   const char* GetCommandName(unsigned int command_id) const;
 

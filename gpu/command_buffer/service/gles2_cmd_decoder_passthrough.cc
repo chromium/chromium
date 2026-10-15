@@ -669,7 +669,7 @@ void PassthroughResources::Destroy(gl::GLApi* api,
 
 PassthroughResources::SharedImageData::SharedImageData() = default;
 PassthroughResources::SharedImageData::SharedImageData(
-    const GLES2DecoderPassthroughImpl* impl,
+    GLES2DecoderPassthroughImpl* impl,
     std::unique_ptr<GLTexturePassthroughImageRepresentation> representation)
     : representation_(std::move(representation)) {
   DCHECK(representation_);
@@ -692,18 +692,27 @@ PassthroughResources::SharedImageData::operator=(SharedImageData&& other) {
 }
 
 void PassthroughResources::SharedImageData::EnsureClear(
-    const GLES2DecoderPassthroughImpl* impl) {
+    GLES2DecoderPassthroughImpl* impl) {
   // To avoid unnessary overhead we don't enable robust initialization on shared
   // gl context where all shared images are created, so we clear image here if
   // necessary.
   if (!representation_->IsCleared()) {
+    // Move any pending errors into the decoder's error state so that only
+    // errors raised while clearing are checked below.
+    impl->FlushErrors();
+    if (impl->WasContextLost()) {
+      return;
+    }
+
     // Allow uncleared access as we're going to clear the image.
     auto scoped_access = representation_->BeginScopedAccess(
         GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
-    if (!scoped_access)
+    if (!scoped_access) {
+      impl->FlushErrors();
       return;
+    }
 
     auto texture = representation_->GetTexturePassthrough();
     const bool use_oes_draw_buffers_indexed =
@@ -768,6 +777,12 @@ void PassthroughResources::SharedImageData::EnsureClear(
       }
       api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                        texture->target(), 0, 0);
+    }
+
+    // Don't mark the image cleared if the driver reported an error. Errors
+    // remain in the decoder's error state for the client.
+    if (impl->FlushErrors() || impl->WasContextLost()) {
+      all_layers_cleared = false;
     }
 
     if (all_layers_cleared) {
