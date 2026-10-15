@@ -217,6 +217,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier.SupplierFlow;
+import org.chromium.chrome.browser.ui.signin.account_picker.ExtensionsSigninDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -1807,7 +1808,8 @@ public class RootUiCoordinator
                                 mWindowAndroid,
                                 mActivity,
                                 mActivityResultTracker,
-                                new BottomSheetSigninAndHistorySyncCoordinator.Delegate() {},
+                                new ExtensionsSigninDelegate(
+                                        profile, new WebSigninTrackerBridge.Factory()),
                                 assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                                 profileSupplier,
                                 getBottomSheetControllerSupplier().asNonNull(),
