@@ -28,6 +28,7 @@ const CGFloat kCustomSpacingAfterImage = 32.0;
 }
 
 - (void)viewDidLoad {
+  self.view.accessibilityViewIsModal = YES;
   self.image = [UIImage imageNamed:@"wallet_reminder_branding_illustration"];
   self.customSpacingBeforeImage = kCustomSpacingBeforeImage;
   self.customSpacingAfterImage = kCustomSpacingAfterImage;

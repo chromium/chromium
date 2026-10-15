@@ -47,6 +47,7 @@ TEST_F(WalletReminderNoticeViewControllerTest, SetConsumerProperties) {
 
   [view_controller loadViewIfNeeded];
 
+  EXPECT_TRUE(view_controller.view.accessibilityViewIsModal);
   EXPECT_NSEQ(title, view_controller.titleString);
   EXPECT_NSEQ(primaryAction, view_controller.configuration.primaryActionString);
 }

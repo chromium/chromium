@@ -73,9 +73,12 @@
 
   _mediator.consumer = _viewController;
 
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -132,6 +135,15 @@
 }
 
 #pragma mark - Private
+
+// Sets the initial VoiceOver focus to the bottom sheet title.
+- (void)setInitialVoiceOverFocus {
+  if (!_viewController) {
+    return;
+  }
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _viewController.titleLabel);
+}
 
 - (void)dismissNotice {
   [self stop];
