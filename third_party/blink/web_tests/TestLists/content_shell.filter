@@ -144,8 +144,6 @@ external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection
 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=DesignMode&parent=b
 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=DesignMode&parent=b&child=i
 external/wpt/editing/plaintext-only/paste.https.html*
-external/wpt/element-timing/observe-multiple-images.html
-external/wpt/encoding/unsupported-labels.window.html
 external/wpt/event-timing/keyup.html
 external/wpt/event-timing/modal-dialog-interrupt-paint.html
 external/wpt/event-timing/selection-autoscroll.html
@@ -162,7 +160,6 @@ external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html
 external/wpt/fetch/stale-while-revalidate/stale-css.html
 external/wpt/fetch/stale-while-revalidate/stale-image.html
 external/wpt/fetch/stale-while-revalidate/stale-script.html
-external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*
 external/wpt/html-aam/names.html
 external/wpt/html-aam/roles.html
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-redirects.html
@@ -174,8 +171,6 @@ external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversa
 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html
 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt/004.html
 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html
-external/wpt/html/browsers/history/the-location-interface/assign_after_load.html
-external/wpt/html/browsers/history/the-location-interface/assign_before_load.html
 external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html
 external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html*
 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html
@@ -184,7 +179,6 @@ external/wpt/html/browsers/the-window-object/open-close/open-features-tokenizati
 external/wpt/html/browsers/the-window-object/window-open-popup-behavior.html
 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.dropShadow.tentative.html
 external/wpt/html/canvas/element/filters/2d.filter.layers.dropShadow.tentative.html
-external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm
 external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShadow.tentative.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShadow.tentative.w.html
@@ -250,21 +244,13 @@ external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import
 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/*
 external/wpt/html/semantics/text-level-semantics/the-bdi-element/*
-external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/data-xhtml-with-dtd.html
 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.*
 external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html
 external/wpt/html/webappapis/scripting/events/event-handler-onmove-02.tentative.html
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setInterval.html
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html
-external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html
-external/wpt/import-maps/data-driven/resolving.html?scopes.json
-external/wpt/import-maps/multiple-import-maps/resolution-consistency-in-module-tree.html
-external/wpt/IndexedDB/idbindex_getAll.any.*
 external/wpt/inert/inert-iframe-hittest.html
 external/wpt/input-events/input-events-exec-command.html
-external/wpt/largest-contentful-paint/broken-image-icon.html
-external/wpt/largest-contentful-paint/multiple-image-same-src.html
-external/wpt/largest-contentful-paint/video-data-uri.html
 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-*
 external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html
 external/wpt/mathml/presentation-markup/operators/operator-dictionary-arabic-*
@@ -356,10 +342,6 @@ external/wpt/svg/text/scripted/getcharnumatposition-slr.tentative.html
 external/wpt/svg/text/scripted/getstartpositionofchar.html
 external/wpt/trusted-types/trusted-types-navigation.html
 external/wpt/uievents/interface/keyboard-accesskey-click-event.html
-external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/upgrade/websocket.https.html
-external/wpt/url/failure.html
-external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html
-external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.html
 external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html
 external/wpt/visual-viewport/page-and-offset-in-iframe.html
 external/wpt/visual-viewport/resize-event-order.html
@@ -516,10 +498,6 @@ virtual/scalefactor200/external/wpt/css/filter-effects/clip-under-filter-*
 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.html
 virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
 virtual/scalefactor200/external/wpt/css/printing/*
-virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
-virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html
-virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
-virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
 
 external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_blank
 external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_self
