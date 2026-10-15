@@ -274,7 +274,7 @@ WebEngineContentRendererClient::GetSupportedKeySystems(
   std::ignore = supported_codecs;
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
-  std::move(cb).Run(std::move(key_systems));
+  std::move(cb).Run(std::move(key_systems), /*pending_key_systems=*/{});
   return nullptr;
 }
 

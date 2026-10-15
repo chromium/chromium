@@ -9,10 +9,12 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/decrypt_config.h"
@@ -42,7 +44,8 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
   KeySystemsImpl& operator=(const KeySystemsImpl&) = delete;
 
   // Implementation of KeySystems interface.
-  void UpdateIfNeeded(base::OnceClosure done_cb) override;
+  void UpdateIfNeeded(const std::string& key_system,
+                      base::OnceClosure done_cb) override;
   std::string GetBaseKeySystemName(
       const std::string& key_system) const override;
   bool IsSupportedKeySystem(const std::string& key_system) const override;
@@ -86,10 +89,15 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
   void Initialize();
 
   void UpdateSupportedKeySystems();
-  void OnSupportedKeySystemsUpdated(KeySystemInfos key_systems);
+  void OnSupportedKeySystemsUpdated(
+      KeySystemInfos key_systems,
+      base::flat_set<std::string> pending_key_systems);
   void ProcessSupportedKeySystems(KeySystemInfos key_systems);
 
   const KeySystemInfo* GetKeySystemInfo(const std::string& key_system) const;
+
+  // Returns whether a capability query for `key_system` is still in progress.
+  bool IsKeySystemPending(const std::string& key_system) const;
 
   void RegisterMimeType(const std::string& mime_type, SupportedCodecs codecs);
   bool IsValidMimeTypeCodecsCombination(const std::string& mime_type,
@@ -106,13 +114,16 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
                                 const std::string& container_mime_type,
                                 const std::string& codec_string) const;
 
-  // Whether the supported key systems are still up to date.
-  bool is_updating_ = false;
+  // Whether the initial supported key systems update has been received.
+  bool has_updated_ = false;
 
-  // Pending callbacks for UpdateIfNeeded() calls.
-  base::OnceClosureList update_callbacks_;
+  // Pending UpdateIfNeeded() callbacks, with the key system each is waiting on.
+  std::vector<std::pair<std::string, base::OnceClosure>> pending_callbacks_;
 
-  // Vector of KeySystemInfo .
+  // Key systems with a capability query still in progress.
+  base::flat_set<std::string> pending_key_systems_;
+
+  // Vector of KeySystemInfo.
   KeySystemInfos key_system_info_vector_;
 
   // This member should only be modified by RegisterMimeType().

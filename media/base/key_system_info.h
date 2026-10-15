@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "media/base/decrypt_config.h"
@@ -86,9 +87,13 @@ class MEDIA_EXPORT KeySystemInfo {
 
 using KeySystemInfos = std::vector<std::unique_ptr<KeySystemInfo>>;
 
+// Callback to receive updated `key_systems` and the set of
+// `pending_key_systems` whose capability checks are still in progress.
 // TODO(b/321307544): Rename this callback to more appropriate name e.g.
 // SupportedKeySystemsUpdateCB.
-using GetSupportedKeySystemsCB = base::RepeatingCallback<void(KeySystemInfos)>;
+using GetSupportedKeySystemsCB = base::RepeatingCallback<void(
+    KeySystemInfos /*key_systems*/,
+    base::flat_set<std::string> /*pending_key_systems*/)>;
 
 }  // namespace media
 

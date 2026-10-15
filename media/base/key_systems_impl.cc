@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -228,8 +229,9 @@ KeySystemsImpl::KeySystemsImpl(RegisterKeySystemsSupportCB cb)
 }
 
 KeySystemsImpl::~KeySystemsImpl() {
-  if (!update_callbacks_.empty())
-    update_callbacks_.Notify();
+  for (auto& [key_system, done_cb] : std::exchange(pending_callbacks_, {})) {
+    std::move(done_cb).Run();
+  }
 }
 
 void KeySystemsImpl::Initialize() {
@@ -240,11 +242,9 @@ void KeySystemsImpl::Initialize() {
 }
 
 void KeySystemsImpl::UpdateSupportedKeySystems() {
-  DCHECK(!is_updating_);
-  is_updating_ = true;
-
   if (!GetMediaClient()) {
-    OnSupportedKeySystemsUpdated({});
+    OnSupportedKeySystemsUpdated(/*key_systems=*/{},
+                                 /*pending_key_systems=*/{});
     return;
   }
 
@@ -255,14 +255,17 @@ void KeySystemsImpl::UpdateSupportedKeySystems() {
                                   weak_factory_.GetWeakPtr()));
 }
 
-void KeySystemsImpl::UpdateIfNeeded(base::OnceClosure done_cb) {
-  if (is_updating_) {
-    // The callback will be resolved in OnSupportedKeySystemsUpdated().
-    update_callbacks_.AddUnsafe(std::move(done_cb));
+void KeySystemsImpl::UpdateIfNeeded(const std::string& key_system,
+                                    base::OnceClosure done_cb) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (has_updated_ && !IsKeySystemPending(key_system)) {
+    std::move(done_cb).Run();
     return;
   }
 
-  std::move(done_cb).Run();
+  // The callback will be resolved in OnSupportedKeySystemsUpdated().
+  pending_callbacks_.emplace_back(key_system, std::move(done_cb));
 }
 
 SupportedCodecs KeySystemsImpl::GetCodecMaskForMimeType(
@@ -327,17 +330,34 @@ EmeCodec KeySystemsImpl::GetEmeCodecForString(
   return ToVideoEmeCodec(result->codec, result->profile);
 }
 
-void KeySystemsImpl::OnSupportedKeySystemsUpdated(KeySystemInfos key_systems) {
+void KeySystemsImpl::OnSupportedKeySystemsUpdated(
+    KeySystemInfos key_systems,
+    base::flat_set<std::string> pending_key_systems) {
   DVLOG(1) << __func__;
 
-  is_updating_ = false;
+  has_updated_ = true;
+  pending_key_systems_ = std::move(pending_key_systems);
 
   // Clear Key is always supported.
   key_systems.emplace_back(std::make_unique<ClearKeyKeySystemInfo>());
 
   ProcessSupportedKeySystems(std::move(key_systems));
 
-  update_callbacks_.Notify();
+  // Resolve callbacks whose key system is no longer pending. Keep the rest
+  // queued before running any, since callbacks may call UpdateIfNeeded().
+  std::vector<base::OnceClosure> done_cbs;
+  for (auto& [key_system, done_cb] : std::exchange(pending_callbacks_, {})) {
+    if (IsKeySystemPending(key_system)) {
+      pending_callbacks_.emplace_back(std::move(key_system),
+                                      std::move(done_cb));
+    } else {
+      done_cbs.push_back(std::move(done_cb));
+    }
+  }
+
+  for (auto& done_cb : done_cbs) {
+    std::move(done_cb).Run();
+  }
 }
 
 void KeySystemsImpl::ProcessSupportedKeySystems(KeySystemInfos key_systems) {
@@ -375,7 +395,7 @@ void KeySystemsImpl::ProcessSupportedKeySystems(KeySystemInfos key_systems) {
 
 const KeySystemInfo* KeySystemsImpl::GetKeySystemInfo(
     const std::string& key_system) const {
-  DCHECK(!is_updating_);
+  DCHECK(has_updated_);
   for (const auto& key_system_info : key_system_info_vector_) {
     const auto& base_key_system = key_system_info->GetBaseKeySystemName();
     if ((key_system == base_key_system ||
@@ -386,6 +406,20 @@ const KeySystemInfo* KeySystemsImpl::GetKeySystemInfo(
   }
 
   return nullptr;
+}
+
+bool KeySystemsImpl::IsKeySystemPending(const std::string& key_system) const {
+  // Registered CDMs use base key system names (e.g.
+  // "com.microsoft.playready.recommendation"). Sub-key system queries (e.g.
+  // "...playready.recommendation.3000") must match against their pending base
+  // key system.
+  for (const auto& pending_key_system : pending_key_systems_) {
+    if (key_system == pending_key_system ||
+        IsSubKeySystemOf(key_system, pending_key_system)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Adds the MIME type with the codec mask after verifying the validity.
@@ -463,9 +497,10 @@ void KeySystemsImpl::AddMimeTypeCodecMaskForTesting(
 
 void KeySystemsImpl::ResetForTesting() {
   weak_factory_.InvalidateWeakPtrs();
-  is_updating_ = false;
-  DCHECK(update_callbacks_.empty())
+  has_updated_ = false;
+  DCHECK(pending_callbacks_.empty())
       << "Should have no update callbacks for a clean test.";
+  pending_key_systems_.clear();
   key_system_info_vector_.clear();
   mime_type_to_codecs_map_.clear();
   codec_map_for_testing_.clear();

@@ -207,7 +207,8 @@ class FakeKeySystems : public media::KeySystems {
  public:
   ~FakeKeySystems() override = default;
 
-  void UpdateIfNeeded(base::OnceClosure done_cb) override {
+  void UpdateIfNeeded(const std::string& key_system,
+                      base::OnceClosure done_cb) override {
     // Call the callback directly since it's always up to date.
     std::move(done_cb).Run();
   }

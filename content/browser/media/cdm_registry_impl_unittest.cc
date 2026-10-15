@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
@@ -139,7 +140,9 @@ class CdmRegistryImplTest : public testing::Test {
       KeySystemCapabilities key_system_capabilities) {
     DVLOG(1) << __func__;
     results_[observer_id].push_back(std::move(key_system_capabilities));
-    std::move(done_cb).Run();
+    if (PendingLazyInitializationsEmpty() && done_cb) {
+      std::move(done_cb).Run();
+    }
   }
 
  protected:
@@ -217,8 +220,13 @@ class CdmRegistryImplTest : public testing::Test {
     return versions;
   }
 
+  bool PendingLazyInitializationsEmpty() const {
+    return cdm_registry_.pending_lazy_initializations_.empty();
+  }
+
   void GetKeySystemCapabilities(bool allow_hw_secure_capability_check = true) {
     DVLOG(1) << __func__;
+    capabilities_cb_sub_ = {};
     base::RunLoop run_loop;
     capabilities_cb_sub_ = cdm_registry_.ObserveKeySystemCapabilities(
         allow_hw_secure_capability_check,
@@ -446,8 +454,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -467,8 +475,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -489,8 +497,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_TRUE(key_system_capabilities.empty());
 
   auto cdm_info = cdm_registry_.GetCdmInfo(
@@ -511,8 +519,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_TRUE(key_system_capabilities.empty());
 
   auto cdm_info = cdm_registry_.GetCdmInfo(
@@ -552,8 +560,7 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_SoftwareAndHardwareSecure) {
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -617,8 +624,8 @@ TEST_F(
   run_loop.Run();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -627,8 +634,8 @@ TEST_F(
   ASSERT_FALSE(support.hw_cdm_capability_or_status.has_value());
 
   ASSERT_TRUE(results_.count(kObserver2));
-  ASSERT_EQ(results_[kObserver2].size(), 1u);
-  ASSERT_EQ(key_system_capabilities, results_[kObserver2][0]);
+  ASSERT_EQ(results_[kObserver2].size(), 2u);
+  ASSERT_EQ(key_system_capabilities, results_[kObserver2].back());
 }
 
 TEST_F(
@@ -643,6 +650,7 @@ TEST_F(
       .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
 
   base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
   auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
       /*allow_hw_secure_capability_check=*/true,
       base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
@@ -650,14 +658,16 @@ TEST_F(
                           base::DoNothing()));
   auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
       /*allow_hw_secure_capability_check=*/true,
-      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-                          base::Unretained(this), kObserver2,
-                          run_loop.QuitClosure()));
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        results_[kObserver2].push_back(caps);
+        if (PendingLazyInitializationsEmpty() && quit_closure) {
+          std::move(quit_closure).Run();
+        }
+      }));
   run_loop.Run();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -667,8 +677,7 @@ TEST_F(
             GetTestCdmCapability());
 
   ASSERT_TRUE(results_.count(kObserver2));
-  ASSERT_EQ(results_[kObserver2].size(), 1u);
-  ASSERT_EQ(key_system_capabilities, results_[kObserver2][0]);
+  ASSERT_EQ(key_system_capabilities, results_[kObserver2].back());
 }
 
 TEST_F(
@@ -685,11 +694,15 @@ TEST_F(
   base::CallbackListSubscription subscription1;
   {
     base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
     subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
         /*allow_hw_secure_capability_check=*/true,
-        base::BindRepeating(
-            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-            base::Unretained(this), kObserver1, run_loop.QuitClosure()));
+        base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+          results_[kObserver1].push_back(caps);
+          if (PendingLazyInitializationsEmpty() && quit_closure) {
+            std::move(quit_closure).Run();
+          }
+        }));
     run_loop.Run();
   }
   base::CallbackListSubscription subscription2;
@@ -704,8 +717,7 @@ TEST_F(
   }
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -723,16 +735,22 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_RegisterCdmAfterObserving) {
   Register(GetTestCdmInfo());
   SelectHardwareSecureDecryption(true);
 
-  base::CallbackListSubscription subscription;
-  {
-    base::RunLoop run_loop;
-    subscription = cdm_registry_.ObserveKeySystemCapabilities(
-        /*allow_hw_secure_capability_check=*/true,
-        base::BindRepeating(
-            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-            base::Unretained(this), kObserver1, run_loop.QuitClosure()));
-    run_loop.Run();
-  }
+  base::RunLoop run_loop1;
+  auto quit1 = run_loop1.QuitClosure();
+  base::RepeatingClosure quit2;
+
+  auto subscription = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        results_[kObserver1].push_back(caps);
+        if (quit1) {
+          std::move(quit1).Run();
+        }
+        if (PendingLazyInitializationsEmpty() && quit2) {
+          quit2.Run();
+        }
+      }));
+  run_loop1.Run();
 
   // Hardware security not supported for `kTestKeySystem`.
   ASSERT_TRUE(results_.count(kObserver1));
@@ -746,18 +764,18 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_RegisterCdmAfterObserving) {
   ASSERT_FALSE(support_1.hw_cdm_capability_or_status.has_value());
 
   {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
+    quit2 = run_loop2.QuitClosure();
     EXPECT_CALL(capability_cb_,
                 Run(kTestKeySystem, Robustness::kHardwareSecure, _))
         .WillOnce(RunOnceCallback<2>(GetOtherCdmCapability()));
     RegisterForLazyHardwareSecureInitialization();
-    run_loop.RunUntilIdle();
+    run_loop2.Run();
   }
 
   // Now hardware security is supported for `kTestKeySystem`.
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 2u);
-  auto& key_system_capabilities_2 = results_[kObserver1][1];
+  auto& key_system_capabilities_2 = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities_2.size(), 1u);
   ASSERT_TRUE(key_system_capabilities_2.count(kTestKeySystem));
   const auto& support_2 = key_system_capabilities_2[kTestKeySystem];
@@ -768,19 +786,60 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_RegisterCdmAfterObserving) {
 }
 
 TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_RegisterCdmWithoutActiveObservers) {
+  Register(GetTestCdmInfo());
+
+  // 1. First observer subscribes and populates `key_system_capabilities_`
+  // cache.
+  {
+    base::RunLoop run_loop;
+    auto subscription = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/false,
+        base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+          results_[kObserver1].push_back(caps);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  // The observer is destroyed and `key_system_capabilities_update_callbacks_`
+  // is now empty.
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  ASSERT_TRUE(results_[kObserver1][0].count(kTestKeySystem));
+  ASSERT_FALSE(results_[kObserver1][0].count(kOtherKeySystem));
+
+  // 2. Register a new CDM while no observers are active.
+  Register(kOtherKeySystem, GetOtherCdmCapability());
+
+  // 3. New observer subscribes. It must receive capabilities containing the
+  // newly registered CDM.
+  {
+    base::RunLoop run_loop;
+    auto subscription = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/false,
+        base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+          results_[kObserver2].push_back(caps);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  ASSERT_EQ(results_[kObserver2].size(), 1u);
+  EXPECT_TRUE(results_[kObserver2][0].count(kTestKeySystem));
+  EXPECT_TRUE(results_[kObserver2][0].count(kOtherKeySystem));
+}
+
+TEST_F(CdmRegistryImplTest,
        KeySystemCapabilities_RegisterCdmPendingLazyInitialize) {
   SelectHardwareSecureDecryption(true);
 
   // Save the callbacks so we can control when and how they are fired.
-  base::OnceCallback<void(media::CdmCapabilityOrStatus)> callback_1, callback_2,
-      callback_3;
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> callback_test,
+      callback_other;
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
-      .WillOnce(MoveArg<2>(&callback_1))
-      .WillOnce(MoveArg<2>(&callback_2));
+      .WillOnce(MoveArg<2>(&callback_test));
   EXPECT_CALL(capability_cb_,
               Run(kOtherKeySystem, Robustness::kHardwareSecure, _))
-      .WillOnce(MoveArg<2>(&callback_3));
+      .WillOnce(MoveArg<2>(&callback_other));
 
   // Register CdmInfo for lazy initialization.
   base::CallbackListSubscription subscription;
@@ -796,25 +855,25 @@ TEST_F(CdmRegistryImplTest,
     run_loop.RunUntilIdle();
   }
 
-  // No results since we are still pending lazy initialization.
-  ASSERT_TRUE(results_.empty());
+  // An initial update is broadcast immediately with kPending capability.
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  EXPECT_TRUE(results_[kObserver1][0][kTestKeySystem].IsPending());
 
-  // Register CdmInfo for the same key system with a CdmCapability.
+  // Register CdmInfo for another key system while first is still pending.
+  // The in-progress lazy initialization for kTestKeySystem is not aborted.
   {
     base::RunLoop run_loop;
-    // Register a CdmInfo without CdmCapability to allow lazy initialization.
     Register(CdmInfo(kOtherKeySystem, CdmInfo::Robustness::kHardwareSecure,
                      std::nullopt, kTestCdmType));
-    std::move(callback_1).Run(GetTestCdmCapability());
-    std::move(callback_2).Run(GetTestCdmCapability());
-    std::move(callback_3).Run(GetOtherCdmCapability());
+    std::move(callback_test).Run(GetTestCdmCapability());
+    std::move(callback_other).Run(GetOtherCdmCapability());
     run_loop.RunUntilIdle();
   }
 
-  // The observer should only be updated once with both key systems.
+  // The observer is updated with both key systems once all initialize.
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 2u);
 
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
@@ -866,6 +925,75 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DisableHardwareSecureCdms) {
   ASSERT_EQ(support_2.sw_cdm_capability_or_status.value(),
             GetTestCdmCapability());
   ASSERT_FALSE(support_2.hw_cdm_capability_or_status.has_value());
+}
+
+TEST_F(
+    CdmRegistryImplTest,
+    KeySystemCapabilities_DisableHardwareSecureCdms_WhilePendingLazyInitialize) {
+  SelectHardwareSecureDecryption(true);
+
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> callback;
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&callback));
+
+  Register(GetTestCdmInfo());
+  RegisterForLazyHardwareSecureInitialization();
+
+  base::CallbackListSubscription subscription;
+  {
+    base::RunLoop run_loop;
+    subscription = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/true,
+        base::BindRepeating(
+            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+            base::Unretained(this), kObserver1, base::DoNothing()));
+    run_loop.RunUntilIdle();
+  }
+
+  // Initial update: SW is supported, HW check is pending (kPending).
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities_1 = results_[kObserver1][0];
+  ASSERT_EQ(key_system_capabilities_1.size(), 1u);
+  const auto& support_1 = key_system_capabilities_1[kTestKeySystem];
+  ASSERT_EQ(support_1.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support_1.hw_cdm_capability_or_status.has_value());
+  ASSERT_EQ(support_1.hw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kPending);
+  ASSERT_TRUE(support_1.IsPending());
+
+  // Hardware secure CDMs are disabled while the check is still pending.
+  {
+    base::RunLoop run_loop;
+    cdm_registry_.SetHardwareSecureCdmStatus(CdmInfo::Status::kDisabledOnError);
+    run_loop.RunUntilIdle();
+  }
+
+  // Observers should immediately be notified that HW is no longer pending and
+  // not supported (kUnknown error, not kPending).
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities_2 = results_[kObserver1][1];
+  ASSERT_EQ(key_system_capabilities_2.size(), 1u);
+  const auto& support_2 = key_system_capabilities_2[kTestKeySystem];
+  ASSERT_EQ(support_2.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support_2.hw_cdm_capability_or_status.has_value());
+  ASSERT_EQ(support_2.hw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kUnknown);
+  ASSERT_FALSE(support_2.IsPending());
+
+  // When the now-discarded callback finally returns, it should not resurrect or
+  // re-enable HW capability.
+  {
+    base::RunLoop run_loop;
+    std::move(callback).Run(GetTestCdmCapability());
+    run_loop.RunUntilIdle();
+  }
+
+  // No further updates or change in support.
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -939,8 +1067,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/true);
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 2u);
-  auto& key_system_capabilities2 = results_[kObserver1][1];
+  ASSERT_EQ(results_[kObserver1].size(), 3u);
+  auto& key_system_capabilities2 = results_[kObserver1].back();
   ASSERT_FALSE(key_system_capabilities2.empty());
   auto cdm_info2 = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
@@ -961,8 +1089,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/true);
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_FALSE(key_system_capabilities.empty());
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
@@ -976,8 +1104,8 @@ TEST_F(CdmRegistryImplTest,
   GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/false);
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 2u);
-  auto& key_system_capabilities2 = results_[kObserver1][1];
+  ASSERT_EQ(results_[kObserver1].size(), 3u);
+  auto& key_system_capabilities2 = results_[kObserver1].back();
   ASSERT_FALSE(key_system_capabilities2.empty());
   auto cdm_info2 = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
@@ -1017,8 +1145,8 @@ TEST_F(CdmRegistryImplTest,
   run_loop2.Run();
 
   ASSERT_TRUE(results_.count(kObserver2));
-  ASSERT_EQ(results_[kObserver2].size(), 1u);
-  auto& key_system_capabilities2 = results_[kObserver2][0];
+  ASSERT_EQ(results_[kObserver2].size(), 2u);
+  auto& key_system_capabilities2 = results_[kObserver2].back();
   const auto& support = key_system_capabilities2[kTestKeySystem];
   ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
             GetTestCdmCapability());
@@ -1031,19 +1159,18 @@ TEST_F(
   RegisterForLazyHardwareSecureInitialization();
   SelectHardwareSecureDecryption(true);
 
-  // Expect the lazy software capability to be triggered twice because the
-  // second observer will invalidate pending initializations and retrigger them.
+  // The lazy software capability is triggered once; the second observer does
+  // not invalidate or retrigger initializations already in progress.
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kSoftwareSecure, _))
-      .Times(2)
-      .WillRepeatedly(
-          base::test::RunOnceCallbackRepeatedly<2>(GetTestCdmCapability()));
+      .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
 
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
       .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
 
   base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
   auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
       /*allow_hw_secure_capability_check=*/false,
       base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
@@ -1051,14 +1178,16 @@ TEST_F(
                           base::DoNothing()));
   auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
       /*allow_hw_secure_capability_check=*/true,
-      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-                          base::Unretained(this), kObserver2,
-                          run_loop.QuitClosure()));
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        results_[kObserver2].push_back(caps);
+        if (PendingLazyInitializationsEmpty() && quit_closure) {
+          std::move(quit_closure).Run();
+        }
+      }));
   run_loop.Run();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
@@ -1068,8 +1197,7 @@ TEST_F(
             GetTestCdmCapability());
 
   ASSERT_TRUE(results_.count(kObserver2));
-  ASSERT_EQ(results_[kObserver2].size(), 1u);
-  ASSERT_EQ(key_system_capabilities, results_[kObserver2][0]);
+  ASSERT_EQ(key_system_capabilities, results_[kObserver2].back());
 }
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
@@ -1088,9 +1216,432 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
-  ASSERT_EQ(results_[kObserver1].size(), 1u);
-  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities = results_[kObserver1].back();
   ASSERT_EQ(key_system_capabilities.size(), 0u);
+}
+
+// Scenario 1: Immediate software notification — Synchronously finalized
+// software CDMs (e.g. Widevine L3) notify observers immediately without
+// waiting for pending lazy hardware initializations.
+TEST_F(CdmRegistryImplTest,
+       ObserveKeySystemCapabilities_ImmediateSoftwareNotification) {
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   GetTestCdmCapability(), kTestCdmType));
+  RegisterForLazyHardwareSecureInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  base::RunLoop run_loop_sw, run_loop_hw;
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb;
+
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb));
+
+  std::vector<KeySystemCapabilities> received_updates;
+  auto quit_sw = run_loop_sw.QuitClosure();
+  auto quit_hw = run_loop_hw.QuitClosure();
+
+  auto cb_sub = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        received_updates.push_back(caps);
+        if (caps.contains(kTestKeySystem)) {
+          if (caps[kTestKeySystem].hw_cdm_capability_or_status.has_value()) {
+            if (quit_hw) {
+              std::move(quit_hw).Run();
+            }
+          } else if (caps[kTestKeySystem]
+                         .sw_cdm_capability_or_status.has_value()) {
+            if (quit_sw) {
+              std::move(quit_sw).Run();
+            }
+          }
+        }
+      }));
+
+  // Software capability must be broadcast immediately without waiting for HW
+  // check to complete!
+  run_loop_sw.Run();
+  ASSERT_EQ(received_updates.size(), 1u);
+  auto& sw_capabilities = received_updates[0];
+  ASSERT_TRUE(sw_capabilities.contains(kTestKeySystem));
+  EXPECT_EQ(sw_capabilities[kTestKeySystem].sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_FALSE(
+      sw_capabilities[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+
+  // Now finish the lazy HW initialization in the background.
+  std::move(cdm_cb).Run(GetTestCdmCapability());
+  run_loop_hw.Run();
+  ASSERT_EQ(received_updates.size(), 2u);
+  auto& hw_capabilities = received_updates[1];
+  EXPECT_EQ(hw_capabilities[kTestKeySystem].sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_EQ(hw_capabilities[kTestKeySystem].hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+}
+
+// Scenario 2: Concurrent different key systems — Two lazy hardware
+// initializations notify observers progressively as each finishes without
+// waiting for the other.
+TEST_F(CdmRegistryImplTest,
+       ObserveKeySystemCapabilities_ConcurrentDifferentKeySystems) {
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
+                   std::nullopt, kTestCdmType));
+  Register(CdmInfo(kOtherKeySystem, CdmInfo::Robustness::kHardwareSecure,
+                   std::nullopt, kTestCdmType));
+  SelectHardwareSecureDecryption(true);
+
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_test;
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_other;
+
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_test));
+  EXPECT_CALL(capability_cb_,
+              Run(kOtherKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_other));
+
+  std::vector<KeySystemCapabilities> received_updates;
+  base::RunLoop run_loop_test, run_loop_other;
+  auto quit_test = run_loop_test.QuitClosure();
+  auto quit_other = run_loop_other.QuitClosure();
+
+  auto cb_sub = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        received_updates.push_back(caps);
+        if (caps.contains(kTestKeySystem) &&
+            caps[kTestKeySystem].hw_cdm_capability_or_status.has_value() &&
+            (!caps.contains(kOtherKeySystem) ||
+             !caps[kOtherKeySystem].hw_cdm_capability_or_status.has_value())) {
+          if (quit_test) {
+            std::move(quit_test).Run();
+          }
+        } else if (caps.contains(kOtherKeySystem) &&
+                   caps[kOtherKeySystem]
+                       .hw_cdm_capability_or_status.has_value()) {
+          if (quit_other) {
+            std::move(quit_other).Run();
+          }
+        }
+      }));
+
+  // Resolve kTestKeySystem first: observer receives update with kTestKeySystem!
+  std::move(cdm_cb_test).Run(GetTestCdmCapability());
+  run_loop_test.Run();
+  ASSERT_EQ(received_updates.size(), 2u);
+  EXPECT_TRUE(received_updates[1].contains(kTestKeySystem));
+  EXPECT_TRUE(received_updates[1][kTestKeySystem]
+                  .hw_cdm_capability_or_status.has_value());
+  if (received_updates[1].contains(kOtherKeySystem)) {
+    EXPECT_FALSE(received_updates[1][kOtherKeySystem]
+                     .hw_cdm_capability_or_status.has_value());
+  }
+
+  // Now resolve kOtherKeySystem. Observer receives update with both!
+  std::move(cdm_cb_other).Run(GetOtherCdmCapability());
+  run_loop_other.Run();
+  ASSERT_EQ(received_updates.size(), 3u);
+  EXPECT_TRUE(received_updates[2][kTestKeySystem]
+                  .hw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(received_updates[2][kOtherKeySystem]
+                  .hw_cdm_capability_or_status.has_value());
+}
+
+// Scenario 3: Static software only with lazy hardware check.
+// Verifies that a key system with static software capabilities and an on-going
+// lazy hardware check reports IsPending() as true while an unregistered
+// hardware CDM reports IsPending() as false.
+TEST_F(CdmRegistryImplTest,
+       ObserveKeySystemCapabilities_StaticSoftwareWithLazyHardware) {
+  // Register kTestKeySystem with static SW and lazy HW.
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   GetTestCdmCapability(), kTestCdmType));
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
+                   std::nullopt, kTestCdmType));
+  // Register kOtherKeySystem with only static SW (e.g. Widevine on desktop).
+  Register(CdmInfo(kOtherKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   GetOtherCdmCapability(), kTestCdmType));
+  SelectHardwareSecureDecryption(true);
+
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_hw;
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_hw));
+
+  std::vector<KeySystemCapabilities> received_updates;
+  base::RunLoop run_loop_sw, run_loop_hw;
+  auto quit_sw = run_loop_sw.QuitClosure();
+  auto quit_hw = run_loop_hw.QuitClosure();
+
+  auto cb_sub = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        received_updates.push_back(caps);
+        if (caps.contains(kTestKeySystem)) {
+          if (caps[kTestKeySystem].hw_cdm_capability_or_status.has_value()) {
+            if (quit_hw) {
+              std::move(quit_hw).Run();
+            }
+          } else if (caps[kTestKeySystem]
+                         .sw_cdm_capability_or_status.has_value()) {
+            if (quit_sw) {
+              std::move(quit_sw).Run();
+            }
+          }
+        }
+      }));
+
+  // 1st Broadcast: Software capabilities must be immediately broadcast.
+  run_loop_sw.Run();
+  ASSERT_EQ(received_updates.size(), 1u);
+  auto& initial_caps = received_updates[0];
+
+  // kOtherKeySystem has no hardware CDM registered and is not pending.
+  ASSERT_TRUE(initial_caps.contains(kOtherKeySystem));
+  EXPECT_TRUE(
+      initial_caps[kOtherKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(
+      initial_caps[kOtherKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(initial_caps[kOtherKeySystem].IsPending());
+
+  // kTestKeySystem has hardware check on-going -> IsPending() must be true and
+  // hw_cdm_capability_or_status has error kPending.
+  ASSERT_TRUE(initial_caps.contains(kTestKeySystem));
+  EXPECT_TRUE(
+      initial_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(
+      initial_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(initial_caps[kTestKeySystem].IsPending());
+  EXPECT_EQ(initial_caps[kTestKeySystem].hw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kPending);
+
+  // 2nd Progressive Broadcast: Hardware check finishes.
+  std::move(cdm_cb_hw).Run(GetTestCdmCapability());
+  run_loop_hw.Run();
+  ASSERT_EQ(received_updates.size(), 2u);
+  auto& final_caps = received_updates[1];
+
+  EXPECT_TRUE(
+      final_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(
+      final_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_EQ(final_caps[kTestKeySystem].hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_FALSE(final_caps[kTestKeySystem].IsPending());
+}
+
+// Scenario 4a: Dual lazy software and hardware check (with static CDM).
+// Verifies that a key system with both software and hardware checks running
+// lazily reports IsPending() as true initially, and preserves IsPending() as
+// true across progressive updates until both checks complete.
+TEST_F(CdmRegistryImplTest,
+       ObserveKeySystemCapabilities_DualLazySoftwareAndHardware) {
+  // Register kTestKeySystem with both SW and HW lazy uninitialized.
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   std::nullopt, kTestCdmType));
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
+                   std::nullopt, kTestCdmType));
+  // Register kOtherKeySystem with static SW (representing Widevine).
+  Register(CdmInfo(kOtherKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   GetOtherCdmCapability(), kTestCdmType));
+  SelectHardwareSecureDecryption(true);
+
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_sw;
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_hw;
+
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kSoftwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_sw));
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_hw));
+
+  std::vector<KeySystemCapabilities> received_updates;
+  base::RunLoop run_loop_sw, run_loop_hw;
+  auto quit_sw = run_loop_sw.QuitClosure();
+  auto quit_hw = run_loop_hw.QuitClosure();
+
+  auto cb_sub = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        received_updates.push_back(caps);
+        if (caps.contains(kTestKeySystem)) {
+          if (caps[kTestKeySystem].hw_cdm_capability_or_status.has_value()) {
+            if (quit_hw) {
+              std::move(quit_hw).Run();
+            }
+          } else if (caps[kTestKeySystem]
+                         .sw_cdm_capability_or_status.has_value()) {
+            if (quit_sw) {
+              std::move(quit_sw).Run();
+            }
+          }
+        }
+      }));
+
+  // 1st Broadcast: Both SW and HW checks are in progress.
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(received_updates.size(), 1u);
+  auto& initial_caps = received_updates[0];
+  ASSERT_TRUE(initial_caps.contains(kTestKeySystem));
+  EXPECT_FALSE(
+      initial_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(
+      initial_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(initial_caps[kTestKeySystem].IsPending());
+  EXPECT_EQ(initial_caps[kTestKeySystem].sw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kPending);
+  EXPECT_EQ(initial_caps[kTestKeySystem].hw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kPending);
+
+  // Progressive Broadcast 1: SW check completes first.
+  std::move(cdm_cb_sw).Run(GetTestCdmCapability());
+  run_loop_sw.Run();
+  ASSERT_EQ(received_updates.size(), 2u);
+  auto& interim_caps = received_updates[1];
+  EXPECT_TRUE(
+      interim_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  // HW is still in progress.
+  EXPECT_FALSE(
+      interim_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(interim_caps[kTestKeySystem].IsPending());
+  EXPECT_EQ(interim_caps[kTestKeySystem].hw_cdm_capability_or_status.error(),
+            media::CdmCapabilityQueryStatus::kPending);
+
+  // Progressive Broadcast 2: HW check completes.
+  std::move(cdm_cb_hw).Run(GetTestCdmCapability());
+  run_loop_hw.Run();
+  ASSERT_EQ(received_updates.size(), 3u);
+  auto& final_caps = received_updates.back();
+  EXPECT_TRUE(
+      final_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(
+      final_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_EQ(final_caps[kTestKeySystem].sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_EQ(final_caps[kTestKeySystem].hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_FALSE(final_caps[kTestKeySystem].IsPending());
+}
+
+// Scenario 4b: Dual lazy software and hardware check with no other CDMs.
+// Verifies that when a key system with dual lazy checks is the only registered
+// CDM (i.e. no Widevine or other static CDM present), CdmRegistryImpl still
+// immediately broadcasts the initial snapshot with IsPending() = true. This
+// enables renderers to receive the initial update and immediately reject
+// queries for unrelated/absent key systems without waiting for the slow check.
+TEST_F(CdmRegistryImplTest,
+       ObserveKeySystemCapabilities_DualLazySoftwareAndHardwareOnly) {
+  // Register kTestKeySystem with both SW and HW lazy uninitialized.
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   std::nullopt, kTestCdmType));
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
+                   std::nullopt, kTestCdmType));
+  SelectHardwareSecureDecryption(true);
+
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_sw;
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> cdm_cb_hw;
+
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kSoftwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_sw));
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(MoveArg<2>(&cdm_cb_hw));
+
+  std::vector<KeySystemCapabilities> received_updates;
+  base::RunLoop run_loop_sw, run_loop_hw;
+  auto quit_sw = run_loop_sw.QuitClosure();
+  auto quit_hw = run_loop_hw.QuitClosure();
+
+  auto cb_sub = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        received_updates.push_back(caps);
+        if (caps.contains(kTestKeySystem)) {
+          if (caps[kTestKeySystem].hw_cdm_capability_or_status.has_value()) {
+            if (quit_hw) {
+              std::move(quit_hw).Run();
+            }
+          } else if (caps[kTestKeySystem]
+                         .sw_cdm_capability_or_status.has_value()) {
+            if (quit_sw) {
+              std::move(quit_sw).Run();
+            }
+          }
+        }
+      }));
+
+  // 1st Broadcast: Both SW and HW checks are in progress, but the initial
+  // snapshot must be broadcast immediately even with no static CDMs.
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(received_updates.size(), 1u);
+  auto& initial_caps = received_updates[0];
+  ASSERT_TRUE(initial_caps.contains(kTestKeySystem));
+  EXPECT_FALSE(
+      initial_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(
+      initial_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(initial_caps[kTestKeySystem].IsPending());
+
+  // Progressive Broadcast 1: SW check completes first.
+  std::move(cdm_cb_sw).Run(GetTestCdmCapability());
+  run_loop_sw.Run();
+  ASSERT_EQ(received_updates.size(), 2u);
+  auto& interim_caps = received_updates[1];
+  EXPECT_TRUE(
+      interim_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(
+      interim_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(interim_caps[kTestKeySystem].IsPending());
+
+  // Progressive Broadcast 2: HW check completes.
+  std::move(cdm_cb_hw).Run(GetTestCdmCapability());
+  run_loop_hw.Run();
+  ASSERT_EQ(received_updates.size(), 3u);
+  auto& final_caps = received_updates.back();
+  EXPECT_TRUE(
+      final_caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(
+      final_caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_EQ(final_caps[kTestKeySystem].sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_EQ(final_caps[kTestKeySystem].hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  EXPECT_FALSE(final_caps[kTestKeySystem].IsPending());
+}
+
+// Scenario 5: Static software with disabled hardware secure decryption.
+// Verifies that when hardware secure decryption is disabled (e.g. disabled
+// accelerated video decoding), IsPending() is false and the key system is
+// immediately ready.
+TEST_F(CdmRegistryImplTest,
+       ObserveKeySystemCapabilities_StaticSoftwareWithDisabledHardware) {
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
+                   GetTestCdmCapability(), kTestCdmType));
+  Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
+                   std::nullopt, kTestCdmType));
+  SelectHardwareSecureDecryption(false);
+
+  std::vector<KeySystemCapabilities> received_updates;
+  base::RunLoop run_loop;
+  auto cb_sub = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindLambdaForTesting([&](KeySystemCapabilities caps) {
+        received_updates.push_back(caps);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+  ASSERT_EQ(received_updates.size(), 1u);
+  auto& caps = received_updates[0];
+  ASSERT_TRUE(caps.contains(kTestKeySystem));
+  EXPECT_TRUE(caps[kTestKeySystem].sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(caps[kTestKeySystem].hw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(caps[kTestKeySystem].IsPending());
 }
 
 }  // namespace content

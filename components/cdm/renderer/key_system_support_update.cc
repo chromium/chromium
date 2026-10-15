@@ -548,7 +548,13 @@ void OnKeySystemSupportUpdated(
     media::GetSupportedKeySystemsCB cb,
     content::KeySystemCapabilities key_system_capabilities) {
   KeySystemInfos key_systems;
+  base::flat_set<std::string> pending_key_systems;
   for (const auto& [key_system, capability] : key_system_capabilities) {
+    if (capability.IsPending()) {
+      pending_key_systems.insert(key_system);
+      continue;
+    }
+
 #if BUILDFLAG(ENABLE_WIDEVINE)
     if (key_system == kWidevineKeySystem) {
       AddWidevine(capability, can_persist_data, &key_systems);
@@ -583,7 +589,7 @@ void OnKeySystemSupportUpdated(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  cb.Run(std::move(key_systems));
+  cb.Run(std::move(key_systems), std::move(pending_key_systems));
 }
 
 }  // namespace

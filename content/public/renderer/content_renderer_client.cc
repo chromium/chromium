@@ -199,7 +199,7 @@ std::unique_ptr<media::KeySystemSupportRegistration>
 ContentRendererClient::GetSupportedKeySystems(
     RenderFrame* render_frame,
     media::GetSupportedKeySystemsCB cb) {
-  std::move(cb).Run({});
+  std::move(cb).Run(/*key_systems=*/{}, /*pending_key_systems=*/{});
   return nullptr;
 }
 

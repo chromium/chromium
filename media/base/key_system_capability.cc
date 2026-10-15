@@ -21,6 +21,12 @@ KeySystemCapability::KeySystemCapability(const KeySystemCapability& other) =
 
 KeySystemCapability::~KeySystemCapability() = default;
 
+bool KeySystemCapability::IsPending() const {
+  const auto kPending = base::unexpected(CdmCapabilityQueryStatus::kPending);
+  return sw_cdm_capability_or_status == kPending ||
+         hw_cdm_capability_or_status == kPending;
+}
+
 bool operator==(const KeySystemCapability& lhs,
                 const KeySystemCapability& rhs) {
   return lhs.sw_cdm_capability_or_status == rhs.sw_cdm_capability_or_status &&

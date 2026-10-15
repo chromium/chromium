@@ -55,9 +55,6 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   // Each stat is only reported once per renderer frame per key system.
   class Reporter;
 
-  // Callback for media::KeySystems initialization.
-  void OnKeySystemsUpdated();
-
   // Helper function to call `KeySystemConfigSelector::SelectConfig()`.
   void SelectConfig(WebEncryptedMediaRequest request);
 
@@ -82,9 +79,6 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   const raw_ptr<media::KeySystems> key_systems_;
   const raw_ptr<media::CdmFactory> cdm_factory_;
   KeySystemConfigSelector key_system_config_selector_;
-
-  // Pending requests while waiting for KeySystems initialization.
-  std::vector<WebEncryptedMediaRequest> pending_requests_;
 
   base::WeakPtrFactory<WebEncryptedMediaClientImpl> weak_factory_{this};
 };

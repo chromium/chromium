@@ -93,6 +93,8 @@ std::string CdmCapabilityQueryStatusToString(
     case CdmCapabilityQueryStatus::
         kMediaFoundationGetExtendedDRMTypeSupportFailed:
       return "kMediaFoundationGetExtendedDRMTypeSupportFailed";
+    case CdmCapabilityQueryStatus::kPending:
+      return "kPending";
   }
 
   NOTREACHED();

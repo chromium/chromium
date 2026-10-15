@@ -26,9 +26,12 @@ class MEDIA_EXPORT KeySystems {
  public:
   virtual ~KeySystems() = default;
 
-  // Updates the list of available key systems if it's not initialized or may be
-  // out of date. Calls the `done_cb` when done.
-  virtual void UpdateIfNeeded(base::OnceClosure done_cb) = 0;
+  // Waits for the initial key systems update and any pending capability
+  // check for `key_system` to complete if needed, then calls `done_cb`
+  // (synchronously if already ready, or asynchronously when the update
+  // arrives).
+  virtual void UpdateIfNeeded(const std::string& key_system,
+                              base::OnceClosure done_cb) = 0;
 
   // Gets the base key system name, e.g. "org.chromium.foo".
   virtual std::string GetBaseKeySystemName(

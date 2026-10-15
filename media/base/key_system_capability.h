@@ -25,6 +25,10 @@ struct MEDIA_EXPORT KeySystemCapability {
       base::unexpected(CdmCapabilityQueryStatus::kUnknown);
   CdmCapabilityOrStatus hw_cdm_capability_or_status =
       base::unexpected(CdmCapabilityQueryStatus::kUnknown);
+
+  // Returns whether the capability query for either robustness is still in
+  // progress, i.e. a later update will report its result.
+  bool IsPending() const;
 };
 
 bool MEDIA_EXPORT operator==(const KeySystemCapability& lhs,

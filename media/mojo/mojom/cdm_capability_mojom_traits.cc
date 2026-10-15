@@ -110,6 +110,8 @@ media::mojom::CdmCapabilityQueryStatus EnumTraits<
         kMediaFoundationGetExtendedDRMTypeSupportFailed:
       return media::mojom::CdmCapabilityQueryStatus::
           kMediaFoundationGetExtendedDRMTypeSupportFailed;
+    case media::CdmCapabilityQueryStatus::kPending:
+      return media::mojom::CdmCapabilityQueryStatus::kPending;
   }
 
   NOTREACHED();
@@ -155,6 +157,8 @@ EnumTraits<media::mojom::CdmCapabilityQueryStatus,
         kMediaFoundationGetExtendedDRMTypeSupportFailed:
       return media::CdmCapabilityQueryStatus::
           kMediaFoundationGetExtendedDRMTypeSupportFailed;
+    case media::mojom::CdmCapabilityQueryStatus::kPending:
+      return media::CdmCapabilityQueryStatus::kPending;
   }
 
   NOTREACHED();

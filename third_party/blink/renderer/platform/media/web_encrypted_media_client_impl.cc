@@ -266,10 +266,13 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
 
   GetPerProcessReporter(request.KeySystem())->ReportRequested();
 
-  pending_requests_.push_back(std::move(request));
+  std::string key_system = request.KeySystem().Utf8();
+  // Delegate capability initialization to KeySystems, which queues the callback
+  // if the key system is still pending or runs it synchronously once ready.
   key_systems_->UpdateIfNeeded(
-      blink::BindOnce(&WebEncryptedMediaClientImpl::OnKeySystemsUpdated,
-                      weak_factory_.GetWeakPtr()));
+      key_system,
+      blink::BindOnce(&WebEncryptedMediaClientImpl::SelectConfig,
+                      weak_factory_.GetWeakPtr(), std::move(request)));
 }
 
 void WebEncryptedMediaClientImpl::CreateCdm(
@@ -279,12 +282,6 @@ void WebEncryptedMediaClientImpl::CreateCdm(
   WebContentDecryptionModuleImpl::Create(
       cdm_factory_, key_systems_, security_origin, cdm_config,
       BindOnce(&CompleteWebContentDecryptionModuleResult, std::move(result)));
-}
-
-void WebEncryptedMediaClientImpl::OnKeySystemsUpdated() {
-  auto requests = std::move(pending_requests_);
-  for (const auto& request : requests)
-    SelectConfig(request);
 }
 
 void WebEncryptedMediaClientImpl::SelectConfig(

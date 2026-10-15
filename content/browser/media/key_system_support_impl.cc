@@ -16,12 +16,13 @@ namespace content {
 namespace {
 
 // All key systems must have either software or hardware secure capability
-// supported.
-bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
+// supported, or have a capability query in progress.
+bool IsValidKeySystemCapabilities(const KeySystemCapabilities& capabilities) {
   for (const auto& entry : capabilities) {
     auto& capability = entry.second;
     if (!capability.sw_cdm_capability_or_status.has_value() &&
-        !capability.hw_cdm_capability_or_status.has_value()) {
+        !capability.hw_cdm_capability_or_status.has_value() &&
+        !capability.IsPending()) {
       return false;
     }
   }

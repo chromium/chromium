@@ -159,15 +159,14 @@ void MediaInternalsCdmHelper::GetRegisteredCdms() {
               weak_factory_.GetWeakPtr()));
 }
 
-// Ignore results since we'll get them from CdmRegistryImpl directly.
+// Ignore results since we'll get them from CdmRegistryImpl directly. CDMs still
+// being lazily initialized show up as "Uninitialized" until the next update.
 void MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated(
     KeySystemCapabilities /*capabilities*/) {
   auto cdms = CdmRegistryImpl::GetInstance()->GetRegisteredCdms();
 
   base::ListValue cdm_list;
   for (const auto& cdm_info : cdms) {
-    CHECK(cdm_info.status != CdmInfo::Status::kUninitialized,
-          base::NotFatalUntil::M160);
     cdm_list.Append(CdmInfoToDict(cdm_info));
   }
 

@@ -61,11 +61,12 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   std::unique_ptr<CdmInfo> GetCdmInfo(const std::string& key_system,
                                       CdmInfo::Robustness robustness) const;
 
-  // Observes key system capabilities updates. The updated capabilities are
-  // guaranteed to be finalized. The `cb` is always called on the original
-  // thread this function was called on. If `allow_hw_secure_capability_check`
-  // is true, then `this` is allowed to check capability for hardware secure key
-  // systems.
+  // Observes key system capabilities updates. Capabilities still being lazily
+  // initialized are reported with CdmCapabilityQueryStatus::kPending, and `cb`
+  // is called again once they are finalized. The `cb` is always called on the
+  // original thread this function was called on. If
+  // `allow_hw_secure_capability_check` is true, then `this` is allowed to check
+  // capability for hardware secure key systems.
   //
   // Returns a `base::CallbackListSubscription` which is owned by the caller. If
   // that is destroyed, the `cb` is cancelled.
@@ -83,21 +84,22 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   ~CdmRegistryImpl() override;
 
   // Get the capability for `key_system` with robustness `robustness`
-  // synchronously. If lazy initialization is needed, return
-  // Status::kUninitialized.
+  // synchronously. Returns null capability if it is not enabled or still being
+  // lazily initialized (in which case Status::kUninitialized is returned).
   std::pair<std::optional<media::CdmCapability>, CdmInfo::Status> GetCapability(
       const std::string& key_system,
       CdmInfo::Robustness robustness);
 
-  // Get the capability for `key_system` with robustness `robustness`
-  // synchronously. All initialization should have been completed.
-  std::pair<std::optional<media::CdmCapability>, CdmInfo::Status>
-  GetFinalCapability(const std::string& key_system,
-                     CdmInfo::Robustness robustness);
+  // Returns the capability for `key_system` with robustness `robustness`, or
+  // `kPending` if lazy initialization is still in progress, or `kUnknown` if
+  // finalized without a capability. Also reports UMA once finalized.
+  media::CdmCapabilityOrStatus GetCapabilityOrStatus(
+      const std::string& key_system,
+      CdmInfo::Robustness robustness);
 
-  // Finalizes KeySystemCapabilities. May lazy initialize CDM capabilities
-  // asynchronously if needed.
-  void FinalizeKeySystemCapabilities();
+  // Attempts to finalize KeySystemCapabilities. May lazy initialize CDM
+  // capabilities asynchronously if needed.
+  void AttemptToFinalizeKeySystemCapabilities();
 
   // Attempt to finalize KeySystemCapability for `key_system` with robustness
   // `robustness`. May lazy initialize it asynchronously if needed.
@@ -132,9 +134,9 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
                           media::CdmCapabilityOrStatus cdm_capability_or_status,
                           CdmInfo::Status status);
 
-  // When capabilities for all registered key systems have been determined,
-  // notify all observers with the updated values. No notification is done
-  // if the capabilities have not changed.
+  // Notifies all observers with the current capabilities of all registered key
+  // systems, including ones still being lazily initialized. No notification is
+  // done if the capabilities have not changed.
   void UpdateAndNotifyKeySystemCapabilities();
 
   // Returns the set of all registered key systems.

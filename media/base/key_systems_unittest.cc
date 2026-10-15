@@ -15,6 +15,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
+#include "media/base/key_system_names.h"
 #include "media/base/key_systems_impl.h"
 #include "media/base/media.h"
 #include "media/base/media_client.h"
@@ -206,6 +207,15 @@ class TestMediaClient : public MediaClient {
   void ResetAndUpdateClientKeySystems(
       std::unique_ptr<KeySystemInfo> key_system_info);
 
+  void SetDeferInitialUpdate(bool defer) { defer_initial_update_ = defer; }
+
+  void NotifyPendingLazyUpdate(
+      KeySystemInfos key_systems,
+      base::flat_set<std::string> pending_key_systems) {
+    get_supported_key_systems_cb_.Run(std::move(key_systems),
+                                      std::move(pending_key_systems));
+  }
+
   std::optional<AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
 
@@ -217,6 +227,7 @@ class TestMediaClient : public MediaClient {
 
   GetSupportedKeySystemsCB get_supported_key_systems_cb_;
   bool supports_external_key_system_ = true;
+  bool defer_initial_update_ = false;
 };
 
 TestMediaClient::TestMediaClient() = default;
@@ -225,9 +236,12 @@ TestMediaClient::~TestMediaClient() = default;
 std::unique_ptr<::media::KeySystemSupportRegistration>
 TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
   // Save the callback for future updates.
-  get_supported_key_systems_cb_ = cb;
+  get_supported_key_systems_cb_ = std::move(cb);
 
-  get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
+  if (!defer_initial_update_) {
+    get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal(),
+                                      /*pending_key_systems=*/{});
+  }
   return nullptr;
 }
 
@@ -257,7 +271,8 @@ ExternalMemoryAllocator* TestMediaClient::GetMediaAllocator() {
 
 void TestMediaClient::DisableExternalKeySystemSupport() {
   supports_external_key_system_ = false;
-  get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
+  get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal(),
+                                    /*pending_key_systems=*/{});
 }
 
 std::optional<AudioRendererAlgorithmParameters>
@@ -282,7 +297,8 @@ void TestMediaClient::ResetAndUpdateClientKeySystems(
     std::unique_ptr<KeySystemInfo> key_system_info) {
   KeySystemInfos key_systems;
   key_systems.emplace_back(std::move(key_system_info));
-  get_supported_key_systems_cb_.Run(std::move(key_systems));
+  get_supported_key_systems_cb_.Run(std::move(key_systems),
+                                    /*pending_key_systems=*/{});
 }
 
 }  // namespace
@@ -336,7 +352,7 @@ class KeySystemsTest : public testing::Test {
     AddContainerAndCodecMasksForTest();
 
     base::RunLoop run_loop;
-    key_systems_->UpdateIfNeeded(run_loop.QuitClosure());
+    key_systems_->UpdateIfNeeded(std::string(), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -351,7 +367,7 @@ class KeySystemsTest : public testing::Test {
     test_media_client_.DisableExternalKeySystemSupport();
 
     base::RunLoop run_loop;
-    key_systems_->UpdateIfNeeded(run_loop.QuitClosure());
+    key_systems_->UpdateIfNeeded(std::string(), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -361,8 +377,22 @@ class KeySystemsTest : public testing::Test {
         std::move(key_system_info));
 
     base::RunLoop run_loop;
-    key_systems_->UpdateIfNeeded(run_loop.QuitClosure());
+    key_systems_->UpdateIfNeeded(std::string(), run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  void NotifyPendingLazyUpdate(
+      KeySystemInfos key_systems,
+      base::flat_set<std::string> pending_key_systems) {
+    test_media_client_.NotifyPendingLazyUpdate(std::move(key_systems),
+                                               std::move(pending_key_systems));
+  }
+
+  void DeferInitialUpdateAndReinitialize() {
+    test_media_client_.SetDeferInitialUpdate(true);
+    key_systems_ = std::make_unique<KeySystemsImpl>(base::BindOnce(
+        &KeySystemsTest::RegisterKeySystemsSupport, base::Unretained(this)));
+    AddContainerAndCodecMasksForTest();
   }
 
   std::unique_ptr<KeySystemSupportRegistration> RegisterKeySystemsSupport(
@@ -442,6 +472,11 @@ class KeySystemsTest : public testing::Test {
 
   bool IsSupportedKeySystem(const std::string& key_system) {
     return key_systems_->IsSupportedKeySystem(key_system);
+  }
+
+  void UpdateIfNeeded(const std::string& key_system,
+                      base::OnceClosure done_cb) {
+    key_systems_->UpdateIfNeeded(key_system, std::move(done_cb));
   }
 
   EmeConfig::Rule GetRobustnessConfigRule(
@@ -966,6 +1001,267 @@ TEST_F(KeySystemsTest, NoSupportedCodec) {
                                kVideoFoo, foovideo_codec(), kExternal));
   EXPECT_EQ(not_supported, GetVideoContentTypeConfigRule(
                                kVideoFoo, securefoovideo_codec(), kExternal));
+}
+
+// Scenario 7: On-demand query for an already-initialized key system via
+// UpdateIfNeeded resolves immediately.
+TEST_F(KeySystemsTest, UpdateIfNeeded_KeySystem) {
+  bool called = false;
+  UpdateIfNeeded(kExternal,
+                 base::BindOnce([](bool* flag) { *flag = true; }, &called));
+  EXPECT_TRUE(called);
+  EXPECT_TRUE(IsSupportedKeySystem(kExternal));
+}
+
+// Scenario 8: Cache Hit — First query waits while the key system is pending,
+// and a repeat query after resolution invokes the callback synchronously.
+TEST_F(KeySystemsTest, UpdateIfNeeded_RepeatQueryInstantSynchronous) {
+  // Mark kExternal as pending initially.
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(initial_systems), {kExternal});
+
+  // First query queues until kExternal finishes its capability check.
+  bool first_called = false;
+  UpdateIfNeeded(kExternal, base::BindOnce([](bool* flag) { *flag = true; },
+                                           &first_called));
+  EXPECT_FALSE(first_called);
+
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  final_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>());
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+  EXPECT_TRUE(first_called);
+
+  // Second query for the same key system should invoke callback synchronously
+  // and instantly.
+  bool second_called = false;
+  UpdateIfNeeded(kExternal, base::BindOnce([](bool* flag) { *flag = true; },
+                                           &second_called));
+  EXPECT_TRUE(second_called);
+}
+
+// Scenario 9: Concurrent Request Batching — Multiple concurrent UpdateIfNeeded
+// queries for the same pending key system are queued and drained together when
+// the capability arrives.
+TEST_F(KeySystemsTest, UpdateIfNeeded_ConcurrentQueriesSameKeySystem) {
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(initial_systems), {kExternal});
+
+  bool called1 = false;
+  bool called2 = false;
+  UpdateIfNeeded(kExternal,
+                 base::BindOnce([](bool* flag) { *flag = true; }, &called1));
+  UpdateIfNeeded(kExternal,
+                 base::BindOnce([](bool* flag) { *flag = true; }, &called2));
+
+  EXPECT_FALSE(called1);
+  EXPECT_FALSE(called2);
+
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  final_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>());
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+
+  EXPECT_TRUE(called1);
+  EXPECT_TRUE(called2);
+}
+
+// Scenario 10: Empty string query — Calling UpdateIfNeeded with an empty key
+// system resolves immediately once initial capabilities have updated, even when
+// a specific key system is still pending.
+TEST_F(KeySystemsTest, UpdateIfNeeded_EmptyStringInstantSynchronous) {
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(initial_systems), {kExternal});
+
+  bool called = false;
+  UpdateIfNeeded(std::string(),
+                 base::BindOnce([](bool* flag) { *flag = true; }, &called));
+  EXPECT_TRUE(called);
+}
+
+// Scenario 11: ClearKey static availability — ClearKey is always registered
+// statically on update without querying browser CDMs, even when the update
+// contains no resolved client key systems and lazy checks are still pending.
+TEST_F(KeySystemsTest, ClearKey_SupportedStatically) {
+  NotifyPendingLazyUpdate(/*key_systems=*/{},
+                          /*pending_key_systems=*/{kExternal});
+
+  bool clearkey_called = false;
+  UpdateIfNeeded(kClearKeyKeySystem,
+                 base::BindOnce([](bool* f) { *f = true; }, &clearkey_called));
+  EXPECT_TRUE(clearkey_called);
+  EXPECT_TRUE(IsSupportedKeySystem(kClearKeyKeySystem));
+
+  bool external_called = false;
+  UpdateIfNeeded(kExternal,
+                 base::BindOnce([](bool* f) { *f = true; }, &external_called));
+  EXPECT_FALSE(external_called);
+
+  // Complete the capability query for kExternal so that the queued callback
+  // runs before `external_called` goes out of scope.
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>());
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+  EXPECT_TRUE(external_called);
+  EXPECT_TRUE(IsSupportedKeySystem(kClearKeyKeySystem));
+}
+
+// Scenario 12: Pending lazy check — Queries before the initial update wait in
+// pending_callbacks_. When the 1st broadcast arrives with kUsesAes finalized
+// and pending key systems still undergoing lazy checks, finalized callbacks
+// drain selectively and unrecognised key systems are rejected synchronously,
+// while pending key system callbacks remain queued until the 2nd progressive
+// broadcast arrives.
+TEST_F(KeySystemsTest, UpdateIfNeeded_PendingLazyKeySystemQueuesAndResolves) {
+  DeferInitialUpdateAndReinitialize();
+
+  // Before the 1st broadcast (has_updated_ == false), all queries are queued.
+  bool fast_called = false;
+  UpdateIfNeeded(kUsesAes,
+                 base::BindOnce([](bool* f) { *f = true; }, &fast_called));
+  EXPECT_FALSE(fast_called);
+
+  bool lazy_supported_called = false;
+  UpdateIfNeeded(
+      "x-org.example.pending.sub",
+      base::BindOnce([](bool* f) { *f = true; }, &lazy_supported_called));
+  EXPECT_FALSE(lazy_supported_called);
+
+  bool lazy_unsupported_called = false;
+  UpdateIfNeeded(
+      "x-org.example.pending_unsupported",
+      base::BindOnce([](bool* f) { *f = true; }, &lazy_unsupported_called));
+  EXPECT_FALSE(lazy_unsupported_called);
+
+  // 1st Broadcast: kUsesAes is finished, while "x-org.example.pending" and
+  // "x-org.example.pending_unsupported" are still pending. kUsesAes callback
+  // drains selectively while pending callbacks stay queued.
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(
+      std::move(initial_systems),
+      {"x-org.example.pending", "x-org.example.pending_unsupported"});
+  EXPECT_TRUE(fast_called);
+  EXPECT_FALSE(lazy_supported_called);
+  EXPECT_FALSE(lazy_unsupported_called);
+
+  // Instant negative rejection: querying an unrecognized key system while
+  // other key systems are pending resolves synchronously as unsupported.
+  bool unrecognized_called = false;
+  UpdateIfNeeded(
+      "com.example.unsupported",
+      base::BindOnce([](bool* f) { *f = true; }, &unrecognized_called));
+  EXPECT_TRUE(unrecognized_called);
+  EXPECT_FALSE(IsSupportedKeySystem("com.example.unsupported"));
+
+  // 2nd Progressive Broadcast: "x-org.example.pending" finishes as supported,
+  // and "x-org.example.pending_unsupported" finishes as unsupported (removed
+  // from pending_key_systems without a KeySystemInfo).
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  final_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>("x-org.example.pending"));
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+
+  // Both queued callbacks must now be drained and resolved!
+  EXPECT_TRUE(lazy_supported_called);
+  EXPECT_TRUE(IsSupportedKeySystem("x-org.example.pending"));
+  EXPECT_TRUE(lazy_unsupported_called);
+  EXPECT_FALSE(IsSupportedKeySystem("x-org.example.pending_unsupported"));
+}
+
+// Scenario 13: Static software with pending lazy hardware check (pattern where
+// software capabilities are known statically while hardware secure capabilities
+// require a pending background check).
+TEST_F(KeySystemsTest, UpdateIfNeeded_StaticSoftwareWithLazyHardware) {
+  // 1st Broadcast: kExternal has a pending hardware check so it is in
+  // pending_key_systems (and withheld from KeySystemInfos until finalized).
+  // kUsesAes is fully resolved and not pending.
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(initial_systems), {kExternal});
+
+  // Querying a finished key system resolves synchronously.
+  bool fast_called = false;
+  UpdateIfNeeded(kUsesAes,
+                 base::BindOnce([](bool* f) { *f = true; }, &fast_called));
+  EXPECT_TRUE(fast_called);
+
+  // ClearKey is always resolved synchronously.
+  bool clearkey_called = false;
+  UpdateIfNeeded(kClearKeyKeySystem,
+                 base::BindOnce([](bool* f) { *f = true; }, &clearkey_called));
+  EXPECT_TRUE(clearkey_called);
+
+  // Querying the key system with a pending hardware check queues the callback.
+  bool lazy_called = false;
+  UpdateIfNeeded(kExternal,
+                 base::BindOnce([](bool* f) { *f = true; }, &lazy_called));
+  EXPECT_FALSE(lazy_called);
+
+  // 2nd Progressive Broadcast: Hardware check completes and adds kExternal
+  // with both software and hardware secure codecs.
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>(
+      /*supported_codecs=*/EME_CODEC_WEBM_ALL,
+      /*supported_hw_secure_codecs=*/TEST_CODEC_FOO_SECURE_VIDEO));
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+
+  // Queued callback is drained and resolved.
+  EXPECT_TRUE(lazy_called);
+  EXPECT_TRUE(IsSupportedKeySystem(kExternal));
+  EXPECT_EQ((EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired}),
+            GetVideoContentTypeConfigRule(kVideoFoo, securefoovideo_codec(),
+                                          kExternal));
+}
+
+// Scenario 14: Dual lazy software and hardware checks (pattern where both
+// software and hardware capabilities undergo lazy checks).
+TEST_F(KeySystemsTest, UpdateIfNeeded_DualLazySoftwareAndHardware) {
+  const std::string kDualLazyKeySystem = "x-org.example.duallazy";
+
+  // 1st Broadcast: Dual-lazy key system has no capabilities yet and is pending.
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(initial_systems), {kDualLazyKeySystem});
+
+  // Querying the dual-lazy key system queues the callback.
+  bool lazy_called = false;
+  UpdateIfNeeded(kDualLazyKeySystem,
+                 base::BindOnce([](bool* f) { *f = true; }, &lazy_called));
+  EXPECT_FALSE(lazy_called);
+
+  // 2nd Progressive Broadcast: Software check finishes first, but hardware
+  // check is still pending (still in pending_key_systems).
+  KeySystemInfos intermediate_systems;
+  intermediate_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(intermediate_systems),
+                          {kDualLazyKeySystem});
+
+  // Callback remains queued because the key system is still pending.
+  EXPECT_FALSE(lazy_called);
+
+  // 3rd Progressive Broadcast: Hardware check completes, pending set is empty.
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  final_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kDualLazyKeySystem));
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+
+  // Callback is drained and resolved.
+  EXPECT_TRUE(lazy_called);
+  EXPECT_TRUE(IsSupportedKeySystem(kDualLazyKeySystem));
 }
 
 }  // namespace media
