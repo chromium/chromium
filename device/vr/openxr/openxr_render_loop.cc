@@ -108,7 +108,10 @@ void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
 
   // Kill outstanding overlays:
   overlay_visible_ = false;
+  has_valid_overlay_texture_ = false;
   overlay_receiver_.reset();
+  overlay_submit_callback_.Reset();
+  pending_overlay_pose_callback_.Reset();
 
   graphics_binding_->SetOverlayAndWebXrVisibility(false, false);
 
@@ -292,6 +295,8 @@ void OpenXrRenderLoop::CleanUp() {
   frame_data_receiver_.reset();
   layer_manager_receiver_.reset();
   overlay_receiver_.reset();
+  overlay_submit_callback_.Reset();
+  pending_overlay_pose_callback_.Reset();
   environment_receiver_.reset();
   StopRuntime();
 }
@@ -307,6 +312,9 @@ void OpenXrRenderLoop::ClearPendingFrame() {
     return;
   }
 
+  if (overlay_submit_callback_) {
+    std::move(overlay_submit_callback_).Run(false);
+  }
   pending_frame_.reset();
   // Send frame data to outstanding requests.
   if (delayed_get_frame_data_callback_ &&
@@ -337,6 +345,13 @@ bool OpenXrRenderLoop::StartPendingFrame() {
     DCHECK(pending_frame_->frame_data_);
     pending_frame_->render_info_ = GetRenderInfo(*pending_frame_->frame_data_);
   }
+
+  if (!webxr_visible_ && pending_overlay_pose_callback_ &&
+      pending_frame_->render_info_) {
+    std::move(pending_overlay_pose_callback_)
+        .Run(pending_frame_->render_info_->Clone());
+  }
+
   return true;
 }
 
@@ -457,8 +472,10 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
   }
 
   // Check if we have obtained all layers (overlay and webxr) that we need.
+  // Note: When WebXR is visible, we do not block on the overlay, allowing
+  // WebXR to run at full frame rate while reusing the latched overlay texture.
   if (pending_frame_->waiting_for_webxr_ ||
-      pending_frame_->waiting_for_overlay_) {
+      (pending_frame_->waiting_for_overlay_ && !webxr_visible_)) {
     DVLOG(3) << __func__ << "Waiting for additional layers, waiting_for_webxr_="
              << pending_frame_->waiting_for_webxr_
              << " waiting_for_overlay=" << pending_frame_->waiting_for_overlay_;
@@ -469,10 +486,13 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
   // Dropping the "Maybe", because now we've passed that point.
   TRACE_EVENT_BEGIN("xr", "CompositeAndSubmit");
   bool copy_successful = false;
-  bool has_webxr_content = pending_frame_->webxr_submitted_ && webxr_visible_;
-  bool has_overlay_content =
-      pending_frame_->overlay_submitted_ && overlay_visible_;
-  bool can_submit = has_webxr_content || has_overlay_content;
+  const bool has_webxr_content =
+      pending_frame_->webxr_submitted_ && webxr_visible_;
+  const bool has_overlay_content =
+      (pending_frame_->overlay_submitted_ || has_valid_overlay_texture_) &&
+      overlay_visible_;
+  const bool can_submit =
+      has_webxr_content || (!webxr_visible_ && has_overlay_content);
 
   // Tell texture helper to composite, then grab the output texture, and submit.
   // If we submitted, set up the next frame, and send outstanding pose requests.
@@ -614,42 +634,66 @@ void OpenXrRenderLoop::SubmitOverlayTexture(
     SubmitOverlayTextureCallback overlay_submit_callback) {
   TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::SubmitOverlay");
   DCHECK(overlay_visible_);
-  overlay_submit_callback_ = std::move(overlay_submit_callback);
-  if (!pending_frame_) {
-    // We may stop presenting while there is a pending SubmitOverlayTexture
-    // outstanding.  If we get an overlay submit we weren't expecting, just
-    // ignore it.
-    DCHECK(!is_presenting_);
-    std::move(overlay_submit_callback_).Run(false);
+  if (!is_presenting_) {
+    std::move(overlay_submit_callback).Run(false);
     return;
   }
 
-  pending_frame_->waiting_for_overlay_ = false;
-
-  graphics_binding_->SetOverlayTexture(
+  const bool success = graphics_binding_->SetOverlayTexture(
       gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)),
       sync_token, left_bounds, right_bounds);
-  pending_frame_->overlay_submitted_ = true;
+  has_valid_overlay_texture_ = success;
 
-  // Regardless of success - try to composite what we have.
-  MaybeCompositeAndSubmit();
+  if (pending_frame_) {
+    pending_frame_->waiting_for_overlay_ = false;
+    pending_frame_->overlay_submitted_ = success;
+    if (overlay_submit_callback_) {
+      std::move(overlay_submit_callback_).Run(false);
+    }
+    overlay_submit_callback_ = std::move(overlay_submit_callback);
+    // Regardless of success - try to composite what we have.
+    MaybeCompositeAndSubmit();
+  } else {
+    // WebXR already composited and cleared pending_frame_. Acknowledge the
+    // callback so the overlay loop continues, and the new texture will be
+    // composited on the next WebXR frame.
+    std::move(overlay_submit_callback).Run(success);
+  }
 }
 
 void OpenXrRenderLoop::RequestNextOverlayPose(
     RequestNextOverlayPoseCallback callback) {
   DVLOG(3) << __func__;
+  if (!is_presenting_) {
+    std::move(callback).Run(mojom::XRRenderInfo::New());
+    return;
+  }
   // We will only request poses while the overlay is visible.
   DCHECK(overlay_visible_);
   TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::RequestOverlayPose");
 
-  // Ensure we have a pending frame; bail if the session ended while starting
-  // it. ExitPresent() has already reset the overlay receiver, so dropping this
-  // callback during teardown is safe.
-  if (!StartPendingFrame()) {
+  if (pending_overlay_pose_callback_) {
+    std::move(pending_overlay_pose_callback_).Run(mojom::XRRenderInfo::New());
+  }
+
+  if (!webxr_visible_) {
+    // When WebXR is hidden, the overlay drives the frame loop.
+    pending_overlay_pose_callback_ = std::move(callback);
+    StartPendingFrame();
     return;
   }
 
-  std::move(callback).Run(pending_frame_->render_info_->Clone());
+  // When WebXR is visible, WebXR drives the OpenXR frame loop. Do not call
+  // StartPendingFrame() here, as that would invoke xrWaitFrame() and block on
+  // hardware VSync, stealing frame pacing from WebXR. Defer until
+  // SendFrameData() has dispatched the frame to WebXR so the overlay IPC never
+  // delays WebXR frame start.
+  if (pending_frame_ && pending_frame_->render_info_ &&
+      pending_frame_->sent_to_webxr_ && pending_frame_->waiting_for_overlay_) {
+    std::move(callback).Run(pending_frame_->render_info_->Clone());
+  } else {
+    pending_overlay_pose_callback_ = std::move(callback);
+  }
 }
 
 void OpenXrRenderLoop::SetOverlayAndWebXRVisibility(bool overlay_visible,
@@ -661,6 +705,18 @@ void OpenXrRenderLoop::SetOverlayAndWebXRVisibility(bool overlay_visible,
   // Update state.
   webxr_visible_ = webxr_visible;
   overlay_visible_ = overlay_visible;
+  if (!overlay_visible_) {
+    has_valid_overlay_texture_ = false;
+    if (pending_overlay_pose_callback_) {
+      std::move(pending_overlay_pose_callback_)
+          .Run(pending_frame_ && pending_frame_->render_info_
+                   ? pending_frame_->render_info_->Clone()
+                   : mojom::XRRenderInfo::New());
+    }
+  } else if (!webxr_visible_ && is_presenting_ &&
+             pending_overlay_pose_callback_) {
+    StartPendingFrame();
+  }
   if (pending_frame_) {
     pending_frame_->waiting_for_webxr_ =
         pending_frame_->waiting_for_webxr_ && webxr_visible;
@@ -710,6 +766,14 @@ void OpenXrRenderLoop::SendFrameData(
           frame_data->render_info->frame_id;
     }
     std::move(callback).Run(std::move(empty_frame_data));
+  }
+
+  if (pending_frame_) {
+    pending_frame_->sent_to_webxr_ = true;
+    if (pending_overlay_pose_callback_ && pending_frame_->render_info_) {
+      std::move(pending_overlay_pose_callback_)
+          .Run(pending_frame_->render_info_->Clone());
+    }
   }
 }
 
@@ -906,6 +970,7 @@ void OpenXrRenderLoop::StopRuntime() {
     std::move(end_callback_).Run();
   }
   openxr_ = nullptr;
+  has_valid_overlay_texture_ = false;
   // Need to destroy the graphics binding after the OpenXrApiWrapper, which
   // depends on it.
   graphics_binding_.reset();
