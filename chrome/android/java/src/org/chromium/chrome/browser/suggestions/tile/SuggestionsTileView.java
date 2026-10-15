@@ -34,7 +34,10 @@ public class SuggestionsTileView extends TileView {
     // TileView override.
     @Override
     public boolean isDraggable() {
-        return mData.source == TileSource.CUSTOM_LINKS;
+        // TODO(crbug.com/549681251): Return `|| mData.isAiMode()` once AI Mode tile reordering
+        // lands. That requires visual->native custom link index translation and persistence of
+        // the AI Mode tile's own position, neither of which exists yet.
+        return mData.isCustomLink();
     }
 
     /**
@@ -46,7 +49,7 @@ public class SuggestionsTileView extends TileView {
      */
     @Initializer
     public void initialize(Tile tile, int titleLines) {
-        boolean showPinnedShortcutBadge = tile.getSource() == TileSource.CUSTOM_LINKS;
+        boolean showPinnedShortcutBadge = tile.isCustomLink() || tile.isAiMode();
         super.initialize(
                 TitleUtil.getTitleForDisplay(tile.getTitle(), tile.getUrl()),
                 tile.isOfflineAvailable(),

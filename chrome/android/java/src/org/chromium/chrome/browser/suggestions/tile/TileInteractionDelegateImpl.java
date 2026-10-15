@@ -318,7 +318,7 @@ class TileInteractionDelegateImpl
     }
 
     boolean isCustomLink() {
-        return mTile.getSource() == TileSource.CUSTOM_LINKS;
+        return mTile.isCustomLink();
     }
 
     boolean isCustomizationItemSupported(boolean matchIsCustomLink) {

@@ -114,6 +114,7 @@ public class TileInteractionDelegateTest {
 
     private void setupForCustomTileTests() {
         when(mTile.getSource()).thenReturn(TileSource.CUSTOM_LINKS);
+        when(mTile.isCustomLink()).thenReturn(true);
         when(mTile.getSectionType()).thenReturn(TileSectionType.PERSONALIZED);
         mDelegate =
                 new TileInteractionDelegateImpl(

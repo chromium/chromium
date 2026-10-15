@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
@@ -26,6 +29,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -292,5 +296,26 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         // Search suggestions should not reselect existing tab; a new search is always conducted to
         // ensure freshness.
         return !TileUtils.isSearchTile(mProfile, tile);
+    }
+
+    @Override
+    public @Nullable String getAiModeTileTitle() {
+        return mContext.getString(R.string.ai_mode_entrypoint_label);
+    }
+
+    @Override
+    public @Nullable GURL getAiModeTileUrl() {
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        return templateUrlService != null ? templateUrlService.getComposeplateUrl() : null;
+    }
+
+    @Override
+    public @Nullable String getAiModeTileContentDescription() {
+        return mContext.getString(R.string.accessibility_ai_mode_mvt_tile);
+    }
+
+    @Override
+    public @DrawableRes int getAiModeTileIconDrawableId() {
+        return R.drawable.search_spark_white_24dp;
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -215,6 +216,31 @@ public class TileRendererTest {
         SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
         Assert.assertEquals(
                 "Example: Pinned shortcut: www.example.com", tileView.getContentDescription());
+    }
+
+    @Test
+    public void testBuildTileView_AiMode_ContentDescription() {
+        mTileSource = TileSource.AI_MODE;
+        doReturn("AI Mode shortcut").when(mTileSetupDelegate).getAiModeTileContentDescription();
+        SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
+        Assert.assertEquals("AI Mode shortcut", tileView.getContentDescription());
+    }
+
+    @Test
+    public void testBuildTileView_AiMode_Icon() {
+        mTileSource = TileSource.AI_MODE;
+        doReturn(R.drawable.search_spark_white_24dp)
+                .when(mTileSetupDelegate)
+                .getAiModeTileIconDrawableId();
+        buildTileView(TileStyle.MODERN, TITLE_LINES);
+
+        verify(mTileSetupCallback, never()).run();
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mTileSetupCallback).run();
+
+        ShadowDrawable shadowDrawable = shadowOf(mTile.getIcon());
+        Assert.assertEquals(
+                R.drawable.search_spark_white_24dp, shadowDrawable.getCreatedFromResId());
     }
 
     @Test

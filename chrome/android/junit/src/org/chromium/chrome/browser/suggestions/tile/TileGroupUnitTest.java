@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,11 +47,18 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.LayoutType;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
@@ -97,6 +105,7 @@ public class TileGroupUnitTest {
     private static final int MAX_TILES_TO_FETCH = 4;
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
+    private static final GURL AI_MODE_TEST_URL = JUnitTestGURLs.URL_1;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TileGroup.Observer mTileGroupObserver;
@@ -131,6 +140,12 @@ public class TileGroupUnitTest {
                         })
                 .when(mTileGroupDelegate)
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
+    }
+
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX);
     }
 
     @Test
@@ -664,10 +679,151 @@ public class TileGroupUnitTest {
         assertEquals(3, TileGroup.countCustomLinksBeforeIndex(tiles, 4));
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_injectedAtSlotZeroByDefault() {
+        enableAiModeTileInsideMvt();
+        SiteSuggestion[] sites = createSiteSuggestions(8);
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        // Capacity scales to 9 when injected.
+        assertEquals(9, tiles.size());
+        assertEquals(TileSource.AI_MODE, tiles.get(0).getSource());
+        assertEquals("AI Mode", tiles.get(0).getTitle());
+        assertEquals(AI_MODE_TEST_URL, tiles.get(0).getUrl());
+        assertEquals(0, tiles.get(0).getIndex());
+
+        // Organic top sites follow.
+        for (int i = 0; i < 8; i++) {
+            assertEquals("Site " + i, tiles.get(i + 1).getTitle());
+            assertEquals(i + 1, tiles.get(i + 1).getIndex());
+        }
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_suppressedWhenSavedIndexNegativeOne() {
+        enableAiModeTileInsideMvt();
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1);
+
+        assertAiModeTileSuppressed(createSiteSuggestions(8));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_suppressedWhenUrlNull() {
+        enableAiModeTileInsideMvt();
+        when(mTileGroupDelegate.getAiModeTileUrl()).thenReturn(null);
+
+        assertAiModeTileSuppressed(createSiteSuggestions(8));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.NTP_AURORA_V2})
+    public void testAiModeTile_suppressedWhenFeatureDisabled() {
+        enableAiModeTileInsideMvt();
+
+        assertAiModeTileSuppressed(createSiteSuggestions(8));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_collisionCustomLinkTakesPrecedence() {
+        enableAiModeTileInsideMvt();
+        // CT > AIT: Custom link has AI Mode URL. Custom link takes precedence; AI Mode tile is
+        // suppressed.
+        SiteSuggestion[] sites = new SiteSuggestion[3];
+        sites[0] =
+                createCustomLinkSiteSuggestion(
+                        "My Gemini", AI_MODE_TEST_URL.getSpec()); // customized tile
+        sites[1] = createSiteSuggestion("Site 1", JUnitTestGURLs.URL_2.getSpec());
+        sites[2] = createSiteSuggestion("Site 2", JUnitTestGURLs.URL_3.getSpec());
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        // AI Mode tile should be suppressed; custom link remains.
+        assertEquals(3, tiles.size());
+        assertTrue(tiles.get(0).isCustomLink());
+        assertEquals("My Gemini", tiles.get(0).getTitle());
+        for (Tile tile : tiles) {
+            assertTrue(tile.getSource() != TileSource.AI_MODE);
+        }
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_collisionOrganicTopSiteReplaced() {
+        enableAiModeTileInsideMvt();
+        // AIT > TST: Organic top site has AI Mode URL. AI Mode tile replaces organic top site.
+        SiteSuggestion[] sites = new SiteSuggestion[3];
+        sites[0] = createSiteSuggestion("Site 0", JUnitTestGURLs.URL_2.getSpec());
+        sites[1] = createSiteSuggestion("AI Mode", AI_MODE_TEST_URL.getSpec());
+        sites[2] = createSiteSuggestion("Site 2", JUnitTestGURLs.URL_3.getSpec());
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        // Organic top site replaced; AI Mode tile injected at slot 0.
+        assertEquals(3, tiles.size());
+        assertEquals(TileSource.AI_MODE, tiles.get(0).getSource());
+        assertEquals("AI Mode", tiles.get(0).getTitle());
+        assertEquals("Site 0", tiles.get(1).getTitle());
+        assertEquals("Site 2", tiles.get(2).getTitle());
+    }
+
     private boolean isAddNewButton(View view) {
         View tileView = view.findViewById(R.id.tile_view_title);
         return tileView != null
                 && (tileView instanceof TextView)
                 && ((TextView) tileView).getText().toString().equals("Add new");
+    }
+
+    private SiteSuggestion[] createSiteSuggestions(int count) {
+        SiteSuggestion[] sites = new SiteSuggestion[count];
+        for (int i = 0; i < count; i++) {
+            sites[i] = createSiteSuggestion("Site " + i, "https://site" + i + ".com");
+        }
+        return sites;
+    }
+
+    private void enableAiModeTileInsideMvt() {
+        when(mTileGroupDelegate.getAiModeTileTitle()).thenReturn("AI Mode");
+        when(mTileGroupDelegate.getAiModeTileUrl()).thenReturn(AI_MODE_TEST_URL);
+    }
+
+    private TileGroup initializeTileGroup(int maxResults, SiteSuggestion... suggestions) {
+        when(mSuggestionsUiDelegate.getImageFetcher()).thenReturn(mImageFetcher);
+        when(mSuggestionsUiDelegate.isVisible()).thenReturn(false);
+
+        mMostVisitedSites.setTileSuggestions(suggestions);
+
+        TileGroup tileGroup =
+                new TileGroup(
+                        mTileRenderer,
+                        mSuggestionsUiDelegate,
+                        mContextMenuManager,
+                        mTileGroupDelegate,
+                        mTileDragDelegate,
+                        mTileGroupObserver,
+                        mOfflinePageBridge);
+        tileGroup.startObserving(maxResults);
+        refreshData(tileGroup);
+
+        return tileGroup;
+    }
+
+    private List<Tile> assertAiModeTileSuppressed(SiteSuggestion... sites) {
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        assertEquals(sites.length, tiles.size());
+        for (Tile tile : tiles) {
+            assertTrue(tile.getSource() != TileSource.AI_MODE);
+        }
+        return tiles;
     }
 }

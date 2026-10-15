@@ -3989,6 +3989,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MOST_VISITED_ADD_NEW" desc="Name of the Tile-like button to add new shortcut by opening the Custom Links Edit Shortcut dialog.">
         Add new
       </message>
+      <message name="IDS_ACCESSIBILITY_AI_MODE_MVT_TILE" desc="Accessibility description for the AI Mode shortcut tile in the Most Visited Tiles section in the New Tab Page.">
+        AI Mode shortcut
+      </message>
       <message name="IDS_ACCESSIBILITY_GOOGLE_DOODLE" desc="Content description for the Google Doodle (the fun, alternative Google logo) shown on the new tab page.">
         Google doodle: <ph name="DOODLE_DESCRIPTION">%1$s<ex>Einstein’s birthday</ex></ph>
       </message>

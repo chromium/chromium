@@ -79,7 +79,7 @@ public class TileUtils {
     public static boolean customTileCountIsUnderLimit(List<Tile> tiles) {
         int numCustomTiles = 0;
         for (Tile tile : tiles) {
-            if (tile.getData().source == TileSource.CUSTOM_LINKS) {
+            if (tile.isCustomLink()) {
                 ++numCustomTiles;
             }
         }

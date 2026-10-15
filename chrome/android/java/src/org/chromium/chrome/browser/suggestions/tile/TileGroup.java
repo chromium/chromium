@@ -6,17 +6,22 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
@@ -84,6 +89,27 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /** Initialize AndroidPrerenderManager JNI interface. */
         void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager);
+
+        /**
+         * @return Localized title for the AI Mode tile, or null if unavailable.
+         */
+        @Nullable String getAiModeTileTitle();
+
+        /**
+         * @return URL for the AI Mode tile, or null if unavailable.
+         */
+        @Nullable GURL getAiModeTileUrl();
+
+        /**
+         * @return Content description for the AI Mode tile, or null if unavailable.
+         */
+        @Nullable String getAiModeTileContentDescription();
+
+        /**
+         * @return Icon drawable resource ID for the AI Mode tile.
+         */
+        @DrawableRes
+        int getAiModeTileIconDrawableId();
 
         /**
          * @param originalTile The tile to edit, or null to add a new tile.
@@ -168,6 +194,17 @@ public class TileGroup implements MostVisitedSites.Observer {
          * be responsible for triggering the visual refresh.
          */
         Runnable createIconLoadCallback(Tile tile);
+
+        /**
+         * @return Content description for the AI Mode tile, or null if unavailable.
+         */
+        @Nullable String getAiModeTileContentDescription();
+
+        /**
+         * @return Icon drawable resource ID for the AI Mode tile.
+         */
+        @DrawableRes
+        int getAiModeTileIconDrawableId();
     }
 
     /** Delegate for handling interactions with tiles. */
@@ -333,6 +370,16 @@ public class TileGroup implements MostVisitedSites.Observer {
                         if (trackLoad) removeTask(TileTask.FETCH_ICON);
                     };
                 }
+
+                @Override
+                public @Nullable String getAiModeTileContentDescription() {
+                    return mTileGroupDelegate.getAiModeTileContentDescription();
+                }
+
+                @Override
+                public @DrawableRes int getAiModeTileIconDrawableId() {
+                    return mTileGroupDelegate.getAiModeTileIconDrawableId();
+                }
             };
 
     /**
@@ -460,6 +507,15 @@ public class TileGroup implements MostVisitedSites.Observer {
         List<Tile> oldPersonalizedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
 
         mTileSections = createTileData(mPendingChanges.siteSuggestions);
+
+        if (NewTabPageUtils.isAiModeTileInsideMvt()) {
+            String aiModeTileTitle = mTileGroupDelegate.getAiModeTileTitle();
+            GURL aiModeTileUrl = mTileGroupDelegate.getAiModeTileUrl();
+            if (!TextUtils.isEmpty(aiModeTileTitle) && !GURL.isEmptyOrInvalid(aiModeTileUrl)) {
+                injectAiModeTile(mTileSections, aiModeTileTitle, aiModeTileUrl);
+            }
+        }
+
         mPendingChanges.siteSuggestions = null;
 
         List<Tile> newPersonalizedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
@@ -614,6 +670,51 @@ public class TileGroup implements MostVisitedSites.Observer {
         return newTileData;
     }
 
+    private static void injectAiModeTile(
+            SparseArray<List<Tile>> tileSections, String aiModeTileTitle, GURL aiModeTileUrl) {
+        int savedIndex =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 0);
+        if (savedIndex < 0) {
+            return;
+        }
+
+        // createTileData() always starts from createEmptyTileData(), which unconditionally seeds
+        // the PERSONALIZED section. It is therefore an empty list, never null, even when the user
+        // has no top sites and no custom links.
+        List<Tile> sectionTiles = assumeNonNull(tileSections.get(TileSectionType.PERSONALIZED));
+
+        Tile existingTile = findTileByUrl(aiModeTileUrl, sectionTiles);
+        if (existingTile != null) {
+            if (existingTile.isCustomLink()) {
+                // CT > AIT: Custom link takes precedence. Suppress AI Mode tile.
+                return;
+            }
+            // AIT > TST: Replace organic top site with AI Mode tile.
+            sectionTiles.remove(existingTile);
+        }
+
+        SiteSuggestion aiModeSuggestion =
+                new SiteSuggestion(
+                        aiModeTileTitle,
+                        aiModeTileUrl,
+                        TileTitleSource.TITLE_TAG,
+                        TileSource.AI_MODE,
+                        TileSectionType.PERSONALIZED);
+        int maxInsertIndex = countCustomLinksBeforeIndex(sectionTiles, sectionTiles.size());
+        int insertIndex = Math.max(0, Math.min(savedIndex, maxInsertIndex));
+        // If `insertIndex < savedIndex`, we deliberately *not* try to "fix" the stored value, to
+        // avoid churn.
+        sectionTiles.add(insertIndex, new Tile(aiModeSuggestion, insertIndex));
+        reindexTiles(sectionTiles);
+    }
+
+    private static void reindexTiles(List<Tile> tiles) {
+        for (int i = 0; i < tiles.size(); ++i) {
+            tiles.get(i).setIndex(i);
+        }
+    }
+
     private boolean tileListAreEqual(
             @Nullable List<Tile> tileList1, @Nullable List<Tile> tileList2) {
         if (tileList1 == null) return tileList2 == null || tileList2.isEmpty();
@@ -644,7 +745,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         int limit = Math.max(0, Math.min(screenIndex, tiles.size()));
         for (int i = 0; i < limit; ++i) {
             Tile tile = tiles.get(i);
-            if (tile.getSource() == TileSource.CUSTOM_LINKS) {
+            if (tile.isCustomLink()) {
                 count++;
             }
         }

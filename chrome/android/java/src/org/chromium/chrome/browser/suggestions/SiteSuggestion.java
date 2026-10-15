@@ -64,4 +64,14 @@ public class SiteSuggestion {
         result = 31 * result + titleSource;
         return result;
     }
+
+    /** Returns whether this suggestion represents the AI Mode tile. */
+    public boolean isAiMode() {
+        return source == TileSource.AI_MODE;
+    }
+
+    /** Returns whether this suggestion represents a custom link. */
+    public boolean isCustomLink() {
+        return source == TileSource.CUSTOM_LINKS;
+    }
 }

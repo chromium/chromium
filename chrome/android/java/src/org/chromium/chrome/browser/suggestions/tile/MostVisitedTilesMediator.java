@@ -338,7 +338,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
         if (tiles.isEmpty()) return;
 
         Tile firstTile = tiles.get(0);
-        if (firstTile.getData().source == TileSource.CUSTOM_LINKS) return;
+        if (firstTile.isCustomLink()) return;
 
         double firstTileScore = mTileGroup.getSuggestionScore(firstTile.getUrl());
         if (firstTileScore < MVT_CUSTOMIZATION_IPH_TILE_SCORE_THRESHOULD) return;

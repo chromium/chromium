@@ -19,7 +19,9 @@ import org.chromium.url.GURL;
 public class Tile implements OfflinableSuggestion {
     private final SiteSuggestion mSiteData;
 
-    private final int mIndex;
+    // 0-based visual screen index of tile, assigned at construction, but may be increased
+    // post-construction if extra tiles (e.g., The AI Mode tile) are added.
+    private int mIndex;
 
     private @TileVisualType int mType = TileVisualType.NONE;
 
@@ -99,8 +101,17 @@ public class Tile implements OfflinableSuggestion {
     }
 
     /**
+     * Reassigns the stored 0-based visual screen index so it's consistent with actual state.
+     *
+     * @param index The new 0-based index.
+     */
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
+    /**
      * @return The source of this tile's title. Used for metrics tracking. Valid values are listed
-     * in {@code TileTitleSource}.
+     *     in {@code TileTitleSource}.
      */
     public @TileTitleSource int getTitleSource() {
         return mSiteData.titleSource;
@@ -164,5 +175,15 @@ public class Tile implements OfflinableSuggestion {
 
     public @TileSectionType int getSectionType() {
         return mSiteData.sectionType;
+    }
+
+    /** Returns whether this tile represents the AI Mode tile. */
+    public boolean isAiMode() {
+        return mSiteData.isAiMode();
+    }
+
+    /** Returns whether this tile represents a custom link. */
+    public boolean isCustomLink() {
+        return mSiteData.isCustomLink();
     }
 }

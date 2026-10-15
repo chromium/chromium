@@ -169,4 +169,9 @@ public class NewTabPageUtils {
     public static boolean isBesideMvtModuleEnabled() {
         return getLayoutTypeForAuroraV2() == LayoutType.BESIDE_MVT;
     }
+
+    /** Returns whether the inside-MVT AI Mode tile is enabled. */
+    public static boolean isAiModeTileInsideMvt() {
+        return getLayoutTypeForAuroraV2() == LayoutType.INSIDE_MVT;
+    }
 }
