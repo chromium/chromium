@@ -201,13 +201,17 @@ BrowsingHistoryService::BrowsingHistoryService(
   if (web_history_) {
     web_history_service_observation_.Observe(web_history_.get());
   }
+
+  // Get notifications when SyncService is destroyed.
+  if (sync_service_) {
+    sync_service_observation_.Observe(sync_service_.get());
+  }
 }
 
 BrowsingHistoryService::BrowsingHistoryService() = default;
 
 BrowsingHistoryService::~BrowsingHistoryService() {
-  query_task_tracker_.TryCancelAll();
-  web_history_request_.reset();
+  Shutdown();
 }
 
 void BrowsingHistoryService::WebHistoryTimeout(
@@ -342,23 +346,27 @@ void BrowsingHistoryService::QueryHistoryInternal(
 }
 
 void BrowsingHistoryService::GetAllAppIds() {
-  local_history_->GetAllAppIds(
-      base::BindOnce(&BrowsingHistoryService::OnGetAllAppIds,
-                     weak_factory_.GetWeakPtr()),
-      &query_task_tracker_);
+  if (local_history_) {
+    local_history_->GetAllAppIds(
+        base::BindOnce(&BrowsingHistoryService::OnGetAllAppIds,
+                       weak_factory_.GetWeakPtr()),
+        &query_task_tracker_);
+  }
 }
 
 void BrowsingHistoryService::GetLastVisitToHostBeforeRecentNavigations(
     const std::string& host_name,
     base::OnceCallback<void(base::Time)> callback) {
-  base::Time now = base::Time::Now();
-  local_history_->GetLastVisitToHost(
-      host_name, /*begin_time=*/base::Time(), /*end_time=*/now,
-      VisitQuery404sPolicy::kExclude404s,
-      base::BindOnce(
-          &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete,
-          weak_factory_.GetWeakPtr(), host_name, now, std::move(callback)),
-      &query_task_tracker_);
+  if (local_history_) {
+    base::Time now = base::Time::Now();
+    local_history_->GetLastVisitToHost(
+        host_name, /*begin_time=*/base::Time(), /*end_time=*/now,
+        VisitQuery404sPolicy::kExclude404s,
+        base::BindOnce(
+            &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete,
+            weak_factory_.GetWeakPtr(), host_name, now, std::move(callback)),
+        &query_task_tracker_);
+  }
 }
 
 void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete(
@@ -366,7 +374,7 @@ void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete(
     base::Time query_start_time,
     base::OnceCallback<void(base::Time)> callback,
     HistoryLastVisitResult result) {
-  if (!result.success || result.last_visit.is_null()) {
+  if (!result.success || result.last_visit.is_null() || !local_history_) {
     std::move(callback).Run(base::Time());
     return;
   }
@@ -392,6 +400,10 @@ void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete2(
 
 void BrowsingHistoryService::RemoveVisits(
     const std::vector<BrowsingHistoryService::HistoryEntry>& items) {
+  if (!driver_) {
+    return;
+  }
+
   if (delete_task_tracker_.HasTrackedTasks() || has_pending_delete_request_ ||
       !driver_->AllowHistoryDeletions()) {
     driver_->OnRemoveVisitsFailed();
@@ -494,6 +506,26 @@ void BrowsingHistoryService::RemoveVisits(
   driver_->OnRemoveVisits(expire_list);
 }
 
+// This method is called when the object is destroyed or when receiving a
+// notification that the HistoryService or the SyncService are being shut
+// down. Since those objects are KeyedService, it is sent before they are
+// destroyed and is a strong hint that the pointer will become dangling.
+// Clear all pending requests and pointers in order to reset all pointers
+// and avoid keeping any dangling ones.
+void BrowsingHistoryService::Shutdown() {
+  delete_task_tracker_.TryCancelAll();
+  web_history_request_.reset();
+  web_history_timer_.reset();
+
+  history_service_observation_.Reset();
+  sync_service_observation_.Reset();
+
+  driver_ = nullptr;
+  local_history_ = nullptr;
+  sync_service_ = nullptr;
+  device_info_tracker_ = nullptr;
+}
+
 // static
 bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
   if (state.remote_status == REACHED_BEGINNING) {
@@ -582,6 +614,7 @@ void BrowsingHistoryService::HoldbackAndPartitionResults(
   }
 }
 
+// static
 void BrowsingHistoryService::MergeDuplicateResults(
     QueryHistoryState* state,
     std::vector<HistoryEntry>* results) {
@@ -679,6 +712,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
   *results = std::move(deduped);
 }
 
+// static
 std::vector<BrowsingHistoryService::HistoryEntry>
 BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
   CHECK(state);
@@ -826,11 +860,17 @@ void BrowsingHistoryService::QueryComplete(
 }
 
 void BrowsingHistoryService::OnGetAllAppIds(GetAllAppIdsResult result) {
-  driver_->OnGetAllAppIds(result.app_ids);
+  if (driver_) {
+    driver_->OnGetAllAppIds(result.app_ids);
+  }
 }
 
 void BrowsingHistoryService::ReturnResultsToDriver(
     scoped_refptr<QueryHistoryState> state) {
+  if (!driver_) {
+    return;
+  }
+
   std::vector<HistoryEntry> results;
   bool has_remote_results = !state->remote_results.empty();
   bool group_visits =
@@ -860,7 +900,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
     }
   }
 
-  RecordResultsMetrics(results);
+  RecordResultsMetrics(results, clock_->Now());
 
   QueryResultsInfo info;
   info.search_text = state->search_text;
@@ -881,12 +921,14 @@ void BrowsingHistoryService::ReturnResultsToDriver(
                                           has_synced_results_);
 }
 
+// static
 void BrowsingHistoryService::RecordResultsMetrics(
-    const std::vector<HistoryEntry>& results) {
+    const std::vector<HistoryEntry>& results,
+    base::Time now) {
   // Count the number of local, remote, and combined entries, each split by
   // entries before vs after the local expiry threshold (90 days).
   const base::Time local_expiry_threshold =
-      clock_->Now() - base::Days(HistoryBackend::kExpireDaysThreshold);
+      now - base::Days(HistoryBackend::kExpireDaysThreshold);
   base::flat_map<HistoryEntry::EntryType, size_t> pre_expiry_counts;
   base::flat_map<HistoryEntry::EntryType, size_t> post_expiry_counts;
   for (const HistoryEntry& entry : results) {
@@ -922,6 +964,7 @@ void BrowsingHistoryService::RecordResultsMetrics(
   RecordDuplicateVisitsCount(results);
 }
 
+// static
 void BrowsingHistoryService::RecordDuplicateVisitsCount(
     const std::vector<HistoryEntry>& results) {
   int duplicate_visits_count = 0;
@@ -1008,15 +1051,18 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
 
 void BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete(
     bool found_other_forms_of_browsing_history) {
-  has_other_forms_of_browsing_history_ = found_other_forms_of_browsing_history;
-  driver_->HasOtherFormsOfBrowsingHistory(has_other_forms_of_browsing_history_,
-                                          has_synced_results_);
+  if (driver_) {
+    has_other_forms_of_browsing_history_ =
+        found_other_forms_of_browsing_history;
+    driver_->HasOtherFormsOfBrowsingHistory(
+        has_other_forms_of_browsing_history_, has_synced_results_);
+  }
 }
 
 void BrowsingHistoryService::RemoveComplete() {
   // Notify the driver that the deletion request is complete, but only if
   // web history delete request is not still pending.
-  if (!has_pending_delete_request_) {
+  if (!has_pending_delete_request_ && driver_) {
     driver_->OnRemoveVisitsComplete();
   }
 }
@@ -1030,34 +1076,37 @@ void BrowsingHistoryService::RemoveWebHistoryComplete(bool success) {
   }
 }
 
+void BrowsingHistoryService::OnSyncShutdown(syncer::SyncService* sync) {
+  // BrowsingHistoryService is not a KeyedService but it stores pointer
+  // to a few KeyedService. As OnSyncShutdown(...) is called when the
+  // SyncService is shutdown, it is a good hint the other KeyedServices
+  // will also be destroyed, so call Shutdown() now.
+  Shutdown();
+}
+
 void BrowsingHistoryService::OnHistoryDeletions(
     HistoryService* history_service,
     const DeletionInfo& deletion_info) {
   // TODO(calamity): Only ignore history deletions when they are actually
   // initiated by us, rather than ignoring them whenever we are deleting.
-  if (!delete_task_tracker_.HasTrackedTasks()) {
+  if (!delete_task_tracker_.HasTrackedTasks() && driver_) {
     driver_->HistoryDeleted();
   }
 }
 
 void BrowsingHistoryService::HistoryServiceBeingDeleted(
     HistoryService* history_service) {
-  DCHECK(history_service == local_history_);
-  // BrowsingHistoryService is owned by UI consumers (e.g.
-  // BrowsingHistoryHandler) and can outlive HistoryService during profile
-  // shutdown or test teardown. Reset the observation while HistoryService is
-  // still alive to prevent ~ScopedObservation() from calling RemoveObserver()
-  // on freed memory during destruction, and clear `local_history_` so it does
-  // not dangle.
-  history_service_observation_.Reset();
-  local_history_ = nullptr;
-  device_info_tracker_ = nullptr;
+  // BrowsingHistoryService is not a KeyedService but it stores pointer
+  // to a few KeyedService. As HistoryServiceBeingDeleted(...) is called
+  // when the HistoryService is shutdown, it is a good hint the other
+  // KeyedServices will also be destroyed, so call Shutdown() now.
+  Shutdown();
 }
 
 void BrowsingHistoryService::OnWebHistoryDeleted() {
   // TODO(calamity): Only ignore web history deletions when they are actually
   // initiated by us, rather than ignoring them whenever we are deleting.
-  if (!has_pending_delete_request_) {
+  if (!has_pending_delete_request_ && driver_) {
     driver_->HistoryDeleted();
   }
 }

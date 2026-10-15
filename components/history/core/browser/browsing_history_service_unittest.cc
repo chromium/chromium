@@ -405,8 +405,8 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   syncer::MockSyncService sync_service_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   TestBrowsingHistoryDriver driver_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
+  raw_ptr<base::MockOneShotTimer> timer_;
 };
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryIncludes404s) {
@@ -908,10 +908,6 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
 }
 
 TEST_F(BrowsingHistoryServiceTest, ObservingWebHistory) {
-  // No need to observe SyncService since we have a WebHistory already.
-  EXPECT_CALL(*sync(), AddObserver).Times(0);
-  EXPECT_CALL(*sync(), RemoveObserver).Times(0);
-
   ResetService(driver(), /*local_history=*/nullptr, web_history(), sync(),
                device_info_tracker());
 
