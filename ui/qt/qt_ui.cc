@@ -30,6 +30,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/glib/gsettings.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ui_base_switches.h"
@@ -188,11 +189,26 @@ bool IsGtkDesktop(base::Environment* env) {
          desktop_session == "pantheon";
 }
 
+// Returns true if QT must be prevented from loading GTK3 (eg. via its GTK3
+// platform theme or style plugins).
+bool ShouldPreventQtFromLoadingGtk3(ui::LinuxUiBackend backend) {
+  // GTK3 and GTK4 symbols collide, so GTK3 can't be loaded if Chrome is using
+  // GTK4.
+  if (IsGtk4Loaded()) {
+    return true;
+  }
+  // On Wayland, GDK3 aborts during initialization if the GSettings font
+  // schemas are invalid.  This is the case where GtkUi refuses to initialize,
+  // and QT is used as a fallback.  See https://crbug.com/573086583.
+  return backend == ui::LinuxUiBackend::kWayland &&
+         !ui::AreGdkWaylandFontSchemasValid();
+}
+
 std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
-GetGtkQtCollisionPreventionOverrides() {
+GetGtkQtCollisionPreventionOverrides(ui::LinuxUiBackend backend) {
   std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
       env_overrides;
-  if (!IsGtk4Loaded()) {
+  if (!ShouldPreventQtFromLoadingGtk3(backend)) {
     return env_overrides;
   }
 
@@ -297,28 +313,31 @@ bool QtUi::Initialize() {
   // [3] https://crbug.com/396193145
   base::ScopedEnvironmentVariableOverride qt_xcb_no_xi2("QT_XCB_NO_XI2", "1");
 
-  // If Chrome is using GTK4, prevent QT from loading GTK3, otherwise
-  // the symbols from both versions will collide and crash the browser process.
-  auto env_overrides = GetGtkQtCollisionPreventionOverrides();
+  auto* delegate = ui::LinuxUiDelegate::GetInstance();
+  const auto backend =
+      delegate ? delegate->GetBackend() : ui::LinuxUiBackend::kStub;
+
+  // Prevent QT from loading GTK3 if it would crash the browser process: either
+  // because Chrome is using GTK4 and the symbols from both versions would
+  // collide, or because GDK3 would abort due to invalid GSettings schemas.
+  auto env_overrides = GetGtkQtCollisionPreventionOverrides(backend);
 
   // Set up command line.
   auto cmd_line = *base::CommandLine::ForCurrentProcess();
-  if (auto* delegate = ui::LinuxUiDelegate::GetInstance()) {
-    // Ensure QT is initialized with the same display server protocol as Chrome.
-    // In particular, when running under XWayland, make sure to use the xcb QT
-    // backend instead of the wayland backend.
-    switch (delegate->GetBackend()) {
-      case ui::LinuxUiBackend::kStub:
-        break;
-      case ui::LinuxUiBackend::kX11:
-        cmd_line.AppendArg("-platform");
-        cmd_line.AppendArg("xcb");
-        break;
-      case ui::LinuxUiBackend::kWayland:
-        cmd_line.AppendArg("-platform");
-        cmd_line.AppendArg("wayland");
-        break;
-    }
+  // Ensure QT is initialized with the same display server protocol as Chrome.
+  // In particular, when running under XWayland, make sure to use the xcb QT
+  // backend instead of the wayland backend.
+  switch (backend) {
+    case ui::LinuxUiBackend::kStub:
+      break;
+    case ui::LinuxUiBackend::kX11:
+      cmd_line.AppendArg("-platform");
+      cmd_line.AppendArg("xcb");
+      break;
+    case ui::LinuxUiBackend::kWayland:
+      cmd_line.AppendArg("-platform");
+      cmd_line.AppendArg("wayland");
+      break;
   }
   cmd_line_ = CopyCmdLine(cmd_line);
 
