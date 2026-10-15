@@ -6,7 +6,6 @@
 
 #import "base/check_deref.h"
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/child_account_service.h"
 #import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -29,24 +28,11 @@ std::unique_ptr<KeyedService> CreateChildAccountService(ProfileIOS* profile) {
 }
 }  // namespace
 
-// static
-supervised_user::ChildAccountService* ChildAccountServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<supervised_user::ChildAccountService>(
-          profile, /*create=*/true);
-}
-
-// static
-ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
-  static base::NoDestructor<ChildAccountServiceFactory> instance;
-  return instance.get();
-}
-
-ChildAccountServiceFactory::ChildAccountServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ChildAccountService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+ChildAccountServiceFactory::ChildAccountServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ChildAccountService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   // Source of truth for the supervision status.
   DependsOn(IdentityManagerFactory::GetInstance());
   // Consumer that shall be activated according to supervision status.

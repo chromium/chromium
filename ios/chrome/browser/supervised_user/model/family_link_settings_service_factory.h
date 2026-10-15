@@ -5,26 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_FAMILY_LINK_SETTINGS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_FAMILY_LINK_SETTINGS_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace supervised_user {
-class FamilyLinkSettingsService;
 
 // Singleton that owns SupervisedUserSettingsService object and associates
 // them with ProfileIOS.
-class FamilyLinkSettingsServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class FamilyLinkSettingsServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          FamilyLinkSettingsServiceFactory,
+          supervised_user::FamilyLinkSettingsService> {
  public:
-  static supervised_user::FamilyLinkSettingsService* GetForProfile(
-      ProfileIOS* profile);
-  static FamilyLinkSettingsServiceFactory* GetInstance();
+  explicit FamilyLinkSettingsServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<FamilyLinkSettingsServiceFactory>;
-
-  FamilyLinkSettingsServiceFactory();
-  ~FamilyLinkSettingsServiceFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

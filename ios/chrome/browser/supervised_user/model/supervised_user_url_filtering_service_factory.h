@@ -7,29 +7,21 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace supervised_user {
 
 // Singleton that owns SupervisedUserService objects and associates
 // them with Profiles.
 class SupervisedUserUrlFilteringServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SupervisedUserUrlFilteringServiceFactory,
+          SupervisedUserUrlFilteringService> {
  public:
-  static SupervisedUserUrlFilteringService* GetForProfile(ProfileIOS* profile);
-
-  static SupervisedUserUrlFilteringServiceFactory* GetInstance();
+  explicit SupervisedUserUrlFilteringServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SupervisedUserUrlFilteringServiceFactory>;
-
-  SupervisedUserUrlFilteringServiceFactory();
-  ~SupervisedUserUrlFilteringServiceFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

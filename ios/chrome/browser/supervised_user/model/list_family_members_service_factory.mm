@@ -5,35 +5,15 @@
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 
 #import "base/check_deref.h"
-#import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/list_family_members_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace supervised_user {
-// static
-ListFamilyMembersService* ListFamilyMembersServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ListFamilyMembersService>(
-      profile, /*create=*/true);
-}
 
-// static
-ListFamilyMembersService*
-ListFamilyMembersServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ListFamilyMembersService>(
-      profile, /*create=*/false);
-}
-
-// static
-ListFamilyMembersServiceFactory*
-ListFamilyMembersServiceFactory::GetInstance() {
-  static base::NoDestructor<ListFamilyMembersServiceFactory> instance;
-  return instance.get();
-}
-
-ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
-    : ProfileKeyedServiceFactoryIOS(
+ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "ListFamilyMembersService",
           ServiceCreation::kCreateWithProfile,
           // Note: this is a leaf service that is not automatically created in

@@ -31,24 +31,10 @@ class FilterDelegateImpl : public FamilyLinkUrlFilter::Delegate {
 
 }  // namespace
 
-// static
-SupervisedUserUrlFilteringService*
-SupervisedUserUrlFilteringServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<SupervisedUserUrlFilteringService>(
-          profile, /*create=*/true);
-}
-
-// static
-SupervisedUserUrlFilteringServiceFactory*
-SupervisedUserUrlFilteringServiceFactory::GetInstance() {
-  static base::NoDestructor<SupervisedUserUrlFilteringServiceFactory> instance;
-  return instance.get();
-}
-
 SupervisedUserUrlFilteringServiceFactory::
-    SupervisedUserUrlFilteringServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SupervisedUserUrlFilteringService") {
+    SupervisedUserUrlFilteringServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SupervisedUserUrlFilteringService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
 }
