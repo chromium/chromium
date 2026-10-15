@@ -260,22 +260,6 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-    public void testSearchAutofill_autofillAndPasswordsDisabled() {
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Autofill.Settings.AutofillOptionsReferrerAndroid",
-                        AutofillOptionsReferrer.SETTINGS_SEARCH);
-        searchSettings("autofill");
-
-        clickSearchResult(R.string.autofill_settings_title);
-
-        onView(withText(R.string.settings_autofill_service_provider)).check(matches(isDisplayed()));
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // TODO(crbug.com/572883473): Re-enable.
     public void testSearchAutofill_autofillAiDisabled() {
@@ -289,19 +273,8 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
-    public void testSearchAutofillSettingsChildren_yourSavedInfoSettingsPageEnabled() {
-        testSearchAutofillAiSwitch();
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)
-    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-    public void testSearchAutofillSettingsChildren_yourSavedInfoSettingsPageDisabled() {
+    public void testSearchAutofillSettingsChildren_yourSavedInfoSettingsPageEnabled() {
         testSearchAutofillAiSwitch();
     }
 

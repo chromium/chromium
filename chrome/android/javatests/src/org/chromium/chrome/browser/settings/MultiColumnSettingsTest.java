@@ -404,7 +404,6 @@ public class MultiColumnSettingsTest {
     })
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSinglePane() {
         SettingsActivityInterface activity = startSettings();
@@ -423,7 +422,6 @@ public class MultiColumnSettingsTest {
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testTwoPane() {
         SettingsActivityInterface activity = startSettings();
