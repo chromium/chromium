@@ -542,6 +542,7 @@ source_set("policy_path_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "async_policy_loader_unittest.cc",
     "cloud/affiliation_unittest.cc",
     "cloud/cloud_policy_client_unittest.cc",
     "cloud/cloud_policy_core_unittest.cc",
