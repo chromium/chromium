@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "components/browser_actuator/public/common.h"
 
 namespace browser_actuator {
@@ -21,7 +22,21 @@ class TransportHandlerFactory;
 // establishment.
 class TransportHandlerFactoryRegistry {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when a registered factory is unregistered from the registry.
+    virtual void OnFactoryUnregistered(FactoryId factory_id) {}
+
+    // Called when the registry is being destroyed.
+    virtual void OnRegistryDestroyed() {}
+  };
+
   virtual ~TransportHandlerFactoryRegistry() = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Registers a factory. Registry does NOT take ownership;
   // ownership remains with the feature client.

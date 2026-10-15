@@ -17,6 +17,19 @@ TransportHandlerFactoryRegistryImpl::TransportHandlerFactoryRegistryImpl() =
 
 TransportHandlerFactoryRegistryImpl::~TransportHandlerFactoryRegistryImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (Observer& observer : observers_) {
+    observer.OnRegistryDestroyed();
+  }
+}
+
+void TransportHandlerFactoryRegistryImpl::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void TransportHandlerFactoryRegistryImpl::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
 }
 
 void TransportHandlerFactoryRegistryImpl::RegisterFactory(
@@ -45,14 +58,23 @@ void TransportHandlerFactoryRegistryImpl::UnregisterFactory(
     TransportHandlerFactory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(factory);
+  bool removed = false;
   for (PayloadType payload_type : factory->GetSupportedPayloadTypes()) {
     auto it = factories_.find(payload_type);
     if (it != factories_.end()) {
       auto& registered_factories = it->second;
-      std::erase(registered_factories, factory);
+      if (std::erase(registered_factories, factory) > 0) {
+        removed = true;
+      }
       if (registered_factories.empty()) {
         factories_.erase(it);
       }
+    }
+  }
+  if (removed) {
+    const FactoryId factory_id = factory->GetFactoryId();
+    for (Observer& observer : observers_) {
+      observer.OnFactoryUnregistered(factory_id);
     }
   }
 }

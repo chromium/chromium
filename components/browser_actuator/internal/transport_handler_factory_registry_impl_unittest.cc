@@ -4,8 +4,10 @@
 
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 
+#include <memory>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
 #include "components/browser_actuator/test_support/mock_transport_handler_factory.h"
@@ -119,6 +121,73 @@ TEST(TransportHandlerFactoryRegistryImplTest,
 
   registry.RegisterFactory(&factory1);
   EXPECT_DCHECK_DEATH(registry.RegisterFactory(&factory2));
+}
+
+namespace {
+
+class MockFactoryRegistryObserver
+    : public TransportHandlerFactoryRegistry::Observer {
+ public:
+  MOCK_METHOD(void, OnFactoryUnregistered, (FactoryId factory_id), (override));
+  MOCK_METHOD(void, OnRegistryDestroyed, (), (override));
+};
+
+}  // namespace
+
+TEST(TransportHandlerFactoryRegistryImplTest,
+     NotifiesObserversOnFactoryUnregistered) {
+  TransportHandlerFactoryRegistryImpl registry;
+  MockFactoryRegistryObserver observer;
+  registry.AddObserver(&observer);
+
+  MockTransportHandlerFactory factory1({kTestPayloadTypeA, kTestPayloadTypeB},
+                                       kTestFactoryId1);
+  registry.RegisterFactory(&factory1);
+
+  EXPECT_CALL(observer, OnFactoryUnregistered(kTestFactoryId1)).Times(1);
+  registry.UnregisterFactory(&factory1);
+  registry.RemoveObserver(&observer);
+}
+
+TEST(TransportHandlerFactoryRegistryImplTest,
+     DoesNotNotifyObserversWhenUnregisteringUnknownFactory) {
+  TransportHandlerFactoryRegistryImpl registry;
+  MockFactoryRegistryObserver observer;
+  registry.AddObserver(&observer);
+
+  MockTransportHandlerFactory factory1({kTestPayloadTypeA}, kTestFactoryId1);
+  EXPECT_CALL(observer, OnFactoryUnregistered).Times(0);
+  registry.UnregisterFactory(&factory1);
+  registry.RemoveObserver(&observer);
+}
+
+TEST(TransportHandlerFactoryRegistryImplTest, DoesNotNotifyRemovedObservers) {
+  TransportHandlerFactoryRegistryImpl registry;
+  MockFactoryRegistryObserver observer;
+  registry.AddObserver(&observer);
+  registry.RemoveObserver(&observer);
+
+  MockTransportHandlerFactory factory1({kTestPayloadTypeA}, kTestFactoryId1);
+  registry.RegisterFactory(&factory1);
+
+  EXPECT_CALL(observer, OnFactoryUnregistered).Times(0);
+  registry.UnregisterFactory(&factory1);
+}
+
+TEST(TransportHandlerFactoryRegistryImplTest,
+     NotifiesObserversOnRegistryDestroyed) {
+  MockFactoryRegistryObserver observer;
+  base::ScopedObservation<TransportHandlerFactoryRegistry,
+                          TransportHandlerFactoryRegistry::Observer>
+      observation(&observer);
+  auto registry = std::make_unique<TransportHandlerFactoryRegistryImpl>();
+  observation.Observe(registry.get());
+
+  EXPECT_CALL(observer, OnRegistryDestroyed()).WillOnce([&]() {
+    observation.Reset();
+  });
+  registry.reset();
+  EXPECT_FALSE(observation.IsObserving());
 }
 
 }  // namespace browser_actuator

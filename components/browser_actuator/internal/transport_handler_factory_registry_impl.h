@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/browser_actuator/public/common.h"
@@ -31,6 +32,8 @@ class TransportHandlerFactoryRegistryImpl
   TransportHandlerFactoryRegistryImpl& operator=(
       const TransportHandlerFactoryRegistryImpl&) = delete;
 
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void RegisterFactory(TransportHandlerFactory* factory) override;
   void UnregisterFactory(TransportHandlerFactory* factory) override;
   std::vector<TransportHandlerFactory*> GetFactories(
@@ -41,6 +44,8 @@ class TransportHandlerFactoryRegistryImpl
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::flat_map<PayloadType, std::vector<raw_ptr<TransportHandlerFactory>>>
       factories_ GUARDED_BY_CONTEXT(sequence_checker_);
