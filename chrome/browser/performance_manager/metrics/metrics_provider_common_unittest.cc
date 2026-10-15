@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
@@ -24,12 +25,17 @@ class PerformanceManagerMetricsProviderCommonTest : public testing::Test {
     return provider_.get();
   }
 
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
  private:
   void SetUp() override {
     provider_ = std::make_unique<performance_manager::MetricsProviderCommon>();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<performance_manager::MetricsProviderCommon> provider_;
 };
 
@@ -75,3 +81,46 @@ TEST_F(PerformanceManagerMetricsProviderCommonTest, MultipleA11yModeFlags) {
       "PerformanceManager.Experimental.AccessibilityModeFlag",
       ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML, 1);
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(PerformanceManagerMetricsProviderCommonTest, MacSystemMemoryMetrics) {
+  base::HistogramTester tester;
+  // The provider's constructor starts a 2 minute repeating timer that records
+  // the memory histograms; advance mock time to fire it once.
+  task_environment().FastForwardBy(base::Minutes(2));
+
+  // Values are live machine readings, so only check that each histogram was
+  // emitted once and that percentages stay within range.
+  static constexpr const char* kSizeHistograms[] = {
+      "Memory.Experimental.MacFileBackedMemoryMB2",
+      "Memory.Experimental.MacFreeMemoryMB",
+      "Memory.Experimental.MacSpeculativeMemoryMB",
+      "Memory.Experimental.MacPurgeableMemoryMB",
+      "Memory.Experimental.MacWiredMemoryMB",
+      "Memory.Experimental.MacUnwiredMemoryMB",
+      "Memory.Experimental.MacCompressorMemoryMB",
+      "Memory.Experimental.MacCompressorUncompressedMemoryMB",
+      "Memory.Experimental.MacCompressorSwappedMemoryMB",
+  };
+  for (const char* name : kSizeHistograms) {
+    tester.ExpectTotalCount(name, 1);
+  }
+
+  static constexpr const char* kPercentHistograms[] = {
+      "Memory.Experimental.MacFileBackedMemoryPercent",
+      "Memory.Experimental.MacFreeMemoryPercent",
+      "Memory.Experimental.MacWiredMemoryPercent",
+      "Memory.Experimental.MacCompressorPercentOfTotal",
+      "Memory.Experimental.MacCompressorPercentOfUnwired",
+  };
+  for (const char* name : kPercentHistograms) {
+    const auto samples = tester.GetAllSamples(name);
+    ASSERT_EQ(samples.size(), 1u) << name;
+    EXPECT_GE(samples[0].min, 0) << name;
+    EXPECT_LE(samples[0].min, 100) << name;
+  }
+
+  // MacSwap{Used,Total}MB are not asserted on: they depend on the vm.swapusage
+  // sysctl succeeding.
+}
+#endif  // BUILDFLAG(IS_MAC)

@@ -1723,16 +1723,120 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Experimental.MacCompressorPercentOfTotal" units="%"
+    expires_after="2027-10-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The share of total physical memory occupied by the macOS memory compressor
+    (compressor_page_count / total).
+
+    Recorded every 2 minutes on macOS.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Experimental.MacCompressorPercentOfUnwired" units="%"
+    expires_after="2027-10-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The share of unwired physical memory occupied by the macOS memory compressor
+    (compressor_page_count / (total - wire_count)).
+
+    Recorded every 2 minutes on macOS.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Experimental.MacFileBackedMemoryMB2" units="MB"
-    expires_after="2025-03-09">
+    expires_after="2027-10-01">
   <owner>anthonyvd@chromium.org</owner>
+  <owner>andresrperez@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The amount of memory reported as &quot;file-backed&quot; or associated to
     &quot;external_pages&quot; by vm_stat.
 
     Recorded every 2 minutes on MacOS.
+
+    Note: This histogram was expired from 2025-03-09 to 2026-10-08.
   </summary>
+</histogram>
+
+<histogram name="Memory.Experimental.MacSwap{MacSwapKind}MB" units="MB"
+    expires_after="2027-10-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The {MacSwapKind} disk swap space, as reported by the vm.swapusage sysctl.
+
+    Recorded every 2 minutes on macOS. Not recorded if the sysctl fails.
+  </summary>
+  <token key="MacSwapKind">
+    <variant name="Total"
+        summary="total provisioned (xsu_total). macOS grows and shrinks this
+                 on demand, so it is not a fixed capacity"/>
+    <variant name="Used" summary="currently used (xsu_used)"/>
+  </token>
+</histogram>
+
+<histogram name="Memory.Experimental.Mac{MacMemoryKind}MemoryMB" units="MB"
+    expires_after="2027-10-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The amount of {MacMemoryKind} on the system, as reported by
+    host_statistics64().
+
+    Recorded every 2 minutes on macOS. Values above 64 GB fall in the overflow
+    bucket; use the matching Percent histogram to compare machines with
+    different amounts of RAM.
+  </summary>
+  <token key="MacMemoryKind">
+    <variant name="Compressor"
+        summary="physical memory occupied by the compressed pager
+                 (compressor_page_count)"/>
+    <variant name="CompressorSwapped"
+        summary="compressor-held memory currently stored in swap rather than
+                 in RAM (swapped_count)"/>
+    <variant name="CompressorUncompressed"
+        summary="memory held by the compressor measured before compression
+                 (total_uncompressed_pages_in_compressor); this may include
+                 pages whose compressed form has since been swapped out"/>
+    <variant name="Free"
+        summary="strictly unallocated memory, excluding speculative pages
+                 (free_count - speculative_count)"/>
+    <variant name="Purgeable"
+        summary="purgeable memory, which the kernel may reclaim without
+                 writing it out (purgeable_count)"/>
+    <variant name="Speculative"
+        summary="speculatively read-ahead file data that no process has used
+                 yet (speculative_count)"/>
+    <variant name="Unwired"
+        summary="memory not wired by the kernel (total - wire_count), which
+                 is the pool the compressor and all user memory compete for"/>
+    <variant name="Wired"
+        summary="memory wired down by the kernel, which can neither be paged
+                 out nor compressed (wire_count)"/>
+  </token>
+</histogram>
+
+<histogram name="Memory.Experimental.Mac{MacMemoryKind}MemoryPercent" units="%"
+    expires_after="2027-10-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The share of total physical memory that is {MacMemoryKind}, as reported by
+    host_statistics64().
+
+    Recorded every 2 minutes on macOS.
+  </summary>
+  <token key="MacMemoryKind">
+    <variant name="FileBacked" summary="file-backed (external_page_count)"/>
+    <variant name="Free"
+        summary="strictly unallocated, excluding speculative pages
+                 (free_count - speculative_count)"/>
+    <variant name="Wired" summary="wired down by the kernel (wire_count)"/>
+  </token>
 </histogram>
 
 <histogram

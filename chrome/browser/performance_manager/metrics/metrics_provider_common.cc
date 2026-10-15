@@ -9,8 +9,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <sys/sysctl.h>
+#endif
 
 namespace performance_manager {
 
@@ -55,6 +60,77 @@ void MaybeRecordAccessibilityModeFlags(const ui::AXMode& mode,
     }
   }
 }
+
+#if BUILDFLAG(IS_MAC)
+int PercentOf(uint64_t part, uint64_t whole) {
+  return static_cast<int>(part * 100 / whole);
+}
+
+// Records a breakdown of system memory as seen by the Mach VM subsystem, plus
+// disk swap usage.
+void RecordMacSystemMemoryMetrics(const base::SystemMemoryInfo& info) {
+  const uint64_t total = info.total.InBytes();
+  if (total == 0) {
+    return;
+  }
+
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacFileBackedMemoryMB2",
+                                  info.file_backed);
+  base::UmaHistogramPercentage("Memory.Experimental.MacFileBackedMemoryPercent",
+                               PercentOf(info.file_backed.InBytes(), total));
+
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacFreeMemoryMB",
+                                  info.free);
+  base::UmaHistogramPercentage("Memory.Experimental.MacFreeMemoryPercent",
+                               PercentOf(info.free.InBytes(), total));
+
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacSpeculativeMemoryMB",
+                                  info.speculative);
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacPurgeableMemoryMB",
+                                  info.purgeable);
+
+  const uint64_t wired = info.wired.InBytes();
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacWiredMemoryMB",
+                                  info.wired);
+  base::UmaHistogramPercentage("Memory.Experimental.MacWiredMemoryPercent",
+                               PercentOf(wired, total));
+
+  const uint64_t compressor = info.compressor.InBytes();
+  base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacCompressorMemoryMB",
+                                  info.compressor);
+  base::UmaHistogramPercentage(
+      "Memory.Experimental.MacCompressorPercentOfTotal",
+      PercentOf(compressor, total));
+
+  // Unwired memory is the pool the compressor and user memory compete for.
+  if (total > wired) {
+    const uint64_t unwired = total - wired;
+    base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacUnwiredMemoryMB",
+                                    base::ByteSize(unwired));
+    base::UmaHistogramPercentage(
+        "Memory.Experimental.MacCompressorPercentOfUnwired",
+        PercentOf(compressor, unwired));
+  }
+
+  base::UmaHistogramMemoryLargeMB(
+      "Memory.Experimental.MacCompressorUncompressedMemoryMB",
+      info.compressor_uncompressed);
+  base::UmaHistogramMemoryLargeMB(
+      "Memory.Experimental.MacCompressorSwappedMemoryMB",
+      info.compressor_swapped);
+
+  // SystemMemoryInfo does not report swap on Apple platforms; ask the kernel
+  // directly. xsu_total grows and shrinks as macOS adds and removes swap files.
+  xsw_usage swap = {};
+  size_t size = sizeof(swap);
+  if (sysctlbyname("vm.swapusage", &swap, &size, nullptr, 0) == 0) {
+    base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacSwapUsedMB",
+                                    base::ByteSize(swap.xsu_used));
+    base::UmaHistogramMemoryLargeMB("Memory.Experimental.MacSwapTotalMB",
+                                    base::ByteSize(swap.xsu_total));
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
 MetricsProviderCommon::MetricsProviderCommon() {
@@ -78,8 +154,7 @@ void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
 #if BUILDFLAG(IS_MAC)
   base::SystemMemoryInfo info;
   if (base::GetSystemMemoryInfo(&info)) {
-    base::UmaHistogramMemoryLargeMB(
-        "Memory.Experimental.MacFileBackedMemoryMB2", info.file_backed.InMiB());
+    RecordMacSystemMemoryMetrics(info);
   }
 #endif
 }
