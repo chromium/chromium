@@ -69,7 +69,7 @@ class ExtensibleEnterpriseSSOPrefsHandler {
     // Required for `Credential` payloads. Ignored for `Redirect` payloads.
     // Host names that begin with a "." are wildcard suffixes that match all
     // subdomains; otherwise the host name needs to be an exact match.
-    std::vector<std::string> hosts;
+    std::optional<std::vector<std::string>> hosts;
 
     friend bool operator==(const Config&, const Config&) = default;
   };

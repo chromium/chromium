@@ -391,8 +391,13 @@ using Config = ExtensibleEnterpriseSSOPrefsHandler::Config;
 // Makes `Config` mismatches readable in test failure output.
 void PrintTo(const Config& config, std::ostream* os) {
   *os << "{extension_id: \"" << config.extension_id << "\", team_id: \""
-      << config.team_id << "\", hosts: ["
-      << base::JoinString(config.hosts, ", ") << "]}";
+      << config.team_id << "\", hosts: ";
+  if (config.hosts.has_value()) {
+    *os << "[" << base::JoinString(config.hosts.value(), ", ") << "]";
+  } else {
+    *os << "nullopt";
+  }
+  *os << "}";
 }
 
 struct ParseConfigTestParams {
@@ -431,7 +436,8 @@ INSTANTIATE_TEST_SUITE_P(
                 Config{
                     .extension_id = kOktaSsoExtensionId,
                     .team_id = kOktaSsoTeamId,
-                    .hosts = {kExampleHost, kWildcardHost},
+                    .hosts = std::vector<std::string>{kExampleHost,
+                                                      kWildcardHost},
                 },
         },
         ParseConfigTestParams{
@@ -446,7 +452,7 @@ INSTANTIATE_TEST_SUITE_P(
                 Config{
                     .extension_id = kOktaSsoExtensionId,
                     .team_id = kOktaSsoTeamId,
-                    .hosts = {kExampleHost},
+                    .hosts = std::vector<std::string>{kExampleHost},
                 },
         },
         ParseConfigTestParams{
@@ -457,12 +463,16 @@ INSTANTIATE_TEST_SUITE_P(
                     .team_id = StringToScopedPropList(kOktaSsoTeamId),
                     .hosts = HostsToScopedPropList({}),
                 },
+            // An empty `Hosts` array is distinct from a missing one.
             .expected_config =
                 Config{
                     .extension_id = kOktaSsoExtensionId,
                     .team_id = kOktaSsoTeamId,
+                    .hosts = std::vector<std::string>(),
                 },
         },
+        // `Hosts` is optional, so a malformed entry doesn't invalidate the
+        // whole payload.
         ParseConfigTestParams{
             .name = "HostsNotAnArray",
             .raw_config =
@@ -471,8 +481,14 @@ INSTANTIATE_TEST_SUITE_P(
                     .team_id = StringToScopedPropList(kOktaSsoTeamId),
                     .hosts = StringToScopedPropList(kExampleHost),
                 },
-            .expected_config = std::nullopt,
+            .expected_config =
+                Config{
+                    .extension_id = kOktaSsoExtensionId,
+                    .team_id = kOktaSsoTeamId,
+                    .hosts = std::nullopt,
+                },
         },
+        // `Hosts` is optional, e.g. for `Redirect` payloads.
         ParseConfigTestParams{
             .name = "MissingHosts",
             .raw_config =
@@ -481,7 +497,12 @@ INSTANTIATE_TEST_SUITE_P(
                     .team_id = StringToScopedPropList(kOktaSsoTeamId),
                     .hosts = ScopedPropList(),
                 },
-            .expected_config = std::nullopt,
+            .expected_config =
+                Config{
+                    .extension_id = kOktaSsoExtensionId,
+                    .team_id = kOktaSsoTeamId,
+                    .hosts = std::nullopt,
+                },
         },
         ParseConfigTestParams{
             .name = "MissingExtensionId",

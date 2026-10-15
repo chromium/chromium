@@ -231,7 +231,7 @@ void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {
 void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(
     std::optional<Config> config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config.has_value()) {
+  if (!config.has_value() || !config->hosts.has_value()) {
     local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts, {});
     return;
   }
@@ -240,8 +240,8 @@ void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(
       << "Successfully parsed SSO extension MDM payload.";
 
   base::ListValue hosts;
-  hosts.reserve(config->hosts.size());
-  for (const std::string& host : config->hosts) {
+  hosts.reserve(config->hosts->size());
+  for (const std::string& host : config->hosts.value()) {
     hosts.Append(host);
   }
   local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,
@@ -259,7 +259,7 @@ void ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
 std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
 ExtensibleEnterpriseSSOPrefsHandler::ParseConfig(
     CFPreferencesObserver::RawConfig config) {
-  if (!config.extension_id || !config.team_id || !config.hosts) {
+  if (!config.extension_id || !config.team_id) {
     VLOG_POLICY(1, EXTENSIBLE_SSO)
         << "SSO extension MDM payload not found or incomplete.";
     return std::nullopt;
@@ -293,18 +293,13 @@ ExtensibleEnterpriseSSOPrefsHandler::ParseConfig(
     return std::nullopt;
   }
 
-  // TODO(b/564412659): Make hostnames an optional field of Config and don't
-  // fail if it's missing from the MDM payload.
   std::optional<std::vector<std::string>> hostnames =
       ParseHostnames(config.hosts.get());
-  if (!hostnames.has_value()) {
-    return std::nullopt;
-  }
 
   return ExtensibleEnterpriseSSOPrefsHandler::Config{
       .extension_id = std::move(extension_id).value(),
       .team_id = std::move(team_id).value(),
-      .hosts = std::move(hostnames).value(),
+      .hosts = std::move(hostnames),
   };
 }
 
