@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,20 +18,30 @@ gpu::SyncToken CreateSyncToken(int value) {
                         gpu::CommandBufferId::FromUnsafeValue(value), 0);
 }
 
+// Returns a copy of the gpu::SyncToken stored in the GL sync token blob
+// `sync_token`.
+gpu::SyncToken ReadSyncToken(const GLbyte* sync_token) {
+  gpu::SyncToken sync_token_data;
+  // SAFETY: `GetData()` points to the sizeof(gpu::SyncToken) bytes of
+  // `sync_token_data`. The CHROMIUM_sync_point GL API requires `sync_token` to
+  // point to a GL_SYNC_TOKEN_SIZE_CHROMIUM-byte sync token, and sync_token.h
+  // static_asserts that gpu::SyncToken fits in it. In this test, the only
+  // caller is ResourceSyncTokenClient, which passes a gpu::SyncToken's data.
+  UNSAFE_BUFFERS(
+      base::span(sync_token_data.GetData(), sizeof(gpu::SyncToken))
+          .copy_from(base::span(sync_token, sizeof(gpu::SyncToken))));
+  return sync_token_data;
+}
+
 class SyncTokenTestInterface : public viz::TestGLES2Interface {
  public:
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override {
     viz::TestGLES2Interface::GenSyncTokenCHROMIUM(sync_token);
-    gpu::SyncToken sync_token_data;
-    UNSAFE_TODO(
-        memcpy(sync_token_data.GetData(), sync_token, sizeof(sync_token_data)));
-    generated_tokens_.push_back(sync_token_data);
+    generated_tokens_.push_back(ReadSyncToken(sync_token));
   }
 
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override {
-    gpu::SyncToken sync_token_data;
-    UNSAFE_TODO(
-        memcpy(sync_token_data.GetData(), sync_token, sizeof(sync_token_data)));
+    gpu::SyncToken sync_token_data = ReadSyncToken(sync_token);
     viz::TestGLES2Interface::WaitSyncTokenCHROMIUM(sync_token);
     waited_tokens_.push_back(sync_token_data);
   }
