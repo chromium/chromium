@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
 
-#include "base/containers/circular_deque.h"
-#include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -13,7 +11,6 @@
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,14 +21,10 @@ namespace ash {
 namespace {
 
 using ::content::WebContents;
-using ::content::WebUIMessageHandler;
 
 constexpr gfx::Insets kMinMargins{64};
 constexpr gfx::Size kMinSize{128, 128};
 constexpr gfx::Size kMaxSize{1024, 768};
-
-base::LazyInstance<base::circular_deque<WebContents*>>::DestructorAtExit
-    g_web_contents_stack = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -87,16 +80,6 @@ void LoginWebDialog::GetDialogSize(gfx::Size* size) const {
   size->SetToMax(kMinSize);
 }
 
-// static.
-WebContents* LoginWebDialog::GetCurrentWebContents() {
-  auto& stack = g_web_contents_stack.Get();
-  return stack.empty() ? nullptr : stack.front();
-}
-
-void LoginWebDialog::OnDialogShown(content::WebUI* webui) {
-  g_web_contents_stack.Pointer()->push_front(webui->GetWebContents());
-}
-
 void LoginWebDialog::OnDialogClosing(const std::string& json_retval) {
   dialog_window_ = nullptr;
 }
@@ -104,10 +87,6 @@ void LoginWebDialog::OnDialogClosing(const std::string& json_retval) {
 void LoginWebDialog::OnCloseContents(WebContents* source,
                                      bool* out_close_dialog) {
   *out_close_dialog = true;
-
-  if (GetCurrentWebContents() == source) {
-    g_web_contents_stack.Pointer()->pop_front();
-  }
 }
 
 bool LoginWebDialog::HandleOpenURLFromTab(

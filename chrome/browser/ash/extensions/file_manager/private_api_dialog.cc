@@ -39,10 +39,10 @@ namespace extensions {
 
 namespace {
 
-// Computes the routing ID for SelectFileDialogExtension from the |function|.
-SelectFileDialogExtension::RoutingID GetFileDialogRoutingID(
-    ExtensionFunction* function) {
-  return SelectFileDialogExtensionUserData::GetRoutingIdForWebContents(
+// Returns the SelectFileDialogExtension that opened the Files app dialog
+// `function` was called from, or nullptr if it is gone.
+SelectFileDialogExtension* GetFileDialog(ExtensionFunction* function) {
+  return SelectFileDialogExtensionUserData::GetDialogForWebContents(
       function->GetSenderWebContents());
 }
 
@@ -50,8 +50,9 @@ SelectFileDialogExtension::RoutingID GetFileDialogRoutingID(
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateCancelDialogFunction::Run() {
-  SelectFileDialogExtension::OnFileSelectionCanceled(
-      GetFileDialogRoutingID(this));
+  if (SelectFileDialogExtension* dialog = GetFileDialog(this)) {
+    dialog->OnFileSelectionCanceled();
+  }
   return RespondNow(NoArguments());
 }
 
@@ -115,8 +116,9 @@ void FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse(
     Respond(Error("No file selected"));
     return;
   }
-  SelectFileDialogExtension::OnFileSelected(GetFileDialogRoutingID(this),
-                                            files[0], index);
+  if (SelectFileDialogExtension* dialog = GetFileDialog(this)) {
+    dialog->OnFileSelected(files[0], index);
+  }
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifierFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context()))) {
@@ -208,8 +210,9 @@ void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
     return;
   }
 
-  SelectFileDialogExtension::OnMultiFilesSelected(GetFileDialogRoutingID(this),
-                                                  files);
+  if (SelectFileDialogExtension* dialog = GetFileDialog(this)) {
+    dialog->OnMultiFilesSelected(files);
+  }
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifierFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context()))) {
@@ -324,8 +327,9 @@ FileManagerPrivateSelectAndroidPickerAppFunction::Run() {
   ui::SelectedFileInfo file;
   file.file_path = arc::ConvertAndroidActivityToFilePath(
       params->android_app.package_name, params->android_app.activity_name);
-  SelectFileDialogExtension::OnFileSelected(GetFileDialogRoutingID(this), file,
-                                            0);
+  if (SelectFileDialogExtension* dialog = GetFileDialog(this)) {
+    dialog->OnFileSelected(file, 0);
+  }
   return RespondNow(NoArguments());
 }
 

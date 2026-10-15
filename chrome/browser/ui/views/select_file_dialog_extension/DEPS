@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/multi_user/multi_user_window_manager.h",
+
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
   "-chrome",
@@ -10,28 +12,30 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/app_mode/app_mode_utils.h",
   "+chrome/browser/apps/platform_apps/app_window_registry_util.h",
   "+chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h",
-  "+chrome/browser/ash/profiles/profile_helper.h",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/download/download_prefs.h",
   "+chrome/browser/extensions",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/keyboard",
-  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/browser_select_file_dialog_controller.h",
   "+chrome/browser/ui/browser_window/public/browser_window_features.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/browser/ui/navigator/browser_navigator_params.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h",
   "+chrome/common",
   "+chrome/test",
 
 ]
+
+specific_include_rules = {
+  "select_file_dialog_extension_browsertest\\.cc": [
+    "+chrome/browser/ash/login/test",
+    "+chrome/browser/ui/ash/session/session_controller_client_impl.h",
+  ],
+}

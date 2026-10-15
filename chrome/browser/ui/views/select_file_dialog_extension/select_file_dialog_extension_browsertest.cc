@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -25,6 +26,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -32,6 +35,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -39,11 +43,22 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -53,6 +68,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,6 +80,10 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "ui/views/test/test_widget_builder.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -400,10 +420,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, CanResize) {
   // The dialog should be resizable.
   ASSERT_EQ(!GetParam().tablet_mode, OpenDialogIsResizable());
 
-  // Click the "Cancel" button. This closes the dialog thus removing it from
-  // `PendingDialog::map_`. `PendingDialog::map_` otherwise prevents the dialog
-  // from being destroyed on `reset()` in test TearDown and the
-  // `SelectFileDialog::listener_` becomes dangling.
+  // Click the "Cancel" button. This closes the dialog thus releasing the
+  // reference held by the Files app WebContents user data, which otherwise
+  // prevents the dialog from being destroyed on `reset()` in test TearDown and
+  // the `SelectFileDialog::listener_` becomes dangling.
   CloseDialog(kDialogBtnCancel, owning_window);
 }
 
@@ -978,3 +998,124 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpUploadBlock) {
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,
                          SelectFileDialogExtensionPolicyTest,
                          TestMode::SystemWebAppValues());
+
+// Tests with multiple users signed in.
+class SelectFileDialogExtensionMultiUserBrowserTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  static constexpr inline auto kPrimaryAccountId =
+      AccountId::Literal::FromUserEmailGaiaId("primary@test",
+                                              GaiaId::Literal("12345"));
+  static constexpr inline auto kSecondaryAccountId =
+      AccountId::Literal::FromUserEmailGaiaId("secondary@test",
+                                              GaiaId::Literal("67890"));
+
+  SelectFileDialogExtensionMultiUserBrowserTest() {
+    set_exit_when_last_browser_closes(false);
+  }
+  SelectFileDialogExtensionMultiUserBrowserTest(
+      const SelectFileDialogExtensionMultiUserBrowserTest&) = delete;
+  SelectFileDialogExtensionMultiUserBrowserTest& operator=(
+      const SelectFileDialogExtensionMultiUserBrowserTest&) = delete;
+  ~SelectFileDialogExtensionMultiUserBrowserTest() override = default;
+
+  void SetUp() override {
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        "test");
+    MixinBasedInProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    MixinBasedInProcessBrowserTest::TearDown();
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        nullptr);
+  }
+
+  // Logs in `account_id`, adding it to the session if a user is already
+  // logged in.
+  void LogIn(const AccountId& account_id) {
+    if (auto* primary_session =
+            session_manager::SessionManager::Get()->GetPrimarySession()) {
+      user_manager::User* primary_user =
+          user_manager::UserManager::Get()->FindUserAndModify(
+              primary_session->account_id());
+      primary_user->GetProfilePrefs()->SetBoolean(
+          user_manager::prefs::kMultiProfileNeverShowIntro, true);
+      SessionControllerClientImpl::Get()->ShowMultiProfileLogin();
+    }
+    login_manager_mixin_.LoginWithDefaultContext(
+        ash::LoginManagerMixin::TestUserInfo(account_id));
+  }
+
+  Profile* GetProfile(const AccountId& account_id) {
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+  }
+
+ protected:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
+  ash::LoginManagerMixin login_manager_mixin_{
+      &mixin_host_,
+      {ash::LoginManagerMixin::TestUserInfo(kPrimaryAccountId),
+       ash::LoginManagerMixin::TestUserInfo(kSecondaryAccountId)}};
+};
+
+// A window that is neither a Browser nor an AppWindow, owned by an inactive
+// user and shown on the active user's desktop. The dialog must run in the
+// profile of the window's owner rather than the active user's.
+IN_PROC_BROWSER_TEST_F(SelectFileDialogExtensionMultiUserBrowserTest,
+                       WindowOwnedByInactiveUser) {
+  LogIn(kPrimaryAccountId);
+  Profile* primary_profile = GetProfile(kPrimaryAccountId);
+  ASSERT_TRUE(primary_profile);
+  LogIn(kSecondaryAccountId);
+  Profile* secondary_profile = GetProfile(kSecondaryAccountId);
+  ASSERT_TRUE(secondary_profile);
+  ASSERT_NE(primary_profile, secondary_profile);
+  ASSERT_EQ(
+      kSecondaryAccountId,
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id());
+
+  std::unique_ptr<views::Widget> owner_widget =
+      views::test::TestWidgetBuilder()
+          .SetBounds({100, 100, 300, 200})
+          .BuildClientOwnsWidget();
+  gfx::NativeWindow owner_window = owner_widget->GetNativeWindow();
+
+  // Make the primary user own the window, and show it on the secondary
+  // (active) user's desktop.
+  auto* window_manager = ash::MultiUserWindowManager::Get();
+  ASSERT_TRUE(window_manager);
+  ASSERT_FALSE(window_manager->GetWindowOwner(owner_window).is_valid());
+  window_manager->SetWindowOwner(owner_window, kPrimaryAccountId);
+  window_manager->ShowWindowForUser(owner_window, kSecondaryAccountId);
+  ASSERT_EQ(kPrimaryAccountId, window_manager->GetWindowOwner(owner_window));
+
+  MockSelectFileDialogListener listener;
+  scoped_refptr<SelectFileDialogExtension> dialog =
+      SelectFileDialogExtension::Create(&listener, nullptr);
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+                     base::FilePath(), /*file_types=*/nullptr,
+                     /*file_type_index=*/0, FILE_PATH_LITERAL(""),
+                     owner_window);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !!dialog->GetPrimaryMainFrame(); }));
+
+  auto* files_app_web_contents =
+      content::WebContents::FromRenderFrameHost(dialog->GetPrimaryMainFrame());
+  ASSERT_TRUE(files_app_web_contents);
+  EXPECT_EQ(primary_profile, files_app_web_contents->GetBrowserContext());
+  aura::Window* files_app_window =
+      files_app_web_contents->GetTopLevelNativeWindow();
+  ASSERT_NE(nullptr, files_app_window);
+  EXPECT_EQ(owner_window, wm::GetTransientParent(files_app_window));
+
+  // Closing the dialog cancels the selection.
+  views::Widget::GetWidgetForNativeWindow(files_app_window)->CloseNow();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return listener.canceled(); }));
+  EXPECT_FALSE(listener.file_selected());
+  EXPECT_FALSE(dialog->IsRunning(owner_window));
+}

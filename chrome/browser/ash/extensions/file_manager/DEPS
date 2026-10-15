@@ -51,6 +51,10 @@ specific_include_rules = {
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   ],
 
+  "select_file_dialog_extension_user_data\\.cc" : [
+    "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
+  ],
+
   "system_notification_manager\\.cc": [
     "+ui/message_center/message_center.h",
   ],

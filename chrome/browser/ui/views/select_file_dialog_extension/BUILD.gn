@@ -13,19 +13,20 @@ static_library("select_file_dialog_extension") {
   ]
 
   deps = [
-    "//chrome/browser/app_mode",
+    "//ash",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/policy/dlp",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/download",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/session_manager/core",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
   ]
 
@@ -44,16 +45,29 @@ source_set("browser_tests") {
 
   deps = [
     ":select_file_dialog_extension",
+    "//ash",
     "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/ui:browser_select_file_dialog_controller",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/navigator",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/account_id:test_support",
+    "//components/session_manager/core",
+    "//components/signin/public/identity_manager",
+    "//components/user_manager",
+    "//google_apis",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//ui/wm",
   ]
 }
 

@@ -6,17 +6,20 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_SELECT_FILE_DIALOG_EXTENSION_USER_DATA_H_
 
 #include <optional>
-#include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+class SelectFileDialogExtension;
 
 namespace content {
 class WebContents;
 }
 
-// Used for attaching SelectFileDialogExtension's user data to its WebContents.
+// Used for attaching SelectFileDialogExtension's user data to the WebContents
+// of the Files app dialog it opened.
 class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
  public:
   SelectFileDialogExtensionUserData(const SelectFileDialogExtensionUserData&) =
@@ -25,17 +28,17 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
       const SelectFileDialogExtensionUserData&) = delete;
   ~SelectFileDialogExtensionUserData() override;
 
-  // Attaches the SelectFileDialogExtension's user data to its `web_contents`,
-  // that consists of the unique `routing_id`, dialog type, and optionally the
-  // `dialog_caller`.
+  // Attaches `dialog`, its type and optionally the `dialog_caller` to
+  // `web_contents`. The user data keeps `dialog` alive until `web_contents` is
+  // destroyed.
   static void SetDialogDataForWebContents(
       content::WebContents* web_contents,
-      const std::string& routing_id,
+      scoped_refptr<SelectFileDialogExtension> dialog,
       ui::SelectFileDialog::Type type,
       std::optional<policy::DlpFileDestination> dialog_caller);
-  // Returns the SelectFileDialogExtension's routing id attached to
-  // `web_contents`, if it can be found.
-  static std::string GetRoutingIdForWebContents(
+  // Returns the SelectFileDialogExtension attached to `web_contents`, if it can
+  // be found.
+  static SelectFileDialogExtension* GetDialogForWebContents(
       content::WebContents* web_contents);
   // Returns the SelectFileDialogExtension's dialog type attached to
   // `web_contents`, if it can be found.
@@ -52,11 +55,11 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
 
  private:
   SelectFileDialogExtensionUserData(
-      const std::string& routing_id,
+      scoped_refptr<SelectFileDialogExtension> dialog,
       ui::SelectFileDialog::Type type,
       std::optional<policy::DlpFileDestination> dialog_caller);
 
-  const std::string& routing_id() const { return routing_id_; }
+  SelectFileDialogExtension* dialog() const { return dialog_.get(); }
 
   ui::SelectFileDialog::Type type() const { return type_; }
 
@@ -64,7 +67,7 @@ class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
     return dialog_caller_;
   }
 
-  std::string routing_id_;
+  scoped_refptr<SelectFileDialogExtension> dialog_;
   ui::SelectFileDialog::Type type_;
   std::optional<policy::DlpFileDestination> dialog_caller_;
 };

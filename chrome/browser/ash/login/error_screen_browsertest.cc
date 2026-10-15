@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ash/login/screens/error_screen.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -26,7 +31,9 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -41,11 +48,22 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -83,6 +101,34 @@ std::vector<KioskMixin::Config> KioskErrorScreenTestConfigs() {
                              /*auto_launch_account_id=*/{},
                              {KioskMixin::SimpleChromeAppOption()}}};
 }
+
+// Returns the WebContents showing a page from `host`, if any.
+content::WebContents* FindWebContentsForHost(std::string_view host) {
+  for (content::WebContents* web_contents : content::GetAllWebContents()) {
+    if (web_contents->GetVisibleURL().host() == host) {
+      return web_contents;
+    }
+  }
+  return nullptr;
+}
+
+class TestSelectFileDialogListener : public ui::SelectFileDialog::Listener {
+ public:
+  TestSelectFileDialogListener() = default;
+  TestSelectFileDialogListener(const TestSelectFileDialogListener&) = delete;
+  TestSelectFileDialogListener& operator=(const TestSelectFileDialogListener&) =
+      delete;
+  ~TestSelectFileDialogListener() override = default;
+
+  bool canceled() const { return canceled_; }
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {}
+  void FileSelectionCanceled() override { canceled_ = true; }
+
+ private:
+  bool canceled_ = false;
+};
 
 }  // namespace
 
@@ -367,6 +413,62 @@ IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest, OpenCertificateConfig) {
       ->Wait();
   test::OobeJS().ClickOnPath(kNetworkConfigureScreenCertsButton);
   waiter.Wait();
+}
+
+// Verify that a file dialog opened from the certificate manager dialog (e.g.
+// to import a certificate) runs in the kiosk profile, and is parented and
+// system modal to the certificate manager dialog.
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
+                       OpenFileDialogFromCertificateConfig) {
+  network_state_.SimulateOffline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  DialogWindowWaiter waiter(
+      l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE));
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kNetworkConfigureScreenCertsButton)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kNetworkConfigureScreenCertsButton);
+  waiter.Wait();
+
+  content::WebContents* cert_manager_contents = FindWebContentsForHost(
+      GURL(chrome_urls::kChromeUICertificateManagerDialogURL).host());
+  ASSERT_TRUE(cert_manager_contents);
+  Profile* kiosk_profile =
+      Profile::FromBrowserContext(cert_manager_contents->GetBrowserContext());
+  ASSERT_TRUE(kiosk_profile);
+  ASSERT_FALSE(ProfileHelper::IsSigninProfile(kiosk_profile));
+  gfx::NativeWindow cert_manager_window =
+      cert_manager_contents->GetTopLevelNativeWindow();
+  ASSERT_EQ(ui::mojom::ModalType::kSystem,
+            cert_manager_window->GetProperty(aura::client::kModalKey));
+
+  TestSelectFileDialogListener listener;
+  scoped_refptr<ui::SelectFileDialog> dialog =
+      ui::SelectFileDialog::Create(&listener, /*policy=*/nullptr);
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+                     base::FilePath(), /*file_types=*/nullptr,
+                     /*file_type_index=*/0, FILE_PATH_LITERAL(""),
+                     cert_manager_window);
+
+  content::WebContents* files_app_contents = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    files_app_contents =
+        FindWebContentsForHost(file_manager::kChromeUIFileManagerHost);
+    return !!files_app_contents;
+  }));
+  EXPECT_EQ(kiosk_profile, files_app_contents->GetBrowserContext());
+  aura::Window* files_app_window =
+      files_app_contents->GetTopLevelNativeWindow();
+  ASSERT_NE(nullptr, files_app_window);
+  EXPECT_EQ(cert_manager_window, wm::GetTransientParent(files_app_window));
+  EXPECT_EQ(ui::mojom::ModalType::kSystem,
+            files_app_window->GetProperty(aura::client::kModalKey));
+
+  // Closing the file dialog cancels the selection.
+  views::Widget::GetWidgetForNativeWindow(files_app_window)->CloseNow();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return listener.canceled(); }));
+  dialog->ListenerDestroyed();
 }
 
 // The existence of user pods in the signin screen can influence

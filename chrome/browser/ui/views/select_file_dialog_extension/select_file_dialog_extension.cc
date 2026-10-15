@@ -4,46 +4,44 @@
 
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
-#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/select_file_dialog_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/ash/login/login_web_dialog.h"
-#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/native_app_window.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/base/base_window.h"
+#include "ui/base/class_property.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -65,127 +63,79 @@ const int kFileManagerMinimumHeight = 240;  // pixels
 constexpr char kFakeEntryURLScheme[] = "fake-entry://";
 constexpr char kFakeEntryPath[] = "/.fake-entry";
 
-// Holds references to file manager dialogs that have callbacks pending
-// to their listeners.
-class PendingDialog {
- public:
-  static PendingDialog* GetInstance();
-  void Add(SelectFileDialogExtension::RoutingID id,
-           scoped_refptr<SelectFileDialogExtension> dialog);
-  void Remove(SelectFileDialogExtension::RoutingID id);
-  scoped_refptr<SelectFileDialogExtension> Find(
-      SelectFileDialogExtension::RoutingID id);
+// Set on the owner window while a Files app dialog opened for it is showing,
+// so that a request to open a second dialog for the same window is rejected.
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHasOpenSelectFileDialogKey, false)
 
- private:
-  friend struct base::DefaultSingletonTraits<PendingDialog>;
-  using Map = std::map<SelectFileDialogExtension::RoutingID,
-                       scoped_refptr<SelectFileDialogExtension>>;
-  Map map_;
+// The window to parent the Files app dialog to, and the profile to run it in.
+struct RuntimeContext {
+  gfx::NativeWindow parent_window = gfx::NativeWindow();
+  raw_ptr<Profile> profile = nullptr;
 };
 
-// static
-PendingDialog* PendingDialog::GetInstance() {
-  static base::NoDestructor<PendingDialog> instance;
-  return instance.get();
+// Returns the fully initialized Profile for `account_id`, or nullptr.
+Profile* GetProfileByAccountId(const AccountId& account_id) {
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
 }
 
-void PendingDialog::Add(SelectFileDialogExtension::RoutingID id,
-                        scoped_refptr<SelectFileDialogExtension> dialog) {
-  DCHECK(dialog.get());
-  if (map_.find(id) == map_.end()) {
-    map_.insert(std::make_pair(id, dialog));
-  } else {
-    DLOG(WARNING) << "Duplicate pending dialog " << id;
-  }
-}
-
-void PendingDialog::Remove(SelectFileDialogExtension::RoutingID id) {
-  map_.erase(id);
-}
-
-scoped_refptr<SelectFileDialogExtension> PendingDialog::Find(
-    SelectFileDialogExtension::RoutingID id) {
-  Map::const_iterator it = map_.find(id);
-  if (it == map_.end()) {
-    return nullptr;
-  }
-  return it->second;
-}
-
-// Return the Chrome OS WebUI login WebContents, if applicable.
-content::WebContents* GetLoginWebContents() {
-  auto* host = ash::LoginDisplayHost::default_host();
-  return host ? host->GetOobeWebContents() : nullptr;
-}
-
-// Given |owner_window| finds corresponding |base_window|, it's associated
-// |web_contents| and |profile|.
-void FindRuntimeContext(gfx::NativeWindow owner_window,
-                        ui::BaseWindow** base_window,
-                        content::WebContents** web_contents) {
-  *base_window = nullptr;
-  *web_contents = nullptr;
-  // To get the base_window and web contents, either a Browser or AppWindow is
-  // needed.
-  BrowserWindowInterface* owner_browser = nullptr;
-  AppWindow* app_window = nullptr;
-
-  // If owner_window is supplied, use that to find a browser or a app window.
+// Derives the RuntimeContext for `owner_window`:
+//  - A Browser or extension AppWindow: parent to it, use its profile.
+//  - Any other window (e.g. a system web dialog, a login dialog, or an ash
+//    widget such as the capture mode folder selection dimmer): parent to it,
+//    use the profile of the window's owner user if any, otherwise the active
+//    user profile.
+//  - No window (e.g. a file picker requested by a VM app, or a download
+//    started by an extension service worker): parent to the last active
+//    browser, if any, and use its profile.
+RuntimeContext GetRuntimeContext(gfx::NativeWindow owner_window) {
+  RuntimeContext context;
   if (owner_window) {
-    owner_browser =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
-            owner_window);
-    if (!owner_browser) {
-      // If an owner_window was supplied but we couldn't find a browser, this
-      // could be for a app window.
-      app_window = AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
-          owner_window);
+    context.parent_window = owner_window;
+    if (BrowserWindowInterface* browser =
+            GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
+                owner_window)) {
+      context.profile = browser->GetProfile();
+    } else if (AppWindow* app_window =
+                   AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
+                       owner_window)) {
+      context.profile =
+          Profile::FromBrowserContext(app_window->browser_context());
+    } else if (!owner_window->GetRootWindow()) {
+      // TODO(crbug.com/252339992): Handle the window of a WebContents that is
+      // not attached to any widget (e.g. an extension background page or an
+      // offscreen document). Such a window is not in any window tree, so it
+      // should not be used as the parent, and the profile should come from
+      // the WebContents.
+    } else if (auto* multi_user_window_manager =
+                   ash::MultiUserWindowManager::Get()) {
+      const AccountId& account_id =
+          multi_user_window_manager->GetWindowOwner(owner_window);
+      if (account_id.is_valid()) {
+        context.profile = GetProfileByAccountId(account_id);
+      }
+    }
+  } else if (BrowserWindowInterface* browser =
+                 GlobalBrowserCollection::GetInstance()
+                     ->GetLastActiveBrowser()) {
+    // CAUTION: The last active browser may not be accurate. For example, if
+    // the dialog is opened on an empty desktop after switching from another
+    // user's desktop, the last active browser may belong to the other user.
+    context.parent_window = browser->GetWindow()->GetNativeWindow();
+    context.profile = browser->GetProfile();
+  }
+  if (!context.profile) {
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    // The dialog is not expected on the login screen, where there is no user
+    // session: the Files app can't run in the sign-in profile.
+    DUMP_WILL_BE_CHECK(active_session);
+    if (active_session) {
+      context.profile = GetProfileByAccountId(active_session->account_id());
     }
   }
-
-  if (app_window) {
-    *base_window = app_window->GetBaseWindow();
-    *web_contents = app_window->web_contents();
-  } else {
-    // If the owning window is still unknown, this could be a background page or
-    // and extension popup. Use the last active browser.
-    if (!owner_browser) {
-      owner_browser =
-          GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-    }
-    if (owner_browser) {
-      *base_window = owner_browser->GetWindow();
-      *web_contents = owner_browser->GetTabStripModel()->GetActiveWebContents();
-    }
-  }
-
-  // In ChromeOS kiosk launch mode, we can still show file picker for
-  // certificate manager dialog. There are no browser or webapp window
-  // instances present in this case.
-  if (IsRunningInForcedAppMode() && !(*web_contents)) {
-    *web_contents = ash::LoginWebDialog::GetCurrentWebContents();
-  }
-
-  // Check for a WebContents used for the Chrome OS WebUI login flow.
-  if (!*web_contents) {
-    *web_contents = GetLoginWebContents();
-  }
-}
-
-SelectFileDialogExtension::RoutingID GetRoutingID(
-    content::WebContents* web_contents,
-    const SelectFileDialogExtension::Owner& owner) {
-  if (owner.android_task_id.has_value()) {
-    return base::StringPrintf("android.%d", *owner.android_task_id);
-  }
-
-  if (web_contents) {
-    return base::StringPrintf(
-        "web.%d",
-        web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId().value());
-  }
-  LOG(ERROR) << "Unable to generate a RoutingID";
-  return "";
+  return context;
 }
 
 }  // namespace
@@ -196,12 +146,9 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
  public:
   SystemFilesAppDialogDelegate(base::WeakPtr<SelectFileDialogExtension> parent,
-                               const std::string& id,
                                GURL url,
                                std::u16string title)
-      : ash::SystemWebDialogDelegate(url, title),
-        id_(id),
-        parent_(std::move(parent)) {
+      : ash::SystemWebDialogDelegate(url, title), parent_(std::move(parent)) {
     RegisterOnDialogClosedCallback(
         base::BindOnce(&SystemFilesAppDialogDelegate::OnDialogClosing,
                        base::Unretained(this)));
@@ -210,11 +157,13 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
     // forwarded back to the widget.
     set_allow_accelerators(false);
   }
+  SystemFilesAppDialogDelegate(const SystemFilesAppDialogDelegate&) = delete;
+  SystemFilesAppDialogDelegate& operator=(const SystemFilesAppDialogDelegate&) =
+      delete;
   ~SystemFilesAppDialogDelegate() override = default;
 
-  void SetModal(bool modal) {
-    set_dialog_modal_type(modal ? ui::mojom::ModalType::kWindow
-                                : ui::mojom::ModalType::kNone);
+  void SetModalType(ui::mojom::ModalType modal_type) {
+    set_dialog_modal_type(modal_type);
   }
 
   FrameKind GetWebDialogFrameKind() const override {
@@ -235,7 +184,7 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
 
   void OnDialogShown(content::WebUI* webui) override {
     if (parent_) {
-      parent_->OnSystemDialogShown(webui->GetWebContents(), id_);
+      parent_->OnSystemDialogShown(webui->GetWebContents());
     }
     ash::SystemWebDialogDelegate::OnDialogShown(webui);
   }
@@ -247,11 +196,6 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
   }
 
  private:
-  // The routing ID. We store it so that we can call back into the
-  // SelectFileDialog to inform it about contents::WebContents and
-  // the ID associated with it.
-  const std::string id_;
-
   // The parent of this delegate.
   base::WeakPtr<SelectFileDialogExtension> parent_;
 };
@@ -291,66 +235,48 @@ bool SelectFileDialogExtension::IsRunning(
 
 void SelectFileDialogExtension::ListenerDestroyed() {
   listener_ = nullptr;
-  PendingDialog::GetInstance()->Remove(routing_id_);
 }
 
 void SelectFileDialogExtension::OnSystemDialogShown(
-    content::WebContents* web_contents,
-    const std::string& id) {
+    content::WebContents* web_contents) {
   system_files_app_web_contents_ = web_contents;
+  // The user data holds a reference to `this` so that the dialog outlives its
+  // caller for as long as the Files app dialog is open.
   SelectFileDialogExtensionUserData::SetDialogDataForWebContents(
-      web_contents, id, type_, owner_.dialog_caller);
+      web_contents, this, type_, owner_.dialog_caller);
 }
 
 void SelectFileDialogExtension::OnSystemDialogWillClose() {
   profile_ = nullptr;
   auto dialog_caller = owner_.dialog_caller;
+  if (owner_.window) {
+    owner_.window->ClearProperty(kHasOpenSelectFileDialogKey);
+  }
   owner_ = {};
   system_files_app_web_contents_ = nullptr;
-  PendingDialog::GetInstance()->Remove(routing_id_);
   // Actually invoke the appropriate callback on our listener.
   ApplyPolicyAndNotifyListener(std::move(dialog_caller));
 }
 
-// static
-void SelectFileDialogExtension::OnFileSelected(RoutingID routing_id,
-                                               const ui::SelectedFileInfo& file,
+void SelectFileDialogExtension::OnFileSelected(const ui::SelectedFileInfo& file,
                                                int index) {
-  scoped_refptr<SelectFileDialogExtension> dialog =
-      PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog.get()) {
-    return;
-  }
-  dialog->selection_type_ = SelectionType::kSingleFile;
-  dialog->selection_files_.clear();
-  dialog->selection_files_.push_back(file);
-  dialog->selection_index_ = index;
+  selection_type_ = SelectionType::kSingleFile;
+  selection_files_.clear();
+  selection_files_.push_back(file);
+  selection_index_ = index;
 }
 
-// static
 void SelectFileDialogExtension::OnMultiFilesSelected(
-    RoutingID routing_id,
     const std::vector<ui::SelectedFileInfo>& files) {
-  scoped_refptr<SelectFileDialogExtension> dialog =
-      PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog.get()) {
-    return;
-  }
-  dialog->selection_type_ = SelectionType::kMultipleFiles;
-  dialog->selection_files_ = files;
-  dialog->selection_index_ = 0;
+  selection_type_ = SelectionType::kMultipleFiles;
+  selection_files_ = files;
+  selection_index_ = 0;
 }
 
-// static
-void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
-  scoped_refptr<SelectFileDialogExtension> dialog =
-      PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog.get()) {
-    return;
-  }
-  dialog->selection_type_ = SelectionType::kCancel;
-  dialog->selection_files_.clear();
-  dialog->selection_index_ = 0;
+void SelectFileDialogExtension::OnFileSelectionCanceled() {
+  selection_type_ = SelectionType::kCancel;
+  selection_files_.clear();
+  selection_index_ = 0;
 }
 
 content::RenderFrameHost* SelectFileDialogExtension::GetPrimaryMainFrame() {
@@ -448,47 +374,23 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     return;
   }
 
-  // The base window to associate the dialog with.
-  ui::BaseWindow* base_window = nullptr;
+  // Another dialog is already open for this window. It's unlikely, but
+  // possible. In such situation, discard this request.
+  if (owner.window && owner.window->GetProperty(kHasOpenSelectFileDialogKey)) {
+    LOG(ERROR) << "File dialog already open for the owner window!";
+    return;
+  }
 
-  // The web contents to associate the dialog with.
-  content::WebContents* web_contents = nullptr;
-
-  // The folder selection dialog created for capture mode should never be
-  // parented to a browser window (if one exists). https://crbug.com/1258842.
   const bool is_for_capture_mode =
       owner.window &&
       owner.window->GetId() ==
           ash::kShellWindowId_CaptureModeFolderSelectionDialogOwner;
 
-  const bool skip_finding_browser =
-      is_for_capture_mode || owner.android_task_id.has_value();
-
   can_resize_ = !display::Screen::Get()->InTabletMode() && !is_for_capture_mode;
 
-  // Obtain BaseWindow and WebContents if the owner window is browser.
-  if (!skip_finding_browser) {
-    FindRuntimeContext(owner.window, &base_window, &web_contents);
-  }
-
-  if (web_contents) {
-    profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  }
-
-  // Handle the cases where |web_contents| is not available or |web_contents| is
-  // associated with Default profile.
-  if (!web_contents || ash::ProfileHelper::IsSigninProfile(profile_)) {
-    profile_ = ProfileManager::GetActiveUserProfile();
-  }
-
+  const RuntimeContext context = GetRuntimeContext(owner.window);
+  profile_ = context.profile;
   DCHECK(profile_);
-
-  // Check if we have another dialog opened for the contents. It's unlikely, but
-  // possible. In such situation, discard this request.
-  RoutingID routing_id = GetRoutingID(web_contents, owner);
-  if (PendingExists(routing_id)) {
-    return;
-  }
 
   std::vector<std::string> volume_filter;
   if (use_media_store_filter) {
@@ -508,23 +410,32 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   std::u16string dialog_title =
       !title.empty() ? title
                      : file_manager::util::GetSelectFileDialogTitle(type);
-  gfx::NativeWindow parent_window =
-      base_window ? base_window->GetNativeWindow() : owner.window.get();
 
   owner_ = owner;
   type_ = type;
+  if (owner_.window) {
+    owner_.window->SetProperty(kHasOpenSelectFileDialogKey, true);
+  }
+
+  // The dialog is modal to its owner window. If the owner is itself system
+  // modal (e.g. a LoginWebDialog on the login screen or during kiosk launch),
+  // the dialog has to be system modal too: it is placed in the owner's system
+  // modal container, which does not accept window modal children.
+  ui::mojom::ModalType modal_type = ui::mojom::ModalType::kNone;
+  if (owner.window) {
+    modal_type = owner.window->GetProperty(aura::client::kModalKey) ==
+                         ui::mojom::ModalType::kSystem
+                     ? ui::mojom::ModalType::kSystem
+                     : ui::mojom::ModalType::kWindow;
+  }
 
   // The delegate deletes itself in WebDialogDelegate::OnDialogClosed().
   auto* dialog_delegate = new SystemFilesAppDialogDelegate(
-      weak_factory_.GetWeakPtr(), routing_id, file_manager_url, dialog_title);
-  dialog_delegate->SetModal(owner.window != nullptr);
+      weak_factory_.GetWeakPtr(), file_manager_url, dialog_title);
+  dialog_delegate->SetModalType(modal_type);
   dialog_delegate->set_can_resize(can_resize_);
-  dialog_delegate->ShowSystemDialogForBrowserContext(profile_, parent_window);
-
-  // Connect our listener to FileDialogFunction's per-tab callbacks.
-  AddPending(routing_id);
-
-  routing_id_ = routing_id;
+  dialog_delegate->ShowSystemDialogForBrowserContext(profile_,
+                                                     context.parent_window);
 }
 
 void SelectFileDialogExtension::SelectFileImpl(
@@ -627,13 +538,4 @@ void SelectFileDialogExtension::NotifyListener(
     default:
       NOTREACHED();
   }
-}
-
-void SelectFileDialogExtension::AddPending(RoutingID routing_id) {
-  PendingDialog::GetInstance()->Add(routing_id, this);
-}
-
-// static
-bool SelectFileDialogExtension::PendingExists(RoutingID routing_id) {
-  return PendingDialog::GetInstance()->Find(routing_id).get() != nullptr;
 }

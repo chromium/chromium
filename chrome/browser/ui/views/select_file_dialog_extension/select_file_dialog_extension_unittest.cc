@@ -11,13 +11,6 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-namespace {
-
-// RoutingID is a std::string; the default one is empty.
-constexpr char kDefaultRoutingID[] = "";
-
-}  // namespace
-
 // Must be a class so it can be a friend of SelectFileDialogExtension.
 class SelectFileDialogExtensionTest : public ::testing::Test {
  public:
@@ -28,13 +21,7 @@ class SelectFileDialogExtensionTest : public ::testing::Test {
 
   static SelectFileDialogExtension* CreateDialog(
       ui::SelectFileDialog::Listener* listener) {
-    SelectFileDialogExtension* dialog =
-        new SelectFileDialogExtension(listener, nullptr);
-    // Simulate the dialog opening.
-    EXPECT_FALSE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
-    dialog->AddPending(kDefaultRoutingID);
-    EXPECT_TRUE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
-    return dialog;
+    return new SelectFileDialogExtension(listener, nullptr);
   }
 };
 
@@ -96,8 +83,7 @@ TEST_F(SelectFileDialogExtensionTest, FileSelected) {
       CreateDialog(listener.get());
   // Simulate selecting a file.
   ui::SelectedFileInfo info;
-  SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, info,
-                                            kFileIndex);
+  dialog->OnFileSelected(info, kFileIndex);
   // Simulate closing the dialog so the listener gets invoked.
   dialog->OnSystemDialogWillClose();
   EXPECT_TRUE(listener->selected());
@@ -109,7 +95,7 @@ TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
   scoped_refptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
   // Simulate cancelling the dialog.
-  SelectFileDialogExtension::OnFileSelectionCanceled(kDefaultRoutingID);
+  dialog->OnFileSelectionCanceled();
   // Simulate closing the dialog so the listener gets invoked.
   dialog->OnSystemDialogWillClose();
   EXPECT_FALSE(listener->selected());
@@ -118,10 +104,13 @@ TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
 
 TEST_F(SelectFileDialogExtensionTest, SelfDeleting) {
   SelfDeletingClient* client = new SelfDeletingClient();
+  // While the Files app dialog is open its WebContents user data keeps the
+  // SelectFileDialogExtension alive; emulate that here.
+  scoped_refptr<SelectFileDialogExtension> dialog = client->dialog();
   // Ensure we don't crash or trip an Address Sanitizer warning about
   // use-after-free.
   ui::SelectedFileInfo file_info;
-  SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, file_info, 0);
+  dialog->OnFileSelected(file_info, 0);
   // Simulate closing the dialog so the listener gets invoked.
-  client->dialog()->OnSystemDialogWillClose();
+  dialog->OnSystemDialogWillClose();
 }

@@ -37,8 +37,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
   void Show();
 
-  static content::WebContents* GetCurrentWebContents();
-
   // Returns `dialog_window_` instance for test, can be NULL if dialog is not
   // shown or closed.
   gfx::NativeWindow get_dialog_window_for_test() const {
@@ -48,7 +46,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
  protected:
   // ui::WebDialogDelegate implementation.
   void GetDialogSize(gfx::Size* size) const override;
-  void OnDialogShown(content::WebUI* webui) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool HandleOpenURLFromTab(content::WebContents* source,

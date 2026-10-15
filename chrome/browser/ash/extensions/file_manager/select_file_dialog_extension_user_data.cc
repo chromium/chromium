@@ -5,11 +5,13 @@
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -24,30 +26,31 @@ SelectFileDialogExtensionUserData::~SelectFileDialogExtensionUserData() =
 // static
 void SelectFileDialogExtensionUserData::SetDialogDataForWebContents(
     content::WebContents* web_contents,
-    const std::string& routing_id,
+    scoped_refptr<SelectFileDialogExtension> dialog,
     ui::SelectFileDialog::Type type,
     std::optional<policy::DlpFileDestination> dialog_caller) {
   CHECK(web_contents, base::NotFatalUntil::M160);
   web_contents->SetUserData(
       kSelectFileDialogExtensionUserDataKey,
       base::WrapUnique(new SelectFileDialogExtensionUserData(
-          routing_id, type, std::move(dialog_caller))));
+          std::move(dialog), type, std::move(dialog_caller))));
 }
 
 // static
-std::string SelectFileDialogExtensionUserData::GetRoutingIdForWebContents(
+SelectFileDialogExtension*
+SelectFileDialogExtensionUserData::GetDialogForWebContents(
     content::WebContents* web_contents) {
   // There's a race condition. This can be called from a callback after the
   // webcontents has been deleted.
   if (!web_contents) {
     LOG(WARNING) << "WebContents already destroyed.";
-    return "";
+    return nullptr;
   }
 
   SelectFileDialogExtensionUserData* data =
       static_cast<SelectFileDialogExtensionUserData*>(
           web_contents->GetUserData(kSelectFileDialogExtensionUserDataKey));
-  return data ? data->routing_id() : "";
+  return data ? data->dialog() : nullptr;
 }
 
 // static
@@ -96,9 +99,9 @@ void SelectFileDialogExtensionUserData::SetDialogCallerForTesting(
 }
 
 SelectFileDialogExtensionUserData::SelectFileDialogExtensionUserData(
-    const std::string& routing_id,
+    scoped_refptr<SelectFileDialogExtension> dialog,
     ui::SelectFileDialog::Type type,
     std::optional<policy::DlpFileDestination> dialog_caller)
-    : routing_id_(routing_id),
+    : dialog_(std::move(dialog)),
       type_(type),
       dialog_caller_(std::move(dialog_caller)) {}

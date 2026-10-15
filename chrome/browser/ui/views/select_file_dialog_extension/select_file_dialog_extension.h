@@ -39,10 +39,6 @@ class SelectFilePolicy;
 // file manager extension implementation.
 class SelectFileDialogExtension : public ui::SelectFileDialog {
  public:
-  // Opaque ID type for identifying the tab spawned each dialog, unique for
-  // every WebContents or every Android task ID.
-  typedef std::string RoutingID;
-
   // Enum for tracking the type of file selection made by the user.
   enum class SelectionType { kCancel = 0, kSingleFile, kMultipleFiles };
 
@@ -57,15 +53,13 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   bool IsRunning(gfx::NativeWindow owner_window) const override;
   void ListenerDestroyed() override;
 
-  // Routes callback to appropriate SelectFileDialog::Listener based on the
-  // owning |web_contents|.
-  static void OnFileSelected(RoutingID routing_id,
-                             const ui::SelectedFileInfo& file,
-                             int index);
-  static void OnMultiFilesSelected(
-      RoutingID routing_id,
-      const std::vector<ui::SelectedFileInfo>& files);
-  static void OnFileSelectionCanceled(RoutingID routing_id);
+  // Records the selection made in the Files app dialog. The listener is
+  // notified when the dialog closes (see OnSystemDialogWillClose()). Called by
+  // the fileManagerPrivate API, which finds this object via
+  // SelectFileDialogExtensionUserData attached to the dialog's WebContents.
+  void OnFileSelected(const ui::SelectedFileInfo& file, int index);
+  void OnMultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files);
+  void OnFileSelectionCanceled();
 
   // Helper method that given parameters that are passed to the
   // SelectFileWithFileManagerParams method creates a URL for launching File
@@ -97,8 +91,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
 
     // The native window that opened the dialog.
     raw_ptr<aura::Window, LeakedDanglingUntriaged> window = nullptr;
-    // Android task ID if the owner window is an Android app.
-    std::optional<int> android_task_id;
     // The URL or Component type of the caller that opened the dialog (Save
     // As/File Picker).
     std::optional<policy::DlpFileDestination> dialog_caller;
@@ -138,8 +130,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
                            DialogCallerSetWhenPassed);
 
   // For the benefit of SystemFilesAppDialogDelegate.
-  void OnSystemDialogShown(content::WebContents* content,
-                           const std::string& id);
+  void OnSystemDialogShown(content::WebContents* content);
   void OnSystemDialogWillClose();
 
   // Object is ref-counted, use Create().
@@ -155,12 +146,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // Invokes the appropriate file selection callback on our listener.
   void NotifyListener(std::vector<ui::SelectedFileInfo> selection_files);
 
-  // Adds this to the list of pending dialogs, used for testing.
-  void AddPending(RoutingID routing_id);
-
-  // Check if the list of pending dialogs contains dialog for |routing_id|.
-  static bool PendingExists(RoutingID routing_id);
-
   // Returns true if |extension_dialog_| is resizable; the dialog must be
   // non-null at the time of this call.
   bool IsResizeable() const;
@@ -172,9 +157,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // Files App dialog is opened.
   raw_ptr<content::WebContents, LeakedDanglingUntriaged>
       system_files_app_web_contents_;
-
-  // ID of the tab that spawned this dialog, used to route callbacks.
-  RoutingID routing_id_;
 
   // Pointer to the profile the dialog is running in.
   raw_ptr<Profile, LeakedDanglingUntriaged> profile_ = nullptr;
