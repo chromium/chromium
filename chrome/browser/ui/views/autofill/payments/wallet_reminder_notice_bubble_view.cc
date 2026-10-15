@@ -40,10 +40,6 @@ WalletReminderNoticeBubbleView::WalletReminderNoticeBubbleView(
   SetAcceptCallback(base::BindOnce(
       &WalletReminderNoticeBubbleController::OnAcceptButton, controller_));
 
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  GetViewAccessibility().SetName(GetWindowTitle());
-
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
