@@ -16,8 +16,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import {getCss} from './overflow_menu.css.js';
@@ -86,13 +84,11 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
 
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private isUnboundedMenuEnabled_: boolean =
       loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
       loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled');
   private toolbarBrowserProxy_: ToolbarBrowserProxy =
       ToolbarBrowserProxyImpl.getInstance();
-  private listenerIds_: number[] = [];
   private toolbarListenerIds_: number[] = [];
   // <if expr="not is_android">
   private helpBubbleRegistered_: boolean = false;
@@ -100,7 +96,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.listenerIds_ = [];
     this.toolbarListenerIds_ = [
       this.toolbarBrowserProxy_.callbackRouter.onSidePanelPinStateChanged
           .addListener((isPinned: boolean) => {
@@ -115,9 +110,6 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.listenerIds_.forEach(
-        id => this.browserProxy_.callbackRouter.removeListener(id));
-    this.listenerIds_ = [];
     this.toolbarListenerIds_.forEach(
         id => this.toolbarBrowserProxy_.callbackRouter.removeListener(id));
     this.toolbarListenerIds_ = [];

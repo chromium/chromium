@@ -4,7 +4,6 @@
 
 import 'chrome://contextual-tasks/overflow_menu.js';
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {OverflowMenuElement} from 'chrome://contextual-tasks/overflow_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,19 +12,15 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('OverflowMenuTest', () => {
   let overflowMenu: OverflowMenuElement;
-  let proxy: TestContextualTasksBrowserProxy;
   let toolbarProxy: TestToolbarBrowserProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    proxy = new TestContextualTasksBrowserProxy(
-        'chrome://webui-test/contextual_tasks/test.html');
-    BrowserProxyImpl.setInstance(proxy);
     toolbarProxy = new TestToolbarBrowserProxy();
     ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
 

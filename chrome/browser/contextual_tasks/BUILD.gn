@@ -820,6 +820,7 @@ source_set("unit_tests") {
     "//ui/base/interaction:test_support",
     "//ui/base/unowned_user_data",
     "//ui/webui:buildflags",
+    "//ui/webui/tracked_element",
   ]
 
   if (!is_android) {
