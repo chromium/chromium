@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CLIENT_BROWSER_INTERFACE_H_
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CLIENT_BROWSER_INTERFACE_H_
 
-#include <map>
-
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
-#include "content/public/browser/global_routing_id.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -49,22 +46,11 @@ class SpeechRecognitionClientBrowserInterface
       const SpeechRecognitionClientBrowserInterface&) = delete;
   ~SpeechRecognitionClientBrowserInterface() override;
 
-  // Binds the browser interface receiver for a specific renderer frame.
   void BindReceiver(
       mojo::PendingReceiver<
-          media::mojom::SpeechRecognitionClientBrowserInterface> receiver,
-      content::GlobalRenderFrameHostId frame_id);
+          media::mojom::SpeechRecognitionClientBrowserInterface> receiver);
 
-  // Binds a speech recognition availability observer directly in the browser
-  // process (pass an empty `frame_id` if not associated with a specific frame).
-  void BindSpeechRecognitionBrowserObserver(
-      mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
-          pending_remote,
-      content::GlobalRenderFrameHostId frame_id);
-
-  // media::mojom::SpeechRecognitionClientBrowserInterface:
-  // Binds a speech recognition availability observer from a renderer client
-  // over Mojo (associating it with the frame bound via `BindReceiver()`).
+  // media::mojom::SpeechRecognitionClientBrowserInterface
   void BindSpeechRecognitionBrowserObserver(
       mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
           pending_remote) override;
@@ -99,16 +85,11 @@ class SpeechRecognitionClientBrowserInterface
   // language pack is installed.  If not, then defer until it is.
   void NotifyLiveCaptionObserversIfNeeded();
   void MaybeTriggerModelInstall();
-  void OnObserverDisconnected(mojo::RemoteSetElementId id);
-  bool IsTranscriptionAllowed(mojo::RemoteSetElementId id) const;
 
   mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
       live_caption_availability_observers_;
-  std::map<mojo::RemoteSetElementId, content::GlobalRenderFrameHostId>
-      observer_frame_ids_;
 
-  mojo::ReceiverSet<media::mojom::SpeechRecognitionClientBrowserInterface,
-                    content::GlobalRenderFrameHostId>
+  mojo::ReceiverSet<media::mojom::SpeechRecognitionClientBrowserInterface>
       speech_recognition_client_browser_interface_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
