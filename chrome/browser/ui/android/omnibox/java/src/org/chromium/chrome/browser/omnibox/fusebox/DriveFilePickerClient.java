@@ -31,13 +31,6 @@ public class DriveFilePickerClient {
         return sInstance;
     }
 
-    /** Sets the instance for testing. */
-    public static void setInstanceForTesting(@Nullable DriveFilePickerClient instance) {
-        var prev = sInstance;
-        sInstance = instance;
-        ResettersForTesting.register(() -> sInstance = prev);
-    }
-
     /**
      * Checks whether Google Drive file picker is available. Overridden by downstream implementation
      * in //clank.
@@ -66,5 +59,12 @@ public class DriveFilePickerClient {
             @Nullable List<String> mimeTypes,
             boolean allowMultiSelect) {
         return Promise.fulfilled(List.of());
+    }
+
+    /** Sets the instance for testing. */
+    public static void setInstanceForTesting(@Nullable DriveFilePickerClient instance) {
+        var prev = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = prev);
     }
 }

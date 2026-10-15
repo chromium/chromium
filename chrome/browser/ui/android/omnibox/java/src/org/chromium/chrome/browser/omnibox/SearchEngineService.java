@@ -257,24 +257,6 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         return mAiModeButtonUiConfigSupplier;
     }
 
-    /**
-     * Fakes the AI Mode entry point configuration of the current default search engine, as native
-     * only provides one to an eligible client. Subsequent updates from native are ignored, so that
-     * an eligibility change can't clear the config mid-test.
-     *
-     * @param config The config to supply, or null to surface no AI Mode entry point.
-     */
-    public void setAiModeButtonUiConfigForTesting(@Nullable AiModeButtonUiConfig config) {
-        @Nullable AiModeButtonUiConfig oldConfig = mAiModeButtonUiConfigSupplier.get();
-        mIsAiModeButtonUiConfigOverriddenForTesting = true;
-        mAiModeButtonUiConfigSupplier.set(config);
-        ResettersForTesting.register(
-                () -> {
-                    mIsAiModeButtonUiConfigOverriddenForTesting = false;
-                    mAiModeButtonUiConfigSupplier.set(oldConfig);
-                });
-    }
-
     /** Supplies the icon for the AI Mode entry point button. */
     public NonNullObservableSupplier<StatusIconResource> getAiModeButtonIconSupplier() {
         return mAiModeButtonIconSupplier;
@@ -503,6 +485,24 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         }
 
         return R.string.omnibox_empty_hint_with_dse_name;
+    }
+
+    /**
+     * Fakes the AI Mode entry point configuration of the current default search engine, as native
+     * only provides one to an eligible client. Subsequent updates from native are ignored, so that
+     * an eligibility change can't clear the config mid-test.
+     *
+     * @param config The config to supply, or null to surface no AI Mode entry point.
+     */
+    public void setAiModeButtonUiConfigForTesting(@Nullable AiModeButtonUiConfig config) {
+        @Nullable AiModeButtonUiConfig oldConfig = mAiModeButtonUiConfigSupplier.get();
+        mIsAiModeButtonUiConfigOverriddenForTesting = true;
+        mAiModeButtonUiConfigSupplier.set(config);
+        ResettersForTesting.register(
+                () -> {
+                    mIsAiModeButtonUiConfigOverriddenForTesting = false;
+                    mAiModeButtonUiConfigSupplier.set(oldConfig);
+                });
     }
 
     /** Set the instance for testing. */
