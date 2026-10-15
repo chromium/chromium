@@ -7,7 +7,9 @@
 #import <memory>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/no_destructor.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -25,6 +27,20 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(ProfileIOS* profile) {
   service->Initialize();
   DCHECK(service->initialized());
   return service;
+}
+
+std::unique_ptr<KeyedService> BuildAuthenticationServiceForTesting(
+    ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  // In production OnNetworkInitialized is called by
+  // ProfileManagerIOSImpl::DoFinalInitForServices, explicitly call it in
+  // tests that utilize AuthenticationService.
+  if (base::FeatureList::IsEnabled(switches::kUseAccountInfoFetcherIos)) {
+    identity_manager->OnNetworkInitialized();
+  }
+
+  return BuildAuthenticationService(profile);
 }
 
 }  // namespace
@@ -45,7 +61,7 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
 // static
 AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildAuthenticationService);
+  return base::BindOnce(&BuildAuthenticationServiceForTesting);
 }
 
 AuthenticationServiceFactory::AuthenticationServiceFactory()
