@@ -9484,6 +9484,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.Startup.CreationTime.InitializeMemorySystemTime.Browser"
+    units="ms" expires_after="2027-04-14">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the wall-clock time taken by AwMainDelegate::InitializeMemorySystem
+    on the UI thread during WebView browser process startup. This measures the
+    overhead of initializing memory subsystems, including GWP-ASan,
+    PoissonAllocationSampler, and HeapProfilerController.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.InitReason2"
     enum="WebViewStartupCallSite" expires_after="2027-08-01">
   <owner>torne@chromium.org</owner>
