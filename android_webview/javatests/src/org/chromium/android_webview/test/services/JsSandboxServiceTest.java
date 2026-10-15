@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation test for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS)
 @Batch(Batch.PER_CLASS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
