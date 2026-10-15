@@ -17580,6 +17580,24 @@
             ]
         }
     ],
+    "TrustedVaultSharedRecoveryFactorsAndEncryption": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TrustedVaultSharedRecoveryFactorsAndEncryption"
+                    ]
+                }
+            ]
+        }
+    ],
     "USSMigrationEnabled": [
         {
             "platforms": [
