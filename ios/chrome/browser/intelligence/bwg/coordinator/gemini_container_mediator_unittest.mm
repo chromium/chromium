@@ -1763,9 +1763,10 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_TRUE(delegate_.force_dismiss_floaty_called_);
 }
 
-// Test that `updateWithStartupState:` updates the provider with the image
+// Tests that `updateWithStartupState:` updates the provider with the image
 // attachment, partial page context, prompt action, suggestion chips, loading
-// configuration, and account snackbar.
+// configuration, and account snackbar, and requests active page context
+// generation.
 TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1782,7 +1783,10 @@ TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
   startup_state.shouldAutoSubmit = YES;
   startup_state.isMismatchedAccount = YES;
 
-  [mediator_ updateWithStartupState:startup_state];
+  id mediator_mock = OCMPartialMock(mediator_);
+  OCMExpect([mediator_mock requestActivePageContextGeneration]);
+
+  [mediator_mock updateWithStartupState:startup_state];
 
   EXPECT_EQ(startup_state, mediator_.startupState);
   EXPECT_EQ(dummy_image, ios::provider::GetLastAttachedImage());
@@ -1801,6 +1805,8 @@ TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
       ios::provider::GetLastShowPageLoadingSnackbarOnOpeningInvocation(),
       testing::Optional(true));
   EXPECT_TRUE(ios::provider::WasShowAccountSnackbarCalled());
+  EXPECT_OCMOCK_VERIFY(mediator_mock);
+  [mediator_mock stopMocking];
 }
 
 // Test that `updateWithStartupState:` animates the assistant container to the

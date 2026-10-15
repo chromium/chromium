@@ -829,9 +829,6 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
         ios::provider::GeminiViewState::kExpanded, /*animated=*/true);
     RecordStartupTime(startup_state, start_time);
 
-    // Request full page context generation, which will update the floaty once
-    // it's available.
-    [gemini_container_mediator_ requestActivePageContextGeneration];
     // TODO(crbug.com/571506045): Migrate the delayed presentation for
     // autosubmit prompts.
   } else if (startup_state.shouldAutoSubmit) {

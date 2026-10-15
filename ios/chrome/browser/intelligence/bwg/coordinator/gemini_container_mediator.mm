@@ -394,6 +394,8 @@ class GeminiContainerMediatorTabHelperObserver
     // Assumes it's minimized.
     [_containerHandler animateAssistantContainerToDetent:kMedium];
   }
+
+  [self requestActivePageContextGeneration];
 }
 
 #pragma mark - IdentityManagerObserving
