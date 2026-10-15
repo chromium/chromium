@@ -7054,19 +7054,31 @@ WebContents* WebContentsImpl::OpenURL(
     }
   }
 
-  WebContents* new_contents = delegate_->OpenURLFromTab(
-      this, params, std::move(navigation_handle_callback));
-
   if (source_render_frame_host && params.source_site_instance) {
     CHECK_EQ(source_render_frame_host->GetSiteInstance(),
              params.source_site_instance.get());
   }
 
-  if (new_contents && source_render_frame_host && new_contents != this) {
+  // `OpenURLFromTab()` can synchronously delete `source_render_frame_host`.
+  // For example, if the source frame's renderer process has crashed (e.g. a
+  // ServiceWorker calls WindowClient.navigate() on a crashed frame), starting
+  // the navigation performs an early RenderFrameHost swap, which deletes the
+  // crashed source RenderFrameHost. So, don't use `source_render_frame_host`
+  // after this point. In that case the disposition is CURRENT_TAB and
+  // `new_contents` is `this`, so the observer notification below won't run,
+  // but use a WeakPtr to avoid relying on that.
+  base::WeakPtr<RenderFrameHostImpl> weak_source_rfh =
+      source_render_frame_host ? source_render_frame_host->GetWeakPtr()
+                               : nullptr;
+  source_render_frame_host = nullptr;
+  WebContents* new_contents = delegate_->OpenURLFromTab(
+      this, params, std::move(navigation_handle_callback));
+
+  if (new_contents && weak_source_rfh && new_contents != this) {
     observers_.NotifyObservers(
         &WebContentsObserver::DidOpenRequestedURL, new_contents,
-        source_render_frame_host, params.url, params.referrer,
-        params.disposition, params.transition, params.started_from_context_menu,
+        weak_source_rfh.get(), params.url, params.referrer, params.disposition,
+        params.transition, params.started_from_context_menu,
         params.is_renderer_initiated);
   }
 
