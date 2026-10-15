@@ -234,26 +234,26 @@ public class OmniboxResourceProviderUnitTest {
         final int incognitoColor = mContext.getColor(R.color.default_text_color_light);
         final int defaultColor = MaterialColors.getColor(mContext, R.attr.colorOnSurface, TAG);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Wrong suggestion primary text color for LIGHT_THEME.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME));
+                mProvider.getSuggestionPrimaryTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Wrong suggestion primary text color for DARK_THEME.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
+                mProvider.getSuggestionPrimaryTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 "Wrong suggestion primary text color for INCOGNITO.",
                 incognitoColor,
-                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getSuggestionPrimaryTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Wrong suggestion primary text color for DEFAULT.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getSuggestionPrimaryTextColor());
     }
 
     @Test
@@ -262,26 +262,26 @@ public class OmniboxResourceProviderUnitTest {
         final int defaultColor =
                 MaterialColors.getColor(mContext, R.attr.colorOnSurfaceVariant, TAG);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Wrong suggestion secondary text color for LIGHT_THEME.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME));
+                mProvider.getSuggestionSecondaryTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Wrong suggestion secondary text color for DARK_THEME.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
+                mProvider.getSuggestionSecondaryTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 "Wrong suggestion secondary text color for INCOGNITO.",
                 incognitoColor,
-                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getSuggestionSecondaryTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Wrong suggestion secondary text color for DEFAULT.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getSuggestionSecondaryTextColor());
     }
 
     @Test
@@ -289,26 +289,26 @@ public class OmniboxResourceProviderUnitTest {
         final int incognitoColor = mContext.getColor(R.color.suggestion_url_color_incognito);
         final int defaultColor = SemanticColorUtils.getDefaultTextColorLink(mContext);
 
+        mProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         assertEquals(
                 "Wrong suggestion url text color for LIGHT_THEME.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME));
+                mProvider.getSuggestionUrlTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         assertEquals(
                 "Wrong suggestion url text color for DARK_THEME.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mContext, BrandedColorScheme.DARK_BRANDED_THEME));
+                mProvider.getSuggestionUrlTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 "Wrong suggestion url text color for INCOGNITO.",
                 incognitoColor,
-                OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mContext, BrandedColorScheme.INCOGNITO));
+                mProvider.getSuggestionUrlTextColor());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Wrong suggestion url text color for DEFAULT.",
                 defaultColor,
-                OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT));
+                mProvider.getSuggestionUrlTextColor());
     }
 
     @Test
@@ -634,8 +634,7 @@ public class OmniboxResourceProviderUnitTest {
                 provider.getUrlBarPrimaryTextColor());
 
         assertEquals(
-                OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mContext, BrandedColorScheme.LIGHT_BRANDED_THEME),
+                MaterialColors.getColor(mContext, R.attr.colorOnSurface, TAG),
                 provider.getSuggestionPrimaryTextColor());
 
         // Test dynamic update (setter).

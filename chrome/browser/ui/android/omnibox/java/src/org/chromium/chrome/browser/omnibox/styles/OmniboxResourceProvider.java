@@ -300,31 +300,28 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getUrlBarSecureColor(mContext, getBrandedColorScheme());
     }
 
-    /**
-     * Get suggestion primary text color.
-     *
-     * @see #getSuggestionPrimaryTextColor(Context, ...)
-     */
+    // Suggestions are only shown when the omnibox is focused, hence LIGHT_BRANDED_THEME and
+    // DARK_BRANDED_THEME are ignored by the suggestion text colors below.
+
+    /** Returns the primary text color for the suggestions. */
     public @ColorInt int getSuggestionPrimaryTextColor() {
-        return getSuggestionPrimaryTextColor(mContext, getBrandedColorScheme());
+        return isIncognito()
+                ? mCache.getColor(R.color.default_text_color_light)
+                : mCache.getColorAttr(R.attr.colorOnSurface);
     }
 
-    /**
-     * Get suggestion secondary text color.
-     *
-     * @see #getSuggestionSecondaryTextColor(Context, ...)
-     */
+    /** Returns the secondary text color for the suggestions. */
     public @ColorInt int getSuggestionSecondaryTextColor() {
-        return getSuggestionSecondaryTextColor(mContext, getBrandedColorScheme());
+        return isIncognito()
+                ? mCache.getColor(R.color.default_text_color_secondary_light)
+                : mCache.getColorAttr(R.attr.colorOnSurfaceVariant);
     }
 
-    /**
-     * Get suggestion url text color.
-     *
-     * @see #getSuggestionUrlTextColor(Context, ...)
-     */
+    /** Returns the URL text color for the suggestions. */
     public @ColorInt int getSuggestionUrlTextColor() {
-        return getSuggestionUrlTextColor(mContext, getBrandedColorScheme());
+        return isIncognito()
+                ? mCache.getColor(R.color.suggestion_url_color_incognito)
+                : SemanticColorUtils.getDefaultTextColorLink(mContext);
     }
 
     /** Get status separator color. */
@@ -998,56 +995,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
             colorId = R.color.default_green;
         }
         return context.getColor(colorId);
-    }
-
-    /**
-     * Returns the primary text color for the suggestions.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return Primary suggestion text color.
-     */
-    public static @ColorInt int getSuggestionPrimaryTextColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
-        // are ignored as they don't change the result.
-        return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.default_text_color_light)
-                : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
-    }
-
-    /**
-     * Returns the secondary text color for the suggestions.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return Secondary suggestion text color.
-     */
-    public static @ColorInt int getSuggestionSecondaryTextColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
-        // are ignored as they don't change the result.
-        return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.default_text_color_secondary_light)
-                : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
-    }
-
-    /**
-     * Returns the URL text color for the suggestions.
-     *
-     * @param context The context to retrieve the resources from.
-     * @param brandedColorScheme The {@link BrandedColorScheme}.
-     * @return URL suggestion text color.
-     */
-    public static @ColorInt int getSuggestionUrlTextColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        // Suggestions are only shown when the omnibox is focused, hence LIGHT_THEME and DARK_THEME
-        // are ignored as they don't change the result.
-        final @ColorInt int color =
-                brandedColorScheme == BrandedColorScheme.INCOGNITO
-                        ? context.getColor(R.color.suggestion_url_color_incognito)
-                        : SemanticColorUtils.getDefaultTextColorLink(context);
-        return color;
     }
 
     /** Returns the background color for suggestions in the given color scheme and context. */
