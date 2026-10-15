@@ -2,6 +2,7 @@ file://ui/accessibility/OWNERS
 
 # For Android
 per-file *android*=kyraseevers@chromium.org
+per-file *android*=aerynm@google.com
 
 # For ATK / AuraLinux
 jdiggs@igalia.com
