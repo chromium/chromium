@@ -42,6 +42,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -343,6 +344,8 @@ public class TipsPromoCoordinator {
 
     @NullMarked
     protected class TipsPromoSheetContent implements BottomSheetContent {
+        private static final BottomSheetType SHEET_TYPE = new BottomSheetType.Builder().build();
+
         private final TipsPromoView mContentView;
         private final PropertyModel mModel;
         private final BottomSheetController mController;
@@ -418,6 +421,11 @@ public class TipsPromoCoordinator {
         @Override
         public void destroy() {
             TipsPromoCoordinator.this.destroy();
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return SHEET_TYPE;
         }
 
         @Override
