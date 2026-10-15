@@ -15,26 +15,11 @@
 
 namespace ios {
 
-// static
-history::WebHistoryService* WebHistoryServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<history::WebHistoryService>(
-      profile, /*create=*/true);
-}
-
-// static
-WebHistoryServiceFactory* WebHistoryServiceFactory::GetInstance() {
-  static base::NoDestructor<WebHistoryServiceFactory> instance;
-  return instance.get();
-}
-
-WebHistoryServiceFactory::WebHistoryServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("WebHistoryService") {
+WebHistoryServiceFactory::WebHistoryServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "WebHistoryService") {
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-WebHistoryServiceFactory::~WebHistoryServiceFactory() = default;
 
 std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

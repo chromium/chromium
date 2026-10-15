@@ -15,28 +15,15 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-DomainDiversityReporter* DomainDiversityReporterFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<DomainDiversityReporter>(
-      profile, /*create=*/true);
-}
-
-// static
-DomainDiversityReporterFactory* DomainDiversityReporterFactory::GetInstance() {
-  static base::NoDestructor<DomainDiversityReporterFactory> instance;
-  return instance.get();
-}
-
-DomainDiversityReporterFactory::DomainDiversityReporterFactory()
-    : ProfileKeyedServiceFactoryIOS("DomainDiversityReporter",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+DomainDiversityReporterFactory::DomainDiversityReporterFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "DomainDiversityReporter",
+          ProfileSelection::kNoInstanceInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
-
-DomainDiversityReporterFactory::~DomainDiversityReporterFactory() = default;
 
 std::unique_ptr<KeyedService>
 DomainDiversityReporterFactory::BuildServiceInstanceFor(

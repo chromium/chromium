@@ -5,10 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_DOMAIN_DIVERSITY_REPORTER_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_DOMAIN_DIVERSITY_REPORTER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class DomainDiversityReporter;
+#include "components/history/metrics/domain_diversity_reporter.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -16,18 +14,13 @@ class PrefRegistrySyncable;
 
 // Singleton that creates all DomainDiversityReporter instances and associates
 // them with BrowserState.
-class DomainDiversityReporterFactory : public ProfileKeyedServiceFactoryIOS {
+class DomainDiversityReporterFactory
+    : public TypedProfileKeyedServiceFactoryIOS<DomainDiversityReporterFactory,
+                                                DomainDiversityReporter> {
  public:
-  static DomainDiversityReporter* GetForProfile(ProfileIOS* profile);
-
-  static DomainDiversityReporterFactory* GetInstance();
+  explicit DomainDiversityReporterFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<DomainDiversityReporterFactory>;
-
-  DomainDiversityReporterFactory();
-  ~DomainDiversityReporterFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
