@@ -339,9 +339,6 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
           features::kWebGPUEnableRangeAnalysisForRobustness);
     case dawn::platform::Features::kWebGPUUseSpirv14:
       return base::FeatureList::IsEnabled(features::kWebGPUUseSpirv14);
-    case dawn::platform::Features::kWebGPUDecomposeUniformBuffers:
-      return base::FeatureList::IsEnabled(
-          features::kWebGPUDecomposeUniformBuffers);
     case dawn::platform::Features::kWebGPUUseHLSL2021:
       return base::FeatureList::IsEnabled(features::kWebGPUUseHLSL2021);
     case dawn::platform::Features::kWebGPUUseSpirvReconvergenceMode:
