@@ -2740,6 +2740,19 @@ void HTMLInputElement::SetFocused(bool is_focused,
   if (RadioButtonGroupScope* scope = GetRadioButtonGroupScope()) {
     scope->UpdateLastFocusedState(this);
   }
+
+  if (focus_type != mojom::blink::FocusType::kPage && IsTextField()) {
+    if (HTMLSelectElement* select = FilterTarget()) {
+      // TODO(crbug.com/453705243): Track the target select element like we are
+      // already doing for the list attribute in order to remove the
+      // :active-option pseudo.
+      if (is_focused) {
+        select->StartFiltering();
+      } else {
+        select->StopFiltering();
+      }
+    }
+  }
 }
 
 bool HTMLInputElement::SupportsBaseAppearanceInternal(

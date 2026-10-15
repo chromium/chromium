@@ -433,10 +433,6 @@ void TextFieldInputType::HandleBlurEvent() {
       }
     }
   }
-
-  if (HTMLSelectElement* select = input.FilterTarget()) {
-    select->StopFiltering();
-  }
 }
 
 bool TextFieldInputType::ShouldSubmitImplicitly(const Event& event) {
@@ -879,12 +875,6 @@ void TextFieldInputType::HandleFocusInEvent(
     if (auto* datalist = input.DataList()) {
       datalist->ShowPopoverInternal(&input, /*exception_state=*/nullptr);
     }
-  } else if (HTMLSelectElement* select = input.FilterTarget()) {
-    select->StartFiltering();
-
-    // TODO(crbug.com/453705243): Track the target select element like we are
-    // already doing for the list attribute in order to remove the
-    // :active-option pseudo.
   }
   UpdateWheelEventRegistration(/*is_detaching=*/false);
 }
