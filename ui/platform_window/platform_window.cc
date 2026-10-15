@@ -46,6 +46,10 @@ void PlatformWindow::SetOpacity(float opacity) {}
 
 void PlatformWindow::SetVisibilityChangedAnimationsEnabled(bool enabled) {}
 
+void PlatformWindow::SetWindowClass(const std::string& wm_class_name,
+                                    const std::string& wm_class_class,
+                                    const std::string& wayland_app_id) {}
+
 std::string PlatformWindow::GetWindowUniqueId() const {
   return std::string();
 }

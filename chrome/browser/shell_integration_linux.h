@@ -9,8 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -171,6 +173,13 @@ std::string GetInstalledPerProfileDesktopId(const base::FilePath& profile_path);
 // known. Must be called on the UI thread.
 void SetPerProfileDesktopEntryInstalled(const base::FilePath& profile_path,
                                         bool installed);
+
+// Registers `callback` to be run with the profile path whenever
+// SetPerProfileDesktopEntryInstalled() changes whether a profile has an
+// installed per-profile desktop entry, so that open browser windows can update
+// their identity. Must be called on the UI thread.
+base::CallbackListSubscription RegisterPerProfileDesktopEntryChangedCallback(
+    base::RepeatingCallback<void(const base::FilePath&)> callback);
 
 // Checks the XDG data directories for installed per-profile desktop entries
 // for each of `profile_paths`, and records the results with

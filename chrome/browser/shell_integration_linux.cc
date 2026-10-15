@@ -84,6 +84,14 @@ base::flat_set<base::FilePath>& ProfilesWithInstalledDesktopEntry() {
   return *profiles;
 }
 
+base::RepeatingCallbackList<void(const base::FilePath&)>&
+PerProfileDesktopEntryChangedCallbacks() {
+  static base::NoDestructor<
+      base::RepeatingCallbackList<void(const base::FilePath&)>>
+      callbacks;
+  return *callbacks;
+}
+
 #if defined(USE_GLIB)
 struct GKeyFileDataDeleter {
   void operator()(gchar* data) { g_free(data); }
@@ -424,11 +432,19 @@ std::string GetInstalledPerProfileDesktopId(
 void SetPerProfileDesktopEntryInstalled(const base::FilePath& profile_path,
                                         bool installed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (installed) {
-    ProfilesWithInstalledDesktopEntry().insert(profile_path);
-  } else {
-    ProfilesWithInstalledDesktopEntry().erase(profile_path);
+  const bool changed =
+      installed
+          ? ProfilesWithInstalledDesktopEntry().insert(profile_path).second
+          : ProfilesWithInstalledDesktopEntry().erase(profile_path) > 0;
+  if (changed) {
+    PerProfileDesktopEntryChangedCallbacks().Notify(profile_path);
   }
+}
+
+base::CallbackListSubscription RegisterPerProfileDesktopEntryChangedCallback(
+    base::RepeatingCallback<void(const base::FilePath&)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return PerProfileDesktopEntryChangedCallbacks().Add(std::move(callback));
 }
 
 void DetectInstalledPerProfileDesktopEntries(

@@ -101,6 +101,9 @@ class X11Window : public PlatformWindow,
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
   gfx::Rect GetBoundsInDIP() const override;
   void SetTitle(const std::u16string& title) override;
+  void SetWindowClass(const std::string& wm_class_name,
+                      const std::string& wm_class_class,
+                      const std::string& wayland_app_id) override;
   void SetCapture() override;
   void ReleaseCapture() override;
   bool HasCapture() const override;

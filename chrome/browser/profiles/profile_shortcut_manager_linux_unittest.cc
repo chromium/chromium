@@ -132,7 +132,14 @@ class ProfileShortcutManagerLinuxTest : public testing::Test {
   // Waits until all pending file operations and their replies have completed.
   // Replies are posted to this sequence in order, so the replies of earlier
   // operations have run once the flush reply runs.
+  // Also waits for newly installed entries to be registered.
   void Flush() {
+    FlushFileOperations();
+    task_environment_.FastForwardBy(
+        ProfileShortcutManagerLinux::kDesktopEntryRegistrationDelay);
+  }
+
+  void FlushFileOperations() {
     base::RunLoop run_loop;
     shortcut_manager_->FlushForTesting(run_loop.QuitClosure());
     run_loop.Run();
@@ -144,7 +151,8 @@ class ProfileShortcutManagerLinuxTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList feature_list_{features::kLinuxPerProfileAppId};
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   std::optional<base::ScopedEnvironmentVariableOverride> config_home_override_;
   std::optional<base::ScopedEnvironmentVariableOverride> data_home_override_;
@@ -199,6 +207,37 @@ TEST_F(ProfileShortcutManagerLinuxTest, CreateAndRemoveShortcut) {
   EXPECT_FALSE(base::PathExists(desktop_entry_path_));
   EXPECT_FALSE(base::PathExists(icon_path));
   EXPECT_FALSE(HasProfileShortcuts(profile_path_));
+  EXPECT_EQ("", shell_integration_linux::GetInstalledPerProfileDesktopId(
+                    profile_path_));
+}
+
+TEST_F(ProfileShortcutManagerLinuxTest, RegistrationIsDelayed) {
+  shortcut_manager_->CreateProfileShortcut(profile_path_);
+  FlushFileOperations();
+  ASSERT_TRUE(base::PathExists(desktop_entry_path_));
+
+  // Windows only switch to the entry once the desktop environment had time to
+  // pick it up.
+  EXPECT_EQ("", shell_integration_linux::GetInstalledPerProfileDesktopId(
+                    profile_path_));
+  task_environment_.FastForwardBy(
+      ProfileShortcutManagerLinux::kDesktopEntryRegistrationDelay -
+      base::Seconds(1));
+  EXPECT_EQ("", shell_integration_linux::GetInstalledPerProfileDesktopId(
+                    profile_path_));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(
+      desktop_id_,
+      shell_integration_linux::GetInstalledPerProfileDesktopId(profile_path_));
+}
+
+TEST_F(ProfileShortcutManagerLinuxTest, RemoveDuringRegistrationDelay) {
+  shortcut_manager_->CreateProfileShortcut(profile_path_);
+  FlushFileOperations();
+  shortcut_manager_->RemoveProfileShortcuts(profile_path_);
+  Flush();
+
+  EXPECT_FALSE(base::PathExists(desktop_entry_path_));
   EXPECT_EQ("", shell_integration_linux::GetInstalledPerProfileDesktopId(
                     profile_path_));
 }

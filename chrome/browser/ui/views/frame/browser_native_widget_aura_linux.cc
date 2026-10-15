@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/common/pref_names.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/platform_window/platform_window.h"
 #include "ui/views/widget/widget.h"
 
 BrowserNativeWidgetAuraLinux::BrowserNativeWidgetAuraLinux(
@@ -29,6 +30,11 @@ BrowserNativeWidgetAuraLinux::BrowserNativeWidgetAuraLinux(
       base::BindRepeating(
           &BrowserNativeWidgetAuraLinux::OnUseCustomChromeFrameChanged,
           base::Unretained(this)));
+  desktop_entry_subscription_ =
+      shell_integration_linux::RegisterPerProfileDesktopEntryChangedCallback(
+          base::BindRepeating(
+              &BrowserNativeWidgetAuraLinux::OnPerProfileDesktopEntryChanged,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 BrowserNativeWidgetAuraLinux::~BrowserNativeWidgetAuraLinux() = default;
@@ -43,20 +49,10 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   views::Widget::InitParams params(ownership);
   params.native_widget = this;
 
-  // Set up a custom WM_CLASS for some sorts of window types. This allows
-  // task switchers in X11 environments to distinguish between main browser
-  // windows and e.g app windows.
-  const BrowserWindowInterface& browser = *browser_view()->browser();
-  params.wm_class_name =
-      (browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)
-          ? shell_integration_linux::GetWMClassFromAppName(
-                BrowserInitState::From(&browser)->create_params().app_name)
-          // This window is a hosted app or v1 packaged app.
-          // NOTE: v2 packaged app windows are created by
-          // ChromeNativeAppWindowViews.
-          : shell_integration_linux::GetProgramClassName();
-  params.wm_class_class = shell_integration_linux::GetProgramClassClass();
+  const WindowClass window_class = GetWindowClass();
+  params.wm_class_name = window_class.wm_class_name;
+  params.wm_class_class = window_class.wm_class_class;
+  params.wayland_app_id = window_class.wayland_app_id;
   const char kX11WindowRoleBrowser[] = "browser";
   const char kX11WindowRolePopup[] = "pop-up";
   params.wm_role_name = browser_view()->browser()->GetType() ==
@@ -66,30 +62,67 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   params.remove_standard_frame = UseCustomFrame();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
-  if ((browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) &&
-      browser.GetProfile()) {
-    params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
+  return params;
+}
+
+BrowserNativeWidgetAuraLinux::WindowClass
+BrowserNativeWidgetAuraLinux::GetWindowClass() const {
+  WindowClass window_class;
+  // Set up a custom WM_CLASS for some sorts of window types. This allows
+  // task switchers in X11 environments to distinguish between main browser
+  // windows and e.g app windows.
+  const BrowserWindowInterface& browser = *browser_view()->browser();
+  const bool is_app =
+      browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
+  window_class.wm_class_name =
+      is_app ? shell_integration_linux::GetWMClassFromAppName(
+                   BrowserInitState::From(&browser)->create_params().app_name)
+             // This window is a hosted app or v1 packaged app.
+             // NOTE: v2 packaged app windows are created by
+             // ChromeNativeAppWindowViews.
+             : shell_integration_linux::GetProgramClassName();
+  window_class.wm_class_class = shell_integration_linux::GetProgramClassClass();
+
+  if (is_app && browser.GetProfile()) {
+    window_class.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
         BrowserInitState::From(&browser)->create_params().app_name,
         browser.GetProfile()->GetPath());
   } else {
-    params.wayland_app_id = params.wm_class_class;
+    window_class.wayland_app_id = window_class.wm_class_class;
     // Give windows of non-default profiles their own identity if a matching
     // desktop entry is installed, so the desktop environment can show them
     // with the profile's own launcher and icon. Off-the-record windows use the
     // identity of their original profile.
-    if (browser.GetProfile()) {
+    if (!is_app && browser.GetProfile()) {
       const std::string desktop_id =
           shell_integration_linux::GetInstalledPerProfileDesktopId(
               browser.GetProfile()->GetOriginalProfile()->GetPath());
       if (!desktop_id.empty()) {
-        params.wm_class_name = desktop_id;
-        params.wayland_app_id = desktop_id;
+        window_class.wm_class_name = desktop_id;
+        window_class.wayland_app_id = desktop_id;
       }
     }
   }
+  return window_class;
+}
 
-  return params;
+void BrowserNativeWidgetAuraLinux::OnPerProfileDesktopEntryChanged(
+    const base::FilePath& profile_path) {
+  const BrowserWindowInterface* browser =
+      browser_view() ? browser_view()->browser() : nullptr;
+  if (!host_ || !browser || !browser->GetProfile() ||
+      browser->GetProfile()->GetOriginalProfile()->GetPath() != profile_path) {
+    return;
+  }
+  // The profile's desktop entry was installed or removed while this window
+  // was open, so switch the window to the identity new windows of the profile
+  // get. When an entry is removed, this runs before the file is deleted, so
+  // the window never refers to a missing entry.
+  const WindowClass window_class = GetWindowClass();
+  host_->platform_window()->SetWindowClass(window_class.wm_class_name,
+                                           window_class.wm_class_class,
+                                           window_class.wayland_app_id);
 }
 
 bool BrowserNativeWidgetAuraLinux::UseCustomFrame() const {

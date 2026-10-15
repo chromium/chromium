@@ -433,8 +433,29 @@ void ProfileShortcutManagerLinux::OnDesktopEntryWritten(
     return;
   }
   icon_paths_[profile_path] = *icon_path;
-  // Browser windows of the profile that are opened from now on use the
-  // per-profile identity.
+  if (!shell_integration_linux::GetInstalledPerProfileDesktopId(profile_path)
+           .empty()) {
+    // The entry was only updated.
+    return;
+  }
+  // Give the desktop environment time to pick up the new entry before
+  // windows start referring to it.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ProfileShortcutManagerLinux::OnDesktopEntryRegistered,
+                     weak_ptr_factory_.GetWeakPtr(), profile_path, generation),
+      kDesktopEntryRegistrationDelay);
+}
+
+void ProfileShortcutManagerLinux::OnDesktopEntryRegistered(
+    const base::FilePath& profile_path,
+    uint64_t generation) {
+  auto it = generations_.find(profile_path);
+  if (it == generations_.end() || it->second != generation) {
+    return;
+  }
+  // The profile's open browser windows switch to the per-profile identity, and
+  // windows opened from now on use it.
   shell_integration_linux::SetPerProfileDesktopEntryInstalled(profile_path,
                                                               true);
 }

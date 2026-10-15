@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 
@@ -59,6 +60,16 @@ SkBitmap BadgeIconWithAvatar(const SkBitmap& app_icon, const SkBitmap& avatar);
 class ProfileShortcutManagerLinux : public ProfileShortcutManager,
                                     public ProfileAttributesStorage::Observer {
  public:
+  // How long to wait after a desktop entry is installed before the profile's
+  // windows switch to the per-profile identity. GNOME Shell only notices new
+  // desktop entries up to 5 seconds after they are written (see
+  // ShellAppCache), and its window tracker only re-evaluates a window's
+  // application when the window's WM_CLASS / app_id changes. Windows that
+  // switch before the shell knows the entry would stay associated with the
+  // main browser entry.
+  static constexpr base::TimeDelta kDesktopEntryRegistrationDelay =
+      base::Seconds(10);
+
   explicit ProfileShortcutManagerLinux(ProfileManager* manager);
   ProfileShortcutManagerLinux(const ProfileShortcutManagerLinux&) = delete;
   ProfileShortcutManagerLinux& operator=(const ProfileShortcutManagerLinux&) =
@@ -105,6 +116,10 @@ class ProfileShortcutManagerLinux : public ProfileShortcutManager,
   void OnDesktopEntryWritten(const base::FilePath& profile_path,
                              uint64_t generation,
                              std::optional<base::FilePath> icon_path);
+  // Marks the profile's desktop entry as installed, unless another file
+  // operation has been started since `generation`.
+  void OnDesktopEntryRegistered(const base::FilePath& profile_path,
+                                uint64_t generation);
 
   // Starts a new file operation for `profile_path` and returns its generation.
   // Only the reply of the latest operation for a profile updates its state.

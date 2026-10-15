@@ -220,6 +220,24 @@ void WaylandToplevelWindow::SetTitle(const std::u16string& title) {
   }
 }
 
+void WaylandToplevelWindow::SetWindowClass(const std::string& wm_class_name,
+                                           const std::string& wm_class_class,
+                                           const std::string& wayland_app_id) {
+  if (app_id_ == wayland_app_id) {
+    return;
+  }
+
+  app_id_ = wayland_app_id;
+
+  // Unlike most xdg_toplevel state, the app_id isn't double-buffered, and may
+  // be changed at any time. Compositors re-evaluate the window's application
+  // when it changes.
+  if (xdg_toplevel_) {
+    xdg_toplevel_->SetAppId(app_id_);
+    connection()->Flush();
+  }
+}
+
 void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
                                           int64_t target_display_id) {
   // TODO(msisov, tonikitoo): add multiscreen support. As the documentation says

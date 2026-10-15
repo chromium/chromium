@@ -514,6 +514,16 @@ TEST_P(WaylandWindowTest, SetTitle) {
   });
 }
 
+TEST_P(WaylandWindowTest, SetWindowClassChangesAppId) {
+  window_->SetWindowClass("name", "Class", "new-app-id");
+  EXPECT_EQ("new-app-id", window_->GetWindowUniqueId());
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    EXPECT_EQ("new-app-id", surface->xdg_surface()->xdg_toplevel()->app_id());
+  });
+}
+
 TEST_P(WaylandWindowTest, OnSequencePointConfiguresWaylandWindow) {
   constexpr gfx::Rect kNormalBounds{500, 300};
 

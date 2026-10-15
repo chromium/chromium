@@ -634,6 +634,18 @@ gfx::Rect X11Window::GetBoundsInDIP() const {
   return platform_window_delegate_->ConvertRectToDIP(GetBoundsInPixels());
 }
 
+void X11Window::SetWindowClass(const std::string& wm_class_name,
+                               const std::string& wm_class_class,
+                               const std::string& wayland_app_id) {
+  // ICCCM only allows changing WM_CLASS while the window is withdrawn, but
+  // remapping the window would be disruptive. Many window managers, e.g.
+  // mutter, muffin and i3, pick up changes to mapped windows anyway, and
+  // others keep using the old value, which is no worse than not updating it.
+  SetWindowClassHint(&connection_.get(), xwindow_, wm_class_name,
+                     wm_class_class);
+  connection_->Flush();
+}
+
 void X11Window::SetTitle(const std::u16string& title) {
   if (window_title_ == title) {
     return;

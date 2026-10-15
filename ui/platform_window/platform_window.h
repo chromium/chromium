@@ -169,6 +169,15 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // If |enabled| is set to false, animations are disabled.
   virtual void SetVisibilityChangedAnimationsEnabled(bool enabled);
 
+  // Changes the identity that the window manager uses to associate the window
+  // with an application, which is initially set from
+  // PlatformWindowInitProperties::wm_class_name, wm_class_class and
+  // wayland_app_id. X11 uses the WM_CLASS res_name and res_class, and Wayland
+  // uses the app_id. Overriding this method is optional.
+  virtual void SetWindowClass(const std::string& wm_class_name,
+                              const std::string& wm_class_class,
+                              const std::string& wayland_app_id);
+
   // Returns a unique ID for the window. The interpretation of the ID is
   // platform specific. Overriding this method is optional.
   virtual std::string GetWindowUniqueId() const;

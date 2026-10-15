@@ -883,6 +883,27 @@ TEST(ShellIntegrationTest, InstalledPerProfileDesktopIdFeatureDisabled) {
   SetPerProfileDesktopEntryInstalled(profile_1, false);
 }
 
+TEST(ShellIntegrationTest, PerProfileDesktopEntryChangedCallback) {
+  content::BrowserTaskEnvironment task_environment;
+  const base::FilePath profile_path("/tmp/udd/Profile 1");
+  std::vector<base::FilePath> notified;
+  base::CallbackListSubscription subscription =
+      RegisterPerProfileDesktopEntryChangedCallback(base::BindRepeating(
+          [](std::vector<base::FilePath>* notified,
+             const base::FilePath& path) { notified->push_back(path); },
+          &notified));
+
+  // Only actual changes are notified.
+  SetPerProfileDesktopEntryInstalled(profile_path, true);
+  EXPECT_THAT(notified, ElementsAre(profile_path));
+  SetPerProfileDesktopEntryInstalled(profile_path, true);
+  EXPECT_THAT(notified, ElementsAre(profile_path));
+  SetPerProfileDesktopEntryInstalled(profile_path, false);
+  EXPECT_THAT(notified, ElementsAre(profile_path, profile_path));
+  SetPerProfileDesktopEntryInstalled(profile_path, false);
+  EXPECT_THAT(notified, ElementsAre(profile_path, profile_path));
+}
+
 TEST(ShellIntegrationLinuxTest,
      GetDesktopFileContentsForUrlShortcutEscapesPercent) {
   std::string title = "A\" --gpu-launcher=\"xcalc\" \"B";
