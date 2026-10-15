@@ -3,10 +3,10 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
 #html_wrapper_imports_end -->
 <div id="content">
   ${this.enableThreadsRail_ ?
-    html`<cr-left-hand-side id="forcedLhs"></cr-left-hand-side>` :
+    html`<cr-left-hand-side id="lhsWrapper"></cr-left-hand-side>` :
     ''}
   <div id="rhsWrapper">
-    <div id="rhsContent">
+    <div id="rhsContent" @scroll="${this.onRhsContentScroll_}">
       ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
         <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
       ` : ''}
@@ -247,7 +247,7 @@ ${!this.ntpRealboxNextEnabled_ &&
   <div id="scrim"
       @click="${this.onScrimClick_}"></div>
 ` : ''}
-<svg>
+<svg width="0" height="0">
   <defs>
     <clipPath id="oneGoogleBarClipPath">
       <!-- Set an initial non-empty clip-path so the OneGoogleBar resize events

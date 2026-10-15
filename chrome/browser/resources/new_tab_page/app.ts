@@ -182,6 +182,7 @@ export interface AppElement {
     logo: LogoElement,
     searchbox: NtpSearchboxElement,
     rhsWrapper: HTMLElement,
+    rhsContent: HTMLElement,
   };
 }
 
@@ -458,8 +459,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('multiLineEnabled');
   protected accessor modulesLoaded_: boolean = false;
   protected accessor lazyRender_: boolean = false;
-  protected accessor scrolledToTop_: boolean =
-      document.documentElement.scrollTop <= 0;
+  protected accessor scrolledToTop_: boolean = true;
   protected accessor wallpaperSearchButtonAnimationEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled');
   protected accessor wallpaperSearchButtonEnabled_: boolean =
@@ -670,9 +670,6 @@ export class AppElement extends AppElementBase {
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
     this.eventTracker_.add(
         window, 'click', this.onWindowClick_.bind(this), /*capture=*/ true);
-    this.eventTracker_.add(document, 'scroll', () => {
-      this.scrolledToTop_ = document.documentElement.scrollTop <= 0;
-    });
     this.eventTracker_.add(
         WindowProxy.getInstance().matchMedia('(prefers-color-scheme: dark)'),
         'change', (e: MediaQueryListEvent) => {
@@ -969,6 +966,10 @@ export class AppElement extends AppElementBase {
       });
     }
     this.rhsWrapperResizeObserver_.observe(this.$.rhsWrapper);
+  }
+
+  protected onRhsContentScroll_() {
+    this.scrolledToTop_ = this.$.rhsContent.scrollTop <= 0;
   }
 
   private onLazyRendered_() {
