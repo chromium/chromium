@@ -66,7 +66,7 @@ public class TouchTrackingListView extends ListView implements ListViewTouchTrac
     }
 
     public TouchTrackingListView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, /* defStyleAttr= */ 0);
+        this(context, attrs, android.R.attr.listViewStyle);
     }
 
     public TouchTrackingListView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
