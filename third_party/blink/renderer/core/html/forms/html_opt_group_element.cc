@@ -74,6 +74,12 @@ void HTMLOptGroupElement::ParseAttribute(
   if (params.name == html_names::kDisabledAttr) {
     PseudoStateChanged(CSSSelector::kPseudoDisabled);
     PseudoStateChanged(CSSSelector::kPseudoEnabled);
+    if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled() &&
+        params.old_value.IsNull() != params.new_value.IsNull()) {
+      if (HTMLSelectElement* select = OwnerSelectElement()) {
+        select->ResetSelectedness();
+      }
+    }
   } else if (params.name == html_names::kLabelAttr) {
     UpdateGroupLabel();
   }

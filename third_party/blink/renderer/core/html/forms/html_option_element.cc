@@ -322,6 +322,11 @@ void HTMLOptionElement::ParseAttribute(
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
       PseudoStateChanged(CSSSelector::kPseudoEnabled);
       InvalidateIfHasEffectiveAppearance();
+      if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled()) {
+        if (HTMLSelectElement* select = OwnerSelectElement()) {
+          select->ResetSelectedness();
+        }
+      }
     }
   } else if (name == html_names::kSelectedAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull() && !is_dirty_)
@@ -370,7 +375,14 @@ bool HTMLOptionElement::selectedForBinding() const {
 
 void HTMLOptionElement::setSelectedForBinding(bool selected) {
   bool was_selected = is_selected_;
-  SetSelected(selected);
+  if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled()) {
+    SetSelectedState(selected);
+    if (HTMLSelectElement* select = OwnerSelectElement()) {
+      select->OptionSelectionStateChanged(this, selected);
+    }
+  } else {
+    SetSelected(selected);
+  }
 
   // As of December 2015, the HTML specification says the dirtiness becomes
   // true by |selected| setter unconditionally. However it caused a real bug,
@@ -622,7 +634,9 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
       return InsertionNotificationRequest::
           kInsertionShouldCallDidNotifySubtreeInsertions;
-    } else if (nearest_ancestor_select_
+    } else if ((!RuntimeEnabledFeatures::SelectedcontentSpec2Enabled() ||
+                nearest_ancestor_select_ != old_ancestor_select) &&
+               nearest_ancestor_select_
                    ->HasDescendantSelectedcontentElements()) {
       GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
           BindOnce(&HTMLSelectElement::UpdateAllSelectedcontents,

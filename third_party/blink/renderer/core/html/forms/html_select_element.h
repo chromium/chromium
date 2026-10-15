@@ -234,6 +234,9 @@ class CORE_EXPORT HTMLSelectElement final
 
   void OptGroupInsertedOrRemoved(HTMLOptGroupElement&);
   void HrInsertedOrRemoved(HTMLHRElement&);
+  // ResetSelectedness calls ResetToDefaultSelection, but will also update all
+  // descendant selectedcontent elements if the selected option was changed.
+  void ResetSelectedness();
 
   HTMLOptionElement* SpatialNavigationFocusedOption();
 
@@ -483,7 +486,8 @@ class CORE_EXPORT HTMLSelectElement final
     kResetReasonOptionInsertedOrRemoved,
     kResetReasonOthers
   };
-  void ResetToDefaultSelection(ResetReason = kResetReasonOthers);
+  // Returns true if the selectedness of any option was changed.
+  bool ResetToDefaultSelection(ResetReason = kResetReasonOthers);
   void TypeAheadFind(const KeyboardEvent&);
 
   bool IsOptionalFormControl() const override {

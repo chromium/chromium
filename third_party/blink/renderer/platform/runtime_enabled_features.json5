@@ -5831,6 +5831,16 @@
       depends_on: ["CustomizableSelectMultiplePopup"],
     },
     {
+      // Makes minor tweaks to edge cases with the <selectedcontent> element.
+      // The prior set of spec-driven changes to the selectedcontent element
+      // were called "SelectedcontentSpec", so this one is called
+      // "SelectedcontentSpec2".
+      // https://github.com/whatwg/html/pull/12263
+      // Enabled in M156, can be removed in M159.
+      name: "SelectedcontentSpec2",
+      status: "stable",
+    },
+    {
       // See https://crbug.com/40664519
       // Disabled due to UI freeze issues, see https://crbug.com/448833953.
       name: "SelectionAndFocusedVisiblePositionMatch",
