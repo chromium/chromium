@@ -98,7 +98,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   // InitializeAndStartSandbox steps helper functions.
   void RecordStartupCrashKeys(InitState& state);
   bool CollectBasicInfoAndComputeFeatures(InitState& state);
-  void ConfigureGpuSelection(InitState& state);
+  void ConfigureGpuSelection();
   void MaybeFallbackToSwiftShaderEarly(InitState& state);
   void StartWatchdogAndMaybeSandboxEarly(InitState& state);
   bool InitializeGLBindingsAndDisplay(InitState& state);

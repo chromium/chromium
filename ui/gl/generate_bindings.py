@@ -3753,7 +3753,6 @@ EGL_FUNCTIONS = [
 
 # EGL client extensions that may not add a function but are still queried.
 EGL_CLIENT_EXTENSIONS_EXTRA = [
-  'EGL_ANGLE_display_power_preference',
   'EGL_ANGLE_no_error',
   'EGL_ANGLE_platform_angle',
   'EGL_ANGLE_platform_angle_d3d',

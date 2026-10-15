@@ -366,7 +366,6 @@ typedef void(GL_BINDING_CALL* eglWaitUntilWorkScheduledANGLEProc)(
     EGLDisplay dpy);
 
 struct GL_EXPORT ClientExtensionsEGL {
-  bool b_EGL_ANGLE_display_power_preference;
   bool b_EGL_ANGLE_feature_control;
   bool b_EGL_ANGLE_no_error;
   bool b_EGL_ANGLE_platform_angle;

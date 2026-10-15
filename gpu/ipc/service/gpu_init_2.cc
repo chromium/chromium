@@ -37,7 +37,6 @@
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "ui/base/ui_base_features.h"
@@ -291,9 +290,7 @@ struct GpuInit2::InitState {
 
 GpuInit2::GpuInit2() = default;
 
-GpuInit2::~GpuInit2() {
-  StopForceDiscreteGPU();
-}
+GpuInit2::~GpuInit2() = default;
 
 void GpuInit2::set_sandbox_helper(GpuSandboxHelper* helper) {
   sandbox_helper_ = helper;
@@ -371,7 +368,7 @@ bool GpuInit2::InitializeAndStartSandbox(
   if (!CollectBasicInfoAndComputeFeatures(state)) {
     return false;
   }
-  ConfigureGpuSelection(state);
+  ConfigureGpuSelection();
   MaybeFallbackToSwiftShaderEarly(state);
   StartWatchdogAndMaybeSandboxEarly(state);
 
@@ -555,10 +552,6 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_OZONE)
 
   CHECK(CollectBasicInfoAndComputeFeatures(state));
-  if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
-    InitializeSwitchableGPUs(
-        gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
-  }
   MaybeFallbackToSwiftShaderEarly(state);
   if (!InitializeGLBindingsAndDisplay(state)) {
     return;
@@ -740,17 +733,12 @@ bool GpuInit2::CollectBasicInfoAndComputeFeatures(InitState& state) {
   return true;
 }
 
-void GpuInit2::ConfigureGpuSelection(InitState& state) {
+void GpuInit2::ConfigureGpuSelection() {
 #if BUILDFLAG(IS_WIN)
   gpu_init_internal::SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
 #endif  // BUILDFLAG(IS_WIN)
 
   CHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
-
-  if (SwitchableGPUsSupported(gpu_info_, *state.command_line)) {
-    InitializeSwitchableGPUs(
-        gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
-  }
 }
 
 void GpuInit2::MaybeFallbackToSwiftShaderEarly(InitState& state) {

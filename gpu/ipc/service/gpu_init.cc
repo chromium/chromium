@@ -39,7 +39,6 @@
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_init_2.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
@@ -373,9 +372,7 @@ std::unique_ptr<GpuInit> GpuInit::Create() {
 
 GpuInitLegacy::GpuInitLegacy() = default;
 
-GpuInitLegacy::~GpuInitLegacy() {
-  StopForceDiscreteGPU();
-}
+GpuInitLegacy::~GpuInitLegacy() = default;
 
 void GpuInitLegacy::set_sandbox_helper(GpuSandboxHelper* helper) {
   sandbox_helper_ = helper;
@@ -494,10 +491,6 @@ bool GpuInitLegacy::InitializeAndStartSandbox(
   gpu_info_.in_process_gpu = false;
 
   DCHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationNone);
-  if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
-    InitializeSwitchableGPUs(
-        gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
-  }
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, needs_more_info);
@@ -1163,10 +1156,6 @@ void GpuInitLegacy::InitializeInProcess(base::CommandLine* command_line,
 #endif  // defined(SUBPIXEL_FONT_RENDERING_DISABLED)
   gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                             command_line, &needs_more_info);
-  if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
-    InitializeSwitchableGPUs(
-        gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
-  }
 #endif  // !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
 
   gl::GLDisplay* gl_display = nullptr;

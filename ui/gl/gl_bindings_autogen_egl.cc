@@ -275,8 +275,6 @@ void ClientExtensionsEGL::InitializeClientExtensionSettings() {
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
 
-  b_EGL_ANGLE_display_power_preference =
-      gfx::HasExtension(extensions, "EGL_ANGLE_display_power_preference");
   b_EGL_ANGLE_feature_control =
       gfx::HasExtension(extensions, "EGL_ANGLE_feature_control");
   b_EGL_ANGLE_no_error = gfx::HasExtension(extensions, "EGL_ANGLE_no_error");

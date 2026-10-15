@@ -19,9 +19,6 @@ constinit thread_local GLSurface* current_surface = nullptr;
 
 }  // namespace
 
-// static
-GpuPreference GLSurface::forced_gpu_preference_ = GpuPreference::kDefault;
-
 GLSurface::GLSurface() = default;
 
 bool GLSurface::Initialize() {
@@ -149,25 +146,6 @@ GLSurface* GLSurface::GetCurrent() {
 
 bool GLSurface::IsCurrent() {
   return GetCurrent() == this;
-}
-
-// static
-void GLSurface::SetForcedGpuPreference(GpuPreference gpu_preference) {
-  DCHECK_EQ(GpuPreference::kDefault, forced_gpu_preference_);
-  forced_gpu_preference_ = gpu_preference;
-}
-
-// static
-GpuPreference GLSurface::AdjustGpuPreference(GpuPreference gpu_preference) {
-  switch (forced_gpu_preference_) {
-    case GpuPreference::kDefault:
-      return gpu_preference;
-    case GpuPreference::kLowPower:
-    case GpuPreference::kHighPerformance:
-      return forced_gpu_preference_;
-    default:
-      NOTREACHED();
-  }
 }
 
 GLSurface::~GLSurface() {

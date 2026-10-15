@@ -110,8 +110,6 @@ component("config") {
     "gpu_preferences.h",
     "gpu_switches.cc",
     "gpu_switches.h",
-    "gpu_switching.cc",
-    "gpu_switching.h",
     "gpu_test_config.cc",
     "gpu_test_config.h",
     "gpu_test_expectations_parser.cc",
@@ -192,7 +190,6 @@ component("config") {
   }
   if (is_mac) {
     sources += [ "gpu_info_collector_mac.mm" ]
-    frameworks = [ "OpenGL.framework" ]
   }
   if (is_ios) {
     sources += [ "gpu_info_collector_ios.mm" ]

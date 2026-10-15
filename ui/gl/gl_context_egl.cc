@@ -307,9 +307,7 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_power_preference) {
-    GpuPreference pref = attribs.gpu_preference;
-    pref = GLSurface::AdjustGpuPreference(pref);
-    switch (pref) {
+    switch (attribs.gpu_preference) {
       case GpuPreference::kDefault:
         // Don't request any GPU, let ANGLE and the native driver decide.
         break;

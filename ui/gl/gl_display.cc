@@ -114,26 +114,6 @@ EGLDisplay GetPlatformANGLEDisplay(
   }
   // TODO(dbehr) Add an attrib to Angle to pass EGL platform.
 
-  if (g_driver_egl.client_ext.b_EGL_ANGLE_display_power_preference) {
-    GpuPreference pref =
-        GLSurface::AdjustGpuPreference(GpuPreference::kDefault);
-    switch (pref) {
-      case GpuPreference::kDefault:
-        // Don't request any GPU, let ANGLE and the native driver decide.
-        break;
-      case GpuPreference::kLowPower:
-        display_attribs.push_back(EGL_POWER_PREFERENCE_ANGLE);
-        display_attribs.push_back(EGL_LOW_POWER_ANGLE);
-        break;
-      case GpuPreference::kHighPerformance:
-        display_attribs.push_back(EGL_POWER_PREFERENCE_ANGLE);
-        display_attribs.push_back(EGL_HIGH_POWER_ANGLE);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
   display_attribs.push_back(EGL_PLATFORM_ANGLE_DEBUG_LAYERS_ENABLED_ANGLE);
   display_attribs.push_back(GetANGLEDebugLayerFlag()->IsSet() ? EGL_TRUE
                                                               : EGL_FALSE);

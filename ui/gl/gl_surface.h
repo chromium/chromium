@@ -18,7 +18,6 @@
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_format.h"
-#include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/gfx/native_pixmap.h"
@@ -212,19 +211,11 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface> {
 
   static bool ExtensionsContain(const char* extensions, const char* name);
 
-  // This should be called at most once at GPU process startup time.
-  static void SetForcedGpuPreference(GpuPreference gpu_preference);
-  // If a gpu preference is forced (by GPU driver bug workaround, etc), return
-  // it. Otherwise, return the original input preference.
-  static GpuPreference AdjustGpuPreference(GpuPreference gpu_preference);
-
  protected:
   virtual ~GLSurface();
 
   void InvalidateWeakPtrs();
   bool HasWeakPtrs();
-
-  static GpuPreference forced_gpu_preference_;
 
  private:
   static void ClearCurrent();
