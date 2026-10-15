@@ -394,8 +394,7 @@ ScrollView* ScrollView::GetScrollViewForContents(View* contents) {
   }
 
   auto* scroll_view = static_cast<ScrollView*>(grandparent);
-  DCHECK_EQ(contents, scroll_view->contents());
-  return scroll_view;
+  return contents == scroll_view->contents() ? scroll_view : nullptr;
 }
 
 void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
@@ -760,11 +759,11 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
 }
 
 bool ScrollView::IsHorizontalContentOverflowing() const {
-  return contents_->width() > contents_viewport_->width();
+  return contents_ && contents_->width() > contents_viewport_->width();
 }
 
 bool ScrollView::IsVerticalContentOverflowing() const {
-  return contents_->height() > contents_viewport_->height();
+  return contents_ && contents_->height() > contents_viewport_->height();
 }
 
 base::CallbackListSubscription ScrollView::AddContentsScrolledCallback(

@@ -647,6 +647,9 @@ TEST_F(ScrollViewTest, AccessibleProperties) {
 }
 
 TEST_F(ScrollViewTest, ContentOverflowing) {
+  EXPECT_FALSE(scroll_view_->IsHorizontalContentOverflowing());
+  EXPECT_FALSE(scroll_view_->IsVerticalContentOverflowing());
+
   View* contents = InstallContents();
   const gfx::Size viewport_size =
       ScrollViewTestApi(scroll_view_.get()).contents_viewport()->size();
@@ -679,6 +682,39 @@ TEST_F(ScrollViewTest, ContentOverflowing) {
   InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_TRUE(scroll_view_->IsHorizontalContentOverflowing());
   EXPECT_TRUE(scroll_view_->IsVerticalContentOverflowing());
+
+  scroll_view_->SetContents(nullptr);
+  EXPECT_FALSE(scroll_view_->IsHorizontalContentOverflowing());
+  EXPECT_FALSE(scroll_view_->IsVerticalContentOverflowing());
+}
+
+TEST_F(ScrollViewTest, GetScrollViewForContentsDuringRemoval) {
+  class RemovalCheckingView : public View {
+   public:
+    explicit RemovalCheckingView(bool* checked) : checked_(checked) {}
+
+    void ViewHierarchyChanged(
+        const ViewHierarchyChangedDetails& details) override {
+      if (!details.is_add && details.child == this) {
+        EXPECT_EQ(nullptr, ScrollView::GetScrollViewForContents(this));
+        *checked_ = true;
+      }
+    }
+
+   private:
+    raw_ptr<bool> checked_;
+  };
+
+  bool checked = false;
+  auto* contents = scroll_view_->SetContents(
+      std::make_unique<RemovalCheckingView>(&checked));
+  EXPECT_EQ(scroll_view_.get(), ScrollView::GetScrollViewForContents(contents));
+
+  auto* header = scroll_view_->SetHeader(std::make_unique<View>());
+  EXPECT_EQ(nullptr, ScrollView::GetScrollViewForContents(header));
+
+  scroll_view_->SetContents(nullptr);
+  EXPECT_TRUE(checked);
 }
 
 // Verifies the scrollbars are added as necessary.
