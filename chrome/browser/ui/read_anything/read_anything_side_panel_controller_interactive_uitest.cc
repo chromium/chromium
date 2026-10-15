@@ -65,21 +65,6 @@ class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
         ->RemoveObserver(observer);
   }
 
-  void OnEntryShown(SidePanelEntry* entry) {
-    ReadAnythingOpenTrigger read_anything_trigger =
-        entry->last_open_trigger().has_value()
-            ? read_anything::SidePanelToReadAnythingOpenTrigger(
-                  entry->last_open_trigger().value())
-            : ReadAnythingOpenTrigger::kUnknown;
-    ReadAnythingController::From(browser()->GetActiveTabInterface())
-        ->OnEntryShown(read_anything_trigger);
-  }
-
-  void OnEntryHidden(SidePanelEntry* entry) {
-    ReadAnythingController::From(browser()->GetActiveTabInterface())
-        ->OnEntryHidden();
-  }
-
  protected:
   MockReadAnythingLifecycleObserver read_anything_observer_;
 };
@@ -107,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
   EXPECT_CALL(read_anything_observer_,
               Activate(true, ReadAnythingOpenTrigger::kOmniboxChip, testing::_))
       .Times(1);
-  OnEntryShown(entry);
+  entry->OnEntryShown();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
@@ -121,12 +106,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
   EXPECT_CALL(read_anything_observer_,
               Activate(false, ReadAnythingOpenTrigger::kUnknown, testing::_))
       .Times(1);
-  OnEntryHidden(entry);
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
-                       TabWillDetach_MarkOmniboxIgnoredIfGoodCandidate) {
-  browser()->GetActiveTabInterface()->Close();
+  entry->OnEntryHidden();
 }
 
 class ReadAnythingSidePanelControllerInteractiveTest
