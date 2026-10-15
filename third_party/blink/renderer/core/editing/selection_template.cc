@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -96,7 +97,11 @@ bool SelectionTemplate<Strategy>::AssertValidFor(
   if (anchor_.IsNull()) {
     return true;
   }
-  DCHECK_EQ(anchor_.GetDocument(), document) << *this;
+  if (RuntimeEnabledFeatures::LongPressHitTestInFrameEnabled()) {
+    CHECK_EQ(anchor_.GetDocument(), document) << *this;
+  } else {
+    DCHECK_EQ(anchor_.GetDocument(), document) << *this;
+  }
   return true;
 }
 
