@@ -1538,6 +1538,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
   deps = [
     ":chrome_test_java_helper",
     "//components/tabs/public/android:java",
+    "//ui/accessibility:ui_accessibility_test_support_java",
   ]
 }
 

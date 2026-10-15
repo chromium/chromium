@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for the {@link TabImpl} class. */
@@ -64,6 +66,11 @@ public class TabImplTest {
     @Before
     public void setUp() {
         mInitialPage = mActivityTestRule.startOnBlankPage();
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(AccessibilityStateTestHelper::uninitializeForTesting);
     }
 
     private TabImpl createFrozenTab() {
@@ -164,6 +171,9 @@ public class TabImplTest {
         // initialized (avoiding enabling ui::kAXModeBasic across the browser process).
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // Otherwise the provider is null regardless of the stub.
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
                     WebContentsAccessibility wcax =
                             WebContentsAccessibility.fromWebContents(tab.getWebContents());
                     assertNotNull(wcax);
@@ -236,6 +246,8 @@ public class TabImplTest {
         // native WebContentsAccessibility on the unattached background tab.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
                     WebContentsAccessibility wcax =
                             WebContentsAccessibility.fromWebContents(tab.getWebContents());
                     assertNotNull(wcax);
