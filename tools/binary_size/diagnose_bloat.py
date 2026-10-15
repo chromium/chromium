@@ -356,16 +356,22 @@ class _BuildHelper:
     return [os.path.join('apks', self.apk_name)]
 
   @property
+  def symbols_dir(self):
+    """Directory (relative to output_directory) of unstripped libraries."""
+    # 32-bit targets are built by the android_clang_arm secondary toolchain of
+    # an arm64 build.
+    if self.SizeTargetSuffix() == '32':
+      return 'android_clang_arm/lib.unstripped'
+    return 'lib.unstripped'
+
+  @property
   def main_lib_paths(self):
     # TODO(agrieve): Could maybe extract from .apk or GN?
     if self.main_lib_path_override:
       return [self.main_lib_path_override]
     if self.IsLinux():
       return ['chrome']
-    if self.SizeTargetSuffix() == '32':
-      lib_dir = 'android_clang_arm/lib.unstripped'
-    else:
-      lib_dir = 'lib.unstripped'
+    lib_dir = self.symbols_dir
     if self.IsMultiContainer():
       return [
         f'{lib_dir}/libchrome.so',
@@ -456,6 +462,10 @@ class _BuildHelper:
         ' enable_chrome_android_internal=%s'
         % str(self.enable_chrome_android_internal).lower()
       )
+      # Size targets (including *_32_minimal_apks) require a 64-bit
+      # target_cpu, so set it explicitly rather than relying on the default.
+      if not re.search(r'(^|\s)target_cpu\s*=', self.extra_gn_args_str):
+        gn_args += ' target_cpu="arm64"'
     gn_args += self.extra_gn_args_str
     return [_GN_PATH, 'gen', self.output_directory, '--args=%s' % gn_args]
 
@@ -594,6 +604,10 @@ class _BuildArchive:
     supersize_cmd = [_SUPERSIZE_PATH, 'archive', self.archived_size_path]
     if self.build.IsAndroid():
       supersize_cmd += ['-f', self.build.supersize_input]
+      if not self.build.IsMultiContainer():
+        # Ensures other libraries (e.g. libelements.so) are matched to the
+        # unstripped libraries of the correct ABI.
+        supersize_cmd += ['--symbols-dir', self.build.symbols_dir]
       if len(self.build.abs_main_lib_paths) == 1 and os.path.exists(
         self.build.abs_main_lib_paths[0]
       ):
