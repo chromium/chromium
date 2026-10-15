@@ -16,10 +16,10 @@ namespace actor {
 using ::tabs::TabHandle;
 
 DragAndReleaseToolRequest::DragAndReleaseToolRequest(
-    TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     const PageTarget& from_target,
     const PageTarget& to_target)
-    : PageToolRequest(tab_handle, from_target),
+    : PageToolRequest(actor_surface_handle, from_target),
       from_target_(from_target),
       to_target_(to_target) {}
 

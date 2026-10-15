@@ -20,10 +20,10 @@
 namespace actor {
 
 AttemptLoginToolRequest::AttemptLoginToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     std::optional<PageTarget> password_button,
     std::optional<PageTarget> sign_in_with_google_button)
-    : TabToolRequest(tab_handle),
+    : TabToolRequest(actor_surface_handle),
       password_button_(password_button),
       sign_in_with_google_button_(sign_in_with_google_button) {}
 

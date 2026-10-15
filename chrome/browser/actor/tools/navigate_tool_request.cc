@@ -34,8 +34,10 @@ constexpr std::string_view kUrlParamDescription =
 
 using ::tabs::TabHandle;
 
-NavigateToolRequest::NavigateToolRequest(TabHandle tab_handle, GURL url)
-    : TabToolRequest(tab_handle), url_(url) {}
+NavigateToolRequest::NavigateToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    GURL url)
+    : TabToolRequest(actor_surface_handle), url_(url) {}
 
 NavigateToolRequest::~NavigateToolRequest() = default;
 

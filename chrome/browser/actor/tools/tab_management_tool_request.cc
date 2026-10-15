@@ -73,8 +73,9 @@ std::string_view CreateTabToolRequest::Name() const {
   return kName;
 }
 
-ActivateTabToolRequest::ActivateTabToolRequest(tabs::TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+ActivateTabToolRequest::ActivateTabToolRequest(
+    ActorSurfaceHandle actor_surface_handle)
+    : TabToolRequest(actor_surface_handle) {}
 
 ActivateTabToolRequest::~ActivateTabToolRequest() = default;
 
@@ -90,16 +91,16 @@ std::optional<ToolDefinition> ActivateTabToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult ActivateTabToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  TabInterface* tab = GetTabHandle().Get();
+  TabInterface* tab = GetActorSurfaceHandle().GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
-  return {
-      std::make_unique<TabManagementTool>(
-          task_id, tool_delegate, TabManagementTool::kActivate, GetTabHandle()),
-      MakeOkResult()};
+  return {std::make_unique<TabManagementTool>(
+              task_id, tool_delegate, TabManagementTool::kActivate,
+              GetActorSurfaceHandle().GetTabHandle()),
+          MakeOkResult()};
 }
 
 void ActivateTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
@@ -110,8 +111,9 @@ std::string_view ActivateTabToolRequest::Name() const {
   return kName;
 }
 
-CloseTabToolRequest::CloseTabToolRequest(tabs::TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+CloseTabToolRequest::CloseTabToolRequest(
+    ActorSurfaceHandle actor_surface_handle)
+    : TabToolRequest(actor_surface_handle) {}
 
 CloseTabToolRequest::~CloseTabToolRequest() = default;
 
@@ -125,16 +127,16 @@ std::optional<ToolDefinition> CloseTabToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult CloseTabToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  TabInterface* tab = GetTabHandle().Get();
+  TabInterface* tab = GetActorSurfaceHandle().GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
-  return {
-      std::make_unique<TabManagementTool>(
-          task_id, tool_delegate, TabManagementTool::kClose, GetTabHandle()),
-      MakeOkResult()};
+  return {std::make_unique<TabManagementTool>(
+              task_id, tool_delegate, TabManagementTool::kClose,
+              GetActorSurfaceHandle().GetTabHandle()),
+          MakeOkResult()};
 }
 
 void CloseTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {

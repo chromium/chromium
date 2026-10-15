@@ -31,9 +31,9 @@
 namespace actor {
 
 SiteBasedSearchToolRequest::SiteBasedSearchToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     std::string query)
-    : TabToolRequest(tab_handle), query_(std::move(query)) {}
+    : TabToolRequest(actor_surface_handle), query_(std::move(query)) {}
 
 SiteBasedSearchToolRequest::~SiteBasedSearchToolRequest() = default;
 
@@ -49,7 +49,7 @@ bool SiteBasedSearchToolRequest::RequiresUrlCheckInCurrentTab() const {
 ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  tabs::TabInterface* tab = GetTabHandle().Get();
+  tabs::TabInterface* tab = GetActorSurfaceHandle().GetTabHandle().Get();
   if (!tab || !tab->GetContents()) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
@@ -100,7 +100,8 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
       CHECK(search_url.GetHost() == current_url.GetHost() ||
             (!keyword.empty() && turl->keyword() == keyword));
       if (search_url.is_valid() && search_url.SchemeIsHTTPOrHTTPS()) {
-        return NavigateToolRequest(GetTabHandle(), std::move(search_url))
+        return NavigateToolRequest(GetActorSurfaceHandle(),
+                                   std::move(search_url))
             .CreateTool(task_id, tool_delegate);
       }
     }

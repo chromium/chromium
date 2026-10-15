@@ -24,13 +24,13 @@ namespace actor {
 namespace {
 
 TEST(FileUploadToolRequestTest, Properties) {
-  tabs::MockTabInterface mock_tab;
   PageTarget target = DomNode{.node_id = 123, .document_identifier = "doc"};
   std::vector<FileUploadSource> files = {
       FileUploadSource(GURL("https://example.com/file.txt")),
   };
 
-  FileUploadToolRequest request(mock_tab.GetHandle(), target, files);
+  FileUploadToolRequest request(ActorSurfaceHandle::CreateForTesting(), target,
+                                files);
 
   EXPECT_EQ(request.Name(), FileUploadToolRequest::kName);
   EXPECT_EQ(request.Name(), "FileUpload");
@@ -53,10 +53,10 @@ TEST(FileUploadToolRequestTest, OperatorStreamRedactsUrl) {
 
 TEST(FileUploadToolRequestTest, CreateToolNullTabReturnsError) {
   MockToolDelegate delegate;
-  tabs::TabHandle invalid_tab_handle(999);
+  // No surface is registered under this handle.
   FileUploadToolRequest request(
-      invalid_tab_handle, DomNode{.node_id = 1, .document_identifier = "doc"},
-      {});
+      ActorSurfaceHandle::CreateForTesting(),
+      DomNode{.node_id = 1, .document_identifier = "doc"}, {});
 
   auto result = request.CreateTool(TaskId(1), delegate);
   EXPECT_EQ(result.tool, nullptr);
@@ -70,7 +70,8 @@ TEST(FileUploadToolRequestTest, CreateTool_EmptyFileListFails) {
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  mock_tab.GetHandle());
   FileUploadToolRequest request(
-      mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
+      actor_surface.GetHandle(),
+      DomNode{.node_id = 1, .document_identifier = "doc"},
       /*files=*/{});
 
   auto result = request.CreateTool(TaskId(1), delegate);
@@ -86,7 +87,8 @@ TEST(FileUploadToolRequestTest, CreateTool_ValidUrlSucceeds) {
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  mock_tab.GetHandle());
   FileUploadToolRequest request(
-      mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
+      actor_surface.GetHandle(),
+      DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("https://example.com/file.pdf"))});
 
   auto result = request.CreateTool(TaskId(1), delegate);
@@ -101,7 +103,8 @@ TEST(FileUploadToolRequestTest, CreateTool_NonHttpUrlFails) {
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  mock_tab.GetHandle());
   FileUploadToolRequest request(
-      mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
+      actor_surface.GetHandle(),
+      DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("file:///etc/passwd"))});
 
   auto result = request.CreateTool(TaskId(1), delegate);
@@ -117,7 +120,8 @@ TEST(FileUploadToolRequestTest, CreateTool_InvalidUrlFails) {
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  mock_tab.GetHandle());
   FileUploadToolRequest request(
-      mock_tab.GetHandle(), DomNode{.node_id = 1, .document_identifier = "doc"},
+      actor_surface.GetHandle(),
+      DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("not a url"))});
 
   auto result = request.CreateTool(TaskId(1), delegate);
@@ -128,10 +132,10 @@ TEST(FileUploadToolRequestTest, CreateTool_InvalidUrlFails) {
 }
 
 TEST(FileUploadToolRequestTest, VariantConversion) {
-  tabs::MockTabInterface mock_tab;
   PageTarget target = DomNode{.node_id = 123, .document_identifier = "doc"};
   std::vector<FileUploadSource> files;
-  FileUploadToolRequest request(mock_tab.GetHandle(), target, files);
+  FileUploadToolRequest request(ActorSurfaceHandle::CreateForTesting(), target,
+                                files);
 
   EXPECT_TRUE(
       std::holds_alternative<FileUploadToolRequest>(ConvertToVariant(request)));

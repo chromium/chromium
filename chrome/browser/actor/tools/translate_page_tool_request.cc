@@ -36,9 +36,9 @@ constexpr std::string_view kTargetLanguageParamDescription =
 }  // namespace
 
 TranslatePageToolRequest::TranslatePageToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     std::string_view target_language)
-    : TabToolRequest(tab_handle), target_language_(target_language) {}
+    : TabToolRequest(actor_surface_handle), target_language_(target_language) {}
 
 TranslatePageToolRequest::~TranslatePageToolRequest() = default;
 

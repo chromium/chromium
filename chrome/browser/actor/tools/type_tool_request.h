@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 
@@ -40,7 +41,7 @@ class TypeToolRequest : public PageToolRequest {
     kAppend
   };
 
-  TypeToolRequest(tabs::TabHandle tab_handle,
+  TypeToolRequest(ActorSurfaceHandle actor_surface_handle,
                   const PageTarget& target,
                   std::string_view text,
                   bool follow_by_enter,

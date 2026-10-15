@@ -100,14 +100,13 @@ void AttemptFormFillingTool::Invoke(ToolCallback callback) {
 
       tool_delegate().EnqueueFollowupAction(
           std::make_unique<AttemptFormFillingToolRequest>(
-              actor_surface_handle_.GetTabHandle(),
-              std::move(tool_fill_requests_),
+              actor_surface_handle_, std::move(tool_fill_requests_),
               std::move(credit_card_opaque_token_),
               /*enqueued_click=*/true));
 
       tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
-          actor_surface_handle_.GetTabHandle(), std::move(target),
-          mojom::ClickType::kLeft, mojom::ClickCount::kSingle));
+          actor_surface_handle_, std::move(target), mojom::ClickType::kLeft,
+          mojom::ClickCount::kSingle));
 
       std::move(callback).Run(MakeOkResult());
       return;

@@ -45,12 +45,12 @@ constexpr std::string_view kFollowByEnterParamDescription =
 
 using ::tabs::TabHandle;
 
-TypeToolRequest::TypeToolRequest(TabHandle tab_handle,
+TypeToolRequest::TypeToolRequest(ActorSurfaceHandle actor_surface_handle,
                                  const PageTarget& target,
                                  std::string_view text,
                                  bool follow_by_enter,
                                  Mode mode)
-    : PageToolRequest(tab_handle, target),
+    : PageToolRequest(actor_surface_handle, target),
       text(text),
       follow_by_enter(follow_by_enter),
       mode(mode) {}

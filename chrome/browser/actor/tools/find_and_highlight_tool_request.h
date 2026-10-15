@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -26,7 +27,8 @@ class FindAndHighlightToolRequest : public TabToolRequest {
   // JSON argument key for the search query string parameter.
   static constexpr std::string_view kQueryParam = "query";
 
-  FindAndHighlightToolRequest(tabs::TabHandle tab_handle, std::string query);
+  FindAndHighlightToolRequest(ActorSurfaceHandle actor_surface_handle,
+                              std::string query);
   ~FindAndHighlightToolRequest() override;
 
   FindAndHighlightToolRequest(const FindAndHighlightToolRequest&);

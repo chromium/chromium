@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/shared_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -17,11 +18,10 @@ namespace actor {
 namespace {
 
 constexpr char kDocumentIdentifier[] = "doc_id";
-constexpr int32_t kFakeTabId = 123;
+constexpr int32_t kFakeActorSurfaceId = 123;
 
-tabs::TabHandle NonNullTabHandleForRequestPolicyTest() {
-  // These tests only store the tab handle; they never use it to find a tab.
-  return tabs::TabHandle(kFakeTabId);
+ActorSurfaceHandle NonNullSurfaceHandleForRequestPolicyTest() {
+  return ActorSurfaceHandle::FromRawValue(kFakeActorSurfaceId);
 }
 
 PageTarget NonRootDomNodeTarget() {
@@ -29,9 +29,10 @@ PageTarget NonRootDomNodeTarget() {
 }
 
 TEST(TypeToolRequestTest, GetObservationPageStabilityConfig_Default) {
-  TypeToolRequest request(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(), "hello",
-      /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
+  TypeToolRequest request(NonNullSurfaceHandleForRequestPolicyTest(),
+                          NonRootDomNodeTarget(), "hello",
+                          /*follow_by_enter=*/false,
+                          TypeToolRequest::Mode::kAppend);
   auto config = request.GetObservationPageStabilityConfig();
   EXPECT_TRUE(config.supports_paint_stability);
   EXPECT_EQ(config.start_delay, base::Seconds(1));
@@ -42,9 +43,10 @@ TEST(TypeToolRequestTest, GetObservationPageStabilityConfig_FeatureEnabled) {
   feature_list.InitAndEnableFeatureWithParameters(
       kActorTypeToolObservationStartDelay, {{"start_delay", "2s"}});
 
-  TypeToolRequest request(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(), "hello",
-      /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
+  TypeToolRequest request(NonNullSurfaceHandleForRequestPolicyTest(),
+                          NonRootDomNodeTarget(), "hello",
+                          /*follow_by_enter=*/false,
+                          TypeToolRequest::Mode::kAppend);
   auto config = request.GetObservationPageStabilityConfig();
   EXPECT_TRUE(config.supports_paint_stability);
   EXPECT_EQ(config.start_delay, base::Seconds(2));
@@ -54,9 +56,10 @@ TEST(TypeToolRequestTest, GetObservationPageStabilityConfig_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kActorTypeToolObservationStartDelay);
 
-  TypeToolRequest request(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(), "hello",
-      /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
+  TypeToolRequest request(NonNullSurfaceHandleForRequestPolicyTest(),
+                          NonRootDomNodeTarget(), "hello",
+                          /*follow_by_enter=*/false,
+                          TypeToolRequest::Mode::kAppend);
   auto config = request.GetObservationPageStabilityConfig();
   EXPECT_TRUE(config.supports_paint_stability);
   EXPECT_EQ(config.start_delay, base::TimeDelta());

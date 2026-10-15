@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -1309,7 +1310,7 @@ IN_PROC_BROWSER_TEST_F(
   for (const PageTarget& target : invalid_targets) {
     SCOPED_TRACE(target.index());
     std::unique_ptr<ToolRequest> action = std::make_unique<ClickToolRequest>(
-        active_tab()->GetHandle(), target,
+        ActorSurfaceHandle::From(active_tab()->GetHandle()), target,
         mojom::ClickType::kLeftOnOccludedTarget, mojom::ClickCount::kSingle);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());

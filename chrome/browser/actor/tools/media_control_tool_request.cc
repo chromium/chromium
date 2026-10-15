@@ -61,8 +61,9 @@ ToolRequest::CreateToolResult CreateMediaControlTool(
 
 }  // namespace
 
-PlayMediaToolRequest::PlayMediaToolRequest(tabs::TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+PlayMediaToolRequest::PlayMediaToolRequest(
+    ActorSurfaceHandle actor_surface_handle)
+    : TabToolRequest(actor_surface_handle) {}
 
 PlayMediaToolRequest::~PlayMediaToolRequest() = default;
 
@@ -88,8 +89,9 @@ std::string_view PlayMediaToolRequest::Name() const {
   return kName;
 }
 
-PauseMediaToolRequest::PauseMediaToolRequest(tabs::TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+PauseMediaToolRequest::PauseMediaToolRequest(
+    ActorSurfaceHandle actor_surface_handle)
+    : TabToolRequest(actor_surface_handle) {}
 
 PauseMediaToolRequest::~PauseMediaToolRequest() = default;
 
@@ -144,9 +146,10 @@ std::optional<base::TimeDelta> SeekMediaToolRequest::FromTimecode(
   return std::nullopt;
 }
 
-SeekMediaToolRequest::SeekMediaToolRequest(tabs::TabHandle tab_handle,
-                                           base::TimeDelta seek_time)
-    : TabToolRequest(tab_handle), seek_time_(seek_time) {}
+SeekMediaToolRequest::SeekMediaToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    base::TimeDelta seek_time)
+    : TabToolRequest(actor_surface_handle), seek_time_(seek_time) {}
 
 SeekMediaToolRequest::~SeekMediaToolRequest() = default;
 

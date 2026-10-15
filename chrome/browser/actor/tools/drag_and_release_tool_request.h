@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 
@@ -21,7 +22,7 @@ class DragAndReleaseToolRequest : public PageToolRequest {
  public:
   static constexpr char kName[] = "DragAndRelease";
 
-  DragAndReleaseToolRequest(tabs::TabHandle tab_handle,
+  DragAndReleaseToolRequest(ActorSurfaceHandle actor_surface_handle,
                             const PageTarget& from_target,
                             const PageTarget& to_target);
   ~DragAndReleaseToolRequest() override;

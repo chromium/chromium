@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -53,15 +54,17 @@ class AttemptFormFillingToolRequestTest
   }
   ~AttemptFormFillingToolRequestTest() override = default;
 
-  // Helper to create a dummy tab handle.
-  tabs::TabHandle GetDummyTabHandle() { return tabs::TabHandle(1); }
+  // Helper to create a dummy actor surface handle.
+  ActorSurfaceHandle GetDummyActorSurfaceHandle() {
+    return ActorSurfaceHandle::FromRawValue(1);
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(AttemptFormFillingToolRequestTest, NameReturnsCorrectString) {
-  AttemptFormFillingToolRequest tool_request(GetDummyTabHandle(),
+  AttemptFormFillingToolRequest tool_request(GetDummyActorSurfaceHandle(),
                                              /*requests=*/{},
                                              /*credit_card_opaque_token=*/"");
 
@@ -71,7 +74,7 @@ TEST_P(AttemptFormFillingToolRequestTest, NameReturnsCorrectString) {
 }
 
 TEST_P(AttemptFormFillingToolRequestTest, JournalEventString) {
-  AttemptFormFillingToolRequest tool_request(GetDummyTabHandle(),
+  AttemptFormFillingToolRequest tool_request(GetDummyActorSurfaceHandle(),
                                              /*requests=*/{},
                                              /*credit_card_opaque_token=*/"");
 
@@ -173,7 +176,7 @@ TEST_P(AttemptFormFillingToolRequestTest,
                                  mock_tab.GetHandle());
 
   AttemptFormFillingToolRequest request(
-      mock_tab.GetHandle(),
+      actor_surface.GetHandle(),
       /*requests=*/{},
       /*credit_card_opaque_token=*/"opaque_token_xyz");
 

@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_metrics.h"
@@ -126,8 +127,8 @@ std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     std::vector<FormFillingRequest> requests,
     bool enqueued_click = true) {
   return std::make_unique<AttemptFormFillingToolRequest>(
-      tab.GetHandle(), std::move(requests), /*credit_card_opaque_token=*/"",
-      enqueued_click);
+      ActorSurfaceHandle::From(tab.GetHandle()), std::move(requests),
+      /*credit_card_opaque_token=*/"", enqueued_click);
 }
 
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
@@ -139,7 +140,7 @@ std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
                                            ? RequestedData::kUnknown
                                            : RequestedData::kCreditCard;
   return std::make_unique<AttemptFormFillingToolRequest>(
-      tab.GetHandle(),
+      ActorSurfaceHandle::From(tab.GetHandle()),
       std::vector<FormFillingRequest>{
           CreateFormFillingRequest(requested_data, std::move(trigger_fields))},
       std::string(credit_card_opaque_token), enqueued_click);
@@ -1066,7 +1067,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
 
   std::unique_ptr<ToolRequest> action =
       std::make_unique<AttemptFormFillingToolRequest>(
-          active_tab()->GetHandle(), std::move(requests),
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::move(requests),
           /*credit_card_opaque_token=*/"opaque_token_xyz",
           /*enqueued_click=*/true);
   ActResultFuture result;

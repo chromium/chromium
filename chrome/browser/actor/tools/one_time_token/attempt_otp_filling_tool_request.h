@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 
@@ -42,11 +43,10 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:AttemptOtpFillingPredictedOtpType)
 
-  AttemptOtpFillingToolRequest(
-      tabs::TabHandle tab_handle,
-      std::vector<PageTarget> trigger_fields,
-      bool for_signin,
-      OtpType predicted_otp_type = OtpType::kUnknown);
+  AttemptOtpFillingToolRequest(ActorSurfaceHandle actor_surface_handle,
+                               std::vector<PageTarget> trigger_fields,
+                               bool for_signin,
+                               OtpType predicted_otp_type = OtpType::kUnknown);
   AttemptOtpFillingToolRequest(const AttemptOtpFillingToolRequest&);
   AttemptOtpFillingToolRequest& operator=(const AttemptOtpFillingToolRequest&);
 

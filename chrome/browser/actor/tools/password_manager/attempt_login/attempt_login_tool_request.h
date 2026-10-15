@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
@@ -25,7 +26,7 @@ class AttemptLoginToolRequest : public TabToolRequest {
   GetLoginObservationPageStabilityConfig();
 
   explicit AttemptLoginToolRequest(
-      tabs::TabHandle tab_handle,
+      ActorSurfaceHandle actor_surface_handle,
       std::optional<PageTarget> password_button,
       std::optional<PageTarget> sign_in_with_google_button);
   ~AttemptLoginToolRequest() override;

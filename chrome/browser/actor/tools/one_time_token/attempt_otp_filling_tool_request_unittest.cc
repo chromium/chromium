@@ -85,7 +85,7 @@ TEST_F(AttemptOtpFillingToolRequestTest,
   AttemptOtpFillingToolRequest& otp_request =
       static_cast<AttemptOtpFillingToolRequest&>(created_request);
 
-  EXPECT_EQ(100, otp_request.GetTabHandle().raw_value());
+  EXPECT_EQ(100, otp_request.GetActorSurfaceHandle().raw_value());
 
   EXPECT_TRUE(otp_request.GetForSigninForTesting());
   EXPECT_EQ(AttemptOtpFillingToolRequest::OtpType::kEmail,

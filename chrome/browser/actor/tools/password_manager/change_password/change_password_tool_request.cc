@@ -21,12 +21,12 @@
 namespace actor {
 
 ChangePasswordToolRequest::ChangePasswordToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     std::optional<PageTarget> current_password_field,
     std::optional<PageTarget> new_password_field,
     std::optional<PageTarget> confirm_new_password_field,
     std::optional<PageTarget> confirm_button)
-    : TabToolRequest(tab_handle),
+    : TabToolRequest(actor_surface_handle),
       current_password_field_(std::move(current_password_field)),
       new_password_field_(std::move(new_password_field)),
       confirm_new_password_field_(std::move(confirm_new_password_field)),

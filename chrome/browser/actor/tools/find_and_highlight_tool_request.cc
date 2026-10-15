@@ -33,9 +33,9 @@ constexpr std::string_view kQueryParamDescription =
 }  // namespace
 
 FindAndHighlightToolRequest::FindAndHighlightToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     std::string query)
-    : TabToolRequest(tab_handle), query_(std::move(query)) {}
+    : TabToolRequest(actor_surface_handle), query_(std::move(query)) {}
 
 FindAndHighlightToolRequest::~FindAndHighlightToolRequest() = default;
 

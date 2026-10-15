@@ -30,7 +30,6 @@ class PromptGeminiPanelToolRequest : public ToolRequest {
 
   // ToolRequest:
   GURL GetURLForJournal() const override;
-  tabs::TabHandle GetTabHandle() const override;
   ActorSurfaceHandle GetActorSurfaceHandle() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
   CreateToolResult CreateTool(TaskId task_id,
@@ -58,7 +57,6 @@ class CloseGeminiPanelToolRequest : public ToolRequest {
 
   // ToolRequest:
   GURL GetURLForJournal() const override;
-  tabs::TabHandle GetTabHandle() const override;
   ActorSurfaceHandle GetActorSurfaceHandle() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
   CreateToolResult CreateTool(TaskId task_id,

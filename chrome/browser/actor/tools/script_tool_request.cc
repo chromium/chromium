@@ -22,11 +22,11 @@ namespace actor {
 using ::tabs::TabHandle;
 
 ScriptToolRequest::ScriptToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     const base::UnguessableToken& target_document_id,
     const std::string& name,
     const std::string& input_arguments)
-    : TabToolRequest(tab_handle),
+    : TabToolRequest(actor_surface_handle),
       target_document_id_(target_document_id),
       name_(name),
       input_arguments_(input_arguments) {}

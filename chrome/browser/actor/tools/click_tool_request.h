@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -27,7 +28,7 @@ class ClickToolRequest : public PageToolRequest {
   static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
 
   ClickToolRequest(
-      tabs::TabHandle tab_handle,
+      ActorSurfaceHandle actor_surface_handle,
       const PageTarget& target,
       mojom::ClickType type,
       mojom::ClickCount count,

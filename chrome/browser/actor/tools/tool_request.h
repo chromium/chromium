@@ -17,7 +17,6 @@
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
-#include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -58,15 +57,8 @@ class ToolRequest {
   // if the scoped object no longer exists.
   virtual GURL GetURLForJournal() const;
 
-  // Returns a handle to the tab being targeted by this request. The default
-  // (non-tab, non-page scoped tool requests) returns a null handle.
-  // TODO(b/567721071): Remove once all callers use GetActorSurfaceHandle().
-  virtual tabs::TabHandle GetTabHandle() const;
-
-  // Returns a handle to the surface being targeted by this request, or a null
-  // handle if the request doesn't target a surface. The default implementation
-  // looks up the surface currently backing GetTabHandle(), so it returns a
-  // null handle once that tab is gone.
+  // Returns a handle to the actor surface targeted by this request. Defaults to
+  // a null handle.
   virtual ActorSurfaceHandle GetActorSurfaceHandle() const;
 
   // Returns true if this tool takes action within the page of the current tab
@@ -75,15 +67,9 @@ class ToolRequest {
   // navigate tool is tab scoped but navigates *away* from the current URL.
   virtual bool RequiresUrlCheckInCurrentTab() const;
 
-  // Returns the tab handle that should be used for safety checks, if any.
-  // By default, this is the target tab of the request (GetTabHandle()).
-  // TODO(b/567721071): Remove once all callers use
-  // GetActorSurfaceForValidation().
-  virtual tabs::TabHandle GetTabForValidation() const;
-
   // Returns the surface handle that should be used for safety checks, if any.
-  // The default implementation looks up the surface currently backing
-  // GetTabForValidation().
+  // By default, this is the target actor surface of the request
+  // (GetActorSurfaceHandle()).
   virtual ActorSurfaceHandle GetActorSurfaceForValidation() const;
 
   // Returns the name to use for the journal when recording entries for this
@@ -142,7 +128,7 @@ class ToolRequest {
 // subclass.
 class TabToolRequest : public ToolRequest {
  public:
-  explicit TabToolRequest(const tabs::TabHandle tab_handle);
+  explicit TabToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~TabToolRequest() override;
   TabToolRequest(const TabToolRequest& other);
   TabToolRequest& operator=(const TabToolRequest& other);
@@ -150,13 +136,12 @@ class TabToolRequest : public ToolRequest {
   // ToolRequest
   GURL GetURLForJournal() const override;
 
-  // Returns a handle to the tab being targeted by this request. For tab scoped
-  // requests this handle will never be a null value but it may point to a tab
-  // that is no longer available.
-  tabs::TabHandle GetTabHandle() const override;
+  // Returns a handle to the actor surface targeted by this request. It is never
+  // null, but it may point to an actor surface that no longer exists.
+  ActorSurfaceHandle GetActorSurfaceHandle() const override;
 
  private:
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
 };
 
 }  // namespace actor

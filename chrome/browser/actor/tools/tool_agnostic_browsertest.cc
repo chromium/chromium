@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  tabs::TabHandle tab = action->GetTabHandle();
+  tabs::TabHandle tab = action->GetActorSurfaceHandle().GetTabHandle();
   ASSERT_NE(tab, tabs::TabHandle::Null());
   ASSERT_FALSE(actor_task().GetTabs().contains(tab));
 
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  tabs::TabHandle tab = action->GetTabHandle();
+  tabs::TabHandle tab = action->GetActorSurfaceHandle().GetTabHandle();
 
   ASSERT_TRUE(actor_task().GetTabs().empty());
 
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
 
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  tabs::TabHandle tab_handle = action->GetTabHandle();
+  tabs::TabHandle tab_handle = action->GetActorSurfaceHandle().GetTabHandle();
   actor_task().Act(ToRequestList(action), result.GetCallback());
 
   // Wait until the tab has been associated with the task but before the tool

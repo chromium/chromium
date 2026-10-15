@@ -333,10 +333,10 @@ void ToolController::Navigate(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&url](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::NavigateToolRequest>(tab_handle,
-                                                            GURL(*url));
+      [&url](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::NavigateToolRequest>(
+            actor_surface_handle, GURL(*url));
       },
       std::move(callback));
 }
@@ -353,10 +353,10 @@ void ToolController::PerformSearch(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&query](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::PerformSearchToolRequest>(tab_handle,
-                                                                 *query);
+      [&query](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PerformSearchToolRequest>(
+            actor_surface_handle, *query);
       },
       std::move(callback));
 }
@@ -364,8 +364,10 @@ void ToolController::PerformSearch(const base::DictValue& arguments,
 #if !BUILDFLAG(IS_ANDROID)
 void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::CloseTabToolRequest>(tab_handle);
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::CloseTabToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
@@ -373,24 +375,30 @@ void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
 
 void ToolController::GoBack(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryBackToolRequest>(tab_handle);
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryBackToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
 
 void ToolController::GoForward(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::HistoryForwardToolRequest>(tab_handle);
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryForwardToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
 
 void ToolController::ReloadPage(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::ReloadPageToolRequest>(tab_handle);
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::ReloadPageToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
@@ -439,26 +447,30 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&query](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::FindAndHighlightToolRequest>(tab_handle,
-                                                                    *query);
+      [&query](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::FindAndHighlightToolRequest>(
+            actor_surface_handle, *query);
       },
       std::move(callback));
 }
 
 void ToolController::PlayVideo(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::PlayMediaToolRequest>(tab_handle);
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PlayMediaToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
 
 void ToolController::PauseVideo(ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::PauseMediaToolRequest>(tab_handle);
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PauseMediaToolRequest>(
+            actor_surface_handle);
       },
       std::move(callback));
 }
@@ -483,10 +495,10 @@ void ToolController::SeekToTimestamp(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&seek_time](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::SeekMediaToolRequest>(tab_handle,
-                                                             *seek_time);
+      [&seek_time](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::SeekMediaToolRequest>(
+            actor_surface_handle, *seek_time);
       },
       std::move(callback));
 }
@@ -505,10 +517,10 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&target_language](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+      [&target_language](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::TranslatePageToolRequest>(
-            tab_handle, *target_language);
+            actor_surface_handle, *target_language);
       },
       std::move(callback));
 }
@@ -525,10 +537,10 @@ void ToolController::ClickElement(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&page_target](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+      [&page_target](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::ClickToolRequest>(
-            tab_handle, *page_target, actor::mojom::ClickType::kLeft,
+            actor_surface_handle, *page_target, actor::mojom::ClickType::kLeft,
             actor::mojom::ClickCount::kSingle);
       },
       std::move(callback));
@@ -555,10 +567,10 @@ void ToolController::SetText(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&page_target, &text](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+      [&page_target, &text](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::TypeToolRequest>(
-            tab_handle, *page_target, *text,
+            actor_surface_handle, *page_target, *text,
             /*follow_by_enter=*/false, actor::TypeToolRequest::Mode::kReplace);
       },
       std::move(callback));
@@ -584,9 +596,9 @@ void ToolController::SelectOption(const base::DictValue& arguments,
   }
 
   PerformActionOnTrackedContents(
-      [&page_target, &value](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
-        return std::make_unique<actor::SelectToolRequest>(tab_handle,
+      [&page_target, &value](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::SelectToolRequest>(actor_surface_handle,
                                                           *page_target, *value);
       },
       std::move(callback));
@@ -596,11 +608,13 @@ void ToolController::SelectOption(const base::DictValue& arguments,
 void ToolController::SetFullscreen(bool fullscreen,
                                    ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
-      [fullscreen](
-          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+      [fullscreen](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
         // The tracked tab is always in a window, so this can't be null.
         const BrowserWindowInterface& browser =
-            CHECK_DEREF(tab_handle.Get()->GetBrowserWindowInterface());
+            CHECK_DEREF(actor_surface_handle.GetTabHandle()
+                            .Get()
+                            ->GetBrowserWindowInterface());
         const int32_t window_id = browser.GetSessionID().id();
         if (fullscreen) {
           return std::make_unique<actor::EnterFullscreenToolRequest>(window_id);
@@ -612,8 +626,8 @@ void ToolController::SetFullscreen(bool fullscreen,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void ToolController::PerformActionOnTrackedContents(
-    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
-        create_action,
+    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
+        actor::ActorSurfaceHandle)> create_action,
     ToolResponseCallback callback) {
   // Resolved via the session's VoiceFocusedContentsTracker rather than a
   // TabStripModel, which Android doesn't have.
@@ -623,13 +637,18 @@ void ToolController::PerformActionOnTrackedContents(
       session_controller_->GetVoiceFocusedWebContents();
   tabs::TabInterface* active_tab =
       contents ? tabs::TabInterface::MaybeGetFromContents(contents) : nullptr;
-  if (!active_tab) {
+  actor::ActorSurfaceHandle actor_surface_handle;
+  if (active_tab) {
+    actor_surface_handle =
+        actor::ActorSurfaceHandle::From(active_tab->GetHandle());
+  }
+  if (actor_surface_handle.is_null()) {
     std::move(callback).Run(ToolResponse::Error(
         actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
     return;
   }
 
-  PerformAction(create_action(active_tab->GetHandle()), std::move(callback));
+  PerformAction(create_action(actor_surface_handle), std::move(callback));
 }
 
 void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,

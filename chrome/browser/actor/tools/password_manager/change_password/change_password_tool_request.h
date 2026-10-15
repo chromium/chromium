@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -26,7 +27,7 @@ class ChangePasswordToolRequest : public TabToolRequest {
   static constexpr char kName[] = "ChangePassword";
 
   ChangePasswordToolRequest(
-      tabs::TabHandle tab_handle,
+      ActorSurfaceHandle actor_surface_handle,
       std::optional<PageTarget> current_password_field,
       std::optional<PageTarget> new_password_field,
       std::optional<PageTarget> confirm_new_password_field,

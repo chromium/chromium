@@ -8,23 +8,23 @@
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/common/actor/action_result.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
-WaitToolRequest::WaitToolRequest(base::TimeDelta wait_duration,
-                                 tabs::TabHandle observe_tab_handle)
-    : wait_duration_(wait_duration), observe_tab_handle_(observe_tab_handle) {}
+WaitToolRequest::WaitToolRequest(
+    base::TimeDelta wait_duration,
+    ActorSurfaceHandle observe_actor_surface_handle)
+    : wait_duration_(wait_duration),
+      observe_actor_surface_handle_(observe_actor_surface_handle) {}
 
 WaitToolRequest::~WaitToolRequest() = default;
 
 ToolRequest::CreateToolResult WaitToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return {
-      std::make_unique<WaitTool>(task_id, tool_delegate, wait_duration_,
-                                 ActorSurfaceHandle::From(observe_tab_handle_)),
-      MakeOkResult()};
+  return {std::make_unique<WaitTool>(task_id, tool_delegate, wait_duration_,
+                                     observe_actor_surface_handle_),
+          MakeOkResult()};
 }
 
 void WaitToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
@@ -36,11 +36,11 @@ std::string_view WaitToolRequest::Name() const {
 }
 
 bool WaitToolRequest::RequiresUrlCheckInCurrentTab() const {
-  return observe_tab_handle_ != tabs::TabHandle::Null();
+  return !observe_actor_surface_handle_.is_null();
 }
 
-tabs::TabHandle WaitToolRequest::GetTabForValidation() const {
-  return observe_tab_handle_;
+ActorSurfaceHandle WaitToolRequest::GetActorSurfaceForValidation() const {
+  return observe_actor_surface_handle_;
 }
 
 }  // namespace actor

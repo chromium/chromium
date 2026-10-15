@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 
 namespace actor {
@@ -21,7 +22,7 @@ class HistoryBackToolRequest : public TabToolRequest {
   // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
   static constexpr std::string_view kModelFacingName = "go_back";
 
-  explicit HistoryBackToolRequest(tabs::TabHandle tab_handle);
+  explicit HistoryBackToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~HistoryBackToolRequest() override;
 
   // Returns the `ToolId::kGoBack` tool schema definition.
@@ -44,7 +45,7 @@ class HistoryForwardToolRequest : public TabToolRequest {
   // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
   static constexpr std::string_view kModelFacingName = "go_forward";
 
-  explicit HistoryForwardToolRequest(tabs::TabHandle tab_handle);
+  explicit HistoryForwardToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~HistoryForwardToolRequest() override;
 
   // Returns the `ToolId::kGoForward` tool schema definition.
@@ -67,7 +68,7 @@ class ReloadPageToolRequest : public TabToolRequest {
   // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
   static constexpr std::string_view kModelFacingName = "reload_page";
 
-  explicit ReloadPageToolRequest(tabs::TabHandle tab_handle,
+  explicit ReloadPageToolRequest(ActorSurfaceHandle actor_surface_handle,
                                  bool bypass_cache = false);
   ~ReloadPageToolRequest() override;
 

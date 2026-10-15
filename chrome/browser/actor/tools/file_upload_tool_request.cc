@@ -40,10 +40,10 @@ FileUploadSource::FileUploadSource(GURL url, std::string file_name)
     : url(std::move(url)), file_name(std::move(file_name)) {}
 
 FileUploadToolRequest::FileUploadToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     PageTarget target,
     std::vector<FileUploadSource> files)
-    : TabToolRequest(tab_handle),
+    : TabToolRequest(actor_surface_handle),
       target_(std::move(target)),
       files_(std::move(files)) {}
 

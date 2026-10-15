@@ -4,6 +4,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -107,7 +108,9 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   incognito_browser->GetWindow()->Close();
 }
 
-// Ensure CloseTab fails when targeting a tab in another profile.
+// Ensure a tab in another profile can't be closed. Requests target actor
+// surfaces, and the tab has none, so it can't be targeted at all; a request for
+// an actor surface that doesn't exist fails without closing anything.
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
                        CloseTabRejectsOtherProfileTab) {
   Profile* incognito_profile =
@@ -120,12 +123,14 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   const int incognito_tab_count =
       incognito_browser->GetTabStripModel()->count();
 
-  std::unique_ptr<ToolRequest> action =
-      MakeCloseTabRequest(incognito_tab->GetHandle());
+  // The incognito profile has no ActorKeyedService, so its tab has no actor
+  // surface to target.
+  EXPECT_TRUE(ActorSurfaceHandle::From(incognito_tab->GetHandle()).is_null());
+
+  std::unique_ptr<ToolRequest> action = std::make_unique<CloseTabToolRequest>(
+      ActorSurfaceHandle::CreateForTesting());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  // The incognito profile has no ActorKeyedService, so its tab has no surface
-  // and is reported as gone.
   ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
 
   EXPECT_EQ(incognito_tab_count,

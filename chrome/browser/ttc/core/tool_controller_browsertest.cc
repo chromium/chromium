@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -1436,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
   actions.push_back(std::make_unique<actor::NavigateToolRequest>(
-      tab->GetHandle(),
+      actor::ActorSurfaceHandle::From(tab->GetHandle()),
       embedded_https_test_server().GetURL("example.com", "/title2.html")));
   base::test::TestFuture<std::vector<actor::ActionResultWithLatencyInfo>,
                          actor::TabObservationStrategy>

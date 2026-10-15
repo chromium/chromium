@@ -43,8 +43,9 @@ mojom::ToolTargetPtr ToMojo(const PageTarget& target) {
   return std::visit(ToMojoFn, target);
 }
 
-PageToolRequest::PageToolRequest(TabHandle tab_handle, const PageTarget& target)
-    : TabToolRequest(tab_handle), target_(target) {}
+PageToolRequest::PageToolRequest(ActorSurfaceHandle actor_surface_handle,
+                                 const PageTarget& target)
+    : TabToolRequest(actor_surface_handle), target_(target) {}
 
 PageToolRequest::~PageToolRequest() = default;
 

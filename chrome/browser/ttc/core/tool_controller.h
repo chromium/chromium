@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/ttc/app/public/tool_types.h"
 
@@ -82,11 +83,11 @@ class ToolController {
   // Runs the tool request returned by `create_action` against the contents
   // tracked by the session (see
   // SessionControllerImpl::GetVoiceFocusedWebContents()), replying to
-  // `callback` with the result. Replies with an error if there's no tab to act
-  // on, in which case `create_action` isn't invoked.
+  // `callback` with the result. Replies with an error if there's no actor
+  // surface to act on, in which case `create_action` isn't invoked.
   void PerformActionOnTrackedContents(
-      base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
-          create_action,
+      base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
+          actor::ActorSurfaceHandle)> create_action,
       ToolResponseCallback callback);
 
   // Runs `action` in the session's actor task and replies to `callback` with

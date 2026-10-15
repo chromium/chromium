@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -917,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
 
   std::unique_ptr<::actor::ToolRequest> request =
       std::make_unique<::actor::AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(),
+          ::actor::ActorSurfaceHandle::From(active_tab()->GetHandle()),
           std::vector<::actor::PageTarget>{otp_field},
           /*for_signin=*/false);
 
@@ -979,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
 
   std::unique_ptr<::actor::ToolRequest> request =
       std::make_unique<::actor::AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(),
+          ::actor::ActorSurfaceHandle::From(active_tab()->GetHandle()),
           std::vector<::actor::PageTarget>{otp_field},
           /*for_signin=*/false);
 
@@ -1039,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
 
   std::unique_ptr<::actor::ToolRequest> request =
       std::make_unique<::actor::AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(),
+          ::actor::ActorSurfaceHandle::From(active_tab()->GetHandle()),
           std::vector<::actor::PageTarget>{otp_field},
           /*for_signin=*/false);
 
@@ -1155,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
 
     std::unique_ptr<::actor::ToolRequest> request =
         std::make_unique<::actor::AttemptOtpFillingToolRequest>(
-            active_tab()->GetHandle(),
+            ::actor::ActorSurfaceHandle::From(active_tab()->GetHandle()),
             std::vector<::actor::PageTarget>{otp_field},
             /*for_signin=*/false);
 

@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
@@ -288,8 +289,8 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
                          .document_identifier = document_identifier});
       std::unique_ptr<ToolRequest> request =
           std::make_unique<actor::ClickToolRequest>(
-              GetTab()->GetHandle(), target, mojom::ClickType::kLeft,
-              mojom::ClickCount::kSingle);
+              ActorSurfaceHandle::From(GetTab()->GetHandle()), target,
+              mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
       return request;
     });
   }

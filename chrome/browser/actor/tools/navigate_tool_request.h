@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "url/gurl.h"
 
@@ -26,7 +27,7 @@ class NavigateToolRequest : public TabToolRequest {
   // JSON argument key for the destination URL parameter.
   static constexpr std::string_view kUrlParam = "url";
 
-  NavigateToolRequest(tabs::TabHandle tab_handle, GURL url);
+  NavigateToolRequest(ActorSurfaceHandle actor_surface_handle, GURL url);
   ~NavigateToolRequest() override;
 
   // Returns the `ToolId::kNavigate` tool schema definition.

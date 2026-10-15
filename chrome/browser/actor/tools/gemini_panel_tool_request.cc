@@ -40,10 +40,6 @@ GURL PromptGeminiPanelToolRequest::GetURLForJournal() const {
   return ToolRequest::GetURLForJournal();
 }
 
-tabs::TabHandle PromptGeminiPanelToolRequest::GetTabHandle() const {
-  return actor_surface_handle_.GetTabHandle();
-}
-
 ActorSurfaceHandle PromptGeminiPanelToolRequest::GetActorSurfaceHandle() const {
   return actor_surface_handle_;
 }
@@ -85,10 +81,6 @@ GURL CloseGeminiPanelToolRequest::GetURLForJournal() const {
     return actor_surface->GetWebContents()->GetLastCommittedURL();
   }
   return ToolRequest::GetURLForJournal();
-}
-
-tabs::TabHandle CloseGeminiPanelToolRequest::GetTabHandle() const {
-  return actor_surface_handle_.GetTabHandle();
 }
 
 ActorSurfaceHandle CloseGeminiPanelToolRequest::GetActorSurfaceHandle() const {

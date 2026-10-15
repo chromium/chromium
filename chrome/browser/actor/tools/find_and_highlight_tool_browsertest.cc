@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tab_annotation_manager.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
@@ -90,10 +91,11 @@ IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorFindAndHighlightToolBrowserTest,
                        FindAndHighlight_TabWentAway) {
-  tabs::TabHandle stale_handle(99999);
+  // No surface is registered under this handle.
   ActResultFuture result;
   std::unique_ptr<ToolRequest> request =
-      std::make_unique<FindAndHighlightToolRequest>(stale_handle, "simple");
+      std::make_unique<FindAndHighlightToolRequest>(
+          ActorSurfaceHandle::CreateForTesting(), "simple");
   actor_task().Act(ToRequestList(request), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
 }

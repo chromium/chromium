@@ -1151,10 +1151,10 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsMultipleToolVotes) {
 
   std::unique_ptr<ToolRequest> tool1 = std::make_unique<FakeToolRequest>(
       on_invoke_future1.GetCallback(), base::OnceClosure(),
-      active_tab()->GetHandle());
+      ActorSurfaceHandle::From(active_tab()->GetHandle()));
   std::unique_ptr<ToolRequest> tool2 = std::make_unique<FakeToolRequest>(
       on_invoke_future2.GetCallback(), base::OnceClosure(),
-      active_tab()->GetHandle());
+      ActorSurfaceHandle::From(active_tab()->GetHandle()));
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(tool1, tool2), result.GetCallback());

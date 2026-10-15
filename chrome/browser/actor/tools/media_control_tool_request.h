@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 
 namespace actor {
@@ -22,7 +23,7 @@ class PlayMediaToolRequest : public TabToolRequest {
   // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
   static constexpr std::string_view kModelFacingName = "play_video";
 
-  explicit PlayMediaToolRequest(tabs::TabHandle tab_handle);
+  explicit PlayMediaToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~PlayMediaToolRequest() override;
 
   // Returns the `ToolId::kPlayVideo` tool schema definition.
@@ -43,7 +44,7 @@ class PauseMediaToolRequest : public TabToolRequest {
   // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
   static constexpr std::string_view kModelFacingName = "pause_video";
 
-  explicit PauseMediaToolRequest(tabs::TabHandle tab_handle);
+  explicit PauseMediaToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~PauseMediaToolRequest() override;
 
   // Returns the `ToolId::kPauseVideo` tool schema definition.
@@ -70,7 +71,8 @@ class SeekMediaToolRequest : public TabToolRequest {
   // "1:02:15"). Returns std::nullopt if `timecode` is malformed.
   static std::optional<base::TimeDelta> FromTimecode(std::string_view timecode);
 
-  SeekMediaToolRequest(tabs::TabHandle tab_handle, base::TimeDelta seek_time);
+  SeekMediaToolRequest(ActorSurfaceHandle actor_surface_handle,
+                       base::TimeDelta seek_time);
   ~SeekMediaToolRequest() override;
 
   // Returns the `ToolId::kSeekToTimestamp` tool schema definition.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_FAKE_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_FAKE_TOOL_REQUEST_H_
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 
@@ -13,9 +14,10 @@ namespace actor {
 // A fake tool request that creates a FakeTool.
 class FakeToolRequest : public ToolRequest {
  public:
-  FakeToolRequest(base::OnceCallback<void(ToolCallback)> on_invoke,
-                  base::OnceClosure on_destroy,
-                  tabs::TabHandle tab_handle = tabs::TabHandle::Null());
+  FakeToolRequest(
+      base::OnceCallback<void(ToolCallback)> on_invoke,
+      base::OnceClosure on_destroy,
+      ActorSurfaceHandle actor_surface_handle = ActorSurfaceHandle::Null());
   ~FakeToolRequest() override;
   FakeToolRequest(const FakeToolRequest&) = delete;
   FakeToolRequest& operator=(const FakeToolRequest&) = delete;
@@ -25,12 +27,12 @@ class FakeToolRequest : public ToolRequest {
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string_view Name() const override;
-  tabs::TabHandle GetTabHandle() const override;
+  ActorSurfaceHandle GetActorSurfaceHandle() const override;
 
  private:
   mutable base::OnceCallback<void(ToolCallback)> on_invoke_;
   mutable base::OnceClosure on_destroy_;
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
 };
 
 }  // namespace actor

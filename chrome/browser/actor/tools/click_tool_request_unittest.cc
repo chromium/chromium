@@ -4,12 +4,14 @@
 
 #include "chrome/browser/actor/tools/click_tool_request.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
@@ -27,11 +29,10 @@ namespace actor {
 namespace {
 
 constexpr char kDocumentIdentifier[] = "doc_id";
-constexpr int32_t kFakeTabId = 123;
+constexpr int32_t kFakeActorSurfaceId = 123;
 
-tabs::TabHandle NonNullTabHandleForRequestPolicyTest() {
-  // These tests only store the tab handle; they never use it to find a tab.
-  return tabs::TabHandle(kFakeTabId);
+ActorSurfaceHandle NonNullSurfaceHandleForRequestPolicyTest() {
+  return ActorSurfaceHandle::FromRawValue(kFakeActorSurfaceId);
 }
 
 PageTarget NonRootDomNodeTarget() {
@@ -79,28 +80,28 @@ TEST(ClickToolRequestTest, RequiresTargetInLastApc_ForOccludedClick) {
   feature_list.InitAndDisableFeature(features::kGlicActorToctouValidation);
 
   ClickToolRequest occluded_dom_node(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
+      NonNullSurfaceHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
       mojom::ClickType::kLeftOnOccludedTarget, mojom::ClickCount::kSingle);
   EXPECT_TRUE(occluded_dom_node.RequiresTargetInLastApc());
 
   ClickToolRequest occluded_root(
-      NonNullTabHandleForRequestPolicyTest(), RootDomTarget(),
+      NonNullSurfaceHandleForRequestPolicyTest(), RootDomTarget(),
       mojom::ClickType::kLeftOnOccludedTarget, mojom::ClickCount::kSingle);
   EXPECT_TRUE(occluded_root.RequiresTargetInLastApc());
 
   ClickToolRequest occluded_coordinate(
-      NonNullTabHandleForRequestPolicyTest(), CoordinateTarget(),
+      NonNullSurfaceHandleForRequestPolicyTest(), CoordinateTarget(),
       mojom::ClickType::kLeftOnOccludedTarget, mojom::ClickCount::kSingle);
   EXPECT_TRUE(occluded_coordinate.RequiresTargetInLastApc());
 
   ClickToolRequest regular_dom_node(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
+      NonNullSurfaceHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
       mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
   EXPECT_FALSE(regular_dom_node.RequiresTargetInLastApc());
 }
 
 TEST(ClickToolRequestTest, GetObservationPageStabilityConfig_Default) {
-  ClickToolRequest request(NonNullTabHandleForRequestPolicyTest(),
+  ClickToolRequest request(NonNullSurfaceHandleForRequestPolicyTest(),
                            NonRootDomNodeTarget(), mojom::ClickType::kLeft,
                            mojom::ClickCount::kSingle);
   auto config = request.GetObservationPageStabilityConfig();
@@ -114,7 +115,7 @@ TEST(ClickToolRequestTest, GetObservationPageStabilityConfig_Custom) {
       .start_delay = base::Seconds(4),
   };
   ClickToolRequest request(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
+      NonNullSurfaceHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
       mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
       /*requires_opening_web_contents=*/false, custom_config);
   auto config = request.GetObservationPageStabilityConfig();
@@ -129,34 +130,35 @@ TEST(PageToolRequestTargetApcTest,
   feature_list.InitAndEnableFeature(features::kGlicActorToctouValidation);
 
   ClickToolRequest regular_click(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
+      NonNullSurfaceHandleForRequestPolicyTest(), NonRootDomNodeTarget(),
       mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
   EXPECT_TRUE(regular_click.RequiresTargetInLastApc());
 
-  MoveMouseToolRequest move_mouse(NonNullTabHandleForRequestPolicyTest(),
+  MoveMouseToolRequest move_mouse(NonNullSurfaceHandleForRequestPolicyTest(),
                                   NonRootDomNodeTarget());
   EXPECT_TRUE(move_mouse.RequiresTargetInLastApc());
 
-  DragAndReleaseToolRequest drag(NonNullTabHandleForRequestPolicyTest(),
+  DragAndReleaseToolRequest drag(NonNullSurfaceHandleForRequestPolicyTest(),
                                  NonRootDomNodeTarget(), CoordinateTarget());
   EXPECT_TRUE(drag.RequiresTargetInLastApc());
 
-  TypeToolRequest type(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(), "hello",
-      /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
+  TypeToolRequest type(NonNullSurfaceHandleForRequestPolicyTest(),
+                       NonRootDomNodeTarget(), "hello",
+                       /*follow_by_enter=*/false,
+                       TypeToolRequest::Mode::kAppend);
   EXPECT_TRUE(type.RequiresTargetInLastApc());
 
-  SelectToolRequest select(NonNullTabHandleForRequestPolicyTest(),
+  SelectToolRequest select(NonNullSurfaceHandleForRequestPolicyTest(),
                            NonRootDomNodeTarget(), "beta");
   EXPECT_TRUE(select.RequiresTargetInLastApc());
 
-  ScrollToolRequest scroll(NonNullTabHandleForRequestPolicyTest(),
+  ScrollToolRequest scroll(NonNullSurfaceHandleForRequestPolicyTest(),
                            NonRootDomNodeTarget(),
                            ScrollToolRequest::Direction::kDown,
                            /*distance=*/100);
   EXPECT_TRUE(scroll.RequiresTargetInLastApc());
 
-  ScrollToToolRequest scroll_to(NonNullTabHandleForRequestPolicyTest(),
+  ScrollToToolRequest scroll_to(NonNullSurfaceHandleForRequestPolicyTest(),
                                 NonRootDomNodeTarget());
   EXPECT_TRUE(scroll_to.RequiresTargetInLastApc());
 }
@@ -171,33 +173,33 @@ TEST(PageToolRequestTargetApcTest,
   feature_list.InitAndEnableFeature(features::kGlicActorToctouValidation);
 
   TypeToolRequest type_root(
-      NonNullTabHandleForRequestPolicyTest(), RootDomTarget(), "hello",
+      NonNullSurfaceHandleForRequestPolicyTest(), RootDomTarget(), "hello",
       /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
   EXPECT_FALSE(type_root.RequiresTargetInLastApc());
 
-  SelectToolRequest select_root(NonNullTabHandleForRequestPolicyTest(),
+  SelectToolRequest select_root(NonNullSurfaceHandleForRequestPolicyTest(),
                                 RootDomTarget(), "beta");
   EXPECT_FALSE(select_root.RequiresTargetInLastApc());
 
-  ScrollToolRequest scroll_root(NonNullTabHandleForRequestPolicyTest(),
+  ScrollToolRequest scroll_root(NonNullSurfaceHandleForRequestPolicyTest(),
                                 RootDomTarget(),
                                 ScrollToolRequest::Direction::kDown,
                                 /*distance=*/100);
   EXPECT_FALSE(scroll_root.RequiresTargetInLastApc());
 
-  ScrollToToolRequest scroll_to_root(NonNullTabHandleForRequestPolicyTest(),
+  ScrollToToolRequest scroll_to_root(NonNullSurfaceHandleForRequestPolicyTest(),
                                      RootDomTarget());
   EXPECT_FALSE(scroll_to_root.RequiresTargetInLastApc());
 
   TypeToolRequest type_coordinate(
-      NonNullTabHandleForRequestPolicyTest(), CoordinateTarget(), "hello",
+      NonNullSurfaceHandleForRequestPolicyTest(), CoordinateTarget(), "hello",
       /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
   EXPECT_FALSE(type_coordinate.RequiresTargetInLastApc());
 
-  ScrollToolRequest scroll_coordinate(NonNullTabHandleForRequestPolicyTest(),
-                                      CoordinateTarget(),
-                                      ScrollToolRequest::Direction::kDown,
-                                      /*distance=*/100);
+  ScrollToolRequest scroll_coordinate(
+      NonNullSurfaceHandleForRequestPolicyTest(), CoordinateTarget(),
+      ScrollToolRequest::Direction::kDown,
+      /*distance=*/100);
   EXPECT_FALSE(scroll_coordinate.RequiresTargetInLastApc());
 }
 
@@ -208,30 +210,31 @@ TEST(PageToolRequestTargetApcTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kGlicActorToctouValidation);
 
-  MoveMouseToolRequest move_mouse(NonNullTabHandleForRequestPolicyTest(),
+  MoveMouseToolRequest move_mouse(NonNullSurfaceHandleForRequestPolicyTest(),
                                   NonRootDomNodeTarget());
   EXPECT_FALSE(move_mouse.RequiresTargetInLastApc());
 
-  DragAndReleaseToolRequest drag(NonNullTabHandleForRequestPolicyTest(),
+  DragAndReleaseToolRequest drag(NonNullSurfaceHandleForRequestPolicyTest(),
                                  NonRootDomNodeTarget(), CoordinateTarget());
   EXPECT_FALSE(drag.RequiresTargetInLastApc());
 
-  TypeToolRequest type(
-      NonNullTabHandleForRequestPolicyTest(), NonRootDomNodeTarget(), "hello",
-      /*follow_by_enter=*/false, TypeToolRequest::Mode::kAppend);
+  TypeToolRequest type(NonNullSurfaceHandleForRequestPolicyTest(),
+                       NonRootDomNodeTarget(), "hello",
+                       /*follow_by_enter=*/false,
+                       TypeToolRequest::Mode::kAppend);
   EXPECT_FALSE(type.RequiresTargetInLastApc());
 
-  SelectToolRequest select(NonNullTabHandleForRequestPolicyTest(),
+  SelectToolRequest select(NonNullSurfaceHandleForRequestPolicyTest(),
                            NonRootDomNodeTarget(), "beta");
   EXPECT_FALSE(select.RequiresTargetInLastApc());
 
-  ScrollToolRequest scroll(NonNullTabHandleForRequestPolicyTest(),
+  ScrollToolRequest scroll(NonNullSurfaceHandleForRequestPolicyTest(),
                            NonRootDomNodeTarget(),
                            ScrollToolRequest::Direction::kDown,
                            /*distance=*/100);
   EXPECT_FALSE(scroll.RequiresTargetInLastApc());
 
-  ScrollToToolRequest scroll_to(NonNullTabHandleForRequestPolicyTest(),
+  ScrollToToolRequest scroll_to(NonNullSurfaceHandleForRequestPolicyTest(),
                                 NonRootDomNodeTarget());
   EXPECT_FALSE(scroll_to.RequiresTargetInLastApc());
 }

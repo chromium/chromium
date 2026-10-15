@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 
 namespace actor {
@@ -28,7 +29,7 @@ class TranslatePageToolRequest : public TabToolRequest {
   // "zh-CN") to translate the page to. If empty (default), Chrome translates
   // the page to the user's preferred target language as determined by
   // language settings.
-  explicit TranslatePageToolRequest(tabs::TabHandle tab_handle,
+  explicit TranslatePageToolRequest(ActorSurfaceHandle actor_surface_handle,
                                     std::string_view target_language = "");
   ~TranslatePageToolRequest() override;
 

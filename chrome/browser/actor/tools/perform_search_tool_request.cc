@@ -76,9 +76,10 @@ base::expected<GURL, mojom::ActionResultPtr> ResolveSearchUrl(
 
 using ::tabs::TabHandle;
 
-PerformSearchToolRequest::PerformSearchToolRequest(TabHandle tab_handle,
-                                                   std::string query)
-    : TabToolRequest(tab_handle), query_(std::move(query)) {}
+PerformSearchToolRequest::PerformSearchToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    std::string query)
+    : TabToolRequest(actor_surface_handle), query_(std::move(query)) {}
 
 PerformSearchToolRequest::~PerformSearchToolRequest() = default;
 
@@ -110,13 +111,13 @@ ToolRequest::CreateToolResult PerformSearchToolRequest::CreateTool(
     return {/*tool=*/nullptr, std::move(search_url.error())};
   }
 
-  return NavigateToolRequest(GetTabHandle(), std::move(*search_url))
+  return NavigateToolRequest(GetActorSurfaceHandle(), std::move(*search_url))
       .CreateTool(task_id, tool_delegate);
 }
 
 std::optional<url::Origin> PerformSearchToolRequest::AssociatedOriginGrant()
     const {
-  const tabs::TabInterface* tab = GetTabHandle().Get();
+  const tabs::TabInterface* tab = GetActorSurfaceHandle().GetTabHandle().Get();
   if (!tab || !tab->GetProfile()) {
     return std::nullopt;
   }

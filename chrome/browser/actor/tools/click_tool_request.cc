@@ -33,14 +33,14 @@ constexpr std::string_view kDomNodeIdParamDescription =
 using ::tabs::TabHandle;
 
 ClickToolRequest::ClickToolRequest(
-    TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     const PageTarget& target,
     mojom::ClickType type,
     mojom::ClickCount count,
     bool requires_opening_web_contents,
     std::optional<ObservationDelayController::PageStabilityConfig>
         page_stability_config)
-    : PageToolRequest(tab_handle, target),
+    : PageToolRequest(actor_surface_handle, target),
       click_type_(type),
       click_count_(count),
       requires_opening_web_contents_(requires_opening_web_contents),

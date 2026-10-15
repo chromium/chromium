@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/origin.h"
@@ -28,7 +29,8 @@ class PerformSearchToolRequest : public TabToolRequest {
   // JSON argument key for the search query parameter.
   static constexpr std::string_view kQueryParam = "query";
 
-  PerformSearchToolRequest(tabs::TabHandle tab_handle, std::string query);
+  PerformSearchToolRequest(ActorSurfaceHandle actor_surface_handle,
+                           std::string query);
   ~PerformSearchToolRequest() override;
 
   // Returns the `ToolId::kPerformSearch` tool schema definition.

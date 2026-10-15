@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
@@ -255,7 +256,8 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest, ZeroDurationWait_Recorded) {
 
   ActResultFuture result2;
   std::unique_ptr<ToolRequest> wait_action = std::make_unique<WaitToolRequest>(
-      /*wait_duration=*/base::TimeDelta(), active_tab()->GetHandle());
+      /*wait_duration=*/base::TimeDelta(),
+      ActorSurfaceHandle::From(active_tab()->GetHandle()));
   actor_task().Act(ToRequestList(std::move(wait_action)),
                    result2.GetCallback());
   ExpectOkResult(result2);

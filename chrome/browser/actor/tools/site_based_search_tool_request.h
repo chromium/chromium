@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -21,7 +22,8 @@ class SiteBasedSearchToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "SiteBasedSearch";
 
-  SiteBasedSearchToolRequest(tabs::TabHandle tab_handle, std::string query);
+  SiteBasedSearchToolRequest(ActorSurfaceHandle actor_surface_handle,
+                             std::string query);
   ~SiteBasedSearchToolRequest() override;
 
   SiteBasedSearchToolRequest(const SiteBasedSearchToolRequest&);

@@ -12,6 +12,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -517,11 +518,41 @@ TEST_F(
 
   const ScriptToolRequest& script_request =
       static_cast<const ScriptToolRequest&>(created_request);
-  EXPECT_EQ(100, script_request.GetTabHandle().raw_value());
+  EXPECT_EQ(100, script_request.GetActorSurfaceHandle().raw_value());
   EXPECT_EQ(token, script_request.GetTargetDocumentIdForTesting());
   EXPECT_EQ("echo", script_request.GetNameForTesting());
   EXPECT_EQ(R"({"text":"sample_input"})",
             script_request.GetInputArgumentsForTesting());
+}
+
+TEST_F(ActorProtoConversionTest, BuildToolRequest_Wait_ObserveIdIsSurfaceId) {
+  // `observe_tab_id` holds a surface ID, which need not resolve to a surface.
+  const ActorSurfaceHandle observe_actor_surface_handle =
+      ActorSurfaceHandle::CreateForTesting();
+  optimization_guide::proto::Actions actions;
+  actions.add_actions()->mutable_wait()->set_observe_tab_id(
+      observe_actor_surface_handle.raw_value());
+
+  BuildToolRequestResult requests = BuildToolRequest(actions);
+  ASSERT_TRUE(requests.has_value());
+  ASSERT_EQ(requests.value().size(), 1u);
+  const ToolRequest& request = *requests.value().front();
+  EXPECT_EQ(WaitToolRequest::kName, request.Name());
+  EXPECT_EQ(request.GetActorSurfaceForValidation(),
+            observe_actor_surface_handle);
+  EXPECT_TRUE(request.RequiresUrlCheckInCurrentTab());
+}
+
+TEST_F(ActorProtoConversionTest, BuildToolRequest_Wait_NoObserveId) {
+  optimization_guide::proto::Actions actions;
+  actions.add_actions()->mutable_wait();
+
+  BuildToolRequestResult requests = BuildToolRequest(actions);
+  ASSERT_TRUE(requests.has_value());
+  ASSERT_EQ(requests.value().size(), 1u);
+  const ToolRequest& request = *requests.value().front();
+  EXPECT_TRUE(request.GetActorSurfaceForValidation().is_null());
+  EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
 }
 
 TEST_F(ActorProtoConversionTest,
@@ -576,7 +607,7 @@ TEST_F(ActorProtoConversionTest,
 
   const FileUploadToolRequest& upload_request =
       static_cast<const FileUploadToolRequest&>(created_request);
-  EXPECT_EQ(100, upload_request.GetTabHandle().raw_value());
+  EXPECT_EQ(100, upload_request.GetActorSurfaceHandle().raw_value());
   ASSERT_EQ(1u, upload_request.files().size());
   const FileUploadSource& source = upload_request.files().front();
   EXPECT_EQ(FileUploadSource::Type::kUrl, source.type);
@@ -693,27 +724,28 @@ TEST_F(ActorProtoConversionTest, ConvertRuleWithDuplicateCapabilities) {
 }
 
 TEST_F(ActorProtoConversionTest, GetClientToolForRequest) {
-  ClickToolRequest click_req(tabs::TabHandle(1), PageTarget(gfx::Point(0, 0)),
-                             mojom::ClickType::kLeft,
-                             mojom::ClickCount::kSingle);
+  ClickToolRequest click_req(
+      ActorSurfaceHandle::CreateForTesting(), PageTarget(gfx::Point(0, 0)),
+      mojom::ClickType::kLeft, mojom::ClickCount::kSingle);
   EXPECT_EQ(GetClientToolForRequest(click_req),
             ClientTool(RuleMetadata::CAPABILITY_CLICK));
 
-  WaitToolRequest wait_req(base::Seconds(1), tabs::TabHandle(1));
+  WaitToolRequest wait_req(base::Seconds(1),
+                           ActorSurfaceHandle::CreateForTesting());
   EXPECT_EQ(GetClientToolForRequest(wait_req),
             ClientTool(RuleMetadata::CAPABILITY_WAIT));
 
-  HistoryBackToolRequest back_req(tabs::TabHandle(1));
+  HistoryBackToolRequest back_req(ActorSurfaceHandle::CreateForTesting());
   EXPECT_EQ(GetClientToolForRequest(back_req),
             ClientTool(RuleMetadata::CAPABILITY_BACK));
 
-  HistoryForwardToolRequest forward_req(tabs::TabHandle(1));
+  HistoryForwardToolRequest forward_req(ActorSurfaceHandle::CreateForTesting());
   EXPECT_EQ(GetClientToolForRequest(forward_req),
             ClientTool(RuleMetadata::CAPABILITY_FORWARD));
 }
 
 TEST_F(ActorProtoConversionTest, GetClientToolForRequest_NoCapability) {
-  ReloadPageToolRequest reload_req(tabs::TabHandle(1));
+  ReloadPageToolRequest reload_req(ActorSurfaceHandle::CreateForTesting());
   EXPECT_EQ(GetClientToolForRequest(reload_req),
             ClientTool(RuleMetadata::CAPABILITY_UNKNOWN));
   EXPECT_FALSE(std::ranges::contains(
@@ -747,7 +779,7 @@ TEST_F(
 
   const ChangePasswordToolRequest& change_password_request =
       static_cast<const ChangePasswordToolRequest&>(created_request);
-  EXPECT_EQ(100, change_password_request.GetTabHandle().raw_value());
+  EXPECT_EQ(100, change_password_request.GetActorSurfaceHandle().raw_value());
   EXPECT_EQ(
       change_password_request.GetCurrentPasswordFieldForTesting(),
       PageTarget(DomNode{.node_id = 10, .document_identifier = "doc_token_1"}));

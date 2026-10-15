@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -48,7 +49,7 @@ class ActivateTabToolRequest : public TabToolRequest {
   static constexpr std::string_view kModelFacingName = "activate_tab";
   static constexpr std::string_view kTabIdParam = "tab_id";
 
-  explicit ActivateTabToolRequest(tabs::TabHandle tab);
+  explicit ActivateTabToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~ActivateTabToolRequest() override;
 
   // Returns the `ToolId::kActivateTab` tool schema definition.
@@ -67,7 +68,7 @@ class CloseTabToolRequest : public TabToolRequest {
   // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
   static constexpr std::string_view kModelFacingName = "close_current_tab";
 
-  explicit CloseTabToolRequest(tabs::TabHandle tab);
+  explicit CloseTabToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~CloseTabToolRequest() override;
 
   // Returns the `ToolId::kCloseTab` tool schema definition.

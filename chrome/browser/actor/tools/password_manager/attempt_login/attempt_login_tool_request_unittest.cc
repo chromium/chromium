@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/shared_types.h"
@@ -68,7 +69,7 @@ TEST_F(AttemptLoginToolRequestTest, ReadFromProto) {
   AttemptLoginToolRequest& attempt_login_request =
       static_cast<AttemptLoginToolRequest&>(created_request);
 
-  EXPECT_EQ(attempt_login_request.GetTabHandle().raw_value(), 123);
+  EXPECT_EQ(attempt_login_request.GetActorSurfaceHandle().raw_value(), 123);
 
   std::optional<PageTarget> password_button =
       attempt_login_request.GetPasswordButtonForTesting();
@@ -91,8 +92,8 @@ TEST_F(AttemptLoginToolRequestTest,
   feature_list.InitAndEnableFeatureWithParameters(
       kActorLoginObservationStartDelay, {{"start_delay", "4s"}});
 
-  AttemptLoginToolRequest request(tabs::TabHandle(123), std::nullopt,
-                                  std::nullopt);
+  AttemptLoginToolRequest request(ActorSurfaceHandle::CreateForTesting(),
+                                  std::nullopt, std::nullopt);
   auto config = request.GetObservationPageStabilityConfig();
   EXPECT_TRUE(config.supports_paint_stability);
   EXPECT_EQ(config.start_delay, base::Seconds(4));
@@ -103,8 +104,8 @@ TEST_F(AttemptLoginToolRequestTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kActorLoginObservationStartDelay);
 
-  AttemptLoginToolRequest request(tabs::TabHandle(123), std::nullopt,
-                                  std::nullopt);
+  AttemptLoginToolRequest request(ActorSurfaceHandle::CreateForTesting(),
+                                  std::nullopt, std::nullopt);
   auto config = request.GetObservationPageStabilityConfig();
   EXPECT_TRUE(config.supports_paint_stability);
   EXPECT_EQ(config.start_delay, base::TimeDelta());

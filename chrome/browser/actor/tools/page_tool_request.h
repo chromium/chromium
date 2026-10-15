@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/shared_types.h"
@@ -35,7 +36,8 @@ mojom::ToolTargetPtr ToMojo(const PageTarget& target);
 // ready to invoke.
 class PageToolRequest : public TabToolRequest {
  public:
-  PageToolRequest(tabs::TabHandle tab_handle, const PageTarget& target);
+  PageToolRequest(ActorSurfaceHandle actor_surface_handle,
+                  const PageTarget& target);
   ~PageToolRequest() override;
   PageToolRequest(const PageToolRequest& other);
 

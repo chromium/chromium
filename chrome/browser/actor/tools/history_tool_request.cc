@@ -57,8 +57,10 @@ ToolRequest::CreateToolResult CreateHistoryTool(
 
 }  // namespace
 
-HistoryBackToolRequest::HistoryBackToolRequest(TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+HistoryBackToolRequest::HistoryBackToolRequest(
+    ActorSurfaceHandle actor_surface_handle)
+    : TabToolRequest(actor_surface_handle) {}
+
 HistoryBackToolRequest::~HistoryBackToolRequest() = default;
 
 // static
@@ -89,8 +91,10 @@ bool HistoryBackToolRequest::RequiresUrlCheckInCurrentTab() const {
   return false;
 }
 
-HistoryForwardToolRequest::HistoryForwardToolRequest(TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+HistoryForwardToolRequest::HistoryForwardToolRequest(
+    ActorSurfaceHandle actor_surface_handle)
+    : TabToolRequest(actor_surface_handle) {}
+
 HistoryForwardToolRequest::~HistoryForwardToolRequest() = default;
 
 // static
@@ -121,9 +125,11 @@ bool HistoryForwardToolRequest::RequiresUrlCheckInCurrentTab() const {
   return false;
 }
 
-ReloadPageToolRequest::ReloadPageToolRequest(TabHandle tab_handle,
-                                             bool bypass_cache)
-    : TabToolRequest(tab_handle), bypass_cache_(bypass_cache) {}
+ReloadPageToolRequest::ReloadPageToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    bool bypass_cache)
+    : TabToolRequest(actor_surface_handle), bypass_cache_(bypass_cache) {}
+
 ReloadPageToolRequest::~ReloadPageToolRequest() = default;
 
 // static

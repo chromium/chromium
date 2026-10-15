@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 
@@ -35,7 +36,7 @@ class ScrollToolRequest : public PageToolRequest {
   // Programmatically scrolls the scroller specified by target a given distance.
   // If Target is a nullopt ContentNodeId, the root viewport is scrolled.
   // Distance is specified in DIPs.
-  ScrollToolRequest(tabs::TabHandle tab_handle,
+  ScrollToolRequest(ActorSurfaceHandle actor_surface_handle,
                     const PageTarget& target,
                     Direction direction,
                     float distance);

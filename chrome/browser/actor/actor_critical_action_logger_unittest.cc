@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
@@ -60,9 +61,9 @@ class ActorCriticalActionLoggerTest : public ChromeRenderViewHostTestHarness {
 
   ActorKeyedServiceFake& actor_service() { return *service_; }
 
-  tabs::TabHandle CreateTabHandle() {
+  ActorSurfaceHandle CreateActorSurfaceHandle() {
     tab_states_.push_back(std::make_unique<TestTabState>(web_contents()));
-    return tab_states_.back()->tab.GetHandle();
+    return ActorSurfaceHandle::From(tab_states_.back()->tab.GetHandle());
   }
 
   void FlushPendingActions(int64_t navigation_id) {
@@ -102,7 +103,7 @@ TEST_F(ActorCriticalActionLoggerTest, LogsAttemptLoginAsPasswordManagerAction) {
   ActorTask* task = actor_service().GetTask(task_id);
 
   PageTarget password_button;
-  AttemptLoginToolRequest request(CreateTabHandle(), password_button,
+  AttemptLoginToolRequest request(CreateActorSurfaceHandle(), password_button,
                                   std::nullopt);
   mojom::ActionResultPtr result = MakeOkResult();
   result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
@@ -129,7 +130,7 @@ TEST_F(ActorCriticalActionLoggerTest, LogsAttemptLoginAsFederatedLoginAction) {
   ActorTask* task = actor_service().GetTask(task_id);
 
   PageTarget google_button;
-  AttemptLoginToolRequest request(CreateTabHandle(), std::nullopt,
+  AttemptLoginToolRequest request(CreateActorSurfaceHandle(), std::nullopt,
                                   google_button);
   mojom::ActionResultPtr result = MakeOkResult();
   result->attempt_login_status = mojom::AttemptLoginStatus::kFederated;
@@ -156,7 +157,7 @@ TEST_F(ActorCriticalActionLoggerTest, SkipsAttemptLoginWhenNoStatusResult) {
   ActorTask* task = actor_service().GetTask(task_id);
 
   PageTarget password_button;
-  AttemptLoginToolRequest request(CreateTabHandle(), password_button,
+  AttemptLoginToolRequest request(CreateActorSurfaceHandle(), password_button,
                                   std::nullopt);
   // Login action returned result, but attempt_login_status is std::nullopt
   // (e.g. fail/unsupported)
@@ -179,7 +180,7 @@ TEST_F(ActorCriticalActionLoggerTest, LogsAttemptOtpFillingAction) {
   ActorTask* task = actor_service().GetTask(task_id);
 
   PageTarget otp_input;
-  AttemptOtpFillingToolRequest request(CreateTabHandle(), {otp_input},
+  AttemptOtpFillingToolRequest request(CreateActorSurfaceHandle(), {otp_input},
                                        /*for_signin=*/true);
   mojom::ActionResultPtr result = MakeOkResult();
 
@@ -211,7 +212,8 @@ TEST_F(ActorCriticalActionLoggerTest, LogsFormFillActionWithMetadata) {
   AttemptFormFillingToolRequest::FormFillingRequest sub_req2;
   sub_req2.requested_data = autofill::ActorFormFillingRequestedData::kAddress;
 
-  AttemptFormFillingToolRequest request(CreateTabHandle(), {sub_req1, sub_req2},
+  AttemptFormFillingToolRequest request(CreateActorSurfaceHandle(),
+                                        {sub_req1, sub_req2},
                                         /*credit_card_opaque_token=*/"",
                                         /*enqueued_click=*/true);
   mojom::ActionResultPtr result = MakeOkResult();
@@ -285,7 +287,7 @@ TEST_F(ActorCriticalActionLoggerTest, SkipsFailedToolExecution) {
   ActorTask* task = actor_service().GetTask(task_id);
 
   PageTarget otp_input;
-  AttemptOtpFillingToolRequest request(CreateTabHandle(), {otp_input},
+  AttemptOtpFillingToolRequest request(CreateActorSurfaceHandle(), {otp_input},
                                        /*for_signin=*/true);
   mojom::ActionResultPtr result = mojom::ActionResult::New();
   result->code = mojom::ActionResultCode::kFrameWentAway;
@@ -313,7 +315,7 @@ TEST_F(ActorCriticalActionLoggerTest, FormFillingLoggingPreClickGating) {
 
   // 1. If enqueued_click = false (pre-click), it should NOT log.
   AttemptFormFillingToolRequest pre_click_request(
-      CreateTabHandle(), {sub_req}, /*credit_card_opaque_token=*/"",
+      CreateActorSurfaceHandle(), {sub_req}, /*credit_card_opaque_token=*/"",
       /*enqueued_click=*/false);
   mojom::ActionResultPtr result = MakeOkResult();
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), pre_click_request,
@@ -322,7 +324,8 @@ TEST_F(ActorCriticalActionLoggerTest, FormFillingLoggingPreClickGating) {
   EXPECT_TRUE(GetLoggedActions().empty());
 
   // 2. If enqueued_click = true, it SHOULD log.
-  AttemptFormFillingToolRequest click_request(CreateTabHandle(), {sub_req},
+  AttemptFormFillingToolRequest click_request(CreateActorSurfaceHandle(),
+                                              {sub_req},
                                               /*credit_card_opaque_token=*/"",
                                               /*enqueued_click=*/true);
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), click_request,
@@ -347,7 +350,7 @@ TEST_F(ActorCriticalActionLoggerTest, SkipsLoggingWhenFeatureDisabled) {
   ActorTask* task = actor_service().GetTask(task_id);
 
   PageTarget password_button;
-  AttemptLoginToolRequest request(CreateTabHandle(), password_button,
+  AttemptLoginToolRequest request(CreateActorSurfaceHandle(), password_button,
                                   std::nullopt);
   mojom::ActionResultPtr result = MakeOkResult();
   result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
@@ -366,8 +369,9 @@ TEST_F(ActorCriticalActionLoggerTest, LogsWebMcpToolAction) {
   TaskId task_id = actor_service().CreateTaskForTesting();
   ActorTask* task = actor_service().GetTask(task_id);
 
-  ScriptToolRequest request(CreateTabHandle(), base::UnguessableToken::Create(),
-                            "flight_search", "{\"destination\":\"Paris\"}");
+  ScriptToolRequest request(CreateActorSurfaceHandle(),
+                            base::UnguessableToken::Create(), "flight_search",
+                            "{\"destination\":\"Paris\"}");
 
   mojom::ActionResultPtr result = MakeOkResult();
   result->script_tool_response = mojom::ScriptToolResponse::New();

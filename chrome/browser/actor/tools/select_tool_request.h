@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 
@@ -29,7 +30,7 @@ class SelectToolRequest : public PageToolRequest {
   // JSON argument key for the value attribute of the <option> to select.
   static constexpr std::string_view kValueParam = "value";
 
-  SelectToolRequest(tabs::TabHandle tab_handle,
+  SelectToolRequest(ActorSurfaceHandle actor_surface_handle,
                     const PageTarget& target,
                     std::string_view value);
   ~SelectToolRequest() override;

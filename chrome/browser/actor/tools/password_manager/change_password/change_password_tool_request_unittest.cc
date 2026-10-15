@@ -25,6 +25,8 @@ namespace {
 
 TEST(ChangePasswordToolRequestTest, Properties) {
   tabs::MockTabInterface mock_tab;
+  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
+                                 mock_tab.GetHandle());
   PageTarget current_password_field =
       DomNode{.node_id = 10, .document_identifier = "doc_token_1"};
   PageTarget new_password_field =
@@ -33,14 +35,16 @@ TEST(ChangePasswordToolRequestTest, Properties) {
       DomNode{.node_id = 30, .document_identifier = "doc_token_1"};
   PageTarget confirm_button = gfx::Point(50, 60);
 
-  ChangePasswordToolRequest request(mock_tab.GetHandle(),
+  ChangePasswordToolRequest request(actor_surface.GetHandle(),
                                     current_password_field, new_password_field,
                                     confirm_new_password_field, confirm_button);
 
   EXPECT_EQ(request.Name(), ChangePasswordToolRequest::kName);
   EXPECT_EQ(request.Name(), "ChangePassword");
   EXPECT_EQ(request.JournalEvent(), "ChangePassword");
-  EXPECT_EQ(request.GetTabHandle(), mock_tab.GetHandle());
+  EXPECT_EQ(request.GetActorSurfaceHandle(), actor_surface.GetHandle());
+  EXPECT_EQ(request.GetActorSurfaceHandle().GetTabHandle(),
+            mock_tab.GetHandle());
   EXPECT_EQ(request.GetCurrentPasswordFieldForTesting(),
             current_password_field);
   EXPECT_EQ(request.GetNewPasswordFieldForTesting(), new_password_field);
@@ -55,7 +59,7 @@ TEST(ChangePasswordToolRequestTest, CreateTool_ValidTab_Succeeds) {
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  mock_tab.GetHandle());
   ChangePasswordToolRequest request(
-      mock_tab.GetHandle(),
+      actor_surface.GetHandle(),
       /*current_password_field=*/std::nullopt,
       PageTarget(DomNode{.node_id = 20, .document_identifier = "doc_token_1"}),
       /*confirm_new_password_field=*/std::nullopt,
@@ -70,9 +74,9 @@ TEST(ChangePasswordToolRequestTest, CreateTool_ValidTab_Succeeds) {
 
 TEST(ChangePasswordToolRequestTest, CreateTool_NullTab_ReturnsError) {
   MockToolDelegate delegate;
-  tabs::TabHandle invalid_tab_handle(999);
+  // No surface is registered under this handle.
   ChangePasswordToolRequest request(
-      invalid_tab_handle,
+      ActorSurfaceHandle::CreateForTesting(),
       /*current_password_field=*/std::nullopt,
       PageTarget(DomNode{.node_id = 20, .document_identifier = "doc_token_1"}),
       /*confirm_new_password_field=*/std::nullopt,

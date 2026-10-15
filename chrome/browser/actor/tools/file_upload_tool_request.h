@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -48,7 +49,7 @@ class FileUploadToolRequest : public TabToolRequest {
   // JSON argument key for the URLs of the files to upload.
   static constexpr std::string_view kFileUrlsParam = "file_urls";
 
-  FileUploadToolRequest(tabs::TabHandle tab_handle,
+  FileUploadToolRequest(ActorSurfaceHandle actor_surface_handle,
                         PageTarget target,
                         std::vector<FileUploadSource> files);
   FileUploadToolRequest(const FileUploadToolRequest&);

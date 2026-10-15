@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -277,7 +278,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true, AttemptOtpFillingToolRequest::OtpType::kEmail);
   actor_task()
       .GetExecutionEngine()
@@ -325,7 +327,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SetExpectedOtp("1234");
 
@@ -359,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   actor_task()
       .GetExecutionEngine()
@@ -391,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   actor_task()
       .GetExecutionEngine()
@@ -439,9 +444,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   std::vector<PageTarget> trigger_fields = {otp_field_1, otp_field_2,
                                             otp_field_3, otp_field_4};
   std::unique_ptr<ToolRequest> request =
-      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
-                                                     trigger_fields,
-                                                     /*for_signin=*/true);
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()), trigger_fields,
+          /*for_signin=*/true);
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
@@ -470,7 +475,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/false);
   SeedTestServerAffiliation("example.com");
   SetExpectedOtp("1234", "sender@example.com");
@@ -501,7 +507,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   DomNode dummy_field = {.node_id = 1, .document_identifier = "dummy"};
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          target_tab_handle, std::vector<PageTarget>{dummy_field},
+          ActorSurfaceHandle::From(target_tab_handle),
+          std::vector<PageTarget>{dummy_field},
           /*for_signin=*/true);
 
   // Close the newly added tab.
@@ -526,7 +533,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   DomNode dummy_field = {.node_id = 1, .document_identifier = "dummy"};
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{dummy_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{dummy_field},
           /*for_signin=*/true);
 
   ActResultFuture result;
@@ -548,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                                .document_identifier = "nonexistent"};
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{nonexistent_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{nonexistent_field},
           /*for_signin=*/true);
 
   ActResultFuture result;
@@ -572,7 +581,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       GetDomNodeOnPage(*main_frame(), "#single-submit-button"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{submit_button},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{submit_button},
           /*for_signin=*/true);
 
   ActResultFuture result;
@@ -597,7 +607,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
 
   ActResultFuture result;
@@ -624,7 +635,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
 
   ActResultFuture result;
@@ -659,7 +671,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SetExpectedOtp("1234");
 
@@ -695,7 +708,8 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SeedTestServerAffiliation("example.com");
   SetExpectedOtp("1234", "sender@example.com");
@@ -744,7 +758,8 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SetExpectedOtp("1234");
 
@@ -780,7 +795,8 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SeedTestServerAffiliation("sub1.example.com");
   SetExpectedOtp("1234", "sender@sub1.example.com");
@@ -817,7 +833,8 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SeedTestServerAffiliation("sub1.example.com");
   SetExpectedOtp("1234", "sender@sub1.example.com");
@@ -869,7 +886,8 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
   SeedTestServerAffiliation("example.com");
   SetExpectedOtp("1234", "sender@example.com");
@@ -919,7 +937,8 @@ IN_PROC_BROWSER_TEST_F(
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{*otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{*otp_field},
           /*for_signin=*/true);
   SeedTestServerAffiliation("sub.example.com");
   SetExpectedOtp("1234", "sender@sub.example.com");
@@ -983,7 +1002,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
-          active_tab()->GetHandle(), std::vector<PageTarget>{*otp_field},
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          std::vector<PageTarget>{*otp_field},
           /*for_signin=*/true);
   SetExpectedOtp("1234");
 

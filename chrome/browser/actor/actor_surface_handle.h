@@ -86,6 +86,15 @@ class ActorSurfaceHandle {
   // if the tab's surface was just destroyed.
   static ActorSurfaceHandle From(content::WebContents* web_contents);
 
+  // Returns the handle for an actor surface ID received from outside the
+  // browser process (e.g. over proto or mojo), which was originally produced by
+  // raw_value(). Only use this for such IDs: never pass a tabs::TabHandle's
+  // raw value, since tab and actor surface IDs aren't guaranteed to match. The
+  // actor surface need not exist, in which case Get() returns null.
+  static constexpr ActorSurfaceHandle FromRawValue(int32_t raw_value) {
+    return ActorSurfaceHandle(raw_value);
+  }
+
   // Mints a new, unique handle with no surface registered under it. Tests use
   // it to construct surfaces directly or to get a handle that resolves to
   // nothing. It takes no value, so a test can't make a handle from a TabHandle.

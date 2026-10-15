@@ -34,10 +34,10 @@ constexpr std::string_view kValueParamDescription =
 
 using ::tabs::TabHandle;
 
-SelectToolRequest::SelectToolRequest(TabHandle tab_handle,
+SelectToolRequest::SelectToolRequest(ActorSurfaceHandle actor_surface_handle,
                                      const PageTarget& target,
                                      std::string_view value)
-    : PageToolRequest(tab_handle, target), value_(value) {}
+    : PageToolRequest(actor_surface_handle, target), value_(value) {}
 
 SelectToolRequest::~SelectToolRequest() = default;
 

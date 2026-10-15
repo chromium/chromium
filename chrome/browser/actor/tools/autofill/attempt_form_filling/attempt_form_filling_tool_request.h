@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -39,7 +40,7 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
   // `credit_card_opaque_token` is an empty string unless a token for a credit
   // card has been generated ahead of time and the user does not get to choose
   // what data to fill.
-  AttemptFormFillingToolRequest(tabs::TabHandle tab_handle,
+  AttemptFormFillingToolRequest(ActorSurfaceHandle actor_surface_handle,
                                 std::vector<FormFillingRequest> requests,
                                 std::string credit_card_opaque_token,
                                 bool enqueued_click = false);

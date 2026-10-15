@@ -11,9 +11,10 @@ namespace actor {
 
 using ::tabs::TabHandle;
 
-MoveMouseToolRequest::MoveMouseToolRequest(TabHandle tab_handle,
-                                           const PageTarget& target)
-    : PageToolRequest(tab_handle, target) {}
+MoveMouseToolRequest::MoveMouseToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    const PageTarget& target)
+    : PageToolRequest(actor_surface_handle, target) {}
 
 MoveMouseToolRequest::~MoveMouseToolRequest() = default;
 

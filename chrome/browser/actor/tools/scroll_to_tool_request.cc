@@ -29,9 +29,10 @@ constexpr std::string_view kDomNodeIdParamDescription =
 
 using ::tabs::TabHandle;
 
-ScrollToToolRequest::ScrollToToolRequest(TabHandle tab_handle,
-                                         const PageTarget& target)
-    : PageToolRequest(tab_handle, target) {}
+ScrollToToolRequest::ScrollToToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    const PageTarget& target)
+    : PageToolRequest(actor_surface_handle, target) {}
 
 ScrollToToolRequest::~ScrollToToolRequest() = default;
 

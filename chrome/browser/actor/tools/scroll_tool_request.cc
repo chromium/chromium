@@ -42,11 +42,11 @@ constexpr std::string_view kDomNodeIdParamDescription =
 
 using ::tabs::TabHandle;
 
-ScrollToolRequest::ScrollToolRequest(TabHandle tab_handle,
+ScrollToolRequest::ScrollToolRequest(ActorSurfaceHandle actor_surface_handle,
                                      const PageTarget& target,
                                      Direction direction,
                                      float distance)
-    : PageToolRequest(tab_handle, target),
+    : PageToolRequest(actor_surface_handle, target),
       direction_(direction),
       distance_(distance) {}
 

@@ -426,10 +426,11 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",
-                JournalDetailsBuilder()
-                    .Add("tab_handle", request_->GetTabHandle().raw_value())
-                    .Build());
+  journal().Log(
+      JournalURL(), task_id(), "TimeOfUseValidation",
+      JournalDetailsBuilder()
+          .Add("tab_handle", actor_surface_handle_.GetTabHandle().raw_value())
+          .Build());
 
   RenderFrameHost* frame =
       FindTargetLocalRootFrame(actor_surface_handle_, request_->GetTarget());
@@ -637,7 +638,7 @@ void PageTool::Cancel() {
   if (chrome_render_frame_.is_bound()) {
     journal().Log(JournalURL(), task_id(), "PageTool::Cancel",
                   JournalDetailsBuilder()
-                      .Add("tab_handle", request_->GetTabHandle())
+                      .Add("tab_handle", actor_surface_handle_.GetTabHandle())
                       .Build());
 
     chrome_render_frame_->CancelTool(task_id());
@@ -709,7 +710,7 @@ void PageTool::OnTimeout() {
   if (chrome_render_frame_.is_bound()) {
     journal().Log(JournalURL(), task_id(), "PageTool::OnTimeout",
                   JournalDetailsBuilder()
-                      .Add("tab_handle", request_->GetTabHandle())
+                      .Add("tab_handle", actor_surface_handle_.GetTabHandle())
                       .Build());
 
     chrome_render_frame_->CancelTool(task_id());

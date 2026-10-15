@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 
@@ -18,7 +19,7 @@ class ScriptToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "ScriptTool";
 
-  ScriptToolRequest(tabs::TabHandle tab_handle,
+  ScriptToolRequest(ActorSurfaceHandle actor_surface_handle,
                     const base::UnguessableToken& target_document_id,
                     const std::string& name,
                     const std::string& input_arguments);

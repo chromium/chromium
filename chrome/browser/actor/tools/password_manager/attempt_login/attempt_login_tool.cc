@@ -524,7 +524,7 @@ void AttemptLoginTool::OnAttemptLogin(
       return;
     }
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
-        actor_surface_handle_.GetTabHandle(), *sign_in_with_google_button_,
+        actor_surface_handle_, *sign_in_with_google_button_,
         mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
         requires_opening_web_contents_,
         AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig()));
@@ -547,9 +547,8 @@ void AttemptLoginTool::OnAttemptLogin(
       return;
     }
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
-        actor_surface_handle_.GetTabHandle(), *password_button_,
-        mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
-        requires_opening_web_contents_,
+        actor_surface_handle_, *password_button_, mojom::ClickType::kLeft,
+        mojom::ClickCount::kSingle, requires_opening_web_contents_,
         AttemptLoginToolRequest::GetLoginObservationPageStabilityConfig()));
     mojom::ActionResultPtr result =
         MakeOkResult(/*requires_page_stabilization=*/false);

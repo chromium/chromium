@@ -41,11 +41,11 @@ constexpr std::string_view kForSigninParamDescription =
 }  // namespace
 
 AttemptOtpFillingToolRequest::AttemptOtpFillingToolRequest(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     std::vector<PageTarget> trigger_fields,
     bool for_signin,
     OtpType predicted_otp_type)
-    : TabToolRequest(tab_handle),
+    : TabToolRequest(actor_surface_handle),
       trigger_fields_(std::move(trigger_fields)),
       for_signin_(for_signin),
       predicted_otp_type_(predicted_otp_type) {}
