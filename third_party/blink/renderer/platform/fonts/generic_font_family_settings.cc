@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -101,6 +102,12 @@ const AtomicString& GenericFontFamilySettings::GenericFontFamilyForScript(
       it->value = first_available_font;
     }
     return it->value;
+  }
+  if (script == USCRIPT_ARABIC_NASTALIQ &&
+      RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
+    // Fall back to `USCRIPT_ARABIC` for generic families (e.g., `Fixed`) that
+    // do not have `USCRIPT_ARABIC_NASTALIQ`-specific settings.
+    return GenericFontFamilyForScript(font_map, USCRIPT_ARABIC);
   }
   if (script != USCRIPT_COMMON)
     return GenericFontFamilyForScript(font_map, USCRIPT_COMMON);

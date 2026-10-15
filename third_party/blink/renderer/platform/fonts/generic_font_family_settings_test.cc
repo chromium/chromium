@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -176,6 +177,36 @@ TEST(GenericFontFamilySettingsTest, TestFontListNotChanged) {
   EXPECT_FALSE(settings.UpdateStandard(AtomicString(",not exist, Arial")));
   EXPECT_EQ("Arial", settings.Standard());
   EXPECT_TRUE(settings.UpdateFixed(AtomicString(",not exist, Arial")));
+}
+
+TEST(GenericFontFamilySettingsTest, ArabicNastaliqFallbackToArabic) {
+  GenericFontFamilySettings settings;
+  settings.UpdateStandard(AtomicString("CustomStandard"));
+  settings.UpdateStandard(AtomicString("CustomArabicStandard"), USCRIPT_ARABIC);
+
+  {
+    ScopedNastaliqScriptForTest scoped_feature(true);
+    // When USCRIPT_ARABIC_NASTALIQ is not set, it falls back to USCRIPT_ARABIC.
+    EXPECT_EQ("CustomArabicStandard",
+              settings.Standard(USCRIPT_ARABIC_NASTALIQ));
+
+    // When USCRIPT_ARABIC_NASTALIQ is explicitly set, it takes precedence.
+    settings.UpdateStandard(AtomicString("CustomNastaliqStandard"),
+                            USCRIPT_ARABIC_NASTALIQ);
+    EXPECT_EQ("CustomNastaliqStandard",
+              settings.Standard(USCRIPT_ARABIC_NASTALIQ));
+    EXPECT_EQ("CustomArabicStandard", settings.Standard(USCRIPT_ARABIC));
+
+    // Clearing USCRIPT_ARABIC_NASTALIQ falls back to USCRIPT_ARABIC again.
+    settings.UpdateStandard(g_empty_atom, USCRIPT_ARABIC_NASTALIQ);
+    EXPECT_EQ("CustomArabicStandard",
+              settings.Standard(USCRIPT_ARABIC_NASTALIQ));
+  }
+
+  // When NastaliqScript is disabled, USCRIPT_ARABIC_NASTALIQ falls back
+  // directly to USCRIPT_COMMON.
+  ScopedNastaliqScriptForTest scoped_feature(false);
+  EXPECT_EQ("CustomStandard", settings.Standard(USCRIPT_ARABIC_NASTALIQ));
 }
 
 }  // namespace blink
