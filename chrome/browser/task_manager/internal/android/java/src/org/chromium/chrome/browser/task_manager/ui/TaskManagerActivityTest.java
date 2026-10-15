@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,9 +34,13 @@ public class TaskManagerActivityTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TaskManagerServiceBridge.Natives mBridge;
 
+    @Mock
+    private JniUniquePtr<TaskManagerServiceBridge.NativeTaskManagerObserverAndroid> mNativeObserver;
+
     @Before
     public void setUp() {
         TaskManagerServiceBridgeJni.setInstanceForTesting(mBridge);
+        when(mBridge.addObserver(any(), anyInt(), anyInt())).thenReturn(mNativeObserver);
     }
 
     @Test
@@ -51,6 +56,6 @@ public class TaskManagerActivityTest {
 
         controller.destroy();
 
-        verify(mBridge).removeObserver(anyLong());
+        verify(mNativeObserver).destroy();
     }
 }

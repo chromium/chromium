@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -22,6 +24,9 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("task_manager")
 @NullMarked
 public class TaskManagerServiceBridge {
+    @JniType("::task_manager::TaskManagerObserverAndroid")
+    public interface NativeTaskManagerObserverAndroid extends JniTypeToken {}
+
     /** Describes the GPU memory usage. */
     public static class GpuMemoryUsage {
         /**
@@ -62,7 +67,7 @@ public class TaskManagerServiceBridge {
      */
     public ObserverHandle addObserver(
             TaskManagerObserver observer, int refreshTimeMillis, @RefreshType int refreshType) {
-        long pointer =
+        JniUniquePtr<NativeTaskManagerObserverAndroid> pointer =
                 TaskManagerServiceBridgeJni.get()
                         .addObserver(observer, refreshTimeMillis, refreshType);
         return new ObserverHandle(pointer);
@@ -70,7 +75,7 @@ public class TaskManagerServiceBridge {
 
     /** Removes the observer. */
     public void removeObserver(ObserverHandle handle) {
-        TaskManagerServiceBridgeJni.get().removeObserver(handle.getPointer());
+        handle.destroy();
     }
 
     // Following methods for fetching task information mirror the functions in
@@ -117,23 +122,21 @@ public class TaskManagerServiceBridge {
     }
 
     public static class ObserverHandle {
-        private final long mPointer;
+        private final JniUniquePtr<NativeTaskManagerObserverAndroid> mPointer;
 
-        ObserverHandle(long pointer) {
+        ObserverHandle(JniUniquePtr<NativeTaskManagerObserverAndroid> pointer) {
             mPointer = pointer;
         }
 
-        long getPointer() {
-            return mPointer;
+        void destroy() {
+            mPointer.destroy();
         }
     }
 
     @NativeMethods
     public interface Natives {
-        long addObserver(
+        JniUniquePtr<NativeTaskManagerObserverAndroid> addObserver(
                 TaskManagerObserver observer, int refreshTimeMillis, @RefreshType int refreshType);
-
-        void removeObserver(long pointer);
 
         @JniType("std::u16string")
         String getTitle(long taskid);

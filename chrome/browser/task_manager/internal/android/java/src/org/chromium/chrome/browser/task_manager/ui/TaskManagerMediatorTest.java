@@ -8,6 +8,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,6 +25,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 
 import android.graphics.Bitmap;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +55,9 @@ public class TaskManagerMediatorTest {
     @Mock private Callback<Boolean> mOnHasKillableSelectedTaskChanged;
     @Mock private Bitmap mBitmap;
 
+    @Mock
+    private JniUniquePtr<TaskManagerServiceBridge.NativeTaskManagerObserverAndroid> mNativeObserver;
+
     private PropertyModel mHeader;
     private ModelList mTasks;
     private TaskManagerMediator mMediator;
@@ -60,6 +66,7 @@ public class TaskManagerMediatorTest {
     @Before
     public void setUp() {
         TaskManagerServiceBridgeJni.setInstanceForTesting(mBridge);
+        when(mBridge.addObserver(any(), anyInt(), anyInt())).thenReturn(mNativeObserver);
 
         mHeader = new PropertyModel(HEADER_PROPERTY_KEYS);
         mTasks = new ModelList();

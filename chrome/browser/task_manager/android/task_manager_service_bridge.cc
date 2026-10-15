@@ -20,21 +20,15 @@
 
 namespace task_manager {
 
-static int64_t JNI_TaskManagerServiceBridge_AddObserver(
+static jni_zero::JniUniquePtr<TaskManagerObserverAndroid>
+JNI_TaskManagerServiceBridge_AddObserver(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& observer,
     const int32_t refresh_time_millis,
     const int32_t resource_flags) {
-  TaskManagerObserverAndroid* delegate =
-      new TaskManagerObserverAndroid(env, observer, refresh_time_millis,
-                                     static_cast<RefreshType>(resource_flags));
-  return reinterpret_cast<int64_t>(delegate);
-}
-
-static void JNI_TaskManagerServiceBridge_RemoveObserver(const int64_t ptr) {
-  TaskManagerObserverAndroid* delegate =
-      reinterpret_cast<TaskManagerObserverAndroid*>(ptr);
-  delete delegate;
+  return jni_zero::MakeUnique<TaskManagerObserverAndroid>(
+      env, observer, refresh_time_millis,
+      static_cast<RefreshType>(resource_flags));
 }
 
 static std::u16string JNI_TaskManagerServiceBridge_GetTitle(TaskId task_id) {
