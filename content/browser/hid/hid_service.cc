@@ -238,20 +238,19 @@ namespace {
 // be pruned by its parent.
 bool FilterCollectionReports(
     device::mojom::HidCollectionInfo& collection,
-    const device::mojom::HidCollectionInfo& original_collection,
+    const device::mojom::HidCollectionInfo& original_top_level_collection,
     const std::optional<std::vector<uint8_t>>& protected_input_report_ids,
     const std::optional<std::vector<uint8_t>>& protected_output_report_ids,
     const std::optional<std::vector<uint8_t>>& protected_feature_report_ids,
     bool is_fido_allowed) {
   // Recursively filter children first.
   std::vector<device::mojom::HidCollectionInfoPtr> children;
-  CHECK_EQ(collection.children.size(), original_collection.children.size());
-  for (size_t i = 0; i < collection.children.size(); ++i) {
+  for (auto& child : collection.children) {
     if (!FilterCollectionReports(
-            *collection.children[i], *original_collection.children[i],
-            protected_input_report_ids, protected_output_report_ids,
-            protected_feature_report_ids, is_fido_allowed)) {
-      children.push_back(std::move(collection.children[i]));
+            *child, original_top_level_collection, protected_input_report_ids,
+            protected_output_report_ids, protected_feature_report_ids,
+            is_fido_allowed)) {
+      children.push_back(std::move(child));
     }
   }
   collection.children = std::move(children);
@@ -260,11 +259,11 @@ bool FilterCollectionReports(
   std::vector<device::mojom::HidReportDescriptionPtr> input_reports;
   for (auto& report : collection.input_reports) {
     const bool is_fido = device::HasReportInCollectionWithUsagePage(
-        original_collection, report->report_id, device::HidReportType::kInput,
-        device::mojom::kPageFido);
+        original_top_level_collection, report->report_id,
+        device::HidReportType::kInput, device::mojom::kPageFido);
     const bool is_always_protected =
         device::HasReportInAlwaysProtectedCollection(
-            original_collection, report->report_id,
+            original_top_level_collection, report->report_id,
             device::HidReportType::kInput);
     if ((is_fido && is_fido_allowed) ||
         (!is_always_protected &&
@@ -280,11 +279,11 @@ bool FilterCollectionReports(
   std::vector<device::mojom::HidReportDescriptionPtr> output_reports;
   for (auto& report : collection.output_reports) {
     const bool is_fido = device::HasReportInCollectionWithUsagePage(
-        original_collection, report->report_id, device::HidReportType::kOutput,
-        device::mojom::kPageFido);
+        original_top_level_collection, report->report_id,
+        device::HidReportType::kOutput, device::mojom::kPageFido);
     const bool is_always_protected =
         device::HasReportInAlwaysProtectedCollection(
-            original_collection, report->report_id,
+            original_top_level_collection, report->report_id,
             device::HidReportType::kOutput);
     if ((is_fido && is_fido_allowed) ||
         (!is_always_protected &&
@@ -300,11 +299,11 @@ bool FilterCollectionReports(
   std::vector<device::mojom::HidReportDescriptionPtr> feature_reports;
   for (auto& report : collection.feature_reports) {
     const bool is_fido = device::HasReportInCollectionWithUsagePage(
-        original_collection, report->report_id, device::HidReportType::kFeature,
-        device::mojom::kPageFido);
+        original_top_level_collection, report->report_id,
+        device::HidReportType::kFeature, device::mojom::kPageFido);
     const bool is_always_protected =
         device::HasReportInAlwaysProtectedCollection(
-            original_collection, report->report_id,
+            original_top_level_collection, report->report_id,
             device::HidReportType::kFeature);
     if ((is_fido && is_fido_allowed) ||
         (!is_always_protected &&

@@ -223,6 +223,12 @@ class HidServiceTestHelper {
         device::TestReportDescriptors::VendorWithNestedKeyboard());
   }
 
+  device::mojom::HidDeviceInfoPtr CreateBootMouseDevice() {
+    return device::CreateDeviceFromReportDescriptor(
+        /*vendor_id=*/0x1234, /*product_id=*/0xabcd,
+        device::TestReportDescriptors::Mouse());
+  }
+
   device::mojom::HidDeviceInfoPtr CreateTitanFidoDevice() {
     return device::CreateDeviceFromReportDescriptor(
         kVendorGoogle, kProductTitan,
@@ -1741,6 +1747,92 @@ TEST_P(HidServiceTest, NestedKeyboardDeviceBlocked) {
   });
   DisconnectDevice(*updated_device_info);
   device_removed_loop.Run();
+}
+
+TEST_P(HidServiceTest, BootMouseDeviceBlocked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebHidRecursiveFiltering);
+
+  auto service_creation_type = GetParam();
+  const auto& service = GetService(service_creation_type);
+
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillRepeatedly(Return(true));
+
+  auto device_info = CreateBootMouseDevice();
+  ASSERT_EQ(device_info->collections.size(), 1u);
+  EXPECT_EQ(device_info->collections[0]->usage->usage_page,
+            device::mojom::kPageGenericDesktop);
+  EXPECT_EQ(device_info->collections[0]->usage->usage,
+            device::mojom::kGenericDesktopMouse);
+  EXPECT_EQ(device_info->collections[0]->collection_type,
+            device::mojom::kHIDCollectionTypeApplication);
+  ASSERT_EQ(device_info->collections[0]->children.size(), 1u);
+  EXPECT_EQ(device_info->collections[0]->children[0]->usage->usage_page,
+            device::mojom::kPageGenericDesktop);
+  EXPECT_EQ(device_info->collections[0]->children[0]->usage->usage,
+            device::mojom::kGenericDesktopPointer);
+  EXPECT_EQ(device_info->collections[0]->children[0]->collection_type,
+            device::mojom::kHIDCollectionTypePhysical);
+
+  // Directly verify RemoveProtectedReports prunes both child and TLC.
+  auto cloned_device_info = device_info.Clone();
+  HidService::RemoveProtectedReports(*cloned_device_info,
+                                     /*is_known_security_key=*/false,
+                                     /*is_fido_allowed=*/false);
+  EXPECT_TRUE(cloned_device_info->collections.empty());
+
+  EXPECT_CALL(hid_manager_client(), DeviceAdded).Times(0);
+  ConnectDevice(*device_info);
+  FlushHidServicePipe(service);
+
+  TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> devices_future;
+  service->GetDevices(devices_future.GetCallback());
+  EXPECT_TRUE(devices_future.Get().empty());
+}
+
+TEST_P(HidServiceTest, CompositeDeviceWithMousePruned) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebHidRecursiveFiltering);
+
+  auto service_creation_type = GetParam();
+  const auto& service = GetService(service_creation_type);
+
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillRepeatedly(Return(true));
+
+  auto device_info = CreateBootMouseDevice();
+  // Append a non-protected joystick TLC.
+  auto joystick = device::mojom::HidCollectionInfo::New();
+  joystick->usage = device::mojom::HidUsageAndPage::New(
+      device::mojom::kGenericDesktopJoystick,
+      device::mojom::kPageGenericDesktop);
+  joystick->collection_type = device::mojom::kHIDCollectionTypeApplication;
+  joystick->feature_reports.push_back(
+      device::mojom::HidReportDescription::New());
+  device_info->collections.push_back(std::move(joystick));
+  ASSERT_EQ(device_info->collections.size(), 2u);
+
+  TestFuture<device::mojom::HidDeviceInfoPtr> device_added_future;
+  EXPECT_CALL(hid_manager_client(), DeviceAdded)
+      .WillOnce(InvokeFuture(device_added_future));
+  ConnectDevice(*device_info);
+
+  // Only the joystick collection should survive; the mouse TLC and its nested
+  // physical collection should be completely pruned.
+  const auto& added_device = *device_added_future.Get();
+  ASSERT_EQ(added_device.collections.size(), 1u);
+  EXPECT_EQ(added_device.collections[0]->usage->usage_page,
+            device::mojom::kPageGenericDesktop);
+  EXPECT_EQ(added_device.collections[0]->usage->usage,
+            device::mojom::kGenericDesktopJoystick);
+  EXPECT_TRUE(added_device.collections[0]->children.empty());
+
+  TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> devices_future;
+  service->GetDevices(devices_future.GetCallback());
+  const auto& devices = devices_future.Get();
+  ASSERT_EQ(devices.size(), 1u);
+  ASSERT_EQ(devices[0]->collections.size(), 1u);
+  EXPECT_EQ(devices[0]->collections[0]->usage->usage,
+            device::mojom::kGenericDesktopJoystick);
 }
 
 const HidServiceCreationType kServiceCreationTypes[]{
