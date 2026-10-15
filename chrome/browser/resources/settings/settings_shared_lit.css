@@ -21,6 +21,7 @@
   --cr-card-shadow: none;
   --cr-separator-line: none;
   --cr-title-text-color: var(--color-settings-title-text);
+  --cr-icon-button-margin-start: 8px;
 
   .cr-title-text {
     font-size: 16px;

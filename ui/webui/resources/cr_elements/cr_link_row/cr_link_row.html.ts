@@ -28,6 +28,7 @@ ${this.startIcon ? html`
 <div id="buttonAriaDescription" aria-hidden="true">
   ${this.getButtonAriaDescription_()}
 </div>
+<slot name="icon-label"></slot>
 <cr-icon-button id="icon" iron-icon="${this.getIcon_()}" role="link" part="icon"
     aria-roledescription="${this.roleDescription || nothing}"
     aria-describedby="buttonAriaDescription" aria-labelledby="label subLabel"
