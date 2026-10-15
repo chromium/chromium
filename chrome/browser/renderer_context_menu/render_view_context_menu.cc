@@ -4901,58 +4901,29 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
           is_link ? base::UTF16ToUTF8(params_.link_text) : std::string());
 
   if (send_tab_to_self_submenu_) {
-#if BUILDFLAG(IS_MAC)
-    if (features::IsMenuSimplificationEnabled()) {
-      menu_model_.AddSubMenuWithStringIdAndIcon(
-          IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
-          send_tab_to_self_submenu_.get(),
-          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kDevicesIcon
-                                             : kDevicesOldIcon));
-    } else {
-      menu_model_.AddSubMenu(
-          IDC_SEND_TAB_TO_SELF,
-          l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-          send_tab_to_self_submenu_.get());
-    }
-#else
-    menu_model_.AddSubMenuWithStringIdAndIcon(
-        IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
-        send_tab_to_self_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kDevicesIcon
-                                           : kDevicesOldIcon));
-#endif
-
+    menu_model_.AddSubMenuWithStringId(IDC_SEND_TAB_TO_SELF,
+                                       IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
+                                       send_tab_to_self_submenu_.get());
     // TODO(crbug.com/516708776): Remove new feature tag when no longer new.
     menu_model_.SetIsNewFeatureAt(
         menu_model_.GetItemCount() - 1,
         UserEducationService::MaybeShowNewBadge(
             GetBrowserContext(),
             send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2));
-    return;
+  } else {
+    menu_model_.AddItemWithStringId(IDC_SEND_TAB_TO_SELF,
+                                    IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (features::IsMenuSimplificationEnabled()) {
-    menu_model_.AddItemWithIcon(
-        IDC_SEND_TAB_TO_SELF,
-        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kDevicesIcon
-                                           : kDevicesOldIcon));
-  } else {
-    menu_model_.AddItem(
-        IDC_SEND_TAB_TO_SELF,
-        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
+  if (!features::IsMenuSimplificationEnabled()) {
+    return;
   }
-#else
-  menu_model_.AddItemWithIcon(
+#endif
+  menu_model_.SetIconForCommandId(
       IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
-#endif
 }
 
 std::unique_ptr<ui::DataTransferEndpoint>

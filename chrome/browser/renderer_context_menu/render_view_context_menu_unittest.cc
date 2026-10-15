@@ -2776,6 +2776,7 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
             menu->menu_model().GetTypeAt(index.value()));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
             menu->menu_model().GetLabelAt(index.value()));
+  EXPECT_FALSE(menu->menu_model().GetIconAt(index.value()).IsEmpty());
 }
 
 class RenderViewContextMenuSendTabToSelfPageSigninPromosTest
@@ -2852,6 +2853,7 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
             menu->menu_model().GetTypeAt(index.value()));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
             menu->menu_model().GetLabelAt(index.value()));
+  EXPECT_FALSE(menu->menu_model().GetIconAt(index.value()).IsEmpty());
 }
 
 class RenderViewContextMenuSendTabToSelfLinkTest
