@@ -30,6 +30,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -268,7 +269,20 @@ class CrashReportingBrowserTest : public ReportingBrowserTest {
     // to terminate the `SIGNAL_UNKILLABLE` process after restoring `SIG_DFL`,
     // causing `RenderProcessHostWatcher::Wait()` to time out.
     command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
-#endif  // BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_WIN)
+    // Disable in-process stack traces in child processes on Windows. In
+    // non-official test builds, `ContentMainRunnerImpl::Initialize()` calls
+    // `base::debug::EnableInProcessStackDumping()` in child processes unless
+    // `kDisableInProcessStackTraces` is set, installing
+    // `StackDumpExceptionFilter` with `SYMOPT_DEFERRED_LOADS`. When simulating
+    // an in-renderer crash (e.g. via `OOM_CRASH(0)`, which raises
+    // `0xe0000008`), `StackDumpExceptionFilter` invokes DbgHelp / DIA
+    // (`dbghelp.dll` / `msdia140.dll`) inside the sandboxed renderer process to
+    // lazily load and parse `browser_tests.exe.pdb` and symbolize the stack
+    // trace before the process can terminate, which can cause
+    // `RenderProcessHostWatcher::Wait()` to time out under load.
+    command_line->AppendSwitch(switches::kDisableInProcessStackTraces);
+#endif
   }
 
   content::WebContents* web_contents() {
