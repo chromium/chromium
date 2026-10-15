@@ -25,14 +25,19 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager.ThumbnailChangeListener;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -440,6 +445,12 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         private @ScrollDirection int mScrollDirection;
 
         /**
+         * The direction {@link #isSwipeEnabled} approved when the gesture started. Unlike {@link
+         * #mScrollDirection}, it is derived from the total displacement of the gesture.
+         */
+        private @ScrollDirection int mApprovedDirection = ScrollDirection.UNKNOWN;
+
+        /**
          * The range in degrees that a swipe can be from a particular direction to be considered
          * that direction.
          */
@@ -454,6 +465,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         @Override
         public void onSwipeStarted(@ScrollDirection int direction, MotionEvent triggerEvent) {
             mScrollDirection = ScrollDirection.UNKNOWN;
+            mApprovedDirection = direction;
         }
 
         @Override
@@ -469,23 +481,36 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
 
             // If scroll direction has been computed, send the event to super.
             if (mScrollDirection != ScrollDirection.UNKNOWN) {
-                mToolbarSwipeLayout.swipeUpdated(time(), x, y, dx, dy, tx, ty);
+                // With the extra hide gestures, vertical swipes never start the swipe layout, so
+                // only forward updates to a layout that is active.
+                if (!ChromeFeatureList.sBrowserControlsExtraHideGestures.isEnabled()
+                        || mToolbarSwipeLayout.isActive()) {
+                    mToolbarSwipeLayout.swipeUpdated(time(), x, y, dx, dy, tx, ty);
+                }
                 return;
             }
 
-            mScrollDirection = computeScrollDirection(dx, dy);
-            if (mScrollDirection == ScrollDirection.UNKNOWN) return;
+            @ScrollDirection
+            int direction =
+                    mApprovedDirection != ScrollDirection.UNKNOWN
+                            ? mApprovedDirection
+                            : computeScrollDirection(dx, dy);
+            if (direction == ScrollDirection.UNKNOWN) return;
 
-            if (mScrollDirection == ScrollDirection.LEFT
-                    || mScrollDirection == ScrollDirection.RIGHT) {
+            mScrollDirection = direction;
+
+            if (direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT) {
                 startShowing(mToolbarSwipeLayout, true);
+            } else if (ChromeFeatureList.sBrowserControlsExtraHideGestures.isEnabled()) {
+                // Vertical swipes never start the swipe layout with the extra hide gestures.
+                onVerticalSwipeWithExtraHideGestures();
+                return;
             } else if (mSupportsSwipeToShowTabSwitcher) {
                 // No need to test scroll direction here, as we've ruled out other possibilities.
-                RecordUserAction.record("MobileToolbarSwipeOpenStackView");
-                showLayout(LayoutType.HUB, true);
+                showTabSwitcherFromSwipe();
             }
 
-            mToolbarSwipeLayout.swipeStarted(time(), mScrollDirection, x, y);
+            mToolbarSwipeLayout.swipeStarted(time(), direction, x, y);
         }
 
         @Override
@@ -556,17 +581,84 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                 return true;
             }
 
-            if (!mSupportsSwipeToShowTabSwitcher) {
-                return false;
+            if (ChromeFeatureList.sBrowserControlsExtraHideGestures.isEnabled()) {
+                return isVerticalSwipeEnabledWithExtraHideGestures(direction);
             }
 
             Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
             boolean toolbarShownOnTop = ToolbarPositionController.shouldShowToolbarOnTop(tab);
+            return canSwipeToShowTabSwitcher(direction, toolbarShownOnTop);
+        }
+
+        /** Handles a vertical swipe when the extra hide gestures are enabled. */
+        private void onVerticalSwipeWithExtraHideGestures() {
+            TabModelSelector tabModelSelector = getTabModelSelector();
+            Tab tab = tabModelSelector != null ? tabModelSelector.getCurrentTab() : null;
+            boolean toolbarShownOnTop = isToolbarOnTop();
+            // Act on the direction isSwipeEnabled() approved: mScrollDirection comes from a single
+            // motion event and can disagree with it.
+            if (canSwipeToShowTabSwitcher(mApprovedDirection, toolbarShownOnTop)) {
+                showTabSwitcherFromSwipe();
+            } else if (canSwipeToHideControls(tab, mApprovedDirection, toolbarShownOnTop)) {
+                TabBrowserControlsConstraintsHelper.update(
+                        tab, BrowserControlsState.HIDDEN, /* animate= */ true);
+            }
+        }
+
+        /** Returns whether a vertical swipe is enabled when the extra hide gestures are enabled. */
+        private boolean isVerticalSwipeEnabledWithExtraHideGestures(
+                @ScrollDirection int direction) {
+            TabModelSelector tabModelSelector = getTabModelSelector();
+            Tab tab = tabModelSelector != null ? tabModelSelector.getCurrentTab() : null;
+            boolean toolbarShownOnTop = isToolbarOnTop();
+            return canSwipeToShowTabSwitcher(direction, toolbarShownOnTop)
+                    || canSwipeToHideControls(tab, direction, toolbarShownOnTop);
+        }
+
+        /** Returns whether a swipe in {@code direction} opens the tab switcher. */
+        private boolean canSwipeToShowTabSwitcher(
+                @ScrollDirection int direction, boolean toolbarShownOnTop) {
             @ScrollDirection
             int showTabSwitcherScrollDirection =
                     toolbarShownOnTop ? ScrollDirection.DOWN : ScrollDirection.UP;
+            return direction == showTabSwitcherScrollDirection && mSupportsSwipeToShowTabSwitcher;
+        }
 
-            return direction == showTabSwitcherScrollDirection;
+        /** Opens the tab switcher in response to a toolbar swipe. */
+        private void showTabSwitcherFromSwipe() {
+            RecordUserAction.record("MobileToolbarSwipeOpenStackView");
+            showLayout(LayoutType.HUB, /* animate= */ true);
+        }
+
+        private boolean canSwipeToHideControls(
+                @Nullable Tab tab, @ScrollDirection int direction, boolean toolbarShownOnTop) {
+            if (tab == null) {
+                return false;
+            }
+            @ScrollDirection
+            int hideControlsScrollDirection =
+                    toolbarShownOnTop ? ScrollDirection.UP : ScrollDirection.DOWN;
+            return direction == hideControlsScrollDirection
+                    && canControlsScrollOff(toolbarShownOnTop)
+                    && !tab.isNativePage()
+                    && tab.getWebContents() != null
+                    && TabBrowserControlsConstraintsHelper.getConstraints(tab)
+                            == BrowserControlsState.BOTH;
+        }
+
+        /** Returns whether the controls on the toolbar's side can scroll off screen. */
+        private boolean canControlsScrollOff(boolean toolbarShownOnTop) {
+            // Locked controls (e.g. the top controls on large tablets and desktop) have a min
+            // height equal to their height, so hiding them would be a no-op.
+            BrowserControlsManager controls = mHost.getBrowserControlsManager();
+            return toolbarShownOnTop
+                    ? controls.getTopControlsMinHeight() < controls.getTopControlsHeight()
+                    : controls.getBottomControlsMinHeight() < controls.getBottomControlsHeight();
+        }
+
+        /** Returns whether the toolbar is on top, according to the live controls position. */
+        private boolean isToolbarOnTop() {
+            return mHost.getBrowserControlsManager().getControlsPosition() == ControlsPosition.TOP;
         }
     }
 
