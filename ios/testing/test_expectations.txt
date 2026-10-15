@@ -247,6 +247,7 @@ crbug.com/573145112 [ Simulator ] AutofillCreditCardSettingsTestCase/testToolbar
 crbug.com/573174179 [ Device ] FindInPageTestCase/testFindInPageHistory [ Pass Failure ]
 
 # Gardening suppression 2026-10-14
-crbug.com/573630697 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Pass Failure ]
-crbug.com/573630697 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Pass Failure ]
-crbug.com/573630697 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Pass Failure ]
+crbug.com/573630697 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Skip ]
+crbug.com/573630697 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Skip ]
+crbug.com/573630697 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
+
