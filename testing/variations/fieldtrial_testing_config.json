@@ -5736,21 +5736,6 @@
             ]
         }
     ],
-    "DesktopAndroidUnifiedCompositorLimits": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DesktopAndroidUnifiedCompositorLimits"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopCaptureAndroidFrameBufferReuse": [
         {
             "platforms": [
