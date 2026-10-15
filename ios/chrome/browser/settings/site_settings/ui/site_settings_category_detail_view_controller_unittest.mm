@@ -92,6 +92,7 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
       l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_MICROPHONE_ASK_TITLE),
       askItem.text);
   EXPECT_EQ(UITableViewCellAccessoryNone, askItem.accessoryType);
+  EXPECT_TRUE(askItem.accessibilityTraits & UIAccessibilityTraitButton);
 
   TableViewDetailIconItem* blockItem =
       static_cast<TableViewDetailIconItem*>(GetTableViewItem(0, 1));
@@ -102,6 +103,7 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
       l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_MICROPHONE_BLOCK_SUBTITLE),
       blockItem.detailText);
   EXPECT_EQ(UITableViewCellAccessoryNone, blockItem.accessoryType);
+  EXPECT_TRUE(blockItem.accessibilityTraits & UIAccessibilityTraitButton);
 }
 
 // Tests updating the default setting toggles checkmarks.

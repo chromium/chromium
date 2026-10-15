@@ -570,6 +570,7 @@ enum ItemType {
   askItem.text = [self askOptionTitle];
   askItem.iconImage = [self askOptionIcon];
   askItem.iconTintColor = [UIColor colorNamed:kGrey600Color];
+  askItem.accessibilityTraits |= UIAccessibilityTraitButton;
   askItem.accessibilityIdentifier = kSiteSettingsCategoryDetailAskCellId;
   askItem.accessoryType = _defaultSetting == CONTENT_SETTING_ASK
                               ? UITableViewCellAccessoryCheckmark
@@ -584,6 +585,7 @@ enum ItemType {
   blockItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   blockItem.iconImage = [self blockOptionIcon];
   blockItem.iconTintColor = [UIColor colorNamed:kGrey600Color];
+  blockItem.accessibilityTraits |= UIAccessibilityTraitButton;
   blockItem.accessibilityIdentifier = kSiteSettingsCategoryDetailBlockCellId;
   blockItem.accessoryType = _defaultSetting == CONTENT_SETTING_BLOCK
                                 ? UITableViewCellAccessoryCheckmark
