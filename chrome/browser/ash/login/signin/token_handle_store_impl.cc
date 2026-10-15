@@ -22,12 +22,6 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-// Enable VLOG level 1.
-// TODO(b/387248794): Remove after stabilizing, along with associated log
-// statements.
-#undef ENABLED_VLOG_LEVEL
-#define ENABLED_VLOG_LEVEL 1
-
 namespace ash {
 
 namespace {
@@ -107,7 +101,6 @@ void TokenHandleStoreImpl::IsReauthRequired(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
-  VLOG(1) << "TokenHandleStoreImpl::IsReauthRequired";
 
   if (const user_manager::User* user =
           user_manager::UserManager::Get()->FindUser(account_id);
@@ -149,7 +142,6 @@ void TokenHandleStoreImpl::IsReauthRequired(
 
 void TokenHandleStoreImpl::StoreTokenHandle(const AccountId& account_id,
                                             const std::string& handle) {
-  VLOG(1) << "TokenHandleStoreImpl::StoreTokenHandle";
   known_user_->SetStringPref(account_id, kTokenHandlePref, handle);
   known_user_->SetStringPref(account_id, kTokenHandleStatusPref,
                              kTokenHandleStatusValid);
@@ -158,7 +150,6 @@ void TokenHandleStoreImpl::StoreTokenHandle(const AccountId& account_id,
 }
 
 void TokenHandleStoreImpl::SetTokenHandleStale(const AccountId& account_id) {
-  VLOG(1) << "TokenHandleStoreImpl::SetTokenHandleStale";
   known_user_->SetStringPref(account_id, kTokenHandleStatusPref,
                              kTokenHandleStatusStale);
 }
@@ -169,11 +160,9 @@ void TokenHandleStoreImpl::MaybeFetchTokenHandle(
     const AccountId& account_id,
     const std::string& access_token,
     const std::string& refresh_token_hash) {
-  VLOG(1) << "TokenHandleStoreImpl::MaybeFetchTokenHandle";
   // If the user doesn't have a token handle (new user), or the existing token
   // handle is stale, fetch a new token.
   if (!HasToken(account_id) || IsTokenHandleStale(account_id)) {
-    VLOG(1) << "TokenHandleStoreImpl::MaybeFetchTokenHandle: actually fetching";
     FetchTokenHandle(token_handle_mapping_store, url_loader_factory, account_id,
                      access_token, refresh_token_hash);
   }
@@ -204,7 +193,6 @@ void TokenHandleStoreImpl::OnFetchToken(PrefService* token_handle_mapping_store,
                                         const AccountId& account_id,
                                         bool success,
                                         const std::string& token) {
-  VLOG(1) << "TokenHandleStoreImpl::OnFetchToken: success=" << success;
   if (!success) {
     LOG(ERROR) << "OAuth2 token handle fetch failed.";
     return;
@@ -271,7 +259,6 @@ void TokenHandleStoreImpl::OnCheckToken(
     const AccountId& account_id,
     const std::string& token,
     const TokenHandleChecker::Status& status) {
-  VLOG(1) << "TokenHandleStoreImpl::OnCheckToken";
   CHECK(pending_checks_.find(account_id) != pending_checks_.end());
 
   does_user_have_gaia_password_.Run(
@@ -356,9 +343,5 @@ void TokenHandleStoreImpl::SetInvalidTokenForTesting(const char* token) {
   }
   invalid_token_for_testing_ = token;
 }
-
-void TokenHandleStoreImpl::SetLastCheckedPrefForTesting(
-    const AccountId& account_id,
-    base::Time time) {}
 
 }  // namespace ash

@@ -55,8 +55,6 @@ class TokenHandleStoreImpl : public TokenHandleStore {
                         const std::string& handle) override;
   void SetTokenHandleStale(const AccountId& account_id) override;
   void SetInvalidTokenForTesting(const char* token) override;
-  void SetLastCheckedPrefForTesting(const AccountId& account_id,
-                                    base::Time time) override;
   void MaybeFetchTokenHandle(
       PrefService* token_handle_mapping_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

@@ -84,9 +84,6 @@ class TokenHandleStore {
 
   // Testing methods:
   virtual void SetInvalidTokenForTesting(const char* token) = 0;
-
-  virtual void SetLastCheckedPrefForTesting(const AccountId& account_id,
-                                            base::Time time) = 0;
 };
 
 }  // namespace ash
