@@ -1427,7 +1427,7 @@
     {
         "name": "play-services-base",
         "group": "com.google.android.gms",
-        "version": "18.11.0"
+        "version": "18.11.1"
     },
     {
         "name": "play-services-basement",
@@ -1882,12 +1882,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.84.3"
+        "version": "1.85.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.84.3"
+        "version": "1.85.0"
     },
     {
         "name": "rxandroid",
