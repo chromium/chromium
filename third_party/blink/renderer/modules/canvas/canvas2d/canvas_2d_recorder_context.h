@@ -577,18 +577,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                           SkBlendMode blend_mode,
                           const gfx::RectF* bounds = nullptr);
 
-  template <OverdrawOp CurrentOverdrawOp,
-            typename DrawFunc,
-            typename DrawCoversClipBoundsFunc>
-  void DrawInternal(MemoryManagedPaintCanvas* paint_canvas,
-                    const DrawFunc&,
-                    const DrawCoversClipBoundsFunc&,
-                    const gfx::RectF& bounds,
-                    CanvasRenderingContext2DState::PaintType,
-                    CanvasRenderingContext2DState::ImageType,
-                    const SkIRect& clip_bounds,
-                    CanvasPerformanceMonitor::DrawType);
-
   void DrawPathInternal(const CanvasPath&,
                         CanvasRenderingContext2DState::PaintType,
                         SkPathFillType,
@@ -683,7 +671,7 @@ ALWAYS_INLINE bool Canvas2DRecorderContext::BlendModeRequiresCompositedDraw(
     const CanvasRenderingContext2DState& state) const {
   SkBlendMode blend_mode = state.GlobalComposite();
   // The "copy" composite operation (a.k.a. `SkBlendMode::kSrc`) is handled as a
-  // special case in `DrawInternal` and thus doesn't require `CompositedDraw`.
+  // special case in `Draw` and thus doesn't require `CompositedDraw`.
   if (blend_mode == SkBlendMode::kSrc) {
     return false;
   }
@@ -782,16 +770,33 @@ ALWAYS_INLINE void Canvas2DRecorderContext::CheckOverdraw(
 template <Canvas2DRecorderContext::OverdrawOp CurrentOverdrawOp,
           typename DrawFunc,
           typename DrawCoversClipBoundsFunc>
-void Canvas2DRecorderContext::DrawInternal(
-    MemoryManagedPaintCanvas* paint_canvas,
+void Canvas2DRecorderContext::Draw(
     const DrawFunc& draw_func,
     const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
     const gfx::RectF& bounds,
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
-    const SkIRect& clip_bounds,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  CHECK(paint_canvas);
+  if (!IsTransformInvertible()) [[unlikely]] {
+    return;
+  }
+
+  if (GetState().IsFilterUnresolved()) [[unlikely]] {
+    // Resolving a filter can synchronously execute script (via style and
+    // layout updates), which may reset the canvas recorder or state stack.
+    // Resolve the filter before acquiring `paint_canvas` and `state`.
+    StateGetFilter();
+    if (!IsTransformInvertible()) [[unlikely]] {
+      return;
+    }
+  }
+
+  SkIRect clip_bounds;
+  MemoryManagedPaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
+  if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds)) {
+    return;
+  }
+
   const CanvasRenderingContext2DState& state = GetState();
   SkBlendMode global_composite = state.GlobalComposite();
   if (ShouldUseCompositedDraw(paint_type, image_type)) {
@@ -832,41 +837,6 @@ void Canvas2DRecorderContext::DrawInternal(
   }
 }
 
-template <Canvas2DRecorderContext::OverdrawOp CurrentOverdrawOp,
-          typename DrawFunc,
-          typename DrawCoversClipBoundsFunc>
-void Canvas2DRecorderContext::Draw(
-    const DrawFunc& draw_func,
-    const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
-    const gfx::RectF& bounds,
-    CanvasRenderingContext2DState::PaintType paint_type,
-    CanvasRenderingContext2DState::ImageType image_type,
-    CanvasPerformanceMonitor::DrawType draw_type) {
-  if (!IsTransformInvertible()) [[unlikely]] {
-    return;
-  }
-
-  if (GetState().IsFilterUnresolved()) [[unlikely]] {
-    // Resolving a filter can synchronously execute script (via style and
-    // layout updates), which may reset the canvas recorder or state stack.
-    // Resolve the filter before acquiring `paint_canvas` and `clip_bounds`.
-    StateGetFilter();
-    if (!IsTransformInvertible()) [[unlikely]] {
-      return;
-    }
-  }
-
-  SkIRect clip_bounds;
-  MemoryManagedPaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
-  if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds)) {
-    return;
-  }
-
-  DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
-      paint_canvas, draw_func, draw_covers_clip_bounds, bounds, paint_type,
-      image_type, clip_bounds, draw_type);
-}
-
 template <typename DrawFunc>
 void Canvas2DRecorderContext::CompositedDraw(
     const DrawFunc& draw_func,
@@ -876,7 +846,7 @@ void Canvas2DRecorderContext::CompositedDraw(
   // Due to the complexity of composited draw operations, we need to grant an
   // exception to allow multi-pass rendering, and state finalization
   // operations to proceed between the time when a flush is requested by
-  // draw_func and when the flush request is fulfilled in DrawInternal. We
+  // draw_func and when the flush request is fulfilled in Draw. We
   // cannot fulfill flush request in the middle of a composited draw because
   // it would break the rendering behavior.
   // It is safe to cast 'c' to RecordPaintCanvas below because we know that
