@@ -83,7 +83,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.RequiresRestart;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -93,7 +92,6 @@ import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
-import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -169,7 +167,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/423465927): Explore a better approach to make the
 // existing tests run with the prewarm feature enabled.
-@DisableFeatures({ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, "Prewarm"})
+@DisableFeatures({
+    ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY,
+    "Prewarm",
+    ChromeFeatureList.DESKTOP_ANDROID_LINK_CAPTURING
+})
 @DisableLeakChecks("crbug.com/527131099")
 public class UrlOverridingTest {
     @Rule
@@ -340,8 +342,6 @@ public class UrlOverridingTest {
         private boolean mResolveToTrustedCaller;
         private final String mNonBrowserPackageName;
         private String mHostToMatch;
-        private @Nullable String mHostPathToMatch;
-        private @Nullable String mHostTargetPackage;
         private String mSchemeToMatch;
         private IntentFilter mFilterForHostMatch;
         private IntentFilter mFilterForSchemeMatch;
@@ -372,19 +372,9 @@ public class UrlOverridingTest {
             return false;
         }
 
-        private void setIntentFilterForHost(
-                String host,
-                @Nullable String path,
-                IntentFilter filter,
-                @Nullable String targetPackage) {
-            mHostToMatch = host;
-            mHostPathToMatch = path;
-            mFilterForHostMatch = filter;
-            mHostTargetPackage = targetPackage;
-        }
-
         private void setIntentFilterForHost(String host, IntentFilter filter) {
-            setIntentFilterForHost(host, null, filter, null);
+            mHostToMatch = host;
+            mFilterForHostMatch = filter;
         }
 
         private void setIntentFilterForScheme(String scheme, IntentFilter filter) {
@@ -420,14 +410,8 @@ public class UrlOverridingTest {
 
                     if (mHostToMatch != null
                             && intent.getData() != null
-                            && mHostToMatch.equals(intent.getData().getHost())
-                            && (mHostPathToMatch == null
-                                    || mHostPathToMatch.equals(intent.getData().getPath()))) {
-                        ResolveInfo info =
-                                newResolveInfo(
-                                        mHostTargetPackage != null
-                                                ? mHostTargetPackage
-                                                : targetPackage);
+                            && mHostToMatch.equals(intent.getData().getHost())) {
+                        ResolveInfo info = newResolveInfo(targetPackage);
                         info.filter = mFilterForHostMatch;
                         return Arrays.asList(info);
                     }
@@ -1853,7 +1837,6 @@ public class UrlOverridingTest {
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testIntentWithRedirectToApp_TargetsChrome_AllowedToLeave() throws Exception {
         doTestIntentWithRedirectToApp(true, true);
     }
@@ -1861,7 +1844,6 @@ public class UrlOverridingTest {
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testIntentWithRedirectToApp() throws Exception {
         doTestIntentWithRedirectToApp(false, false);
     }
@@ -2644,9 +2626,8 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_LINK_CAPTURING)
-    @Restriction(DeviceFormFactor.DESKTOP)
-    public void testTopLevelNavigationNotInterceptedForNativeAppOnDesktop() throws Exception {
+    @DisabledTest(message = "https://crbug.com/446837985")
+    public void testTopLevelNavigationShouldBeIntercepted() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
 
         IntentFilter filter = createHelloIntentFilter();
@@ -2662,91 +2643,22 @@ public class UrlOverridingTest {
 
         String urlExternal = mTestServer.getURL(HELLO_PAGE);
         String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, urlExternal);
-        TestParams testParams = new TestParams(url, true, false);
+        TestParams testParams = new TestParams(url, true, true);
         testParams.createsNewTab = true;
         testParams.expectedFinalUrl = null;
-        testParams.shouldFailNavigation = false;
-        testParams.willNavigateTwice = true;
+        testParams.shouldFailNavigation = true;
         loadUrlAndWaitForIntentUrl(testParams, ctaPage);
 
         ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(0));
+                    Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
                     Criteria.checkThat(
                             ChromeTabUtils.getNumOpenTabs(mTabbedActivityTestRule.getActivity()),
-                            Matchers.is(2));
+                            Matchers.is(1));
                     Criteria.checkThat(
                             activity.getActivityTab().getUrl().getSpec(),
-                            Matchers.equalTo(new GURL(urlExternal).getSpec()));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_LINK_CAPTURING)
-    public void testTopLevelNavigationInterceptedForTwa() throws Exception {
-        InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
-        TwaValidator.setTwaInstalledOverrideForTesting(true);
-
-        IntentFilter filter = createHelloIntentFilter();
-        mActivityMonitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(
-                                filter,
-                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
-                                true);
-        mTestContext.setIntentFilterForHost("127.0.0.1", HELLO_PAGE, filter, null);
-
-        WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
-
-        String urlExternal = mTestServer.getURL(HELLO_PAGE);
-        String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, urlExternal);
-        TestParams testParams = new TestParams(url, true, true);
-        testParams.createsNewTab = true;
-        testParams.expectedFinalUrl = null;
-        loadUrlAndWaitForIntentUrl(testParams, ctaPage);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-                },
-                10000L,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_LINK_CAPTURING)
-    public void testTopLevelNavigationInterceptedForWebApk() throws Exception {
-        InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
-        WebApkValidator.setDisableValidationForTesting(true);
-        ExternalNavigationDelegateImpl.setIsWebApkLinkHandlingAllowedForTesting(true);
-
-        IntentFilter filter = createHelloIntentFilter();
-        mActivityMonitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(
-                                filter,
-                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
-                                true);
-        mTestContext.setIntentFilterForHost(
-                "127.0.0.1", HELLO_PAGE, filter, TEST_WEBAPK_PACKAGE_NAME);
-
-        WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
-
-        String urlExternal = mTestServer.getURL(HELLO_PAGE);
-        String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, urlExternal);
-        TestParams testParams = new TestParams(url, true, true);
-        testParams.createsNewTab = true;
-        testParams.expectedFinalUrl = null;
-        loadUrlAndWaitForIntentUrl(testParams, ctaPage);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+                            Matchers.equalTo(new GURL(url).getSpec()));
                 },
                 10000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -3029,7 +2941,6 @@ public class UrlOverridingTest {
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testInitialIntentToApp_allowToLeave() throws Exception {
         doTestInitialIntentToApp(true, false);
     }
@@ -3044,7 +2955,6 @@ public class UrlOverridingTest {
     @Test
     @Feature("CustomTabFromChrome")
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testInitialIntentToApp_allowToLeave_prewarmed() throws Exception {
         doTestInitialIntentToApp(true, true);
     }
@@ -3053,7 +2963,6 @@ public class UrlOverridingTest {
     @Feature("CustomTabFromChrome")
     @LargeTest
     @EnableFeatures(ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testInitialIntentToApp_CctFinishesAfterHandoff() throws Exception {
         final String initialUrl = "https://example.com/path";
         final CallbackHelper onHandedOffCallback = new CallbackHelper();
