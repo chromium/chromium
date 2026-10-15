@@ -51,6 +51,17 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
       public aura::WindowTreeHost,
       public HWNDMessageHandlerDelegate {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DisplayAffinityResult)
+  enum class DisplayAffinityResult {
+    kSuccess = 0,
+    kSkippedRemoteSession = 1,
+    kSetWindowDisplayAffinityFailed = 2,
+    kMaxValue = kSetWindowDisplayAffinityFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:DisplayAffinityResult)
+
   DesktopWindowTreeHostWin(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
@@ -362,6 +373,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window should be excluded from screen capture.
   bool exclude_from_capture_ = false;
+
+  // True if the UMA metric for the current capture exclusion activation has
+  // already been recorded.
+  bool has_recorded_capture_exclusion_metric_ = false;
 
   // Overrides the remote session detection for testing.
   std::optional<bool> remote_session_for_testing_;

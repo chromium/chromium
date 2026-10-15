@@ -3822,6 +3822,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.DocumentPictureInPicture.ScreenCaptureExclusion"
+    enum="Boolean" expires_after="2027-04-08">
+  <owner>kron@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Records whether a Document Picture-in-Picture window was excluded from
+    screen capture at any point while it was open. A window is excluded when all
+    active screen captures come from the page that opened it. Recorded once per
+    PiP window when it is closed, while the ExcludePipFromScreenCapture feature
+    is enabled.
+
+    This records Chrome's decision to exclude the window, not whether the OS
+    applied it. On Windows, see
+    Media.DocumentPictureInPicture.Win.DisplayAffinityResult.
+  </summary>
+</histogram>
+
+<histogram name="Media.DocumentPictureInPicture.Win.DisplayAffinityResult"
+    enum="DisplayAffinityResult" expires_after="2027-04-08">
+  <owner>kron@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Records the outcome of applying screen capture exclusion
+    (WDA_EXCLUDEFROMCAPTURE) to a window on Windows: success,
+    SetWindowDisplayAffinity failure, or skipped because Chrome runs in a remote
+    desktop session.
+
+    Recorded when exclusion is first applied to a visible window: either when an
+    excluded window is shown, or when exclusion is turned on for a visible
+    window. Hiding and showing the window again does not record another sample;
+    turning exclusion off and on again does.
+
+    Only windows that request exclusion themselves are counted, including
+    popups, menus, and tooltips created with the PiP window as their parent.
+    Windows that only copy the affinity of their owner window, such as native
+    system menus, are not counted. This counts windows, not PiP sessions. For
+    per-session counts, see
+    Media.DocumentPictureInPicture.ScreenCaptureExclusion.
+  </summary>
+</histogram>
+
 <histogram name="Media.DroppedFrameCount" units="units" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 

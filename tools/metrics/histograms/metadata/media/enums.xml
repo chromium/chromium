@@ -734,6 +734,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Error - Video Capturer Service crashed"/>
 </enum>
 
+<!-- LINT.IfChange(DisplayAffinityResult) -->
+
+<enum name="DisplayAffinityResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Skipped due to remote session"/>
+  <int value="2" label="SetWindowDisplayAffinity failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/views/widget/desktop_aura/desktop_window_tree_host_win.h:DisplayAffinityResult) -->
+
 <enum name="DisplayCapturePolicyResult">
   <int value="0" label="kDisallowed"/>
   <int value="1" label="kAllowed"/>

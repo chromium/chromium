@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -26,6 +27,8 @@ const content::GlobalRenderFrameHostId kOtherId(2, 2);
 constexpr content::DesktopMediaID::Id kPipWindowId = 123;
 constexpr content::DesktopMediaID::Id kDesktopId = 234;
 constexpr content::DesktopMediaID::Id kDiffDesktopId = 567;
+constexpr char kScreenCaptureExclusionHistogram[] =
+    "Media.DocumentPictureInPicture.ScreenCaptureExclusion";
 
 class MockObserver : public PipScreenCaptureCoordinatorImpl::Observer {
  public:
@@ -665,6 +668,47 @@ TEST_F(PipScreenCaptureCoordinatorImplTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   coordinator_->RemoveExclusionObserver(&observer);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, ScreenCaptureExclusionMetric) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Session not excluded -> records false on close.
+  coordinator_->OnPipInitiated(kPipOwnerId);
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+  coordinator_->OnPipClosed();
+  histogram_tester.ExpectUniqueSample(kScreenCaptureExclusionHistogram, false,
+                                      1);
+
+  // 2. Session excluded during its lifetime -> records true on close.
+  coordinator_->OnPipInitiated(kPipOwnerId);
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+  const base::UnguessableToken session_owner = base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_owner,
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  coordinator_->RemoveCapture(session_owner);
+  coordinator_->OnPipClosed();
+  histogram_tester.ExpectBucketCount(kScreenCaptureExclusionHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kScreenCaptureExclusionHistogram, 2);
+
+  // 3. Capture already active before the PiP window is initiated and shown ->
+  // records true on close.
+  const base::UnguessableToken session_before =
+      base::UnguessableToken::Create();
+  coordinator_->AddCapture(
+      {.session_id = session_before,
+       .render_frame_host_id = kPipOwnerId,
+       .desktop_media_id = content::DesktopMediaID(
+           content::DesktopMediaID::TYPE_SCREEN, kDesktopId)});
+  coordinator_->OnPipInitiated(kPipOwnerId);
+  coordinator_->OnPipShown(kPipWindowId, kPipOwnerId);
+  coordinator_->OnPipClosed();
+  coordinator_->RemoveCapture(session_before);
+  histogram_tester.ExpectBucketCount(kScreenCaptureExclusionHistogram, true, 2);
+  histogram_tester.ExpectTotalCount(kScreenCaptureExclusionHistogram, 3);
 }
 
 }  // namespace content
