@@ -13582,10 +13582,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrefetchActivationBeaconName,
      flag_descriptions::kPrefetchActivationBeaconDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPrefetchActivationBeacon)},
-    {"prerender-activation-beacon",
-     flag_descriptions::kPrerenderActivationBeaconName,
-     flag_descriptions::kPrerenderActivationBeaconDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPrerenderActivationBeacon)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"read-aloud-native", flag_descriptions::kReadAloudNativeName,

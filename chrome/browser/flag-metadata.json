@@ -8372,11 +8372,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "prerender-activation-beacon",
-    "owners": [ "gjc@google.com", "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "prerender-activation-by-form-submission",
     "owners": [
       "robertlin@chromium.org",

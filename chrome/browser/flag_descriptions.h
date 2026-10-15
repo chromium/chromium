@@ -808,12 +808,6 @@ inline constexpr char kPrerenderUntilScriptDescription[] =
     "Prerenders pages until a script is about to be executed. The script "
     "execution and the page parsing will be deferred until action.";
 
-inline constexpr char kPrerenderActivationBeaconName[] =
-    "Prerender Activation Beacon";
-inline constexpr char kPrerenderActivationBeaconDescription[] =
-    "If enabled, prerender activation beacon will be sent when a prerender is "
-    "activated.";
-
 inline constexpr char kPrerenderActivationByFormSubmissionName[] =
     "Prerender Activation By Form Submission";
 inline constexpr char kPrerenderActivationByFormSubmissionDescription[] =
