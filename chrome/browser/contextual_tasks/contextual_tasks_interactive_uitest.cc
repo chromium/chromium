@@ -64,6 +64,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -87,6 +90,7 @@
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/page_info/page_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -118,11 +122,15 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 using testing::_;
 
@@ -4385,6 +4393,81 @@ class ContextualTasksSidePanelRearchToolbarInteractiveUiTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
+
+ protected:
+  // Opens the Lens Overlay from the 3-dot App Menu and submits `query` in its
+  // Contextual Searchbox. The search URL is mocked to `aim_url`, so the
+  // Contextual Tasks side panel opens on that AI Mode page.
+  MultiStep SubmitContextualSearchboxQueryToOpenSidePanel(
+      ui::ElementIdentifier overlay_id,
+      const std::string& query,
+      const GURL& aim_url) {
+    const DeepQuery kPathToOverlaySearchboxInput{
+        "lens-overlay-app",
+        "cr-lens-searchbox",
+        "cr-searchbox-input",
+        "input",
+    };
+    return Steps(
+        OpenLensOverlay(),
+        InAnyContext(
+            InstrumentNonTabWebView(overlay_id,
+                                    LensOverlayController::kOverlayId),
+            WaitForWebContentsReady(
+                overlay_id, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+        InSameContext(
+            WaitForShow(LensOverlayController::kOverlayId),
+            Do([this, aim_url]() {
+              content::WebContents* web_contents =
+                  browser()->tab_strip_model()->GetActiveWebContents();
+              auto* lens_controller =
+                  LensSearchController::FromTabWebContents(web_contents);
+              auto* query_router = static_cast<lens::FakeLensQueryFlowRouter*>(
+                  lens_controller->query_router());
+              CHECK(query_router);
+              auto* session_handle = static_cast<
+                  contextual_search::MockContextualSearchSessionHandle*>(
+                  query_router->GetContextualSearchSessionHandle());
+              CHECK(session_handle);
+              ON_CALL(*session_handle,
+                      CreateSearchUrl(::testing::_, ::testing::_))
+                  .WillByDefault(::testing::WithArg<1>(
+                      [aim_url](base::OnceCallback<void(GURL)> callback) {
+                        std::move(callback).Run(aim_url);
+                      }));
+            }),
+            WaitForElementExists(overlay_id, kPathToOverlaySearchboxInput),
+            FocusWebContents(overlay_id),
+            ExecuteJsAt(overlay_id, kPathToOverlaySearchboxInput,
+                        "(el) => { el.focus(); }",
+                        ExecuteJsMode::kWaitForCompletion),
+            ExecuteJsAt(
+                overlay_id, kPathToOverlaySearchboxInput,
+                content::JsReplace(
+                    "(el) => { el.value = $1; el.dispatchEvent(new "
+                    "Event('input', { bubbles: true })); el.dispatchEvent(new "
+                    "Event('change', { bubbles: true })); }",
+                    query),
+                ExecuteJsMode::kWaitForCompletion),
+            ExecuteJsAt(overlay_id, kPathToOverlaySearchboxInput,
+                        "(el) => { el.dispatchEvent(new KeyboardEvent("
+                        "'keydown', { key: 'Enter', bubbles: true, "
+                        "cancelable: true, composed: true })); }",
+                        ExecuteJsMode::kFireAndForget)),
+        WaitForShow(kContextualTasksSidePanelWebViewElementId));
+  }
+
+  // Instruments the side panel's rearchitecture toolbar WebView (which loads
+  // chrome://contextual-tasks/toolbar.html) as `toolbar_id`.
+  MultiStep InstrumentSidePanelToolbar(ui::ElementIdentifier toolbar_id) {
+    return Steps(
+        NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                         "SidePanelToolbarWebViewName",
+                         [](ContextualTasksWebView* web_view) -> views::View* {
+                           return web_view->toolbar_web_view();
+                         }),
+        InstrumentNonTabWebView(toolbar_id, "SidePanelToolbarWebViewName"));
+  }
 };
 
 // This tests the following CUJ:
@@ -4505,6 +4588,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
                          &UserVariationToString);
+
+// This tests the following CUJ:
 //  (1) User opens Lens Overlay from the 3-dot App Menu on a web page.
 //  (2) User types a query into the Lens Overlay Contextual Searchbox and
 //      presses Enter to submit.
@@ -4517,12 +4602,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
 
-  const DeepQuery kPathToOverlaySearchboxInput{
-      "lens-overlay-app",
-      "cr-lens-searchbox",
-      "cr-searchbox-input",
-      "input",
-  };
   const DeepQuery kToolbarTitle{
       "contextual-tasks-toolbar-app",
       "#toolbar",
@@ -4540,64 +4619,13 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
   };
 
   RunTestSequence(
-      // Step 1: Open the Lens Overlay via the 3-dot App Menu.
-      OpenLensOverlay(),
-      InAnyContext(
-          InstrumentNonTabWebView(kOverlayId,
-                                  LensOverlayController::kOverlayId),
-          WaitForWebContentsReady(
-              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
-
-      // Step 2: Submit a query in the Lens Overlay Contextual Searchbox to
-      // open the Contextual Tasks side panel on an AI page.
-      InSameContext(
-          WaitForShow(LensOverlayController::kOverlayId), Do([&]() {
-            content::WebContents* web_contents =
-                browser()->tab_strip_model()->GetActiveWebContents();
-            auto* lens_controller =
-                LensSearchController::FromTabWebContents(web_contents);
-            auto* query_router = static_cast<lens::FakeLensQueryFlowRouter*>(
-                lens_controller->query_router());
-            CHECK(query_router);
-            auto* session_handle = static_cast<
-                contextual_search::MockContextualSearchSessionHandle*>(
-                query_router->GetContextualSearchSessionHandle());
-            CHECK(session_handle);
-            ON_CALL(*session_handle,
-                    CreateSearchUrl(::testing::_, ::testing::_))
-                .WillByDefault(::testing::WithArg<1>([](base::OnceCallback<void(
-                                                            GURL)> callback) {
-                  std::move(callback).Run(GURL(
-                      "https://www.google.com/search?q=hello+world&udm=50"));
-                }));
-          }),
-          WaitForElementExists(kOverlayId, kPathToOverlaySearchboxInput),
-          FocusWebContents(kOverlayId),
-          ExecuteJsAt(kOverlayId, kPathToOverlaySearchboxInput,
-                      "(el) => { el.focus(); }",
-                      ExecuteJsMode::kWaitForCompletion),
-          ExecuteJsAt(
-              kOverlayId, kPathToOverlaySearchboxInput,
-              "(el) => { el.value = 'hello world'; el.dispatchEvent(new "
-              "Event('input', { bubbles: true })); el.dispatchEvent(new "
-              "Event('change', { bubbles: true })); }",
-              ExecuteJsMode::kWaitForCompletion),
-          ExecuteJsAt(kOverlayId, kPathToOverlaySearchboxInput,
-                      "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', "
-                      "{ key: 'Enter', bubbles: true, cancelable: true, "
-                      "composed: true })); }",
-                      ExecuteJsMode::kFireAndForget)),
-
-      // Step 3: Wait for the Contextual Tasks side panel to show and
-      // instrument the rearchitecture toolbar WebView.
-      WaitForShow(kContextualTasksSidePanelWebViewElementId),
-      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
-                       "SidePanelToolbarWebViewName",
-                       [](ContextualTasksWebView* web_view) -> views::View* {
-                         return web_view->toolbar_web_view();
-                       }),
-      InstrumentNonTabWebView(kSidePanelToolbarWebContentsId,
-                              "SidePanelToolbarWebViewName"),
+      // Steps 1-3: Open the Lens Overlay via the 3-dot App Menu and submit a
+      // query in its Contextual Searchbox to open the Contextual Tasks side
+      // panel on an AI page, then instrument the rearchitecture toolbar.
+      SubmitContextualSearchboxQueryToOpenSidePanel(
+          kOverlayId, "hello world",
+          GURL("https://www.google.com/search?q=hello+world&udm=50")),
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
 
       // Step 4: Verify the thread title in the toolbar is updated to
       // "hello world".
@@ -4621,6 +4649,129 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
               "b.textContent.trim() === $1))",
               l10n_util::GetStringUTF8(
                   IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)),
+          true));
+}
+
+// This tests the following CUJ:
+//  (1) User opens Lens Overlay from the 3-dot App Menu on a web page.
+//  (2) User types a query into the Lens Overlay Contextual Searchbox and
+//      presses Enter to submit.
+//  (3) The Contextual Tasks side panel opens on an AI Mode page.
+//  (4) User clicks the Super G logo button in the side panel toolbar.
+//  (5) The Page Info bubble opens anchored to the Super G button inside the
+//      side panel with a TOP_LEFT arrow.
+//  (6) The Page Info bubble shows the URL and site of the page in the side
+//      panel, not the page in the active tab.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
+                       SuperGLogoButtonOpensPageInfoBubble) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
+
+  const DeepQuery kSuperGButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      ".top-toolbar-logo-button",
+  };
+  const GURL kAimUrl("https://www.google.com/search?q=hello+world&udm=50");
+
+  gfx::Rect side_panel_bounds;
+  gfx::Rect super_g_bounds;
+
+  RunTestSequence(
+      // Steps 1-3: Open the Contextual Tasks side panel on an AI page from a
+      // Contextual Searchbox query, then instrument the rearchitecture toolbar.
+      SubmitContextualSearchboxQueryToOpenSidePanel(kOverlayId, "hello world",
+                                                    kAimUrl),
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
+      EnsureNotPresent(
+          PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier),
+
+      // Precondition: the side panel shows the AI page (the browser appends
+      // extra search params to `kAimUrl`) and the active tab is on a different
+      // site, so the URL checks below can tell them apart.
+      Check(
+          [&]() {
+            content::WebContents* panel_contents =
+                ContextualTasksPanelController::From(browser())
+                    ->GetActiveWebContents();
+            content::WebContents* tab_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            return panel_contents &&
+                   panel_contents->GetVisibleURL().host() == kAimUrl.host() &&
+                   panel_contents->GetVisibleURL().path() == kAimUrl.path() &&
+                   tab_contents->GetVisibleURL().host() != kAimUrl.host();
+          },
+          "The side panel shows the AI page and the tab is on another site."),
+
+      // Step 4: Wait for the Super G button to be tracked and laid out, then
+      // click it.
+      InAnyContext(WaitForShow(kContextualTasksSuperGButtonElementId)),
+      WaitForElementVisible(kSidePanelToolbarWebContentsId, kSuperGButton),
+      WithView(kContextualTasksSidePanelWebViewElementId,
+               [&side_panel_bounds](views::View* side_panel) {
+                 side_panel_bounds = side_panel->GetBoundsInScreen();
+               }),
+      InAnyContext(WithElement(kContextualTasksSuperGButtonElementId,
+                               [&super_g_bounds](ui::TrackedElement* el) {
+                                 super_g_bounds = el->GetScreenBounds();
+                               })),
+      ClickElement(kSidePanelToolbarWebContentsId, kSuperGButton),
+
+      // Step 5: The Page Info bubble opens for the side panel's WebContents
+      // (not the active tab), anchored to the Super G button inside the side
+      // panel with a TOP_LEFT arrow.
+      WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier),
+      WaitForShow(PageInfoMainView::kMainLayoutElementId),
+      Check(
+          [&]() {
+            content::WebContents* panel_contents =
+                ContextualTasksPanelController::From(browser())
+                    ->GetActiveWebContents();
+            return panel_contents &&
+                   PageInfoBubbleViewBase::GetPageInfoBubbleForTesting(
+                       panel_contents) != nullptr &&
+                   !PageInfoBubbleViewBase::IsShowing(
+                       browser()->tab_strip_model()->GetActiveWebContents());
+          },
+          "Page Info is shown for the side panel WebContents, not the tab."),
+      // Step 6: Page Info's site URL is the side panel's URL, not the active
+      // tab's.
+      CheckView(
+          PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier,
+          [&](PageInfoBubbleView* bubble) {
+            const GURL& site_url = bubble->presenter_for_testing()->site_url();
+            content::WebContents* panel_contents =
+                ContextualTasksPanelController::From(browser())
+                    ->GetActiveWebContents();
+            content::WebContents* tab_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            return panel_contents &&
+                   site_url == panel_contents->GetVisibleURL() &&
+                   site_url != tab_contents->GetVisibleURL();
+          },
+          true),
+      // The bubble header shows the registrable domain of the side panel's
+      // page; the active tab's page is on the embedded test server.
+      CheckView(
+          PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier,
+          [](PageInfoBubbleView* bubble) {
+            return bubble->presenter_for_testing()->GetSubjectNameForDisplay();
+          },
+          u"google.com"),
+      CheckView(
+          PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier,
+          [](views::BubbleDialogDelegateView* bubble) {
+            return bubble->arrow();
+          },
+          views::BubbleBorder::TOP_LEFT),
+      CheckView(
+          PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier,
+          [&](views::BubbleDialogDelegateView* bubble) {
+            const gfx::Rect anchor_rect = bubble->GetAnchorRect();
+            return !super_g_bounds.IsEmpty() &&
+                   anchor_rect.Intersects(super_g_bounds) &&
+                   side_panel_bounds.Contains(anchor_rect);
+          },
           true));
 }
 
