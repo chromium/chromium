@@ -4201,6 +4201,24 @@ Called by update_autofill_enums.py.-->
 
   <int value="2" label="Promo code suggestions shown (once)"/>
   <int value="3" label="Promo code suggestion filled (once)"/>
+  <int value="4"
+      label="Form submitted with promo code present for the page (once). This
+             is tracked separately of submissions with fills to compare
+             conversion rates with users that don't have a promo code saved
+             for a page"/>
+  <int value="5"
+      label="Form submitted without promo code present for the page (once).
+             This is used to compare conversion rates between pages with and
+             without promo codes"/>
+  <int value="6"
+      label="Form submitted after promo code suggestion was filled on
+             suggestion acceptance (once). This is used to see the funnel for
+             how often users submit a form after filling a promo code
+             suggestion"/>
+  <int value="7"
+      label="Form submitted and promo code field contained a value (once).
+             This can be compared with the autofilled metric to see how often
+             users manually enter a promo code in the field"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/promo_code_metrics.h:AutofillPromoCodeFormEvent) -->

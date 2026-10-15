@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +69,16 @@ class MockSuggestionsReturnedCallback
 
   std::list<OnSuggestionsReturnedCallback> callbacks_;
 };
+
+// Returns a form that is classified as a credit card form.
+FormData CreateCreditCardFormData() {
+  return test::GetFormData(test::FormDescription{
+      .fields = {{.role = CREDIT_CARD_NAME_FULL},
+                 {.role = CREDIT_CARD_NUMBER},
+                 {.role = CREDIT_CARD_EXP_MONTH},
+                 {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+}
 
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
@@ -409,6 +420,372 @@ TEST_F(MerchantPromoCodeManagerTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.PromoCode",
       autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionFilled, 2);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_NoPromoCodeFieldOnPage_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(form_data.global_id()));
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), form_data);
+
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.PromoCode", 0);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_PromoCodePresent_LogsWithPromoCodePresentForPage) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
+  // No promo code suggestion was filled.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kFormSubmittedAfterPromoCodeFilled,
+      0);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_NoPromoCodePresent_LogsWithoutPromoCodePresentForPage) {
+  base::HistogramTester histogram_tester;
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithoutPromoCodePresentForPage,
+      1);
+}
+
+TEST_F(
+    MerchantPromoCodeManagerTest,
+    OnFormSubmitted_PromoCodeAddedAfterPageLoad_LogsWithPromoCodePresentForPage) {
+  base::HistogramTester histogram_tester;
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
+}
+
+// Tests that submission events are logged at most once per page load, and are
+// logged again after `Reset()` (i.e. after a navigation).
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_LogsOncePerPageLoad_ResetAllowsLoggingAgain) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+  Suggestion promo_code_suggestion(SuggestionType::kMerchantPromoCodeEntry);
+
+  // Submitting twice on the same page only logs once.
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kFormSubmittedAfterPromoCodeFilled,
+      1);
+
+  // After a reset, filling and submitting again logs a second time.
+  promo_manager().Reset();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      2);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kFormSubmittedAfterPromoCodeFilled,
+      2);
+}
+
+// Tests that submitting a form that is not a credit card form, e.g. a form that
+// only contains a promo code field, does not log.
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_NonCreditCardForm_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  autofill_manager().OnFormsSeen({form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(form_data.global_id()));
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), form_data);
+
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.PromoCode", 0);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_PromoCodeFieldContainingValue_LogsMetric) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE,
+                  .is_visible = true,
+                  .value = u"DISCOUNT"}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodeFieldContainingValue,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
+}
+
+// Tests that a promo code that was entered and then deleted before submission
+// is not counted as a value of the promo code field.
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_PromoCodeFieldCleared_DoesNotLogContainingValue) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE,
+                  .is_visible = true,
+                  .value = u"PROMOCODE"}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+
+  // The user deletes the promo code, which updates the cached form.
+  test_api(promo_form_data).field(0).set_value(u"");
+  autofill_manager().OnFormsSeen({promo_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodeFieldContainingValue,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
+}
+
+// Tests that the submitted value is used for a promo code field in the
+// submitted form, since the cached form does not contain it yet.
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_PromoCodeFieldInSubmittedForm_UsesSubmittedValue) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData checkout_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = CREDIT_CARD_NAME_FULL},
+                 {.role = CREDIT_CARD_NUMBER},
+                 {.role = CREDIT_CARD_EXP_MONTH},
+                 {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR},
+                 {.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  autofill_manager().OnFormsSeen({checkout_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(
+      autofill_manager().FindCachedFormById(checkout_form_data.global_id()));
+
+  test_api(checkout_form_data).field(-1).set_value(u"PROMOCODE");
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), checkout_form_data);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodeFieldContainingValue,
+      1);
+}
+
+// Tests that a promo code field in the submitted form that was cleared right
+// before submission is not counted, even if the cached form still has a value.
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_PromoCodeFieldClearedInSubmittedForm_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData checkout_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = CREDIT_CARD_NAME_FULL},
+                 {.role = CREDIT_CARD_NUMBER},
+                 {.role = CREDIT_CARD_EXP_MONTH},
+                 {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR},
+                 {.role = MERCHANT_PROMO_CODE,
+                  .is_visible = true,
+                  .value = u"PROMOCODE"}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  autofill_manager().OnFormsSeen({checkout_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(
+      autofill_manager().FindCachedFormById(checkout_form_data.global_id()));
+
+  test_api(checkout_form_data).field(-1).set_value(u"");
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), checkout_form_data);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodeFieldContainingValue,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
+}
+
+// Tests that when a page has multiple promo code forms, every one is checked
+// for a value on submission, not just the most recently parsed form, and that
+// the containing value event is only logged once.
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_MultiplePromoCodeForms_ChecksAllFormsAndLogsOnce) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data_1 = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE,
+                  .is_visible = true,
+                  .value = u"DISCOUNT1"}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData promo_form_data_2 = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE,
+                  .is_visible = true,
+                  .value = u"DISCOUNT2"}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData empty_promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+
+  // Parse the empty promo code form last.
+  autofill_manager().OnFormsSeen(
+      {promo_form_data_1, promo_form_data_2, cc_form_data}, {},
+      AutofillManagerTestApi::pass_key());
+  autofill_manager().OnFormsSeen({empty_promo_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(
+      autofill_manager().FindCachedFormById(promo_form_data_1.global_id()));
+  ASSERT_TRUE(
+      autofill_manager().FindCachedFormById(promo_form_data_2.global_id()));
+  ASSERT_TRUE(
+      autofill_manager().FindCachedFormById(empty_promo_form_data.global_id()));
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodeFieldContainingValue,
+      1);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFormSubmitted_AfterSuggestionFilled_LogsAfterPromoCodeFilled) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  FormData cc_form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({promo_form_data, cc_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(cc_form_data.global_id()));
+
+  // Filling the promo code updates the cached form with the filled value.
+  test_api(promo_form_data).field(0).set_value(u"DISCOUNT");
+  autofill_manager().OnFormsSeen({promo_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  Suggestion promo_code_suggestion(SuggestionType::kMerchantPromoCodeEntry);
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+
+  promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kFormSubmittedAfterPromoCodeFilled,
+      1);
+  // The filled promo code also counts as a value of the promo code field.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodeFieldContainingValue,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::
+          kFormSubmittedWithPromoCodePresentForPage,
+      1);
 }
 
 }  // namespace autofill

@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MERCHANT_PROMO_CODE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MERCHANT_PROMO_CODE_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -19,7 +21,7 @@ class AutofillClient;
 // Per-tab Merchant Promo Code Manager. This class handles promo code
 // related functionality such as retrieving promo code offer data, managing
 // promo code suggestions, filling promo code fields, and handling form
-// submission data when there is a merchant promo code field present.
+// submission metrics.
 class MerchantPromoCodeManager : public AutofillManager::Observer {
  public:
   explicit MerchantPromoCodeManager(AutofillClient* autofill_client);
@@ -34,6 +36,8 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
                               FormGlobalId form,
                               AutofillManager::Observer::FieldTypeSource source,
                               bool small_forms_were_parsed) override;
+  void OnBeforeFormSubmitted(AutofillManager& manager,
+                             const FormData& form) override;
 
   // May generate promo code suggestions for the given `autofill_field` which
   // belongs to the `form_structure`.
@@ -70,9 +74,24 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
     // Indicates whether promo code suggestion filled metric has already been
     // logged for the current page load.
     bool has_logged_suggestion_filled = false;
+
+    // Indicates whether form submitted metric has already been logged for the
+    // current page load.
+    bool has_logged_form_submitted = false;
   };
 
+  // Returns whether any promo code field in the forms tracked by
+  // `promo_code_form_global_ids_` contains a non-whitespace value. Values of
+  // fields in `submitted_form` are read from it, since the cached form is not
+  // updated with the submitted values yet when the form is submitted.
+  bool HasPromoCodeFieldWithValue(AutofillManager& manager,
+                                  const FormData& submitted_form) const;
+
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
+
+  // Tracks the FormGlobalIds of all forms containing a visible promo code field
+  // on the current page. Empty if no promo code field has been detected.
+  base::flat_set<FormGlobalId> promo_code_form_global_ids_;
 
   PageMetrics page_metrics_;
 };

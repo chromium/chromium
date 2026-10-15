@@ -10,9 +10,12 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
@@ -21,7 +24,9 @@
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -60,6 +65,8 @@ void MerchantPromoCodeManager::OnFieldTypesDetermined(
     return;
   }
 
+  promo_code_form_global_ids_.insert(form);
+
   if (!manager.client().GetPaymentsAutofillClient()) {
     return;
   }
@@ -78,6 +85,60 @@ void MerchantPromoCodeManager::OnFieldTypesDetermined(
 
   manager.client().ShowAutofillFieldIphForFeature(
       **promo_code_field, AutofillClient::IphFeature::kWalletDirectOffers);
+}
+
+void MerchantPromoCodeManager::OnBeforeFormSubmitted(AutofillManager& manager,
+                                                     const FormData& form) {
+  // Submissions are only logged once per page load, and only on pages with a
+  // visible promo code field.
+  if (promo_code_form_global_ids_.empty() ||
+      page_metrics_.has_logged_form_submitted) {
+    return;
+  }
+
+  AutofillClient& client = manager.client();
+
+  // Only credit card form submissions are logged.
+  const FormStructure* form_structure =
+      manager.FindCachedFormById(form.global_id());
+  if (!form_structure ||
+      !form_structure->GetFormTypes(GetAcUnrecognizedBehavior(client))
+           .contains(FormType::kCreditCardForm)) {
+    return;
+  }
+
+  page_metrics_.has_logged_form_submitted = true;
+
+  if (HasPromoCodeFieldWithValue(manager, form)) {
+    autofill_metrics::LogPromoCodeFormEvent(
+        autofill_metrics::PromoCodeFormEvent::
+            kFormSubmittedWithPromoCodeFieldContainingValue);
+  }
+
+  if (page_metrics_.has_logged_suggestion_filled) {
+    autofill_metrics::LogPromoCodeFormEvent(
+        autofill_metrics::PromoCodeFormEvent::
+            kFormSubmittedAfterPromoCodeFilled);
+  }
+
+  payments::PaymentsAutofillClient* payments_client =
+      client.GetPaymentsAutofillClient();
+  const bool has_promo_code_for_page =
+      payments_client &&
+      !payments_client->GetPaymentsDataManager()
+           .GetActiveAutofillPromoCodeOffersForOrigin(
+               client.GetLastCommittedPrimaryMainFrameOrigin().GetURL())
+           .empty();
+
+  if (has_promo_code_for_page) {
+    autofill_metrics::LogPromoCodeFormEvent(
+        autofill_metrics::PromoCodeFormEvent::
+            kFormSubmittedWithPromoCodePresentForPage);
+  } else {
+    autofill_metrics::LogPromoCodeFormEvent(
+        autofill_metrics::PromoCodeFormEvent::
+            kFormSubmittedWithoutPromoCodePresentForPage);
+  }
 }
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
@@ -135,6 +196,34 @@ void MerchantPromoCodeManager::DidShowSuggestions() {
 
 void MerchantPromoCodeManager::Reset() {
   page_metrics_ = {};
+  promo_code_form_global_ids_.clear();
+}
+
+bool MerchantPromoCodeManager::HasPromoCodeFieldWithValue(
+    AutofillManager& manager,
+    const FormData& submitted_form) const {
+  for (FormGlobalId form_id : promo_code_form_global_ids_) {
+    const FormStructure* form_structure = manager.FindCachedFormById(form_id);
+    if (!form_structure) {
+      continue;
+    }
+    for (const std::unique_ptr<AutofillField>& field :
+         form_structure->fields()) {
+      if (!field->Type().GetTypes().contains(MERCHANT_PROMO_CODE)) {
+        continue;
+      }
+      // The cached form is not updated with the submitted values yet, so the
+      // submitted value is used if the field is part of the submitted form.
+      const FormFieldData* submitted_field =
+          submitted_form.FindFieldByGlobalId(field->global_id());
+      const std::u16string& value =
+          submitted_field ? submitted_field->value() : field->value();
+      if (!base::TrimWhitespace(value, base::TRIM_ALL).empty()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace autofill

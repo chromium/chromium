@@ -25,6 +25,29 @@ TEST(PromoCodeMetricsTest, LogPromoCodeFormEvent) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.PromoCode",
       PromoCodeFormEvent::kPromoCodeSuggestionFilled, 1);
+
+  LogPromoCodeFormEvent(
+      PromoCodeFormEvent::kFormSubmittedWithPromoCodePresentForPage);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kFormSubmittedWithPromoCodePresentForPage, 1);
+
+  LogPromoCodeFormEvent(
+      PromoCodeFormEvent::kFormSubmittedWithoutPromoCodePresentForPage);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kFormSubmittedWithoutPromoCodePresentForPage, 1);
+
+  LogPromoCodeFormEvent(PromoCodeFormEvent::kFormSubmittedAfterPromoCodeFilled);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kFormSubmittedAfterPromoCodeFilled, 1);
+
+  LogPromoCodeFormEvent(
+      PromoCodeFormEvent::kFormSubmittedWithPromoCodeFieldContainingValue);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kFormSubmittedWithPromoCodeFieldContainingValue, 1);
 }
 
 // Tests that the total, valid and expired stored promo code counts are logged.
