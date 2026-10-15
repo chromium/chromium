@@ -5031,6 +5031,50 @@ const FeatureEntry::FeatureVariation kSplitViewHorizontalVariations[] = {
      nullptr}};
 #endif
 
+const FeatureEntry::FeatureParam kTabStripDeclutter80WithActiveCloseHide[] = {
+    {"TabStripDeclutterMaxTabWidthForCloseHide", "80"},
+    {"TabStripDeclutterActiveTabCloseHideEnabled", "true"}};
+const FeatureEntry::FeatureParam kTabStripDeclutter80NoActiveCloseHide[] = {
+    {"TabStripDeclutterMaxTabWidthForCloseHide", "80"},
+    {"TabStripDeclutterActiveTabCloseHideEnabled", "false"}};
+const FeatureEntry::FeatureParam kTabStripDeclutter90WithActiveCloseHide[] = {
+    {"TabStripDeclutterMaxTabWidthForCloseHide", "90"},
+    {"TabStripDeclutterActiveTabCloseHideEnabled", "true"}};
+const FeatureEntry::FeatureParam kTabStripDeclutter90NoActiveCloseHide[] = {
+    {"TabStripDeclutterMaxTabWidthForCloseHide", "90"},
+    {"TabStripDeclutterActiveTabCloseHideEnabled", "false"}};
+const FeatureEntry::FeatureParam kTabStripDeclutter100WithActiveCloseHide[] = {
+    {"TabStripDeclutterMaxTabWidthForCloseHide", "100"},
+    {"TabStripDeclutterActiveTabCloseHideEnabled", "true"}};
+const FeatureEntry::FeatureParam kTabStripDeclutter100NoActiveCloseHide[] = {
+    {"TabStripDeclutterMaxTabWidthForCloseHide", "100"},
+    {"TabStripDeclutterActiveTabCloseHideEnabled", "false"}};
+const FeatureEntry::FeatureParam
+    kTabStripDeclutterNoInactiveCloseHideWithActiveCloseHide[] = {
+        {"TabStripDeclutterInactiveTabCloseHideEnabled", "false"},
+        {"TabStripDeclutterActiveTabCloseHideEnabled", "true"}};
+const FeatureEntry::FeatureParam
+    kTabStripDeclutterNoInactiveCloseHideNoActiveCloseHide[] = {
+        {"TabStripDeclutterInactiveTabCloseHideEnabled", "false"},
+        {"TabStripDeclutterActiveTabCloseHideEnabled", "false"}};
+const FeatureEntry::FeatureVariation kTabStripDeclutterVariations[] = {
+    {"max inactive close hide width 80, active close hide",
+     kTabStripDeclutter80WithActiveCloseHide, nullptr},
+    {"max inactive close hide width 80, no active close hide",
+     kTabStripDeclutter80NoActiveCloseHide, nullptr},
+    {"max inactive close hide width 90, active close hide",
+     kTabStripDeclutter90WithActiveCloseHide, nullptr},
+    {"max inactive close hide width 90, no active close hide",
+     kTabStripDeclutter90NoActiveCloseHide, nullptr},
+    {"max inactive close hide width 100, active close hide",
+     kTabStripDeclutter100WithActiveCloseHide, nullptr},
+    {"max inactive close hide width 100, no active close hide",
+     kTabStripDeclutter100NoActiveCloseHide, nullptr},
+    {"no inactive close hide, active close hide",
+     kTabStripDeclutterNoInactiveCloseHideWithActiveCloseHide, nullptr},
+    {"no inactive close hide, no active close hide",
+     kTabStripDeclutterNoInactiveCloseHideNoActiveCloseHide, nullptr}};
+
 const FeatureEntry::FeatureParam kToolbarGlowUpNoReload[] = {
     {"reload", "false"}};
 const FeatureEntry::FeatureParam kToolbarGlowUpNoReloadBackForward[] = {
@@ -5995,7 +6039,9 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::kCapabilityDelegationDigitalCredentials)},
     {"tab-strip-declutter", flag_descriptions::kTabStripDeclutterName,
      flag_descriptions::kTabStripDeclutterDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabStripDeclutter)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabStripDeclutter,
+                                    kTabStripDeclutterVariations,
+                                    "TabStripDeclutter")},
     {"enable-desktop-pwas-elided-extensions-menu",
      flag_descriptions::kDesktopPWAsElidedExtensionsMenuName,
      flag_descriptions::kDesktopPWAsElidedExtensionsMenuDescription, kOsDesktop,

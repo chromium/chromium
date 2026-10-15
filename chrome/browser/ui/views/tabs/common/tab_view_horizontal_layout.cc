@@ -318,7 +318,10 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (TabView().active_) {
-    if (!declutter_eligible) {
+    const bool active_tab_declutter_eligible =
+        declutter_eligible &&
+        features::kTabStripDeclutterActiveTabCloseHideEnabled.Get();
+    if (!active_tab_declutter_eligible) {
       // Close button is shown on active tabs regardless of the size.
       showing_close_button = should_show_close_button;
       if (showing_close_button) {
@@ -337,7 +340,7 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width,
       available_width -= favicon_width;
     }
 
-    if (declutter_eligible) {
+    if (active_tab_declutter_eligible) {
       showing_close_button =
           should_show_close_button && ((!has_alert_icon && !has_favicon) ||
                                        close_button_width <= available_width);
@@ -359,8 +362,9 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width,
     showing_close_button =
         should_show_close_button && large_enough_for_close_button &&
         !(declutter_eligible &&
+          features::kTabStripDeclutterInactiveTabCloseHideEnabled.Get() &&
           available_width <=
-              TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide);
+              features::kTabStripDeclutterMaxTabWidthForCloseHide.Get());
     if (showing_close_button) {
       available_width -= close_button_width;
     }

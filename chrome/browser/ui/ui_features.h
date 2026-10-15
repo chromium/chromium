@@ -51,6 +51,9 @@ BASE_DECLARE_FEATURE(kLinuxPerProfileAppId);
 // All feature flags associated with Glow Up, apart from those in
 // ui_base_features.h
 BASE_DECLARE_FEATURE(kTabStripDeclutter);
+BASE_DECLARE_FEATURE_PARAM(bool, kTabStripDeclutterActiveTabCloseHideEnabled);
+BASE_DECLARE_FEATURE_PARAM(bool, kTabStripDeclutterInactiveTabCloseHideEnabled);
+BASE_DECLARE_FEATURE_PARAM(int, kTabStripDeclutterMaxTabWidthForCloseHide);
 BASE_DECLARE_FEATURE(kToolbarGlowUp);
 BASE_DECLARE_FEATURE_PARAM(bool, kToolbarGlowUpReloadEnabled);
 BASE_DECLARE_FEATURE_PARAM(bool, kToolbarGlowUpBackForwardEnabled);

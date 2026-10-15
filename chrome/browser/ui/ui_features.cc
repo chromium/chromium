@@ -64,6 +64,18 @@ BASE_FEATURE(kLinuxPerProfileAppId, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kTabStripDeclutter, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kTabStripDeclutterActiveTabCloseHideEnabled,
+                   &kTabStripDeclutter,
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kTabStripDeclutterInactiveTabCloseHideEnabled,
+                   &kTabStripDeclutter,
+                   true);
+BASE_FEATURE_PARAM(int,
+                   kTabStripDeclutterMaxTabWidthForCloseHide,
+                   &kTabStripDeclutter,
+                   100);
 BASE_FEATURE(kToolbarGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kToolbarGlowUpReloadEnabled,

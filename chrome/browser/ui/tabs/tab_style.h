@@ -210,9 +210,7 @@ class TabStyle {
 
   static constexpr float kDefaultSelectedTabOpacity = 0.75f;
 
-  // Thresholds where the tab strip may render without certain UI elements,
-  // such as separators and inactive tab close buttons.
-  static constexpr int kTabStripDeclutterMaxTabWidthForCloseHide = 100;
+  // Threshold where the tab strip may render without separators.
   static constexpr int kTabStripDeclutterMinTabsForSeparatorHide = 20;
 
   static const TabStyle* Get();
