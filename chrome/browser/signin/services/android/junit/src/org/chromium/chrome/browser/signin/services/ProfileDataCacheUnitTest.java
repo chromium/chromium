@@ -42,6 +42,7 @@ import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /** Unit tests for {@link ProfileDataCache} */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -417,7 +418,18 @@ public class ProfileDataCacheUnitTest {
 
         DisplayableProfileData profileData =
                 mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertEquals(TestAccounts.ACCOUNT1.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getId(), profileData.getAccountId());
+    }
+
+    @Test
+    public void givenPrimaryAccountWhenRefreshTokensLoadingFailedThenShouldNotThrow() {
+        FakeIdentityManager identityManager = mAccountManagerTestRule.getIdentityManager();
+        identityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.FAILED);
+        identityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        DisplayableProfileData profileData =
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getId(), profileData.getAccountId());
     }
 
     @Test
@@ -553,6 +565,38 @@ public class ProfileDataCacheUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(mProfileDataCache.getAccounts().isFulfilled());
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
+    }
+
+    @Test
+    public void testAccountsPromiseIsFulfilledOnInitializationWhenRefreshTokensLoadingFailed() {
+        mAccountManagerTestRule.setAccountFetchFailed();
+
+        var profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+
+        Assert.assertTrue(profileDataCache.getAccounts().isFulfilled());
+        Assert.assertTrue(profileDataCache.getAccounts().getResult().isEmpty());
+    }
+
+    @Test
+    public void testAccountsPromiseIsFulfilledWhenRefreshTokensLoadingFailsAfterInitialization() {
+        var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
+        var profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        profileDataCache.addObserver(mObserverMock);
+        Assert.assertFalse(profileDataCache.getAccounts().isFulfilled());
+
+        mAccountManagerTestRule.setAccountFetchFailed();
+        Assert.assertFalse(profileDataCache.getAccounts().isFulfilled());
+        updateBlocker.close();
+
+        Assert.assertTrue(profileDataCache.getAccounts().isFulfilled());
+        Assert.assertTrue(profileDataCache.getAccounts().getResult().isEmpty());
+        verify(mObserverMock).onAccountsUpdated(List.of());
     }
 
     @Test
