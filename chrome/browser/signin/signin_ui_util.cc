@@ -68,6 +68,8 @@
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "components/user_manager/user.h"
+#else
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -589,11 +591,18 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
   signin_ui_util::SignInFromSingleAccountPromo(
       profile, account_for_promos.GetCoreAccountInfo(), access_point);
 
-  // It is safe to pass a pointer to the sync service here because the callback
-  // is then owned by a tab helper, which is guaranteed to be destroyed before
-  // the sync service.
-  auto enable_history_sync = base::BindOnce(&signin_util::EnableHistorySync,
-                                            base::Unretained(sync_service));
+  // It is safe to pass pointers to the profile and sync service here because
+  // the callback is then owned by a tab helper, which is guaranteed to be
+  // destroyed before the profile and sync service.
+  auto enable_history_sync = base::BindOnce(
+      [](Profile* profile, syncer::SyncService* sync_service,
+         signin_metrics::AccessPoint access_point) {
+        signin_util::EnableHistorySync(sync_service);
+        HistorySyncOptinHelper::RecordMetricsForHistorySyncUserChoice(
+            HistorySyncOptinHelper::ScreenChoiceResult::kAccepted, profile,
+            access_point);
+      },
+      base::Unretained(profile), base::Unretained(sync_service), access_point);
 
   switch (signin_util::GetSignedInState(
       IdentityManagerFactory::GetForProfile(profile))) {
@@ -602,6 +611,7 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
       // If the sign in was already successful, enable history sync directly. In
       // case of kSignInPending, the datatype is enabled immediately before the
       // reauth completes.
+      HistorySyncOptinHelper::RecordMetricsForHistorySyncStarted(access_point);
       std::move(enable_history_sync).Run();
       return;
     // These states require a sign in tab to be displayed. A tab helper attached
@@ -623,6 +633,7 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
     return;
   }
 
+  HistorySyncOptinHelper::RecordMetricsForHistorySyncStarted(access_point);
   SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
       ->InitializeCallbackAfterSignIn(std::move(enable_history_sync),
                                       access_point);

@@ -937,6 +937,8 @@ class SigninUiUtilTest_HistorySyncOptinTest : public SigninUiUtilTestBase {
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
                        ShowSignInUiForHistorySyncOptin_SignedOut) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
 
   SignInAndEnableHistorySync(browser(), browser()->GetProfile(),
@@ -944,6 +946,14 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
   EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->GetTabStripModel()->GetActiveWebContents())
                   ->IsInitializedForTesting());
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Started"), 1);
+  histogram_tester.ExpectTotalCount("Signin.HistorySyncOptIn.Completed", 0);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Completed"),
+            0);
+
   // Signing in should also enable history sync.
   identity_test_env()->MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
@@ -957,10 +967,21 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Started"), 1);
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Completed",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Completed"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
                        ShowSignInUiForHistorySyncOptin_WebSignedIn) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   // Sign in with an account, but only on the web. The primary account is not
   // set.
   AccountInfo info = signin::MakeAccountAvailable(
@@ -986,10 +1007,21 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Started"), 1);
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Completed",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Completed"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
                        ShowSignInUiForHistorySyncOptin_SignInPending) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   AccountInfo info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "test@email.com", signin::ConsentLevel::kSignin);
   sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
@@ -1024,6 +1056,15 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Started"), 1);
+  histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Completed",
+                                      signin_metrics::AccessPoint::kRecentTabs,
+                                      1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Completed"),
+            1);
 
   // No SigninPromoTabHelper in this case.
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
@@ -1034,6 +1075,8 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
 IN_PROC_BROWSER_TEST_F(
     SigninUiUtilTest_HistorySyncOptinTest,
     ShowSignInUiForHistorySyncOptin_SignedInWithoutHistorySync) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@email.com", signin::ConsentLevel::kSignin);
 
@@ -1055,6 +1098,15 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Started",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Started"), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Completed",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Signin_HistorySync_Completed"),
+            1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

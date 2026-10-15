@@ -116,33 +116,6 @@ void RecordSyncServiceStartupTimeoutMetrics(base::TimeDelta elapsed_time) {
                           elapsed_time);
 }
 
-void RecordMetricsForHistorySyncUserChoice(
-    HistorySyncOptinHelper::ScreenChoiceResult user_choice,
-    Profile* profile,
-    signin_metrics::AccessPoint access_point) {
-  auto user_choice_str = UserChoiceToStringMetric(user_choice);
-  auto histogram_name = base::StrCat(
-      {kHistorySyncOptIntAccessPointHistogramPrefix, user_choice_str});
-  auto action_name = base::StrCat(
-      {kHistorySyncOptIntAccessPointActionPrefix, user_choice_str});
-
-  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
-  base::UmaHistogramEnumeration(histogram_name, access_point);
-
-  // Record successfully enabling history sync when originating from the
-  // AvatarPill promo.
-  if (user_choice == HistorySyncOptinHelper::ScreenChoiceResult::kAccepted &&
-      access_point == signin_metrics::AccessPoint::
-                          kHistorySyncOptinExpansionPillOnStartup) {
-    signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
-        signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
-        IdentityManagerFactory::GetForProfile(profile)
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-            .gaia,
-        *profile->GetPrefs());
-  }
-}
-
 void RecordMetricsForSkippedHistoryScreen(
     HistorySyncOptinHelper::HistorySyncSkipReason skip_reason,
     signin_metrics::AccessPoint access_point) {
@@ -520,6 +493,45 @@ std::unique_ptr<HistorySyncOptinHelper> HistorySyncOptinHelper::Create(
   }
 }
 
+// static
+void HistorySyncOptinHelper::RecordMetricsForHistorySyncStarted(
+    signin_metrics::AccessPoint access_point) {
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({kHistorySyncOptIntAccessPointActionPrefix, "Started"})
+          .c_str()));
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistorySyncOptIntAccessPointHistogramPrefix, "Started"}),
+      access_point);
+}
+
+// static
+void HistorySyncOptinHelper::RecordMetricsForHistorySyncUserChoice(
+    ScreenChoiceResult user_choice,
+    Profile* profile,
+    signin_metrics::AccessPoint access_point) {
+  auto user_choice_str = UserChoiceToStringMetric(user_choice);
+  auto histogram_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointHistogramPrefix, user_choice_str});
+  auto action_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointActionPrefix, user_choice_str});
+
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  base::UmaHistogramEnumeration(histogram_name, access_point);
+
+  // Record successfully enabling history sync when originating from the
+  // AvatarPill promo.
+  if (user_choice == ScreenChoiceResult::kAccepted &&
+      access_point == signin_metrics::AccessPoint::
+                          kHistorySyncOptinExpansionPillOnStartup) {
+    signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
+        signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+        IdentityManagerFactory::GetForProfile(profile)
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia,
+        *profile->GetPrefs());
+  }
+}
+
 HistorySyncOptinHelper::HistorySyncOptinHelper(
     signin::IdentityManager* identity_manager,
     Profile* profile,
@@ -673,9 +685,7 @@ void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
       signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get());
 
   if (result == signin_util::ShouldShowHistorySyncOptinResult::kShow) {
-    base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
-    base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started",
-                                  access_point());
+    RecordMetricsForHistorySyncStarted(access_point());
 
     delegate_->ShowHistorySyncOptinScreen(
         profile(), FlowCompletedCallback(base::BindOnce(

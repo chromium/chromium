@@ -159,6 +159,7 @@ class HistorySyncOptinHelper {
    public:
     // Called when the HistorySyncOptinHelper completes its flow.
     virtual void OnHistorySyncOptinHelperFlowFinished() {}
+
    protected:
     ~Observer() override = default;
   };
@@ -188,6 +189,14 @@ class HistorySyncOptinHelper {
       const AccountInfo& account_info,
       Delegate* delegate,
       LaunchContext launch_context,
+      signin_metrics::AccessPoint access_point);
+
+  static void RecordMetricsForHistorySyncStarted(
+      signin_metrics::AccessPoint access_point);
+
+  static void RecordMetricsForHistorySyncUserChoice(
+      ScreenChoiceResult user_choice,
+      Profile* profile,
       signin_metrics::AccessPoint access_point);
 
   virtual ~HistorySyncOptinHelper();
@@ -259,7 +268,6 @@ class HistorySyncOptinHelper {
       ManagementStatusState::kManagementDisclaimerNotStarted;
 
  private:
-
   base::ObserverList<Observer> observers_;
   const raw_ptr<Profile> profile_;
   const CoreAccountInfo account_info_;
