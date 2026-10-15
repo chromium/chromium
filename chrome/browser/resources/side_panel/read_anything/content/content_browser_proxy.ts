@@ -72,7 +72,6 @@ export interface ContentBrowserProxy {
 
   hasValidSelection(): boolean;
   isReadabilityEnabled(): boolean;
-  isReadabilitySelectTextEnabled(): boolean;
   isContentTranslated(): boolean;
   isTranslatePdfEnabled(): boolean;
   isGoogleDocs(): boolean;
@@ -184,10 +183,6 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   isReadabilityEnabled(): boolean {
     return chrome.readingMode.isReadabilityEnabled;
-  }
-
-  isReadabilitySelectTextEnabled(): boolean {
-    return chrome.readingMode.isReadabilitySelectTextEnabled;
   }
 
   isContentTranslated(): boolean {

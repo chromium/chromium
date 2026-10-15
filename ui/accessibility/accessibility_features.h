@@ -312,10 +312,6 @@ GetReadAnythingMenuShuffleExperimentGroup();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingMenuShuffleExperiment);
 AX_BASE_EXPORT bool IsReadAnythingMenuShuffleExperimentEnabled();
 
-// Enable the select text feature for Read Anything Readability.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadabilitySelectText);
-AX_BASE_EXPORT bool IsReadAnythingReadabilitySelectTextEnabled();
-
 // Enable the experimental playback UI for Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kReadAnythingReadAloudExperimentalPlaybackUi);

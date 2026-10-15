@@ -434,14 +434,6 @@ bool IsReadAnythingWithReadabilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);
 }
 
-BASE_FEATURE(kReadAnythingReadabilitySelectText,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingReadabilitySelectTextEnabled() {
-  return base::FeatureList::IsEnabled(
-             ::features::kReadAnythingReadabilitySelectText) &&
-         base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);
-}
-
 BASE_FEATURE(kReadAnythingDistillationQualityEvaluation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingDistillationQualityEvaluationEnabled() {

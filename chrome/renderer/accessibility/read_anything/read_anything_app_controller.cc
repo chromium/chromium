@@ -412,26 +412,12 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     return;
   }
 
-  // Trigger model updates for Screen2x or for Readability when the select text
-  // feature is enabled.
-  if (IsReadabilitySelectTextEnabled() ||
-      !model_.is_readability_next_distillation_method()) {
-    ProcessModelUpdates();
-    return;
-  }
+  ProcessModelUpdates();
 }
 
 void ReadAnythingAppController::ProcessModelUpdates() {
-  // When the Readability feature is enabled as standalone, treat readability
-  // distilation as static and ignore model updates.
-  if (model_.is_readability_next_distillation_method() &&
-      !IsReadabilitySelectTextEnabled()) {
-    return;
-  }
-
   // TODO: crbug.com/505770261 - Implement selection_mode for readability.
-  // If IsReadAnythingReadabilitySelectTextEnabled, Readability should
-  // only be able to trigger PostProcessSelection.
+  // Readability should only be able to trigger PostProcessSelection.
   if (model_.is_readability_next_distillation_method()) {
     DCHECK(!model_.requires_distillation())
         << "Readability should not trigger Screen2x distillation.";
@@ -526,9 +512,7 @@ void ReadAnythingAppController::SetDistillationState(
   if (state == read_anything::mojom::ReadAnythingDistillationState::
                    kDistillationInProgress) {
     model_.set_should_extract_anchors_from_tree_for_readability(false);
-    if (IsReadabilitySelectTextEnabled()) {
-      model_.set_should_map_rendered_text_to_tree_for_readability(false);
-    }
+    model_.set_should_map_rendered_text_to_tree_for_readability(false);
     model_.ResetAXTreeAnchors();
   } else if (state == read_anything::mojom::ReadAnythingDistillationState::
                           kDistillationWithContent) {
@@ -1340,8 +1324,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "isReadAnythingReadAloudExperimentalPlaybackUiEnabled")
       .SetProperty<&ReadAnythingAppController::IsReadabilityEnabled>(
           "isReadabilityEnabled")
-      .SetProperty<&ReadAnythingAppController::IsReadabilitySelectTextEnabled>(
-          "isReadabilitySelectTextEnabled")
       .SetProperty<&ReadAnythingAppController::GetDistillationMethod>(
           "activeDistillationMethod")
       .SetProperty<&ReadAnythingAppController::IsLineFocusEnabled>(
@@ -2106,10 +2088,6 @@ bool ReadAnythingAppController::IsTranslatePdfEnabled() const {
 bool ReadAnythingAppController::IsReadabilityEnabled() const {
   return features::IsReadAnythingWithReadabilityEnabled() &&
          !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
-}
-
-bool ReadAnythingAppController::IsReadabilitySelectTextEnabled() const {
-  return features::IsReadAnythingReadabilitySelectTextEnabled();
 }
 
 bool ReadAnythingAppController::IsLineFocusEnabled() const {
@@ -3184,17 +3162,15 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
 
-  if (IsReadabilitySelectTextEnabled()) {
-    // Reset text blocks when content is updated and reset should map flag to
-    // not trigger a false positive when rendered text is not ready.
-    model_.set_readability_text_blocks({});
-    model_.set_should_map_rendered_text_to_tree_for_readability(false);
-    model_.set_is_readability_mapping_in_progress(true);
-  }
+  // Reset text blocks when content is updated and reset should map flag to
+  // not trigger a false positive when rendered text is not ready.
+  model_.set_readability_text_blocks({});
+  model_.set_should_map_rendered_text_to_tree_for_readability(false);
+  model_.set_is_readability_mapping_in_progress(true);
+
   ExecuteJavaScript("chrome.readingMode.updateContent();");
 
-  if (IsReadabilitySelectTextEnabled() && !IsUpdateProcessingPaused() &&
-      model_.ContainsActiveTree()) {
+  if (!IsUpdateProcessingPaused() && model_.ContainsActiveTree()) {
     PostProcessSelection();
   }
 
@@ -3252,7 +3228,7 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
 
   // If there's been a selection on the main page, the selection should be
   // processed so that Immersive can open to the correctly selected text.
-  if (IsReadabilitySelectTextEnabled() && !read_aloud_model_.speech_playing() &&
+  if (!read_aloud_model_.speech_playing() &&
       model_.requires_post_process_selection()) {
     // TODO: crbug.com/505770261- Once general select-to-distill is enabled
     // this should be re-evaluated to prevent switching distillation modes
@@ -3280,7 +3256,7 @@ void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
     rendered_text_blocks_ready_recorded_ = true;
   }
 
-  if (!IsReadabilitySelectTextEnabled()) {
+  if (!IsReadabilityEnabled()) {
     return;
   }
   model_.set_readability_text_blocks(blocks);
@@ -3291,7 +3267,7 @@ void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
 }
 
 void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
-  if (!IsReadabilitySelectTextEnabled()) {
+  if (!IsReadabilityEnabled()) {
     return;
   }
 
@@ -3308,7 +3284,7 @@ void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
 
 v8::Local<v8::Value> ReadAnythingAppController::GetAXMapping(int index) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  if (!IsReadabilitySelectTextEnabled() || !isolate) {
+  if (!IsReadabilityEnabled() || !isolate) {
     return v8::Undefined(isolate);
   }
 
@@ -3346,8 +3322,7 @@ v8::Local<v8::Value> ReadAnythingAppController::GetAXMapping(int index) {
 
 void ReadAnythingAppController::AttemptLogEarlySelection(bool from_side_panel) {
   if (model_.has_logged_early_selection() ||
-      !model_.is_readability_mapping_in_progress() ||
-      !IsReadabilitySelectTextEnabled()) {
+      !model_.is_readability_mapping_in_progress() || !IsReadabilityEnabled()) {
     return;
   }
   model_.set_has_logged_early_selection(true);

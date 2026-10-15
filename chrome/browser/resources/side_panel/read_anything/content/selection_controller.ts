@@ -86,11 +86,9 @@ export class SelectionController {
       return;
     }
 
-    // If we're using Readability with select text enabled, report a user
-    // selection attempt to try to log this as an early selection attempt from
-    // the side panel.
-    if (isDistilledByReadability() &&
-        this.contentBrowserProxy_.isReadabilitySelectTextEnabled()) {
+    // If we're using Readability, report a user selection attempt to try to log
+    // this as an early selection attempt from the side panel.
+    if (isDistilledByReadability()) {
       this.contentBrowserProxy_.attemptLogEarlySelection(
           /*fromSidePanel=*/ true);
     }
@@ -195,11 +193,9 @@ export class SelectionController {
       return;
     }
 
-    // If we're using Readability with select text enabled, report a user
-    // selection attempt to try to log this as an early selection attempt from
-    // the main panel.
-    if (isDistilledByReadability() &&
-        this.contentBrowserProxy_.isReadabilitySelectTextEnabled()) {
+    // If we're using Readability, report a user selection attempt to try to log
+    // this as an early selection attempt from the main panel.
+    if (isDistilledByReadability()) {
       this.contentBrowserProxy_.attemptLogEarlySelection(
           /*fromSidePanel=*/ false);
     }
@@ -250,7 +246,7 @@ export class SelectionController {
     };
 
     if (isDistilledByReadability()) {
-      return this.contentBrowserProxy_.isReadabilitySelectTextEnabled() ?
+      return this.contentBrowserProxy_.isReadabilityEnabled() ?
           this.getNewSelectionWithAxIds_(selectionIds) :
           this.getNewSelectionWithoutAxIds_(container, selectionIds);
     }

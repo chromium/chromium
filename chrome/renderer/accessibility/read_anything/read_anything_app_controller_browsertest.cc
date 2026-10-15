@@ -569,13 +569,9 @@ class ReadAnythingAppControllerReadabilityTest
 
     // Create a tree id and tell the controller it's the active one.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
-    ui::AXTreeUpdate snapshot;
-    ui::AXNodeData root;
-    root.id = 1;
-    snapshot.root_id = root.id;
-    snapshot.nodes = {std::move(root)};
-    test::SetUpdateTreeID(&snapshot, tree_id_);
-    AccessibilityEventReceived({std::move(snapshot)});
+    std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
+    test::SetUpdateTreeID(snapshot.get(), tree_id_);
+    AccessibilityEventReceived({*snapshot});
     controller().OnGetPresentationState(
         read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
     controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
@@ -665,39 +661,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   EXPECT_EQ(textAfter, text_after);
 }
 
-class ReadAnythingAppControllerReadabilitySelectTextTest
-    : public ReadAnythingAppControllerTest {
- public:
-  ReadAnythingAppControllerReadabilitySelectTextTest() = default;
-  ~ReadAnythingAppControllerReadabilitySelectTextTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingWithReadability,
-         features::kReadAnythingReadabilitySelectText},
-        {});
-    ReadAnythingAppControllerTest::SetUp();
-    model().set_next_distillation_method(
-        ReadAnythingAppModel::DistillationMethod::kReadability);
-    model().set_current_content_distillation_method(
-        ReadAnythingAppModel::DistillationMethod::kReadability);
-    VerifyAndClearPageHandlerExpectations();
-  }
-
- protected:
-  void DoInitialDistillation() override {
-    // Perform basic navigation setup to initialize timers and the AXTree root,
-    // but skip the manual Screen2x distillation callback.
-    std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
-    test::SetUpdateTreeID(snapshot.get(), tree_id_);
-    AccessibilityEventReceived({*snapshot});
-    controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
-                                         false);
-  }
-};
-
-TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+TEST_F(ReadAnythingAppControllerReadabilityTest,
        GetAXMapping_ReturnsCorrectMapping) {
   ui::AXNodeData node;
   node.id = 2;

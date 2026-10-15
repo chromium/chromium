@@ -138,9 +138,6 @@ declare namespace chrome {
     // Whether Readability.js is used as the primary distillation method.
     let isReadabilityEnabled: boolean;
 
-    // Whether select text for readability distillation is enabled.
-    let isReadabilitySelectTextEnabled: boolean;
-
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 

@@ -462,8 +462,7 @@ export class ContentController {
   }
 
   onRenderedTextMappingReady() {
-    if (!isDistilledByReadability() ||
-        !this.contentBrowserProxy_.isReadabilitySelectTextEnabled()) {
+    if (!isDistilledByReadability()) {
       return;
     }
 
@@ -930,8 +929,7 @@ export class ContentController {
     // page.
     this.setEmptyIfNoTextNodesAvailable(renderedTextNodes);
 
-    if (!isDistilledByReadability() ||
-        !this.contentBrowserProxy_.isReadabilitySelectTextEnabled()) {
+    if (!isDistilledByReadability()) {
       return;
     }
 

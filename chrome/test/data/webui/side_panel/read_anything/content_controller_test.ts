@@ -1900,7 +1900,6 @@ suite('ContentController', () => {
     setup(() => {
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeReadability;
-      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
     });
 
     test('extracts text blocks from container', () => {
@@ -2242,7 +2241,6 @@ suite('ContentController', () => {
     setup(() => {
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeReadability;
-      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
 
       container = document.createElement('div');
       document.body.appendChild(container);

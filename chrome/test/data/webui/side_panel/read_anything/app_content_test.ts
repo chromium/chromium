@@ -216,7 +216,6 @@ suite('AppContent', () => {
     test(
         'sends rendered blocks after layout for readability selection',
         async () => {
-          contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
           let blocksCalled = false;
           contentController.onRenderedTextBlocksAvailable = (container) => {
             assertEquals(app.$.container, container);
@@ -238,7 +237,6 @@ suite('AppContent', () => {
     test(
         'rapid updateContent calls only send rendered blocks once',
         async () => {
-          contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
           let callCount = 0;
           contentController.onRenderedTextBlocksAvailable = () => {
             callCount++;
@@ -257,7 +255,6 @@ suite('AppContent', () => {
         });
 
     test('cancels scheduled requestAnimationFrame on disconnect', async () => {
-      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
       let callCount = 0;
       contentController.onRenderedTextBlocksAvailable = () => {
         callCount++;
@@ -274,7 +271,6 @@ suite('AppContent', () => {
     });
 
     test('cancels scheduled requestAnimationFrame on showLoading', async () => {
-      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
       let callCount = 0;
       contentController.onRenderedTextBlocksAvailable = () => {
         callCount++;

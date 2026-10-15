@@ -329,7 +329,6 @@ class ReadAnythingAppController
   bool IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() const;
   bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;
-  bool IsReadabilitySelectTextEnabled() const;
   bool IsLineFocusEnabled() const;
   bool IsReadabilityWithLinksEnabled() const;
   bool IsPhraseHighlightingEnabled() const;
@@ -509,8 +508,7 @@ class ReadAnythingAppController
       const std::vector<ui::AXEvent>& events);
 
   // Triggers the text mapping algorithm if both the accessibility tree and the
-  // rendered text blocks from the WebUI are ready if
-  // IsReadabilitySelectTextEnabled.
+  // rendered text blocks from the WebUI are ready if IsReadabilityEnabled.
   void MaybeMapRenderedTextToTree();
 
   // Helper for forwarding reading mode hide events to the webui so we can
