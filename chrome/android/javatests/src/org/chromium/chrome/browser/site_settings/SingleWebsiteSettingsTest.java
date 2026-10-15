@@ -52,6 +52,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -86,6 +87,7 @@ import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.media.MediaFeatures;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -738,6 +740,7 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/573749542
     public void testStorageAccessPermission() {
         int type = ContentSettingsType.STORAGE_ACCESS;
         GURL example = new GURL("https://example.com");
