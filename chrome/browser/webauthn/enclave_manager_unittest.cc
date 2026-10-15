@@ -321,7 +321,9 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
   void OnStateUpdated() override { notified_about_state_update_count_++; }
   void OnOutOfContextRecoveryCompletion(
-      EnclaveManager::OutOfContextRecoveryOutcome outcome) override {}
+      EnclaveManager::OutOfContextRecoveryOutcome outcome) override {
+    last_out_of_context_recovery_outcome_ = outcome;
+  }
 
   void DoCreate(
       std::unique_ptr<enclave::ClaimedPIN> claimed_pin,
@@ -528,6 +530,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   unsigned stored_count_ = 0;
   GaiaId last_stored_gaia_id_;
   unsigned notified_about_state_update_count_ = 0;
+  std::optional<EnclaveManager::OutOfContextRecoveryOutcome>
+      last_out_of_context_recovery_outcome_;
   const TempDir temp_dir_;
   const std::pair<base::Process, uint16_t> process_and_port_;
   const enclave::ScopedEnclaveOverride enclave_override_;
@@ -3474,6 +3478,56 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
   // several things will go wrong. If nothing else, `pretend_there_are_members`
   // isn't called so the fake security domain service will CHECK since the
   // version is non-zero.
+}
+
+// Regression test for https://crbug.com/573735417.
+// Ensure redundant keys from opportunistic retrieval before enclave load are
+// ignored.
+TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
+       OpportunisticStoreKeysRedundantBeforeLoad) {
+  security_domain_service_->pretend_there_are_members();
+  {
+    EnclaveKeysWaiter enclave_keys_waiter(&manager_);
+    manager_.StoreKeys(
+        gaia_id_,
+        {trusted_vault::TrustedVaultKeyAndVersion(
+            std::vector<uint8_t>(kTestKey.begin(), kTestKey.end()),
+            kSecretVersion)},
+        trusted_vault::TrustedVaultUserActionTriggerForUMA::
+            kPasskeyUnlockProfileMenu);
+    ASSERT_EQ(enclave_keys_waiter.Wait(),
+              EnclaveManager::OutOfContextRecoveryOutcome::
+                  kStoreKeysFromOpportunisticFlowSucceeded);
+  }
+  ASSERT_TRUE(manager_.IsReady());
+
+  NoArgFuture write_future;
+  if (manager_.RunWhenStoppedForTesting(write_future.GetCallback())) {
+    EXPECT_TRUE(write_future.Wait());
+  }
+  manager_.ResetForTesting();
+  ASSERT_FALSE(manager_.IsLoaded());
+
+  base::HistogramTester histogram_tester;
+  EnclaveKeysWaiter enclave_keys_waiter(&manager_);
+  manager_.StoreKeys(gaia_id_,
+                     {trusted_vault::TrustedVaultKeyAndVersion(
+                         std::vector<uint8_t>(kTestKey.begin(), kTestKey.end()),
+                         kSecretVersion)},
+                     trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                         kPasskeyUnlockProfileMenu);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowIgnoredRedundant);
+
+  EXPECT_TRUE(manager_.IsLoaded());
+  EXPECT_TRUE(manager_.is_idle());
+  EXPECT_EQ(manager_.store_keys_count(), 0u);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowIgnoredRedundant,
+      1);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

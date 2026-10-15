@@ -270,6 +270,9 @@ class EnclaveManager : public EnclaveManagerInterface {
   bool IsLoaded() const override;
   // Returns true if the current user has been registered with the enclave.
   bool IsRegistered() const override;
+  // Loads the persistent state from disk if needed and invokes `callback` with
+  // whether the current user is registered with the enclave.
+  void LoadAndCheckIsRegistered(Callback callback) override;
   // Invokes `callback` with true if the account identified by `gaia_id` has
   // been registered with the enclave, irrespective of whether it is the current
   // primary account, loading persistent state first if needed.
@@ -620,6 +623,9 @@ class EnclaveManager : public EnclaveManagerInterface {
   void StoreKeysFromOutOfContextRetrieval(
       const GaiaId& gaia_id,
       std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
+  void DoStoreKeysFromOutOfContextRetrieval(
+      std::unique_ptr<StoreKeysArgs> pending_keys,
+      bool is_registered);
   void OpportunisticStoreKeysAddComplete(ActionOutcome action_outcome);
   void NotifyObserversAboutOutOfContextRecoveryOutcome(
       OutOfContextRecoveryOutcome outcome);

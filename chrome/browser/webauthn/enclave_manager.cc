@@ -1872,6 +1872,10 @@ class EnclaveManager::StateMachine {
         GetAccessTokenInternal();
       } else if (!user_->joined() && !user_->member_public_key().empty()) {
         JoinSecurityDomain();
+      } else {
+        FIDO_LOG(ERROR)
+            << "Ignoring known security domain secret for joined user";
+        Stop(ActionOutcome::kSuccess);
       }
       return;
     }
@@ -3361,6 +3365,16 @@ bool EnclaveManager::IsRegistered() const {
   return user_ && user_->registered();
 }
 
+void EnclaveManager::LoadAndCheckIsRegistered(Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsLoaded()) {
+    Load(base::BindOnce(&EnclaveManager::LoadAndCheckIsRegistered,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(IsRegistered());
+}
+
 void EnclaveManager::IsRegisteredForAccount(
     const GaiaId& gaia_id,
     base::OnceCallback<void(bool)> callback) {
@@ -4362,7 +4376,17 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   pending_keys->gaia_id = gaia_id;
   pending_keys->keys = std::move(keys);
 
-  if (IsRegistered()) {
+  LoadAndCheckIsRegistered(
+      base::BindOnce(&EnclaveManager::DoStoreKeysFromOutOfContextRetrieval,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
+}
+
+void EnclaveManager::DoStoreKeysFromOutOfContextRetrieval(
+    std::unique_ptr<StoreKeysArgs> pending_keys,
+    bool is_registered) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_registered) {
     FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
                     << pending_keys->keys.back().version;
     NotifyObserversAboutOutOfContextRecoveryOutcome(

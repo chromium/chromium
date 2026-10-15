@@ -88,6 +88,10 @@ class EnclaveManagerInterface : public KeyedService {
   // Returns true if the current user has been registered with the enclave.
   virtual bool IsRegistered() const = 0;
 
+  // Loads the persistent state from disk if needed and invokes `callback` with
+  // whether the current user is registered with the enclave.
+  virtual void LoadAndCheckIsRegistered(Callback callback) = 0;
+
   // Returns true if the persistent state has been loaded from the disk. (Or
   // else the loading failed and an empty state is being used.)
   virtual bool IsLoaded() const = 0;
