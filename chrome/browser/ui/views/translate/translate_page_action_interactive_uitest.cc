@@ -22,11 +22,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/test/views_test_utils.h"
 
 namespace translate {
 
@@ -54,36 +52,6 @@ class TranslatePageActionInteractiveUiTest : public InteractiveBrowserTest {
     return TranslateBubbleController::From(browser())
         ->GetPartialTranslateBubble();
   }
-
-  std::unique_ptr<views::Widget> CreateTestWidget(
-      views::Widget::InitParams::Ownership ownership) {
-    auto widget = std::make_unique<views::Widget>();
-
-    views::Widget::InitParams params(ownership,
-                                     views::Widget::InitParams::TYPE_WINDOW);
-    widget->Init(std::move(params));
-    // TODO(https://crbug.com/329235190): The bubble child of a widget that is
-    // invisible will not be mapped through wayland and hence never shown so
-    // widget must be shown. However, showing widget causes
-    // RunAccessibilityPaintChecks() to fail when this feature is disabled due
-    // to node_data.GetNameFrom() == kContents.
-    if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
-      widget->Show();
-    }
-
-    return widget;
-  }
-
-  MultiStep WaitForPartialTranslateBubble(bool visible) {
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                        kPartialTranslateBubbleVisible);
-
-    return Steps(
-        PollState(kPartialTranslateBubbleVisible,
-                  [this]() { return GetPartialTranslateBubble() != nullptr; }),
-        WaitForState(kPartialTranslateBubbleVisible, visible),
-        StopObservingState(kPartialTranslateBubbleVisible));
-  }
 };
 
 // Verifies that clicking the Translate icon closes the Partial Translate bubble
@@ -92,9 +60,6 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        ClosePartialTranslateBubble) {
   TranslateBubbleController* controller =
       TranslateBubbleController::From(browser());
-  auto anchor_widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  views::View* anchor_view = anchor_widget->GetContentsView();
 
   RunTestSequence(
       // Show the Translate icon.
@@ -106,16 +71,16 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
             ->SetTranslateEnabled(true);
       }),
       WaitForShow(kTranslatePageActionElementId), Do([&]() {
-        controller->SetAnchorViewForTesting(anchor_view);
         controller->StartPartialTranslate("fr", "en", std::u16string());
       }),
-      WaitForPartialTranslateBubble(/*visible=*/true),
+      WaitForShow(PartialTranslateBubbleView::kIdentifier),
       // Clicking the icon should close the Partial Translate bubble and should
       // not open the Full Page Translate bubble.
       MoveMouseTo(kTranslatePageActionElementId), ClickMouse(),
-      WaitForPartialTranslateBubble(/*visible=*/false),
-      CheckResult([&]() { return GetBubble(); }, ::testing::IsNull()),
-      Do([&]() { controller->SetAnchorViewForTesting(nullptr); }));
+      WaitForHide(PartialTranslateBubbleView::kIdentifier),
+      CheckResult([&]() { return GetPartialTranslateBubble(); },
+                  ::testing::IsNull()),
+      CheckResult([&]() { return GetBubble(); }, ::testing::IsNull()));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
