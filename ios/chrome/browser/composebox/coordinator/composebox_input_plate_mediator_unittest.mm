@@ -106,16 +106,21 @@
                 page_context
                          webState:(web::WebState*)webState
                        identifier:(base::UnguessableToken)identifier;
+- (void)reloadSuggestions;
 @end
 
 // Mock delegate for the mediator.
 @interface TestComposeboxInputPlateMediatorDelegate
     : NSObject <ComposeboxInputPlateMediatorDelegate>
 @property(nonatomic, assign) BOOL showedSnackbarForItemUploadDidFail;
+@property(nonatomic, assign) NSUInteger reloadAutocompleteCallCount;
+@property(nonatomic, assign) BOOL lastReloadAutocompleteRestarting;
 @end
 
 @implementation TestComposeboxInputPlateMediatorDelegate
 - (void)reloadAutocompleteSuggestionsRestarting:(BOOL)restart {
+  _reloadAutocompleteCallCount++;
+  _lastReloadAutocompleteRestarting = restart;
 }
 - (void)refineWithText:(NSString*)text {
 }
@@ -2210,6 +2215,51 @@ TEST_F(ComposeboxInputPlateMediatorTest,
                                     optimization_guide::proto::PageContext>()
                        webState:web_state
                      identifier:tab_item_identifier];
+}
+
+// Tests that reloadSuggestions restarts autocomplete when items count <= 1,
+// and does not restart when items count > 1.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       ReloadSuggestionsRestartsAutocompleteBasedOnItemCount) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(ComposeboxEntrypoint::kOther, ComposeboxMode::kAIM);
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  TestComposeboxInputPlateMediatorDelegate* delegate =
+      [[TestComposeboxInputPlateMediatorDelegate alloc] init];
+  mediator.delegate = delegate;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // 1 item attached -> reloadSuggestions restarts autocomplete (restart = YES).
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+
+  [mediator reloadSuggestions];
+  EXPECT_EQ(delegate.reloadAutocompleteCallCount, 1U);
+  EXPECT_TRUE(delegate.lastReloadAutocompleteRestarting);
+
+  // 2 items attached -> reloadSuggestions does not restart autocomplete
+  // (restart = NO).
+  auto second_web_state = std::make_unique<web::FakeWebState>();
+  [mediator createInputItemForWebState:second_web_state.get()
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 2U);
+
+  [mediator reloadSuggestions];
+  EXPECT_EQ(delegate.reloadAutocompleteCallCount, 2U);
+  EXPECT_FALSE(delegate.lastReloadAutocompleteRestarting);
 }
 
 }  // namespace

@@ -487,14 +487,6 @@ inline constexpr char kComposeboxDriveContextMenuOptionName[] =
 inline constexpr char kComposeboxDriveContextMenuOptionDescription[] =
     "Enables Google Drive option in the Composebox menu.";
 
-inline constexpr char
-    kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName[] =
-        "Enable Composebox Fetch Contextual Suggestions For multiple "
-        "attachments";
-inline constexpr char
-    kComposeboxFetchContextualSuggestionsForMultipleAttachmentsDescription[] =
-        "Enables showing suggestions for multiple attachments";
-
 inline constexpr char kComposeboxPlusButtonBottomSheetName[] =
     "Enable the bottom sheet for plus button in Composebox";
 inline constexpr char kComposeboxPlusButtonBottomSheetDescription[] =

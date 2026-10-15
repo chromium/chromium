@@ -65,15 +65,6 @@ BASE_DECLARE_FEATURE(kComposeboxAIMNudge);
 // user exits the session.
 bool IsComposeboxAIMNudgeEnabled();
 
-// Used to check if we should display contextual suggestions for multiple
-// attachments.
-BASE_DECLARE_FEATURE(
-    kComposeboxFetchContextualSuggestionsForMultipleAttachments);
-
-// Whether or not we should display contextual suggestions for multiple
-// attachments;
-bool IsComposeboxFetchContextualSuggestionsForMultiAttachmentsEnabled();
-
 // Used to conditionally show the + button in the composebox input plate.
 BASE_DECLARE_FEATURE(kComposeboxConditionalPlusButton);
 

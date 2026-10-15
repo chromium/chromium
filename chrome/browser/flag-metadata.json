@@ -2170,11 +2170,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "composebox-fetch-contextual-suggestions-for-multiple-attachments",
-    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "composebox-persistent-aim-button-omnibox",
     "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 165

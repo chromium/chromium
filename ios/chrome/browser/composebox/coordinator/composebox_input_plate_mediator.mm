@@ -1923,11 +1923,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self updateAwaitingAttachmentSignalsState];
 
   BOOL shouldRestartAutocomplete = _items.count <= 1;
-
-  if (_items.count > 1) {
-    shouldRestartAutocomplete =
-        IsComposeboxFetchContextualSuggestionsForMultiAttachmentsEnabled();
-  }
   [self.delegate
       reloadAutocompleteSuggestionsRestarting:shouldRestartAutocomplete];
 }
