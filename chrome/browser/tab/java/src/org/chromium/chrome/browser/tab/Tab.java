@@ -85,6 +85,7 @@ public interface Tab extends TabLifecycle {
 
     /**
      * Removes a {@link TabObserver}.
+     *
      * @param observer The {@link TabObserver} to remove.
      */
     void removeObserver(TabObserver observer);
@@ -130,11 +131,12 @@ public interface Tab extends TabLifecycle {
 
     /**
      * Update the attachment state to Window(Activity).
-     * @param window A new {@link WindowAndroid} to attach the tab to. If {@code null},
-     *        the tab is being detached. See {@link ReparentingTask#detach()} for details.
-     * @param tabDelegateFactory The new delegate factory this tab should be using. Can be
-     *        {@code null} even when {@code window} is not, meaning we simply want to swap out
-     *        {@link WindowAndroid} for this tab and keep using the current delegate factory.
+     *
+     * @param window A new {@link WindowAndroid} to attach the tab to. If {@code null}, the tab is
+     *     being detached. See {@link ReparentingTask#detach()} for details.
+     * @param tabDelegateFactory The new delegate factory this tab should be using. Can be {@code
+     *     null} even when {@code window} is not, meaning we simply want to swap out {@link
+     *     WindowAndroid} for this tab and keep using the current delegate factory.
      */
     void updateAttachment(
             @Nullable WindowAndroid window, @Nullable TabDelegateFactory tabDelegateFactory);
@@ -197,8 +199,8 @@ public interface Tab extends TabLifecycle {
     boolean isShowingCustomView();
 
     /**
-     * Replaces the current NativePage with a empty stand-in for a NativePage. This can be used
-     * to reduce memory pressure.
+     * Replaces the current NativePage with a empty stand-in for a NativePage. This can be used to
+     * reduce memory pressure.
      */
     void freezeNativePage();
 
@@ -251,8 +253,19 @@ public interface Tab extends TabLifecycle {
     boolean isShowingErrorPage();
 
     /**
-     * Returns true iff the tab doesn't hold a live page. For example, this could happen when the
-     * tab holds frozen WebContents state that is yet to be inflated.
+     * Returns true iff the tab has neither a live {@link WebContents} nor a native page. This is
+     * the case:
+     *
+     * <ul>
+     *   <li>before content is created, including tabs waiting on a lazy load that have no
+     *       WebContents yet (see {@link #getPendingLoadParams()}) and tabs waiting to be restored
+     *       from a saved {@link WebContentsState};
+     *   <li>for tabs in dormant tab models (e.g. headless or archived), which never create content;
+     *   <li>after the tab is destroyed.
+     * </ul>
+     *
+     * <p>This is unrelated to {@link NativePage#isFrozen()}: a tab showing a frozen native page is
+     * not frozen.
      */
     boolean isFrozen();
 

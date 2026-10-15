@@ -225,9 +225,11 @@ class TabImpl implements Tab, TabInternal {
     private @Nullable ContentView mContentView;
 
     /**
-     * Explicitly tracks if the heavy {@link ContentView} UI wrapper has been deferred for frozen
-     * background tabs during session restoration. Necessary to uniquely distinguish deferred view
-     * layers from uninitialized or destroyed states where {@code mContentView} is also null.
+     * Whether inflating the real {@link ContentView} is deferred (set via {@link
+     * TabBuilder#setContentViewDeferred}). While true, non-dormant tabs still create their
+     * WebContents in {@link #initialize}, but {@code mContentView} holds a lightweight {@link
+     * DeferredContentViewStub} instead of a real {@link ContentView}. The real view is inflated,
+     * and this is cleared, in {@link #inflateContentView()}.
      */
     private boolean mIsContentViewDeferred;
 
@@ -951,10 +953,6 @@ class TabImpl implements Tab, TabInternal {
         return mIsShowingErrorPage;
     }
 
-    /**
-     * @return true iff the tab doesn't hold a live page. This happens before initialize() and when
-     *     the tab holds frozen WebContents state that is yet to be inflated.
-     */
     @Override
     public boolean isFrozen() {
         return !isNativePage() && getWebContents() == null;
@@ -985,14 +983,15 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private boolean checkAttachedToActivity() {
-        // getWindowAndroid() cannot be null (see updateWindowAndroid()) so this is effectively
-        // checking to ensure whether the WebContents has a window and the tab is attached to an
-        // activity.
+        // getWindowAndroid() may be null, e.g. for tabs built without a window. When a WebContents
+        // exists, also require that it has a top-level native window. Without a WebContents there
+        // is nothing else to cross-check, so defer to mIsDetachedFromActivity.
         boolean hasActivity = getWindowAndroid() != null && windowHasActivity(getWindowAndroid());
         WebContents webContents = getWebContents();
-        return webContents == null
-                ? !mIsDetachedFromActivity && hasActivity
-                : (webContents.getTopLevelNativeWindow() != null && hasActivity);
+        if (webContents == null) {
+            return !mIsDetachedFromActivity && hasActivity;
+        }
+        return webContents.getTopLevelNativeWindow() != null && hasActivity;
     }
 
     private static @Nullable Activity getActivity(@Nullable WindowAndroid window) {
@@ -1560,8 +1559,8 @@ class TabImpl implements Tab, TabInternal {
 
             for (TabObserver observer : mObservers) observer.onShown(this, type);
 
-            // Updating the timestamp has to happen after the showInternal() call since subclasses
-            // may use it for logging.
+            // Update the timestamp only after notifying observers, since onShown() observers may
+            // read the previous value.
             setTimestampMillis(System.currentTimeMillis());
         } finally {
             TraceEvent.end("Tab.show");
@@ -1773,6 +1772,8 @@ class TabImpl implements Tab, TabInternal {
             @Nullable TabState tabState,
             boolean initializeRenderer,
             boolean isPinned) {
+        assert loadUrlParams == null || tabState == null
+                : "A tab cannot be both lazily loaded and restored from TabState.";
         TraceEvent.begin("Tab.initialize");
         // WARNING: Do not early return from this method to ensure the trace event is ended and to
         // ensure the logic at the end of this method is run for all tabs.
@@ -2301,8 +2302,7 @@ class TabImpl implements Tab, TabInternal {
 
     /**
      * Sets whether the tab is showing an error page. This is reset whenever the tab finishes a
-     * navigation. Note: This is kept here to keep the build green. Remove from interface as soon as
-     * the downstream patch lands.
+     * navigation.
      *
      * @param isShowingErrorPage Whether the tab shows an error page.
      */
@@ -2383,7 +2383,7 @@ class TabImpl implements Tab, TabInternal {
         return false;
     }
 
-    /** Calls onContentChanged on all TabObservers and updates accessibility visibility. */
+    /** Calls onContentChanged on all TabObservers. */
     void notifyContentChanged() {
         for (TabObserver observer : mObservers) observer.onContentChanged(this);
     }
@@ -2446,7 +2446,10 @@ class TabImpl implements Tab, TabInternal {
         return mPendingLoadParams;
     }
 
-    /** Performs any subclass-specific tasks when the Tab crashes. */
+    /**
+     * Resets loading/restoring state and notifies observers (except for spare tabs) when the Tab's
+     * renderer crashes.
+     */
     void handleTabCrash() {
         mIsLoading = false;
 
@@ -2605,6 +2608,7 @@ class TabImpl implements Tab, TabInternal {
     private void initWebContents(WebContents webContents) {
         assert !isDormant() : "Dormant tabs must never initialize WebContents.";
         assert mWebContents == null : "WebContents is already initialized for this Tab.";
+        assert mWebContentsState == null : "Pending WebContentsState must be cleared first.";
         try {
             TraceEvent.begin("ChromeTab.initWebContents");
             mWebContents = webContents;
@@ -2628,8 +2632,7 @@ class TabImpl implements Tab, TabInternal {
             updateWebContentsDelegate();
 
             // TODO(crbug.com/40942165): Find a better way of indicating this is a background tab
-            // (or
-            // move the logic elsewhere).
+            // (or move the logic elsewhere).
             boolean isBackgroundTab = isDetachedFromActivity();
 
             assert mNativeTabAndroid != 0;
@@ -3501,7 +3504,7 @@ class TabImpl implements Tab, TabInternal {
         // Usually mCurrentTabSupplier should equal currentTabSupplier when it's removed from the
         // TabModel. However, during reparenting it appears there are situations where the tab is
         // not removed from the original TabModel before being added to the new TabModel. In these
-        // cases, mCurrentTabSupplier will be null as a result of the logic in updateAttachment().
+        // cases, mCurrentTabSupplier will be null as a result of the logic in detachFromWindow().
         assert mCurrentTabSupplier == null || mCurrentTabSupplier == currentTabSupplier;
 
         clearCurrentTabSupplier(detachReason);
