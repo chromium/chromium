@@ -3466,17 +3466,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.Management_Refresh" units="ms"
-    expires_after="2023-05-07">
-  <owner>jam@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <summary>
-    Measures how long ExtensionManagement::Refresh takes. This reloads all
-    enterprise-related policies for all extensions, and is called both at
-    startup and any time the enterprise policy changes.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ManifestVersion2" units="units"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->

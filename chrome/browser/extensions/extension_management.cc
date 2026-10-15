@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
@@ -723,7 +722,6 @@ bool ExtensionManagement::CheckMinimumVersion(const Extension* extension,
 
 void ExtensionManagement::Refresh() {
   TRACE_EVENT0("browser,startup", "ExtensionManagement::Refresh");
-  SCOPED_UMA_HISTOGRAM_TIMER("Extensions.Management_Refresh");
   // Load all extension management settings preferences.
   const base::ListValue* allowed_list_pref =
       LoadListPreference(pref_names::kInstallAllowList, true);
