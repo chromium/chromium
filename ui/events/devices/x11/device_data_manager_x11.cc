@@ -12,7 +12,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -715,18 +714,17 @@ void DeviceDataManagerX11::SetValuatorDataForTest(
   CHECK(index >= 0 && index < valuator_count_[device]);
   SetXinputMask(base::as_writable_byte_span(devev->valuator_mask), index);
 
-  x11::Input::Fp3232* valuators = devev->axisvalues.data();
+  int valuator_index = 0;
   for (int i = 0; i < index; ++i) {
     if (IsXinputMaskSet(base::as_byte_span(devev->valuator_mask), i)) {
-      UNSAFE_TODO(valuators++);
+      valuator_index++;
     }
   }
-  for (int i = DT_LAST_ENTRY - 1; i > valuators - devev->axisvalues.data();
-       --i) {
+  for (int i = DT_LAST_ENTRY - 1; i > valuator_index; --i) {
     devev->axisvalues[i] = devev->axisvalues[i - 1];
   }
 
-  *valuators = DoubleToFp3232(value);
+  devev->axisvalues[valuator_index] = DoubleToFp3232(value);
 }
 
 void DeviceDataManagerX11::InitializeValuatorsForTest(
