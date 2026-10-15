@@ -395,11 +395,12 @@ MediaDrmBridge::GetVersionResult MediaDrmBridge::MaybeGetVersion(
   if (!media_drm_bridge.has_value()) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system
              << ", CreateCdmStatus: "
-             << static_cast<media::StatusCodeType>(media_drm_bridge.code());
-    return base::unexpected(media_drm_bridge.code());
+             << static_cast<media::StatusCodeType>(
+                    media_drm_bridge.error().code());
+    return base::unexpected(media_drm_bridge.error().code());
   }
 
-  std::string version_str = media_drm_bridge->GetVersionInternal();
+  std::string version_str = media_drm_bridge.value()->GetVersionInternal();
   auto version = MaybeParseCdmVersion(version_str);
   DVLOG_IF(1, !version.IsValid()) << "Unable to convert " << version_str;
   return version;
@@ -430,8 +431,8 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateInternal(
   if (!media_drm_bridge->j_media_drm_) {
     DCHECK_NE(media_drm_bridge->last_create_error_,
               MediaDrmCreateError::SUCCESS);
-    return ConvertMediaDrmCreateError(media_drm_bridge->last_create_error_,
-                                      security_level);
+    return base::unexpected(ConvertMediaDrmCreateError(
+        media_drm_bridge->last_create_error_, security_level));
   }
 
   return media_drm_bridge;
@@ -448,7 +449,7 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateWithoutSessionSupport(
 
   UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
   if (scheme_uuid.empty()) {
-    return CreateCdmTypedStatus::Codes::kUnsupportedKeySystem;
+    return base::unexpected(CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
   }
 
   // When created without session support, MediaCrypto is not needed.

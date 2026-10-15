@@ -40,11 +40,11 @@ namespace media {
     }                                                               \
   } while (0)
 
-#define EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(a, b, error)  \
+#define EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(a, b, err)    \
   do {                                                              \
     if (!MediaDrmBridge::IsKeySystemSupported(b)) {                 \
       VLOG(0) << "Key System " << b << " not supported on device."; \
-      EXPECT_EQ(a.code(), error);                                   \
+      EXPECT_EQ(a.error().code(), err);                             \
     } else {                                                        \
       EXPECT_TRUE(a.has_value());                                   \
     }                                                               \
@@ -119,11 +119,11 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
                ResponseCB response_cb));
 
   void Provision() {
-    media_drm_bridge_->Provision(base::BindOnce(
+    media_drm_bridge_.value()->Provision(base::BindOnce(
         &MediaDrmBridgeTest::ProvisioningDone, base::Unretained(this)));
   }
 
-  void Unprovision() { media_drm_bridge_->Unprovision(); }
+  void Unprovision() { media_drm_bridge_.value()->Unprovision(); }
 
   // MediaDrmBridge::Provision() requires a callback that is called when
   // provisioning completes and indicates if it succeeds or not.
@@ -135,7 +135,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
 
  protected:
   MediaDrmBridge::CdmCreationResult media_drm_bridge_ =
-      CreateCdmTypedStatus::Codes::kUnknownError;
+      base::unexpected(CreateCdmTypedStatus::Codes::kUnknownError);
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -221,7 +221,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_Widevine) {
 TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
   CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
                               kDefault);
-  EXPECT_EQ(media_drm_bridge_.code(),
+  EXPECT_EQ(media_drm_bridge_.error().code(),
             CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
 
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
@@ -237,7 +237,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
 TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_InvalidKeySystem) {
   CreateWithoutSessionSupport(kInvalidKeySystem, kTestOrigin, kDefault);
   EXPECT_FALSE(media_drm_bridge_.has_value());
-  EXPECT_EQ(media_drm_bridge_.code(),
+  EXPECT_EQ(media_drm_bridge_.error().code(),
             CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
 }
 
@@ -351,7 +351,7 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_FeatureFlagDisabled) {
   CdmKeyInformation::KeyStatus key_status;
   CdmPromise::Exception exception;
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersionNone,
       std::make_unique<MockCdmKeyStatusPromise>(
           /*expect_success=*/false, &key_status, &exception));
@@ -376,17 +376,17 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
 
   CdmKeyInformation::KeyStatus key_status;
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersionNone, std::make_unique<MockCdmKeyStatusPromise>(
                                          /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersion1_0, std::make_unique<MockCdmKeyStatusPromise>(
                                         /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersion2_3, std::make_unique<MockCdmKeyStatusPromise>(
                                         /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
@@ -405,17 +405,17 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicyL3_Widevine) {
 
   CdmKeyInformation::KeyStatus key_status;
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersionNone, std::make_unique<MockCdmKeyStatusPromise>(
                                          /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersion1_0, std::make_unique<MockCdmKeyStatusPromise>(
                                         /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 
-  media_drm_bridge_->GetStatusForPolicy(
+  media_drm_bridge_.value()->GetStatusForPolicy(
       HdcpVersion::kHdcpVersion2_3, std::make_unique<MockCdmKeyStatusPromise>(
                                         /*expect_success=*/true, &key_status));
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);

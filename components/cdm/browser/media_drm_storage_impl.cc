@@ -407,7 +407,7 @@ void ClearMediaDrmLicensesBlocking(
         base::NullCallback());
 
     if (media_drm_bridge.has_value()) {
-      media_drm_bridge->Unprovision();
+      media_drm_bridge.value()->Unprovision();
     }
   }
 }

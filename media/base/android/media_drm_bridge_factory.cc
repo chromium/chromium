@@ -90,7 +90,7 @@ void MediaDrmBridgeFactory::Create(
 
   if (!result.has_value()) {
     weak_factory_.InvalidateWeakPtrs();
-    std::move(cdm_created_cb_).Run(nullptr, std::move(result).code());
+    std::move(cdm_created_cb_).Run(nullptr, std::move(result).error().code());
     return;
   }
   media_drm_bridge_ = std::move(result).value();
