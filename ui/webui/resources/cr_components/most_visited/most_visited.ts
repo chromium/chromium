@@ -1029,6 +1029,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected async onReorderClick_() {
     this.$.actionMenu.close();
     this.inReorderMode_ = true;
+    this.reordering_ = true;
     await this.updateComplete;
     this.tileFocus_(this.actionMenuTargetIndex_);
   }
@@ -1113,9 +1114,33 @@ export class MostVisitedElement extends MostVisitedElementBase {
         item, index, e.button || 0, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
   }
 
-  protected onTileKeydown_(e: KeyboardEvent) {
+  protected async onTileKeydown_(e: KeyboardEvent) {
     if (hasKeyModifiers(e)) {
       return;
+    }
+
+    if (this.shortcutsReorderEnabled && this.inReorderMode_) {
+      // Handle reordering key events.
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        const currentIndex = this.actionMenuTargetIndex_;
+        const direction = e.key === 'ArrowLeft' ? -1 : 1;
+        const newIndex = (currentIndex + direction + this.tiles_.length) %
+            this.tiles_.length;
+
+        const selectedTile = this.tiles_[currentIndex]!;
+        const adjacentTile = this.tiles_[newIndex]!;
+        this.tiles_[currentIndex] = adjacentTile;
+        this.tiles_[newIndex] = selectedTile;
+
+        this.requestUpdate();
+        this.browserProxy_.handler.reorderMostVisitedTile(
+            selectedTile, newIndex);
+
+        this.actionMenuTargetIndex_ = newIndex;
+        await this.updateComplete;
+        this.tileFocus_(newIndex);
+        return;
+      }
     }
 
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' &&
