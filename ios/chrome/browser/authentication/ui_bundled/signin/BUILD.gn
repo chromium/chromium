@@ -20,7 +20,6 @@ source_set("signin_headers") {
   public_deps = [
     ":constants",
     "//base",
-    "//components/signin/core/browser",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_deep_link",
     "//components/signin/public/identity_manager",
@@ -60,13 +59,11 @@ source_set("signin_impl") {
     "//components/prefs",
     "//components/signin/ios/browser",
     "//components/sync/base:features",
-    "//components/sync/protocol",
     "//components/sync/service",
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/account_menu/coordinator",
     "//ios/chrome/browser/authentication/add_account_signin/coordinator",
     "//ios/chrome/browser/authentication/consistency_promo_signin/coordinator",
@@ -99,7 +96,6 @@ source_set("signin_impl") {
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
-    "//ui/base",
   ]
 }
 
@@ -119,14 +115,31 @@ source_set("signin_screen_provider") {
   ]
 }
 
+source_set("account_preview_preference_string_utils") {
+  sources = [
+    "account_preview_preference_string_utils.h",
+    "account_preview_preference_string_utils.mm",
+  ]
+  public_deps = [ "//components/signin/core/browser" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//components/sync/base",
+    "//components/sync/protocol",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "account_preview_preference_string_utils_unittest.mm",
     "deeplink_signin/cross_device_signin_url_interceptor_unittest.mm",
     "signin_coordinator_unittest.mm",
     "signin_utils_unittest.mm",
   ]
   deps = [
+    ":account_preview_preference_string_utils",
     ":features",
     ":signin_impl",
     "//base",
@@ -134,12 +147,15 @@ source_set("unit_tests") {
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/pref_registry",
+    "//components/signin/core/browser",
     "//components/signin/public/base:signin_deep_link",
     "//components/sync/base",
+    "//components/sync/protocol",
     "//components/sync/service",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin",
     "//ios/chrome/browser/feature_engagement/model",
@@ -166,6 +182,7 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
 

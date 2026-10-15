@@ -15,7 +15,6 @@
 #import "base/functional/callback.h"
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
-#import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/app/change_profile_continuation.h"
@@ -215,18 +214,6 @@ SigninCoordinatorResultOrIdentity
 SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
     SigninCoordinatorResult result,
     id<SystemIdentity> identity);
-
-// Returns the promo label string for web sign-in based on `preference`, or nil
-// if no customized subtitle applies.
-NSString* GetPromoLabelStringForWebSignin(
-    const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
-        preference);
-
-// Returns the promo label string for NTP sign-in based on `preference`, or nil
-// if no customized subtitle applies.
-NSString* GetPromoLabelStringForNtpSignedOutIcon(
-    const std::optional<AccountPreviewDataService::AccountPreviewPreference>&
-        preference);
 
 }  // namespace signin
 
