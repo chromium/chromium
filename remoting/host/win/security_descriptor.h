@@ -13,6 +13,20 @@
 
 namespace remoting {
 
+// SDDL for `paired-clients\secrets`: grants Generic All (GA) access only to
+// Built-in Administrators (BA) and LocalSystem (SY), with a protected DACL (P)
+// to block inheritance from parent keys so standard users cannot read secrets.
+inline constexpr char kPairingRegistrySecretsSddl[] =
+    "O:BAG:BAD:P(A;;GA;;;BA)(A;;GA;;;SY)";
+
+// SDDL for `RdpDesktopSession` COM AppID LaunchPermission and AccessPermission:
+// grants COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL |
+// COM_RIGHTS_ACTIVATE_LOCAL (0xb) to LocalSystem (SY), Built-in Administrators
+// (BA), and LocalService (LS), with mandatory label "no execute up" for Medium
+// integrity level (matching `RdpSd` in chromoting.wxs).
+inline constexpr char kRdpDesktopSessionComPermissionsSddl[] =
+    "O:BAG:BAD:(A;;0xb;;;SY)(A;;0xb;;;BA)(A;;0xb;;;LS)S:(ML;;NX;;;ME)";
+
 typedef TypedBuffer<ACL> ScopedAcl;
 typedef TypedBuffer<SECURITY_DESCRIPTOR> ScopedSd;
 typedef TypedBuffer<SID> ScopedSid;

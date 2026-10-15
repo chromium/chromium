@@ -241,7 +241,11 @@ source_set("base") {
   }
 
   if (is_win) {
-    sources += [ "scoped_sc_handle_win.h" ]
+    sources += [
+      "registry_util_win.cc",
+      "registry_util_win.h",
+      "scoped_sc_handle_win.h",
+    ]
     libs = [ "crypt32.lib" ]  # For CryptoAPI functions in certificate_helpers
   } else if (is_linux || is_chromeos) {
     sources += [
@@ -521,6 +525,11 @@ source_set("unit_tests") {
   if (is_linux || is_win) {
     sources += [ "crash/crashpad_database_manager_unittest.cc" ]
     deps += [ "//remoting/base/crash:crashpad_db_mgr" ]
+  }
+
+  if (is_win) {
+    sources += [ "registry_util_win_unittest.cc" ]
+    deps += [ "//base/test:test_support" ]
   }
 
   if (is_linux) {

@@ -397,11 +397,7 @@ bool DaemonProcessWin::OpenPairingRegistry() {
   if (result == ERROR_FILE_NOT_FOUND) {
     LOG(WARNING) << "Pairing registry privileged key absent, creating.";
 
-    // Create a security descriptor that gives full access to local system and
-    // administrators and denies access by anyone else.
-    std::string security_descriptor = "O:BAG:BAD:(A;;GA;;;BA)(A;;GA;;;SY)";
-
-    ScopedSd sd = ConvertSddlToSd(security_descriptor);
+    ScopedSd sd = ConvertSddlToSd(kPairingRegistrySecretsSddl);
     if (!sd) {
       PLOG(ERROR) << "Failed to create a security descriptor for the pairing"
                   << "registry privileged key.";
