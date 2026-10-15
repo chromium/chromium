@@ -268,7 +268,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool UsesAcceleratedRaster() const final { return true; }
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  gpu::InterfaceBase* InterfaceBase() const;
 
   ExternalCanvasResource(
       scoped_refptr<gpu::ClientSharedImage> client_si,

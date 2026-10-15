@@ -56,17 +56,6 @@
 
 namespace blink {
 
-namespace {
-// Controls whether ExternalCanvasResource::WaitSyncToken() should store the
-// SyncToken and pass it to the release callback to wait at destruction time
-// (when enabled), or wait on the SyncToken immediately (when disabled). This
-// feature is part of the effort of reducing WaitSyncTokenCHROMIUM usage in
-// favor of the automatic SyncToken management in ClientSharedImage.
-BASE_FEATURE(kDeferWaitSyncTokenInExternalCanvasResource,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 CanvasResource::CanvasResource(
     scoped_refptr<gpu::ClientSharedImage> shared_image)
     : gpu::ClientImage(std::move(shared_image)),
@@ -74,12 +63,6 @@ CanvasResource::CanvasResource(
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()) {
   subclass_manages_destruction_sync_token_ = true;
-}
-
-gpu::InterfaceBase* ExternalCanvasResource::InterfaceBase() const {
-  if (!ContextProviderWrapper())
-    return nullptr;
-  return ContextProviderWrapper()->ContextProvider().InterfaceBase();
 }
 
 gpu::raster::RasterInterface* CanvasResourceSharedImage::RasterInterface()
@@ -446,13 +429,8 @@ ExternalCanvasResource::~ExternalCanvasResource() {
   }
 
   if (release_callback_) {
-    if (base::FeatureList::IsEnabled(
-            kDeferWaitSyncTokenInExternalCanvasResource)) {
-      std::move(release_callback_)
-          .Run(destruction_sync_token_, resource_is_lost_);
-    } else {
-      std::move(release_callback_).Run(sync_token(), resource_is_lost_);
-    }
+    std::move(release_callback_)
+        .Run(destruction_sync_token_, resource_is_lost_);
   }
 }
 
@@ -488,14 +466,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 
 void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
-    if (base::FeatureList::IsEnabled(
-            kDeferWaitSyncTokenInExternalCanvasResource)) {
-      destruction_sync_token_ = sync_token;
-    } else {
-      if (auto* interface_base = InterfaceBase()) {
-        interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-      }
-    }
+    destruction_sync_token_ = sync_token;
   }
 }
 
