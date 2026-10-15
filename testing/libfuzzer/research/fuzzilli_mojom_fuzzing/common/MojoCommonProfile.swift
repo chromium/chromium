@@ -44,6 +44,8 @@ public let commonMojoBuiltins: [String: ILType] = [:]
     .merging(urlMojomBuiltins) { (existing, _) in existing }
 
 public let commonMojoCodeGenerators: [(CodeGenerator, Int)] = [
+    (MojoAsyncFunctionGenerator, 5000),
+    (MojoAwaitGenerator, 5000),
     (MojoObjectLiteralNoopGenerator, 1),
     (MojoBufferSourceGenerator, 1),
 ]
@@ -70,6 +72,33 @@ extension ILType {
         JavaScriptEnvironment.typedArrayConstructors
         .map { jsTypedArray($0) }
         .reduce(.jsArrayBuffer | .jsDataView, |)
+}
+
+/// Generate large async functions where Fuzzilli can await Mojo calls and use
+/// the return values in interesting ways. To avoid many nested functions, the
+/// generator only emits one instruction when called in an `.async` context.
+public let MojoAsyncFunctionGenerator = CodeGenerator(
+    "MojoAsyncFunctionGenerator"
+) { b in
+    if b.context.contains(.async) {
+        b.build(n: 1)
+        return
+    }
+
+    let asyncFunction = b.buildAsyncArrowFunction(with: .parameters(n: 0)) { _ in
+        b.build(n: 40)
+    }
+    b.callFunction(asyncFunction, withArgs: [])
+}
+
+/// Mojo copy of the builtin AwaitGenerator so that its weight can be tuned for
+/// this profile without affecting the global codeGeneratorWeights. The builtin
+/// "AwaitGenerator" is disabled for this profile.
+public let MojoAwaitGenerator = CodeGenerator(
+    "MojoAwaitGenerator", inContext: .single(.async),
+    inputs: .preferred(.thenable)
+) { b, val in
+    b.await(val)
 }
 
 /// WebIDL dictionaries (e.g. `MojoCreateDataPipeOptions`) are modeled as
