@@ -43,16 +43,14 @@ ContextualNudge::ContextualNudge(views::View* anchor,
                                  const gfx::Insets& margins,
                                  const std::u16string& text,
                                  const base::RepeatingClosure& tap_callback)
-    : views::BubbleDialogDelegateView(anchor,
-                                      GetArrowForPosition(position),
-                                      views::BubbleBorder::NO_SHADOW),
+    : views::BubbleDialogDelegateView(anchor, GetArrowForPosition(position)),
       tap_callback_(tap_callback) {
   SetBackgroundColor(SK_ColorTRANSPARENT);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
   set_accept_events(!tap_callback.is_null());
   SetCanActivate(false);
-  set_shadow(views::BubbleBorder::NO_SHADOW);
+  set_shadow_config({.shadow_type = views::BubbleBorder::NO_SHADOW});
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_layer_type(ui::LAYER_NOT_DRAWN);
 
