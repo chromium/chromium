@@ -423,7 +423,13 @@ void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
     }
 
     if (!text_data.empty()) {
-      Java_Clipboard_setClipboardText(env, clipboard_manager_, text_data);
+      if (!Java_Clipboard_setClipboardText(env, clipboard_manager_,
+                                           text_data)) {
+        map_.clear();
+        map_state_ = MapState::kOutOfDate;
+        ClearLastModifiedTime();
+        return;
+      }
     } else {
       Java_Clipboard_clear(env, clipboard_manager_);
       NOTIMPLEMENTED();

@@ -537,7 +537,7 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    protected void setClipboardText(
+    protected boolean setClipboardText(
             @JniType("std::map<std::string, std::string>") Map<String, String> textData) {
         String html = textData.get(ClipDescription.MIMETYPE_TEXT_HTML);
         String text = textData.get(ClipDescription.MIMETYPE_TEXT_PLAIN);
@@ -567,7 +567,7 @@ public class ClipboardImpl extends Clipboard
 
         if (item == null) {
             clear();
-            return;
+            return false;
         }
 
         ClipDescription description = new ClipDescription("data", mimeTypes.toArray(new String[0]));
@@ -580,7 +580,9 @@ public class ClipboardImpl extends Clipboard
         ClipData clip = new ClipData(description, item);
         if (!setPrimaryClipNoException(clip)) {
             showCopyToClipboardFailureMessage();
+            return false;
         }
+        return true;
     }
 
     @Override
