@@ -4008,17 +4008,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.Experimental.MatchableHostCountOnActivation"
-    units="count" expires_after="2026-11-15">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Records the number of PrerenderHosts that match the potential activation
-    navigation. This is recorded when the navigation chooses one of the hosts in
-    PrerenderHostRegistry::FindPotentialHostToActivate().
-  </summary>
-</histogram>
-
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
     enum="PrerenderPredictionStatus" expires_after="2027-02-28">
   <owner>nhiroki@chromium.org</owner>

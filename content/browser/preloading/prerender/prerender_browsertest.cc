@@ -1353,9 +1353,6 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
       FinishedReason::kNoVarySearchHeaderReceivedAndMatched, 1);
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 1, 1);
 }
 
 // Tests the case where prerendering navigation fails while a potential
@@ -1581,9 +1578,6 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
       FinishedReason::kTimeoutElapsed, 1);
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 1, 1);
 }
 
 // Helper function to test cases where `no_vary_search_header` that does not
@@ -1676,9 +1670,6 @@ void NoVarySearchPrerenderBrowserTest::TestNoVarySearchHeaderFailure(
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
       expected_finished_reason, 1);
-
-  histogram_tester().ExpectTotalCount(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 1);
 }
 
 // Test that a No-Vary-Search header is malformed.
@@ -1844,9 +1835,6 @@ IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
         /*ready_time=*/kMockElapsedTime,
         blink::mojom::SpeculationEagerness::kImmediate)});
   }
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 1, 1);
 }
 
 // Test that activation is not successful when navigating to an inexact URL
@@ -1943,9 +1931,6 @@ IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
   nav_observer->Wait();
   // The navigation should issue a request.
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), navigation_url);
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 1, 1);
 }
 
 // Test that activation is successful when navigating to an exact URL before
@@ -2043,9 +2028,6 @@ IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
   histogram_tester().ExpectTotalCount(
       "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
       0);
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 1, 1);
 }
 
 // Test that activation is successful when 2 matchable PrerenderHosts exist.
@@ -2153,9 +2135,6 @@ IN_PROC_BROWSER_TEST_P(NoVarySearchPrerenderBrowserTest,
   histogram_tester().ExpectTotalCount(
       "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
       1);
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.MatchableHostCountOnActivation", 2, 1);
 }
 
 // Tests that the speculationrules No-Vary-Search hint is populated for the

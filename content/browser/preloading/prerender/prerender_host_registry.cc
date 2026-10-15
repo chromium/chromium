@@ -1171,33 +1171,32 @@ PrerenderHostId PrerenderHostRegistry::FindPotentialHostToActivate(
     return PrerenderHostId();
   }
 
-  // Collect hosts that can match the navigation request.
-  std::vector<PrerenderHost*> matchable_hosts;
-  // First, collect hosts that can exactly match or match with the
-  // No-Vary-Search header.
-  for (const auto& [host_id, host] : prerender_host_by_id_) {
-    if (host->IsUrlMatch(navigation_request.GetURL())) {
-      matchable_hosts.push_back(host.get());
+  // Find an available host for the navigation request.
+  PrerenderHost* host = nullptr;
+  // First, find a host that can exactly match or match with the No-Vary-Search
+  // header.
+  for (const auto& [host_id, it_prerender_host] : prerender_host_by_id_) {
+    if (it_prerender_host->IsUrlMatch(navigation_request.GetURL())) {
+      host = it_prerender_host.get();
+      break;
     }
   }
-  // Then, collect hosts that can match with the No-Vary-Search hint.
-  for (const auto& [host_id, host] : prerender_host_by_id_) {
-    if (host->IsNoVarySearchHintUrlMatch(navigation_request.GetURL())) {
-      matchable_hosts.push_back(host.get());
+  // If the host is not found, then find a host that can match with the
+  // No-Vary-Search hint.
+  if (!host) {
+    for (const auto& [host_id, it_prerender_host] : prerender_host_by_id_) {
+      if (it_prerender_host->IsNoVarySearchHintUrlMatch(
+              navigation_request.GetURL())) {
+        host = it_prerender_host.get();
+        break;
+      }
     }
   }
-  RecordPotentialPrerenderProcessReuse(!matchable_hosts.empty(),
+  RecordPotentialPrerenderProcessReuse(host != nullptr,
                                        navigation_request.GetURL());
-  if (matchable_hosts.empty()) {
+  if (!host) {
     return PrerenderHostId();
   }
-  // Use the first match. This prioritizes the exact match or No-Vary-Search
-  // header match than No-Vary-Search hint match.
-  PrerenderHost* host = *matchable_hosts.begin();
-
-  base::UmaHistogramCounts100(
-      "Prerender.Experimental.MatchableHostCountOnActivation",
-      matchable_hosts.size());
   // Cannot activate if prerendering navigation has not started yet.
   if (!host->GetInitialNavigationId().has_value()) {
     CancelHost(host->prerender_host_id(),
