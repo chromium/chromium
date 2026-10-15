@@ -1598,6 +1598,7 @@ class WebViewChromium
     @Override
     @UiThread
     public void setWebViewClient(WebViewClient client) {
+        checkThread();
         forbidBuilderConfiguration();
         mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.WEBVIEW_INSTANCE_SET_WEBVIEW_CLIENT);
@@ -1668,7 +1669,9 @@ class WebViewChromium
     }
 
     @Override
+    @UiThread
     public WebViewRenderProcessClient getWebViewRenderProcessClient() {
+        checkThread();
         forbidBuilderConfiguration();
         SharedWebViewRendererClientAdapter adapter =
                 mSharedWebViewChromium.getWebViewRendererClientAdapter();
@@ -1708,6 +1711,7 @@ class WebViewChromium
     @Override
     @UiThread
     public void setWebChromeClient(WebChromeClient client) {
+        checkThread();
         forbidBuilderConfiguration();
         mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT);
