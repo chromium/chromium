@@ -7085,6 +7085,21 @@
             ]
         }
     ],
+    "EnableIOSDeviceTrustConnector": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableIOSDeviceTrustConnector"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableNewUploadSizeLimit": [
         {
             "platforms": [
