@@ -1083,14 +1083,14 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     if (!resource) {
       return nullptr;
     }
-    resource->Initialize(/*client=*/nullptr, shared_context_wrapper,
-                         drawing_buffer_tone_mapping_hdr_metadata_,
-                         /*is_accelerated=*/true);
 
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
     auto client_si = resource->GetSharedImage();
-    gpu::SyncToken sync_token = resource->acquire_sync_token();
+    gpu::SyncToken sync_token = client_si->creation_sync_token();
+    if (sync_token.HasData()) {
+      client_si->UpdateDestructionSyncToken(sync_token);
+    }
     auto access = client_si->BeginRasterAccess(raster_interface, sync_token,
                                                /*readonly=*/false);
     sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
