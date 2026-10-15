@@ -954,8 +954,12 @@ void OmniboxEditModel::OpenSelection(
         text_for_desired_tld_navigation, &generated_input);
     if (url_match.destination_url.is_valid()) {
       input_ = generated_input;
-      OpenMatch(selection, url_match, disposition, GURL(), std::u16string(),
-                timestamp, snapshot);
+      // `url_match` isn't in the dropdown, so pass `kNoMatch` as `AcceptInput`
+      // does. That logs `url_match` as the only match, instead of logging the
+      // dropdown line that `selection` is on.
+      OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+                url_match, disposition, GURL(), std::u16string(), timestamp,
+                snapshot);
       return;
     }
   }
