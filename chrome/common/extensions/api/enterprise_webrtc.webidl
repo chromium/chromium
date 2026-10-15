@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Status of a WebRTC capture session. getCaptureStatus cannot fail, so the
-// promise always resolves with this result and never carries an error.
+// Status of a WebRTC capture session. $(ref:getCaptureStatus) cannot fail,
+// so the promise always resolves with this result and never carries an
+// error.
 dictionary CaptureStatus {
   required boolean active;
 };
 
-// A getUserMedia request observed by WebRTC-internals.
+// A <code>getUserMedia</code> request observed by WebRTC-internals.
 dictionary GetUserMediaRequest {
   required long rid;
   required long pid;
@@ -42,8 +43,8 @@ dictionary StatusResult {
   required boolean active;
 };
 
-// Restricts what a capture session observes. An omitted or empty `origins`
-// list matches every origin in the profile.
+// Restricts what a capture session observes. An omitted or empty
+// <code>origins</code> list matches every origin in the profile.
 dictionary CaptureFilter {
   sequence<DOMString> origins;
 };
@@ -115,9 +116,10 @@ interface OnSnapshotTruncatedEvent : ExtensionEvent {
 };
 
 // Programmatic access to WebRTC diagnostic information equivalent to
-// chrome://webrtc-internals. Extensions using this API in incognito mode MUST
-// declare "incognito": "split" in their manifest. Spanning-mode extensions
-// will not observe peer connections from the profile they are not running in.
+// chrome://webrtc-internals. Extensions using this API in incognito mode
+// MUST declare <code>"incognito": "split"</code> in their manifest.
+// Spanning-mode extensions will not observe peer connections from the
+// incognito profile.
 [implemented_in="chrome/browser/extensions/api/enterprise_webrtc/enterprise_webrtc_api.h"]
 interface Webrtc {
   // Starts a capture session recording WebRTC diagnostic events (the
