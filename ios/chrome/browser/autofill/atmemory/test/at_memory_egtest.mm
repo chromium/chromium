@@ -381,7 +381,7 @@ void DismissSettings() {
 
 // Tests that tapping the "Manage settings" link in the inline privacy notice
 // opens the Suggestions from Gemini settings page, and dismissing returns to
-// the AtMemory screen with the notice still visible.
+// the AtMemory screen with the notice dismissed.
 - (void)testInlineNoticeSettingsLink {
   OpenSuggestionsFromGeminiSettingsViaInlineNotice();
   DismissSettings();
@@ -389,7 +389,8 @@ void DismissSettings() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil bottomSheetTitle]];
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil inlineNoticeTitle]];
+      waitForUIElementToDisappearWithMatcher:[AtMemoryTestUtil
+                                                 inlineNoticeTitle]];
 }
 
 // Tests that disabling the Suggestions from Gemini toggle in settings causes

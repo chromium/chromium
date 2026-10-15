@@ -207,21 +207,14 @@ NSArray<NSString*>* GetZeroStateExampleSubtitles() {
 }
 
 - (void)acknowledgePrivacyNotice {
-  CHECK(_firstRunService);
-  _firstRunService->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
-  _noticeIsVisible = NO;
-  _noticeInteractionLogged = YES;
-  [self.consumer setNoticeVisible:NO];
-  base::UmaHistogramEnumeration(
-      kNoticeInteractionsHistogram,
-      autofill::AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
+  [self acknowledgeNoticeWithInteraction:
+            autofill::AutofillMetrics::PopupNoticeInteractions::kAcknowledged];
 }
 
 - (void)didTapSettingsLink {
-  _noticeInteractionLogged = YES;
-  base::UmaHistogramEnumeration(
-      kNoticeInteractionsHistogram,
-      autofill::AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
+  [self acknowledgeNoticeWithInteraction:autofill::AutofillMetrics::
+                                             PopupNoticeInteractions::
+                                                 kLinkButtonClicked];
   [self.settingsNavigator
       openSettingsForPage:AutofillSettingsPage::kSuggestionsFromGemini];
 }
@@ -256,6 +249,18 @@ NSArray<NSString*>* GetZeroStateExampleSubtitles() {
 }
 
 #pragma mark - Private
+
+// Marks the privacy notice as acknowledged so it won't be shown again, hides it
+// in the UI, and logs `interaction`.
+- (void)acknowledgeNoticeWithInteraction:
+    (autofill::AutofillMetrics::PopupNoticeInteractions)interaction {
+  CHECK(_firstRunService);
+  _firstRunService->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
+  _noticeIsVisible = NO;
+  _noticeInteractionLogged = YES;
+  [self.consumer setNoticeVisible:NO];
+  base::UmaHistogramEnumeration(kNoticeInteractionsHistogram, interaction);
+}
 
 // Handles suggestions returned by the AtMemoryManager.
 - (void)onAtMemorySuggestionsReceived:
