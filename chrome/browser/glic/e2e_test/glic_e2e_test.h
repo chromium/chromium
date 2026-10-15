@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_E2E_TEST_GLIC_E2E_TEST_H_
 #define CHROME_BROWSER_GLIC_E2E_TEST_GLIC_E2E_TEST_H_
 
+#include <string_view>
+
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -67,6 +69,7 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest>,
 
   // Host::Observer implementation:
   void WebUiStateChanged(glic::mojom::WebUiState state) override;
+  void ClientLoadStateChanged(ClientLoadState state) override;
 
   MultiStep WaitForAndInstrumentFre();
 
@@ -118,6 +121,12 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest>,
 
  private:
   void OnActiveInstanceChanged(GlicInstance* new_instance);
+
+  // Fails the test and shuts down glic so that it doesn't wait for a timeout.
+  void FailEarly(std::string_view reason);
+
+  // True once the active instance is showing and its web client is connected.
+  bool IsGlicReadyAndShowing();
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedFeatureList exempt_actor_policy_control_feature_list_;

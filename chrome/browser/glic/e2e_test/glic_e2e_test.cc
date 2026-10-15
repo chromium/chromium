@@ -57,6 +57,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
@@ -69,8 +70,6 @@
 namespace glic::test {
 
 namespace {
-
-using glic::test::internal::kGlicInstanceCoordinatorState;
 
 constexpr base::FilePath::StringViewType kRecordingDirectoryPath =
     FILE_PATH_LITERAL("chrome/browser/glic/e2e_test/internal/wpr_recordings");
@@ -296,20 +295,43 @@ void GlicE2ETest::TearDownOnMainThread() {
   LiveTest::TearDownOnMainThread();
 }
 
+bool GlicE2ETest::IsGlicReadyAndShowing() {
+  auto* instance = static_cast<GlicInstanceImpl*>(
+      instance_coordinator().GetActiveInstance());
+  return instance && instance->IsShowing() &&
+         instance->host().IsWebClientConnected();
+}
+
 ui::test::InteractiveTestApi::MultiStep
 GlicE2ETest::WaitForAndInstrumentGlic() {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kGlicReadyAndShowingState);
+
+  // In webview mode, GlicView hosts the glic WebUI and the guest is an inner
+  // WebContents of its <webview>. In NoWebview mode, GlicView first shows a
+  // loading overlay WebUI and then swaps in the guest WebContents directly
+  // once the web client connects; waiting for the client to connect first
+  // ensures kGlicContentsElementId refers to the guest, not the overlay.
+  MultiStep instrument =
+      features::IsGlicNoWebviewEnabled()
+          ? Steps(
+                InstrumentNonTabWebView(kGlicContentsElementId,
+                                        kGlicViewElementId),
+                InstrumentNonTabWebView(kGlicHostElementId, kGlicViewElementId))
+          : Steps(
+                InstrumentNonTabWebView(kGlicHostElementId, kGlicViewElementId),
+                InstrumentInnerWebContents(kGlicContentsElementId,
+                                           kGlicHostElementId, 0));
+
   MultiStep steps(Steps(
       UninstrumentWebContents(kGlicContentsElementId, false),
       UninstrumentWebContents(kGlicHostElementId, false),
-      InAnyContext(
-          ObserveState(kGlicInstanceCoordinatorState,
-                       std::ref(instance_coordinator()), active_tab()),
-          WaitForState(kGlicInstanceCoordinatorState, GlicPanelState::kOpen),
-          Steps(InstrumentNonTabWebView(kGlicHostElementId, kGlicViewElementId),
-                InstrumentInnerWebContents(kGlicContentsElementId,
-                                           kGlicHostElementId, 0),
-                WaitForWebContentsReady(kGlicContentsElementId)),
-          StopObservingState(kGlicInstanceCoordinatorState))));
+      PollState(kGlicReadyAndShowingState,
+                [this]() { return IsGlicReadyAndShowing(); }),
+      WaitForState(kGlicReadyAndShowingState, true),
+      StopObservingState(kGlicReadyAndShowingState),
+      InAnyContext(Steps(std::move(instrument),
+                         WaitForWebContentsReady(kGlicContentsElementId)))));
 
   AddDescriptionPrefix(steps, "WaitForAndInstrumentGlic");
   return steps;
@@ -461,8 +483,12 @@ ui::ElementIdentifier GetGlicViewElementId() {
 void GlicE2ETest::OnActiveInstanceChanged(GlicInstance* new_instance) {
   host_observation_.Reset();
   if (new_instance) {
-    host_observation_.Observe(
-        &static_cast<GlicInstanceImpl*>(new_instance)->host());
+    Host& host = static_cast<GlicInstanceImpl*>(new_instance)->host();
+    host_observation_.Observe(&host);
+    // The instance may become active after its client has already failed
+    // (e.g. errors flushed when the host is attached), so check the current
+    // state too.
+    ClientLoadStateChanged(host.client_load_state());
   }
 }
 
@@ -480,16 +506,8 @@ void GlicE2ETest::WebUiStateChanged(glic::mojom::WebUiState state) {
     case glic::mojom::WebUiState::kIneligibleAccount:
     case glic::mojom::WebUiState::kOffline:
     case glic::mojom::WebUiState::kUnavailable: {
-      ADD_FAILURE() << "Early bail: Glic WebUI entered error state: "
-                    << static_cast<int>(state);
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](base::WeakPtr<GlicE2ETest> self) {
-                           if (self) {
-                             self->instance_coordinator().Shutdown();
-                           }
-                         },
-                         weak_ptr_factory_.GetWeakPtr()));
+      FailEarly(base::StringPrintf("Glic WebUI entered error state: %d",
+                                   static_cast<int>(state)));
       break;
     }
     // Valid states for Glic where no early bail is needed.
@@ -503,6 +521,30 @@ void GlicE2ETest::WebUiStateChanged(glic::mojom::WebUiState state) {
     case glic::mojom::WebUiState::kSignIn:
       break;
   }
+}
+
+void GlicE2ETest::ClientLoadStateChanged(ClientLoadState state) {
+  // In webview mode, errors are detected through WebUiStateChanged(). The
+  // chrome://glic WebUI does not exist in NoWebview mode, so the client load
+  // state is the error signal there. It covers both errors reported through
+  // ClientLoadErrorOccurred() and guest error pages (e.g. /sorry/).
+  if (expects_error_ || !features::IsGlicNoWebviewEnabled() ||
+      state != ClientLoadState::kError) {
+    return;
+  }
+  FailEarly("Glic client load state is kError");
+}
+
+void GlicE2ETest::FailEarly(std::string_view reason) {
+  ADD_FAILURE() << "Early bail: " << reason;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<GlicE2ETest> self) {
+                       if (self) {
+                         self->instance_coordinator().Shutdown();
+                       }
+                     },
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace glic::test
