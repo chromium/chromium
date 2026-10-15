@@ -7,12 +7,12 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  /* TODO(b/515804243): Update the proportional values once UX is finalized. */
-  --indigo-steps-font-size: max(12px, 3.5vw);
+  --indigo-steps-font-size: clamp(11px, 3.5vw, 24px);
   --indigo-disclaimer-font-size:
-      max(10px, calc(var(--indigo-steps-font-size) * 0.7));
-  --indigo-entry-icon-base-size: max(15px, 7vw);
+      max(9px, calc(var(--indigo-steps-font-size) * 0.6));
+  --indigo-entry-icon-base-size: clamp(22px, 6vw, 48px);
   --indigo-disclaimer-margin-top: max(10px, 10vh);
+  --indigo-steps-margin-top: calc(var(--indigo-entry-icon-base-size) * 0.4);
 
   --indigo-entry-icon-pulse-size:
       calc(var(--indigo-entry-icon-base-size) * 1.8);
@@ -123,7 +123,7 @@
   font-size: var(--indigo-steps-font-size);
   font-weight: 500;
   justify-items: center;
-  margin-top: 17px;
+  margin-top: var(--indigo-steps-margin-top);
 }
 
 #steps > div {
