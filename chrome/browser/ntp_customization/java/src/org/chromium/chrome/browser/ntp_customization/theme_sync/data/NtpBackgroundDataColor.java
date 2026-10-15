@@ -46,11 +46,7 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
         super(platformType);
         mIsChromeColorDailyRefreshEnabled = isChromeColorDailyRefreshEnabled;
         mNtpThemeColorInfo = ntpThemeColorInfo;
-
-        if (mNtpThemeColorInfo.colorStringResId != 0) {
-            setContentDescription(
-                    mNtpThemeColorInfo.getContext().getString(mNtpThemeColorInfo.colorStringResId));
-        }
+        setContentDescription(mNtpThemeColorInfo.colorName);
     }
 
     /**

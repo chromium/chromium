@@ -66,7 +66,9 @@ public class NtpThemeColorInfo {
 
     public @StringRes int colorStringResId;
 
-    private final Context mContext;
+    // The name of the predefined color, used as the accessibility content description of its
+    // history card. Null for the default color and for custom colors.
+    public @Nullable String colorName;
 
     private static final float HIGHLIGHT_COLOR_ALPHA = 0.3f;
     private static final float BACKGROUND_COLOR_ALPHA = 0.15f;
@@ -74,12 +76,11 @@ public class NtpThemeColorInfo {
     /**
      * Constructor for predefined colors.
      *
-     * @param context The Activity context.
+     * @param context The context to load the resources with. It isn't retained.
      * @param id The ID of the theme color.
      */
     public NtpThemeColorInfo(Context context, @NtpThemeColorId int id) {
         this.id = id;
-        mContext = context;
 
         if (id == NtpThemeColorId.DEFAULT) {
             iconDrawable =
@@ -93,6 +94,7 @@ public class NtpThemeColorInfo {
 
         this.primaryColorResId = NtpThemeColorUtils.getNtpThemePrimaryColorResId(id);
         this.colorStringResId = NtpThemeColorUtils.getNtpColorThemeStringResId(id);
+        this.colorName = context.getString(colorStringResId);
 
         @ColorInt int primaryColor = context.getColor(primaryColorResId);
         highlightColor = calculateHighlightColorForColorPalette(primaryColor);
@@ -106,23 +108,17 @@ public class NtpThemeColorInfo {
     /**
      * Constructor for custom colors.
      *
-     * @param context The Activity context.
+     * @param context The context to load the icon resources with. It isn't retained.
      * @param backgroundColor The background color.
      * @param primaryColor The primary color.
      */
     public NtpThemeColorInfo(
             Context context, @ColorInt int backgroundColor, @ColorInt int primaryColor) {
-        mContext = context;
         highlightColor = calculateHighlightColorForColorPalette(primaryColor);
 
         iconDrawable =
                 NtpThemeColorUtils.createColoredCircle(
                         context, backgroundColor, primaryColor, highlightColor);
-    }
-
-    /** Returns the activity context. */
-    public Context getContext() {
-        return mContext;
     }
 
     /**

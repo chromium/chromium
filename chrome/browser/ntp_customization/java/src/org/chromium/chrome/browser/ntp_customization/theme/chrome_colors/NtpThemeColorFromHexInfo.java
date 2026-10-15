@@ -24,7 +24,7 @@ public class NtpThemeColorFromHexInfo extends NtpThemeColorInfo {
     /**
      * Create a NtpThemeColorFromHexInfo.
      *
-     * @param context The Activity context.
+     * @param context The context to load the icon resources with. It isn't retained.
      * @param backgroundColor The background color.
      * @param primaryColor The primary color.
      */
@@ -36,7 +36,7 @@ public class NtpThemeColorFromHexInfo extends NtpThemeColorInfo {
     /**
      * Create a NtpThemeColorFromHexInfo.
      *
-     * @param context The Activity context.
+     * @param context The context to load the icon resources with. It isn't retained.
      * @param backgroundColorLight The background color in light mode.
      * @param backgroundColorDark The background color in dark mode.
      * @param primaryColorLight The primary color in light mode.
