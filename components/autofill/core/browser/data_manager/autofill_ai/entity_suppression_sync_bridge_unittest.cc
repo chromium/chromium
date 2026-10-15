@@ -596,6 +596,60 @@ TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_Empty) {
   EXPECT_FALSE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
 }
 
+// Tests that CountSuppressionsCreatedBetween only counts entries whose
+// creation time falls within the inclusive range [begin, end].
+TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween) {
+  const base::Time t1 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(100));
+  const base::Time t2 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(200));
+  WriteToStore("guid1", CreatePassportEntry(), t1);
+  WriteToStore("guid2", CreateDriversLicenseEntry(), t2);
+  CreateBridge();
+  ASSERT_EQ(bridge().GetSuppressions().size(), 2u);
+
+  // Null bounds cover everything.
+  EXPECT_EQ(
+      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
+      2u);
+  EXPECT_EQ(
+      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time()), 2u);
+  // Bounds are inclusive.
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1, t1), 1u);
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t2, t2), 1u);
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1, t2), 2u);
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1 + base::Seconds(50),
+                                                     base::Time::Max()),
+            1u);
+  // Ranges not containing any creation time.
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(base::Time::Min(),
+                                                     t1 - base::Seconds(1)),
+            0u);
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t1 + base::Seconds(1),
+                                                     t2 - base::Seconds(1)),
+            0u);
+  EXPECT_EQ(bridge().CountSuppressionsCreatedBetween(t2 + base::Seconds(1),
+                                                     base::Time::Max()),
+            0u);
+
+  // After clearing, nothing is left.
+  ASSERT_TRUE(bridge().ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_EQ(
+      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
+      0u);
+}
+
+// Tests that CountSuppressionsCreatedBetween returns zero when there are no
+// suppressions.
+TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween_Empty) {
+  CreateBridge();
+  ASSERT_TRUE(bridge().GetSuppressions().empty());
+
+  EXPECT_EQ(
+      bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
+      0u);
+}
+
 // Tests that a load without corrupt records logs zero dropped records.
 TEST_F(EntitySuppressionSyncBridgeTest, Metrics_LoadWithoutDroppedRecords) {
   WriteToStore("guid1", CreatePassportEntry());

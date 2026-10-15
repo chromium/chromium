@@ -42,6 +42,8 @@ class EntitySuppressionManagerImpl
   bool ClearSuppressions(base::Time delete_begin,
                          base::Time delete_end) override;
   bool IsSuppressed(const EntityInstance& entity) const override;
+  size_t CountSuppressionsCreatedBetween(base::Time begin,
+                                         base::Time end) const override;
 
   // EntitySuppressionSyncBridge::Observer:
   void OnSuppressionsChanged() override;

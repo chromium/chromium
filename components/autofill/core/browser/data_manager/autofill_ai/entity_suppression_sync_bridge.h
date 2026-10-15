@@ -88,6 +88,12 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // Returns true if `entry` is currently suppressed.
   bool IsSuppressed(const EntitySuppressionEntry& entry) const;
 
+  // Returns the number of suppression records whose creation timestamp falls
+  // within the inclusive range `[begin, end]`. Null `begin`/`end` are treated
+  // as `base::Time::Min()`/`base::Time::Max()`, matching `ClearSuppressions()`.
+  size_t CountSuppressionsCreatedBetween(base::Time begin,
+                                         base::Time end) const;
+
   bool IsLoaded() const;
 
   // Returns a weak pointer to the sync controller delegate.

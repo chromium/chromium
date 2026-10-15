@@ -33,6 +33,10 @@ class MockEntitySuppressionManager : public EntitySuppressionManager {
               IsSuppressed,
               (const EntityInstance& entity),
               (const, override));
+  MOCK_METHOD(size_t,
+              CountSuppressionsCreatedBetween,
+              (base::Time begin, base::Time end),
+              (const, override));
   MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetSyncControllerDelegate,
               (),

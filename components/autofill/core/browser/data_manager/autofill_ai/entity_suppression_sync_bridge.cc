@@ -239,6 +239,24 @@ bool EntitySuppressionSyncBridge::IsSuppressed(
   return metadata_by_entry_.contains(entry);
 }
 
+size_t EntitySuppressionSyncBridge::CountSuppressionsCreatedBetween(
+    base::Time begin,
+    base::Time end) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (begin.is_null()) {
+    begin = base::Time::Min();
+  }
+  if (end.is_null()) {
+    end = base::Time::Max();
+  }
+  return std::ranges::count_if(
+      metadata_by_entry_,
+      [&](const std::pair<EntitySuppressionEntry, EntryMetadata>& pair) {
+        const base::Time creation_time = pair.second.creation_time;
+        return creation_time >= begin && creation_time <= end;
+      });
+}
+
 bool EntitySuppressionSyncBridge::IsLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_loaded_;

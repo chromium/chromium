@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_MANAGER_H_
 
+#include <cstddef>
+
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -55,6 +57,14 @@ class EntitySuppressionManager : public KeyedService {
   // Returns true if the entity matches at least one suppressed merge
   // constraint.
   virtual bool IsSuppressed(const EntityInstance& entity) const = 0;
+
+  // Returns the number of recorded entity suppressions whose creation
+  // timestamp falls within the inclusive range `[begin, end]` (use
+  // `base::Time()` and `base::Time::Max()` to cover all suppressions). This
+  // mirrors the range semantics of `ClearSuppressions()`, i.e. it returns the
+  // number of suppressions that `ClearSuppressions(begin, end)` would remove.
+  virtual size_t CountSuppressionsCreatedBetween(base::Time begin,
+                                                 base::Time end) const = 0;
 
   // Returns the delegate for Chrome Sync.
   // TODO(crbug.com/501036619): Once the sync bridge rollout is complete and

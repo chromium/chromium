@@ -319,6 +319,44 @@ TEST_F(EntitySuppressionManagerImplTest, ClearSuppressions_Empty) {
   EXPECT_FALSE(manager().ClearSuppressions(base::Time(), base::Time::Max()));
 }
 
+// Tests that CountSuppressionsCreatedBetween counts the suppressions created
+// within the given inclusive time range.
+TEST_F(EntitySuppressionManagerImplTest, CountSuppressionsCreatedBetween) {
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
+                                                      base::Time::Max()),
+            0u);
+
+  const base::Time suppression_time = base::Time::Now();
+  ASSERT_TRUE(manager().SuppressEntity(test::GetPassportEntityInstance()));
+
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
+                                                      base::Time::Max()),
+            1u);
+  // Both bounds are inclusive.
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(suppression_time,
+                                                      suppression_time),
+            1u);
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(
+                base::Time(), suppression_time - base::Seconds(1)),
+            0u);
+
+  // The vehicle satisfies two merge constraints (plate number and VIN), so
+  // suppressing it records two entries.
+  task_environment().FastForwardBy(base::Hours(2));
+  ASSERT_TRUE(manager().SuppressEntity(test::GetVehicleEntityInstance()));
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
+                                                      base::Time::Max()),
+            3u);
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(
+                base::Time::Now() - base::Hours(1), base::Time::Max()),
+            2u);
+
+  ASSERT_TRUE(manager().ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_EQ(manager().CountSuppressionsCreatedBetween(base::Time(),
+                                                      base::Time::Max()),
+            0u);
+}
+
 // Tests that all operations fail gracefully if the sync bridge never loads,
 // e.g. because encryption is unavailable.
 TEST_F(EntitySuppressionManagerImplTest, BridgeNotLoaded) {
@@ -343,6 +381,9 @@ TEST_F(EntitySuppressionManagerImplTest, BridgeNotLoaded) {
   EXPECT_FALSE(manager.IsSuppressed(passport));
   EXPECT_FALSE(manager.UndoInSessionSuppressedEntity(passport.guid()));
   EXPECT_FALSE(manager.ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_EQ(
+      manager.CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
+      0u);
 
   manager.RemoveObserver(&observer);
 }

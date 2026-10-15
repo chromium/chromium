@@ -278,5 +278,46 @@ TEST_F(InMemoryEntitySuppressionManagerTest, ClearSuppressions_Empty) {
       suppression_manager_.ClearSuppressions(base::Time(), base::Time::Max()));
 }
 
+// Tests that CountSuppressionsCreatedBetween counts the suppressions created
+// within the given inclusive time range.
+TEST_F(InMemoryEntitySuppressionManagerTest, CountSuppressionsCreatedBetween) {
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                base::Time(), base::Time::Max()),
+            0u);
+
+  const base::Time suppression_time = base::Time::Now();
+  ASSERT_TRUE(
+      suppression_manager_.SuppressEntity(test::GetPassportEntityInstance()));
+
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                base::Time(), base::Time::Max()),
+            1u);
+  // Both bounds are inclusive.
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                suppression_time, suppression_time),
+            1u);
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                base::Time(), suppression_time - base::Seconds(1)),
+            0u);
+
+  // The vehicle satisfies two merge constraints (plate number and VIN), so
+  // suppressing it records two entries.
+  task_environment_.FastForwardBy(base::Hours(2));
+  ASSERT_TRUE(
+      suppression_manager_.SuppressEntity(test::GetVehicleEntityInstance()));
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                base::Time(), base::Time::Max()),
+            3u);
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                base::Time::Now() - base::Hours(1), base::Time::Max()),
+            2u);
+
+  ASSERT_TRUE(
+      suppression_manager_.ClearSuppressions(base::Time(), base::Time::Max()));
+  EXPECT_EQ(suppression_manager_.CountSuppressionsCreatedBetween(
+                base::Time(), base::Time::Max()),
+            0u);
+}
+
 }  // namespace
 }  // namespace autofill

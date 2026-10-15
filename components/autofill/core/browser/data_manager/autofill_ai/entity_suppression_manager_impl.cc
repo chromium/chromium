@@ -96,6 +96,15 @@ bool EntitySuppressionManagerImpl::IsSuppressed(
                              });
 }
 
+size_t EntitySuppressionManagerImpl::CountSuppressionsCreatedBetween(
+    base::Time begin,
+    base::Time end) const {
+  if (!sync_bridge_->IsLoaded()) {
+    return 0;
+  }
+  return sync_bridge_->CountSuppressionsCreatedBetween(begin, end);
+}
+
 void EntitySuppressionManagerImpl::OnSuppressionsChanged() {
   observers_.Notify(
       &EntitySuppressionManager::Observer::OnEntitySuppressionsChanged);

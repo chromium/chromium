@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/containers/map_util.h"
@@ -102,6 +103,22 @@ bool InMemoryEntitySuppressionManager::IsSuppressed(
                              [this](const EntitySuppressionEntry& entry) {
                                return suppressed_entries_.contains(entry);
                              });
+}
+
+size_t InMemoryEntitySuppressionManager::CountSuppressionsCreatedBetween(
+    base::Time begin,
+    base::Time end) const {
+  if (begin.is_null()) {
+    begin = base::Time::Min();
+  }
+  if (end.is_null()) {
+    end = base::Time::Max();
+  }
+  return std::ranges::count_if(
+      suppressed_entries_,
+      [&](const std::pair<const EntitySuppressionEntry, base::Time>& pair) {
+        return pair.second >= begin && pair.second <= end;
+      });
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
