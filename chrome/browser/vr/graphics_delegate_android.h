@@ -55,7 +55,7 @@ class GraphicsDelegateAndroid : public GraphicsDelegate {
 
   // Helpers:
   void OnMailboxBridgeReady(base::OnceClosure on_initialized);
-  bool EnsureMemoryBuffer();
+  bool EnsureAndBindMemoryBuffer();
   void ClearBufferToBlack() override;
 
   std::unique_ptr<device::MailboxToSurfaceBridge> mailbox_bridge_;

@@ -95,15 +95,11 @@ bool GraphicsDelegateAndroid::PreRender() {
 
   current_buffer_index_ = (current_buffer_index_ + 1) % kNumBuffers;
 
-  // Create a memory buffer for rendering the overlay.
-  if (!EnsureMemoryBuffer()) {
+  // Create and bind a memory buffer for rendering the overlay.
+  if (!EnsureAndBindMemoryBuffer()) {
     DLOG(ERROR) << __func__ << " Failed to ensure memory buffer";
     return false;
   }
-
-  // Bind our image/texture/memory buffer as the draw framebuffer.
-  glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER,
-                       buffers_[current_buffer_index_].draw_frame_buffer);
 
   return true;
 }
@@ -147,7 +143,7 @@ gpu::SyncToken GraphicsDelegateAndroid::GetSyncToken() {
   return token;
 }
 
-bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
+bool GraphicsDelegateAndroid::EnsureAndBindMemoryBuffer() {
   const gfx::Size buffer_size = GetTextureSize();
   if (last_size_ != buffer_size) {
     ResetMemoryBuffer();
@@ -157,6 +153,7 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
   BufferSlot& slot = buffers_[current_buffer_index_];
   if (slot.shared_buffer && slot.shared_buffer->shared_image &&
       slot.shared_buffer->scoped_ahb_handle.is_valid()) {
+    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, slot.draw_frame_buffer);
     return true;
   }
 
@@ -234,7 +231,6 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
   glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target,
                             slot.shared_buffer->local_texture.id, 0);
   ClearBufferToBlack();
-  glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
 
   return true;
 }
