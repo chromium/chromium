@@ -4952,7 +4952,6 @@ public class StripLayoutHelperTest {
             when(mModel.isTabInTabGroup(eq(tab))).thenReturn(true);
             when(mModel.getIndexOfTabInGroup(tab)).thenReturn(i - startIndex);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
-            when(mModel.getRelatedTabList(tab.getId())).thenReturn(relatedTabs);
             relatedTabs.add(tab);
         }
         when(mModel.containsTabGroup(tabGroupId)).thenReturn(true);
@@ -6826,7 +6825,7 @@ public class StripLayoutHelperTest {
         // Expected model: 0, 1, [2, 3], 4
         verify(mTabUngrouper, times(1))
                 .ungroupTabs(eq(List.of(mModel.getTabAt(4))), eq(true), eq(true), any());
-        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -6848,11 +6847,10 @@ public class StripLayoutHelperTest {
         // Verify: Tab 4 has joined the group.
         // Original model: 0, 1, [2, 3], 4
         // Expected model: 0, 1, [2, 3, 4]
-        Tab expectedDestinationTab = mModel.getTabById(3);
         verify(mModel, times(1))
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         mTabListCaptor.capture(),
-                        eq(expectedDestinationTab),
+                        eq(TAB_GROUP_ID_1),
                         eq(null),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(4)));
@@ -6878,11 +6876,10 @@ public class StripLayoutHelperTest {
         // Verify: Tab 1 has joined the group.
         // Original model: 0, 1, [2, 3], 4
         // Expected model: 0, [1, 2, 3], 4
-        Tab expectedDestinationTab = mModel.getTabById(2);
         verify(mModel, times(1))
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         mTabListCaptor.capture(),
-                        eq(expectedDestinationTab),
+                        eq(TAB_GROUP_ID_1),
                         eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(1)));
@@ -6908,7 +6905,7 @@ public class StripLayoutHelperTest {
         // Verify: Tab 1 has left the group and is now at index 0.
         verify(mTabUngrouper, times(1))
                 .ungroupTabs(eq(List.of(mModel.getTabAt(0))), eq(false), eq(true), any());
-        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -6929,7 +6926,7 @@ public class StripLayoutHelperTest {
 
         // Verify: The order within the group has changed.
         verify(mModel, times(1)).moveTab(0, 1);
-        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6951,7 +6948,7 @@ public class StripLayoutHelperTest {
         // Original model: 0, 1, 2, 3, 4
         // Expected model: 0, 2, 1, 3, 4
         verify(mModel, times(1)).moveTab(1, 2);
-        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6974,7 +6971,7 @@ public class StripLayoutHelperTest {
 
         // Verify: The tab order has changed.
         verify(mModel, times(1)).moveTab(0, 2);
-        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6997,7 +6994,7 @@ public class StripLayoutHelperTest {
 
         // Verify: The tab order has changed.
         verify(mModel, times(1)).moveTab(3, 1);
-        verify(mModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 

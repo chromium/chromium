@@ -511,7 +511,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void verifyMergedToGroup() {
         verify(mModel, never()).moveTab(anyInt(), anyInt());
         verify(mTabUnGrouper, never()).ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
-        verify(mModel).mergeListOfTabsToGroup(any(), any(), any(), anyInt());
+        verify(mModel).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
     }
 
     private void verifySuccessfulDrag(float expectedOffset) {
@@ -522,7 +522,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void verifyFailedDrag(float expectedOffset) {
         verify(mModel, never()).moveTab(anyInt(), anyInt());
         verify(mTabUnGrouper, never()).ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
-        verify(mModel, never()).mergeListOfTabsToGroup(any(), any(), any(), anyInt());
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mAnimationHost, times(1)).startAnimations(anyList(), isNull());
         assertEquals("Unexpected offset.", expectedOffset, mInteractingTab.getOffsetX(), DELTA);
     }
@@ -548,15 +548,14 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void mockMergeToGroup() {
         doAnswer(
                         invocation -> {
-                            Tab tab = mModel.getTabById(mTabCaptor.getValue().getId());
-                            assertThat(tab).isNotNull();
-                            Token tabGroupId = tab.getTabGroupId();
+                            Token tabGroupId = mTokenCaptor.getValue();
+                            assertThat(tabGroupId).isNotNull();
                             int count = mModel.getTabCountForGroup(tabGroupId);
                             when(mModel.getTabCountForGroup(tabGroupId)).thenReturn(count + 1);
                             return null;
                         })
                 .when(mModel)
-                .mergeListOfTabsToGroup(any(), mTabCaptor.capture(), any(), anyInt());
+                .mergeListOfTabsToExistingGroup(any(), mTokenCaptor.capture(), any(), anyInt());
     }
 
     @SuppressWarnings("DirectInvocationOnMock")

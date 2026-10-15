@@ -363,8 +363,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             // Case C.2: Maybe merge to group.
             if (Math.abs(offset) <= getDragInThreshold()) return false;
 
-            mergeInteractingTabToGroup(
-                    adjTab.getId(), interactingTab, interactingGroupTitle, towardEnd);
+            mergeInteractingTabToGroup(interactingTab, interactingGroupTitle, towardEnd);
         }
         return true;
     }
@@ -392,28 +391,22 @@ public class TabReorderStrategy extends ReorderStrategyBase {
     /**
      * Merges the interacting tab to the given group. Animates accordingly.
      *
-     * @param destinationTabId The tab ID to merge the interacting tab to.
      * @param interactingTab The interacting tab to merge to group.
      * @param groupTitle The title of the group the interacting tab is attempting to merge to.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
     private void mergeInteractingTabToGroup(
-            int destinationTabId,
-            StripLayoutTab interactingTab,
-            StripLayoutGroupTitle groupTitle,
-            boolean towardEnd) {
+            StripLayoutTab interactingTab, StripLayoutGroupTitle groupTitle, boolean towardEnd) {
         Tab tabToMerge = mModel.getTabByIdChecked(interactingTab.getTabId());
-        List<Tab> tabsToMarge = Collections.singletonList(tabToMerge);
-        Tab destinationTab = mModel.getTabByIdChecked(destinationTabId);
 
         // If dragging towards the end of the strip, we should insert at the start of the group.
         // Otherwise, we insert at the end of the group (by passing a null index).
         Integer indexInGroup = towardEnd ? 0 : null;
 
         // TODO(crbug.com/451697001): Investigate if we still need to suppress the notifications.
-        mModel.mergeListOfTabsToGroup(
-                tabsToMarge,
-                destinationTab,
+        mModel.mergeListOfTabsToExistingGroup(
+                List.of(tabToMerge),
+                groupTitle.getTabGroupId(),
                 indexInGroup,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");

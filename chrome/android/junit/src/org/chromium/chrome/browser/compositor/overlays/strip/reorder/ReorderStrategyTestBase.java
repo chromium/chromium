@@ -106,7 +106,7 @@ public abstract class ReorderStrategyTestBase {
 
     // Captors
     @Captor ArgumentCaptor<List<Tab>> mTabListCaptor;
-    @Captor ArgumentCaptor<Tab> mTabCaptor;
+    @Captor ArgumentCaptor<Token> mTokenCaptor;
 
     protected void setup() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -237,10 +237,9 @@ public abstract class ReorderStrategyTestBase {
         List<Tab> tabList = List.of(tabs);
         for (Tab tab : tabList) {
             when(mModel.isTabInTabGroup(tab)).thenReturn(true);
-            when(mModel.getRelatedTabList(tab.getId())).thenReturn(tabList);
-            when(mModel.getTabsInGroup(groupId)).thenReturn(tabList);
             tab.setTabGroupId(groupId);
         }
+        when(mModel.getTabsInGroup(groupId)).thenReturn(tabList);
         when(mModel.getTabCountForGroup(groupId)).thenReturn(tabList.size());
     }
 

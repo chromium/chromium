@@ -201,10 +201,12 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mModel).setIndex(eq(2), anyInt());
 
         // Verify the ungrouped tab is merged into the primary tab's group.
-        Tab expectedPrimaryTab = mModel.getTabById(mGroupedTab2.getTabId());
         verify(mModel)
-                .mergeListOfTabsToGroup(
-                        mTabListCaptor.capture(), eq(expectedPrimaryTab), anyInt(), anyInt());
+                .mergeListOfTabsToExistingGroup(
+                        mTabListCaptor.capture(),
+                        eq(GROUP_ID1),
+                        /* indexInGroup= */ eq(1),
+                        eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         assertEquals("Should merge 2 tabs.", 2, mTabListCaptor.getValue().size());
 
         // Verify no reorder operations took place.
@@ -325,10 +327,10 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         drag(DRAG_INTO_GROUP_SUCCESS);
 
         verify(mModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         anyList(),
-                        any(Tab.class),
-                        eq(0),
+                        eq(GROUP_ID1),
+                        /* indexInGroup= */ eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
     }

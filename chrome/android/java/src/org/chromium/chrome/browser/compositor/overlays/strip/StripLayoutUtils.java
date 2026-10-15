@@ -114,7 +114,7 @@ public class StripLayoutUtils {
     public static boolean isNonTrailingTabInGroup(TabModel tabModel, StripLayoutTab stripTab) {
         Tab tab = assumeNonNull(tabModel.getTabById(stripTab.getTabId()));
         if (tabModel.isTabInTabGroup(tab)) {
-            List<Tab> relatedTabs = tabModel.getRelatedTabList(tab.getId());
+            List<Tab> relatedTabs = tabModel.getTabsInGroup(tab.getTabGroupId());
             Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
             return tab.getId() != lastTab.getId();
         }

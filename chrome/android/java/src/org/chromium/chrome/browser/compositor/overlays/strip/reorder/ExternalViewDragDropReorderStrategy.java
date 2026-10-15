@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -204,17 +203,13 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     boolean handleDrop(StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
         if (mInteractingViewDuringStop == null) return false;
 
-        @Nullable StripLayoutGroupTitle groupTitle;
-        final int destinationTabId;
+        StripLayoutGroupTitle groupTitle;
         if (mInteractingViewDuringStop instanceof StripLayoutTab interactingStripTab) {
             Tab interactingTab = mModel.getTabByIdChecked(interactingStripTab.getTabId());
             groupTitle =
                     StripLayoutUtils.findGroupTitle(groupTitles, interactingTab.getTabGroupId());
-            destinationTabId = interactingTab.getId();
         } else {
             groupTitle = (StripLayoutGroupTitle) mInteractingViewDuringStop;
-            Token destinationTabGroupId = groupTitle.getTabGroupId();
-            destinationTabId = TabGroupUtils.getFirstTabIdInGroup(mModel, destinationTabGroupId);
         }
 
         // 1. If hovered on view is not part of group or is collapsed, no-op.
@@ -229,12 +224,13 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             // Need to reverse, since the list of tab ids was reversed.
             tabsToMerge.add(0, mModel.getTabByIdChecked(tabId));
         }
-        List<Tab> destinationTabList = mModel.getRelatedTabList(destinationTabId);
+        Token destinationTabGroupId = groupTitle.getTabGroupId();
+        List<Tab> destinationTabList = mModel.getTabsInGroup(destinationTabGroupId);
         int mergeIndex = dropIndex - mModel.indexOf(destinationTabList.get(0));
-        mModel.mergeListOfTabsToGroup(
+        mModel.mergeListOfTabsToExistingGroup(
                 tabsToMerge,
-                mModel.getTabByIdChecked(destinationTabId),
-                mergeIndex,
+                destinationTabGroupId,
+                /* indexInGroup= */ mergeIndex,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
 
         // 3. Animate bottom indicator. Done after merging the dragged tab group to group,

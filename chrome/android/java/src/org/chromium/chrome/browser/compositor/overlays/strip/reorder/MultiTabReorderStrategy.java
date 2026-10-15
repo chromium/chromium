@@ -421,9 +421,9 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     }
 
     private void gatherBlock(Tab primaryTab, List<Tab> selectedTabs) {
-        boolean isPrimaryTabInGroup = mModel.isTabInTabGroup(primaryTab);
+        Token destinationGroupId = primaryTab.getTabGroupId();
         boolean notAllTabsInPrimaryGroupAreSelected = false;
-        List<Tab> tabsInGroup = mModel.getTabsInGroup(primaryTab.getTabGroupId());
+        List<Tab> tabsInGroup = mModel.getTabsInGroup(destinationGroupId);
         for (Tab tab : tabsInGroup) {
             if (!mInteractingTabIds.contains(tab.getId())) {
                 notAllTabsInPrimaryGroupAreSelected = true;
@@ -431,13 +431,11 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             }
         }
 
-        if (isPrimaryTabInGroup && notAllTabsInPrimaryGroupAreSelected) {
-            Token destinationGroupId = primaryTab.getTabGroupId();
-            assert destinationGroupId != null;
+        if (destinationGroupId != null && notAllTabsInPrimaryGroupAreSelected) {
             int primaryTabIndexInGroup = tabsInGroup.indexOf(primaryTab);
-            mModel.mergeListOfTabsToGroup(
+            mModel.mergeListOfTabsToExistingGroup(
                     convertStripTabsToTabs(mUnpinnedTabs),
-                    primaryTab,
+                    destinationGroupId,
                     /* indexInGroup= */ primaryTabIndexInGroup,
                     /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
             if (mHasMixedPinState == TriState.TRUE) {
@@ -628,7 +626,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         } else {
             // Maybe merge to group.
             if (Math.abs(offset) <= getDragInThreshold()) return false;
-            mergeBlockIntoGroup(adjTab, interactingGroupTitle, towardEnd);
+            mergeBlockIntoGroup(interactingGroupTitle, towardEnd);
             return true;
         }
     }
@@ -694,17 +692,15 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     /**
      * Merges all tabs in the interacting block into an adjacent, expanded tab group.
      *
-     * @param adjTab The adjacent tab, which is part of the destination group.
      * @param adjTitle The title view of the destination group.
      * @param towardEnd True if the drag is toward the end of the strip (RTL: left, LTR: right),
      *     which determines if the block is merged to the front or back of the group.
      */
-    private void mergeBlockIntoGroup(
-            Tab adjTab, StripLayoutGroupTitle adjTitle, boolean towardEnd) {
+    private void mergeBlockIntoGroup(StripLayoutGroupTitle adjTitle, boolean towardEnd) {
         RecordUserAction.record("MobileToolbarReorderTab.TabsAddedToGroup");
-        mModel.mergeListOfTabsToGroup(
+        mModel.mergeListOfTabsToExistingGroup(
                 convertStripTabsToTabs(mUnpinnedTabs),
-                adjTab,
+                adjTitle.getTabGroupId(),
                 /* indexInGroup= */ towardEnd ? 0 : null,
                 /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         animateGroupIndicatorForTabReorder(adjTitle, /* isMovingOutOfGroup= */ false, towardEnd);

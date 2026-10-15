@@ -4087,7 +4087,7 @@ public class StripLayoutHelper
             Tab selectedTab = getTabById(getSelectedTabId());
             if (selectedTab != null
                     && groupTitle.getTabGroupId().equals(selectedTab.getTabGroupId())) {
-                List<Tab> excludedTabs = mModel.getRelatedTabList(selectedTab.getId());
+                List<Tab> excludedTabs = mModel.getTabsInGroup(selectedTab.getTabGroupId());
                 Tab nextTab =
                         NextTabSelectionUtil.findNearbyNotClosingTab(
                                 mModel, mModel.indexOf(selectedTab), excludedTabs);
