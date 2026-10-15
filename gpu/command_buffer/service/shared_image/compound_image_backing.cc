@@ -396,21 +396,24 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) final {
+      const gfx::Rect& update_rect,
+      EndAccessState& end_access_state) final {
     if (!compound_backing()->NotifyBeginAccess(
             wrapped_->backing(), AccessMode::kWrite,
             SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginWriteAccess(surface_props, update_rect);
+    return wrapped_->BeginWriteAccess(surface_props, update_rect,
+                                      end_access_state);
   }
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() final {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
+      EndAccessState& end_access_state) final {
     if (!compound_backing()->NotifyBeginAccess(
             wrapped_->backing(), AccessMode::kWrite,
             SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginWriteAccess();
+    return wrapped_->BeginWriteAccess(end_access_state);
   }
   void EndWriteAccess() final {
     wrapped_->EndWriteAccess();
@@ -418,13 +421,14 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
                                         AccessMode::kWrite);
   }
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() final {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
+      EndAccessState& end_access_state) final {
     if (!compound_backing()->NotifyBeginAccess(
             wrapped_->backing(), AccessMode::kRead,
             SharedImageAccessStream::kSkia)) {
       return {};
     }
-    return wrapped_->BeginReadAccess();
+    return wrapped_->BeginReadAccess(end_access_state);
   }
   void EndReadAccess() final {
     wrapped_->EndReadAccess();

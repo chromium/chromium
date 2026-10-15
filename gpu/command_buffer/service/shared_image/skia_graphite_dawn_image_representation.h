@@ -28,11 +28,14 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) override;
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() override;
+      const gfx::Rect& update_rect,
+      EndAccessState& end_access_state) override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
+      EndAccessState& end_access_state) override;
   void EndWriteAccess() override;
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
+      EndAccessState& end_access_state) override;
   void EndReadAccess() override;
 
   wgpu::Device GetDevice() const;

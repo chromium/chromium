@@ -162,7 +162,8 @@ SkiaGraphiteDawnImageRepresentation::WrapBackendTextures(
 std::vector<sk_sp<SkSurface>>
 SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     const SkSurfaceProps& surface_props,
-    const gfx::Rect& update_rect) {
+    const gfx::Rect& update_rect,
+    EndAccessState& end_access_state) {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
 
@@ -214,7 +215,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
 }
 
 std::vector<scoped_refptr<GraphiteTextureHolder>>
-SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
+SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
+    EndAccessState& end_access_state) {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
 
@@ -241,7 +243,8 @@ void SkiaGraphiteDawnImageRepresentation::EndWriteAccess() {
 }
 
 std::vector<scoped_refptr<GraphiteTextureHolder>>
-SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
+SkiaGraphiteDawnImageRepresentation::BeginReadAccess(
+    EndAccessState& end_access_state) {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
   constexpr wgpu::TextureUsage kReadOnlyTextureUsage =

@@ -71,7 +71,8 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) override {
+      const gfx::Rect& update_rect,
+      EndAccessState& end_access_state) override {
     const auto& texture_holders =
         backing_impl()->GetWrappedGraphiteTextureHolders();
     CHECK(write_surfaces_.empty());
@@ -99,8 +100,8 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     return write_surfaces_;
   }
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
-      override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
+      EndAccessState& end_access_state) override {
     return backing_impl()->GetWrappedGraphiteTextureHolders();
   }
 
@@ -111,7 +112,8 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     write_surfaces_.clear();
   }
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
+      EndAccessState& end_access_state) override {
     CHECK(write_surfaces_.empty());
     return backing_impl()->GetWrappedGraphiteTextureHolders();
   }

@@ -338,20 +338,22 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) override {
+      const gfx::Rect& update_rect,
+      EndAccessState& end_access_state) override {
     // Writes are not intended to be used with video backed representations.
     NOTIMPLEMENTED();
     return {};
   }
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
-      override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
+      EndAccessState& end_access_state) override {
     // Writes are not intended to be used with video backed representations.
     NOTIMPLEMENTED();
     return {};
   }
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
+      EndAccessState& end_access_state) override {
     DCHECK(!scoped_hardware_buffer_);
 
     // Obtain the AHB for the current video frame.
@@ -644,20 +646,22 @@ class VideoImageReaderImageBacking::SkiaGraphiteVkVideoImageRepresentation
 
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) override {
+      const gfx::Rect& update_rect,
+      EndAccessState& end_access_state) override {
     NOTIMPLEMENTED();
     return {};
   }
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
-      override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess(
+      EndAccessState& end_access_state) override {
     NOTIMPLEMENTED();
     return {};
   }
 
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess(
+      EndAccessState& end_access_state) override {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
 
     DCHECK(!scoped_hardware_buffer_);
@@ -686,7 +690,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteVkVideoImageRepresentation
       SetVulkanImage(std::move(vulkan_image));
     }
 
-    return SkiaGraphiteVkAndroidImageRepresentation::BeginReadAccess();
+    return SkiaGraphiteVkAndroidImageRepresentation::BeginReadAccess(
+        end_access_state);
   }
 
   void EndReadAccess() override {

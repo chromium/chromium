@@ -60,7 +60,8 @@ SkiaGraphiteVkAndroidImageRepresentation::
 std::vector<sk_sp<SkSurface>>
 SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
     const SkSurfaceProps& surface_props,
-    const gfx::Rect& update_rect) {
+    const gfx::Rect& update_rect,
+    EndAccessState& end_access_state) {
   if (!BeginAccessInternal(/*readonly=*/false)) {
     return {};
   }
@@ -87,7 +88,8 @@ SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
 
 std::vector<
     scoped_refptr<SkiaGraphiteImageRepresentation::GraphiteTextureHolder>>
-SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess() {
+SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
+    EndAccessState& end_access_state) {
   if (!BeginAccessInternal(/*readonly=*/false)) {
     return {};
   }
@@ -107,7 +109,8 @@ void SkiaGraphiteVkAndroidImageRepresentation::EndWriteAccess() {
 
 std::vector<
     scoped_refptr<SkiaGraphiteImageRepresentation::GraphiteTextureHolder>>
-SkiaGraphiteVkAndroidImageRepresentation::BeginReadAccess() {
+SkiaGraphiteVkAndroidImageRepresentation::BeginReadAccess(
+    EndAccessState& end_access_state) {
   if (!BeginAccessInternal(/*readonly=*/true)) {
     return {};
   }
