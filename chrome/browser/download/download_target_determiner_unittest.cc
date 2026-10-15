@@ -2217,7 +2217,16 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsDefaultPath) {
 
 // Test that relative paths returned by extensions are always relative to the
 // default downloads path, even if "Ask where to save" (prompt) is enabled.
-TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsSuggestedPathWithPrompt) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+// TODO(crbug.com/531834681): Re-enable once MediaStore state is isolated.
+#define MAYBE_NotifyExtensionsSuggestedPathWithPrompt \
+  DISABLED_NotifyExtensionsSuggestedPathWithPrompt
+#else
+#define MAYBE_NotifyExtensionsSuggestedPathWithPrompt \
+  NotifyExtensionsSuggestedPathWithPrompt
+#endif
+TEST_F(DownloadTargetDeterminerTest,
+       MAYBE_NotifyExtensionsSuggestedPathWithPrompt) {
   // Enable "Ask where to save" (PromptForDownload).
   SetPromptForDownload(true);
 
