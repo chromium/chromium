@@ -1,0 +1,17 @@
+load("//crowbar", "crowbar_workflow", "strip_executable_permission")
+
+crowbar_workflow(
+    origin_files = glob(
+        ["cpp/**"],
+        exclude = [
+            "cpp/Makefile",
+            "cpp/Test.cpp",
+        ],
+    ),
+    transformations = [
+        core.move("src/cpp", "src"),
+        # Upstream marks cpp/OneEuroFilter.cpp and cpp/OneEuroFilter.h as
+        # executable.
+        strip_executable_permission(glob(["src/**"])),
+    ],
+)
