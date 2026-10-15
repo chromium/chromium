@@ -110,6 +110,7 @@ source_set("privacy") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/privacy/incognito",
     "//ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode",
@@ -123,7 +124,6 @@ source_set("privacy") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

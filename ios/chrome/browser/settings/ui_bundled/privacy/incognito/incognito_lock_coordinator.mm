@@ -4,14 +4,16 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator.h"
 
+#import "base/check.h"
 #import "base/check_op.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 @interface IncognitoLockCoordinator () <
     IncognitoLockViewControllerPresentationDelegate>
@@ -38,7 +40,10 @@
 }
 
 - (void)start {
-  ReauthenticationModule* reauthModule = [[ReauthenticationModule alloc] init];
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
+  CHECK(reauthModule);
   _viewController =
       [[IncognitoLockViewController alloc] initWithReauthModule:reauthModule];
   _viewController.presentationDelegate = self;

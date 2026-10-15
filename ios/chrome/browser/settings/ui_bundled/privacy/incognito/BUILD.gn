@@ -16,6 +16,7 @@ source_set("incognito") {
     ":incognito_ui",
     "//base",
     "//components/prefs",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -26,7 +27,6 @@ source_set("incognito") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/welcome_back/model",
     "//ios/chrome/browser/welcome_back/model:features",
-    "//ios/chrome/common/ui/reauthentication",
   ]
 }
 

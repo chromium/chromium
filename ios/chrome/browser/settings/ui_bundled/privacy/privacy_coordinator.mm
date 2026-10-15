@@ -10,6 +10,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/handoff_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator_delegate.h"
@@ -31,7 +33,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ui/base/device_form_factor.h"
 
 @interface PrivacyCoordinator () <
@@ -76,10 +77,13 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ReauthenticationModule* module = [[ReauthenticationModule alloc] init];
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
+  CHECK(reauthModule);
   PrivacyTableViewController* viewController =
       [[PrivacyTableViewController alloc] initWithBrowser:self.browser
-                                   reauthenticationModule:module];
+                                   reauthenticationModule:reauthModule];
   self.viewController = viewController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
