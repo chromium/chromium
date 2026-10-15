@@ -17,7 +17,6 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/app/application_context.h"
-#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -79,9 +78,7 @@ std::string WebViewGCMProfileServiceFactory::GetProductCategoryForSubtypes() {
 WebViewGCMProfileServiceFactory::WebViewGCMProfileServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "GCMProfileService",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(WebViewIdentityManagerFactory::GetInstance());
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 WebViewGCMProfileServiceFactory::~WebViewGCMProfileServiceFactory() {}
 
@@ -102,7 +99,6 @@ WebViewGCMProfileServiceFactory::BuildServiceInstanceFor(
       browser_state->GetSharedURLLoaderFactory(),
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker(),
       version_info::Channel::STABLE, GetProductCategoryForSubtypes(),
-      WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       base::WrapUnique(new gcm::GCMClientFactory),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
       blocking_task_runner,

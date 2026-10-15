@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/gcm_driver/fake_gcm_app_handler.h"
@@ -88,7 +87,6 @@ std::unique_ptr<KeyedService> BuildGCMProfileService(
       network::TestNetworkConnectionTracker::GetInstance(),
       chrome::GetChannel(),
       gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
-      IdentityManagerFactory::GetForProfile(profile),
       std::make_unique<gcm::FakeGCMClientFactory>(
           content::GetUIThreadTaskRunner({}),
           content::GetIOThreadTaskRunner({})),

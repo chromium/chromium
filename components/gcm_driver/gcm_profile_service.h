@@ -27,10 +27,6 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace signin {
-class IdentityManager;
-}
-
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
@@ -42,7 +38,6 @@ class OSCryptAsync;
 
 namespace gcm {
 
-class GCMAccountTracker;
 class GCMClientFactory;
 class GCMDriver;
 
@@ -68,7 +63,6 @@ class GCMProfileService : public KeyedService {
       network::NetworkConnectionTracker* network_connection_tracker,
       version_info::Channel channel,
       const std::string& product_category_for_subtypes,
-      signin::IdentityManager* identity_manager,
       std::unique_ptr<GCMClientFactory> gcm_client_factory,
       const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
@@ -94,11 +88,7 @@ class GCMProfileService : public KeyedService {
   std::unique_ptr<GCMDriver> driver_;
 
 #if !BUILDFLAG(USE_GCM_FROM_PLATFORM)
-  raw_ptr<signin::IdentityManager> identity_manager_;
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  std::unique_ptr<GCMAccountTracker> gcm_account_tracker_;
 #endif
 
   GetProxyResolvingFactoryCallback get_socket_factory_callback_;

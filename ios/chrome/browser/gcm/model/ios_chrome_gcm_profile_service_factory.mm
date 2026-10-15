@@ -18,7 +18,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -50,9 +49,7 @@ std::string IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes() {
 }
 
 IOSChromeGCMProfileServiceFactory::IOSChromeGCMProfileServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("GCMProfileService") {
-  DependsOn(IdentityManagerFactory::GetInstance());
-}
+    : ProfileKeyedServiceFactoryIOS("GCMProfileService") {}
 
 IOSChromeGCMProfileServiceFactory::~IOSChromeGCMProfileServiceFactory() {}
 
@@ -86,7 +83,6 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
       profile->GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       GetProductCategoryForSubtypes(),
-      IdentityManagerFactory::GetForProfile(profile),
       std::make_unique<gcm::GCMClientFactory>(), web::GetUIThreadTaskRunner({}),
       web::GetIOThreadTaskRunner({}), blocking_task_runner,
       GetApplicationContext()->GetOSCryptAsync());

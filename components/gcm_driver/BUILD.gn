@@ -56,7 +56,6 @@ static_library("gcm_driver") {
     "//components/os_crypt/browser",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/signin/public/identity_manager",
     "//components/version_info",
     "//google_apis",
     "//google_apis/gcm",
@@ -83,10 +82,6 @@ static_library("gcm_driver") {
     ]
   } else {
     sources += [
-      "account_tracker.cc",
-      "account_tracker.h",
-      "gcm_account_tracker.cc",
-      "gcm_account_tracker.h",
       "gcm_client_factory.cc",
       "gcm_client_factory.h",
       "gcm_client_impl.cc",
@@ -191,8 +186,6 @@ source_set("unit_tests") {
 
   if (!use_gcm_from_platform) {
     sources += [
-      "account_tracker_unittest.cc",
-      "gcm_account_tracker_unittest.cc",
       "gcm_client_impl_unittest.cc",
       "gcm_driver_desktop_unittest.cc",
       "gcm_driver_unittest.cc",
@@ -200,7 +193,6 @@ source_set("unit_tests") {
 
     deps += [
       "//components/fcm/engine",
-      "//components/signin/public/identity_manager:test_support",
       "//google_apis",
     ]
   }
