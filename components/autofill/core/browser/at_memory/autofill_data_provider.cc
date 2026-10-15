@@ -175,17 +175,6 @@ MemorySearchResult CreateMemorySearchResultForEntity(
   entry.identifier = *entity.guid();
   entry.metadata_list = GetMetadataFromEntityAttributes(entity, app_locale,
                                                         primary_attribute_type);
-  entry.is_local = [&] {
-    switch (entity.record_type()) {
-      case EntityInstance::RecordType::kLocal:
-        return true;
-      case EntityInstance::RecordType::kServerWallet:
-        return false;
-      case EntityInstance::RecordType::kPersonalContext:
-        NOTREACHED();
-    }
-    NOTREACHED();
-  }();
   if (base::optional_ref<const AttributeInstance> attribute =
           entity.attribute(primary_attribute_type)) {
     entry.typed_value = GetAttributeTypedValue(*attribute);
@@ -204,18 +193,6 @@ MemorySearchResult CreateResultFromAddressProfile(
       std::move(value), profile.GetRankingScore(base::Time::Now()));
 
   entry.identifier = profile.guid();
-  entry.is_local = [&] {
-    switch (profile.record_type()) {
-      case AutofillProfile::RecordType::kLocalOrSyncable:
-      case AutofillProfile::RecordType::kAccount:
-        return true;
-      case AutofillProfile::RecordType::kAccountHome:
-      case AutofillProfile::RecordType::kAccountWork:
-      case AutofillProfile::RecordType::kAccountNameEmail:
-        return false;
-    }
-    NOTREACHED();
-  }();
 
   // Add other profile fields as metadata.
   for (MemoryDataType metadata_type :
@@ -341,7 +318,6 @@ MemorySearchResult CreateResultFromLoyaltyCard(
       std::move(value),
       CalculateRankingScore(loyalty_card.use_count(), loyalty_card.use_date()));
   entry.identifier = *loyalty_card.id();
-  entry.is_local = true;
 
   for (MemoryDataType other_type :
        {MemoryDataType::kLoyaltyMembershipId,
@@ -482,12 +458,10 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchIbanData() {
     entry.is_obfuscated = true;
     switch (iban->record_type()) {
       case Iban::kLocalIban:
-        entry.is_local = true;
         entry.identifier = iban->guid();
         break;
       case Iban::kServerIban:
       case Iban::kUnknown:
-        entry.is_local = false;
         entry.identifier = iban->instrument_id();
         break;
     }
@@ -526,17 +500,6 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     entry.is_obfuscated = (field_type == CREDIT_CARD_NUMBER ||
                            field_type == CREDIT_CARD_VERIFICATION_CODE);
     entry.identifier = credit_card->guid();
-    entry.is_local = [&] {
-      switch (credit_card->record_type()) {
-        case CreditCard::RecordType::kLocalCard:
-          return true;
-        case CreditCard::RecordType::kMaskedServerCard:
-        case CreditCard::RecordType::kFullServerCard:
-        case CreditCard::RecordType::kVirtualCard:
-          return false;
-      }
-      NOTREACHED();
-    }();
 
     // All of the non-empty types different than the one being requested are
     // added as metadata.

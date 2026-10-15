@@ -265,7 +265,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const MemorySearchResult& result) {
     buffer << Tr{} << "Is Obfuscated:" << "true";
   }
   buffer << Tr{} << "Sources:" << (LogBuffer() << result.sources);
-  buffer << Tr{} << "Is locally stored:" << result.is_local;
   if (result.metadata_list.empty()) {
     buffer << Tr{} << "Metadata:" << "(none)";
   } else {

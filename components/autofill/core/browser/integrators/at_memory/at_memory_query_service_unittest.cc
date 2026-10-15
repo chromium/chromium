@@ -706,7 +706,6 @@ TEST_F(AtMemoryQueryServiceTest,
 
   MemorySearchResult result1(MemoryDataType::kNameFull, u"Name", u"John Doe",
                              /*confidence_score=*/0.9);
-  result1.is_local = true;
   result1.metadata_list.push_back(metadata);
   result1.sources.push_back(
       MemoryEntrySource(MemoryEntrySourceType::kAutofill));
@@ -732,7 +731,6 @@ TEST_F(AtMemoryQueryServiceTest,
       ElementsAre(
           AllOf(Field(&MemorySearchResult::value, u"John Doe"),
                 Field(&MemorySearchResult::confidence_score, DoubleEq(0.9)),
-                Field(&MemorySearchResult::is_local, true),
                 Field(&MemorySearchResult::sources,
                       ElementsAre(Field(&MemoryEntrySource::type,
                                         MemoryEntrySourceType::kAutofill))))));
@@ -781,19 +779,17 @@ TEST_F(AtMemoryQueryServiceTest,
 }
 
 // Tests that deduplication prefers results with more non-empty metadata fields,
-// even over local Autofill-sourced results with higher confidence scores.
+// even over Autofill-sourced results with higher confidence scores.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_PrefersMoreMetadata) {
   MemorySearchResult less_meta(MemoryDataType::kNameFull, u"Name", u"John Doe",
                                /*confidence_score=*/0.9);
-  less_meta.is_local = true;
   less_meta.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   less_meta.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
                                        u"San Diego");
 
   MemorySearchResult more_meta(MemoryDataType::kNameFull, u"Name", u"John Doe",
                                /*confidence_score=*/0.5);
-  more_meta.is_local = false;
   more_meta.sources.emplace_back(MemoryEntrySourceType::kGmail);
   more_meta.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
                                        u"San Diego");
@@ -824,23 +820,20 @@ TEST_F(AtMemoryQueryServiceTest,
 }
 
 // Tests that deduplication prefers higher ranking (confidence score) when
-// metadata counts and sources are equal, rather than prioritizing local
-// entities over server entities.
+// metadata counts and sources are equal.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_PrefersHigherRankingScore) {
-  MemorySearchResult local_result1(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe", /*confidence_score=*/0.9);
-  local_result1.is_local = false;
-  local_result1.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  MemorySearchResult higher_score(MemoryDataType::kNameFull, u"Name",
+                                  u"John Doe", /*confidence_score=*/0.9);
+  higher_score.sources.emplace_back(MemoryEntrySourceType::kAutofill);
 
-  MemorySearchResult local_result2(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe", /*confidence_score=*/0.5);
-  local_result2.is_local = true;
-  local_result2.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  MemorySearchResult lower_score(MemoryDataType::kNameFull, u"Name",
+                                 u"John Doe", /*confidence_score=*/0.5);
+  lower_score.sources.emplace_back(MemoryEntrySourceType::kAutofill);
 
   const MemorySearchResults& result =
-      RunDeduplicationQueryWithLocalResults({local_result2, local_result1});
-  EXPECT_THAT(result.entries, ElementsAre(local_result1));
+      RunDeduplicationQueryWithLocalResults({lower_score, higher_score});
+  EXPECT_THAT(result.entries, ElementsAre(higher_score));
 }
 
 // Tests that deduplication for Autofill AI entities is determined by merge
@@ -948,7 +941,6 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_ObfuscatedValues) {
 
   MemorySearchResult result1(MemoryDataType::kDriversLicenseNumber,
                              u"Driver's license number", obfuscated_value);
-  result1.is_local = true;
   result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
   result1.metadata_list.emplace_back(MemoryDataType::kDriversLicenseName,
                                      u"Name", u"John Doe");
@@ -956,7 +948,6 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_ObfuscatedValues) {
   // Remote Sian result with unmasked value.
   MemorySearchResult result2(MemoryDataType::kDriversLicenseNumber,
                              u"Driver's license number", raw_value);
-  result2.is_local = false;
   result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
   result2.metadata_list.emplace_back(MemoryDataType::kDriversLicenseName,
                                      u"Name", u"John Doe");
@@ -975,12 +966,10 @@ TEST_F(AtMemoryQueryServiceTest,
   std::u16string obfuscated_iban = GetObfuscatedIban(raw_iban);
 
   MemorySearchResult result1(MemoryDataType::kIban, u"IBAN", obfuscated_iban);
-  result1.is_local = true;
   result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
 
   MemorySearchResult result2(MemoryDataType::kIban, u"IBAN",
                              u"DE91 1000 0000 0123 4567 89");
-  result2.is_local = false;
   result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
 
   const MemorySearchResults& result =
@@ -995,7 +984,6 @@ TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_UnmaskedSianSpiiInMergeConstraintMetadata) {
   MemorySearchResult result1(MemoryDataType::kPassportName, u"Name",
                              u"John Doe");
-  result1.is_local = true;
   result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
   result1.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
                                      u"Passport number",
@@ -1003,7 +991,6 @@ TEST_F(AtMemoryQueryServiceTest,
 
   MemorySearchResult result2(MemoryDataType::kPassportName, u"Name",
                              u"John Doe");
-  result2.is_local = false;
   result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
   result2.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
                                      u"Passport number", u"123456789");
@@ -1021,12 +1008,10 @@ TEST_F(
     Query_DeduplicatesResults_TwoUnmaskedSianSpiiWithSameSuffix_NotDeduplicated) {
   MemorySearchResult result1(MemoryDataType::kPassportNumber,
                              u"Passport number", u"AA11116789");
-  result1.is_local = false;
   result1.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
 
   MemorySearchResult result2(MemoryDataType::kPassportNumber,
                              u"Passport number", u"BB22226789");
-  result2.is_local = false;
   result2.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
 
   const MemorySearchResults& result =
@@ -2484,7 +2469,6 @@ TEST_F(AtMemoryQueryServiceTest, LogsDiscardedDuplicatesWhenFound) {
   auto provider = std::make_unique<FakeMemoryDataProvider>();
   MemorySearchResult local_result(MemoryDataType::kVehiclePlateNumber, u"Plate",
                                   u"12345");
-  local_result.is_local = true;
   local_result.sources = {MemoryEntrySource(MemoryEntrySourceType::kPhotos),
                           MemoryEntrySource(MemoryEntrySourceType::kGmail,
                                             "https://gmail.com/123")};
@@ -2529,7 +2513,6 @@ TEST_F(AtMemoryQueryServiceTest, LogsDiscardedDuplicatesWhenFound) {
     EXPECT_THAT(log_str, HasSubstr("12345"));
     EXPECT_THAT(log_str, HasSubstr("PHOTOS"));
     EXPECT_THAT(log_str, HasSubstr("GMAIL (URL: https://gmail.com/123)"));
-    EXPECT_THAT(log_str, HasSubstr("Is locally stored:"));
   });
   EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
     EXPECT_THAT(entry.DebugString(), HasSubstr("Combined results:"));
@@ -2553,7 +2536,6 @@ TEST_F(AtMemoryQueryServiceTest,
   auto provider = std::make_unique<FakeMemoryDataProvider>();
   MemorySearchResult local_result(MemoryDataType::kPassportNumber, u"Passport",
                                   u"PASS123");
-  local_result.is_local = true;
   provider->SetResults({local_result});
 
   auto service = CreateQueryService(std::move(provider), &log_router);
@@ -2616,7 +2598,6 @@ TEST_F(AtMemoryQueryServiceTest,
       std::make_unique<FakeMemoryDataProvider>();
   MemorySearchResult local_result(MemoryDataType::kVehiclePlateNumber, u"Plate",
                                   u"CX100");
-  local_result.is_local = true;
   // "Country" (shared) comes before "City" (unique).
   local_result.metadata_list = {
       EntryMetadata(MemoryDataType::kUnknown, u"Country", u"US"),
