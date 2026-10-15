@@ -507,13 +507,10 @@ class WebViewChromium
     public SslCertificate getCertificate() {
         checkThread();
         forbidBuilderConfiguration();
-        if (!mStartupController.isChromiumInitialized()) {
-            return null;
-        }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CERTIFICATE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_CERTIFICATE, ApiCallUserAction.WEBVIEW_INSTANCE_GET_CERTIFICATE);
-            return mAwContents.getCertificate();
+            return mAwWebContent.getCertificate();
         }
     }
 
@@ -1263,9 +1260,7 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_PROGRESS")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_PROGRESS, ApiCallUserAction.WEBVIEW_INSTANCE_GET_PROGRESS);
-            if (mAwContents == null) return 100;
-            // No checkThread() because the value is cached java side (workaround for b/10533304).
-            return mAwContents.getMostRecentProgress();
+            return mAwWebContent.getMostRecentProgress();
         }
     }
 
@@ -1278,9 +1273,7 @@ class WebViewChromium
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_CONTENT_HEIGHT,
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_CONTENT_HEIGHT);
-            if (mAwContents == null) return 0;
-            // No checkThread() as it is mostly thread safe (workaround for b/10594869).
-            return mAwContents.getContentHeightCss();
+            return mAwWebContent.getContentHeightCss();
         }
     }
 
@@ -1291,9 +1284,9 @@ class WebViewChromium
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_CONTENT_WIDTH,
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_CONTENT_WIDTH);
-            if (mAwContents == null) return 0;
-            // No checkThread() as it is mostly thread safe (workaround for b/10594869).
-            return mAwContents.getContentWidthCss();
+            // We don't check that we're on the UI thread because we have not done it historically.
+            // Also, this method is only callable via reflection.
+            return mAwWebContent.getContentWidthCss();
         }
     }
 
@@ -2048,10 +2041,8 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_ZOOM_IN")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_ZOOM_IN, ApiCallUserAction.WEBVIEW_INSTANCE_CAN_ZOOM_IN);
-            if (checkUiMethodNeedsPost()) {
-                return false;
-            }
-            return mAwContents.canZoomIn();
+            checkThread();
+            return mAwWebContent.canZoomIn();
         }
     }
 
@@ -2062,10 +2053,8 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_ZOOM_OUT")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_ZOOM_OUT, ApiCallUserAction.WEBVIEW_INSTANCE_CAN_ZOOM_OUT);
-            if (checkUiMethodNeedsPost()) {
-                return false;
-            }
-            return mAwContents.canZoomOut();
+            checkThread();
+            return mAwWebContent.canZoomOut();
         }
     }
 

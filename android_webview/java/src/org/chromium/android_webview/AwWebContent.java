@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
+import android.net.http.SslCertificate;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -238,6 +239,9 @@ public class AwWebContent {
         return mAwContents;
     }
 
+    // The following methods trigger startup. It waits for Chromium to start before executing the
+    // action if startup has not yet completed.
+
     public void evaluateJavaScript(String script, @Nullable Callback<String> callback) {
         ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT)
                 .evaluateJavaScript(script, callback);
@@ -319,8 +323,38 @@ public class AwWebContent {
         return ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_PAGE_DOWN).pageDown(bottom);
     }
 
+    // The following methods don't trigger startup. They queue the action to run once Chromium has
+    // started or run the action immediately if Chromium has already started.
+
     public void goBack() {
         runOrQueueUntilStarted(AwContents::goBack);
+    }
+
+    // The following methods don't trigger startup. They return a default value if the AwContents
+    // hasn't been created yet.
+
+    public @Nullable SslCertificate getCertificate() {
+        return mAwContents == null ? null : mAwContents.getCertificate();
+    }
+
+    public int getMostRecentProgress() {
+        return mAwContents == null ? 100 : mAwContents.getMostRecentProgress();
+    }
+
+    public int getContentHeightCss() {
+        return mAwContents == null ? 0 : mAwContents.getContentHeightCss();
+    }
+
+    public int getContentWidthCss() {
+        return mAwContents == null ? 0 : mAwContents.getContentWidthCss();
+    }
+
+    public boolean canZoomIn() {
+        return mAwContents != null && mAwContents.canZoomIn();
+    }
+
+    public boolean canZoomOut() {
+        return mAwContents != null && mAwContents.canZoomOut();
     }
 
     private AwContents ensureAwContents(@StartupCallSite int callSite) {
