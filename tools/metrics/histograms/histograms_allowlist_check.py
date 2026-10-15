@@ -61,8 +61,9 @@ def check_histograms_allowlist(output_api, allowlist_path, histograms_files):
     output_api: The output api type, generally provided by the PRESUBMIT system.
     allowlist_path: The path to the allowlist file to validate histograms
       against.
-    histograms_files: The list of histograms files to look for allowlisted
-      histograms in.
+    histograms_files: A list of filenames or file-like objects containing
+      histogram definitions. Files opened from filenames are closed after
+      parsing; caller-provided streams remain open.
   """
 
   all_histograms = histogram_utils.get_names(histograms_files)

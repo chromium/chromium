@@ -217,26 +217,36 @@ class MetricsPresubmitTest(unittest.TestCase):
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 
-  def testCheckWebViewHistogramsAllowlistOnUploadPasses(self):
-    valid_enums_path = _BASE_DIR + '/test_data/example_valid_enums.xml'
-    example_allowlist_path = _BASE_DIR + '/test_data/AllowlistExample.java'
-
-    (mock_input_api, valid_histograms_path) = _MockInputFromTestFile(
+  def testAllowlistCheckClosesEachFileBeforeOpeningNext(self):
+    mock_input_api, histograms_path = _MockInputFromTestFile(
       'example_valid_histograms.xml'
     )
+    xml_paths = [
+      histograms_path,
+      _BASE_DIR + '/test_data/example_valid_enums.xml',
+      _TOP_LEVEL_ENUMS_PATH,
+    ]
+    opened_files = []
+    real_open = open
 
-    results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
-      mock_input_api,
-      PRESUBMIT_test_mocks.MockOutputApi(),
-      allowlist_path_override=example_allowlist_path,
-      xml_paths_override=[
-        valid_histograms_path,
-        valid_enums_path,
-        _TOP_LEVEL_ENUMS_PATH,
-      ],
-    )
-    # Zero results mean that there were no errors reported.
-    self.assertEqual(len(results), 0)
+    def open_one_at_a_time(*args, **kwargs):
+      self.assertTrue(all(f.closed for f in opened_files))
+      f = real_open(*args, **kwargs)
+      # Keep references so garbage collection cannot hide unclosed files.
+      opened_files.append(f)
+      self.addCleanup(f.close)
+      return f
+
+    with mock.patch('builtins.open', side_effect=open_one_at_a_time):
+      results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
+        mock_input_api,
+        PRESUBMIT_test_mocks.MockOutputApi(),
+        allowlist_path_override=_BASE_DIR + '/test_data/AllowlistExample.java',
+        xml_paths_override=xml_paths,
+      )
+    self.assertEqual(results, [])
+    self.assertEqual(len(opened_files), len(xml_paths) + 1)
+    self.assertTrue(all(f.closed for f in opened_files))
 
   def testCheckBooleansAreEnumsPasses(self):
     mock_input_api = _MockInputFromString(

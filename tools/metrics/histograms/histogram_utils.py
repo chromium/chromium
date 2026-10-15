@@ -26,7 +26,9 @@ def get_names(xml_files):
   """Returns all histogram names generated from a list of xml files.
 
   Args:
-    xml_files: A list of open file objects containing histogram definitions.
+    xml_files: A list of filenames or file-like objects containing histogram
+      definitions. Files opened from filenames are closed after parsing;
+      caller-provided streams remain open.
   Returns:
     The set of histogram names.
   """

@@ -313,7 +313,6 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(
   if xml_paths_override is not None:
     xml_files_paths = xml_paths_override
 
-  xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
   allowlist_path = os.path.join(
     path_util.CHROMIUM_SRC_PATH,
     histograms_allowlist_check.WellKnownAllowlistPath.ANDROID_WEBVIEW.relative_path(),
@@ -322,12 +321,9 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(
   if allowlist_path_override is not None:
     allowlist_path = allowlist_path_override
 
-  result = histograms_allowlist_check.check_histograms_allowlist(
-    output_api, allowlist_path, xml_files
+  return histograms_allowlist_check.check_histograms_allowlist(
+    output_api, allowlist_path, xml_files_paths
   )
-  for f in xml_files:
-    f.close()
-  return result
 
 
 def CheckBooleansAreEnums(

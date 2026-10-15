@@ -171,7 +171,9 @@ def MergeFiles(
 
   Args:
     filenames: A list of histograms.xml filenames.
-    files: A list of histograms.xml file-like objects.
+    files: A list of histograms.xml filenames or file-like objects. Files
+      opened from filenames are closed after parsing; caller-provided streams
+      remain open.
     expand_owners_and_extract_components: Whether we want to expand owners and
       extract components.
 

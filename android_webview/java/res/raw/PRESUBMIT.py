@@ -20,7 +20,7 @@ def _CheckHistogramsAllowlist(input_api, output_api):
     histograms_path = os.path.join(src_path, 'tools', 'metrics', 'histograms')
     sys.path.append(histograms_path)
 
-    import print_histogram_names
+    import histogram_paths
     from histograms_allowlist_check import WellKnownAllowlistPath
     from histograms_allowlist_check import check_histograms_allowlist
     allowlist_path = os.path.join(
@@ -31,12 +31,5 @@ def _CheckHistogramsAllowlist(input_api, output_api):
     if not input_api.AffectedFiles(file_filter=histograms_allowlist_filter):
         return []
 
-    xml_files = print_histogram_names.histogram_xml_files()
-    result = check_histograms_allowlist(output_api, allowlist_path, xml_files)
-
-    # TODO(crbug.com/391795980): Files should be scope managed, remove this
-    # quick fixed once the issue is done.
-    for f in xml_files:
-        f.close()
-
-    return result
+    return check_histograms_allowlist(output_api, allowlist_path,
+                                      histogram_paths.ALL_XMLS)
