@@ -405,15 +405,15 @@ class ManagedConfigurationAPI::OriginConfiguration {
     PostStoreConfiguration(url_hash, std::move(result_dict));
   }
 
-  // `hash_to_commit` is committed once this write succeeded, or std::nullopt
-  // for writes that must never be committed (clears and test writes). An empty
-  // hash is a valid policy hash.
+  // `hash_to_commit` is committed once this write succeeds and no later write
+  // is queued, or std::nullopt for writes that must never be committed (clears
+  // and test writes). An empty hash is a valid policy hash.
   void PostStoreConfiguration(std::optional<std::string> hash_to_commit,
                               base::DictValue configuration) {
     EnsureStoreCreated();
     if (IsRecoveryEnabled()) {
       // Drop the committed hash before the store diverges from it; it is
-      // re-committed in OnStoreConfigurationCompleted() once this write
+      // re-committed in OnStoreConfigurationCompleted() once the latest write
       // succeeded. Otherwise a superseded or failed write could leave a hash
       // that does not match the store (e.g. policy A -> B -> A while B's write
       // is queued).
@@ -445,7 +445,11 @@ class ManagedConfigurationAPI::OriginConfiguration {
                                                   changed.value_or(false));
       return;
     }
-    const bool is_desired_write = desired_ && hash_to_commit == desired_->hash;
+    // Writes complete in order, so a write with later writes queued behind it
+    // does not determine what the store contains. Only the latest write may
+    // commit its hash or schedule a retry.
+    const bool is_desired_write = in_flight_store_writes_ == 0 && desired_ &&
+                                  hash_to_commit == desired_->hash;
     if (!changed.has_value()) {
       if (is_desired_write) {
         ScheduleRetry();

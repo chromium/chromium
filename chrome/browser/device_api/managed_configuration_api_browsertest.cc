@@ -806,6 +806,68 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
 }
 
+// Verifies that a store write with a later write queued behind it does not
+// commit its hash. Otherwise the committed hash would match the policy while
+// the store holds the later write's configuration, and the configuration would
+// not be downloaded again.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       SupersededWriteDoesNotCommitHash) {
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  api()->SetStoreTaskRunnerForTesting(store_task_runner);
+  auto fail_url2 =
+      base::MakeRefCounted<base::RefCountedData<std::atomic<bool>>>(
+          std::in_place, false);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](scoped_refptr<base::RefCountedData<std::atomic<bool>>> fail_url2,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl2 &&
+            fail_url2->data.load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      fail_url2));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+
+  {
+    StoreSequenceBlocker blocker(store_task_runner);
+    // The writes of (url2, hash2) and then (url1, hash1) are queued behind
+    // `blocker`.
+    SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+    SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+    // The policy returns to (url2, hash2), but downloading it again fails.
+    fail_url2->data.store(true);
+    SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+  }
+  // Wait until both queued writes completed and their replies ran.
+  base::RunLoop run_loop;
+  store_task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                      run_loop.QuitClosure());
+  run_loop.Run();
+  // The store holds the configuration of (url1, hash1), so hash2 must not be
+  // committed.
+  EXPECT_FALSE(GetCommittedHash());
+
+  // Once url2 can be downloaded again, a retry restores its configuration.
+  fail_url2->data.store(false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetCommittedHash() == kConfigurationHash2; }));
+  EXPECT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue12}, {kKey2, kValue22}}));
+}
+
 // Verifies that a read issued while a downloaded configuration is still being
 // written waits for that write instead of downloading the configuration again.
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
