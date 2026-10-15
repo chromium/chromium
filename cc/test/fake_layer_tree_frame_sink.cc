@@ -92,7 +92,7 @@ void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
 
 std::unique_ptr<LayerContext> FakeLayerTreeFrameSink::CreateLayerContext(
     LayerTreeHostImpl& host_impl) {
-  return std::make_unique<FakeLayerContext>();
+  return std::make_unique<FakeLayerContext>(&layer_context_updates_);
 }
 
 void FakeLayerTreeFrameSink::DidReceiveCompositorFrameAck() {

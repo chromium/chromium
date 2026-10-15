@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -53,7 +54,8 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
       bool frame_has_damage,
       bool is_flush,
       std::vector<ui::LatencyInfo> latency_info,
-      viz::TrackedElementRects tracked_element_rects) override;
+      viz::TrackedElementRects tracked_element_rects,
+      std::optional<viz::FrameIntervalInputs> frame_interval_inputs) override;
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,
                          viz::ClientResourceProvider& resource_provider,

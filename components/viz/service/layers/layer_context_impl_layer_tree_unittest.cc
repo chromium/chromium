@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <limits>
+#include <optional>
 
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/trees/latency_info_swap_promise.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/layers/layer_context_impl.h"
 #include "components/viz/service/layers/layer_context_impl_base_unittest.h"
 #include "components/viz/service/layers/viz_layer_tree_host_impl.h"
@@ -1075,6 +1077,34 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateThrottleAndInteraction) {
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_TRUE(host_impl->may_throttle_if_undrawn_frames());
   EXPECT_FALSE(host_impl->IsHandlingInteraction());
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateFrameIntervalInputs) {
+  VizLayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+
+  // An update for a frame the client drew carries that frame's inputs.
+  auto update1 = CreateDefaultUpdate();
+  FrameIntervalInputs inputs;
+  inputs.has_input = true;
+  inputs.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation,
+       base::Milliseconds(100)});
+  update1->frame_interval_inputs = inputs;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  const std::optional<FrameIntervalInputs>& stored =
+      host_impl->frame_interval_inputs_from_client_for_testing();
+  ASSERT_TRUE(stored);
+  EXPECT_TRUE(stored->has_input);
+  ASSERT_EQ(stored->content_interval_info.size(), 1u);
+  EXPECT_EQ(stored->content_interval_info[0].type,
+            ContentFrameIntervalType::kSteppedCompositorAnimation);
+
+  // An update without inputs clears them.
+  auto update2 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_FALSE(host_impl->frame_interval_inputs_from_client_for_testing());
 }
 
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateWithFrameHasDamage) {

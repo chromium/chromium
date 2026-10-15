@@ -2218,6 +2218,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   host_impl_->set_tracked_element_rects_from_client(
       std::move(update->tracked_element_rects));
+  host_impl_->set_frame_interval_inputs_from_client(
+      std::move(update->frame_interval_inputs));
 
   for (const auto& latency : update->latency_info) {
     if (latency.terminated()) {

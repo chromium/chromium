@@ -242,11 +242,12 @@ struct CC_EXPORT EffectNode {
   // preserved across commit or activation). Mirrors
   // TransformNode::damage_reasons_.
   //
-  // TODO(crbug.com/555345506): Unlike TransformNode, this set is not yet
+  // TODO(crbug.com/402282957): Unlike TransformNode, this set is not yet
   // serialized for TreesInViz (see layer.mojom
-  // TransformNode.damage_reasons_bit_mask). Until the follow-up adds the mojom
-  // field + producer/consumer traits, effect animation provenance is lost
-  // Viz-side and falls back to kUntracked.
+  // TransformNode.damage_reasons_bit_mask), so effect animation provenance is
+  // lost Viz-side and falls back to kUntracked. With TreesInViz alone, that
+  // doesn't affect refresh rate selection, since Viz uses the client's
+  // FrameIntervalInputs; it does with TreeAnimationsInViz.
   DamageReasonSet damage_reasons_;
 
  public:

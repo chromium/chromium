@@ -18,6 +18,7 @@
 #include "cc/tiles/tile.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 
 namespace viz {
@@ -142,7 +143,8 @@ cc::FakePictureLayerImpl* VizLayerContextTest::SetupPictureLayer() {
       host_impl_->active_tree()->LayerById(VizLayerContextTest::kChildLayerId));
 }
 
-void VizLayerContextTest::UpdateDisplayTreeAndWait() {
+void VizLayerContextTest::UpdateDisplayTreeAndWait(
+    std::optional<FrameIntervalInputs> frame_interval_inputs) {
   const gfx::Rect& viewport_damage_rect =
       VizLayerContextTest::kDefaultDamageRect;
   bool frame_has_damage = false;
@@ -152,7 +154,7 @@ void VizLayerContextTest::UpdateDisplayTreeAndWait() {
       *host_impl_->active_tree(), *host_impl_->resource_provider(),
       /*shared_image_interface=*/nullptr, viewport_damage_rect,
       frame_has_damage, /*is_flush=*/false, std::move(latency_info),
-      TrackedElementRects());
+      TrackedElementRects(), std::move(frame_interval_inputs));
 
   base::RunLoop run_loop;
   fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();
@@ -172,6 +174,35 @@ TEST_F(VizLayerContextTest, BasicCreateAndActivate) {
 
   EXPECT_EQ(update->layers.size(), 1u);
   EXPECT_EQ(update->layers[0]->id, VizLayerContextTest::kRootLayerId);
+}
+
+TEST_F(VizLayerContextTest, FrameIntervalInputs) {
+  SetupRootLayer();
+
+  FrameIntervalInputs inputs;
+  inputs.has_input = true;
+  inputs.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation,
+       base::Milliseconds(100)});
+  inputs.has_only_content_frame_interval_updates = true;
+  UpdateDisplayTreeAndWait(inputs);
+
+  ASSERT_TRUE(fake_layer_context_.last_update_);
+  const std::optional<FrameIntervalInputs>& sent =
+      fake_layer_context_.last_update_->frame_interval_inputs;
+  ASSERT_TRUE(sent);
+  EXPECT_TRUE(sent->has_input);
+  ASSERT_EQ(sent->content_interval_info.size(), 1u);
+  EXPECT_EQ(sent->content_interval_info[0].type,
+            ContentFrameIntervalType::kSteppedCompositorAnimation);
+  EXPECT_EQ(sent->content_interval_info[0].frame_interval,
+            base::Milliseconds(100));
+  EXPECT_TRUE(sent->has_only_content_frame_interval_updates);
+
+  // Without inputs from the client, the update carries none.
+  UpdateDisplayTreeAndWait();
+  ASSERT_TRUE(fake_layer_context_.last_update_);
+  EXPECT_FALSE(fake_layer_context_.last_update_->frame_interval_inputs);
 }
 
 TEST_F(VizLayerContextTest, MultipleUpdates) {
@@ -306,7 +337,7 @@ TEST_F(VizLayerContextTest, FlushOnlyUpdate) {
       *host_impl_->active_tree(), *host_impl_->resource_provider(),
       /*shared_image_interface=*/nullptr, viewport_damage_rect,
       frame_has_damage, /*is_flush=*/true, std::move(latency_info),
-      TrackedElementRects());
+      TrackedElementRects(), /*frame_interval_inputs=*/std::nullopt);
 
   base::RunLoop run_loop;
   fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();

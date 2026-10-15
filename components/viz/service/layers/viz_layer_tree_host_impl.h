@@ -5,7 +5,12 @@
 #ifndef COMPONENTS_VIZ_SERVICE_LAYERS_VIZ_LAYER_TREE_HOST_IMPL_H_
 #define COMPONENTS_VIZ_SERVICE_LAYERS_VIZ_LAYER_TREE_HOST_IMPL_H_
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "cc/trees/layer_tree_host_impl.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace cc {
@@ -53,6 +58,18 @@ class VIZ_SERVICE_EXPORT VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
 
   void set_is_handling_interaction_from_client(bool is_handling_interaction) {
     is_handling_interaction_from_client_ = is_handling_interaction;
+  }
+
+  // The FrameIntervalInputs of the frame the client drew for its latest
+  // update, if any. Used once, by the next frame generated here.
+  void set_frame_interval_inputs_from_client(
+      std::optional<FrameIntervalInputs> frame_interval_inputs) {
+    frame_interval_inputs_from_client_ = std::move(frame_interval_inputs);
+  }
+
+  const std::optional<FrameIntervalInputs>&
+  frame_interval_inputs_from_client_for_testing() const {
+    return frame_interval_inputs_from_client_;
   }
 };
 

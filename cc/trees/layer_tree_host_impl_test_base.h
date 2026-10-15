@@ -6,6 +6,7 @@
 #define CC_TREES_LAYER_TREE_HOST_IMPL_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,6 +30,7 @@
 #include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -148,6 +150,16 @@ class TestVizLayerTreeHostImpl : public LayerTreeHostImpl {
 
   void set_is_handling_interaction_from_client(bool is_handling_interaction) {
     is_handling_interaction_from_client_ = is_handling_interaction;
+  }
+
+  void set_frame_interval_inputs_from_client(
+      std::optional<viz::FrameIntervalInputs> frame_interval_inputs) {
+    frame_interval_inputs_from_client_ = std::move(frame_interval_inputs);
+  }
+
+  const std::optional<viz::FrameIntervalInputs>&
+  frame_interval_inputs_from_client_for_testing() const {
+    return frame_interval_inputs_from_client_;
   }
 };
 

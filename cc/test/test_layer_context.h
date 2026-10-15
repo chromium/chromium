@@ -5,6 +5,7 @@
 #ifndef CC_TEST_TEST_LAYER_CONTEXT_H_
 #define CC_TEST_TEST_LAYER_CONTEXT_H_
 
+#include <optional>
 #include <vector>
 
 #include "cc/trees/layer_context.h"
@@ -30,7 +31,8 @@ class TestLayerContext : public LayerContext {
       bool frame_has_damage,
       bool is_flush,
       std::vector<ui::LatencyInfo> latency_info,
-      viz::TrackedElementRects tracked_element_rects) override;
+      viz::TrackedElementRects tracked_element_rects,
+      std::optional<viz::FrameIntervalInputs> frame_interval_inputs) override;
 
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,

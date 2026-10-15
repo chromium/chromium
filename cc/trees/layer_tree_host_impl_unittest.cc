@@ -197,8 +197,10 @@ INSTANTIATE_COMPOSITOR_FRAME_PRODUCING_TREE_TEST_P(
 class AnimationsLayerTreeHostImplTest : public LayerTreeHostImplTest {
  protected:
   // TreesInViz clients don't submit CompositorFrames, and the Viz-process
-  // instance doesn't report stepped animation cadence yet
-  // (crbug.com/555345506).
+  // instance doesn't compute stepped animation cadence itself: with TreesInViz
+  // alone it uses the client's FrameIntervalInputs (see
+  // FrameIntervalInputsFromClientTest), and with TreeAnimationsInViz it doesn't
+  // report the cadence yet (crbug.com/388855821).
   bool ReportsSteppedCadence() const {
     return !host_impl_->settings().TreesInVizInClientProcess() &&
            !host_impl_->settings().trees_in_viz_in_viz_process;
@@ -3380,7 +3382,7 @@ TEST_P(AnimationsLayerTreeHostImplTest,
 TEST_P(AnimationsLayerTreeHostImplTest, SteppedCadenceNotReportedInVizProcess) {
   // Among the TreesInViz modes, only the Viz-process instance with
   // TreeAnimationsInViz ticks animations. It doesn't report stepped cadence
-  // yet (crbug.com/555345506), so the frame keeps kCompositorAnimation and
+  // yet (crbug.com/388855821), so the frame keeps kCompositorAnimation and
   // stays ineligible for throttling.
   if (!host_impl_->settings().TreeAnimationsInVizInVizProcess()) {
     GTEST_SKIP();
@@ -3414,6 +3416,141 @@ TEST_P(AnimationsLayerTreeHostImplTest, SteppedCadenceNotReportedInVizProcess) {
   const auto& frame_interval_inputs = frame->metadata.frame_interval_inputs;
   EXPECT_FALSE(frame_interval_inputs.has_only_content_frame_interval_updates);
   EXPECT_TRUE(frame_interval_inputs.content_interval_info.empty());
+}
+
+// With TreesInViz, the client passes the FrameIntervalInputs of the frames it
+// draws to Viz, and the frames Viz generates use them.
+class FrameIntervalInputsFromClientTest
+    : public AnimationsLayerTreeHostImplTest {
+ protected:
+  // Whether the frames this instance generates use the client's inputs.
+  bool UsesClientInputs() const {
+    return host_impl_->settings().trees_in_viz_in_viz_process &&
+           !host_impl_->settings().TreeAnimationsInVizInVizProcess();
+  }
+
+  // Like DrawAnimationFrame(), but with damage, so that a frame is drawn.
+  const viz::CompositorFrame* DrawDamagedFrame(base::TimeTicks frame_time,
+                                               uint64_t sequence_number) {
+    host_impl_->SetFullViewportDamage();
+    return DrawAnimationFrame(frame_time, sequence_number);
+  }
+
+  static viz::FrameIntervalInputs ClientInputs() {
+    viz::FrameIntervalInputs inputs;
+    inputs.frame_time = base::TimeTicks() + base::Seconds(10);
+    inputs.has_input = true;
+    inputs.content_interval_info.push_back(
+        {viz::ContentFrameIntervalType::kSteppedCompositorAnimation,
+         base::Milliseconds(100)});
+    inputs.has_only_content_frame_interval_updates = true;
+    return inputs;
+  }
+
+  // Only the Viz-process instance receives inputs from the client.
+  TestVizLayerTreeHostImpl* viz_host_impl() {
+    CHECK(host_impl_->settings().trees_in_viz_in_viz_process);
+    return static_cast<TestVizLayerTreeHostImpl*>(host_impl_.get());
+  }
+};
+
+INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(
+    FrameIntervalInputsFromClientTest,
+    CommitToActiveTree,
+    CommitToPendingTree,
+    CommitToActiveTreeTreesInVizClient,
+    CommitToPendingTreeTreesInVizClient,
+    CommitToActiveTreeTreesInVizService,
+    CommitToActiveTreeAnimationsInVizService);
+
+TEST_P(FrameIntervalInputsFromClientTest, ClientSendsInputsOfDrawnFrames) {
+  if (!host_impl_->settings().TreesInVizInClientProcess()) {
+    GTEST_SKIP();
+  }
+
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(50, 50));
+
+  LayerImpl* child = AddLayerInActiveTree();
+  child->SetBounds(gfx::Size(10, 10));
+  child->SetDrawsContent(true);
+
+  host_impl_->active_tree()->SetElementIdsForTesting();
+  CopyProperties(root, child);
+  auto& effect_node = CreateEffectNode(child);
+  effect_node.render_surface_reason = RenderSurfaceReason::kTest;
+  effect_node.has_potential_opacity_animation = true;
+
+  // 10 steps over 1s -> 100ms interval.
+  AddImplOpacityAnimation(child->element_id(), base::Seconds(1), 10);
+  UpdateDrawProperties(host_impl_->active_tree());
+  host_impl_->ActivateAnimations();
+
+  auto* sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+
+  // The first frame starts the animation.
+  const base::TimeTicks start_time =
+      base::TimeTicks() + base::Milliseconds(100);
+  DrawAnimationFrame(start_time, 1);
+
+  // The animation steps: the inputs sent with the update include its cadence.
+  const base::TimeTicks frame_time = start_time + base::Milliseconds(150);
+  DrawAnimationFrame(frame_time, 2);
+  const std::optional<viz::FrameIntervalInputs>& inputs =
+      sink->layer_context_updates().last_frame_interval_inputs;
+  ASSERT_TRUE(inputs);
+  EXPECT_EQ(inputs->frame_time, frame_time);
+  EXPECT_TRUE(inputs->has_only_content_frame_interval_updates);
+  ASSERT_EQ(inputs->content_interval_info.size(), 1u);
+  EXPECT_EQ(inputs->content_interval_info[0].type,
+            viz::ContentFrameIntervalType::kSteppedCompositorAnimation);
+  EXPECT_EQ(inputs->content_interval_info[0].frame_interval,
+            base::Milliseconds(100));
+
+  // Within the same step nothing changes, so the update carries no inputs.
+  const size_t updates_before = sink->layer_context_updates().count;
+  DrawAnimationFrame(frame_time + base::Milliseconds(10), 3);
+  EXPECT_GT(sink->layer_context_updates().count, updates_before);
+  EXPECT_FALSE(sink->layer_context_updates().last_frame_interval_inputs);
+}
+
+TEST_P(FrameIntervalInputsFromClientTest, VizFrameUsesClientInputsOnce) {
+  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
+    GTEST_SKIP();
+  }
+
+  SetupDefaultRootLayer(gfx::Size(50, 50));
+  UpdateDrawProperties(host_impl_->active_tree());
+  viz_host_impl()->set_frame_interval_inputs_from_client(ClientInputs());
+
+  const base::TimeTicks frame_time =
+      base::TimeTicks() + base::Milliseconds(100);
+  const viz::CompositorFrame* frame = DrawDamagedFrame(frame_time, 1);
+  ASSERT_TRUE(frame);
+  const viz::FrameIntervalInputs inputs = frame->metadata.frame_interval_inputs;
+  EXPECT_EQ(inputs.frame_time, frame_time);
+  if (!UsesClientInputs()) {
+    // With TreeAnimationsInViz, Viz keeps its own inputs.
+    EXPECT_FALSE(inputs.has_input);
+    EXPECT_TRUE(inputs.content_interval_info.empty());
+    return;
+  }
+  EXPECT_TRUE(inputs.has_input);
+  ASSERT_EQ(inputs.content_interval_info.size(), 1u);
+  EXPECT_EQ(inputs.content_interval_info[0].type,
+            viz::ContentFrameIntervalType::kSteppedCompositorAnimation);
+  EXPECT_EQ(inputs.content_interval_info[0].frame_interval,
+            base::Milliseconds(100));
+  EXPECT_TRUE(inputs.has_only_content_frame_interval_updates);
+  EXPECT_FALSE(
+      viz_host_impl()->frame_interval_inputs_from_client_for_testing());
+
+  // Without new inputs from the client, the next frame keeps its own.
+  frame = DrawDamagedFrame(frame_time + base::Milliseconds(16), 2);
+  ASSERT_TRUE(frame);
+  EXPECT_FALSE(frame->metadata.frame_interval_inputs.has_input);
+  EXPECT_TRUE(
+      frame->metadata.frame_interval_inputs.content_interval_info.empty());
 }
 
 class IncompleteRecordingLayer : public LayerImpl {

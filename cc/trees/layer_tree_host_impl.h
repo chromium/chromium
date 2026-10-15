@@ -69,6 +69,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -429,6 +430,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       FrameData& frame,
       std::vector<ui::LatencyInfo> latency_info,
       viz::TrackedElementRects tracked_element_rects,
+      std::optional<viz::FrameIntervalInputs> frame_interval_inputs,
       bool is_flush = false);
 
   // Synchronizes the current tree state to Viz without triggering a draw.
@@ -1382,6 +1384,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Only used in TreesInViz mode. Stores tracked element rects passed from the
   // client so that they can be added to generated frame metadata in Viz.
   viz::TrackedElementRects tracked_element_rects_from_client_;
+
+  // Only used in TreesInViz mode. Stores the frame interval inputs of the frame
+  // the client drew for its latest update, if any. Used once, by the next frame
+  // generated in Viz.
+  std::optional<viz::FrameIntervalInputs> frame_interval_inputs_from_client_;
 
   // Settings whether we dump generated compositor frame during DrawLayers.
   // They are for debug purposes for TreesInViz and TreeAnimationsInViz.

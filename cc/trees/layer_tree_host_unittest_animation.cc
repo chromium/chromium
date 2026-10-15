@@ -4,11 +4,13 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <climits>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation.h"
@@ -24,6 +26,7 @@
 #include "cc/base/features.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/solid_color_layer.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
@@ -34,6 +37,7 @@
 #include "cc/trees/target_property.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -430,6 +434,82 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction);
+
+// With TreesInViz, the frames Viz generates carry the cadence of a stepped
+// opacity animation that the client computed (crbug.com/522635671).
+class LayerTreeHostAnimationTestSteppedCadenceTreesInViz
+    : public LayerTreeHostAnimationTest {
+ public:
+  LayerTreeHostAnimationTestSteppedCadenceTreesInViz() {
+    feature_list_.InitAndEnableFeature(features::kTreesInViz);
+  }
+
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostAnimationTest::InitializeSettings(settings);
+    // SetupTree() builds a layer tree, without property trees.
+    settings->use_layer_lists = false;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(10, 10));
+    LayerTreeHostAnimationTest::SetupTree();
+    layer_ = SolidColorLayer::Create();
+    layer_->SetBounds(gfx::Size(4, 4));
+    layer_->SetBackgroundColor(SkColors::kRed);
+    layer_->SetIsDrawable(true);
+    layer_tree_host()->root_layer()->AddChild(layer_);
+
+    AttachAnimationsToTimeline();
+    animation_->AttachElement(layer_->element_id());
+  }
+
+  void BeginTest() override {
+    // 10 steps over 1s: a 100ms cadence.
+    AddOpacityStepsToAnimation(animation_.get(), 1.0, 0.1f, 0.9f, 10);
+  }
+
+  // Called with each frame submitted to Viz's frame sink, which with
+  // TreesInViz is the frame Viz generates.
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    const viz::FrameIntervalInputs& inputs =
+        frame.metadata.frame_interval_inputs;
+    for (const viz::ContentFrameIntervalInfo& info :
+         inputs.content_interval_info) {
+      if (info.type ==
+          viz::ContentFrameIntervalType::kSteppedCompositorAnimation) {
+        EXPECT_EQ(info.frame_interval, base::Milliseconds(100));
+        if (inputs.has_only_content_frame_interval_updates) {
+          found_eligible_cadence_ = true;
+        }
+      }
+    }
+    if (found_eligible_cadence_) {
+      EndTest();
+    }
+  }
+
+  // Ends the test once every step of the animation has been drawn, if it
+  // hasn't ended already.
+  void NotifyAnimationFinished(base::TimeTicks monotonic_time,
+                               int target_property,
+                               int group) override {
+    EndTest();
+  }
+
+  void AfterTest() override {
+    EXPECT_TRUE(found_eligible_cadence_);
+    LayerTreeHostAnimationTest::AfterTest();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<SolidColorLayer> layer_;
+  std::atomic<bool> found_eligible_cadence_ = false;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(
+    LayerTreeHostAnimationTestSteppedCadenceTreesInViz);
 
 // Ensures that main thread animations have their start times synchronized with
 // impl thread animations.

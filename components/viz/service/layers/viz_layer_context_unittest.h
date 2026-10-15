@@ -21,6 +21,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -109,7 +110,8 @@ class VizLayerContextTest : public testing::Test {
   cc::LayerImpl* SetupRootLayer();
   cc::FakePictureLayerImpl* SetupPictureLayer();
 
-  void UpdateDisplayTreeAndWait();
+  void UpdateDisplayTreeAndWait(
+      std::optional<FrameIntervalInputs> frame_interval_inputs = std::nullopt);
 
   static constexpr int kRootLayerId = 1;
   static constexpr int kChildLayerId = 2;

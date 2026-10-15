@@ -133,6 +133,7 @@ constexpr size_t kMaxAnimationTimelines = 100;
 constexpr size_t kMaxAnimationsPerTimeline = 100;
 constexpr size_t kMaxKeyframeModelsPerAnimation = 10;
 constexpr size_t kMaxKeyframesPerAnimationCurve = 10;
+constexpr size_t kMaxContentFrameIntervalInfo = 100;
 
 void ClampTiling(viz::mojom::Tiling* tiling) {
   if (!tiling) {
@@ -210,6 +211,13 @@ void ClampLayerTreeUpdate(viz::mojom::LayerTreeUpdate* update) {
     if (rects.size() > kMaxTrackedElementRects) {
       rects.resize(kMaxTrackedElementRects);
     }
+  }
+
+  if (update->frame_interval_inputs &&
+      update->frame_interval_inputs->content_interval_info.size() >
+          kMaxContentFrameIntervalInfo) {
+    update->frame_interval_inputs->content_interval_info.resize(
+        kMaxContentFrameIntervalInfo);
   }
 
   for (auto& node : update->effect_nodes) {

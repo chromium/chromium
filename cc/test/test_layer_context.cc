@@ -23,7 +23,8 @@ base::TimeTicks TestLayerContext::UpdateDisplayTreeFrom(
     bool frame_has_damage,
     bool is_flush,
     std::vector<ui::LatencyInfo> latency_info,
-    viz::TrackedElementRects tracked_element_rects) {
+    viz::TrackedElementRects tracked_element_rects,
+    std::optional<viz::FrameIntervalInputs> frame_interval_inputs) {
   return base::TimeTicks::Now();
 }
 

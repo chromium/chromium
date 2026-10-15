@@ -5,11 +5,13 @@
 #ifndef CC_TREES_LAYER_CONTEXT_H_
 #define CC_TREES_LAYER_CONTEXT_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/trees/commit_state.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/latency/latency_info.h"
 
@@ -47,6 +49,8 @@ class CC_EXPORT LayerContext {
       const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
   // Pushes updates from `tree` into the context's display tree.
+  // `frame_interval_inputs` are those of the frame the client drew for this
+  // update, if any.
   virtual base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
@@ -55,7 +59,8 @@ class CC_EXPORT LayerContext {
       bool frame_has_damage,
       bool is_flush,
       std::vector<ui::LatencyInfo> latency_info,
-      viz::TrackedElementRects tracked_element_rects) = 0;
+      viz::TrackedElementRects tracked_element_rects,
+      std::optional<viz::FrameIntervalInputs> frame_interval_inputs) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
   virtual void UpdateDisplayTile(

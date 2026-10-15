@@ -4,6 +4,7 @@
 
 #include "cc/test/fake_layer_context.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/time/time.h"
@@ -24,7 +25,12 @@ base::TimeTicks FakeLayerContext::UpdateDisplayTreeFrom(
     bool frame_has_damage,
     bool is_flush,
     std::vector<ui::LatencyInfo> latency_info,
-    viz::TrackedElementRects tracked_element_rects) {
+    viz::TrackedElementRects tracked_element_rects,
+    std::optional<viz::FrameIntervalInputs> frame_interval_inputs) {
+  if (updates_) {
+    ++updates_->count;
+    updates_->last_frame_interval_inputs = std::move(frame_interval_inputs);
+  }
   return base::TimeTicks::Now();
 }
 
