@@ -621,11 +621,10 @@ class GeminiContainerMediatorTabHelperObserver
 - (void)geminiZeroStateViewController:
             (GeminiZeroStateViewController*)viewController
                   didSelectSuggestion:(ZeroStateSuggestion*)suggestion {
-  if (!_startupState || !suggestion.query.length) {
+  if (!suggestion.query.length) {
     return;
   }
-  ios::provider::UpdatePromptAction(_startupState.entryPoint, suggestion.query,
-                                    YES);
+  ios::provider::UpdatePromptAction(suggestion.type, suggestion.query, YES);
 }
 
 - (void)didTapZeroStateCloseButton {

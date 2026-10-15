@@ -64,6 +64,7 @@ static GeminiPageContextAttachmentState g_current_attachment_state =
     GeminiPageContextAttachmentState::kUnknown;
 static std::optional<gemini::EntryPoint>
     g_last_update_prompt_action_entry_point;
+static std::optional<gemini::InputType> g_last_update_prompt_action_input_type;
 static NSString* g_last_update_prompt_action_prompt = nil;
 static BOOL g_last_update_prompt_action_should_auto_submit = NO;
 
@@ -83,6 +84,7 @@ void ResetGemini() {
   g_current_view_state = GeminiViewState::kUnknown;
   g_current_attachment_state = GeminiPageContextAttachmentState::kUnknown;
   g_last_update_prompt_action_entry_point.reset();
+  g_last_update_prompt_action_input_type.reset();
   g_last_update_prompt_action_prompt = nil;
   g_last_update_prompt_action_should_auto_submit = NO;
   g_mock_feature_mode_disabled_by_quota = false;
@@ -154,8 +156,20 @@ void UpdatePromptAction(gemini::EntryPoint entry_point,
   g_last_update_prompt_action_should_auto_submit = should_auto_submit;
 }
 
+void UpdatePromptAction(gemini::InputType input_type,
+                        NSString* prepopulated_prompt,
+                        bool should_auto_submit) {
+  g_last_update_prompt_action_input_type = input_type;
+  g_last_update_prompt_action_prompt = [prepopulated_prompt copy];
+  g_last_update_prompt_action_should_auto_submit = should_auto_submit;
+}
+
 std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint() {
   return g_last_update_prompt_action_entry_point;
+}
+
+std::optional<gemini::InputType> GetLastUpdatePromptActionInputType() {
+  return g_last_update_prompt_action_input_type;
 }
 
 NSString* GetLastUpdatePromptActionPrompt() {

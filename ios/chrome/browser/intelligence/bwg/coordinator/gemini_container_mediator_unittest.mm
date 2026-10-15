@@ -238,6 +238,7 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 
 namespace ios::provider {
 std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint();
+std::optional<gemini::InputType> GetLastUpdatePromptActionInputType();
 NSString* GetLastUpdatePromptActionPrompt();
 BOOL GetLastUpdatePromptActionShouldAutoSubmit();
 int GetUpdateActivePageContextCallCount();
@@ -1050,8 +1051,8 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_EQ(ActuationWorklogDisplayModeCompact, consumer.worklogDisplayMode);
 }
 
-// Tests that didSelectSuggestion calls UpdatePromptAction with the entry point
-// from startupState, the suggestion's query, and shouldAutoSubmit set to YES.
+// Tests that didSelectSuggestion calls UpdatePromptAction with the input type
+// from suggestion, the suggestion's query, and shouldAutoSubmit set to YES.
 TEST_F(GeminiContainerMediatorTest,
        TestDidSelectSuggestionUpdatesPromptAction) {
   ios::provider::ResetGemini();
@@ -1059,30 +1060,35 @@ TEST_F(GeminiContainerMediatorTest,
 
   ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
   suggestion.query = @"What is this page about?";
+  suggestion.type = gemini::InputType::kSummarize;
 
   [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
 
-  EXPECT_THAT(ios::provider::GetLastUpdatePromptActionEntryPoint(),
-              testing::Optional(gemini::EntryPoint::OverflowMenu));
+  EXPECT_THAT(ios::provider::GetLastUpdatePromptActionInputType(),
+              testing::Optional(gemini::InputType::kSummarize));
   EXPECT_NSEQ(@"What is this page about?",
               ios::provider::GetLastUpdatePromptActionPrompt());
   EXPECT_TRUE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
 }
 
-// Tests that didSelectSuggestion does not call UpdatePromptAction when
-// startupState is nil.
-TEST_F(GeminiContainerMediatorTest, TestDidSelectSuggestionNoStartupState) {
+// Tests that didSelectSuggestion calls UpdatePromptAction for a model-led
+// suggestion.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidSelectSuggestionUpdatesPromptActionModelLed) {
   ios::provider::ResetGemini();
-  mediator_.startupState = nil;
+  mediator_.startupState = startup_state_;
 
   ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
-  suggestion.query = @"What is this page about?";
+  suggestion.query = @"Summarize the main points";
+  suggestion.type = gemini::InputType::kZeroStateModelSuggestion;
 
   [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
 
-  EXPECT_EQ(std::nullopt, ios::provider::GetLastUpdatePromptActionEntryPoint());
-  EXPECT_EQ(nil, ios::provider::GetLastUpdatePromptActionPrompt());
-  EXPECT_FALSE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
+  EXPECT_THAT(ios::provider::GetLastUpdatePromptActionInputType(),
+              testing::Optional(gemini::InputType::kZeroStateModelSuggestion));
+  EXPECT_NSEQ(@"Summarize the main points",
+              ios::provider::GetLastUpdatePromptActionPrompt());
+  EXPECT_TRUE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
 }
 
 // Tests that didSelectSuggestion does not call UpdatePromptAction when the
@@ -1093,10 +1099,11 @@ TEST_F(GeminiContainerMediatorTest, TestDidSelectSuggestionEmptyQuery) {
 
   ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
   suggestion.query = @"";
+  suggestion.type = gemini::InputType::kSummarize;
 
   [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
 
-  EXPECT_EQ(std::nullopt, ios::provider::GetLastUpdatePromptActionEntryPoint());
+  EXPECT_EQ(std::nullopt, ios::provider::GetLastUpdatePromptActionInputType());
   EXPECT_EQ(nil, ios::provider::GetLastUpdatePromptActionPrompt());
   EXPECT_FALSE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
 }

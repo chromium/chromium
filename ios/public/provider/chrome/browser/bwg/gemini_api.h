@@ -26,6 +26,7 @@ using GeminiEligibilityCallback = void (^)(BOOL eligible);
 
 namespace gemini {
 enum class EntryPoint;
+enum class InputType;
 }
 
 namespace ios::provider {
@@ -200,6 +201,11 @@ void UpdatePageAttachmentState(
 
 // Updates the prompt action of the floaty if it's invoked.
 void UpdatePromptAction(gemini::EntryPoint entry_point,
+                        NSString* prepopulated_prompt,
+                        bool should_auto_submit = false);
+
+// Updates the prompt action of the floaty with an input type if it's invoked.
+void UpdatePromptAction(gemini::InputType input_type,
                         NSString* prepopulated_prompt,
                         bool should_auto_submit = false);
 

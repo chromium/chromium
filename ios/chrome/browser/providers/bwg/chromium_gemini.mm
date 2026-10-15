@@ -34,6 +34,10 @@ void UpdatePromptAction(gemini::EntryPoint entry_point,
                         NSString* prepopulated_prompt,
                         bool should_auto_submit) {}
 
+void UpdatePromptAction(gemini::InputType input_type,
+                        NSString* prepopulated_prompt,
+                        bool should_auto_submit) {}
+
 bool IsProtectedUrl(std::string url) {
   return false;
 }

@@ -10,6 +10,7 @@
 #import "base/test/test_future.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -80,7 +81,9 @@ TEST_F(ZeroStateSuggestionsServiceTest, TestFetchCachedSuggestions) {
   ASSERT_NE(nil, result);
   EXPECT_EQ(2u, result.count);
   EXPECT_NSEQ(@"suggestion1", result[0].text);
+  EXPECT_EQ(gemini::InputType::kZeroStateModelSuggestion, result[0].type);
   EXPECT_NSEQ(@"suggestion2", result[1].text);
+  EXPECT_EQ(gemini::InputType::kZeroStateModelSuggestion, result[1].type);
 }
 
 // Tests that ClearCachedSuggestions clears the cached suggestions.
@@ -116,15 +119,15 @@ TEST_F(ZeroStateSuggestionsServiceTest, TestFetchCentralizedCachedSuggestions) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_SUMMARIZE_QUERY),
       result[0].query);
-  EXPECT_NSEQ(nil, result[0].iconIdentifier);
+  EXPECT_EQ(gemini::InputType::kSummarize, result[0].type);
 
   EXPECT_NSEQ(@"suggestion1", result[1].text);
   EXPECT_NSEQ(@"suggestion1", result[1].query);
-  EXPECT_NSEQ(nil, result[1].iconIdentifier);
+  EXPECT_EQ(gemini::InputType::kZeroStateModelSuggestion, result[1].type);
 
   EXPECT_NSEQ(@"suggestion2", result[2].text);
   EXPECT_NSEQ(@"suggestion2", result[2].query);
-  EXPECT_NSEQ(nil, result[2].iconIdentifier);
+  EXPECT_EQ(gemini::InputType::kZeroStateModelSuggestion, result[2].type);
 }
 
 // Tests that suggestions return static fallbacks when model suggestions are
@@ -155,13 +158,13 @@ TEST_F(ZeroStateSuggestionsServiceTest,
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_SUMMARIZE_QUERY),
       result[0].query);
-  EXPECT_NSEQ(nil, result[0].iconIdentifier);
+  EXPECT_EQ(gemini::InputType::kSummarize, result[0].type);
 
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_FAQ_TEXT),
               result[1].text);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_FAQ_QUERY),
               result[1].query);
-  EXPECT_NSEQ(nil, result[1].iconIdentifier);
+  EXPECT_EQ(gemini::InputType::kCreateFaq, result[1].type);
 
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_ZERO_STATE_SUGGESTIONS_WHAT_CAN_GEMINI_DO_TEXT),
@@ -169,7 +172,7 @@ TEST_F(ZeroStateSuggestionsServiceTest,
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_ZERO_STATE_SUGGESTIONS_WHAT_CAN_GEMINI_DO_QUERY),
               result[2].query);
-  EXPECT_NSEQ(nil, result[2].iconIdentifier);
+  EXPECT_EQ(gemini::InputType::kWhatCanGeminiDo, result[2].type);
 }
 
 }  // namespace ai

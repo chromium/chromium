@@ -152,7 +152,7 @@ ZeroStateSuggestion* ZeroStateSuggestionsService::CreateSummarizeAction() {
       l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_SUMMARIZE_TEXT);
   suggestion.query =
       l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_SUMMARIZE_QUERY);
-  suggestion.iconIdentifier = nil;
+  suggestion.type = gemini::InputType::kSummarize;
   return suggestion;
 }
 
@@ -162,7 +162,7 @@ ZeroStateSuggestion* ZeroStateSuggestionsService::CreateFAQAction() {
       l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_FAQ_TEXT);
   suggestion.query =
       l10n_util::GetNSString(IDS_IOS_ZERO_STATE_SUGGESTIONS_FAQ_QUERY);
-  suggestion.iconIdentifier = nil;
+  suggestion.type = gemini::InputType::kCreateFaq;
   return suggestion;
 }
 
@@ -173,7 +173,7 @@ ZeroStateSuggestionsService::CreateWhatCanGeminiDoAction() {
       IDS_IOS_ZERO_STATE_SUGGESTIONS_WHAT_CAN_GEMINI_DO_TEXT);
   suggestion.query = l10n_util::GetNSString(
       IDS_IOS_ZERO_STATE_SUGGESTIONS_WHAT_CAN_GEMINI_DO_QUERY);
-  suggestion.iconIdentifier = nil;
+  suggestion.type = gemini::InputType::kWhatCanGeminiDo;
   return suggestion;
 }
 
@@ -182,7 +182,7 @@ ZeroStateSuggestion* ZeroStateSuggestionsService::CreateCustomAction(
   ZeroStateSuggestion* suggestion = [[ZeroStateSuggestion alloc] init];
   suggestion.text = query;
   suggestion.query = query;
-  suggestion.iconIdentifier = nil;
+  suggestion.type = gemini::InputType::kZeroStateModelSuggestion;
   return suggestion;
 }
 
