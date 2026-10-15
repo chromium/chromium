@@ -5,8 +5,8 @@
 #ifndef CHROMECAST_PUBLIC_CHROMECAST_EXPORT_H_
 #define CHROMECAST_PUBLIC_CHROMECAST_EXPORT_H_
 
-// Export attribute for classes that are exposed in shared libraries,
-// allowing OEM partners to replace with their own implementations.
+// Export attribute for classes and functions exposed across Chromecast
+// shared libraries.
 #define CHROMECAST_EXPORT __attribute__((visibility("default")))
 
 #endif  // CHROMECAST_PUBLIC_CHROMECAST_EXPORT_H_

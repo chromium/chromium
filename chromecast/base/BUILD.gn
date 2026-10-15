@@ -193,8 +193,7 @@ if (is_android) {
     ]
   }
 } else {  # !is_android
-  # Target for OEM partners to override sys_info shared library, i.e.
-  # libcast_sys_info_1.0.so.
+  # Default implementation of libcast_sys_info_1.0.so.
   cast_shared_library("libcast_sys_info_1.0") {
     sources = [ "cast_sys_info_shlib.cc" ]
 

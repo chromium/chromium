@@ -9,10 +9,10 @@
 
 namespace chromecast {
 
-// Provides a way for vendor libraries to run code on a specific thread.
-// For example, cast_shell supplies an implementation of this interface through
-// media APIs (see MediaPipelineDeviceParams) to allow media backends to
-// schedule tasks to be run on the media thread.
+// Provides a way for media backends and other components to run code on a
+// specific thread. For example, cast_shell supplies an implementation of this
+// interface through media APIs (see MediaPipelineDeviceParams) to allow media
+// backends to schedule tasks to be run on the media thread.
 class TaskRunner {
  public:
   // Subclass and implement 'Run' to supply code to be run by PostTask or
@@ -24,9 +24,9 @@ class TaskRunner {
     virtual void Run() = 0;
   };
 
-  // This class is intended for use with base callback type. A template has been
-  // used to avoid introducing a hard dependency on Chromium base. It is used to
-  // convert a chromium-style callback to a Task as defined above.
+  // This class is intended for use with base callback types. A template was
+  // historically used to avoid introducing a hard dependency on Chromium
+  // //base. It converts a Chromium-style callback to a Task as defined above.
   template <typename T>
   class CallbackTask : public Task {
    public:

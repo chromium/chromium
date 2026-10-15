@@ -21,8 +21,7 @@ class AudioPostProcessor;
 // This is applicable only to Alsa CMA backend.
 // Please refer to
 // chromecast/media/cma/backend/post_processors/governor_shlib.cc
-// as an example, but OEM's implementations should not have any
-// Chromium dependencies.
+// as an example.
 // Called from StreamMixerAlsa when shared objects are listed in
 // /etc/cast_audio.json
 // AudioPostProcessors are created on startup and only destroyed/reset

@@ -14,8 +14,7 @@
 //
 // Please refer to
 // chromecast/media/cma/backend/post_processors/governor_shlib.cc
-// as an example for new code, but OEM's implementations should not have any
-// Chromium dependencies.
+// as an example for new code.
 //
 // Please refer to
 // chromecast/media/cma/backend/post_processors/post_processor_wrapper.h for an

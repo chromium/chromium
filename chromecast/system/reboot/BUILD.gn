@@ -51,8 +51,7 @@ test("cast_reboot_unittests") {
   }
 }
 
-# Target for OEM partners to override reboot shared library, i.e.
-# libcast_reboot_1.0.so.
+# Stub implementation of libcast_reboot_1.0.so.
 cast_shared_library("libcast_reboot_1.0") {
   sources = [ "reboot_dummy.cc" ]
 
