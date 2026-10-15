@@ -24,12 +24,10 @@ component("public") {
     ":task_type",
     "//base",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("task_type") {
   sources = [ "download_task_types.h" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_android) {

@@ -56,8 +56,6 @@ if (use_blink) {
       "//storage/browser",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
     if (is_android) {
       sources += [
         "android/battery_status_listener_android.cc",
@@ -148,8 +146,6 @@ source_set("common") {
   if (use_blink) {
     deps += [ "//storage/browser" ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("storage") {
@@ -187,8 +183,6 @@ source_set("storage") {
     "//services/network/public/mojom:url_loader_base",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

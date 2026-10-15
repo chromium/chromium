@@ -61,6 +61,4 @@ component("public") {
   } else {
     public_deps += [ "//components/download/public/task:task_type" ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

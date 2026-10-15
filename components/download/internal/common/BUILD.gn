@@ -90,8 +90,6 @@ source_set("internal") {
     "//services/service_manager/public/cpp",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   # TODO(crbug.com/40120259): Enable this on Fuchsia
   if (safe_browsing_mode > 0 && !is_fuchsia) {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]

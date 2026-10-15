@@ -75,10 +75,7 @@ component("public") {
     "url_loader_factory_provider.h",
   ]
 
-  configs += [
-    ":components_download_implementation",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ ":components_download_implementation" ]
 
   public_deps = [
     ":interfaces",
