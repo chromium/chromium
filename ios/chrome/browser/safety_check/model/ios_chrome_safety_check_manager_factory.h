@@ -7,28 +7,20 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class IOSChromeSafetyCheckManager;
-class KeyedService;
-class ProfileIOS;
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all IOSChromeSafetyCheckManager(s) and associates them
 // with profiles.
 class IOSChromeSafetyCheckManagerFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeSafetyCheckManagerFactory,
+          IOSChromeSafetyCheckManager> {
  public:
-  static IOSChromeSafetyCheckManager* GetForProfile(ProfileIOS* profile);
-  static IOSChromeSafetyCheckManagerFactory* GetInstance();
+  explicit IOSChromeSafetyCheckManagerFactory(PassKey key);
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<IOSChromeSafetyCheckManagerFactory>;
-
-  IOSChromeSafetyCheckManagerFactory();
-  ~IOSChromeSafetyCheckManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

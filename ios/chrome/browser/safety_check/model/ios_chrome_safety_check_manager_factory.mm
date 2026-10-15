@@ -29,34 +29,20 @@ std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
 }  // namespace
 
 // static
-IOSChromeSafetyCheckManager* IOSChromeSafetyCheckManagerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<IOSChromeSafetyCheckManager>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSChromeSafetyCheckManagerFactory*
-IOSChromeSafetyCheckManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeSafetyCheckManagerFactory> instance;
-  return instance.get();
-}
-
-// static
 IOSChromeSafetyCheckManagerFactory::TestingFactory
 IOSChromeSafetyCheckManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }
 
-IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("SafetyCheckManager",
-                                    ProfileSelection::kRedirectedInIncognito) {
+IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "SafetyCheckManager",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(IOSChromePasswordCheckManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-IOSChromeSafetyCheckManagerFactory::~IOSChromeSafetyCheckManagerFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 IOSChromeSafetyCheckManagerFactory::BuildServiceInstanceFor(

@@ -12,29 +12,10 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-ImpressionLimitServiceFactory* ImpressionLimitServiceFactory::GetInstance() {
-  static base::NoDestructor<ImpressionLimitServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-ImpressionLimitService* ImpressionLimitServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ImpressionLimitService>(
-      profile, /*create=*/true);
-}
-
-// static
-ImpressionLimitService* ImpressionLimitServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ImpressionLimitService>(
-      profile, /*create=*/false);
-}
-
-ImpressionLimitServiceFactory::ImpressionLimitServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ImpressionLimitService",
-                                    TestingCreation::kNoServiceForTests) {
+ImpressionLimitServiceFactory::ImpressionLimitServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ImpressionLimitService",
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(commerce::ShoppingServiceFactory::GetInstance());

@@ -7,12 +7,8 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class KeyedService;
-class ProfileIOS;
-class TipsManagerIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -20,24 +16,17 @@ class PrefRegistrySyncable;
 
 // Singleton that owns all `TipsManagerIOS` objects and associates them
 // with Profiles.
-class TipsManagerIOSFactory : public ProfileKeyedServiceFactoryIOS {
+class TipsManagerIOSFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TipsManagerIOSFactory,
+                                                TipsManagerIOS> {
  public:
-  // Returns the `TipsManagerIOS` instance associated with the given
-  // `profile`. If no instance exists, one will be created.
-  static TipsManagerIOS* GetForProfile(ProfileIOS* profile);
-  // Returns the singleton instance of `TipsManagerIOSFactory`.
-  static TipsManagerIOSFactory* GetInstance();
+  explicit TipsManagerIOSFactory(PassKey key);
 
   // Returns the default factory used to build `TipsManagerIOS`. Can be
   // registered with `SetTestingFactory()` to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<TipsManagerIOSFactory>;
-
-  TipsManagerIOSFactory();
-  ~TipsManagerIOSFactory() override;
-
   // `ProfileKeyedServiceFactoryIOS` implementation.
   // Creates and returns an `TipsManagerIOS` instance for the given
   // `context`.
