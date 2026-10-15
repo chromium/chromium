@@ -305,11 +305,11 @@ void CanvasResourceSharedImage::EndExternalWrite(
   // internal interface as part of generating the TransferableResource. This new
   // sync token will be chained after `external_write_sync_token` thanks to the
   // wait above.
-  CHECK(ContextProviderWrapper());
+  CHECK(context_provider_wrapper_);
 
   std::unique_ptr<gpu::RasterScopedAccess> access =
       GetSharedImage()->BeginRasterAccess(
-          ContextProviderWrapper()->ContextProvider().RasterInterface(),
+          context_provider_wrapper_->ContextProvider().RasterInterface(),
           acquire_sync_token_,
           /*readonly=*/true);
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
@@ -361,12 +361,6 @@ void CanvasResourceSharedImage::WaitSyncToken(
 void CanvasResourceSharedImage::NotifyResourceLost() {
   DCHECK(!is_cross_thread());
   resource_is_lost_ = true;
-}
-
-base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-CanvasResourceSharedImage::ContextProviderWrapper() const {
-  DCHECK(!is_cross_thread());
-  return context_provider_wrapper_;
 }
 
 void CanvasResourceSharedImage::OnMemoryDump(
@@ -441,13 +435,6 @@ void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
     destruction_sync_token_ = sync_token;
   }
-}
-
-base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-ExternalCanvasResource::ContextProviderWrapper() const {
-  // The context provider is not thread-safe, nor is the WeakPtr that holds it.
-  DCHECK(!is_cross_thread());
-  return context_provider_wrapper_;
 }
 
 ExternalCanvasResource::ExternalCanvasResource(
