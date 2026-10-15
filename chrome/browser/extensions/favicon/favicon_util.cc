@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/favicon/core/favicon_service.h"
@@ -84,7 +85,8 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
   // Fall back to the host-level favicon when no exact page URL match is found.
   bool allow_fallback_to_host = parsed.fallback_to_host;
 
-  int size_in_pixels = parsed.size_in_dip;
+  int size_in_pixels =
+      base::ClampCeil(parsed.size_in_dip * parsed.device_scale_factor);
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   favicon::FaviconService* favicon_service =

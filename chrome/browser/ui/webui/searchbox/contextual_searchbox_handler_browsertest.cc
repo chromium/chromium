@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,6 +52,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -243,13 +245,21 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
     ASSERT_TRUE(future.Get().has_value());
   }
 
-  // The cached favicon data URL should be returned immediately.
+  // The cached favicon data URL should be returned immediately at 2x (32x32)
+  // resolution for crisp rendering on HiDPI displays.
   {
     base::test::TestFuture<const std::optional<GURL>&> future;
     handler_->WaitForTabFaviconLoad(tab_id, future.GetCallback());
     std::optional<GURL> data_url = future.Get();
     ASSERT_TRUE(data_url.has_value());
-    EXPECT_TRUE(data_url->spec().starts_with("data:image/png;base64,"));
+    constexpr std::string_view kPrefix = "data:image/png;base64,";
+    ASSERT_TRUE(data_url->spec().starts_with(kPrefix));
+    std::optional<std::vector<uint8_t>> png_bytes = base::Base64Decode(
+        std::string_view(data_url->spec()).substr(kPrefix.size()));
+    ASSERT_TRUE(png_bytes.has_value());
+    SkBitmap bitmap = gfx::PNGCodec::Decode(*png_bytes);
+    EXPECT_EQ(bitmap.width(), 32);
+    EXPECT_EQ(bitmap.height(), 32);
   }
 }
 

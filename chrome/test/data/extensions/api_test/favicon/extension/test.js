@@ -89,6 +89,18 @@ window.onload = function() {
       Promise.all(promises).then(() => chrome.test.succeed());
     },
 
+    // Verify that scaleFactor scales the requested size in pixels.
+    function scaleFactorResolutions() {
+      const url = `_favicon/?pageUrl=${visitedPageUrl}&size=16&scaleFactor=2x`;
+      const image = new Image();
+      image.src = url;
+      image.onload = () => {
+        chrome.test.assertEq(32, image.height);
+        chrome.test.assertEq(32, image.width);
+        chrome.test.succeed();
+      };
+    },
+
     // The default favicon size is 16.
     function defaultSize() {
       const expected = 16;
