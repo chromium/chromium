@@ -181,7 +181,9 @@ std::u16string PartnerBookmarksShim::GetTitle(const BookmarkNode* node) const {
 }
 
 bool PartnerBookmarksShim::IsPartnerBookmark(const BookmarkNode* node) const {
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/572863007): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
   if (!HasPartnerBookmarks()) {
     return false;
   }
