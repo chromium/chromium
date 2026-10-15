@@ -106,7 +106,7 @@ extension UIView {
       // Additionally, call the closure here as the view moved to a window.
       self.cr_onWindowCoordinatesChanged?(self)
     } else {
-      self.removeMirrorViewInWindow()
+      self.mirrorViewInWindow?.removeFromSuperview()
     }
   }
 
@@ -114,8 +114,7 @@ extension UIView {
   /// always has the same window coordinates as the receiver. The mirror view calls the
   /// `onWindowCoordinatesChanged` closure when its bounds change.
   private func addMirrorViewInWindow() {
-    removeMirrorViewInWindow()
-    let mirrorViewInWindow = NotifyingView()
+    let mirrorViewInWindow = self.mirrorViewInWindow ?? NotifyingView()
     mirrorViewInWindow.backgroundColor = .clear
     mirrorViewInWindow.isUserInteractionEnabled = false
     mirrorViewInWindow.translatesAutoresizingMaskIntoConstraints = false

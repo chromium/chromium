@@ -1063,6 +1063,14 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   [handler showSettingsFromViewController:nil];
 }
 
++ (void)showTabSwitcherInWindowWithNumber:(int)windowNumber {
+  SceneState* scene = [self sceneStateWithNumber:windowNumber];
+  Browser* browser = scene.browserProviderInterface.mainBrowserProvider.browser;
+  id<SceneCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+  [handler displayTabGridInMode:TabGridOpeningMode::kDefault];
+}
+
 #pragma mark - URL Utilities (EG2)
 
 + (NSString*)displayTitleForURL:(NSString*)URL {
