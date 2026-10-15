@@ -2139,6 +2139,17 @@ source_set("unit_tests") {
       "//components/session_manager/core:test_support",
     ]
   }
+
+  if (is_android) {
+    sources += [ "android/accelerator_utils_android_unittest.cc" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui:accelerator_utils_headers",
+      "//ui/base",
+      "//ui/events:event_constants",
+      "//ui/events:events_base",
+    ]
+  }
 }
 
 if (!is_android && !is_chromeos_device) {

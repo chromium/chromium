@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/accelerator_utils.h"
 
+#include <algorithm>
+
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/key_event_android.h"
@@ -13,6 +18,15 @@
 #include "chrome/android/chrome_jni_headers/KeyboardShortcuts_jni.h"
 
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kUniversalKeyboardHandling)) {
+    return std::ranges::any_of(
+        GetAcceleratorList(), [&](const AcceleratorMapping& entry) {
+          return entry.keycode == accelerator.key_code() &&
+                 entry.modifiers == accelerator.modifiers();
+        });
+  }
+
   ui::KeyEvent key_event = accelerator.ToKeyEvent();
   ui::PlatformEvent platform_event = ui::NativeEventFromEvent(key_event);
 
