@@ -8,6 +8,11 @@ PRESUBMIT_VERSION = "2.0.0"
 
 
 def CheckUnitTests(input_api, output_api):
+    # sandbox_denial_watcher is macOS-specific tooling that assumes POSIX path
+    # formats and environment semantics that fail on win-presubmit.
+    if input_api.is_windows:
+        return []
+
     return input_api.canned_checks.RunUnitTestsInDirectory(
         input_api,
         output_api,
