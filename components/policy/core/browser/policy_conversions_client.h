@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -18,6 +19,7 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
+#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 
 namespace policy {
 
@@ -75,20 +77,27 @@ class POLICY_EXPORT PolicyConversionsClient {
           updater_policy_schemas);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-  // Converts the given |value| to JSON, respecting the configuration
+  // Converts the given `value` to JSON, respecting the configuration
   // preferences that were set on this client.
   std::string ConvertValueToJSON(const base::Value& value) const;
 
   // Returns policies for Chrome browser. Must only be called if
-  // |HasUserPolicies()| returns true.
+  // `HasUserPolicies()` returns true.
   base::DictValue GetChromePolicies();
+  // Mojo equivalent of `GetChromePolicies()`, keyed by policy name. See
+  // `GetPolicyMojo()` for how the output differs from the `base::Value` one.
+  base::flat_map<std::string, mojom::PolicyPtr> GetChromePoliciesMojo();
 
   // Returns precedence-related policies for Chrome browser. Must only be called
-  // if |HasUserPolicies()| returns true.
+  // if `HasUserPolicies()` returns true.
   base::DictValue GetPrecedencePolicies();
+  // Mojo equivalent of `GetPrecedencePolicies()`, keyed by policy name.
+  base::flat_map<std::string, mojom::PolicyPtr> GetPrecedencePoliciesMojo();
 
   // Returns an array containing the ordered precedence strings.
   base::ListValue GetPrecedenceOrder();
+  // Mojo equivalent of `GetPrecedenceOrder()`.
+  std::vector<std::string> GetPrecedenceOrderMojo();
 
   // Returns true if this client is able to return information on user
   // policies.
@@ -123,19 +132,26 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool GetUserPoliciesEnabled() const;
 
  protected:
-  // Returns a copy of |value|. If necessary (which is specified by
-  // |convert_values_enabled_|), converts some values to a representation that
+  // Returns a copy of `value` with sensitive values masked according to
+  // `schema`. Returns `kSensitiveValueMask` instead if `scope` is machine and
+  // machine values are hidden (see `EnableShowMachineValues()`).
+  base::Value CopyAndMask(const base::Value& value,
+                          const std::optional<Schema>& schema,
+                          PolicyScope scope) const;
+
+  // Returns a copy of `value`. If necessary (which is specified by
+  // `convert_values_enabled_`), converts some values to a representation that
   // i18n_template.js will display.
   base::Value CopyAndMaybeConvert(const base::Value& value,
                                   const std::optional<Schema>& schema,
                                   PolicyScope scope) const;
 
-  // Creates a description of the policy |policy_name| using |policy| and the
-  // optional errors in |errors| to determine the status of each policy.
-  // |known_policy_schemas| contains |Schema|s for known policies in the same
-  // policy namespace of |map|. |deprecated_policies| holds deprecated policies.
-  // |future_policies| holds unreleased policies. A policy without an entry in
-  // |known_policy_schemas| is an unknown policy.
+  // Creates a description of the policy `policy_name` using `policy` and the
+  // optional errors in `errors` to determine the status of each policy.
+  // `known_policy_schemas` contains `Schema`s for known policies in the same
+  // policy namespace of `map`. `deprecated_policies` holds deprecated policies.
+  // `future_policies` holds unreleased policies. A policy without an entry in
+  // `known_policy_schemas` is an unknown policy.
   base::DictValue GetPolicyValue(
       const std::string& policy_name,
       const PolicyMap::Entry& policy,
@@ -145,12 +161,12 @@ class POLICY_EXPORT PolicyConversionsClient {
       const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas) const;
 
-  // Returns a description of each policy in |map| as Value, using the
-  // optional errors in |errors| to determine the status of each policy.
-  // |known_policy_schemas| contains |Schema|s for known policies in the same
-  // policy namespace of |map|. |deprecated_policies| holds deprecated policies.
-  // |future_policies| holds unreleased policies. A policy in |map| but without
-  // an entry |known_policy_schemas| is an unknown policy.
+  // Returns a description of each policy in `map` as Value, using the
+  // optional errors in `errors` to determine the status of each policy.
+  // `known_policy_schemas` contains `Schema`s for known policies in the same
+  // policy namespace of `map`. `deprecated_policies` holds deprecated policies.
+  // `future_policies` holds unreleased policies. A policy in `map` but without
+  // an entry `known_policy_schemas` is an unknown policy.
   base::DictValue GetPolicyValues(
       const PolicyMap& map,
       PolicyErrorMap* errors,
@@ -159,8 +175,37 @@ class POLICY_EXPORT PolicyConversionsClient {
       const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas) const;
 
-  // Returns the Schema for |policy_name| if that policy is known. If the policy
-  // is unknown, returns |std::nullopt|.
+  // Mojo equivalent of `GetPolicyValue()`. Unlike the `base::Value` version,
+  // the output is strongly typed and therefore independent of some of the
+  // formatting options set on this client:
+  // - `level` and `scope` are always mojo enums, regardless of
+  //   `EnableConvertTypes()`. `source` is always the source name string.
+  // - `value` is never converted to JSON strings, regardless of
+  //   `EnableConvertValues()`; it is only masked (sensitive values and, if
+  //   `EnableShowMachineValues(false)`, machine values). The UI is responsible
+  //   for formatting it.
+  // - Conflicting values are described by `mojom::Conflict`, which only holds
+  //   their level, scope, source and value.
+  mojom::PolicyPtr GetPolicyMojo(
+      const std::string& policy_name,
+      const PolicyMap::Entry& policy,
+      const PoliciesSet& deprecated_policies,
+      const PoliciesSet& future_policies,
+      PolicyErrorMap* errors,
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
+          known_policy_schemas) const;
+
+  // Mojo equivalent of `GetPolicyValues()`, keyed by policy name.
+  base::flat_map<std::string, mojom::PolicyPtr> GetPolicyValuesMojo(
+      const PolicyMap& map,
+      PolicyErrorMap* errors,
+      const PoliciesSet& deprecated_policies,
+      const PoliciesSet& future_policies,
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
+          known_policy_schemas) const;
+
+  // Returns the Schema for `policy_name` if that policy is known. If the policy
+  // is unknown, returns `std::nullopt`.
   std::optional<Schema> GetKnownPolicySchema(
       const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas,

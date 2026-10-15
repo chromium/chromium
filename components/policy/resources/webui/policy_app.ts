@@ -27,11 +27,34 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {GetPoliciesReason} from './policy.mojom-webui.js';
+import {GetPoliciesReason, PolicyLevel, PolicyScope} from './policy.mojom-webui.js';
 import type {PolicyGroupNames, PolicyGroupsResponse, Status} from './policy.mojom-webui.js';
 import {getCss} from './policy_app.css.js';
 import {getHtml} from './policy_app.html.js';
 import type {PolicyTableModel} from './policy_table.js';
+
+// TODO(crbug.com/40897784): Remove once policies are received over mojo.
+// The legacy 'policies-updated' WebUI event sends `level` and `scope` as the
+// strings "recommended"/"mandatory" and "user"/"machine". Converts them in
+// place to the mojo enums expected by the UI.
+function convertLegacyLevelAndScope(groups: PolicyGroupsResponse):
+    PolicyGroupsResponse {
+  for (const group of Object.values(groups.policyGroups)) {
+    for (const policy of Object.values(group.policies || {})) {
+      for (const item
+               of [policy, ...(policy.conflicts || []),
+                   ...(policy.superseded || [])]) {
+        const level: unknown = item.level;
+        const scope: unknown = item.scope;
+        item.level = level === 'recommended' ? PolicyLevel.kRecommended :
+                                               PolicyLevel.kMandatory;
+        item.scope =
+            scope === 'user' ? PolicyScope.kUser : PolicyScope.kMachine;
+      }
+    }
+  }
+  return groups;
+}
 
 export class PolicyAppElement extends CrLitElement {
   static get is() {
@@ -125,7 +148,8 @@ export class PolicyAppElement extends CrLitElement {
         'policies-updated',
         (names: Record<string, PolicyGroupNames>,
          groups: PolicyGroupsResponse) =>
-            this.onPoliciesReceived_(names, groups));
+            this.onPoliciesReceived_(
+                names, convertLegacyLevelAndScope(groups)));
     sendWithPromise<void>('listenPoliciesUpdates');
   }
 

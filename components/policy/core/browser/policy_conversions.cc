@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,6 +33,12 @@ constexpr char kDeviceLocalAccountPoliciesId[] = "deviceLocalAccountPolicies";
 PolicyConversions::Delegate::Delegate(PolicyConversionsClient* client)
     : client_(client) {}
 PolicyConversions::Delegate::~Delegate() = default;
+
+base::flat_map<std::string, mojom::PolicyGroupPtr>
+PolicyConversions::Delegate::ToMojoPolicyGroups() {
+  // Mojo conversion is not supported by this delegate.
+  NOTREACHED();
+}
 
 PolicyConversions::PolicyConversions(
     std::unique_ptr<PolicyConversionsClient> client)
@@ -95,6 +103,11 @@ base::DictValue PolicyConversions::ToValueDict() {
   return delegate_->ToValueDict();
 }
 
+base::flat_map<std::string, mojom::PolicyGroupPtr>
+PolicyConversions::ToMojoPolicyGroups() {
+  return delegate_->ToMojoPolicyGroups();
+}
+
 /**
  * DefaultPolicyConversions
  */
@@ -119,8 +132,9 @@ base::DictValue DefaultPolicyConversions::ToValueDict() {
   all_policies.Set(kDeviceLocalAccountPoliciesId,
                    GetDeviceLocalAccountPolicies());
   base::DictValue identity_fields = client()->GetIdentityFields();
-  if (!identity_fields.empty())
+  if (!identity_fields.empty()) {
     all_policies.Merge(std::move(identity_fields));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return all_policies;
 }
@@ -192,6 +206,36 @@ base::DictValue ChromePolicyConversions::ToValueDict() {
     // Precedence policies do not apply to Chrome OS, so the Policy Precedence
     // table is not shown in chrome://policy.
     all_policies.Set(kPrecedencePoliciesId, GetPrecedencePolicies());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  }
+
+  return all_policies;
+}
+
+base::flat_map<std::string, mojom::PolicyGroupPtr>
+ChromePolicyConversions::ToMojoPolicyGroups() {
+  // The caller should not expect device policies or info from
+  // ChromePolicyConversions, these are not supported.
+  CHECK(!client()->GetDeviceLocalAccountPoliciesEnabled())
+      << "Chrome policies doesn't include device local account policies.";
+  CHECK(!client()->GetDeviceInfoEnabled())
+      << "Chrome policies doesn't include device info.";
+  base::flat_map<std::string, mojom::PolicyGroupPtr> all_policies;
+
+  if (client()->HasUserPolicies()) {
+    auto chrome_policies = mojom::PolicyGroup::New();
+    chrome_policies->name = kChromePoliciesName;
+    chrome_policies->policies = client()->GetChromePoliciesMojo();
+    all_policies.emplace(kChromePoliciesId, std::move(chrome_policies));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    // Precedence policies do not apply to Chrome OS, so the Policy Precedence
+    // table is not shown in chrome://policy.
+    auto precedence_policies = mojom::PolicyGroup::New();
+    precedence_policies->name = kPrecedencePoliciesName;
+    precedence_policies->policies = client()->GetPrecedencePoliciesMojo();
+    precedence_policies->precedence_order = client()->GetPrecedenceOrderMojo();
+    all_policies.emplace(kPrecedencePoliciesId, std::move(precedence_policies));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 

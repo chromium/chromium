@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
+#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -82,6 +83,12 @@ class POLICY_EXPORT PolicyConversions {
 
     virtual base::DictValue ToValueDict() = 0;
 
+    // Returns the policy data as mojo structs keyed by policy group id.
+    // TODO(crbug.com/40897784): Only supported by `ChromePolicyConversions`
+    // for now. Make this pure virtual once all delegates support it.
+    virtual base::flat_map<std::string, mojom::PolicyGroupPtr>
+    ToMojoPolicyGroups();
+
    protected:
     PolicyConversionsClient* client() { return client_; }
 
@@ -134,6 +141,10 @@ class POLICY_EXPORT PolicyConversions {
 
   base::DictValue ToValueDict();
 
+  // Returns the policy data as mojo structs keyed by policy group id. Only
+  // supported with `UseChromePolicyConversions()` for now.
+  base::flat_map<std::string, mojom::PolicyGroupPtr> ToMojoPolicyGroups();
+
  private:
   std::unique_ptr<PolicyConversionsClient> client_;
   std::unique_ptr<Delegate> delegate_;
@@ -172,6 +183,8 @@ class POLICY_EXPORT ChromePolicyConversions
   ~ChromePolicyConversions() override;
 
   base::DictValue ToValueDict() override;
+  base::flat_map<std::string, mojom::PolicyGroupPtr> ToMojoPolicyGroups()
+      override;
 
  private:
   base::DictValue GetChromePolicies();

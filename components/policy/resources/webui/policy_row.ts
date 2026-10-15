@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {PolicyLevel, PolicyScope} from './policy.mojom-webui.js';
 import type {Conflict, Policy} from './policy.mojom-webui.js';
 import {copyValue, stringifyPolicyValue} from './policy_conflict.js';
 import {getCss} from './policy_row.css.js';
@@ -107,7 +108,7 @@ export class PolicyRowElement extends CrLitElement {
       return '';
     }
     return loadTimeData.getString(
-        this.policy.scope === 'user' ? 'scopeUser' : 'scopeDevice');
+        this.policy.scope === PolicyScope.kUser ? 'scopeUser' : 'scopeDevice');
   }
 
   protected getLevelText(): string {
@@ -115,8 +116,8 @@ export class PolicyRowElement extends CrLitElement {
       return '';
     }
     return loadTimeData.getString(
-        this.policy.level === 'recommended' ? 'levelRecommended' :
-                                              'levelMandatory');
+        this.policy.level === PolicyLevel.kRecommended ? 'levelRecommended' :
+                                                         'levelMandatory');
   }
 
   protected getSourceText(): string {

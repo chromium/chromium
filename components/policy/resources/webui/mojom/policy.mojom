@@ -56,16 +56,25 @@ struct Status {
   bool extension_install_error;
 };
 
+// Enforcement level of a policy. Mirrors `policy::PolicyLevel`.
+enum PolicyLevel {
+  kRecommended = 0,
+  kMandatory,
+};
+
+// Scope of a policy. Mirrors `policy::PolicyScope`.
+enum PolicyScope {
+  kUser = 0,
+  kMachine,
+};
+
 // Represents a conflicting policy value.
 struct Conflict {
-  // Enforcement level of conflicting policy, can be "recommended" or
-  // "mandatory".
-  // TODO(crbug.com/40897784): This should be an enum or a bool.
-  string level;
+  // Enforcement level of the conflicting policy.
+  PolicyLevel level;
 
-  // Scope of the conflicting policy, examples values are "device" or "user".
-  // TODO(crbug.com/40897784): This should be an enum.
-  string scope;
+  // Scope of the conflicting policy.
+  PolicyScope scope;
 
   // The name of the policy provider from which the conflicting policy
   // originated.
@@ -83,13 +92,11 @@ struct Policy {
   // Name of the policy.
   string name;
 
-  // Enforcement level of this policy, can be "recommended" or "mandatory".
-  // TODO(crbug.com/40897784): This should be an enum or a bool.
-  string level;
+  // Enforcement level of this policy.
+  PolicyLevel level;
 
-  // Scope of this policy, examples values are "device" or "user".
-  // TODO(crbug.com/40897784): This should be an enum.
-  string scope;
+  // Scope of this policy.
+  PolicyScope scope;
 
   // The name of the policy provider from which this policy originated.
   string source;
