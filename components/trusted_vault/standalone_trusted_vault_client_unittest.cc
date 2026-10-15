@@ -213,6 +213,8 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
 #if BUILDFLAG(IS_MAC)
   crypto::apple::ScopedFakeKeychainV2 fake_keychain_{kKeychainAccessGroup};
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kTrustedVaultSharedRecoveryFactorsAndEncryption};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
@@ -427,12 +429,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   passkeys_client->RemoveObserver(&passkeys_observer);
 }
 
-TEST_F(StandaloneTrustedVaultClientTest,
-       ShouldStoreAndFetchKeysAcrossDomainsWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kTrustedVaultSharedRecoveryFactorsAndEncryption);
-
+TEST_F(StandaloneTrustedVaultClientTest, ShouldStoreAndFetchKeysAcrossDomains) {
   const std::vector<uint8_t> kSyncKey = {1, 2, 3, 4};
   const std::vector<uint8_t> kPasskeysKey = {5, 6, 7, 8};
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
@@ -470,6 +467,59 @@ TEST_F(StandaloneTrustedVaultClientTest,
     EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
                 ElementsAre(kPasskeysKey));
   }
+}
+
+TEST_F(StandaloneTrustedVaultClientTest,
+       ShouldMigrateFromLegacyStorageOnRestart) {
+  const std::vector<uint8_t> kKey1 = {1, 2, 3, 4};
+  const int kServerEpoch = 10;
+  fake_security_domains_server_->ResetDataToState({kKey1}, kServerEpoch);
+
+  const base::FilePath legacy_file_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("trusted_vault.pb"));
+  const base::FilePath new_file_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("local_domains_data.pb"));
+
+  CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
+
+  // First run with legacy storage enabled
+  // (`kTrustedVaultSharedRecoveryFactorsAndEncryption` disabled).
+  {
+    base::test::ScopedFeatureList disable_new_storage;
+    disable_new_storage.InitAndDisableFeature(
+        kTrustedVaultSharedRecoveryFactorsAndEncryption);
+
+    std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
+    StoreKeys(client.get(), account_info.gaia, {kKey1}, kServerEpoch);
+    WaitForIdle(client.get());
+
+    EXPECT_TRUE(base::PathExists(legacy_file_path));
+    EXPECT_FALSE(base::PathExists(new_file_path));
+    EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
+              kDefaultExpectedMemberCount);
+  }
+  task_environment_.RunUntilIdle();
+
+  // Simulate restart with the new encrypted storage format enabled.
+  std::unique_ptr<StandaloneTrustedVaultClient> migrated_client =
+      CreateClient();
+  WaitForIdle(migrated_client.get());
+
+  EXPECT_TRUE(base::PathExists(new_file_path));
+  // Cached keys should be immediately returned from migrated storage without
+  // re-registering recovery factors.
+  EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
+              ElementsAre(kKey1));
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
+            kDefaultExpectedMemberCount);
+
+  // Verify that the migrated physical device private key can decrypt newly
+  // rotated server keys.
+  const std::vector<uint8_t> new_epoch_key =
+      fake_security_domains_server_->RotateTrustedVaultKey(kKey1);
+  EXPECT_TRUE(MarkLocalKeysAsStale(migrated_client.get(), account_info));
+  EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
+              ElementsAre(kKey1, new_epoch_key));
 }
 
 }  // namespace
