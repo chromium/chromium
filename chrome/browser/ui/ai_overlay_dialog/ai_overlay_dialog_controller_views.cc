@@ -99,7 +99,7 @@ void AiOverlayDialogControllerViews::ShowOverlay() {
   }
 }
 
-void AiOverlayDialogControllerViews::HideOverlay() {
+void AiOverlayDialogControllerViews::CloseOverlay() {
   views::WebView* overlay_web_view = GetActiveOverlayWebView();
   if (overlay_web_view) {
     overlay_web_view->SetVisible(false);

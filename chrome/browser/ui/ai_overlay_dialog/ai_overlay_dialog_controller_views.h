@@ -24,7 +24,7 @@ class AiOverlayDialogControllerViews : public AiOverlayDialogController {
   ~AiOverlayDialogControllerViews() override;
 
   void ShowOverlay() override;
-  void HideOverlay() override;
+  void CloseOverlay() override;
   bool IsOverlayShowing() const override;
 
   // content::WebContentsDelegate:

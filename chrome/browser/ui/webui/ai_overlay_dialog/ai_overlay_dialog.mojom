@@ -4,9 +4,9 @@
 
 module ai_overlay_dialog.mojom;
 
+import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -87,8 +87,8 @@ interface PageHandler {
 
   // Closes and dismisses the overlay WebUI dialog widget. Calling this is
   // equivalent to the user clicking the toolbar microphone button to deactivate
-  // listening, tearing down the active audio listener and session via HideOverlay().
-  // TODO(crbug.com/540858790): Rename HideOverlay() to CloseOverlay() for clarity.
+  // listening, tearing down the active audio listener and session via
+  // CloseOverlay().
   Close();
 
   // Returns current mouse pointer coordinates relative to the tab viewport,
@@ -97,7 +97,8 @@ interface PageHandler {
 
   // Captures a cropped, un-annotated region of the tab surface.
   //
-  // x, y: Top-left corner coordinates of the target region in viewport CSS pixels.
+  // x, y: Top-left corner coordinates of the target region in viewport CSS
+  // pixels.
   // width, height: Dimensions of the target region in viewport CSS pixels.
   // Returns null if there is no active web contents, render view, or if surface
   // capture/encoding fails.
@@ -132,7 +133,8 @@ interface PageHandler {
   // from the user's microphone.
   SendAudioChunk(mojo_base.mojom.BigBuffer pcm_data);
 
-  // Submits a typed text query to the MES backend as part of the active session.
+  // Submits a typed text query to the MES backend as part of the active
+  // session.
   // `text`: The user-provided text query.
   SendTextInput(string text);
 
@@ -165,7 +167,8 @@ interface Page {
                            array<WebMcpToolDefinition> webmcp_tools);
 
   // TODO(crbug.com/535704548): Consider renaming SetInputCaptionsVisible to
-  // SetInputCaptionsEnabled to avoid confusion with time-based/ephemeral visibility.
+  // SetInputCaptionsEnabled to avoid confusion with time-based/ephemeral
+  // visibility.
   // Controls whether input captions are visible.
   SetInputCaptionsVisible(bool visible);
 
@@ -184,9 +187,8 @@ interface Page {
   // server backend, or empty if disconnected.
   // `error_message`: Human-readable error description if the session failed or
   // closed unexpectedly, or empty string on clean shutdown.
-  OnStreamingSessionStateChanged(bool connected,
-                                 string session_id,
-                                 string error_message);
+  OnStreamingSessionStateChanged(
+      bool connected, string session_id, string error_message);
 
   // Delivers live real-time transcriptions for display in caption UI.
   // `input_transcription`: Live speech-to-text transcription of the user's

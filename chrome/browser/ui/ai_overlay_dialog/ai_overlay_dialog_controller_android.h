@@ -20,7 +20,7 @@ class AiOverlayDialogControllerAndroid : public AiOverlayDialogController {
 
   // AiOverlayDialogController:
   void ShowOverlay() override;
-  void HideOverlay() override;
+  void CloseOverlay() override;
   bool IsOverlayShowing() const override;
 
  private:

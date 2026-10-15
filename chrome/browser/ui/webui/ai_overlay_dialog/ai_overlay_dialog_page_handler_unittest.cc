@@ -61,6 +61,28 @@ class MockPage : public ai_overlay_dialog::mojom::Page {
                                 bool interrupted) override {}
 };
 
+class TestAiOverlayDialogController : public AiOverlayDialogControllerViews {
+ public:
+  explicit TestAiOverlayDialogController(BrowserWindowInterface* browser)
+      : AiOverlayDialogControllerViews(browser) {}
+  ~TestAiOverlayDialogController() override = default;
+
+  void ShowOverlay() override {
+    is_showing_ = true;
+    AiOverlayDialogControllerViews::ShowOverlay();
+  }
+
+  void CloseOverlay() override {
+    is_showing_ = false;
+    AiOverlayDialogControllerViews::CloseOverlay();
+  }
+
+  bool IsOverlayShowing() const override { return is_showing_; }
+
+ private:
+  bool is_showing_ = false;
+};
+
 class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   AiOverlayDialogPageHandlerTest() = default;
@@ -79,8 +101,8 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(browser_window_interface_, GetFeatures())
         .WillByDefault(testing::ReturnRef(features_));
 
-    controller_ =
-        std::make_unique<AiOverlayDialogControllerViews>(&browser_window_interface_);
+    controller_ = std::make_unique<TestAiOverlayDialogController>(
+        &browser_window_interface_);
 
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> page_remote;
     page_receiver_.Bind(page_remote.InitWithNewPipeAndPassReceiver());
@@ -118,7 +140,7 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
     handler_remote_.reset();
     page_receiver_.reset();
 
-    controller_ = std::make_unique<AiOverlayDialogControllerViews>(
+    controller_ = std::make_unique<TestAiOverlayDialogController>(
         &browser_window_interface_);
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> page_remote;
     page_receiver_.Bind(page_remote.InitWithNewPipeAndPassReceiver());
@@ -140,6 +162,14 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<AiOverlayDialogController> controller_;
   std::unique_ptr<AiOverlayDialogPageHandler> handler_;
 };
+
+TEST_F(AiOverlayDialogPageHandlerTest, Close) {
+  controller()->ShowOverlay();
+  ASSERT_TRUE(controller()->IsOverlayShowing());
+
+  handler()->Close();
+  EXPECT_FALSE(controller()->IsOverlayShowing());
+}
 
 TEST_F(AiOverlayDialogPageHandlerTest, GetCursorPosition) {
   AddTab();

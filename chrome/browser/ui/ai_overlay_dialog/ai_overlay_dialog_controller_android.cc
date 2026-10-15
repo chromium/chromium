@@ -57,7 +57,7 @@ void AiOverlayDialogControllerAndroid::ShowOverlay() {
   }
 }
 
-void AiOverlayDialogControllerAndroid::HideOverlay() {
+void AiOverlayDialogControllerAndroid::CloseOverlay() {
   if (android_shell_web_contents_) {
     if (auto* view = android_shell_web_contents_->GetNativeView()) {
       view->RemoveFromParent();

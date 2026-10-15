@@ -54,7 +54,7 @@ AiOverlayDialogController::~AiOverlayDialogController() = default;
 
 void AiOverlayDialogController::ToggleOverlay() {
   if (IsOverlayShowing()) {
-    HideOverlay();
+    CloseOverlay();
   } else {
     ShowOverlay();
   }
