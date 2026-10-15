@@ -79,6 +79,8 @@ source_set("test_support") {
     "media_galleries_test_util.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":impl",
     ":media_galleries",

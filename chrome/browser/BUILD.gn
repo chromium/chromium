@@ -4936,11 +4936,8 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "media_galleries/media_galleries_test_util.cc",
-      "media_galleries/media_galleries_test_util.h",
-    ]
     configs += [ "//build/config/linux/dbus" ]
+    public_deps += [ "//chrome/browser/media_galleries:test_support" ]
     deps += [
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/login/oobe_quick_start",
@@ -5013,12 +5010,6 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/spellchecker",
       "//components/spellcheck/common",
-    ]
-  }
-  if (enable_bound_session_credentials) {
-    sources += [
-      "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.cc",
-      "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h",
     ]
   }
 
