@@ -7,22 +7,18 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/one_time_token_log_handler.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
-#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-using ::one_time_tokens::GmailOtpBackend;
 using ::one_time_tokens::OneTimeTokenService;
 using ::one_time_tokens::OneTimeTokenServiceImpl;
 using ::one_time_tokens::SmsOtpBackend;
@@ -36,7 +32,6 @@ OneTimeTokenServiceFactory::OneTimeTokenServiceFactory()
   DependsOn(AndroidSmsOtpBackendFactory::GetInstance());
 #endif  // BUILDFLAG(IS_ANDROID)
   DependsOn(AutofillLogRouterFactory::GetInstance());
-  DependsOn(GmailOtpBackendFactory::GetInstance());
 }
 OneTimeTokenServiceFactory::~OneTimeTokenServiceFactory() = default;
 
@@ -59,15 +54,8 @@ OneTimeTokenServiceFactory::BuildServiceInstanceForBrowserContext(
   sms_otp_backend = AndroidSmsOtpBackendFactory::GetForBrowserContext(context);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
-      base::FeatureList::IsEnabled(
-          one_time_tokens::features::kGmailOtpRetrievalService)
-          ? GmailOtpBackendFactory::GetForProfile(
-                Profile::FromBrowserContext(context))
-          : nullptr;
-
   return std::make_unique<OneTimeTokenServiceImpl>(
-      sms_otp_backend, gmail_otp_backend,
+      sms_otp_backend,
       CreateOneTimeTokenLogHandler(
           AutofillLogRouterFactory::GetForBrowserContext(context)));
 }

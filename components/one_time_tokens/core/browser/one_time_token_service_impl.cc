@@ -4,12 +4,10 @@
 
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 
-#include <algorithm>
 #include <ranges>
 #include <utility>
 #include <vector>
 
-#include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -17,16 +15,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 
 namespace one_time_tokens {
 
 OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
     SmsOtpBackend* sms_otp_backend,
-    GmailOtpBackend* gmail_otp_backend,
     OneTimeTokenLogSink::LogHandler log_handler)
     : sms_{.has_pending_request = false, .backend = sms_otp_backend},
-      gmail_{.backend = gmail_otp_backend},
       cache_(kCacheDurationForOldTokens,
              &OneTimeToken::on_device_arrival_time,
              CacheProjection()) {
@@ -42,17 +37,10 @@ OneTimeTokenLogSink* OneTimeTokenServiceImpl::log_sink() {
 }
 
 void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
+  // The tokens in `cache_` are sorted by `on_device_arrival_time` in ascending
+  // order. Iterate in reverse so that the most recent token is delivered first.
   std::vector<OneTimeToken> recent_tokens =
       base::ToVector(cache_.PurgeExpiredAndGetItems());
-  if (gmail_.backend) {
-    std::vector<OneTimeToken> gmail_tokens =
-        gmail_.backend->PurgeExpiredAndGetCachedOneTimeTokens();
-    base::Extend(recent_tokens, std::move(gmail_tokens));
-  }
-  // The tokens in `cache_` and `gmail_.backend` are sorted by
-  // `on_device_arrival_time` in ascending order. We sort the combined list so
-  // that we can deliver the most recent token first.
-  std::ranges::sort(recent_tokens, {}, &OneTimeToken::on_device_arrival_time);
   for (const auto& token : std::views::reverse(recent_tokens)) {
     callback.Run(base::ok(token));
   }
@@ -75,17 +63,7 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
 
 std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
     const {
-  std::vector<OneTimeToken> tokens = base::ToVector(cache_.GetItems());
-  if (gmail_.backend) {
-    std::vector<OneTimeToken> gmail_tokens =
-        gmail_.backend->GetCachedOneTimeTokens();
-    base::Extend(tokens, std::move(gmail_tokens));
-  }
-  // The tokens in `cache_` and `gmail_.backend` are sorted by
-  // `on_device_arrival_time` in ascending order. We sort the combined list so
-  // that we can deliver the most recent token first.
-  std::ranges::sort(tokens, {}, &OneTimeToken::on_device_arrival_time);
-  return tokens;
+  return base::ToVector(cache_.GetItems());
 }
 
 void OneTimeTokenServiceImpl::RequestOneTimeToken(

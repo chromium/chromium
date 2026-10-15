@@ -20,8 +20,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -171,11 +169,9 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_backend(std::make_unique<FakeSmsOtpBackend>());
-    gmail_otp_backend_ =
-        std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
     one_time_token_service_ =
         std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
-            GetSmsOtpBackend(), gmail_otp_backend_.get());
+            GetSmsOtpBackend());
   }
   ~OtpTestAutofillClient() override = default;
 
@@ -188,13 +184,7 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
     return *static_cast<FakeSmsOtpBackend*>(GetSmsOtpBackend());
   }
 
-  one_time_tokens::FakeGmailOtpBackend& gmail_otp_backend() {
-    return *static_cast<one_time_tokens::FakeGmailOtpBackend*>(
-        gmail_otp_backend_.get());
-  }
-
  private:
-  std::unique_ptr<one_time_tokens::GmailOtpBackend> gmail_otp_backend_;
   std::unique_ptr<one_time_tokens::OneTimeTokenServiceImpl>
       one_time_token_service_;
 };

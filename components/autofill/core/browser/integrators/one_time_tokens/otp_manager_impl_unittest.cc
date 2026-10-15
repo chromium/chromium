@@ -114,7 +114,7 @@ class OtpManagerImplTest
       public WithTestAutofillClientDriverManager<TestAutofillClient,
                                                  MockAutofillDriver> {
  public:
-  OtpManagerImplTest() : one_time_token_service_(&sms_otp_backend_, nullptr) {}
+  OtpManagerImplTest() : one_time_token_service_(&sms_otp_backend_) {}
   ~OtpManagerImplTest() override = default;
 
   void SetUp() override {
@@ -1627,8 +1627,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NullServiceInvokesCallback) {
 // when OneTimeTokenService has no SMS backend (e.g. Desktop).
 TEST_F(OtpManagerImplTest, GetOtpSuggestions_NullSmsBackendInvokesCallback) {
   OneTimeTokenServiceImpl service_without_backend(
-      /*sms_otp_backend=*/nullptr,
-      /*gmail_otp_backend=*/nullptr);
+      /*sms_otp_backend=*/nullptr);
   OtpManagerImpl otp_manager(autofill_manager(), &service_without_backend);
   const FormStructure* form = AddFormWithOtpField();
   base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
@@ -3454,26 +3453,24 @@ TEST_F(
 }
 
 // Tests that when AffiliationService and GmailOtpBackend are present,
-// unverified Gmail tokens in OneTimeTokenService::GetCachedOneTimeTokens() are
-// ignored by SelectMostRecentToken() and GetOtpSuggestions(), preventing
-// cross-origin leakage of domain-mismatched tokens.
+// unverified Gmail tokens cached by the `GmailOtpBackend` are ignored by
+// SelectMostRecentToken() and GetOtpSuggestions(), preventing cross-origin
+// leakage of domain-mismatched tokens.
 TEST_F(
     OtpManagerImplTest,
-    SelectMostRecentToken_IgnoresUnverifiedServiceGmailOtpWhenAffiliationPresent) {
+    SelectMostRecentToken_IgnoresUnverifiedBackendGmailOtpWhenAffiliationPresent) {
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
   SetUpOtpFieldDetector();
   NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
   autofill_client().set_affiliation_service(&mock_affiliation_service);
 
   auto backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
-  one_time_tokens::FakeGmailOtpBackend* backend_ptr = backend.get();
-  backend_ptr->ProcessCallbacks(one_time_tokens::OneTimeToken(
+  backend->ProcessCallbacks(one_time_tokens::OneTimeToken(
       one_time_tokens::OneTimeTokenType::kGmail, "999888",
       base::TimeTicks::Now(), "otp@bank.test"));
   autofill_client().set_gmail_otp_backend(std::move(backend));
 
-  OneTimeTokenServiceImpl prod_service(&sms_otp_backend_, backend_ptr);
-  OtpManagerImpl otp_manager(autofill_manager(), &prod_service);
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
@@ -3500,8 +3497,7 @@ TEST_F(
   autofill_client().set_gmail_otp_backend(
       std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
 
-  OneTimeTokenServiceImpl desktop_service(/*sms_otp_backend=*/nullptr,
-                                          /*gmail_otp_backend=*/nullptr);
+  OneTimeTokenServiceImpl desktop_service(/*sms_otp_backend=*/nullptr);
   OtpManagerImpl otp_manager(autofill_manager(), &desktop_service);
 
   const FormStructure* form = AddFormWithOtpField();

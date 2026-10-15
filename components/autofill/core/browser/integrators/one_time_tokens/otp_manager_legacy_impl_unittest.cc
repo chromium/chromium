@@ -77,8 +77,7 @@ class OtpManagerLegacyImplTest
       public WithTestAutofillClientDriverManager<TestAutofillClient,
                                                  TestAutofillDriver> {
  public:
-  OtpManagerLegacyImplTest()
-      : one_time_token_service_(&sms_otp_backend_, nullptr) {}
+  OtpManagerLegacyImplTest() : one_time_token_service_(&sms_otp_backend_) {}
   ~OtpManagerLegacyImplTest() override = default;
 
   void SetUp() override {
@@ -1089,8 +1088,7 @@ TEST_F(OtpManagerLegacyImplTest, GetOtpSuggestions_NullServiceInvokesCallback) {
 TEST_F(OtpManagerLegacyImplTest,
        GetOtpSuggestions_NullSmsBackendInvokesCallback) {
   OneTimeTokenServiceImpl service_without_backend(
-      /*sms_otp_backend=*/nullptr,
-      /*gmail_otp_backend=*/nullptr);
+      /*sms_otp_backend=*/nullptr);
   OtpManagerLegacyImpl otp_manager(autofill_manager(),
                                    &service_without_backend);
   const FormStructure* form = AddFormWithOtpField();

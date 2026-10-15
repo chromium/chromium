@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -18,13 +17,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
-#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
-#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
-#include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,76 +84,6 @@ class MockSmsOtpBackend : public SmsOtpBackend {
       callbacks_;
 };
 
-class MockGmailOtpBackend : public GmailOtpBackend {
- public:
-  MockGmailOtpBackend()
-      : one_time_token_cache_(kGmailTokenCacheDuration,
-                              &OneTimeToken::on_device_arrival_time,
-                              OneTimeTokenCacheProjection()) {}
-
-  OneTimeTokenLogSink* GetLogSink() override { return nullptr; }
-
-  MOCK_METHOD(ExpiringSubscription,
-              Subscribe,
-              (base::Time expiration, Callback callback),
-              (override));
-
-  ExpiringSubscription Subscribe(
-      base::Time expiration,
-      Callback callback,
-      base::OnceClosure expiration_callback) override {
-    return Subscribe(expiration, std::move(callback));
-  }
-
-  MOCK_METHOD(ExpiringSubscription,
-              SubscribeToTickles,
-              (base::Time expiration, TickleCallback callback),
-              (override));
-
-  std::vector<OneTimeToken> GetCachedOneTimeTokens() const override {
-    return base::ToVector(one_time_token_cache_.GetItems());
-  }
-
-  std::vector<OneTimeToken> PurgeExpiredAndGetCachedOneTimeTokens() override {
-    return base::ToVector(one_time_token_cache_.PurgeExpiredAndGetItems());
-  }
-
-  MOCK_METHOD(void,
-              OnIncomingOneTimeTokenBackendNotification,
-              (const OneTimeTokenBackendNotification& notification),
-              (override));
-
-  MOCK_METHOD(void,
-              FetchUserDataProcessingConsent,
-              (FetchUserDataProcessingConsentCallback callback),
-              (override));
-
-  MOCK_METHOD(bool, HasPendingRequests, (), (const, override));
-
-  // Simulates the reception of an OTP by adding it to the token cache.
-  void SimulateOtpArrived(OneTimeToken token) {
-    one_time_token_cache_.PurgeExpiredAndAdd(std::move(token));
-  }
-
- private:
-  struct OneTimeTokenCacheKey {
-    std::string_view value;
-    std::optional<std::string_view> sender_address;
-    bool operator==(const OneTimeTokenCacheKey&) const = default;
-  };
-
-  struct OneTimeTokenCacheProjection {
-    OneTimeTokenCacheKey operator()(const OneTimeToken& token) const {
-      return {token.value(), token.sender_address()};
-    }
-  };
-
-  ExpiringCache<OneTimeToken,
-                decltype(&OneTimeToken::on_device_arrival_time),
-                OneTimeTokenCacheProjection>
-      one_time_token_cache_;
-};
-
 // A helper class to collect results from the OneTimeTokenService callbacks.
 class OneTimeTokenServiceTestObserver {
  public:
@@ -181,8 +106,7 @@ class OneTimeTokenServiceTestObserver {
 
 class OneTimeTokenServiceImplTest : public testing::Test {
  public:
-  OneTimeTokenServiceImplTest()
-      : gmail_otp_backend_(std::make_unique<MockGmailOtpBackend>()) {}
+  OneTimeTokenServiceImplTest() = default;
   ~OneTimeTokenServiceImplTest() override = default;
 
   void TearDown() override { feature_list_.Reset(); }
@@ -192,13 +116,11 @@ class OneTimeTokenServiceImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   MockSmsOtpBackend sms_otp_backend_;
-  std::unique_ptr<MockGmailOtpBackend> gmail_otp_backend_;
 };
 
 // Test that with no backend, nothing happens.
 TEST_F(OneTimeTokenServiceImplTest, NoBackend) {
-  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
-                                  /*gmail_otp_backend=*/nullptr);
+  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr);
   OneTimeTokenServiceTestObserver observer;
 
   // GetRecentOneTimeTokens should not call the callback.
@@ -222,7 +144,7 @@ TEST_F(OneTimeTokenServiceImplTest, NoBackend) {
 
 // Test that subscribing triggers a fetch.
 TEST_F(OneTimeTokenServiceImplTest, SubscriptionTriggersFetch) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -238,7 +160,7 @@ TEST_F(OneTimeTokenServiceImplTest, SubscriptionTriggersFetch) {
 
 // Test that a successful fetch notifies subscribers.
 TEST_F(OneTimeTokenServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver observer;
 
   auto subscription = service.Subscribe(
@@ -254,7 +176,7 @@ TEST_F(OneTimeTokenServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
 
 // Test that after a successful fetch the backend is queried again.
 TEST_F(OneTimeTokenServiceImplTest, BackendIsQueriedForFreshTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -280,7 +202,7 @@ TEST_F(OneTimeTokenServiceImplTest, BackendIsQueriedForFreshTokens) {
 
 // Test that multiple subscriptions only trigger one fetch.
 TEST_F(OneTimeTokenServiceImplTest, MultipleSubscriptionsOneFetch) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver observer1;
   OneTimeTokenServiceTestObserver observer2;
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -308,7 +230,7 @@ TEST_F(OneTimeTokenServiceImplTest, MultipleSubscriptionsOneFetch) {
 
 // Test that an expired subscription does not receive notifications.
 TEST_F(OneTimeTokenServiceImplTest, ExpiredSubscription) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -331,7 +253,7 @@ TEST_F(OneTimeTokenServiceImplTest, ExpiredSubscription) {
 // Test that after all subscriptions expire, a new subscription triggers a new
 // fetch.
 TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
 
   OneTimeTokenServiceTestObserver observer1;
   auto subscription1 = service.Subscribe(
@@ -365,7 +287,7 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
 
 // Test GetRecentOneTimeTokens returns cached tokens.
 TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver subscriber_observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -394,7 +316,7 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens) {
 
 // Test GetRecentOneTimeTokens does not return expired tokens.
 TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_Expired) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver subscriber_observer;
 
   auto subscription = service.Subscribe(
@@ -423,7 +345,7 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_Expired) {
 
 // Test that an error from the backend is propagated to subscribers.
 TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -447,7 +369,7 @@ TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
 // Test GetCachedOneTimeTokens returns cached tokens, including expired ones.
 TEST_F(OneTimeTokenServiceImplTest,
        GetCachedOneTimeTokens_ReturnsCachedTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   OneTimeTokenServiceTestObserver subscriber_observer;
 
   auto subscription = service.Subscribe(
@@ -473,193 +395,42 @@ TEST_F(OneTimeTokenServiceImplTest,
   EXPECT_EQ(cached_tokens[0].value(), "123456");
 }
 
-// Test GetRecentOneTimeTokens returns cached Gmail tokens.
-TEST_F(OneTimeTokenServiceImplTest, GmailGetRecentOneTimeTokens) {
-  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
-                                  gmail_otp_backend_.get());
+// Test GetRecentOneTimeTokens returns the most recent token first.
+TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_MostRecentFirst) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+  OneTimeTokenServiceTestObserver subscriber_observer;
 
-  gmail_otp_backend_->SimulateOtpArrived(
-      OneTimeToken(OneTimeTokenType::kGmail, "654321", base::TimeTicks::Now(),
-                   "no_reply@example.com"));
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(AtLeast(1));
 
-  // Now, get recent tokens.
+  auto subscription = service.Subscribe(
+      base::Time::Now() + base::Minutes(5),
+      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                          base::Unretained(&subscriber_observer)),
+      /*expiration_callback=*/base::DoNothing());
+
+  // First, an SMS OTP arrives at T = 0.
+  sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
+
+  // 10 seconds later, the backend has been queried again and another SMS OTP
+  // arrives at T = 10s.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "222222", base::TimeTicks::Now()));
+
+  // GetRecentOneTimeTokens should return both, with the newer token first.
   OneTimeTokenServiceTestObserver recent_observer;
   service.GetRecentOneTimeTokens(
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&recent_observer)));
   EXPECT_THAT(recent_observer.results(),
-              ElementsAre(OneTimeTokenValueEq("654321")));
-}
-
-// Test GetRecentOneTimeTokens does not return expired Gmail tokens.
-TEST_F(OneTimeTokenServiceImplTest, GmailGetRecentOneTimeTokens_Expired) {
-  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
-                                  gmail_otp_backend_.get());
-
-  gmail_otp_backend_->SimulateOtpArrived(
-      OneTimeToken(OneTimeTokenType::kGmail, "654321", base::TimeTicks::Now(),
-                   "no_reply@example.com"));
-
-  // Expire the token.
-  task_environment_.FastForwardBy(base::Minutes(6));
-
-  // Now, get recent tokens.
-  OneTimeTokenServiceTestObserver recent_observer;
-  service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&recent_observer)));
-
-  EXPECT_TRUE(recent_observer.results().empty());
-}
-
-// Test GetCachedOneTimeTokens returns cached Gmail tokens, including expired
-// ones.
-TEST_F(OneTimeTokenServiceImplTest,
-       GmailGetCachedOneTimeTokens_ReturnsCachedTokens) {
-  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
-                                  gmail_otp_backend_.get());
-
-  gmail_otp_backend_->SimulateOtpArrived(
-      OneTimeToken(OneTimeTokenType::kGmail, "654321", base::TimeTicks::Now(),
-                   "no_reply@example.com"));
-
-  // Verify that the token is returned by GetCachedOneTimeTokens.
-  std::vector<OneTimeToken> cached_tokens = service.GetCachedOneTimeTokens();
-  EXPECT_EQ(cached_tokens.size(), 1u);
-  EXPECT_EQ(cached_tokens[0].value(), "654321");
-  EXPECT_EQ(cached_tokens[0].sender_address(), "no_reply@example.com");
-
-  // Expire the token.
-  task_environment_.FastForwardBy(base::Minutes(6));
-
-  // Verify that the expired token is still returned by GetCachedOneTimeTokens.
-  cached_tokens = service.GetCachedOneTimeTokens();
-  EXPECT_EQ(cached_tokens.size(), 1u);
-  EXPECT_EQ(cached_tokens[0].value(), "654321");
-  EXPECT_EQ(cached_tokens[0].sender_address(), "no_reply@example.com");
-}
-
-// Test GetRecentOneTimeTokens concatenates internal SMS cache and Gmail
-// backend cache, returning the most recent first.
-TEST_F(OneTimeTokenServiceImplTest,
-       GetRecentOneTimeTokens_ConcatenatesSmsAndGmailTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, gmail_otp_backend_.get());
-  OneTimeTokenServiceTestObserver subscriber_observer;
-
-  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(AtLeast(1));
-
-  auto subscription_sms = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&subscriber_observer)),
-      /*expiration_callback=*/base::DoNothing());
-
-  // First, SMS OTP arrives at T = 0.
-  sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
-      OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
-
-  // 10 seconds later, Gmail OTP arrives at T = 10s.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  gmail_otp_backend_->SimulateOtpArrived(
-      OneTimeToken(OneTimeTokenType::kGmail, "222222", base::TimeTicks::Now(),
-                   "no_reply@example.com"));
-
-  // GetRecentOneTimeTokens should return both, with the newer Gmail token
-  // first.
-  OneTimeTokenServiceTestObserver recent_observer;
-  service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&recent_observer)));
-
-  ASSERT_EQ(recent_observer.results().size(), 2u);
-  EXPECT_EQ(recent_observer.results()[0].value().type(),
-            OneTimeTokenType::kGmail);
-  EXPECT_EQ(recent_observer.results()[0].value().value(), "222222");
-  EXPECT_EQ(recent_observer.results()[1].value().type(),
-            OneTimeTokenType::kSmsOtp);
-  EXPECT_EQ(recent_observer.results()[1].value().value(), "111111");
-}
-
-// Test GetCachedOneTimeTokens concatenates internal SMS cache and Gmail
-// backend cache.
-TEST_F(OneTimeTokenServiceImplTest,
-       GetCachedOneTimeTokens_ConcatenatesSmsAndGmailTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, gmail_otp_backend_.get());
-  OneTimeTokenServiceTestObserver subscriber_observer;
-
-  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(AtLeast(1));
-
-  auto subscription_sms = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&subscriber_observer)),
-      /*expiration_callback=*/base::DoNothing());
-
-  // First, SMS OTP arrives at T = 0.
-  sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
-      OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
-
-  // 10 seconds later, Gmail OTP arrives at T = 10s.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  gmail_otp_backend_->SimulateOtpArrived(
-      OneTimeToken(OneTimeTokenType::kGmail, "222222", base::TimeTicks::Now(),
-                   "no_reply@example.com"));
-
-  std::vector<OneTimeToken> cached_tokens = service.GetCachedOneTimeTokens();
-  ASSERT_EQ(cached_tokens.size(), 2u);
-  EXPECT_EQ(cached_tokens[0].value(), "111111");
-  EXPECT_EQ(cached_tokens[1].value(), "222222");
-}
-
-// Test that Gmail tokens expire from GetRecentOneTimeTokens after 1 minute
-// while SMS tokens remain cached for 3 minutes.
-TEST_F(OneTimeTokenServiceImplTest,
-       GetRecentOneTimeTokens_ExpiresAfterOneMinute) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, gmail_otp_backend_.get());
-  OneTimeTokenServiceTestObserver subscriber_observer;
-
-  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(AtLeast(1));
-
-  auto subscription_sms = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&subscriber_observer)),
-      /*expiration_callback=*/base::DoNothing());
-
-  // First, SMS OTP arrives at T = 0.
-  sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
-      OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
-
-  // 10 seconds later, Gmail OTP arrives at T = 10s.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  gmail_otp_backend_->SimulateOtpArrived(
-      OneTimeToken(OneTimeTokenType::kGmail, "222222", base::TimeTicks::Now(),
-                   "no_reply@example.com"));
-
-  // Fast forward by 61 seconds (past Gmail's 1-minute cache duration).
-  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
-
-  // Gmail token has expired, but SMS OTP is still cached (3-minute expiration).
-  OneTimeTokenServiceTestObserver recent_observer;
-  service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&recent_observer)));
-  EXPECT_THAT(recent_observer.results(),
-              ElementsAre(OneTimeTokenValueEq("111111")));
-
-  // Fast forward another 2 minutes (past SMS OTP's 3-minute cache duration).
-  task_environment_.FastForwardBy(base::Minutes(2));
-
-  OneTimeTokenServiceTestObserver expired_observer;
-  service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
-                          base::Unretained(&expired_observer)));
-  EXPECT_TRUE(expired_observer.results().empty());
+              ElementsAre(OneTimeTokenValueEq("222222"),
+                          OneTimeTokenValueEq("111111")));
 }
 
 // Test that RequestOneTimeToken returns a token when the backend succeeds.
 TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Success) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -674,7 +445,7 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Success) {
 
 // Test that RequestOneTimeToken returns nullopt when the backend fails.
 TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Failure) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -687,7 +458,7 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Failure) {
 
 // Test that RequestOneTimeToken returns nullopt when there is no backend.
 TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_NoBackend) {
-  OneTimeTokenServiceImpl service(nullptr, nullptr);
+  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(callback, Run(Eq(std::nullopt)));
@@ -696,7 +467,7 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_NoBackend) {
 
 // Test that RequestOneTimeToken returns nullopt when the timeout is reached.
 TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Timeout) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -710,7 +481,7 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Timeout) {
 // Test that if the backend responds after the timeout, it doesn't crash and the
 // second response is ignored.
 TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_LateResponse) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  OneTimeTokenServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -731,7 +502,7 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_LateResponse) {
 TEST_F(OneTimeTokenServiceImplTest, LogHandlerRegisteredInConstructor) {
   base::test::TestFuture<std::string> log_future;
   OneTimeTokenServiceImpl service(
-      /*sms_otp_backend=*/nullptr, /*gmail_otp_backend=*/nullptr,
+      /*sms_otp_backend=*/nullptr,
       base::BindRepeating(
           [](base::RepeatingCallback<void(std::string)> cb,
              std::string_view message) { cb.Run(std::string(message)); },

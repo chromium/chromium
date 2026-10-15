@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -33,12 +32,11 @@ inline constexpr base::TimeDelta kSmsRefetchInterval = base::Seconds(5);
 class OneTimeTokenServiceImpl : public OneTimeTokenService {
  public:
   // If `sms_otp_backend` is null, this class does not do any SMS-based
-  // subscriptions. If `gmail_otp_backend` is null, this class does not return
-  // any Gmail-based tokens. If `log_handler` is provided, it is registered with
+  // subscriptions. If `log_handler` is provided, it is registered with
   // `log_sink_` for the lifetime of this service.
-  OneTimeTokenServiceImpl(SmsOtpBackend* sms_otp_backend,
-                          GmailOtpBackend* gmail_otp_backend,
-                          OneTimeTokenLogSink::LogHandler log_handler = {});
+  explicit OneTimeTokenServiceImpl(
+      SmsOtpBackend* sms_otp_backend,
+      OneTimeTokenLogSink::LogHandler log_handler = {});
   OneTimeTokenServiceImpl(const OneTimeTokenServiceImpl&) = delete;
   OneTimeTokenServiceImpl& operator=(const OneTimeTokenServiceImpl&) = delete;
   ~OneTimeTokenServiceImpl() override;
@@ -71,11 +69,6 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
     raw_ptr<SmsOtpBackend> backend;
   } sms_;
 
-  // Handles requests of the `OneTimeTokenService` to the `GmailOtpBackend`.
-  struct {
-    raw_ptr<GmailOtpBackend> backend;
-  } gmail_;
-
   // Keys used by `cache_` to identify and deduplicate tokens. Unlike a direct
   // comparison of `OneTimeToken` objects (which was removed because different
   // callers have different equality requirements), this key explicitly captures
@@ -97,8 +90,7 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
     }
   };
 
-  // Internal cache of tokens, now effectively used only for SMS OTPs as Gmail
-  // OTPs are managed in the GmailOtpBackend's cache.
+  // Internal cache of SMS OTPs received from `sms_.backend`.
   ExpiringCache<OneTimeToken,
                 decltype(&OneTimeToken::on_device_arrival_time),
                 CacheProjection>
