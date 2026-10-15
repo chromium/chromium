@@ -2143,24 +2143,6 @@ void WebGLRenderingContextBase::SizeChanged() {
   cached_snapshot_.reset();
 }
 
-scoped_refptr<ExternalCanvasResource>
-WebGLRenderingContextBase::ExportLowLatencyCanvasResource(
-    SourceDrawingBuffer source_buffer) {
-  CHECK(Host()->LowLatencyEnabled());
-  CHECK(GetDrawingBuffer());
-  CHECK(!isContextLost());
-
-  ClearIfComposited(kClearCallerOther);
-
-  // Given that we are in low-latency mode and directly writing to the
-  // SharedImage that we will export below, at this point we have successfully
-  // painted the canvas' contents by doing any necessary clearing in the above
-  // call.
-  must_paint_to_canvas_ = false;
-
-  return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
-}
-
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
@@ -2170,7 +2152,15 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
 
   if (Host()->LowLatencyEnabled() &&
       GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
-    auto resource = ExportLowLatencyCanvasResource(source_buffer);
+    ClearIfComposited(kClearCallerOther);
+
+    // Given that we are in low-latency mode and directly writing to the
+    // SharedImage that we will export below, at this point we have successfully
+    // painted the canvas' contents by doing any necessary clearing in the above
+    // call.
+    must_paint_to_canvas_ = false;
+
+    auto resource = GetDrawingBuffer()->ExportLowLatencyCanvasResource();
     return resource ? resource->Bitmap() : nullptr;
   }
 
@@ -2284,7 +2274,15 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 
   if (Host()->LowLatencyEnabled() &&
       GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
-    return ExportLowLatencyCanvasResource(source_buffer);
+    ClearIfComposited(kClearCallerOther);
+
+    // Given that we are in low-latency mode and directly writing to the
+    // SharedImage that we will export below, at this point we have successfully
+    // painted the canvas' contents by doing any necessary clearing in the above
+    // call.
+    must_paint_to_canvas_ = false;
+
+    return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
   }
 
   bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
