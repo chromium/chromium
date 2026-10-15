@@ -210,6 +210,12 @@ declare_args() {
   # away from the opt-in wexit_time_destructors config, and into the default
   # compiler config.
   is_wexit_time_destructors_default = build_with_chromium
+
+  # Enable Clang's -Wlifetime-safety-permissive warnings in chromium_code.
+  # https://clang.llvm.org/docs/LifetimeSafety.html
+  # TODO(crbug.com/570169685): Enable by default once baseline warnings are
+  # fixed.
+  enable_lifetime_safety_warnings = false
 }
 
 declare_args() {
@@ -2273,6 +2279,7 @@ config("chromium_code") {
 
   configs = [
     ":default_warnings",
+    ":lifetime_safety",
     ":noshadowing",
   ]
   if (treat_warnings_as_errors) {
@@ -2454,6 +2461,16 @@ config("no_exceptions") {
 config("wglobal_constructors") {
   if (is_clang) {
     cflags = [ "-Wglobal-constructors" ]
+  }
+}
+
+# Enables Clang's compile-time lifetime safety analysis
+# (-Wlifetime-safety-permissive).
+# See: https://clang.llvm.org/docs/LifetimeSafety.html
+config("lifetime_safety") {
+  if (is_clang && enable_lifetime_safety_warnings) {
+    cflags_cc = [ "-Wlifetime-safety-permissive" ]
+    cflags_objcc = cflags_cc
   }
 }
 
