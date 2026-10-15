@@ -74,10 +74,6 @@ tast.inputs.VirtualKeyboardSpeech
 # b/424789710
 tast.apps.LaunchGalleryFromNotifications.stable
 
-# https://crbug.com/434741638
-apps.Sharesheet
-tast.apps.Sharesheet
-
 # https://crbug.com/437961311
 tast.bruschetta.Basic.with_fieldtrial_config@betty
 tast.bruschetta.CommandVim@betty
