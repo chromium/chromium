@@ -7,4 +7,5 @@ export {directive, PartInfo, PartType} from 'lit-html/directive.js';
 export {AsyncDirective} from 'lit-html/async-directive.js';
 export {CrLitElement} from './cr_lit_element.js';
 export {dedupingMixin} from './deduping_mixin.js';
+export {cache} from 'lit/directives/cache.js';
 export {repeat} from 'lit/directives/repeat.js';
