@@ -21,14 +21,29 @@ export function getHtml(this: SearchboxInputElement) {
     ${this.inKeywordMode_() ?
       html`<span id="keyword">${
           this.inputKeywordModel!.displayText}</span>` : ''}
+    <!-- Target of the input's aria-activedescendant while a selection is
+         active. It distracts screen readers from the input's value, which
+         previews the selection, so the notification of the selection's label
+         wins over the value change. Must share the input's shadow root for
+         element reflection to work. It is an option of a listbox the combobox
+         controls because that is the one kind of active descendant VoiceOver
+         accepts as keyboard focus after a key press: told that focus is on a
+         plain group, it re-anchors keyboard focus on the web area, which blurs
+         the input and closes the popup, whatever the group's position or
+         focusability. Hidden, hence out of the accessibility tree, while there
+         is no selection (see setSelectionA11yLabel()). -->
+    <div id="selectionListbox" role="listbox" hidden>
+      <div id="selectionAnnouncement" role="option" aria-selected="true"></div>
+    </div>
     <div id="mirrorContainer">
       <div id="mirror" part="mirror" aria-hidden="true"
           ?hidden="${!this.urlEmphasisEnabled}"></div>
       ${this.multiLineEnabled ? html`
         <textarea id="input" autocomplete="off"
             part="searchbox-input"
-            spellcheck="false" aria-live="${this.inputAriaLive}" role="combobox"
-            aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
+            spellcheck="false" role="combobox"
+            aria-expanded="${this.dropdownIsVisible}"
+            aria-controls="selectionListbox"
             aria-description="${this.searchboxAriaDescription}"
             placeholder="${this.computePlaceholderText_()}"
             @blur="${this.onInputBlur_}"
@@ -44,8 +59,9 @@ export function getHtml(this: SearchboxInputElement) {
       ` : html`
         <input id="input" class="truncate" type="search" autocomplete="off"
             part="searchbox-input"
-            spellcheck="false" aria-live="${this.inputAriaLive}" role="combobox"
-            aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
+            spellcheck="false" role="combobox"
+            aria-expanded="${this.dropdownIsVisible}"
+            aria-controls="selectionListbox"
             aria-description="${this.searchboxAriaDescription}"
             placeholder="${this.computePlaceholderText_()}"
             @blur="${this.onInputBlur_}"
@@ -61,12 +77,6 @@ export function getHtml(this: SearchboxInputElement) {
       `}
     </div>
     <span id="ellipsisIndicator" aria-hidden="true">...</span>
-    <!-- Target of the input's aria-activedescendant while a selection is
-         active. It distracts screen readers from the input's value, which
-         previews the selection, so the notification of the selection's label
-         wins over the value change. Must share the input's shadow root for
-         element reflection to work. -->
-    <div id="selectionAnnouncement"></div>
     <slot name="action-buttons"></slot>
     <slot name="compose-button"></slot>
 </div>

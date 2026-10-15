@@ -49,6 +49,7 @@ export interface SearchboxInputElement {
   $: {
     icon: SearchboxIconElement,
     selectionAnnouncement: HTMLElement,
+    selectionListbox: HTMLElement,
   };
 }
 
@@ -68,7 +69,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   static override get properties() {
     return {
       dropdownIsVisible: {type: Boolean, reflect: true},
-      inputAriaLive: {type: String},
       multiLineEnabled: {type: Boolean, reflect: true},
       singleLineOnInlineAutocomplete: {type: Boolean},
       forceSingleLine_:
@@ -95,7 +95,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   accessor dropdownIsVisible: boolean = false;
-  accessor inputAriaLive: string = '';
   accessor multiLineEnabled: boolean = false;
   accessor singleLineOnInlineAutocomplete: boolean = false;
   accessor forceSingleLine_: boolean = false;
@@ -123,8 +122,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   // Bumped by each `setSelectionA11yLabel()` call, so that a deferred
   // notification can tell whether it has been superseded.
   private selectionA11yLabelGeneration_: number = 0;
-  // Whether a selection label's notification is deferred and still pending.
-  private selectionA11yLabelPending_: boolean = false;
 
   constructor() {
     super();
@@ -265,37 +262,44 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
    * narrate that value change, drowning out the selection's own announcement.
    * Like the WebUI toolbar's readonly omnibox, this distracts them from the
    * input by pointing aria-activedescendant at an offscreen element, then
-   * notifies the label, so that is all they narrate. The distraction has no
-   * role of its own, so screen reader focus stays on the input. This is the
-   * only narration of selection changes, so callers must not announce the
-   * label by other means too. Pass an empty string to narrate the input itself
-   * again, e.g. when the user edits.
+   * notifies the label, so that is all they narrate. This is the only
+   * narration of selection changes, so callers must not announce the label by
+   * other means too. Pass an empty string to narrate the input itself again,
+   * e.g. when the user edits.
+   *
+   * Pointing aria-activedescendant at the distraction is reported to screen
+   * readers as a focus change. The distraction is an option of a listbox the
+   * combobox controls (see the template) because, after a key press, VoiceOver
+   * re-anchors keyboard focus on whatever it deems appropriate for the element
+   * it is told has focus: for an option of the combobox's listbox that is the
+   * combobox itself, a no-op; for a plain group it is the web area, which
+   * blurs the input and closes the popup.
+   *
+   * Every label is notified the same way, with the accessibility tree update
+   * that follows the next paint, whether or not screen readers were already
+   * on the distraction. Deferring the notification past the update that
+   * reports the focus change makes the label the last thing they are told,
+   * and doing so always means each selection change is narrated identically
+   * rather than depending on what the user did last. Labels set before the
+   * notification goes out supersede it, so rapid key presses narrate only
+   * where they end up.
    */
   setSelectionA11yLabel(label: string) {
     const input = this.inputElement;
     const distraction = this.$.selectionAnnouncement;
-    const wasDistracted = input.ariaActiveDescendantElement === distraction;
     distraction.textContent = label;
+    // Out of the accessibility tree altogether while there is no selection;
+    // it may enter it in the same update that makes it the active descendant.
+    this.$.selectionListbox.hidden = !label;
     input.ariaActiveDescendantElement = label ? distraction : null;
     const generation = ++this.selectionA11yLabelGeneration_;
     if (!label) {
-      this.selectionA11yLabelPending_ = false;
       return;
     }
-    if (wasDistracted && !this.selectionA11yLabelPending_) {
-      announce(this, label);
-      return;
-    }
-    // Pointing aria-activedescendant at the distraction is reported to screen
-    // readers as a focus change. Notify once that has gone out with the next
-    // accessibility tree update, so that whatever they make of the focus
-    // change, the label is what they narrate last.
-    this.selectionA11yLabelPending_ = true;
     afterNextPaint(() => {
       if (generation !== this.selectionA11yLabelGeneration_) {
         return;  // Superseded by a newer label, or cancelled by an edit.
       }
-      this.selectionA11yLabelPending_ = false;
       announce(this, label);
     });
   }

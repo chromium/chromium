@@ -16,7 +16,6 @@ export function getHtml(this: WebuiBrowserSearchboxElement) {
     @toggle="${this.onInputWrapperToggle_}">
   <cr-searchbox-input id="input" exportparts="searchbox-input"
       ?dropdown-is-visible="${this.dropdownIsVisible}"
-      input-aria-live="${this.inputAriaLive}"
       ?multi-line-enabled="${this.multiLineEnabled}"
       placeholder-text="${this.computePlaceholderText_()}"
       searchbox-aria-description="${this.searchboxAriaDescription}"

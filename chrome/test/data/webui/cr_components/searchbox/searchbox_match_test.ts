@@ -335,7 +335,10 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(0, secondaryTextEl.querySelectorAll('img').length);
   });
 
-  test('AriaLabelUpdatingWithVirtualFocus', async () => {
+  test('AriaLabelDoesNotFollowVirtualFocusSelection', async () => {
+    // Virtual focus selection changes, including onto this match's keyword
+    // chip, action and remove button, are narrated by the hosting searchbox.
+    // The match's own label stays put so nothing else narrates them.
     matchEl.virtualFocusEnabled = true;
     const match = createAutocompleteMatch();
     match.a11yLabel = 'Search Google';
@@ -355,44 +358,18 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     matchEl.matchIndex = 0;
     await microtasksFinished();
-
-    // 1. Normal state selection
-    matchEl.selection = {
-      line: 0,
-      state: SelectionLineState.kNormal,
-      actionIndex: 0,
-    };
-    await microtasksFinished();
     assertEquals('Search Google', matchEl.ariaLabel);
 
-    // 2. Keyword Mode chip selection
-    matchEl.selection = {
-      line: 0,
-      state: SelectionLineState.kKeywordMode,
-      actionIndex: 0,
-    };
-    await microtasksFinished();
-    assertEquals('Search Google in Keyword Mode', matchEl.ariaLabel);
+    for (const state
+             of [SelectionLineState.kNormal, SelectionLineState.kKeywordMode,
+                 SelectionLineState.kFocusedButtonAction,
+                 SelectionLineState.kFocusedButtonRemoveSuggestion]) {
+      matchEl.selection = {line: 0, state, actionIndex: 0};
+      await microtasksFinished();
+      assertEquals('Search Google', matchEl.ariaLabel);
+    }
 
-    // 3. Action chip selection
-    matchEl.selection = {
-      line: 0,
-      state: SelectionLineState.kFocusedButtonAction,
-      actionIndex: 0,
-    };
-    await microtasksFinished();
-    assertEquals('First Action A11y Label', matchEl.ariaLabel);
-
-    // 4. Remove button selection
-    matchEl.selection = {
-      line: 0,
-      state: SelectionLineState.kFocusedButtonRemoveSuggestion,
-      actionIndex: 0,
-    };
-    await microtasksFinished();
-    assertEquals('Remove Suggestion', matchEl.ariaLabel);
-
-    // 5. Selection index mismatch (different match line selected)
+    // Nor when another line is selected.
     matchEl.selection = {
       line: 1,
       state: SelectionLineState.kNormal,

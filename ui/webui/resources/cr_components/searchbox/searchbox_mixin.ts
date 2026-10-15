@@ -49,11 +49,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           reflect: true,
         },
 
-        /** The value of the input element's 'aria-live' attribute. */
-        inputAriaLive: {
-          type: String,
-        },
-
         multiLineEnabled: {
           type: Boolean,
           reflect: true,
@@ -125,7 +120,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
       return (this.result?.matches?.[0]?.allowedToBeDefaultMatch) ? 0 : -1;
     }
-    accessor inputAriaLive: string = '';
     accessor inputKeywordModel: InputKeywordModel|null = null;
     accessor searchboxIcon: string = '';
     accessor showThumbnail: boolean = false;
@@ -169,6 +163,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     // waiting for the post-deletion result. Null if no match was selected at
     // the time. See `shouldPreserveSelectionOnMatchDeletion()`.
     private pendingDeletionLine_: number|null = null;
+    // Set when the user deletes a suggestion, so that the results replacing
+    // the current ones narrate the new selection. See
+    // `onAutocompleteResultChanged()`.
+    private narrateNextResultSelection_: boolean = false;
     private searchboxEventTracker_: EventTracker = new EventTracker();
     private callbackRouter_: PageCallbackRouter =
         SearchboxBrowserProxy.getInstance().callbackRouter;
@@ -246,12 +244,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           changedPrivateProperties.has('selection')) {
         this.selectedMatch = this.computeSelectedMatch_();
       }
-      // Computed after `selectedMatch` so it isn't one update stale; otherwise
-      // the input stays `aria-live=polite` while previewing the first selected
-      // match and screen readers narrate the preview.
-      if (changedPrivateProperties.has('selectedMatch')) {
-        this.inputAriaLive = this.computeInputAriaLive_();
-      }
       if (changedPrivateProperties.has('result') ||
           changedPrivateProperties.has('selectedMatchIndex') ||
           changedPrivateProperties.has('selectedMatch') ||
@@ -308,13 +300,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.activeQueryId = -1;
       this.lastQueriedInput = null;
       this.pendingDeletionLine_ = null;
+      this.narrateNextResultSelection_ = false;
     }
 
     queryAutocomplete(
         input: string, preventInlineAutocomplete: boolean, isOnFocus: boolean) {
       this.activeQueryId = this.nextQueryId_++;
       this.lastQueriedInput = input;
+      // The results of a new query are not the ones left by a deletion.
       this.pendingDeletionLine_ = null;
+      this.narrateNextResultSelection_ = false;
 
       preventInlineAutocomplete = preventInlineAutocomplete ||
           this.getInputElement().preventInlineAutocomplete(input);
@@ -473,24 +468,20 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
             Math.min(this.matchIndex, this.result.matches.length - 1) :
             -1;
         if (this.getInputElement().inputElement.value.trim() && index >= 0) {
-          const match = this.result.matches[index]!;
-          this.selectedMatch = match;
-          if (this.virtualFocusEnabled) {
-            this.setSelection({
-              line: index,
-              state: SelectionLineState.kNormal,
-              actionIndex: 0,
-            });
-          }
           // Restore the selection and update the input. Don't restore when the
           // user deletes all their input and autocomplete is queried or else
           // the empty input will change to the value of the first result.
+          const selection: OmniboxPopupSelection = {
+            line: index,
+            state: SelectionLineState.kNormal,
+            actionIndex: 0,
+          };
+          if (this.virtualFocusEnabled) {
+            this.setSelection(selection);
+          }
           await this.getDropdownElement().selectIndex(index);
-          this.getInputElement().setInput({
-            text: this.computeMatchFillIntoEdit(match),
-            inline: '',
-            moveCursorToEnd: true,
-          });
+          await this.updateComplete;
+          this.fillInputForSelection(selection);
         } else {
           // Remove the selection and update the input.
           this.getDropdownElement().unselect();
@@ -498,6 +489,17 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
             inline: '',
           });
         }
+      }
+
+      // The results replaced the ones a suggestion was deleted from, so tell
+      // the user what is selected now, as the native omnibox does. Typing and
+      // other result updates are not narrated; screen readers echo the input.
+      if (this.narrateNextResultSelection_) {
+        this.narrateNextResultSelection_ = false;
+        await this.updateComplete;
+        // Narrating no selection clears the deleted match's label.
+        this.narrateSelection(
+            this.dropdownIsVisible ? this.selection : kDefaultSelection);
       }
     }
 
@@ -521,7 +523,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     /**
      * Selects the match at `line` and previews it in the input, as if the user
-     * had navigated to it.
+     * had navigated to it. It is narrated by `onAutocompleteResultChanged()`,
+     * like any selection a post-deletion result leaves behind.
      */
     private async selectLineAfterMatchDeletion_(line: number) {
       const selection: OmniboxPopupSelection = {
@@ -536,7 +539,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
       // Wait for `selectedMatch` to be updated.
       await this.updateComplete;
-      this.updateInputForSelection(selection, /*key=*/ '');
+      this.fillInputForSelection(selection);
     }
 
     onInputFocusChanged(e: CustomEvent<{value: string, isOnFocus: boolean}>) {
@@ -782,8 +785,14 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return this.handleVirtualFocusEnter(e);
     }
 
-    updateInputForSelection(nextSelection: OmniboxPopupSelection, key: string) {
-      if (nextSelection.line === -1) {
+    /**
+     * Writes the text the input shows for `selection`: the typed text again
+     * when the selection is the input itself or a button outside the matches,
+     * otherwise the selected match's text. Does not narrate; see
+     * `narrateSelection()`.
+     */
+    fillInputForSelection(selection: OmniboxPopupSelection) {
+      if (selection.line === -1) {
         // The input itself, or a button outside the matches: show the typed
         // text again, without any inline autocompletion.
         this.getInputElement().setInput({
@@ -791,47 +800,62 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           inline: '',
           moveCursorToEnd: true,
         });
-        // Follows `setInput()`, as in the WebUI toolbar, so the label is the
-        // last thing screen readers are told about and the value change does
-        // not talk over it.
-        this.getInputElement().setSelectionA11yLabel(
-            this.getSelectionA11yLabel(this.selectedMatch, nextSelection));
         return;
       }
 
-      if (this.selectedMatch) {
-        const newFill = this.computeMatchFillIntoEdit(this.selectedMatch);
-        const isKeywordMode = this.keywordModeManager_.isInKeywordMode ||
-            nextSelection.state === SelectionLineState.kKeywordMode;
-        const isNormal = nextSelection.state === SelectionLineState.kNormal;
-        const newInline = isNormal && !isKeywordMode &&
-                nextSelection.line === 0 &&
-                this.selectedMatch.allowedToBeDefaultMatch ?
-            this.selectedMatch.inlineAutocompletion :
-            '';
-        const newFillEnd = newFill.length - newInline.length;
-        const text = newFill.substr(0, newFillEnd);
-        const isMatchPreview =
-            this.isMatchPreview_(this.selectedMatch, nextSelection.line);
-        this.getInputElement().setInput({
-          text: text,
-          inline: newInline,
-          moveCursorToEnd: newInline.length === 0,
-          isMatchPreview: isMatchPreview,
-        });
-        // Follows `setInput()`, as in the WebUI toolbar, so the label is the
-        // last thing screen readers are told about and the preview value
-        // change does not talk over it.
-        this.getInputElement().setSelectionA11yLabel(
-            this.getSelectionA11yLabel(this.selectedMatch, nextSelection));
+      const match = this.selectedMatch;
+      if (!match) {
+        return;
+      }
+      const newFill = this.computeMatchFillIntoEdit(match);
+      const isKeywordMode = this.keywordModeManager_.isInKeywordMode ||
+          selection.state === SelectionLineState.kKeywordMode;
+      const isNormal = selection.state === SelectionLineState.kNormal;
+      const newInline = isNormal && !isKeywordMode && selection.line === 0 &&
+              match.allowedToBeDefaultMatch ?
+          match.inlineAutocompletion :
+          '';
+      const newFillEnd = newFill.length - newInline.length;
+      this.getInputElement().setInput({
+        text: newFill.substr(0, newFillEnd),
+        inline: newInline,
+        moveCursorToEnd: newInline.length === 0,
+        isMatchPreview: this.isMatchPreview_(match, selection.line),
+      });
+    }
 
-        if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'PageDown' ||
-            key === 'PageUp') {
-          this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
-          this.pageHandler().onNavigationLikely(
-              nextSelection.line, this.selectedMatch.destinationUrl,
-              NavigationPredictor.kUpOrDownArrowButton);
-        }
+    /**
+     * Narrates `selection` to screen readers with the label from
+     * `getSelectionA11yLabel()`. This is the only narration of selection
+     * changes, so nothing else may announce them. Call it after the input
+     * reflects the selection (see `fillInputForSelection()`), so the label is
+     * the last thing screen readers are told about and the value change does
+     * not talk over it.
+     */
+    narrateSelection(selection: OmniboxPopupSelection) {
+      this.getInputElement().setSelectionA11yLabel(
+          this.getSelectionA11yLabel(this.selectedMatch, selection));
+    }
+
+    /**
+     * Applies a user-driven selection change: fills the input for
+     * `nextSelection`, narrates it, and tells the browser a navigation is
+     * likely when `key` is an arrow or page key.
+     */
+    updateInputForSelection(nextSelection: OmniboxPopupSelection, key: string) {
+      this.fillInputForSelection(nextSelection);
+      this.narrateSelection(nextSelection);
+
+      const isMatchSelection =
+          nextSelection.state !== SelectionLineState.kFocusedButtonAim &&
+          nextSelection.line !== -1;
+      if (isMatchSelection && this.selectedMatch &&
+          (key === 'ArrowDown' || key === 'ArrowUp' || key === 'PageDown' ||
+           key === 'PageUp')) {
+        this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
+        this.pageHandler().onNavigationLikely(
+            nextSelection.line, this.selectedMatch.destinationUrl,
+            NavigationPredictor.kUpOrDownArrowButton);
       }
     }
 
@@ -1219,10 +1243,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return this.result.matches[this.matchIndex] || null;
     }
 
-    private computeInputAriaLive_(): string {
-      return this.selectedMatch ? 'off' : 'polite';
-    }
-
     /**
      * Accepts the inline autocompletion by appending it to the input text and
      * moving the cursor to the end. Returns `true` if inline autocomplete was
@@ -1264,12 +1284,14 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     /**
      * Called when the backend is asked to delete the match at `line`, which is
-     * null if the selection shouldn't move to that line afterwards.
+     * null if the selection shouldn't move to that line afterwards. The
+     * post-deletion result narrates the selection it leaves behind.
      */
     private onMatchDeletionRequested_(line: number|null) {
       // Unfreeze `activeQueryId` so post-deletion results are accepted.
       this.unfreezeActiveQueryId();
       this.pendingDeletionLine_ = line;
+      this.narrateNextResultSelection_ = true;
     }
   }
 
@@ -1284,7 +1306,6 @@ export interface SearchboxMixinInterface extends
   controlKeyState: ControlKeyState;
   dropdownIsVisible: boolean;
   initialInputScrollHeight: number;
-  inputAriaLive: string;
   activeQueryId: number;
   lastQueriedInput: string|null;
   multiLineEnabled: boolean;
@@ -1300,6 +1321,7 @@ export interface SearchboxMixinInterface extends
   acceptInlineAutocomplete(e: KeyboardEvent): boolean;
   clearAutocompleteMatches(): void;
   computeMatchFillIntoEdit(match: AutocompleteMatch): string;
+  fillInputForSelection(selection: OmniboxPopupSelection): void;
   getDropdownElement(): SearchboxDropdownElement;
   getInputElement(): SearchboxInputElement;
   getWrapperElement(): HTMLElement;
@@ -1311,6 +1333,7 @@ export interface SearchboxMixinInterface extends
   hasMatches(): boolean;
   isAutocompleteResultStale(result: AutocompleteResult): boolean;
   isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean;
+  narrateSelection(selection: OmniboxPopupSelection): void;
   shouldDropdownBeVisible(): boolean;
   updateDropdownVisibility(): void;
   unfreezeActiveQueryId(): void;

@@ -23,7 +23,6 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
       <cr-searchbox-input id="input"
           exportparts="searchbox-input, icon"
           ?dropdown-is-visible="${this.dropdownIsVisible}"
-          input-aria-live="${this.inputAriaLive}"
           ?multi-line-enabled="${this.multiLineEnabled}"
           .singleLineOnInlineAutocomplete="${
               this.singleLineOnInlineAutocomplete}"

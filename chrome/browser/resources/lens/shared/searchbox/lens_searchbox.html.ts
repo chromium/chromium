@@ -13,7 +13,6 @@ export function getHtml(this: LensSearchboxElement) {
     @keydown="${this.onInputWrapperKeydown}">
   <cr-searchbox-input id="input"
       exportparts="searchbox-input"
-      .inputAriaLive="${this.inputAriaLive}"
       .searchboxIcon="${this.searchboxIcon_}"
       .searchboxAriaDescription="${this.searchboxAriaDescription}"
       .selectedMatch="${this.selectedMatch}"
