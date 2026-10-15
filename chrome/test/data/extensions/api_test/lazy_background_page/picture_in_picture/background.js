@@ -4,19 +4,6 @@
 
 const video = document.createElement('video');
 
-// Load video and toggle Picture-in-Picture when user clicks browser action.
-chrome.browserAction.onClicked.addListener(function(tab) {
-  if (video.readyState === 0) {
-    loadVideo();
-    return;
-  }
-  if (video !== document.pictureInPictureElement) {
-    enterPictureInPicture();
-  } else {
-    exitPictureInPicture();
-  }
-});
-
 function loadVideo() {
   chrome.test.getConfig(function(config) {
     video.src =

@@ -46,8 +46,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForDialog) {
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
                        DevToolsWindowCreationObserver) {
   scoped_refptr<const Extension> extension =
-      LoadExtensionAndWait("browser_action_create_tab");
+      LoadExtensionAndWait("on_installed");
   // Lazy Background Page doesn't exist yet.
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
 
@@ -590,18 +590,13 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
 // close it, and that it can execute simple API calls that don't require an
 // asynchronous response.
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, OnUnload) {
+  ExtensionTestMessageListener listener("Success");
   const Extension* extension = LoadExtensionAndWait("on_unload");
   ASSERT_TRUE(extension);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   // Lazy Background Page has been shut down.
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
-
-  // The extension's action has a new title.
-  ExtensionAction* extension_action =
-      ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);
-  ASSERT_TRUE(extension_action);
-  EXPECT_EQ("Success",
-            extension_action->GetTitle(ExtensionAction::kDefaultTabId));
 }
 
 // Tests that both a regular page and an event page will receive events when
@@ -735,20 +730,21 @@ class PictureInPictureLazyBackgroundPageApiTest
 IN_PROC_BROWSER_TEST_F(PictureInPictureLazyBackgroundPageApiTest,
                        PictureInPictureInBackgroundPage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(LoadExtensionAndWait("browser_action_picture_in_picture"));
 
-  const Extension* extension = GetSingleLoadedExtension();
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("lazy_background_page")
+                        .AppendASCII("picture_in_picture"));
   ASSERT_TRUE(extension) << message_;
 
-  // Click on the browser action icon to load video.
+  // Load video.
   {
     ExtensionTestMessageListener video_loaded("video_loaded");
-    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+    browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        profile(), extension->id(), "loadVideo();");
     EXPECT_TRUE(video_loaded.WaitUntilSatisfied());
   }
 
-  // Click on the browser action icon to enter Picture-in-Picture and check
-  // that keep alive count is incremented.
+  // Enter Picture-in-Picture and check that keep alive count is incremented.
   {
     ProcessManager* pm = ProcessManager::Get(profile());
     const auto pip_activity =
@@ -757,18 +753,20 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureLazyBackgroundPageApiTest,
                 testing::Not(testing::Contains(pip_activity)));
 
     ExtensionTestMessageListener entered_pip("entered_pip");
-    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+    browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        profile(), extension->id(), "enterPictureInPicture();",
+        browsertest_util::ScriptUserActivation::kActivate);
     EXPECT_TRUE(entered_pip.WaitUntilSatisfied());
     EXPECT_THAT(pm->GetLazyKeepaliveActivities(extension),
                 testing::Contains(pip_activity));
   }
 
-  // Click on the browser action icon to exit Picture-in-Picture and the Lazy
-  // Background Page shuts down.
+  // Exit Picture-in-Picture and verify the Lazy Background Page shuts down.
   {
     ExtensionHostTestHelper host_helper(profile(), extension->id());
     host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
-    ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+    browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        profile(), extension->id(), "exitPictureInPicture();");
     host_helper.WaitForHostDestroyed();
     EXPECT_FALSE(IsBackgroundPageAlive(extension->id()));
   }
