@@ -8456,16 +8456,16 @@ const CSSValuePair* ConsumeShapeCommandEndPoint(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     CSSValueID& point_origin) {
-  point_origin = args.ConsumeIncludingWhitespace().Id();
-  switch (point_origin) {
-    case CSSValueID::kTo:
-      return ConsumePosition(args, context, local_context,
-                             UnitlessQuirk::kForbid, std::nullopt);
-    case CSSValueID::kBy:
-      return ConsumeCoordinatePair(args, context, local_context);
-    default:
-      return nullptr;
+  point_origin = args.Peek().Id();
+  if (!IdentMatches<CSSValueID::kTo, CSSValueID::kBy>(point_origin)) {
+    return nullptr;
   }
+  args.ConsumeIncludingWhitespace();
+  if (point_origin == CSSValueID::kTo) {
+    return ConsumePosition(args, context, local_context, UnitlessQuirk::kForbid,
+                           std::nullopt);
+  }
+  return ConsumeCoordinatePair(args, context, local_context);
 }
 
 const CSSValuePair* ConsumeShapeCommandControlPoint(
@@ -8504,9 +8504,9 @@ const CSSValuePair* ConsumeShapeCommandControlPoint(
   if (args.AtEnd()) {
     return nullptr;
   }
-  control_point_origin = args.ConsumeIncludingWhitespace().Id();
-  if (IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kOrigin>(
-          control_point_origin)) {
+  if (PeekedIdentMatches<CSSValueID::kStart, CSSValueID::kEnd,
+                         CSSValueID::kOrigin>(args)) {
+    control_point_origin = args.ConsumeIncludingWhitespace().Id();
     return control_point;
   }
   return nullptr;
@@ -8548,7 +8548,11 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
   HeapVector<Member<const CSSShapeCommand>> commands;
   while (!args.AtEnd()) {
     CSSValueID end_point_origin = CSSValueID::kInvalid;
-    CSSValueID command_type = args.ConsumeIncludingWhitespace().Id();
+    CSSValueID command_type = args.Peek().Id();
+    if (command_type == CSSValueID::kInvalid) {
+      return nullptr;
+    }
+    args.ConsumeIncludingWhitespace();
     switch (command_type) {
       // https://drafts.csswg.org/css-shapes-2/#typedef-shape-move-command
       // <move-command> = move <command-end-point>
@@ -8583,7 +8587,11 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
       // position component
       case CSSValueID::kHline:
       case CSSValueID::kVline: {
-        end_point_origin = args.ConsumeIncludingWhitespace().Id();
+        end_point_origin = args.Peek().Id();
+        if (end_point_origin == CSSValueID::kInvalid) {
+          return nullptr;
+        }
+        args.ConsumeIncludingWhitespace();
         bool horizontal_edge = command_type == CSSValueID::kVline;
         bool vertical_edge = !horizontal_edge;
         const CSSValue* end_point = nullptr;
