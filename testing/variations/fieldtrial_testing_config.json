@@ -5680,6 +5680,21 @@
             ]
         }
     ],
+    "DeliveryOptimizationDownloader": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeliveryOptimizationDownloader"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprecateUnload": [
         {
             "platforms": [
