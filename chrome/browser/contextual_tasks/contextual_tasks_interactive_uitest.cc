@@ -263,29 +263,53 @@ class ContextualTasksInteractiveUiTestBase
     StateChange change;
     change.type = StateChange::Type::kExistsAndConditionTrue;
     change.where = {"contextual-tasks-app"};
-    change.test_function =
-        "function(app) {"
-        "  const composebox = "
-        "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
-        "querySelector('#composebox');"
-        "  if (!composebox) return false;"
-        "  if (composebox.contextMenuOpened) {"
-        "    app._entrypointClicked = false;"
-        "    return true;"
-        "  }"
-        "  if (!app._entrypointClicked) {"
-        "    const btn = "
-        "composebox.shadowRoot?.querySelector('#contextEntrypoint')?."
-        "shadowRoot?."
-        "querySelector('#entrypointButton')?.shadowRoot?.querySelector('#"
-        "entrypoint');"
-        "    if (btn && !btn.disabled) {"
-        "      app._entrypointClicked = true;"
-        "      btn.click();"
-        "    }"
-        "  }"
-        "  return false;"
-        "}";
+    change.test_function = R"(
+        function(app) {
+          const composebox = app?.shadowRoot
+              ?.querySelector('#composebox')
+              ?.shadowRoot
+              ?.querySelector('#composebox');
+          if (!composebox) return false;
+          const contextEntrypoint = composebox.shadowRoot
+              ?.querySelector('#contextEntrypoint');
+          const menu = contextEntrypoint?.shadowRoot
+              ?.querySelector('#menu');
+          if (composebox.contextMenuOpened && menu?.open &&
+              contextEntrypoint?.tabSuggestionsState !== 1) {
+            if (menu.tabSuggestions && menu.tabSuggestions.length > 0) {
+              if (!menu.shadowRoot?.querySelector(
+                      'button.dropdown-item[data-index="0"]')) {
+                return false;
+              }
+            } else if (!menu.shadowRoot?.querySelector(
+                           'button.dropdown-item')) {
+              return false;
+            }
+            app._entrypointClicked = false;
+            app._entrypointClickTime = 0;
+            return true;
+          }
+          const now = Date.now();
+          if (app._entrypointClicked &&
+              (!composebox.contextMenuOpened || !menu || !menu.open)) {
+            if (now - (app._entrypointClickTime || 0) > 1500) {
+              app._entrypointClicked = false;
+            }
+          }
+          if (!app._entrypointClicked) {
+            const btn = contextEntrypoint?.shadowRoot
+                ?.querySelector('#entrypointButton')
+                ?.shadowRoot
+                ?.querySelector('#entrypoint');
+            if (btn && !btn.disabled) {
+              app._entrypointClicked = true;
+              app._entrypointClickTime = now;
+              btn.click();
+            }
+          }
+          return false;
+        }
+        )";
     change.event = kElementExistsEvent;
     return WaitForStateChange(contents_id, change);
   }
@@ -293,30 +317,64 @@ class ContextualTasksInteractiveUiTestBase
   // Helper to force click a button in the context menu matching the selector.
   auto ForceClickMenuButtonBySelector(const ui::ElementIdentifier& contents_id,
                                       const std::string& selector) {
+    static int s_click_id = 0;
+    int click_id = ++s_click_id;
     StateChange change;
     change.type = StateChange::Type::kExistsAndConditionTrue;
     change.where = {"contextual-tasks-app"};
     change.test_function = base::StringPrintf(
         R"(
         function(app) {
-          const btn = app?.shadowRoot
+          const composebox = app?.shadowRoot
               ?.querySelector('#composebox')
               ?.shadowRoot
-              ?.querySelector('#composebox')
-              ?.shadowRoot
-              ?.querySelector('#contextEntrypoint')
-              ?.shadowRoot
-              ?.querySelector('#menu')
-              ?.shadowRoot
-              ?.querySelector('%s');
+              ?.querySelector('#composebox');
+          if (!composebox) return false;
+          const contextEntrypoint = composebox.shadowRoot
+              ?.querySelector('#contextEntrypoint');
+          const menu = contextEntrypoint?.shadowRoot
+              ?.querySelector('#menu');
+          if (app._lastMenuClickId === %d) {
+            if (!composebox.contextMenuOpened || !menu || !menu.open) {
+              return true;
+            }
+            const btn = menu.shadowRoot?.querySelector('%s');
+            if (btn &&
+                btn.getAttribute('aria-checked') !== app._lastMenuClickAria) {
+              return true;
+            }
+            const now = Date.now();
+            if (now - (app._lastMenuClickTime || 0) > 1500) {
+              app._lastMenuClickId = 0;
+            }
+            return false;
+          }
+          if (!composebox.contextMenuOpened || !menu || !menu.open) {
+            const now = Date.now();
+            if (!app._menuReopenTime || now - app._menuReopenTime > 1500) {
+              app._menuReopenTime = now;
+              const entryBtn = contextEntrypoint?.shadowRoot
+                  ?.querySelector('#entrypointButton')?.shadowRoot
+                  ?.querySelector('#entrypoint');
+              if (entryBtn && !entryBtn.disabled) {
+                entryBtn.click();
+              }
+            }
+            return false;
+          }
+          app._menuReopenTime = 0;
+          const btn = menu.shadowRoot?.querySelector('%s');
           if (btn && !btn.disabled) {
+            app._lastMenuClickId = %d;
+            app._lastMenuClickTime = Date.now();
+            app._lastMenuClickAria = btn.getAttribute('aria-checked');
             btn.click();
-            return true;
+            return false;
           }
           return false;
         }
         )",
-        selector.c_str());
+        click_id, selector.c_str(), selector.c_str(), click_id);
     change.event = kElementExistsEvent;
     return WaitForStateChange(contents_id, change);
   }
@@ -336,6 +394,48 @@ class ContextualTasksInteractiveUiTestBase
   auto ForceClickMenuButton(const ui::ElementIdentifier& contents_id,
                             const std::string& button_id) {
     return ForceClickMenuButtonBySelector(contents_id, "#" + button_id);
+  }
+
+  auto WaitForMenuTabSelected(const ui::ElementIdentifier& contents_id,
+                              int target_index) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = {"contextual-tasks-app"};
+    change.test_function = base::StringPrintf(
+        R"(
+        function(app) {
+          const composebox = app?.shadowRoot
+              ?.querySelector('#composebox')
+              ?.shadowRoot
+              ?.querySelector('#composebox');
+          if (!composebox) return false;
+          const contextEntrypoint = composebox.shadowRoot
+              ?.querySelector('#contextEntrypoint');
+          const menu = contextEntrypoint?.shadowRoot
+              ?.querySelector('#menu');
+          if (!composebox.contextMenuOpened || !menu || !menu.open) {
+            const now = Date.now();
+            if (!app._menuReopenTime || now - app._menuReopenTime > 1500) {
+              app._menuReopenTime = now;
+              const entryBtn = contextEntrypoint?.shadowRoot
+                  ?.querySelector('#entrypointButton')?.shadowRoot
+                  ?.querySelector('#entrypoint');
+              if (entryBtn && !entryBtn.disabled) {
+                entryBtn.click();
+              }
+            }
+            return false;
+          }
+          app._menuReopenTime = 0;
+          const btn = menu.shadowRoot
+              ?.querySelector('button.dropdown-item[data-index="%d"]');
+          return !!(btn && !btn.disabled &&
+                    btn.getAttribute('aria-checked') === 'true');
+        }
+        )",
+        target_index);
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
   }
 
   auto WaitForComposeboxFilesCount(const ui::ElementIdentifier& contents_id,
@@ -1647,16 +1747,16 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
       WaitForComposeboxFilesCount(kSidePanelId, 0));
 }
 
-// TODO(crbug.com/524797987, crbug.com/529701663): Re-enable this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_AddAndRemoveTabFromComposebox \
-  DISABLED_AddAndRemoveTabFromComposebox
-#else
-#define MAYBE_AddAndRemoveTabFromComposebox AddAndRemoveTabFromComposebox
-#endif
+// This tests the following CUJ:
+//  (1) User opens a background tab and navigates to a webpage.
+//  (2) User opens the Contextual Tasks side panel on the primary tab.
+//  (3) User clicks the add context entrypoint in the composebox and selects the
+//      background tab from the menu.
+//  (4) The tab favicon chip appears in the composebox.
+//  (5) User reopens the context menu and deselects the tab.
+//  (6) The tab favicon chip is removed and no attachments remain.
 IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
-                       MAYBE_AddAndRemoveTabFromComposebox) {
+                       AddAndRemoveTabFromComposebox) {
   SkipIfIncognito("Tab sharing is not supported in Incognito mode.");
 
   const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
@@ -1674,6 +1774,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
       WaitForWebContentsReady(kGenericTab, kGenericPageUrl),
       SelectTab(kTabStripElementId, 0),
       OpenContextualTasksInSidePanel(kSidePanelId),
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelId, 0),
 
       ForceClickAddContextEntrypoint(kSidePanelId),
       ForceClickMenuButton(kSidePanelId, 0),
@@ -1682,6 +1783,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
       WaitForComposeboxFilesCount(kSidePanelId, 1),
 
       ForceClickAddContextEntrypoint(kSidePanelId),
+      WaitForMenuTabSelected(kSidePanelId, 0),
       ForceClickMenuButton(kSidePanelId, 0),
 
       WaitForElementDoesNotExist(kSidePanelId, kFaviconGroup),
