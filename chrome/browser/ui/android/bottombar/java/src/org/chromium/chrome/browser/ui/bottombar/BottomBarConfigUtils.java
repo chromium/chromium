@@ -57,6 +57,20 @@ public class BottomBarConfigUtils {
     }
 
     /**
+     * Returns whether the Address bar and Homepage settings rows should be moved from MainSettings
+     * into Appearance settings and Toolbar shortcut renamed to Address bar shortcut: the
+     * AndroidBottomBar flag and move_toolbar_settings_to_appearance param must be on, and the
+     * device must be a phone or foldable (not automotive or a non-foldable tablet).
+     */
+    public static boolean shouldMoveToolbarSettingsToAppearance(Context context) {
+        return ChromeFeatureList.sAndroidBottomBar.isEnabled()
+                && !DeviceInfo.isAutomotive()
+                && (DeviceInfo.isFoldable()
+                        || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context))
+                && ChromeFeatureList.sAndroidBottomBarMoveToolbarSettingsToAppearance.getValue();
+    }
+
+    /**
      * Returns whether the user has the bottom bar turned on in Settings. Until the user flips the
      * switch, the default comes from the default_user_enabled feature param; once the user has made
      * an explicit choice it is kept regardless of the param. Feature consumers should call {@link

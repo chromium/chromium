@@ -2007,6 +2007,11 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "default_user_enabled", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_app_menu_in_toolbar", false);
+    // Whether the Address bar and Homepage settings rows are moved from MainSettings into
+    // Appearance settings on phones and foldables.
+    public static final BooleanCachedFeatureParam sAndroidBottomBarMoveToolbarSettingsToAppearance =
+            newBooleanCachedFeatureParam(
+                    ANDROID_BOTTOM_BAR, "move_toolbar_settings_to_appearance", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarNtpScrollOffEnabled =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "ntp_scroll_off_enabled", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowBottomBarOnGts =
@@ -2392,6 +2397,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarDefaultUserEnabled,
                     sAndroidBottomBarHeightDp,
                     sAndroidBottomBarKeepAppMenuInToolbar,
+                    sAndroidBottomBarMoveToolbarSettingsToAppearance,
                     sAndroidBottomBarNtpScrollOffEnabled,
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomBarShowGlicSettingToggle,

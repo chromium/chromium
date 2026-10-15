@@ -404,10 +404,40 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testToolbarShortcutPreferenceIsPresentWhenEnabled() throws ClassNotFoundException {
         AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NEW_TAB);
         launchSettings();
-        assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
+        Preference pref =
+                assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
+        assertEquals(mSettings.getString(R.string.toolbar_shortcut), pref.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testToolbarShortcutPreferenceTitleWhenMoveParamEnabled()
+            throws ClassNotFoundException {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NEW_TAB);
+        launchSettings();
+        Preference pref =
+                assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
+        assertEquals(mSettings.getString(R.string.address_bar_shortcut), pref.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":move_toolbar_settings_to_appearance/false")
+    public void testToolbarShortcutPreferenceTitleWhenMoveParamDisabled()
+            throws ClassNotFoundException {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NEW_TAB);
+        launchSettings();
+        Preference pref =
+                assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
+        assertEquals(mSettings.getString(R.string.toolbar_shortcut), pref.getTitle());
     }
 
     @Test
@@ -685,6 +715,52 @@ public class AppearanceSettingsFragmentTest {
         verify(mIndexData, never()).removeEntryForKey(prefFragment, PREF_TAB_POSITION);
         verify(mIndexData, never())
                 .updateEntrySummaryForKey(eq(prefFragment), eq(PREF_TAB_POSITION), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testSearchIndex_MoveToolbarSettingsNotEligible() {
+        var context = ContextUtils.getApplicationContext();
+        String prefFragment = AppearanceSettingsFragment.class.getName();
+
+        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, mIndexData, mProfile);
+
+        verify(mIndexData, never())
+                .updateEntryForKey(eq(prefFragment), eq(PREF_TOOLBAR_SHORTCUT), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":move_toolbar_settings_to_appearance/false")
+    public void testSearchIndex_MoveToolbarSettingsParamOff() {
+        var context = ContextUtils.getApplicationContext();
+        String prefFragment = AppearanceSettingsFragment.class.getName();
+
+        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, mIndexData, mProfile);
+
+        verify(mIndexData, never())
+                .updateEntryForKey(eq(prefFragment), eq(PREF_TOOLBAR_SHORTCUT), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testSearchIndex_MoveToolbarSettingsEligible() {
+        var context = ContextUtils.getApplicationContext();
+        String prefFragment = AppearanceSettingsFragment.class.getName();
+
+        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, mIndexData, mProfile);
+
+        verify(mIndexData)
+                .updateEntryForKey(
+                        prefFragment, PREF_TOOLBAR_SHORTCUT, R.string.address_bar_shortcut);
     }
 
     private Preference assertSettingsExists(String prefKey, Class settingsFragmentClass)

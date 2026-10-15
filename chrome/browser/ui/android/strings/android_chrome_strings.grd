@@ -4195,6 +4195,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TOOLBAR_SHORTCUT" desc="Title for toolbar shortcut toggle button in adaptive toolbar button preference page.">
         Toolbar shortcut
       </message>
+      <!-- TODO(crbug.com/556961273): Make translateable once the copy is final. -->
+      <message name="IDS_ADDRESS_BAR_SHORTCUT" desc="Title for the address bar shortcut setting and toggle button in the adaptive toolbar button preference page." translateable="false">
+        Address bar shortcut
+      </message>
       <message name="IDS_TOOLBAR_LONG_PRESS_OPTIONS_IPH" desc="The in-product-help message shown to inform the user they can change placement of the address bar from a long-press menu.">
         You can touch and hold to move the address bar to the bottom
       </message>

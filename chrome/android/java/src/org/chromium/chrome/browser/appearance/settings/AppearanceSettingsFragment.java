@@ -281,8 +281,15 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void initToolbarShortcutPref() {
+        Context context = getContext();
+        if (BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)) {
+            Preference toolbarShortcutPref = findPreference(PREF_TOOLBAR_SHORTCUT);
+            if (toolbarShortcutPref != null) {
+                toolbarShortcutPref.setTitle(R.string.address_bar_shortcut);
+            }
+        }
         shouldShowToolbarShortcutPrefAsync(
-                getContext(),
+                context,
                 getProfile(),
                 (shouldShow) -> {
                     if (!shouldShow) removePreference(PREF_TOOLBAR_SHORTCUT);
@@ -466,6 +473,11 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
                     if (!BottomBarConfigUtils.shouldShowSettingsToggle(context)) {
                         indexData.removeEntryForKey(prefFragment, PREF_BOTTOM_BAR_SWITCH);
+                    }
+
+                    if (BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)) {
+                        indexData.updateEntryForKey(
+                                prefFragment, PREF_TOOLBAR_SHORTCUT, R.string.address_bar_shortcut);
                     }
 
                     shouldShowToolbarShortcutPrefAsync(
