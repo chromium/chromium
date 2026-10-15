@@ -53,6 +53,7 @@ class UiEventDispatcher;
 }  // namespace ui
 
 class ActorSurfaceRegistry;
+class ChromeActuationTransportHandlerFactory;
 class EnterprisePolicyChecker;
 class ActorTaskMetadata;
 class HeadlessWebContentsManager;
@@ -354,6 +355,12 @@ class ActorKeyedService : public KeyedService,
   // surfaces.
   std::unique_ptr<HeadlessWebContentsManager> headless_web_contents_manager_;
   std::unique_ptr<ActorSurfaceRegistry> surface_registry_;
+
+  // Registered with `BrowserActuatorService` when `kBrowserActuator` is
+  // enabled, and unregistered and destroyed in `Shutdown()` after tasks are
+  // cleared.
+  std::unique_ptr<ChromeActuationTransportHandlerFactory>
+      actuation_transport_handler_factory_;
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
 

@@ -39,8 +39,10 @@
 #include "chrome/browser/actor/headless_web_contents_manager.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/transport/chrome_actuation_transport_handler_factory.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -57,6 +59,10 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/browser_actuator/public/browser_actuator_service.h"
+#include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/transport_channel.h"
+#include "components/browser_actuator/public/transport_handler_factory_registry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config_slot.h"
 #include "components/tabs/public/tab_interface.h"
@@ -168,6 +174,21 @@ ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   if (!trace_path.empty()) {
     InitializeTraceRecording(trace_path);
   }
+
+  // TODO(crbug.com/572907956): Reconsider ownership of
+  // ChromeActuationTransportHandlerFactory.
+  if (base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator)) {
+    browser_actuator::BrowserActuatorService* browser_actuator_service =
+        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+            profile_);
+    if (browser_actuator_service && browser_actuator_service->GetChannel()) {
+      actuation_transport_handler_factory_ =
+          std::make_unique<ChromeActuationTransportHandlerFactory>(this);
+      browser_actuator_service->GetChannel()
+          ->GetHandlerFactoryRegistry()
+          ->RegisterFactory(actuation_transport_handler_factory_.get());
+    }
+  }
 }
 
 void ActorKeyedService::InitializeTraceRecording(
@@ -226,6 +247,17 @@ void ActorKeyedService::Shutdown() {
   // Ensure tasks get deleted synchronously to avoid dangling refs.
   CHECK(active_tasks_.empty());
   pending_delete_tasks_.clear();
+  if (actuation_transport_handler_factory_) {
+    browser_actuator::BrowserActuatorService* browser_actuator_service =
+        browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
+            profile_);
+    if (browser_actuator_service && browser_actuator_service->GetChannel()) {
+      browser_actuator_service->GetChannel()
+          ->GetHandlerFactoryRegistry()
+          ->UnregisterFactory(actuation_transport_handler_factory_.get());
+    }
+    actuation_transport_handler_factory_.reset();
+  }
   surface_registry_.reset();
   headless_web_contents_manager_.reset();
   trace_file_serializer_.reset();
