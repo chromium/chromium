@@ -54,7 +54,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    // Required to initialize TokenHandleUtil.
+    // Required to initialize TokenHandleStoreImpl.
     ash::UserDataAuthClient::InitializeFake();
 
     token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>(
