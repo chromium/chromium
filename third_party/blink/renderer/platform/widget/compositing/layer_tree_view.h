@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +18,8 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -161,11 +162,9 @@ class PLATFORM_EXPORT LayerTreeView
           render_frame_metadata_observer);
 
   template <typename Callback>
-  void AddCallback(
-      uint32_t frame_token,
-      Callback callback,
-      base::circular_deque<std::pair<uint32_t, std::vector<Callback>>>&
-          callbacks);
+  void AddCallback(uint32_t frame_token,
+                   Callback callback,
+                   Deque<std::pair<uint32_t, Vector<Callback>>>& callbacks);
 
   scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
   const std::unique_ptr<cc::AnimationHost> animation_host_;
@@ -186,15 +185,15 @@ class PLATFORM_EXPORT LayerTreeView
   };
   FrameSinkState frame_sink_state_ = FrameSinkState::kNoFrameSink;
 
-  base::circular_deque<std::pair<
+  Deque<std::pair<
       uint32_t,
-      std::vector<base::OnceCallback<void(const viz::FrameTimingDetails&)>>>>
+      Vector<base::OnceCallback<void(const viz::FrameTimingDetails&)>>>>
       presentation_callbacks_;
 
 #if BUILDFLAG(IS_APPLE)
-  base::circular_deque<std::pair<
+  Deque<std::pair<
       uint32_t,
-      std::vector<base::OnceCallback<void(gfx::CALayerResult error_code)>>>>
+      Vector<base::OnceCallback<void(gfx::CALayerResult error_code)>>>>
       core_animation_error_code_callbacks_;
 #endif
 
