@@ -1239,13 +1239,6 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
     const Feature& feature,
     bool activate_trial) const {
   DCHECK(initialized_);
-  DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
-  DCHECK(CheckFeatureIdentity(feature))
-      << feature.name
-      << " has multiple definitions. Either it is defined more than once in "
-         "code or (for component builds) the code is built into multiple "
-         "components (shared libraries) without a corresponding export "
-         "statement";
   Feature::FeatureStateCache current_cached_value =
       feature.cached_value.load(std::memory_order_relaxed);
 
@@ -1267,6 +1260,21 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
   if (caching_context == caching_context_) {
     return cached_state;
   }
+
+  // It is safe to defer these checks until after the cache check above:
+  // `feature.cached_value` is stored directly in the `Feature` instance at
+  // `&feature` and only gets populated with `caching_context_` after passing
+  // the checks below on a cache miss. Any duplicate `Feature` definition with
+  // the same `name` at a different address has its own separate `cached_value`
+  // (initially 0), so its first query will also miss the cache and fail
+  // `CheckFeatureIdentity()` below.
+  DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
+  DCHECK(CheckFeatureIdentity(feature))
+      << feature.name
+      << " has multiple definitions. Either it is defined more than once in "
+         "code or (for component builds) the code is built into multiple "
+         "components (shared libraries) without a corresponding export "
+         "statement";
 
   // Otherwise, look up the static override state by feature name.
   const OverrideState state =
