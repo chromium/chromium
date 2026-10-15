@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -441,72 +442,105 @@ void OnCitationClicked(base::WeakPtr<AutofillPopupController> controller,
   }
 }
 
-void AddTextPieceRanges(
+using StyledRange = std::pair<gfx::Range, views::StyledLabel::RangeStyleInfo>;
+
+StyledRange CreateStyledRange(gfx::Range range) {
+  return {range, views::StyledLabel::RangeStyleInfo()};
+}
+
+// Returns sub-ranges for `text` in `range`, isolating leading and trailing
+// whitespace (e.g. "Photos\u00A0" or " + 2 other sources") into separate
+// ranges.
+//
+// In RTL layout, `views::StyledLabel` orders child views right-to-left, while
+// each individual `views::Label` renders LTR text internally. Without isolating
+// adjacent whitespace into its own child view, a trailing space in
+// "Photos\u00A0" or a leading space in " + 2 other sources" sticks to the wrong
+// edge of the text run instead of sitting between the badge and adjacent text:
+//
+//   Without whitespace isolation (RTL):
+//     | + 2 other sources|[1]|Photos\u00A0|
+//
+//   With whitespace isolation (RTL):
+//     |+ 2 other sources| |[1]|\u00A0|Photos|
+std::vector<gfx::Range> SplitLeadingAndTrailingWhitespace(
     std::u16string_view text,
-    size_t start,
-    size_t end,
-    std::vector<std::pair<gfx::Range, views::StyledLabel::RangeStyleInfo>>&
-        styled_ranges) {
-  // Isolate trailing whitespace (e.g. "Photos\u00A0") into separate range so
-  // that in RTL layout, the space is placed between badge and app name.
-  size_t content_end = end;
-  while (content_end > start &&
+    gfx::Range range) {
+  size_t content_start = range.start();
+  while (content_start < range.end() &&
+         base::IsUnicodeWhitespace(text[content_start])) {
+    ++content_start;
+  }
+  size_t content_end = range.end();
+  while (content_end > content_start &&
          base::IsUnicodeWhitespace(text[content_end - 1])) {
     --content_end;
   }
-  if (content_end > start) {
-    styled_ranges.emplace_back(gfx::Range(start, content_end),
-                               views::StyledLabel::RangeStyleInfo());
+  std::vector<gfx::Range> ranges;
+  for (const gfx::Range sub_range : {gfx::Range(range.start(), content_start),
+                                     gfx::Range(content_start, content_end),
+                                     gfx::Range(content_end, range.end())}) {
+    if (!sub_range.is_empty()) {
+      ranges.push_back(sub_range);
+    }
   }
-  if (end > content_end) {
-    styled_ranges.emplace_back(gfx::Range(content_end, end),
-                               views::StyledLabel::RangeStyleInfo());
-  }
+  return ranges;
 }
 
-// Splits an unstyled gap into sub-ranges around separators so that
-// `StyledLabel` partitions the text into individual child views. In RTL,
-// child views are ordered from right to left, ensuring citation badges
-// remain adjacent to their corresponding app names instead of the prefix.
-void AddGapRanges(
-    std::u16string_view text,
-    size_t gap_start,
-    size_t gap_end,
-    std::vector<std::pair<gfx::Range, views::StyledLabel::RangeStyleInfo>>&
-        styled_ranges) {
-  size_t current = gap_start;
-  while (current < gap_end) {
-    const size_t sep_pos = text.find(kLabelSeparator, current);
-    if (sep_pos == std::u16string_view::npos || sep_pos >= gap_end) {
-      AddTextPieceRanges(text, current, gap_end, styled_ranges);
+// Splits a plain-text `range` in `text` around `kLabelSeparator` (" · ") and
+// isolates adjacent whitespace so that `views::StyledLabel` creates a separate
+// child `View` for each logical token:
+//
+//   "From Gemini · Gmail\u00A0[1] · Photos\u00A0[1] + 2 other sources"
+//    |<----- plain text ---->|link|<-plain text->|link|<--- plain text --->|
+//
+//   LTR child view order (left -> right):
+//     |From Gemini| · |Gmail|\u00A0|[1]| · |Photos|\u00A0|[1]| |+ 2 other...|
+//
+//   RTL child view order (right -> left):
+//     |+ 2 other...| |[1]|\u00A0|Photos| · |[1]|\u00A0|Gmail| · |From Gemini|
+//
+// Without splitting around separators, "From Gemini · Gmail\u00A0" would form a
+// single child view, placing `[1]` to the left of the entire plain-text block
+// in RTL rather than next to "Gmail".
+std::vector<gfx::Range> SplitTextAroundSeparators(std::u16string_view text,
+                                                  gfx::Range range) {
+  std::vector<gfx::Range> ranges;
+  size_t current = range.start();
+  while (current < range.end()) {
+    const size_t sep_pos =
+        text.substr(0, range.end()).find(kLabelSeparator, current);
+    if (sep_pos == std::u16string_view::npos) {
+      base::Extend(ranges, SplitLeadingAndTrailingWhitespace(
+                               text, gfx::Range(current, range.end())));
       break;
     }
-    if (sep_pos > current) {
-      AddTextPieceRanges(text, current, sep_pos, styled_ranges);
-    }
-    const size_t sep_end =
-        std::min(sep_pos + kLabelSeparator.length(), gap_end);
-    styled_ranges.emplace_back(gfx::Range(sep_pos, sep_end),
-                               views::StyledLabel::RangeStyleInfo());
+    base::Extend(ranges, SplitLeadingAndTrailingWhitespace(
+                             text, gfx::Range(current, sep_pos)));
+    const size_t sep_end = sep_pos + kLabelSeparator.length();
+    ranges.emplace_back(sep_pos, sep_end);
     current = sep_end;
   }
+  return ranges;
 }
 
-// Builds style ranges for citation badges and interleaves unstyled gap ranges.
+// Builds style ranges for citation badges and interleaves plain-text ranges.
 // Note: Assumes payload citations ranges are sorted in non-decreasing order.
-std::vector<std::pair<gfx::Range, views::StyledLabel::RangeStyleInfo>>
-CreateStyleCitationBadges(const Suggestion& suggestion,
-                          base::WeakPtr<AutofillPopupController> controller) {
-  std::vector<std::pair<gfx::Range, views::StyledLabel::RangeStyleInfo>>
-      citation_ranges;
+std::vector<StyledRange> CreateStyleCitationBadges(
+    const Suggestion& suggestion,
+    base::WeakPtr<AutofillPopupController> controller) {
+  std::vector<StyledRange> citation_ranges;
   size_t last_end = 0;
   for (const Suggestion::PersonalContextSourceCitation& citation :
        suggestion.GetPayload<Suggestion::AutofillAiPayload>().citations) {
     if (citation.range.start() < citation.range.end() &&
         citation.range.start() >= last_end &&
         citation.range.end() <= suggestion.main_text.value.length()) {
-      AddGapRanges(suggestion.main_text.value, last_end, citation.range.start(),
-                   citation_ranges);
+      base::Extend(citation_ranges,
+                   SplitTextAroundSeparators(
+                       suggestion.main_text.value,
+                       gfx::Range(last_end, citation.range.start())),
+                   &CreateStyledRange);
       citation_ranges.emplace_back(
           citation.range,
           views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
@@ -514,8 +548,11 @@ CreateStyleCitationBadges(const Suggestion& suggestion,
       last_end = citation.range.end();
     }
   }
-  AddGapRanges(suggestion.main_text.value, last_end,
-               suggestion.main_text.value.length(), citation_ranges);
+  base::Extend(citation_ranges,
+               SplitTextAroundSeparators(
+                   suggestion.main_text.value,
+                   gfx::Range(last_end, suggestion.main_text.value.length())),
+               &CreateStyledRange);
 
   return citation_ranges;
 }
