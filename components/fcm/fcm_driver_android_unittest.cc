@@ -11,6 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/fcm/fcm_app_handler.h"
 #include "components/fcm/fcm_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,7 +48,25 @@ class FcmDriverAndroidTest : public ::testing::Test {
   NiceMock<MockFcmAppHandler> handler_;
 };
 
-TEST_F(FcmDriverAndroidTest, DispatchInstallationIdRefreshed) {
+// TODO(crbug.com/573662143): Re-enable once FcmDriverAndroid no longer posts
+// an unstubbed background FirebaseInstallations task that throws
+// IllegalArgumentException on CrAsyncTask during subsequent tests.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DispatchInstallationIdRefreshed \
+  DISABLED_DispatchInstallationIdRefreshed
+#define MAYBE_DispatchInstallationIdRefreshedEmpty \
+  DISABLED_DispatchInstallationIdRefreshedEmpty
+#define MAYBE_DispatchMessageReceived DISABLED_DispatchMessageReceived
+#define MAYBE_DispatchMessagesDeleted DISABLED_DispatchMessagesDeleted
+#else
+#define MAYBE_DispatchInstallationIdRefreshed DispatchInstallationIdRefreshed
+#define MAYBE_DispatchInstallationIdRefreshedEmpty \
+  DispatchInstallationIdRefreshedEmpty
+#define MAYBE_DispatchMessageReceived DispatchMessageReceived
+#define MAYBE_DispatchMessagesDeleted DispatchMessagesDeleted
+#endif
+
+TEST_F(FcmDriverAndroidTest, MAYBE_DispatchInstallationIdRefreshed) {
   FcmDriverAndroid driver;
 
   EXPECT_CALL(handler_, OnInstallationIdRefreshed(std::optional<InstallationId>(
@@ -58,7 +77,7 @@ TEST_F(FcmDriverAndroidTest, DispatchInstallationIdRefreshed) {
                                    "test_fid_123");
 }
 
-TEST_F(FcmDriverAndroidTest, DispatchInstallationIdRefreshedEmpty) {
+TEST_F(FcmDriverAndroidTest, MAYBE_DispatchInstallationIdRefreshedEmpty) {
   FcmDriverAndroid driver;
 
   EXPECT_CALL(handler_, OnInstallationIdRefreshed(Eq(std::nullopt)));
@@ -67,7 +86,7 @@ TEST_F(FcmDriverAndroidTest, DispatchInstallationIdRefreshedEmpty) {
   driver.OnInstallationIdRefreshed(base::android::AttachCurrentThread(), "");
 }
 
-TEST_F(FcmDriverAndroidTest, DispatchMessageReceived) {
+TEST_F(FcmDriverAndroidTest, MAYBE_DispatchMessageReceived) {
   FcmDriverAndroid driver;
 
   driver.AddAppHandler("test_app", &handler_);
@@ -90,7 +109,7 @@ TEST_F(FcmDriverAndroidTest, DispatchMessageReceived) {
                            data, raw_data);
 }
 
-TEST_F(FcmDriverAndroidTest, DispatchMessagesDeleted) {
+TEST_F(FcmDriverAndroidTest, MAYBE_DispatchMessagesDeleted) {
   FcmDriverAndroid driver;
 
   driver.AddAppHandler("test_app", &handler_);
