@@ -63,8 +63,10 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -165,24 +167,25 @@ class GeminiBrowserAgentTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    profile_ =
+    personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(profile_builder));
 
-    gemini::test::SetUpEligibleAccount(profile_);
+    gemini::test::SetUpEligibleAccount(personal_profile_);
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForProfile(profile_));
+        feature_engagement::TrackerFactory::GetForProfile(personal_profile_));
     web::test::OverrideJavaScriptFeatures(
-        profile_, {web::FindInPageJavaScriptFeature::GetInstance(),
-                   PageContextExtractorJavaScriptFeature::GetInstance()});
+        personal_profile_,
+        {web::FindInPageJavaScriptFeature::GetInstance(),
+         PageContextExtractorJavaScriptFeature::GetInstance()});
     scene_state_ = [[SceneState alloc] init];
-    browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
+    browser_ = std::make_unique<TestBrowser>(personal_profile_, scene_state_);
     InitFullscreenCoordinatorIfNeeded();
     PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(profile_);
+        OptimizationGuideServiceFactory::GetForProfile(personal_profile_);
 
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -204,7 +207,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
 
     std::unique_ptr<TestWebState> web_state = std::make_unique<TestWebState>();
     web_state_ = web_state.get();
-    web_state->SetBrowserState(profile_);
+    web_state->SetBrowserState(personal_profile_);
     web_state->SetCurrentURL(GURL("chrome://newtab/"));
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
@@ -222,14 +225,15 @@ class GeminiBrowserAgentTest : public PlatformTest {
         ->SetDelegate(fake_snapshot_delegate_);
 
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state.get(), ios::FaviconServiceFactory::GetForProfile(
-                             profile_, ServiceAccessType::IMPLICIT_ACCESS));
+        web_state.get(),
+        ios::FaviconServiceFactory::GetForProfile(
+            personal_profile_, ServiceAccessType::IMPLICIT_ACCESS));
 
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame =
         web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
     fake_main_frame_ = main_frame.get();
-    main_frame->set_browser_state(profile_);
+    main_frame->set_browser_state(personal_profile_);
     web_frames_manager->AddWebFrame(std::move(main_frame));
     web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                    std::move(web_frames_manager));
@@ -240,7 +244,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
         std::make_unique<web::FakeWebFramesManager>();
     auto main_frame_page_content =
         web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
-    main_frame_page_content->set_browser_state(profile_);
+    main_frame_page_content->set_browser_state(personal_profile_);
     page_content_frames_manager->AddWebFrame(
         std::move(main_frame_page_content));
     web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
@@ -256,7 +260,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
     fullscreen_coordinator_ = nil;
     fake_main_frame_ = nullptr;
     web_state_ = nullptr;
-    profile_ = nullptr;
+    personal_profile_ = nullptr;
     gemini_browser_agent_ = nullptr;
     gemini_tab_helper_ = nullptr;
     optimization_guide_service_ = nullptr;
@@ -290,7 +294,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
 
   // Returns true if the conversation ID preference is empty.
   bool IsConversationIdPrefCleared() {
-    return profile_->GetPrefs()
+    return personal_profile_->GetPrefs()
         ->GetString(prefs::kGeminiConversationId)
         .empty();
   }
@@ -354,7 +358,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // true. Returns the index of the inserted web state.
   int InsertLoadingWebState(bool activate) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(profile_);
+    web_state->SetBrowserState(personal_profile_);
     web_state->SetCurrentURL(GURL(kEligiblePageURL));
     web_state->SetContentsMimeType(std::string(kEligiblePageMimeType));
     web_state->SetLoading(true);
@@ -431,7 +435,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> personal_profile_;
   raw_ptr<GeminiBrowserAgent> gemini_browser_agent_;
   raw_ptr<GeminiTabHelper> gemini_tab_helper_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
@@ -555,7 +559,7 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
       "pageContextExtractor.extractPageContext");
 
   // Simulate FRE completion.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
 
   // Expect the snapshot to be taken. Use a flag to wait for the async call. Use
   // shared_ptr to safely share state between ObjC block and C++ lambda.
@@ -587,7 +591,7 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
   // the feature flag enabled.
 
   std::unique_ptr<TestBrowser> scoped_browser =
-      std::make_unique<TestBrowser>(profile_);
+      std::make_unique<TestBrowser>(personal_profile_);
   if (IsFullscreenRefactoringEnabled()) {
     FullscreenBrowserAgent::CreateForBrowser(scoped_browser.get());
   }
@@ -597,7 +601,7 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
 
   std::unique_ptr<web::FakeWebState> web_state1 =
       std::make_unique<web::FakeWebState>();
-  web_state1->SetBrowserState(profile_);
+  web_state1->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(web_state1.get());
   WebViewProxyTabHelper::CreateForWebState(web_state1.get());
   GeminiTabHelper* helper1 = GeminiTabHelper::FromWebState(web_state1.get());
@@ -611,7 +615,7 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
 
   std::unique_ptr<web::FakeWebState> web_state2 =
       std::make_unique<web::FakeWebState>();
-  web_state2->SetBrowserState(profile_);
+  web_state2->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(web_state2.get());
   WebViewProxyTabHelper::CreateForWebState(web_state2.get());
   GeminiTabHelper* helper2 = GeminiTabHelper::FromWebState(web_state2.get());
@@ -642,7 +646,7 @@ TEST_F(GeminiBrowserAgentTest, TestFloatyTabSwitchMetrics) {
   // Insert and activate a second tab while floaty is invoked.
   std::unique_ptr<web::FakeWebState> web_state2 =
       std::make_unique<web::FakeWebState>();
-  web_state2->SetBrowserState(profile_);
+  web_state2->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(web_state2.get());
   WebViewProxyTabHelper::CreateForWebState(web_state2.get());
   browser_->GetWebStateList()->InsertWebState(
@@ -799,15 +803,14 @@ TEST_F(GeminiBrowserAgentTest, TestCollapseFloatyIfInvoked) {
 
 // Tests that DismissGeminiFromOtherWindows dismisses Gemini in other browsers.
 TEST_F(GeminiBrowserAgentTest, TestDismissGeminiFromOtherWindows) {
-  TestProfileIOS::Builder second_profile_builder;
-  second_profile_builder.SetName("profile2");
-  TestProfileIOS* second_profile =
-      profile_manager_.AddProfileWithBuilder(std::move(second_profile_builder));
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity]);
 
   // Emulate opening a new window.
   std::unique_ptr<TestBrowser> second_browser =
-      std::make_unique<TestBrowser>(second_profile);
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(second_profile);
+      std::make_unique<TestBrowser>(managed_profile);
+  BrowserList* browser_list =
+      BrowserListFactory::GetForProfile(managed_profile);
   browser_list->AddBrowser(second_browser.get());
 
   id mock_second_handler = OCMProtocolMock(@protocol(GeminiCommands));
@@ -835,7 +838,8 @@ TEST_F(GeminiBrowserAgentTest, TestDismissGeminiFromOtherWindows) {
 // changes.
 TEST_F(GeminiBrowserAgentTest,
        TestConversationIdClearedOnPrimaryAccountChanged) {
-  profile_->GetPrefs()->SetString(prefs::kGeminiConversationId, "test_id");
+  personal_profile_->GetPrefs()->SetString(prefs::kGeminiConversationId,
+                                           "test_id");
   EXPECT_FALSE(IsConversationIdPrefCleared());
 
   signin::PrimaryAccountChangeEvent::State previous_state;
@@ -962,7 +966,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiAvailabilityChanged) {
 
   // Add active WebState with GeminiTabHelper.
   auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(profile_);
+  web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(web_state.get());
   WebViewProxyTabHelper::CreateForWebState(web_state.get());
   web_state->SetCurrentURL(GURL("https://example.com"));
@@ -1018,7 +1022,7 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiLiveIPHAndNewBadgeFET) {
       .WillOnce(testing::Return(true));
 
   // Simulate FRE completion.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
 
   // Start Gemini, which should trigger the IPHs.
   UIViewController* base_view_controller = [[UIViewController alloc] init];
@@ -1359,7 +1363,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1369,7 +1373,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
 
   std::unique_ptr<web::FakeWebState> non_selected_web_state =
       std::make_unique<web::FakeWebState>();
-  non_selected_web_state->SetBrowserState(profile_);
+  non_selected_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(non_selected_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(non_selected_web_state.get());
   browser_->GetWebStateList()->InsertWebState(
@@ -1581,7 +1585,7 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1633,7 +1637,8 @@ TEST_F(GeminiBrowserAgentTest, TestClearSharedTabsOnPageContentPrefDisabled) {
   EXPECT_EQ(2u, GetRawSharedTabs().size());
 
   // Toggle the preference to disabled.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting,
+                                            false);
 
   // Verify that `shared_tabs_` was cleared.
   EXPECT_EQ(0u, GetRawSharedTabs().size());
@@ -1655,7 +1660,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnTabPickerSelectionChangedNewlyAddedTab) {
   // Add a newly selected tab.
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1696,7 +1701,7 @@ TEST_F(GeminiBrowserAgentTest,
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1735,7 +1740,7 @@ TEST_F(GeminiBrowserAgentTest,
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1773,7 +1778,7 @@ TEST_F(GeminiBrowserAgentTest,
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1808,7 +1813,7 @@ TEST_F(GeminiBrowserAgentTest,
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1847,7 +1852,7 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchingTabRefetchesSharedTab) {
 
   std::unique_ptr<web::FakeWebState> other_web_state =
       std::make_unique<web::FakeWebState>();
-  other_web_state->SetBrowserState(profile_);
+  other_web_state->SetBrowserState(personal_profile_);
   GeminiTabHelper::CreateForWebState(other_web_state.get());
   WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
   web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
@@ -1993,8 +1998,8 @@ TEST_F(GeminiBrowserAgentTest, TestShowGeminiLiveMicrophoneAlertWhenOSDenied) {
 TEST_F(GeminiBrowserAgentTest,
        TestShowGeminiLiveMicrophoneAlertWhenChromePrefDisabled) {
   // Disable Chrome-level Gemini Live microphone setting.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
-                                   false);
+  personal_profile_->GetPrefs()->SetBoolean(
+      prefs::kIOSGeminiLiveMicrophoneSetting, false);
 
   // Enable OS level microphone permission.
   id mock_device = OCMClassMock([AVCaptureDevice class]);
@@ -2031,8 +2036,8 @@ TEST_F(GeminiBrowserAgentTest,
 TEST_F(GeminiBrowserAgentTest,
        TestShowGeminiLiveMicrophoneAlertWhenAuthorizedAndEnabled) {
   // Enable Chrome-level Gemini Live microphone setting.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
-                                   true);
+  personal_profile_->GetPrefs()->SetBoolean(
+      prefs::kIOSGeminiLiveMicrophoneSetting, true);
 
   // Enable OS level microphone permission.
   id mock_device = OCMClassMock([AVCaptureDevice class]);
@@ -2074,10 +2079,11 @@ TEST_F(GeminiBrowserAgentTest,
       0, user_action_tester.GetActionCount("MobileGeminiLiveSessionStarted"));
 
   // Grant user consent, intro played, and Chrome microphone preference.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveIntroPlayed, true);
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
-                                   true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveIntroPlayed,
+                                            true);
+  personal_profile_->GetPrefs()->SetBoolean(
+      prefs::kIOSGeminiLiveMicrophoneSetting, true);
 
   // Stub OS-level microphone authorization.
   id mock_device = OCMClassMock([AVCaptureDevice class]);
@@ -2103,10 +2109,11 @@ TEST_F(GeminiBrowserAgentTest,
        {kPageActionMenu, {}}},
       {});
 
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveIntroPlayed, false);
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
-                                   true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveIntroPlayed,
+                                            false);
+  personal_profile_->GetPrefs()->SetBoolean(
+      prefs::kIOSGeminiLiveMicrophoneSetting, true);
 
   id mock_device = OCMClassMock([AVCaptureDevice class]);
   OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
@@ -2159,7 +2166,7 @@ TEST_F(GeminiBrowserAgentTest,
 TEST_F(GeminiBrowserAgentTest,
        TestStartGeminiFlowWithAutoSubmitWhenFloatyInvoked) {
   // Simulate FRE completion.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->WasShown();
 
@@ -2202,7 +2209,7 @@ TEST_F(GeminiBrowserAgentTest,
 TEST_F(GeminiBrowserAgentTest,
        TestStartGeminiFlowWithAutoSubmitWaitsForPageContext) {
   // Simulate FRE completion and an eligible, loaded page.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->WasShown();
@@ -2254,7 +2261,7 @@ TEST_F(GeminiBrowserAgentTest,
        TestStartGeminiFlowWithAutoSubmitPresentsOnPageContextTimeout) {
   // Simulate FRE completion and an eligible page that is still loading, which
   // defers page context generation until the page finishes loading.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
@@ -2288,7 +2295,7 @@ TEST_F(GeminiBrowserAgentTest,
 TEST_F(GeminiBrowserAgentTest,
        TestStartGeminiFlowSupersedesPendingPresentation) {
   // Simulate FRE completion and an eligible page that is still loading.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
@@ -2330,7 +2337,7 @@ TEST_F(GeminiBrowserAgentTest,
 // leaves no stale entry point behind.
 TEST_F(GeminiBrowserAgentTest, TestSwitchingTabsDropsPendingPresentation) {
   // Simulate FRE completion and an eligible page that is still loading.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL(kEligiblePageURL));
   web_state_->SetContentsMimeType(std::string(kEligiblePageMimeType));
   web_state_->SetLoading(true);
@@ -2359,7 +2366,7 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchingTabsDropsPendingPresentation) {
 TEST_F(GeminiBrowserAgentTest, TestClosingTabDropsPendingPresentation) {
   // Simulate FRE completion and an eligible page that is still loading in the
   // active tab.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   InsertLoadingWebState(/*activate=*/true);
   int background_index = InsertLoadingWebState(/*activate=*/false);
 
@@ -2390,7 +2397,7 @@ TEST_F(GeminiBrowserAgentTest,
        TestDroppedPresentationPageContextIsNotUsedOnNewTab) {
   // Simulate FRE completion and an eligible, loaded page, whose page context
   // generation starts right away.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL(kEligiblePageURL));
   web_state_->SetContentsMimeType(std::string(kEligiblePageMimeType));
   web_state_->WasShown();
@@ -2428,7 +2435,7 @@ TEST_F(GeminiBrowserAgentTest,
 
   // Simulate FRE completion and an eligible, loaded page whose content and
   // screenshot can be extracted.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->WasShown();
@@ -2499,7 +2506,7 @@ TEST_F(GeminiBrowserAgentTest,
 TEST_F(GeminiBrowserAgentTest,
        TestAutoSubmitPresentationSkipsPageContextGenerationOnFirstExpansion) {
   // Simulate FRE completion and an eligible, loaded page.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->WasShown();
@@ -2535,7 +2542,7 @@ TEST_F(GeminiBrowserAgentTest,
 TEST_F(GeminiBrowserAgentTest,
        TestPresentationWithoutPageContextGeneratesPageContextOnFirstExpansion) {
   // Simulate FRE completion and an eligible, loaded page.
-  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  personal_profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->WasShown();
