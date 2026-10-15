@@ -52,7 +52,9 @@ public class ClipboardTextDataProviderUnitTest {
     @Test
     public void testStoreAndReadTextOnly() throws Exception {
         String testText = "Large plain text content";
-        Uri uri = ClipboardTextDataProvider.store(testText, null);
+        Uri uri =
+                ClipboardTextDataProvider.store(
+                        testText, /* html= */ null, /* webCustomData= */ null);
         assertNotNull(uri);
         assertEquals("content", uri.getScheme());
         assertNotNull(uri.getQueryParameter("uuid"));
@@ -70,7 +72,9 @@ public class ClipboardTextDataProviderUnitTest {
     @Test
     public void testStoreAndReadHtmlOnly() throws Exception {
         String testHtml = "<h1>Large html content</h1>";
-        Uri uri = ClipboardTextDataProvider.store(null, testHtml);
+        Uri uri =
+                ClipboardTextDataProvider.store(
+                        /* text= */ null, testHtml, /* webCustomData= */ null);
         assertNotNull(uri);
         assertNotNull(uri.getQueryParameter("uuid"));
 
@@ -88,7 +92,7 @@ public class ClipboardTextDataProviderUnitTest {
     public void testStoreAndReadBothTextAndHtml() throws Exception {
         String testText = "Plain text";
         String testHtml = "<p>Plain text</p>";
-        Uri uri = ClipboardTextDataProvider.store(testText, testHtml);
+        Uri uri = ClipboardTextDataProvider.store(testText, testHtml, /* webCustomData= */ null);
         assertNotNull(uri);
 
         assertArrayEquals(
@@ -110,7 +114,9 @@ public class ClipboardTextDataProviderUnitTest {
     public void testStoreAndReadPreservesNewlines() throws Exception {
         String multiLineText = "Line 1\nLine 2\r\nLine 3\n\nLine 4";
         String multiLineHtml = "<div>\n  <p>First paragraph</p>\n  <p>Second paragraph</p>\n</div>";
-        Uri uri = ClipboardTextDataProvider.store(multiLineText, multiLineHtml);
+        Uri uri =
+                ClipboardTextDataProvider.store(
+                        multiLineText, multiLineHtml, /* webCustomData= */ null);
         assertNotNull(uri);
 
         assertEquals(multiLineText, readContentFromUri(uri, MimeTypeUtils.TEXT_PLAIN_MIME_TYPE));
@@ -119,7 +125,9 @@ public class ClipboardTextDataProviderUnitTest {
 
     @Test(expected = FileNotFoundException.class)
     public void testInvalidUuidQueryParameterRejected() throws Exception {
-        Uri validUri = ClipboardTextDataProvider.store("text", null);
+        Uri validUri =
+                ClipboardTextDataProvider.store(
+                        "text", /* html= */ null, /* webCustomData= */ null);
         assertNotNull(validUri);
 
         Uri tamperedUri =
@@ -139,7 +147,7 @@ public class ClipboardTextDataProviderUnitTest {
 
     @Test
     public void testQueryExposesNoOpenableColumns() {
-        Uri uri = ClipboardTextDataProvider.store("text", "html");
+        Uri uri = ClipboardTextDataProvider.store("text", "html", /* webCustomData= */ null);
         assertNotNull(uri);
 
         try (Cursor cursor = mContentResolver.query(uri, null, null, null, null)) {
@@ -151,7 +159,25 @@ public class ClipboardTextDataProviderUnitTest {
 
     @Test
     public void testStoreNullReturnsNull() {
-        assertNull(ClipboardTextDataProvider.store(null, null));
+        assertNull(
+                ClipboardTextDataProvider.store(
+                        /* text= */ null, /* html= */ null, /* webCustomData= */ null));
+    }
+
+    @Test
+    public void testStoreAndReadWebCustomData() throws Exception {
+        String customMimeType = ClipboardImpl.CHROME_WEB_CUSTOM_DATA_MIME_TYPE;
+        String testCustomData = "Y3VzdG9tIGRhdGE=";
+        Uri uri =
+                ClipboardTextDataProvider.store(/* text= */ null, /* html= */ null, testCustomData);
+        assertNotNull(uri);
+
+        assertEquals(customMimeType, mContentResolver.getType(uri));
+        assertArrayEquals(
+                new String[] {customMimeType},
+                mContentResolver.getStreamTypes(uri, customMimeType));
+        assertNull(mContentResolver.getStreamTypes(uri, "text/*"));
+        assertEquals(testCustomData, readContentFromUri(uri, customMimeType));
     }
 
     private String readContentFromUri(Uri uri, String mimeType) throws Exception {
