@@ -29,6 +29,12 @@
 #include <sys/event.h>
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#include <poll.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+#endif
+
 #if BUILDFLAG(CLANG_PROFILING)
 #include "base/test/clang_profiling.h"
 #endif
@@ -38,6 +44,31 @@
 #endif
 
 namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// Blocks until `handle` exits or `wakeup_time` is reached using `pidfd_open(2)`
+// and `ppoll(2)` so the caller wakes immediately upon child exit rather than
+// sleeping in a polling loop. Returns false if `pidfd_open` is unavailable.
+bool WaitWithPidfd(base::ProcessHandle handle, base::TimeTicks wakeup_time) {
+  base::ScopedFD pidfd(static_cast<int>(syscall(__NR_pidfd_open, handle, 0)));
+  if (!pidfd.is_valid()) {
+    return false;
+  }
+  for (base::TimeTicks now = base::TimeTicks::Now(); now < wakeup_time;
+       now = base::TimeTicks::Now()) {
+    struct pollfd pfd = {.fd = pidfd.get(), .events = POLLIN, .revents = 0};
+    struct timespec ts = (wakeup_time - now).ToTimeSpec();
+    // Do not use HANDLE_EINTR() here: if ppoll() is interrupted by a signal
+    // (such as SIGCHLD from an unrelated child process), the remaining timeout
+    // `ts` must be recomputed against `wakeup_time` before retrying rather than
+    // restarting with the full initial duration.
+    if (ppoll(&pfd, 1, &ts, nullptr) >= 0 || errno != EINTR) {
+      break;
+    }
+  }
+  return true;
+}
+#endif
 
 #if !BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
 bool WaitpidWithTimeout(base::ProcessHandle handle,
@@ -57,7 +88,8 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
   // affect other parts of the application and would be difficult to debug.
   //
   // Our strategy is to call waitpid() once up front to check if the process
-  // has already exited, otherwise to loop for |wait|, sleeping for
+  // has already exited, then on Linux/ChromeOS/Android wait via
+  // pidfd_open() + ppoll(), and otherwise loop for |wait|, sleeping for
   // at most 256 milliseconds each time using usleep() and then calling
   // waitpid().  The amount of time we sleep starts out at 1 milliseconds, and
   // we double it every 4 sleep cycles.
@@ -74,15 +106,24 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
   }
 
   pid_t ret_pid = HANDLE_EINTR(waitpid(handle, status, WNOHANG));
-  static const uint32_t kMaxSleepInMicroseconds = 1 << 18;  // ~256 ms.
-  uint32_t max_sleep_time_usecs = 1 << 10;                  // ~1 ms.
-  int double_sleep_time = 0;
+  if (ret_pid != 0 || wait.is_zero()) {
+    return ret_pid > 0;
+  }
 
   // If the process hasn't exited yet, then sleep and try again.
   base::TimeTicks wakeup_time = base::TimeTicks::Now() + wait;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  if (WaitWithPidfd(handle, wakeup_time)) {
+    ret_pid = HANDLE_EINTR(waitpid(handle, status, WNOHANG));
+  }
+#endif
+
+  static const uint32_t kMaxSleepInMicroseconds = 1 << 18;  // ~256 ms.
+  uint32_t max_sleep_time_usecs = 1 << 10;                  // ~1 ms.
+  int double_sleep_time = 0;
   while (ret_pid == 0) {
     base::TimeTicks now = base::TimeTicks::Now();
-    if (now > wakeup_time) {
+    if (now >= wakeup_time) {
       break;
     }
 
