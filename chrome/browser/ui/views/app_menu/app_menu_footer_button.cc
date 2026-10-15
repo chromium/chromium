@@ -5,14 +5,22 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -41,7 +49,12 @@ namespace {
 constexpr int kRowLineHeight = 16;
 }  // namespace
 
-AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
+AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* parent_menu_item,
+                                         actions::BaseAction* base_action,
+                                         views::MenuItemView* submenu_item)
+    : parent_menu_item_(parent_menu_item) {
+  CHECK(parent_menu_item_);
+  CHECK(base_action);
   const auto* provider = ChromeLayoutProvider::Get();
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
@@ -81,6 +94,7 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
 
   // Label
   label_ = AddChildView(std::make_unique<views::Label>());
+  label_->SetMnemonicMode(views::Label::MnemonicMode::kHide);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
   label_->GetViewAccessibility().SetIsIgnored(true);
@@ -100,6 +114,21 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
   }
 
   UpdateColors();
+
+  if (std::u16string* text_override =
+          base_action->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
+    text_override_ = *text_override;
+  }
+
+  if (ui::ImageModel* icon_override =
+          base_action->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
+    icon_override_ = *icon_override;
+  }
+
+  if (const ui::ElementIdentifier element_id =
+          base_action->GetProperty(views::kElementIdentifierKey)) {
+    SetProperty(views::kElementIdentifierKey, element_id);
+  }
 }
 
 AppMenuFooterButton::~AppMenuFooterButton() {
@@ -136,10 +165,31 @@ void AppMenuFooterButton::OnEnabledChanged() {
 }
 
 void AppMenuFooterButton::SetText(std::u16string_view text) {
-  label_->SetText(std::u16string(text));
-  if (!text.empty()) {
-    GetViewAccessibility().SetName(std::u16string(text));
+  label_->SetText(text);
+  // The label's text, without the mnemonic marker.
+  const std::u16string display_text(label_->GetText());
+  if (!display_text.empty()) {
+    GetViewAccessibility().SetName(display_text);
   }
+
+  const char16_t mnemonic = ui::GetMnemonic(std::u16string(text));
+  SetProperty(views::kMenuMnemonicKey, mnemonic);
+  // Like views::MenuItemView does for rows. Mac doesn't use mnemonics.
+  if (mnemonic && views::MenuConfig::instance().use_mnemonics) {
+    GetViewAccessibility().SetKeyShortcuts(
+        base::UTF16ToUTF8(std::u16string(1, mnemonic)));
+  } else {
+    GetViewAccessibility().RemoveKeyShortcuts();
+  }
+}
+
+void AppMenuFooterButton::AddedToWidget() {
+  views::Button::AddedToWidget();
+  // The menu decides whether to show mnemonics just before it opens, which is
+  // after this button is created.
+  label_->SetMnemonicMode(parent_menu_item_->ShouldShowMnemonics()
+                              ? views::Label::MnemonicMode::kUnderline
+                              : views::Label::MnemonicMode::kHide);
 }
 
 void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
@@ -238,10 +288,19 @@ class AppMenuFooterButtonViewInterface
 
   void ActionItemChangedImpl(actions::ActionItem* action_item) override {
     views::ButtonActionViewInterface::ActionItemChangedImpl(action_item);
-    action_view_->SetText(action_item->GetText());
-    if (!action_item->GetImage().IsEmpty()) {
+
+    if (action_view_->text_override().has_value()) {
+      action_view_->SetText(*action_view_->text_override());
+    } else {
+      action_view_->SetText(action_item->GetTextWithMnemonic());
+    }
+
+    if (action_view_->icon_override().has_value()) {
+      action_view_->SetImageModel(*action_view_->icon_override());
+    } else if (!action_item->GetImage().IsEmpty()) {
       action_view_->SetImageModel(action_item->GetImage());
     }
+
     action_view_->SetTooltipText(std::u16string());
   }
 

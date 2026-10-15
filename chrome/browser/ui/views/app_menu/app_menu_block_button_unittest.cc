@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -19,6 +20,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/test_menu_item_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,8 +33,10 @@ class AppMenuBlockButtonTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    root_menu_item_ = std::make_unique<views::TestMenuItemView>();
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    button_ = widget_->SetContentsView(std::make_unique<AppMenuBlockButton>());
+    button_ = widget_->SetContentsView(std::make_unique<AppMenuBlockButton>(
+        root_menu_item_.get(), action_item_.get()));
     button_->SetText(u"New tab");
     button_->SetImageModel(ui::ImageModel::FromVectorIcon(kCircleFilledIcon));
     widget_->Show();
@@ -41,6 +45,7 @@ class AppMenuBlockButtonTest : public ChromeViewsTestBase {
   void TearDown() override {
     button_ = nullptr;
     widget_.reset();
+    root_menu_item_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -73,6 +78,9 @@ class AppMenuBlockButtonTest : public ChromeViewsTestBase {
     return views::InkDrop::Get(button_)->GetMode();
   }
 
+  std::unique_ptr<actions::ActionItem> action_item_ =
+      actions::ActionItem::Builder().Build();
+  std::unique_ptr<views::TestMenuItemView> root_menu_item_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AppMenuBlockButton> button_ = nullptr;
 };

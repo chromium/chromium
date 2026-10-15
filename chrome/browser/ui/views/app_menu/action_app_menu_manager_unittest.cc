@@ -392,7 +392,9 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
   std::u16string* text_override =
       new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(text_override, nullptr);
-  EXPECT_EQ(*text_override, u"New Incognito tab");
+  EXPECT_EQ(*text_override,
+            BrowserActions::GetMnemonicTitleText(
+                l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB)));
 
   ASSERT_GE(block_section->GetChildren().children().size(), 3u);
   actions::BaseAction* incognito_window_action =
@@ -404,7 +406,9 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
   std::u16string* incognito_window_text_override =
       incognito_window_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(incognito_window_text_override, nullptr);
-  EXPECT_EQ(*incognito_window_text_override, u"New Incognito window");
+  EXPECT_EQ(*incognito_window_text_override,
+            BrowserActions::GetMnemonicTitleText(
+                l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
 }
 
 TEST_F(ActionAppMenuManagerTest,
@@ -443,7 +447,9 @@ TEST_F(ActionAppMenuManagerTest,
   std::u16string* text_override =
       new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(text_override, nullptr);
-  EXPECT_EQ(*text_override, u"New isolated tab");
+  EXPECT_EQ(*text_override,
+            BrowserActions::GetMnemonicTitleText(
+                l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB)));
 
   ASSERT_GE(block_section->GetChildren().children().size(), 3u);
   actions::BaseAction* isolated_window_action =
@@ -456,7 +462,7 @@ TEST_F(ActionAppMenuManagerTest,
       isolated_window_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(isolated_window_text_override, nullptr);
   EXPECT_EQ(*isolated_window_text_override,
-            BrowserActions::GetCleanTitleAndTooltipText(
+            BrowserActions::GetMnemonicTitleText(
                 l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_WINDOW)));
 }
 

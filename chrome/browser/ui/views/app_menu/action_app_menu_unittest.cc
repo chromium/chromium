@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -88,6 +89,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -98,6 +101,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ax_strings.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
@@ -162,6 +166,81 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
         l10n_util::GetStringUTF16(string_id));
     action->SetText(text);
     return ui::GetMnemonic(text);
+  }
+
+  // Returns the block button at `index` of the open `menu` (0: New tab,
+  // 1: New window, 2: Incognito or Isolated), or nullptr.
+  static AppMenuBlockButton* GetBlockButton(ActionAppMenu& menu, size_t index) {
+    views::MenuItemView* root = menu.root_menu_item_for_testing();
+    if (!root) {
+      return nullptr;
+    }
+    views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+    if (!block_item || block_item->children().size() != 1u) {
+      return nullptr;
+    }
+    auto* block_view =
+        views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
+    if (!block_view || index >= block_view->children().size()) {
+      return nullptr;
+    }
+    return views::AsViewClass<AppMenuBlockButton>(
+        block_view->children()[index]);
+  }
+
+  // Returns the Settings footer button of the open `menu`, or nullptr.
+  static AppMenuFooterButton* GetSettingsFooterButton(ActionAppMenu& menu) {
+    views::MenuItemView* root = menu.root_menu_item_for_testing();
+    if (!root) {
+      return nullptr;
+    }
+    // The footer row is the last item in the submenu.
+    views::SubmenuView* submenu = root->GetSubmenu();
+    views::MenuItemView* footer_item =
+        submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+    auto* footer_view =
+        views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
+    if (!footer_view) {
+      return nullptr;
+    }
+#if BUILDFLAG(IS_MAC)
+    views::View* container = footer_view->right_container_for_testing();
+#else
+    views::View* container = footer_view->left_container_for_testing();
+#endif
+    if (!container || container->children().empty()) {
+      return nullptr;
+    }
+    // Settings is the first button of its container.
+    return views::AsViewClass<AppMenuFooterButton>(container->children()[0]);
+  }
+
+  // Returns the text that `button`'s label shows.
+  static std::u16string GetLabelText(const views::View& button) {
+    for (const views::View* child : button.children()) {
+      if (const auto* label = views::AsViewClass<views::Label>(child)) {
+        return std::u16string(label->GetText());
+      }
+    }
+    return std::u16string();
+  }
+
+  // Returns how `button`'s label shows its mnemonic.
+  static views::Label::MnemonicMode GetLabelMnemonicMode(
+      const views::View& button) {
+    for (const views::View* child : button.children()) {
+      if (const auto* label = views::AsViewClass<views::Label>(child)) {
+        return label->GetMnemonicMode();
+      }
+    }
+    return views::Label::MnemonicMode::kNone;
+  }
+
+  // Returns `button`'s accessible key shortcuts, or an empty string.
+  static std::string GetKeyShortcuts(views::View& button) {
+    ui::AXNodeData data;
+    button.GetViewAccessibility().GetAccessibleNodeData(&data);
+    return data.GetStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
   }
 
   std::unique_ptr<views::Widget> widget_;
@@ -949,7 +1028,8 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   }
   ASSERT_TRUE(incognito_label);
   EXPECT_EQ(incognito_label->GetText(),
-            l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO));
+            gfx::RemoveAccelerator(
+                l10n_util::GetStringUTF16(IDS_APP_MENU_BLOCK_INCOGNITO)));
   EXPECT_EQ(incognito_button->GetViewAccessibility().GetCachedName(),
             BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
@@ -3908,110 +3988,119 @@ TEST_F(ActionAppMenuTest, PopulatesHelpSubmenuWithEnterpriseReleaseNotes) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(ActionAppMenuTest, BlockButtonsRespondToMnemonics) {
+// Block and footer buttons set the mnemonic that the menu uses to press them,
+// and expose it to screen readers. Block buttons with a short title take their
+// mnemonic from it.
+TEST_F(ActionAppMenuTest, ButtonsSetMnemonic) {
   if (!views::MenuConfig::instance().use_mnemonics) {
     GTEST_SKIP() << "Mnemonics are not enabled on this platform";
   }
 
-  auto test_block_mnemonic = [&](char16_t mnemonic,
-                                 actions::ActionId expected_action_id) {
-    base::MockCallback<base::RepeatingClosure> on_menu_closed;
-    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-    ASSERT_TRUE(menu.IsShowing());
-
-    views::MenuItemView* root = menu.root_menu_item_for_testing();
-    ASSERT_TRUE(root);
-    views::MenuController* controller = root->GetMenuController();
-    ASSERT_TRUE(controller);
-
-    EXPECT_CALL(mock_action_invoked_,
-                Call(expected_action_id, testing::_, testing::_))
-        .Times(1);
-    EXPECT_CALL(on_menu_closed, Run()).Times(1);
-
-    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
-                           ui::EF_NONE);
-    key_event.set_character(mnemonic);
-    controller->OnWillDispatchKeyEvent(&key_event);
-  };
-
-  test_block_mnemonic(SetTextWithMnemonic(kActionNewTab, IDS_NEW_TAB),
-                      kActionNewTab);
-  test_block_mnemonic(SetTextWithMnemonic(kActionNewWindow, IDS_NEW_WINDOW),
-                      kActionNewWindow);
-  test_block_mnemonic(
-      SetTextWithMnemonic(kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW),
-      kActionNewIncognitoWindow);
-}
-
-TEST_F(ActionAppMenuTest, FooterButtonsRespondToMnemonics) {
-  if (!views::MenuConfig::instance().use_mnemonics) {
-    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
-  }
-
-  auto open_menu_and_press = [&](ActionAppMenu& menu, char16_t mnemonic) {
-    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-    ASSERT_TRUE(menu.IsShowing());
-    views::MenuItemView* root = menu.root_menu_item_for_testing();
-    ASSERT_TRUE(root);
-    views::MenuController* controller = root->GetMenuController();
-    ASSERT_TRUE(controller);
-
-    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
-                           ui::EF_NONE);
-    key_event.set_character(mnemonic);
-    controller->OnWillDispatchKeyEvent(&key_event);
-  };
-
-  auto test_footer_action_mnemonic = [&](char16_t mnemonic,
-                                         actions::ActionId expected_action_id) {
-    base::MockCallback<base::RepeatingClosure> on_menu_closed;
-    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-    EXPECT_CALL(mock_action_invoked_,
-                Call(expected_action_id, testing::_, testing::_))
-        .Times(1);
-    EXPECT_CALL(on_menu_closed, Run()).Times(1);
-    open_menu_and_press(menu, mnemonic);
-  };
-
-  test_footer_action_mnemonic(SetTextWithMnemonic(kActionOptions, IDS_SETTINGS),
-                              kActionOptions);
-
-  if (browser_defaults::kShowExitMenuItem) {
-    test_footer_action_mnemonic(SetTextWithMnemonic(kActionExit, IDS_EXIT),
-                                kActionExit);
-  }
-
-  // Branded builds show a Help button that opens a submenu; other builds show
-  // an About button instead.
-  const char16_t help_mnemonic =
-      SetTextWithMnemonic(kActionHelpSubmenu, IDS_HELP_MENU);
-  const char16_t about_mnemonic = SetTextWithMnemonic(kActionAbout, IDS_ABOUT);
-  bool has_help_submenu = false;
-  {
-    base::MockCallback<base::RepeatingClosure> on_menu_closed;
-    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-    views::MenuItemView* root = menu.root_menu_item_for_testing();
-    ASSERT_TRUE(root);
-    has_help_submenu = root->GetMenuItemByID(kActionHelpSubmenu);
-    EXPECT_CALL(on_menu_closed, Run()).Times(1);
-    menu.CloseMenu();
-  }
-
-  if (!has_help_submenu) {
-    test_footer_action_mnemonic(about_mnemonic, kActionAbout);
-    return;
-  }
+  // A different mnemonic in the action's text, which must not be used.
+  actions::ActionItem* incognito_action =
+      actions::ActionManager::Get().FindAction(
+          kActionNewIncognitoWindow, browser_actions_->root_action_item());
+  ASSERT_TRUE(incognito_action);
+  incognito_action->SetText(u"&Zebra window");
+  const char16_t incognito_mnemonic =
+      ui::GetMnemonic(l10n_util::GetStringUTF16(IDS_APP_MENU_BLOCK_INCOGNITO));
+  const char16_t settings_mnemonic =
+      SetTextWithMnemonic(kActionOptions, IDS_SETTINGS);
+  ASSERT_NE(incognito_mnemonic, 0);
+  ASSERT_NE(settings_mnemonic, 0);
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  open_menu_and_press(menu, help_mnemonic);
-  views::MenuItemView* help_item =
-      menu.root_menu_item_for_testing()->GetMenuItemByID(kActionHelpSubmenu);
-  ASSERT_TRUE(help_item);
-  EXPECT_TRUE(help_item->SubmenuIsShowing());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  AppMenuBlockButton* incognito_button = GetBlockButton(menu, 2);
+  ASSERT_TRUE(incognito_button);
+  EXPECT_EQ(incognito_button->GetProperty(views::kMenuMnemonicKey),
+            incognito_mnemonic);
+  EXPECT_EQ(GetKeyShortcuts(*incognito_button),
+            base::UTF16ToUTF8(std::u16string(1, incognito_mnemonic)));
+
+  AppMenuFooterButton* settings_button = GetSettingsFooterButton(menu);
+  ASSERT_TRUE(settings_button);
+  EXPECT_EQ(settings_button->GetProperty(views::kMenuMnemonicKey),
+            settings_mnemonic);
+  EXPECT_EQ(GetKeyShortcuts(*settings_button),
+            base::UTF16ToUTF8(std::u16string(1, settings_mnemonic)));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+// Block and footer buttons underline their mnemonic only when the menu shows
+// mnemonics, e.g. when it was opened from the keyboard.
+TEST_F(ActionAppMenuTest, ButtonsUnderlineMnemonicOnlyWhenMenuShowsMnemonics) {
+  if (!views::MenuConfig::instance().use_mnemonics) {
+    GTEST_SKIP() << "Mnemonics are not enabled on this platform";
+  }
+
+  auto expect_mnemonic_mode = [&](int run_types,
+                                  views::Label::MnemonicMode expected_mode) {
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+    menu.RunMenu(button_->button_controller(), run_types);
+    ASSERT_TRUE(menu.IsShowing());
+
+    AppMenuBlockButton* new_tab_button = GetBlockButton(menu, 0);
+    ASSERT_TRUE(new_tab_button);
+    EXPECT_EQ(GetLabelMnemonicMode(*new_tab_button), expected_mode);
+
+    AppMenuFooterButton* settings_button = GetSettingsFooterButton(menu);
+    ASSERT_TRUE(settings_button);
+    EXPECT_EQ(GetLabelMnemonicMode(*settings_button), expected_mode);
+
+    EXPECT_CALL(on_menu_closed, Run()).Times(1);
+    menu.CloseMenu();
+  };
+
+  expect_mnemonic_mode(views::MenuRunner::SHOULD_SHOW_MNEMONICS,
+                       views::Label::MnemonicMode::kUnderline);
+  // Some systems, e.g. Windows with a setting on, always show mnemonics.
+  if (!views::MenuConfig::instance().show_mnemonics) {
+    expect_mnemonic_mode(views::MenuRunner::NO_FLAGS,
+                         views::Label::MnemonicMode::kHide);
+  }
+}
+
+// A block button keeps its text override, and its mnemonic, when its action
+// changes.
+TEST_F(ActionAppMenuTest, BlockButtonKeepsTextOverrideWhenActionChanges) {
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(otr_profile));
+  // In Incognito, the New tab button shows "New Incognito tab".
+  const std::u16string text_override = BrowserActions::GetMnemonicTitleText(
+      l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  AppMenuBlockButton* new_tab_button = GetBlockButton(menu, 0);
+  ASSERT_TRUE(new_tab_button);
+  EXPECT_EQ(GetLabelText(*new_tab_button),
+            gfx::RemoveAccelerator(text_override));
+
+  actions::ActionItem* new_tab_action =
+      actions::ActionManager::Get().FindAction(
+          kActionNewTab, browser_actions_->root_action_item());
+  ASSERT_TRUE(new_tab_action);
+  new_tab_action->SetEnabled(false);
+  new_tab_action->SetEnabled(true);
+
+  EXPECT_EQ(GetLabelText(*new_tab_button),
+            gfx::RemoveAccelerator(text_override));
+  if (views::MenuConfig::instance().use_mnemonics) {
+    EXPECT_EQ(new_tab_button->GetProperty(views::kMenuMnemonicKey),
+              ui::GetMnemonic(text_override));
+  }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

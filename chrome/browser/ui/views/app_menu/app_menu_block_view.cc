@@ -6,29 +6,25 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
-#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
-#include "ui/views/controls/menu/menu_item_view.h"
-#include "ui/views/view_class_properties.h"
 
 AppMenuBlockView::AppMenuBlockView(
+    views::MenuItemView* parent_menu_item,
     actions::ActionItem* block_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
     ExecuteCommandCallback execute_command_callback) {
+  CHECK(parent_menu_item);
   CHECK(block_action_item);
   CHECK(action_view_controller);
   CHECK(command_to_action_map);
@@ -48,7 +44,8 @@ AppMenuBlockView::AppMenuBlockView(
     std::optional<actions::ActionId> action_id = block_child_ptr->GetActionId();
     CHECK(action_id.has_value());
 
-    auto button = std::make_unique<AppMenuBlockButton>();
+    auto button = std::make_unique<AppMenuBlockButton>(parent_menu_item,
+                                                       block_child.get());
     action_view_controller->CreateActionViewRelationship(
         button.get(), block_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = block_child.get();
@@ -57,25 +54,6 @@ AppMenuBlockView::AppMenuBlockView(
         [](const ExecuteCommandCallback& callback, actions::ActionId id,
            const ui::Event& event) { callback.Run(id, event.flags()); },
         execute_command_callback, action_id.value()));
-
-    if (const ui::ElementIdentifier element_id =
-            block_child->GetProperty(views::kElementIdentifierKey)) {
-      button->SetProperty(views::kElementIdentifierKey, element_id);
-    }
-
-    if (std::u16string* text_override =
-            block_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
-      button->SetText(*text_override);
-    }
-
-    button->SetProperty(views::kMenuMnemonicKey,
-                        ui::GetMnemonic(std::u16string(
-                            block_child_ptr->GetTextWithMnemonic())));
-
-    if (ui::ImageModel* icon_override =
-            block_child->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
-      button->SetImageModel(*icon_override);
-    }
 
     AddChildView(std::move(button));
   }

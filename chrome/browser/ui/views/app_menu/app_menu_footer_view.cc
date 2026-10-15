@@ -13,11 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
-#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -135,8 +133,8 @@ AppMenuFooterView::AppMenuFooterView(
       populate_submenu_callback.Run(submenu_item, footer_child.get());
     }
 
-    auto button = std::make_unique<AppMenuFooterButton>(submenu_item);
-
+    auto button = std::make_unique<AppMenuFooterButton>(
+        parent_menu_item, footer_child.get(), submenu_item);
     action_view_controller->CreateActionViewRelationship(
         button.get(), footer_child_ptr->GetAsWeakPtr());
 
@@ -147,23 +145,6 @@ AppMenuFooterView::AppMenuFooterView(
           [](const ExecuteCommandCallback& callback, actions::ActionId id,
              const ui::Event& event) { callback.Run(id, event.flags()); },
           execute_command_callback, action_id.value()));
-    }
-
-    if (const ui::ElementIdentifier element_id =
-            footer_child->GetProperty(views::kElementIdentifierKey)) {
-      button->SetProperty(views::kElementIdentifierKey, element_id);
-    }
-
-    if (std::u16string* text_override =
-            footer_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
-      button->SetText(*text_override);
-    }
-    button->SetProperty(views::kMenuMnemonicKey,
-                        ui::GetMnemonic(std::u16string(
-                            footer_child_ptr->GetTextWithMnemonic())));
-    if (ui::ImageModel* icon_override =
-            footer_child->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
-      button->SetImageModel(*icon_override);
     }
 
     switch (GetFooterContainerForAction(action_id.value())) {

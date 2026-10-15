@@ -1069,8 +1069,8 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetEnabled(IncognitoModePrefs::IsIncognitoTypeAllowed(
               profile, IncognitoModePrefs::IncognitoModeType::kStandard))
           .SetProperty(actions::kShortTitleTextKey,
-                       new std::u16string(
-                           l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO)))
+                       new std::u16string(l10n_util::GetStringUTF16(
+                           IDS_APP_MENU_BLOCK_INCOGNITO)))
           .SetAccelerator(GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW))
           .Build());
 
@@ -1091,9 +1091,9 @@ void BrowserActions::InitializeChromeMenuActions() {
               : vector_icons::kBusinessChromeRefreshOldIcon)
           .SetEnabled(
               enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile))
-          .SetProperty(
-              actions::kShortTitleTextKey,
-              new std::u16string(l10n_util::GetStringUTF16(IDS_ISOLATED)))
+          .SetProperty(actions::kShortTitleTextKey,
+                       new std::u16string(l10n_util::GetStringUTF16(
+                           IDS_APP_MENU_BLOCK_ISOLATED)))
           .SetAccelerator(GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW))
           .Build());
 
