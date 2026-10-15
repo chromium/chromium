@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -207,8 +208,12 @@ class ExtensionsMenuMainPageViewInteractiveUITest
 
 ExtensionsMenuMainPageViewInteractiveUITest::
     ExtensionsMenuMainPageViewInteractiveUITest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kExtensionsMenuAccessControl);
+  // This suite tests the Views-specific ExtensionsMenuMainPageView hosted by
+  // the native ExtensionsToolbarDesktop, which is not instantiated when
+  // WebUIExtensionsContainer is enabled.
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{extensions_features::kExtensionsMenuAccessControl},
+      /*disabled_features=*/{features::kWebUIExtensionsContainer});
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::SetUpCommandLine(
@@ -515,10 +520,15 @@ class ExtensionsMenuMainPageViewInteractiveTest
     : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
  public:
   ExtensionsMenuMainPageViewInteractiveTest() {
+    // This suite tests the Views-specific ExtensionsMenuMainPageView hosted by
+    // the native ExtensionsToolbarDesktop, which is not instantiated when
+    // WebUIExtensionsContainer is enabled.
     scoped_feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionsMenuAccessControl,
-         metrics::kCriticalUserJourneyService, metrics::kPinExtensionJourney},
-        {features::kExtensionsPinnedByDefault});
+        /*enabled_features=*/{extensions_features::kExtensionsMenuAccessControl,
+                              metrics::kCriticalUserJourneyService,
+                              metrics::kPinExtensionJourney},
+        /*disabled_features=*/{features::kExtensionsPinnedByDefault,
+                               features::kWebUIExtensionsContainer});
   }
   ExtensionsMenuMainPageViewInteractiveTest(
       const ExtensionsMenuMainPageViewInteractiveTest&) = delete;
