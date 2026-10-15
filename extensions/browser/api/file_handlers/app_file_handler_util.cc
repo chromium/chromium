@@ -120,18 +120,31 @@ bool WebAppFileHandlerCanHandleFileWithMimeType(
 }
 
 bool PrepareNativeLocalFileForWritableApp(const base::FilePath& path,
-                                          bool is_directory) {
+                                          bool is_directory,
+                                          const base::FilePath& root_path) {
   // Don't allow links.
   if (base::IsLink(path)) {
     return false;
+  }
+
+  // IsLink() and FLAG_NO_FOLLOW only check the final path component. Also
+  // reject links in every component between |root_path| and |path|, which
+  // would otherwise allow |path| to escape the granted directory.
+  if (!root_path.empty()) {
+    for (base::FilePath current = path; current != root_path;
+         current = current.DirName()) {
+      if (current == current.DirName() || base::IsLink(current)) {
+        return false;
+      }
+    }
   }
 
   if (is_directory)
     return base::DirectoryExists(path);
 
   // Create the file if it doesn't already exist.
-  // Use FLAG_NO_FOLLOW to prevent TOCTOU races where a path is replaced with a
-  // symlink after the IsLink() check above.
+  // Use FLAG_NO_FOLLOW to prevent TOCTOU races where the final path component
+  // is replaced with a symlink after the IsLink() check above.
   int creation_flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                        base::File::FLAG_NO_FOLLOW;
   base::File file(path, creation_flags);
@@ -144,6 +157,7 @@ bool PrepareNativeLocalFileForWritableApp(const base::FilePath& path,
 // is not a symlink, is not in a blocklisted path and can be opened for writing.
 // Creates files if they do not exist, but fails for non-existent directory
 // paths. On Chrome OS, also fails for non-local files that don't already exist.
+// If |root_path| is not empty, local paths must not traverse a link below it.
 class WritableFileChecker
     : public base::RefCountedThreadSafe<WritableFileChecker> {
  public:
@@ -152,7 +166,8 @@ class WritableFileChecker
       content::BrowserContext* context,
       const std::set<base::FilePath>& directory_paths,
       base::OnceClosure on_success,
-      base::OnceCallback<void(const base::FilePath&)> on_failure);
+      base::OnceCallback<void(const base::FilePath&)> on_failure,
+      const base::FilePath& root_path);
 
   void Check();
 
@@ -181,6 +196,7 @@ class WritableFileChecker
   base::FilePath error_path_;
   base::OnceClosure on_success_;
   base::OnceCallback<void(const base::FilePath&)> on_failure_;
+  const base::FilePath root_path_;
 };
 
 WritableFileChecker::WritableFileChecker(
@@ -188,13 +204,15 @@ WritableFileChecker::WritableFileChecker(
     content::BrowserContext* context,
     const std::set<base::FilePath>& directory_paths,
     base::OnceClosure on_success,
-    base::OnceCallback<void(const base::FilePath&)> on_failure)
+    base::OnceCallback<void(const base::FilePath&)> on_failure,
+    const base::FilePath& root_path)
     : paths_(paths),
       context_(context),
       directory_paths_(directory_paths),
       outstanding_tasks_(1),
       on_success_(std::move(on_success)),
-      on_failure_(std::move(on_failure)) {}
+      on_failure_(std::move(on_failure)),
+      root_path_(root_path) {}
 
 void WritableFileChecker::Check() {
   outstanding_tasks_ = paths_.size();
@@ -221,7 +239,7 @@ void WritableFileChecker::Check() {
     base::TaskTraits traits = {base::TaskPriority::USER_BLOCKING,
                                base::MayBlock()};
     base::OnceCallback<bool()> task = base::BindOnce(
-        &PrepareNativeLocalFileForWritableApp, path, is_directory);
+        &PrepareNativeLocalFileForWritableApp, path, is_directory, root_path_);
     base::OnceCallback<void(bool)> reply = base::BindOnce(
         &WritableFileChecker::OnPrepareFileDone, base::RetainedRef(this), path);
 
@@ -474,10 +492,11 @@ void PrepareFilesForWritableApp(
     content::BrowserContext* context,
     const std::set<base::FilePath>& directory_paths,
     base::OnceClosure on_success,
-    base::OnceCallback<void(const base::FilePath&)> on_failure) {
+    base::OnceCallback<void(const base::FilePath&)> on_failure,
+    const base::FilePath& root_path) {
   auto checker = base::MakeRefCounted<WritableFileChecker>(
       paths, context, directory_paths, std::move(on_success),
-      std::move(on_failure));
+      std::move(on_failure), root_path);
   checker->Check();
 }
 
@@ -490,7 +509,8 @@ bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,
                                  const std::string& filesystem_path,
                                  int render_process_id,
                                  base::FilePath* file_path,
-                                 std::string* error) {
+                                 std::string* error,
+                                 base::FilePath* root_path) {
   if (filesystem_path.empty()) {
     *error = kInvalidParameters;
     return false;
@@ -532,6 +552,24 @@ bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,
       type != storage::kFileSystemTypeDragged) {
     *error = kInvalidParameters;
     return false;
+  }
+
+  // If requested, also return the platform path of the granted file or
+  // directory that contains |file_path|. |relative_path| has the form
+  // "<registered name>/<path inside it>", where the registered name identifies
+  // the granted file or directory. Resolving the virtual path made of only the
+  // file system ID and that name (e.g. "<fsid>/<name>") to a platform path
+  // gives the granted root.
+  if (root_path && !file_path->empty()) {
+    base::FilePath root_virtual_path =
+        context->CreateVirtualRootPath(filesystem_id)
+            .Append(relative_path.GetComponents().front());
+    if (!context->CrackVirtualPath(root_virtual_path, &filesystem_id, &type,
+                                   &cracked_id, root_path, &mount_option) ||
+        root_path->empty()) {
+      *error = kInvalidParameters;
+      return false;
+    }
   }
 
   return true;

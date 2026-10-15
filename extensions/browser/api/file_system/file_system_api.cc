@@ -309,7 +309,8 @@ void FileSystemEntryFunction::PrepareFilesForWritableApp(
       base::BindOnce(
           &FileSystemEntryFunction::RegisterFileSystemsAndSendResponse, this,
           paths),
-      base::BindOnce(&FileSystemEntryFunction::HandleWritableFileError, this));
+      base::BindOnce(&FileSystemEntryFunction::HandleWritableFileError, this),
+      root_path_);
 }
 
 void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
@@ -375,8 +376,8 @@ ExtensionFunction::ResponseAction FileSystemGetWritableEntryFunction::Run() {
 
   std::string error;
   if (!app_file_handler_util::ValidateFileEntryAndGetPath(
-          filesystem_name, filesystem_path, source_process_id(), &path_,
-          &error)) {
+          filesystem_name, filesystem_path, source_process_id(), &path_, &error,
+          &root_path_)) {
     return RespondNow(Error(std::move(error)));
   }
 

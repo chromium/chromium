@@ -111,25 +111,30 @@ GrantedFileEntry CreateFileEntry(content::BrowserContext* context,
 // |directory_paths| contain the set of directories out of |paths|.
 // For directories it makes sure they exist at their corresponding |paths|,
 // while for regular files it makes sure they exist (i.e. not links) at |paths|,
-// creating files if needed. If result is successful it calls |on_success|,
+// creating files if needed. If |root_path| is not empty, |paths| must be
+// |root_path| or located under it, and no component between |root_path| and
+// each path may be a link. If result is successful it calls |on_success|,
 // otherwise calls |on_failure|.
 void PrepareFilesForWritableApp(
     const std::vector<base::FilePath>& paths,
     content::BrowserContext* context,
     const std::set<base::FilePath>& directory_paths,
     base::OnceClosure on_success,
-    base::OnceCallback<void(const base::FilePath&)> on_failure);
+    base::OnceCallback<void(const base::FilePath&)> on_failure,
+    const base::FilePath& root_path = base::FilePath());
 
 // Returns whether |extension| has the fileSystem.write permission.
 bool HasFileSystemWritePermission(const Extension* extension);
 
 // Validates a file entry and populates |file_path| with the absolute path if it
-// is valid.
+// is valid. If |root_path| is not null, it is populated with the absolute path
+// of the granted file or directory that contains |file_path|.
 bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,
                                  const std::string& filesystem_path,
                                  int render_process_id,
                                  base::FilePath* file_path,
-                                 std::string* error);
+                                 std::string* error,
+                                 base::FilePath* root_path = nullptr);
 
 // Returns a vector of EntryInfo with:
 // * |path| fields populated by |entry_paths|.

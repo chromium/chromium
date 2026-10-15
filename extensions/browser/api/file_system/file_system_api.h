@@ -87,6 +87,10 @@ class FileSystemEntryFunction : public ExtensionFunction {
 
   // Whether a directory has been requested.
   bool is_directory_ = false;
+
+  // If not empty, the granted file or directory that the paths passed to
+  // PrepareFilesForWritableApp() must not escape through a link.
+  base::FilePath root_path_;
 };
 
 class FileSystemGetWritableEntryFunction : public FileSystemEntryFunction {
