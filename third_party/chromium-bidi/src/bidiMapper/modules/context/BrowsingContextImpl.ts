@@ -1946,9 +1946,17 @@ export class BrowsingContextImpl {
 
     const startBackendNodeIds: number[] = [];
     if (startNodes.length === 0) {
-      const {root: documentRoot} =
-        await this.#cdpTarget.cdpClient.sendCommand('DOM.getDocument');
-      startBackendNodeIds.push(documentRoot.backendNodeId);
+      // Fetch the root AX node of this frame to get its document backendNodeId.
+      const {node: rootNode} = await this.#cdpTarget.cdpClient.sendCommand(
+        'Accessibility.getRootAXNode',
+        {
+          frameId: this.id,
+        },
+      );
+      if (rootNode.backendDOMNodeId !== undefined) {
+        // Default to the current frame's document when no startNodes are given.
+        startBackendNodeIds.push(rootNode.backendDOMNodeId);
+      }
     } else {
       for (const node of startNodes) {
         if (node.sharedId) {
@@ -2013,6 +2021,8 @@ export class BrowsingContextImpl {
           'DOM.resolveNode',
           {
             backendNodeId,
+            // Resolve the node in the requested realm instead of the main world.
+            executionContextId: realm.executionContextId,
           },
         );
         // We need to use `serializeCdpObject` to convert it to BiDi format.

@@ -240,3 +240,68 @@ async def test_locate_nodes_select_html(
         }
     else:
         assert resp == {"nodes": []}
+
+
+@pytest.mark.parametrize("same_origin", [True, False])
+@pytest.mark.parametrize(
+    "locator_value",
+    [
+        {"role": "button", "name": "Inner"},
+        {"role": "button"},
+    ],
+)
+@pytest.mark.asyncio
+async def test_locate_nodes_accessibility_in_iframe(
+    websocket, context_id, html, iframe, same_origin, locator_value
+):
+    # Create the inner iframe URL with its own button.
+    iframe_url = html('<button id="inner">Inner</button>', same_origin=same_origin)
+    # Navigate the top-level page with an outer button and the child iframe.
+    await goto_url(
+        websocket,
+        context_id,
+        html(f'<button id="outer">Outer</button>{iframe(iframe_url)}'),
+    )
+
+    # Fetch the browsing context tree to get the child iframe's context ID.
+    tree = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.getTree",
+            "params": {"root": context_id},
+        },
+    )
+    # Extract the child frame browsing context ID.
+    iframe_context_id = tree["contexts"][0]["children"][0]["context"]
+
+    # Locate nodes by accessibility inside the child iframe context.
+    resp = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.locateNodes",
+            "params": {
+                "context": iframe_context_id,
+                "locator": {"type": "accessibility", "value": locator_value},
+            },
+        },
+    )
+
+    # Verify that only the inner frame's button is matched and returned.
+    assert resp == {
+        "nodes": [
+            {
+                "sharedId": ANY_SHARED_ID,
+                "type": "node",
+                "value": {
+                    "attributes": {
+                        "id": "inner",
+                    },
+                    "childNodeCount": 1,
+                    "localName": "button",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "nodeType": 1,
+                    "shadowRoot": None,
+                },
+            },
+        ]
+    }
