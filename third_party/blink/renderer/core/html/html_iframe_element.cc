@@ -378,7 +378,7 @@ void HTMLIFrameElement::ParseAttribute(
       }
       if (!params.new_value.IsNull()) {
         UseCounter::Count(GetDocument(),
-                          WebFeature::kSharedStorageAPI_Iframe_Attribute);
+                          WebFeature::kIframeAdAuctionHeadersAttribute);
       }
     }
   } else if (name == html_names::kCredentiallessAttr &&
