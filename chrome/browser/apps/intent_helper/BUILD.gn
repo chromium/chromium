@@ -18,6 +18,20 @@ if (!is_android) {
     ]
   }
 
+  source_set("test_support") {
+    testonly = true
+    public = [ "preferred_apps_test_util.h" ]
+    sources = [ "preferred_apps_test_util.cc" ]
+    public_deps = [
+      "//base",
+      "//components/services/app_service",
+    ]
+    deps = [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/profiles:profile",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [ "intent_chip_display_prefs_unittest.cc" ]

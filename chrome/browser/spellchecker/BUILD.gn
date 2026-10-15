@@ -105,6 +105,30 @@ source_set("impl") {
   }
 }
 
+if (has_spellcheck_panel) {
+  source_set("test_support") {
+    testonly = true
+    public = [
+      "test/spellcheck_mock_panel_host.h",
+      "test/spellcheck_panel_browsertest_helper.h",
+    ]
+    sources = [
+      "test/spellcheck_mock_panel_host.cc",
+      "test/spellcheck_panel_browsertest_helper.cc",
+    ]
+    public_deps = [
+      "//base",
+      "//components/spellcheck/common",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+    ]
+    deps = [
+      ":spellchecker",
+      "//services/service_manager/public/cpp",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 

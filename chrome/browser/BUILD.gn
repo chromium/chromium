@@ -4915,11 +4915,8 @@ static_library("test_support") {
   if (is_android) {
     deps += [ "//chrome/browser/android" ]
   } else {
-    sources += [
-      "apps/intent_helper/preferred_apps_test_util.cc",
-      "apps/intent_helper/preferred_apps_test_util.h",
-    ]
     public_deps += [
+      "//chrome/browser/apps/intent_helper:test_support",
       "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/sessions:test_support",
     ]
@@ -5001,16 +4998,7 @@ static_library("test_support") {
   }
 
   if (has_spellcheck_panel) {
-    sources += [
-      "spellchecker/test/spellcheck_mock_panel_host.cc",
-      "spellchecker/test/spellcheck_mock_panel_host.h",
-      "spellchecker/test/spellcheck_panel_browsertest_helper.cc",
-      "spellchecker/test/spellcheck_panel_browsertest_helper.h",
-    ]
-    deps += [
-      "//chrome/browser/spellchecker",
-      "//components/spellcheck/common",
-    ]
+    public_deps += [ "//chrome/browser/spellchecker:test_support" ]
   }
 
   if (toolkit_views) {
