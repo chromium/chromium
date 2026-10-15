@@ -59,7 +59,7 @@ class SyncService;
 - (void)updateSignInPromoVisibility;
 
 // Notifies the mediator that the sign-in flow completed.
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result;
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResultOrIdentity)result;
 
 @end
 

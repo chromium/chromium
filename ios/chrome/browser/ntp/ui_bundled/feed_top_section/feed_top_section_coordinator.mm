@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_coordinator.h"
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -203,10 +205,8 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
                                  SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf.signinPromoMediator signinDidCompleteWithResult:signinResult];
+    [weakSelf.signinPromoMediator
+        signinDidCompleteWithResult:std::move(result)];
   }];
   [self.NTPDelegate showSigninWithCommand:command];
 }

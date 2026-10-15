@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_coordinator.h"
 
 #import <string>
+#import <utility>
 
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
@@ -407,10 +408,8 @@
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
                                  SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf signinDidCompleteWithCoordinator:coordinator result:signinResult];
+    [weakSelf signinDidCompleteWithCoordinator:coordinator
+                                        result:std::move(result)];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
@@ -539,9 +538,10 @@
 }
 
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                                  result:(SigninCoordinatorResult)result {
+                                  result:(SigninCoordinatorResultOrIdentity)
+                                             result {
   CHECK_EQ(_signinCoordinator, coordinator);
-  [_signinPromoViewMediator signinDidCompleteWithResult:result];
+  [_signinPromoViewMediator signinDidCompleteWithResult:std::move(result)];
   [self stopSigninCoordinator];
   [self showHistorySyncOptInAfterDedicatedSignIn:YES];
 }

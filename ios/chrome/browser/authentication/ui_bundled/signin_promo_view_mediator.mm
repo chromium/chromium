@@ -1030,7 +1030,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 // Finishes the sign-in process.
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResultOrIdentity)result {
   if (self.signinPromoViewState == SigninPromoViewState::kDisconnected) {
     // The mediator owner can remove the view before the sign-in is done.
     return;
@@ -1038,8 +1038,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
   // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
   // a post task issue.
-  self.initialSyncInProgress = (result == SigninCoordinatorResultSuccess) &&
-                               [self shouldWaitForInitialSync];
+  self.initialSyncInProgress =
+      result.has_value() && [self shouldWaitForInitialSync];
   CHECK_EQ(SigninPromoViewState::kUserInteracted, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
   CHECK_NE(self.signinInProgress, signin::Tribool::kFalse)

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_signin_promo_mediator.h"
 
+#import <utility>
+
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
@@ -139,8 +141,8 @@
   self.shouldShowSignInPromo = YES;
 }
 
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
-  [_signinPromoViewMediator signinDidCompleteWithResult:result];
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResultOrIdentity)result {
+  [_signinPromoViewMediator signinDidCompleteWithResult:std::move(result)];
   [self updateSignInPromoVisibility];
 }
 

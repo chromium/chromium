@@ -530,7 +530,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // Stop sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
 
-  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ signinDidCompleteWithResult:[FakeSystemIdentity fakeIdentity1]];
   EXPECT_NE(nil, GetConfigurator());
   EXPECT_FALSE(mediator_.spinnerVisible);
   EXPECT_EQ(SigninPromoViewState::kUserInteracted,
@@ -569,7 +569,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   // Stop sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
 
-  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ signinDidCompleteWithResult:[FakeSystemIdentity fakeIdentity1]];
   EXPECT_NE(nil, GetConfigurator());
   EXPECT_FALSE(mediator_.spinnerVisible);
   EXPECT_EQ(SigninPromoViewState::kUserInteracted,
@@ -596,7 +596,7 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ signinDidCompleteWithResult:identity_];
   EXPECT_NE(nil, GetConfigurator());
 }
 
@@ -626,7 +626,7 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
+  [mediator_ signinDidCompleteWithResult:identity_];
   EXPECT_NE(nil, GetConfigurator());
 }
 
@@ -689,7 +689,9 @@ TEST_F(SigninPromoViewMediatorTest,
 
     // Finish the sign-in.
     OCMExpect([consumer_ promoProgressStateDidChange]);
-    [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultInterrupted];
+    [mediator_
+        signinDidCompleteWithResult:base::unexpected(
+                                        SigninCoordinatorResultInterrupted)];
     EXPECT_NE(nil, GetConfigurator());
 
     // Remove the sign-in promo.
@@ -726,7 +728,9 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
 
   // Finish the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultInterrupted];
+  [mediator_
+      signinDidCompleteWithResult:base::unexpected(
+                                      SigninCoordinatorResultInterrupted)];
   EXPECT_NE(nil, GetConfigurator());
 
   // Remove the sign-in promo.

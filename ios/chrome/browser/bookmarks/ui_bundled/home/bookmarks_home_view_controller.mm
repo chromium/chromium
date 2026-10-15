@@ -6,6 +6,7 @@
 
 #import <algorithm>
 #import <set>
+#import <utility>
 
 #import "base/apple/foundation_util.h"
 #import "base/i18n/message_formatter.h"
@@ -730,10 +731,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
                                  SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf signinDidCompleteWithCoordinator:coordinator result:signinResult];
+    [weakSelf signinDidCompleteWithCoordinator:coordinator
+                                        result:std::move(result)];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
@@ -770,9 +769,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 #pragma mark - BookmarksHomeConsumer Helper
 
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                                  result:(SigninCoordinatorResult)result {
+                                  result:(SigninCoordinatorResultOrIdentity)
+                                             result {
   CHECK_EQ(_signinCoordinator, coordinator);
-  [self.mediator signinDidCompleteWithResult:result];
+  [self.mediator signinDidCompleteWithResult:std::move(result)];
   [self stopSigninCoordinator];
 }
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
 
+#import <utility>
+
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -541,10 +543,8 @@
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
                                  SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf signinDidCompleteWithCoordinator:coordinator result:signinResult];
+    [weakSelf signinDidCompleteWithCoordinator:coordinator
+                                        result:std::move(result)];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
@@ -556,9 +556,10 @@
 #pragma mark - SigninPromoViewMediatorDelegate Helper
 
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                                  result:(SigninCoordinatorResult)result {
+                                  result:(SigninCoordinatorResultOrIdentity)
+                                             result {
   CHECK_EQ(_signinCoordinator, coordinator);
-  [_signinPromoViewMediator signinDidCompleteWithResult:result];
+  [_signinPromoViewMediator signinDidCompleteWithResult:std::move(result)];
   [self updateSignInPromoVisibility];
   [self stopSigninCoordinator];
 }

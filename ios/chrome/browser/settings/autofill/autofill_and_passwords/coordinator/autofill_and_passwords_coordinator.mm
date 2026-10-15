@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_coordinator.h"
 
+#import <utility>
+
 #import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -452,10 +454,8 @@ enum class YourSavedInfoDataCategory {
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
                                  SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf signinDidCompleteWithCoordinator:coordinator result:signinResult];
+    [weakSelf signinDidCompleteWithCoordinator:coordinator
+                                        result:std::move(result)];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
@@ -468,11 +468,12 @@ enum class YourSavedInfoDataCategory {
 
 // Callback invoked when the sign-in flow completes.
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                                  result:(SigninCoordinatorResult)result {
+                                  result:(SigninCoordinatorResultOrIdentity)
+                                             result {
   if (_signinCoordinator != coordinator) {
     return;
   }
-  [_signinPromoMediator signinDidCompleteWithResult:result];
+  [_signinPromoMediator signinDidCompleteWithResult:std::move(result)];
   [self stopSigninCoordinator];
 }
 

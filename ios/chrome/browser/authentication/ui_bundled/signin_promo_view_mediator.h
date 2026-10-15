@@ -11,12 +11,12 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 class AuthenticationService;
 class ChromeAccountManagerService;
 class PrefService;
 @protocol AccountSettingsPresenter;
-typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @class SigninPromoViewConfigurator;
 @class ShowSigninCommand;
 @protocol SigninPromoViewConsumer;
@@ -180,7 +180,7 @@ enum class SigninPromoAction {
 - (void)disconnect;
 
 // Callback for the Signin.
-- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result;
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResultOrIdentity)result;
 
 @end
 
