@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/format_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

@@ -10,9 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
 namespace json_schema_compiler {
@@ -96,9 +95,8 @@ bool PopulateArrayFromList(const base::ListValue& list,
   for (size_t i = 0; i < list.size(); ++i) {
     if (!PopulateItem(list[i], item, item_error)) {
       DCHECK(error.empty());
-      error = base::ASCIIToUTF16(
-          base::StringPrintf("Parsing array failed at index %" PRIuS ": %s", i,
-                             base::UTF16ToASCII(item_error).c_str()));
+      error = base::StrCat({u"Parsing array failed at index ",
+                           base::NumberToString16(i), u": ", item_error});
       return false;
     }
     out.push_back(std::move(item));
