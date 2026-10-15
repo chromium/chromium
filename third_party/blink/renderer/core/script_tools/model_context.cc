@@ -400,6 +400,17 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
     }
   }
 
+  // Serializing `inputSchema` above can run script (e.g., a `toJSON()` method)
+  // that makes the document inactive, for example by removing its iframe. The
+  // rest of this method requires an active document (e.g., it uses the frame
+  // and `model_context_host_remote_`), so check again.
+  if (!document_->IsActive()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           kInactiveDocumentError));
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   ScriptPromise promise = resolver->Promise();
