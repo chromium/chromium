@@ -26,7 +26,7 @@ items:
   value: dev-channel
 owners:
 - mpolzer@google.com
-- vsavu@google.com
+- rbock@google.com
 - chromeos-commercial-remote-management@google.com
 schema:
   enum:

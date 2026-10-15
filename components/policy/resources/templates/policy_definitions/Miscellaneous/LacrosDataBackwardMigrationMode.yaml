@@ -35,7 +35,6 @@ items:
   value: keep_all
 owners:
 - artyomchen@google.com
-- vsavu@google.com
 - chromeos-commercial-remote-management@google.com
 schema:
   enum:

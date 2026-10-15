@@ -1,5 +1,5 @@
 owners:
-- vsavu@google.com
+- rbock@google.com
 - chromeos-commercial-remote-management@google.com
 
 caption: Enable/disable Extended Automatic Updates
