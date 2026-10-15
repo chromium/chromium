@@ -68,8 +68,10 @@ class NET_EXPORT ReportingDeliveryAgent {
       std::unique_ptr<base::OneShotTimer> timer) = 0;
 
   // Bypasses the schedule to attempt delivery of all outstanding reports
-  // for a single `reporting_source`. Called when the source document or worker
-  // is being destroyed.
+  // for a single `reporting_source`. If an upload is already in progress for
+  // an endpoint group belonging to `reporting_source`, any newly queued reports
+  // for that group will be sent immediately once the in-flight upload
+  // completes, rather than waiting for the periodic delivery timer.
   virtual void SendReportsForSource(
       base::UnguessableToken reporting_source) = 0;
 

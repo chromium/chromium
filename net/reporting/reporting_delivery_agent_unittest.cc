@@ -876,6 +876,144 @@ TEST_F(ReportingDeliveryAgentTest, SendDeveloperReportsForSource) {
   EXPECT_EQ(0u, pending_uploads().size());
 }
 
+// Verifies that when `SendReportsForSource()` is called while an upload for the
+// same (reporting_source, group) is already in flight, the second report is not
+// uploaded concurrently, and is instead sent immediately as soon as the
+// in-flight upload completes rather than waiting for the periodic delivery
+// timer.
+TEST_F(ReportingDeliveryAgentTest,
+       SendDeveloperReportsForSourceWithPendingUpload) {
+  const base::UnguessableToken kReportingSource =
+      base::UnguessableToken::Create();
+  const IsolationInfo kIsolationInfo =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const ReportingEndpointGroupKey kGroupKey(kNak_, kReportingSource, kOrigin_,
+                                            kGroup_,
+                                            ReportingTargetType::kDeveloper);
+
+  SetV1EndpointInCache(kGroupKey, kReportingSource, kIsolationInfo, kUrl_);
+
+  // The first report starts uploading immediately via `OnReportsUpdated()` and
+  // starts the periodic delivery timer.
+  AddReport(kReportingSource, kNak_, kUrl_, kGroup_);
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  // Queue a second report for the same (reporting_source, group) and explicitly
+  // request an immediate flush while the first upload is still in flight.
+  // Because concurrent uploads to the same group are disallowed, the second
+  // report must remain queued while the first upload is pending.
+  AddReport(kReportingSource, kNak_, kUrl_, kGroup_);
+  SendReportsForSource(kReportingSource);
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  // Completing the first upload must immediately drain the deferred flush for
+  // `kReportingSource` without waiting for `delivery_timer()` to fire.
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+  EXPECT_EQ(0u, pending_uploads().size());
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+}
+
+TEST_F(ReportingDeliveryAgentTest,
+       SendDeveloperReportsForSourceWithPendingUploadFailure) {
+  const base::UnguessableToken kReportingSource =
+      base::UnguessableToken::Create();
+  const IsolationInfo kIsolationInfo =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const ReportingEndpointGroupKey kGroupKey(kNak_, kReportingSource, kOrigin_,
+                                            kGroup_,
+                                            ReportingTargetType::kDeveloper);
+
+  SetV1EndpointInCache(kGroupKey, kReportingSource, kIsolationInfo, kUrl_);
+
+  AddReport(kReportingSource, kNak_, kUrl_, kGroup_);
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  AddReport(kReportingSource, kNak_, kUrl_, kGroup_);
+  SendReportsForSource(kReportingSource);
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  // When the first upload fails, the endpoint enters backoff. The deferred
+  // flush runs, finds no available endpoint out of backoff, and returns both
+  // the failed first report and the second report to `QUEUED`.
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::FAILURE);
+  EXPECT_TRUE(pending_uploads().empty());
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+
+  // Once the endpoint backoff expires, both queued reports are batched and
+  // uploaded together.
+  tick_clock()->Advance(base::Seconds(60));
+  SendReportsForSource(kReportingSource);
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+  EXPECT_TRUE(pending_uploads().empty());
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+}
+
+TEST_F(ReportingDeliveryAgentTest,
+       SendDeveloperReportsForSourceWithPendingUploadRemoveEndpoint) {
+  const base::UnguessableToken kReportingSource =
+      base::UnguessableToken::Create();
+
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
+
+  AddReport(kReportingSource, kNak_, kUrl_, kGroup_);
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  AddReport(kReportingSource, kNak_, kUrl_, kGroup_);
+  SendReportsForSource(kReportingSource);
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(1u, pending_uploads().size());
+
+  // Completing with `REMOVE_ENDPOINT` removes the endpoint from the cache.
+  // The deferred flush runs, finds no valid endpoint, and leaves both reports
+  // `QUEUED` without starting a new upload.
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::REMOVE_ENDPOINT);
+  EXPECT_FALSE(FindEndpointInCache(kGroupKey_, kEndpoint_));
+  EXPECT_TRUE(pending_uploads().empty());
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+}
+
 TEST_F(ReportingDeliveryAgentTest, SendEnterpriseReports) {
   const ReportingEndpointGroupKey kEnterpriseGroupKey(
       NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,

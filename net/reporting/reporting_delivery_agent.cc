@@ -34,6 +34,7 @@
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_uploader.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -294,7 +295,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
         cache()->GetReportsToDeliverForSource(reporting_source);
     if (reports.empty())
       return;
-    DoSendReports(std::move(reports));
+    DoSendReports(std::move(reports), /*is_source_flush=*/true);
   }
 
   // ReportingCacheObserver implementation:
@@ -329,12 +330,12 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     ReportList reports = cache()->GetReportsToDeliver();
     if (reports.empty())
       return;
-    DoSendReports(std::move(reports));
+    DoSendReports(std::move(reports), /*is_source_flush=*/false);
   }
 
   void SendReportsForTesting() override { SendReports(); }
 
-  void DoSendReports(ReportList reports) {
+  void DoSendReports(ReportList reports, bool is_source_flush) {
     // First determine which origins we're allowed to upload reports about.
     std::set<url::Origin> report_origins;
     for (const ReportingReport* report : reports) {
@@ -343,10 +344,12 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     delegate()->CanSendReports(
         std::move(report_origins),
         base::BindOnce(&ReportingDeliveryAgentImpl::OnSendPermissionsChecked,
-                       weak_factory_.GetWeakPtr(), std::move(reports)));
+                       weak_factory_.GetWeakPtr(), std::move(reports),
+                       is_source_flush));
   }
 
   void OnSendPermissionsChecked(ReportList reports,
+                                bool is_source_flush,
                                 std::set<url::Origin> allowed_report_origins) {
     DCHECK(!reports.empty());
     std::map<Delivery::Target, std::unique_ptr<Delivery>> deliveries;
@@ -373,10 +376,20 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
         continue;
       }
 
-      // Skip this group if there is already a pending upload for it.
-      // We don't allow multiple concurrent uploads for the same group.
-      if (pending_groups_.contains(report_group_key))
+      // Postpone delivery for this group if there is already a pending upload
+      // for it. We don't allow multiple concurrent uploads for the same group;
+      // queued reports will be sent when the pending upload completes or on the
+      // next timer tick.
+      if (pending_groups_.contains(report_group_key)) {
+        // If an explicit source flush (`SendReportsForSource`) was requested
+        // while an upload for this group is already in flight, record the
+        // source so `OnUploadComplete` immediately drains the remaining queued
+        // reports instead of dropping them back to the periodic timer.
+        if (is_source_flush && report_group_key.reporting_source.has_value()) {
+          pending_source_flushes_.insert(*report_group_key.reporting_source);
+        }
         continue;
+      }
 
       // Find an endpoint to deliver these reports to.
       const ReportingEndpoint endpoint =
@@ -481,11 +494,23 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     if (outcome == ReportingUploader::Outcome::REMOVE_ENDPOINT)
       cache()->RemoveEndpointsForUrl(delivery->endpoint_url());
 
+    // Extract `reporting_source` tokens before `ClearReportsPending()`, which
+    // destroys delivered reports in the cache, and re-invoke
+    // `SendReportsForSource()` after `ClearReportsPending()` has removed them.
+    absl::flat_hash_set<base::UnguessableToken> sources_to_flush;
     for (const ReportingReport* report : delivery->reports()) {
       pending_groups_.erase(report->GetGroupKey());
+      if (report->reporting_source.has_value() &&
+          pending_source_flushes_.erase(*report->reporting_source) > 0) {
+        sources_to_flush.insert(*report->reporting_source);
+      }
     }
 
     cache()->ClearReportsPending(delivery->reports());
+
+    for (const base::UnguessableToken& source : sources_to_flush) {
+      SendReportsForSource(source);
+    }
   }
 
   const ReportingPolicy& policy() const { return context_->policy(); }
@@ -500,6 +525,10 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
 
   // Tracks endpoint groups for which there is a pending delivery running.
   std::set<ReportingEndpointGroupKey> pending_groups_;
+
+  // Tracks reporting sources for which `SendReportsForSource()` was deferred
+  // because an upload for the same group was already in `pending_groups_`.
+  absl::flat_hash_set<base::UnguessableToken> pending_source_flushes_;
 
   std::unique_ptr<ReportingEndpointManager> endpoint_manager_;
 
