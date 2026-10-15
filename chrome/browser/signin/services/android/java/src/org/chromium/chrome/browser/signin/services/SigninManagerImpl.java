@@ -41,6 +41,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinder;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinderOutcome;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -165,7 +166,16 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         List<AccountInfo> accounts = accountsPromise.getResult();
         if (!didAccountsFetchSucceed() && accounts.isEmpty()) {
             // If the account fetch did not succeed, the AccountManagerFacade falls back to an empty
-            // list. Do nothing when this is the case.
+            // list.
+            if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+                    && mIdentityManager.getRefreshTokensLoadingState()
+                            == RefreshTokensLoadingState.IN_PROGRESS) {
+                // TODO(crbug.com/572579970): This is a temporary solution to unblock the
+                // launch of the feature. Currently, the failed state is handled by the Java layer.
+                // That logic has to be moved to the native layer. That can affect on how the API
+                // works here.
+                mIdentityMutator.setRefreshTokensLoadingFailed();
+            }
             return;
         }
 
