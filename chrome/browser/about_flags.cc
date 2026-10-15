@@ -815,12 +815,17 @@ const FeatureEntry::FeatureParam
     kEnableSwipeToSwitchPaneEmphasizedMaxDuration200ms[] = {
         {"use_emphasized_interpolator", "true"},
         {"max_duration_ms", "200"}};
+const FeatureEntry::FeatureParam
+    kEnableSwipeToSwitchPaneWithSearchBoxAnimation[] = {
+        {"animate_search_box", "true"}};
 
 const FeatureEntry::FeatureVariation kEnableSwipeToSwitchPaneVariations[] = {
     {"Emphasized curve (max duration 250ms)",
      kEnableSwipeToSwitchPaneEmphasizedMaxDuration250ms, nullptr},
     {"Emphasized curve (max duration 200ms)",
-     kEnableSwipeToSwitchPaneEmphasizedMaxDuration200ms, nullptr}};
+     kEnableSwipeToSwitchPaneEmphasizedMaxDuration200ms, nullptr},
+    {"with search box animation",
+     kEnableSwipeToSwitchPaneWithSearchBoxAnimation, nullptr}};
 
 const FeatureEntry::Choice kAndroidTabDeclutterArchiveOnDesktopChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},

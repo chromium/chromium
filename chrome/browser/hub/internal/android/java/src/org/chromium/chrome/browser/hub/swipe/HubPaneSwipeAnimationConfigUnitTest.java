@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.hub.swipe;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,5 +51,17 @@ public class HubPaneSwipeAnimationConfigUnitTest {
     public void testGetSwipeSettleMinDurationMs_zeroOrNegative() {
         assertEquals(0L, HubPaneSwipeAnimationConfig.getSwipeSettleMinDurationMs(0L));
         assertEquals(0L, HubPaneSwipeAnimationConfig.getSwipeSettleMinDurationMs(-100L));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
+    public void testShouldAnimateSearchBox_default() {
+        assertFalse(HubPaneSwipeAnimationConfig.shouldAnimateSearchBox());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE + ":animate_search_box/true")
+    public void testShouldAnimateSearchBox_enabled() {
+        assertTrue(HubPaneSwipeAnimationConfig.shouldAnimateSearchBox());
     }
 }

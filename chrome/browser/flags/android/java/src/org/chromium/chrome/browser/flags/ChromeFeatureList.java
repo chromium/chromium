@@ -2523,6 +2523,8 @@ public abstract class ChromeFeatureList {
             sOnDemandBackgroundTabReleaseSlotOnDomContentLoaded =
                     sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
                             "release_slot_on_dom_content_loaded", false);
+    public static final MutableBooleanParamWithSafeDefault sSwipeToSwitchPaneAnimateSearchBox =
+            sEnableSwipeToSwitchPane.newBooleanParam("animate_search_box", false);
     public static final MutableIntParamWithSafeDefault sSwipeToSwitchPaneMaxDurationMs =
             sEnableSwipeToSwitchPane.newIntParam("max_duration_ms", 250);
     public static final MutableBooleanParamWithSafeDefault

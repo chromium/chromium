@@ -44,4 +44,10 @@ public final class HubPaneSwipeAnimationConfig {
         double ratio = (double) PANE_SETTLE_MIN_DURATION_MS / PANE_SLIDE_ANIMATION_DURATION_MS;
         return Math.round(maxDurationMs * ratio);
     }
+
+    /** Returns whether the Hub search box should animate during swipe or slide transitions. */
+    public static boolean shouldAnimateSearchBox() {
+        return ChromeFeatureList.sEnableSwipeToSwitchPane.isEnabled()
+                && ChromeFeatureList.sSwipeToSwitchPaneAnimateSearchBox.getValue();
+    }
 }
