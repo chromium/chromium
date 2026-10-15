@@ -910,11 +910,6 @@ BASE_FEATURE(kHeliumArcvmKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 // Should stay disabled by default.
 BASE_FEATURE(kHeliumArcvmKioskDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the logic that auto triggers the install dialog during the web app
-// install flow initiated from the Help App.
-BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
 BASE_FEATURE(kHiddenNetworkWarning, base::FEATURE_DISABLED_BY_DEFAULT);

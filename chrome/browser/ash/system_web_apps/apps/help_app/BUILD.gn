@@ -58,7 +58,6 @@ static_library("help_app") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/settings_ui",

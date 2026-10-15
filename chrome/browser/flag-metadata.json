@@ -6159,11 +6159,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "help-app-auto-trigger-install-dialog",
-    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "hid-get-feature-report-fix",
     "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 152

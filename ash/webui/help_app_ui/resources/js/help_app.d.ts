@@ -184,8 +184,7 @@ declare interface ClientApiDelegate {
   openSettings: (path: number) => undefined;
   /**
    * Opens a valid https:// URL in a new browser tab without getting intercepted
-   * by URL capturing logic. If the "HelpAppAutoTriggerInstallDialog" feature
-   * flag is enabled, this will automatically trigger the install dialog.
+   * by URL capturing logic, and automatically triggers the install dialog.
    * Failure to provide a valid https:// URL will cause the Help app renderer
    * process to crash.
    */

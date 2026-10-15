@@ -7997,12 +7997,6 @@ inline constexpr char kGlanceablesTimeManagementTasksViewDescription[] =
     "Enables Google Tasks integration on the Time Management Glanceables "
     "surface (via Calendar entry point).";
 
-inline constexpr char kHelpAppAutoTriggerInstallDialogName[] =
-    "Help App Auto Trigger Install Dialog";
-inline constexpr char kHelpAppAutoTriggerInstallDialogDescription[] =
-    "Enables the logic that auto triggers the install dialog during the web "
-    "app install flow initiated from the Help App.";
-
 inline constexpr char kIdbSqliteBackingStoreName[] = "IDB SQLite Backing Store";
 inline constexpr char kIdbSqliteBackingStoreDescription[] =
     "Uses a SQLite-powered backing store for IndexedDB. No data is migrated "

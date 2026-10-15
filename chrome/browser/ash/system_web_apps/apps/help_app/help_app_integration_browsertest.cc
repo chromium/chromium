@@ -124,18 +124,6 @@ content::WebContents* GetActiveWebContents() {
       ->GetActiveWebContents();
 }
 
-class HelpAppIntegrationTestWithAutoTriggerDisabled
-    : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationTestWithAutoTriggerDisabled() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kHelpAppAutoTriggerInstallDialog);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class HelpAppIntegrationTestWithFirstRunEnabled
     : public HelpAppIntegrationTest {
  public:
@@ -722,58 +710,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowAppMallSWA) {
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
-// Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` can open
-// valid URLs if the `kHelpAppAutoTriggerInstallDialog` feature is disabled.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
-                       HelpAppV2CanOpenValidHttpsUrlsInBrowser) {
-  ASSERT_TRUE(https_server()->Start());
-  const GURL test_url = https_server()->GetURL("/title1.html");
-
-  ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
-
-  // There should be only be one regular browser with one tab.
-  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-
-  WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
-
-  // There should be two browser windows, one regular and one for the newly
-  // opened help app.
-  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-
-  content::TestNavigationObserver navigation_observer(test_url);
-  navigation_observer.StartWatchingNewWebContents();
-
-  // Script that tells the Help App to call the
-  // openUrlInBrowserAndTriggerInstallDialog Mojo function.
-  constexpr char kScript[] = R"(
-    (async () => {
-      const delegate = window.customLaunchData.delegate;
-      await delegate.openUrlInBrowserAndTriggerInstallDialog($1);
-    })();
-  )";
-  // Trigger the script, then wait for the URL to open in a new tab. Use
-  // ExecJs instead of EvalJsInAppFrame because the script needs to run
-  // in the same world as the page's code.
-  EXPECT_TRUE(
-      content::ExecJs(SandboxedWebUiAppTestBase::GetAppFrame(web_contents),
-                      content::JsReplace(kScript, test_url),
-                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  navigation_observer.Wait();
-
-  // There should still be two browser windows.
-  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  // The regular browser should only have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  // After opening the URL, the regular browser should be the most recently
-  // active browser.
-  EXPECT_EQ(browser(),
-            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
-  // The active tab should be the `test_url` we opened.
-  EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
-}
-
 // Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` navigates
 // and triggers the install dialog by default.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
@@ -1210,9 +1146,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationTestWithAutoTriggerDisabled);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithFirstRunEnabled);
