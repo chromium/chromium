@@ -22,7 +22,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -180,12 +179,7 @@ public class SendTabToSelfCoordinator
                         new NoTargetDeviceBottomSheetContent(mContext, mProfile), true);
                 return;
             case EntryPointDisplayReason.OFFER_FEATURE:
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET)) {
-                    showEnhancedTargetDevicePicker(targetDevices);
-                } else {
-                    showLegacyTargetDevicePicker(targetDevices);
-                }
+                showEnhancedTargetDevicePicker(targetDevices);
                 return;
             case EntryPointDisplayReason.OFFER_SIGN_IN:
                 {
@@ -385,19 +379,5 @@ public class SendTabToSelfCoordinator
                         .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         IntentUtils.addTrustedIntentExtras(intent);
         mContext.startActivity(intent);
-    }
-
-    private void showLegacyTargetDevicePicker(List<RemoteDeviceInfo> targetDevices) {
-        mBottomSheetController.requestShowContent(
-                new DevicePickerBottomSheetContent(
-                        mContext,
-                        mUrl,
-                        mTitle,
-                        mBottomSheetController,
-                        targetDevices,
-                        mProfile,
-                        mTabProvider,
-                        mEntryPoint),
-                true);
     }
 }

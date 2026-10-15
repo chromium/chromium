@@ -79,12 +79,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfRecordSnackbarActivation);
 BASE_DECLARE_FEATURE(kSendTabToSelfSwitchToParentOnBack);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// If this feature is enabled, the target device picker will use an enhanced
-// bottom sheet UI.
-BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedBottomsheet);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_IOS)
 
 // If this feature is enabled, target devices are displayed as individual

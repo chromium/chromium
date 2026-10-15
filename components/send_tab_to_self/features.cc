@@ -63,11 +63,6 @@ BASE_FEATURE(kSendTabToSelfSwitchToParentOnBack,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kSendTabToSelfEnhancedBottomsheet,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSendTabToSelfIOSShareSheetDeviceList,

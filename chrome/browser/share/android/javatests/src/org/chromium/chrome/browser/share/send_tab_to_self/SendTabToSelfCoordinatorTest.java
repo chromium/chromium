@@ -210,15 +210,12 @@ public class SendTabToSelfCoordinatorTest {
 
         buildAndShowCoordinator();
 
-        waitForViewShown(R.id.device_picker_list);
+        waitForViewShown(R.id.sheet_item_list);
     }
 
     @Test
     @LargeTest
     @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
-    // This test asserts the old bottom sheet UI and must run with the enhanced
-    // bottom sheet feature disabled.
-    @DisableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET})
     public void testShowDeviceListIfSignedIn_activitylessSignin() {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -237,7 +234,7 @@ public class SendTabToSelfCoordinatorTest {
 
         buildAndShowCoordinator();
 
-        onView(withId(R.id.device_picker_list)).check(matches(isDisplayed()));
+        onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
         histogramWatcher.assertExpected();
     }
 
@@ -245,12 +242,7 @@ public class SendTabToSelfCoordinatorTest {
     @LargeTest
     // TODO(crbug.com/40825119): Flaky on Nexus 5x (bullhead).
     @DisableIf.Build(hardware_is = "bullhead")
-    // This test asserts the old bottom sheet UI and must run with the enhanced
-    // bottom sheet feature disabled.
-    @DisableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @DisableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     // TODO(crbug.com/448227402): Remove this test once the migration to the activity-less sign-in
     // flow is complete.
     @Restriction(DeviceFormFactor.PHONE)
@@ -269,15 +261,12 @@ public class SendTabToSelfCoordinatorTest {
                             .performClick();
                 });
 
-        waitForViewShown(R.id.device_picker_list);
+        waitForViewShown(R.id.sheet_item_list);
     }
 
     @Test
     @LargeTest
     @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
-    // This test asserts the old bottom sheet UI and must run with the enhanced
-    // bottom sheet feature disabled.
-    @DisableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET})
     @DisabledTest(message = "crbug.com/555079457")
     public void testShowSigninPromoIfSignedOut_activitylessSignin() {
         // An account must be added to the device so the promo is offered.
@@ -303,16 +292,13 @@ public class SendTabToSelfCoordinatorTest {
                                 withParent(withId(R.id.account_picker_state_collapsed))))
                 .perform(click());
 
-        onView(withId(R.id.device_picker_list)).check(matches(isDisplayed()));
+        onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
         histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testShowEnhancedDeviceListIfSignedIn_activitylessSignin() {
         // Sign in and wait for the device list to be downloaded.
@@ -340,10 +326,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_multipleDevicesSelection() {
         // Inject two more devices (in addition to the one in setUp) with an older timestamp,
@@ -408,10 +391,7 @@ public class SendTabToSelfCoordinatorTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_halfStateOverflowWithManyDevices() {
         // Inject 6 more devices (in addition to the one in setUp) with an older timestamp,
@@ -451,10 +431,7 @@ public class SendTabToSelfCoordinatorTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_exactlyFourDevicesOverflowBoundary() {
         for (int i = 1; i <= 3; i++) {
@@ -490,10 +467,7 @@ public class SendTabToSelfCoordinatorTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_overflowTransitionToFullState() {
         for (int i = 1; i <= 5; i++) {
@@ -536,10 +510,7 @@ public class SendTabToSelfCoordinatorTest {
     /** Tests fallback to manage account devices link when zero target devices are available. */
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_emptyListFallback() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         SendTabToSelfAndroidBridge.Natives nativeMock =
@@ -563,10 +534,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_manageDevicesClick() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -678,10 +646,7 @@ public class SendTabToSelfCoordinatorTest {
     // snackbar and records the snackbar shown histogram.
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     @DisabledTest(message = "crbug.com/555079457")
     public void testSnackbarShownAfterSend() {
         // Sign in and wait for the device list to be downloaded.
@@ -890,10 +855,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/543459081
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_fullStateOverflowWithManyDevices() {
         for (int i = 1; i <= 20; i++) {
             long olderTime = mSetUpTimeMs - i * 1000;
@@ -930,10 +892,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_landscapeMode() {
         mSyncTestRule
                 .getFakeServerHelper()
@@ -968,10 +927,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_landscapeModeOverflowWithManyDevices() {
         injectFakeDevices(20);
 
@@ -1008,10 +964,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_rotationMaintainsControlsVisibility() {
         injectFakeDevices(20);
 
@@ -1043,10 +996,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_tabletLandscapeMode() {
         mSyncTestRule
                 .getFakeServerHelper()
@@ -1082,10 +1032,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_tabletLandscapeModeOverflowWithManyDevices() {
         injectFakeDevices(20);
 
@@ -1124,10 +1071,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     public void testEnhancedDevicePicker_tabletRotationMaintainsControlsVisibility() {
         injectFakeDevices(20);
 

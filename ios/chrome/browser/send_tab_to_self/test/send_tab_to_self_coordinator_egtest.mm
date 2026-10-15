@@ -197,8 +197,6 @@ void DismissSendTabToSelfModal() {
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfExtraEntryPoints);
   config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfEnhancedBottomsheet);
-  config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfIOSShareSheetDeviceList);
   return config;
 }
