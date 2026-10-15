@@ -74,9 +74,7 @@ class OtpManagerImplTestApi {
     manager_->OnOneTimeTokenReceived(source, std::move(token_or_error));
   }
 
-  void OnTickleReceived(one_time_tokens::OneTimeTokenSource source) {
-    manager_->OnTickleReceived(source);
-  }
+  void OnTickleReceived() { manager_->OnTickleReceived(); }
 
   one_time_tokens::GmailOtpRetriever* gmail_otp_retriever() const {
     return manager_->gmail_otp_retriever_.get();

@@ -38,6 +38,7 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
@@ -120,16 +121,17 @@ void OtpManagerImpl::GetOtpSuggestions(
 void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
   CHECK(one_time_token_service_);
 
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      owner_->client().GetGmailOtpBackend();
+
   const base::Time expiration_time =
       base::Time::Now() + kGmailOtpTickleSubscriptionDuration;
   if (gmail_otp_tickle_subscription_.IsAlive()) {
     gmail_otp_tickle_subscription_.SetExpirationTime(expiration_time);
-  } else {
-    gmail_otp_tickle_subscription_ =
-        one_time_token_service_->SubscribeToTickles(
-            OneTimeTokenSource::kGmail, expiration_time,
-            base::BindRepeating(&OtpManagerImpl::OnTickleReceived,
-                                weak_ptr_factory_.GetWeakPtr()));
+  } else if (gmail_otp_backend) {
+    gmail_otp_tickle_subscription_ = gmail_otp_backend->SubscribeToTickles(
+        expiration_time, base::BindRepeating(&OtpManagerImpl::OnTickleReceived,
+                                             weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (UserOptedIntoGmailOtpFilling()) {
@@ -144,25 +146,17 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
     }
   }
 
+  // Gmail OTPs are retrieved from the `GmailOtpBackend` via
+  // `GmailOtpRetriever` (verifying domain affiliation against the frame
+  // origin). Therefore, only SMS OTPs are taken from the `OneTimeTokenService`
+  // and any unverified Gmail OTPs returned by it are dropped.
   // This may call OnOneTimeTokenReceived() zero times, but ...
   one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
       [](base::WeakPtr<OtpManagerImpl> self, OneTimeTokenSource source,
          base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
-        if (!self) {
-          return;
+        if (self && source == OneTimeTokenSource::kOnDeviceSms) {
+          self->OnOneTimeTokenReceived(source, std::move(result));
         }
-        // When AffiliationService and GmailOtpBackend are both available,
-        // Gmail OTPs are retrieved directly via GmailOtpRetriever (verifying
-        // domain affiliation against the frame origin); therefore,
-        // raw/unaffiliated Gmail tokens from
-        // OneTimeTokenService::GetRecentOneTimeTokens must be dropped to
-        // prevent duplicate or unverified suggestions.
-        if (source == OneTimeTokenSource::kGmail &&
-            self->owner_->client().GetAffiliationService() &&
-            self->owner_->client().GetGmailOtpBackend()) {
-          return;
-        }
-        self->OnOneTimeTokenReceived(source, std::move(result));
       },
       weak_ptr_factory_.GetWeakPtr()));
 
@@ -336,13 +330,9 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
 // Verifies preconditions (OTP field presence, user consent, no existing input,
 // etc.) and starts an asynchronous Gmail OTP retrieval for the target field's
 // origin.
-void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
+void OtpManagerImpl::OnTickleReceived() {
   LOG_AF(owner_->client().GetCurrentLogManager())
-      << LoggingScope::kOneTimeTokens
-      << "Tickle received for source: " << static_cast<int>(source);
-  if (source != OneTimeTokenSource::kGmail) {
-    return;
-  }
+      << LoggingScope::kOneTimeTokens << "Gmail OTP tickle received.";
   if (!IsOtpFieldDetected()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens

@@ -40,7 +40,6 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
-#include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,21 +105,6 @@ class MockAutofillDriver : public TestAutofillDriver {
               (const FieldGlobalId&, AutofillSuggestionTriggerSource),
               (override));
 };
-
-void SetUpTickleSubscription(
-    one_time_tokens::MockOneTimeTokenService& mock_ott_service,
-    one_time_tokens::ExpiringSubscriptionManager<
-        void(one_time_tokens::OneTimeTokenSource)>& sub_manager) {
-  ON_CALL(mock_ott_service,
-          SubscribeToTickles(one_time_tokens::OneTimeTokenSource::kGmail, _, _))
-      .WillByDefault(
-          [&sub_manager](
-              one_time_tokens::OneTimeTokenSource, base::Time exp,
-              one_time_tokens::OneTimeTokenService::TickleCallback cb) {
-            return sub_manager.Subscribe(
-                exp, std::move(cb), /*expiration_callback=*/base::DoNothing());
-          });
-}
 
 }  // namespace
 
@@ -918,6 +902,8 @@ TEST_F(OtpManagerImplTest,
 TEST_F(OtpManagerImplTest,
        GetOtpSuggestions_CachedGmailOtpServedSynchronously) {
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
@@ -934,10 +920,6 @@ TEST_F(OtpManagerImplTest,
       mock_service,
       Subscribe(one_time_tokens::OneTimeTokenSource::kOnDeviceSms, _, _, _))
       .Times(1);
-  EXPECT_CALL(
-      mock_service,
-      SubscribeToTickles(one_time_tokens::OneTimeTokenSource::kGmail, _, _))
-      .Times(1);
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
 
@@ -947,6 +929,7 @@ TEST_F(OtpManagerImplTest,
   EXPECT_TRUE(future.IsReady());
   ASSERT_EQ(future.Get().size(), 1u);
   EXPECT_EQ(future.Get()[0].value(), "654321");
+  EXPECT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   EXPECT_TRUE(autofill_manager()
                   .GetOtpFormEventLogger()
                   .HasLoggedDataToFillAvailableForTesting());
@@ -1355,13 +1338,13 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_MockOtpIgnoredForNonOtpForm) {
 }
 
 // Tests that a tickle subscription is not created in the constructor or when a
-// non-OTP form is parsed, and is lazily created once an OTP form is parsed.
+// non-OTP form is parsed, and is lazily created with the `GmailOtpBackend`
+// (rather than the `OneTimeTokenService`) once an OTP form is parsed.
 TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedLazilyOnOtpFormParsed) {
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
+  EXPECT_CALL(mock_ott_service, SubscribeToTickles).Times(0);
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   EXPECT_FALSE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
@@ -1371,13 +1354,6 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedLazilyOnOtpFormParsed) {
   EXPECT_FALSE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
 
   // Parsing an OTP form should lazily create the tickle subscription.
-  EXPECT_CALL(
-      mock_ott_service,
-      SubscribeToTickles(
-          one_time_tokens::OneTimeTokenSource::kGmail,
-          base::Time::Now() +
-              OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration,
-          _));
   AddFormWithOtpField();
   EXPECT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
   EXPECT_EQ(
@@ -1386,14 +1362,24 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionCreatedLazilyOnOtpFormParsed) {
           OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
+// Tests that no tickle subscription is created if no `GmailOtpBackend` is
+// available.
+TEST_F(OtpManagerImplTest, NoTickleSubscriptionWithoutGmailOtpBackend) {
+  autofill_client().set_gmail_otp_backend(nullptr);
+  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
+  EXPECT_CALL(mock_ott_service, SubscribeToTickles).Times(0);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  AddFormWithOtpField();
+  EXPECT_FALSE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
+}
+
 // Tests that an existing tickle subscription's expiration is renewed when a
 // subsequent OTP form is parsed.
 TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnSubsequentOtpFormParsed) {
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   AddFormWithOtpField();
@@ -1421,11 +1407,9 @@ TEST_F(OtpManagerImplTest, TickleSubscriptionRenewedOnSubsequentOtpFormParsed) {
 // the previous subscription expired.
 TEST_F(OtpManagerImplTest,
        TickleSubscriptionRecreatedOnOtpFormParsedIfExpired) {
+  autofill_client().set_gmail_otp_backend(
+      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   AddFormWithOtpField();
@@ -1447,21 +1431,31 @@ TEST_F(OtpManagerImplTest,
           OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
-// Tests that receiving a push notification tickle triggers `OnTickleReceived`
-// without crashing when subscribed.
-TEST_F(OtpManagerImplTest, TickleReceivedTriggersOnTickleReceived) {
-  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
+// Tests that a tickle notified by the `GmailOtpBackend` is handled by
+// `OnTickleReceived` and starts `GmailOtpRetriever`.
+TEST_F(OtpManagerImplTest, GmailOtpBackendTickleStartsGmailOtpRetriever) {
+  SetUpOtpFieldDetector();
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
+  autofill_client().set_affiliation_service(&mock_affiliation_service);
+  auto backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  one_time_tokens::FakeGmailOtpBackend* backend_ptr = backend.get();
+  autofill_client().set_gmail_otp_backend(std::move(backend));
 
-  OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  // As the user has not opted into Gmail OTP filling yet, parsing an OTP form
+  // subscribes to tickles but does not start `GmailOtpRetriever`.
   AddFormWithOtpField();
   ASSERT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
+  ASSERT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 
-  // Notify tickle to trigger `OnTickleReceived`.
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
+  // Once the user opted in, a tickle notified by the backend starts
+  // `GmailOtpRetriever`.
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  backend_ptr->OnIncomingOneTimeTokenBackendNotification(
+      one_time_tokens::OneTimeTokenBackendNotification());
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  autofill_client().set_affiliation_service(nullptr);
 }
 
 // Tests that IsOtpFieldDetected returns false when no OtpFieldDetector is
@@ -2678,17 +2672,11 @@ TEST_F(OtpManagerImplTest,
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
 
-// Tests that GetRecentOneTimeTokens ignores Gmail OTPs when AffiliationService
-// and GmailOtpBackend are present.
-TEST_F(
-    OtpManagerImplTest,
-    GetRecentOneTimeTokens_IgnoresGmailOtpWhenAffiliationServiceAndBackendPresent) {
+// Tests that Gmail OTPs returned by `OneTimeTokenService` are ignored, even if
+// neither `AffiliationService` nor `GmailOtpBackend` is available, because
+// Gmail OTPs are only retrieved from the `GmailOtpBackend`.
+TEST_F(OtpManagerImplTest, GetRecentOneTimeTokens_IgnoresGmailOtp) {
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
-  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
-  autofill_client().set_affiliation_service(&mock_affiliation_service);
-  autofill_client().set_gmail_otp_backend(
-      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
-
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
@@ -2707,6 +2695,7 @@ TEST_F(
 
   ASSERT_FALSE(get_recent_callback.is_null());
   // Delivering a Gmail token through GetRecentOneTimeTokens should be ignored.
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
   get_recent_callback.Run(
       one_time_tokens::OneTimeTokenSource::kGmail,
       one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
@@ -2714,6 +2703,9 @@ TEST_F(
                                     "sender@example.com"));
 
   EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(autofill_manager()
+                   .GetOtpFormEventLogger()
+                   .HasLoggedDataToFillAvailableForTesting());
 }
 
 using OtpManagerImplOnTickleReceivedTest = OtpManagerImplTest;
@@ -2737,8 +2729,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2762,43 +2753,17 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   one_time_tokens::GmailOtpRetriever* in_flight_retriever =
       test_api(otp_manager).gmail_otp_retriever();
   ASSERT_NE(in_flight_retriever, nullptr);
 
   // A second tickle arrives while the first retrieval is still in flight.
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   // The in-flight retriever instance must not be clobbered or restarted.
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), in_flight_retriever);
-}
-
-// Tests that OnTickleReceived ignores tickles for non-Gmail sources.
-TEST_F(OtpManagerImplOnTickleReceivedTest,
-       SmsTickle_DoesNotStartGmailOtpRetriever) {
-  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
-  SetUpOtpFieldDetector();
-  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service;
-  autofill_client().set_affiliation_service(&mock_affiliation_service);
-  autofill_client().set_gmail_otp_backend(
-      std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
-
-  const FormStructure* form = AddFormWithOtpField();
-  ASSERT_TRUE(form);
-  FieldGlobalId otp_field_id = form->field(0)->global_id();
-
-  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
-  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
-                                       otp_field_id);
-
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kOnDeviceSms);
-
-  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
 
 // Tests that OnTickleReceived does not start GmailOtpRetriever when no OTP
@@ -2820,8 +2785,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2842,8 +2806,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
 
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2875,8 +2838,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        name_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2905,8 +2867,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
       ->field(0)
       ->AddFieldModifier(FieldModifier::kUser);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2930,8 +2891,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2954,8 +2914,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -2978,8 +2937,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
@@ -3019,8 +2977,7 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
           otp_field_id,
           AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable));
 
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(test_api(otp_manager).last_triggered_otp_value(), "654321");
@@ -3100,8 +3057,7 @@ TEST_F(OtpManagerImplTest,
                                        otp_field_id);
 
   // Tickle arrives, starting GmailOtpRetriever.
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
   ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 
   // User unfocuses the OTP field (focuses a non-form field) while retrieval is
@@ -3235,8 +3191,7 @@ TEST_F(OtpManagerImplTest,
                                        otp_field_id);
 
   // Tickle arrives, starting GmailOtpRetriever.
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
   one_time_tokens::GmailOtpRetriever* in_flight_retriever =
       test_api(otp_manager).gmail_otp_retriever();
   ASSERT_NE(in_flight_retriever, nullptr);
@@ -3315,8 +3270,7 @@ TEST_F(
   EXPECT_TRUE(initial_future.Get().empty());
 
   // Now a Gmail tickle arrives while the OTP field is still focused.
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
   ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
@@ -3385,8 +3339,7 @@ TEST_F(OtpManagerImplTest,
       .WillRepeatedly(RunOnceCallbackRepeatedly<1>(/*is_phishing=*/false));
 
   // 1. First tickle arrives and retrieves "111111".
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
   EXPECT_CALL(
       autofill_driver(),
       RendererShouldTriggerSuggestions(
@@ -3412,8 +3365,7 @@ TEST_F(OtpManagerImplTest,
 
   // 2. Second tickle arrives later and retrieves a newer OTP "222222".
   task_environment_.FastForwardBy(base::Seconds(5));
-  test_api(otp_manager)
-      .OnTickleReceived(one_time_tokens::OneTimeTokenSource::kGmail);
+  test_api(otp_manager).OnTickleReceived();
   ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 
   EXPECT_CALL(
