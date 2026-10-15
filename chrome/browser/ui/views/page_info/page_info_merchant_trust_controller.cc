@@ -27,7 +27,7 @@ PageInfoMerchantTrustController::PageInfoMerchantTrustController(
       web_contents->GetVisibleURL(),
       base::BindOnce(
           &PageInfoMerchantTrustController::OnMerchantTrustDataFetched,
-          base::Unretained(this)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PageInfoMerchantTrustController::~PageInfoMerchantTrustController() = default;

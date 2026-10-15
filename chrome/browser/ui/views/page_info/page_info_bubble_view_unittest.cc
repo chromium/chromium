@@ -17,6 +17,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -47,6 +48,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -1601,4 +1603,69 @@ TEST_F(PageInfoBubbleViewTest, DialogResizesWhenNavigatingToSubpageAndBack) {
   api_->navigation_handler()->OpenMainPage(base::DoNothing());
   const gfx::Size restored_size = api_->bubble_delegate()->GetPreferredSize({});
   EXPECT_EQ(main_page_size, restored_size);
+}
+
+namespace {
+
+class MockMerchantTrustService : public page_info::MerchantTrustService {
+ public:
+  MockMerchantTrustService()
+      : MerchantTrustService(nullptr, nullptr, false, nullptr) {}
+  MOCK_METHOD(void,
+              GetMerchantTrustInfo,
+              (const GURL&, page_info::MerchantDataCallback),
+              (const, override));
+  MOCK_METHOD(void,
+              RecordMerchantTrustInteraction,
+              (const GURL&, page_info::MerchantTrustInteraction),
+              (const, override));
+};
+
+std::unique_ptr<KeyedService> BuildMockMerchantTrustService(
+    content::BrowserContext* context) {
+  return std::make_unique<testing::NiceMock<MockMerchantTrustService>>();
+}
+
+}  // namespace
+
+// Regression test for crbug.com/573528668: closing the Merchant Trust subpage
+// before an asynchronous GetMerchantTrustInfo callback completes must not cause
+// a dangling pointer / use-after-free in PageInfoMerchantTrustController.
+TEST_F(PageInfoBubbleViewTest,
+       MerchantTrustControllerDestroyedBeforeCallbackCompletes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      page_info::kMerchantTrust,
+      {{page_info::kMerchantTrustForceShowUIForTestingName, "true"}});
+  auto* mock_service = static_cast<MockMerchantTrustService*>(
+      MerchantTrustServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          web_contents_helper_->profile(),
+          base::BindRepeating(&BuildMockMerchantTrustService)));
+
+  api_->CreateView();
+
+  page_info::MerchantDataCallback pending_callback;
+  EXPECT_CALL(*mock_service, GetMerchantTrustInfo(_, _))
+      .WillOnce(
+          [&](const GURL& url, page_info::MerchantDataCallback callback) {
+            pending_callback = std::move(callback);
+          });
+
+  // Open the Merchant Trust subpage, which creates
+  // PageInfoMerchantTrustController and initiates the async fetch.
+  api_->navigation_handler()->OpenMerchantTrustPage();
+  ASSERT_TRUE(pending_callback);
+
+  // Navigate back to the main page, destroying PageInfoMerchantTrustContentView
+  // and PageInfoMerchantTrustController while `pending_callback` is still
+  // in flight.
+  api_->navigation_handler()->OpenMainPage(base::DoNothing());
+
+  // Running the callback after the controller is destroyed should safely no-op.
+  page_info::MerchantData merchant_data;
+  merchant_data.star_rating = 4.5;
+  merchant_data.count_rating = 100;
+  merchant_data.page_url = GURL("https://reviews.example.com");
+  merchant_data.reviews_summary = "Great store";
+  std::move(pending_callback).Run(GURL(kUrl), merchant_data);
 }
