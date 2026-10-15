@@ -119,7 +119,8 @@ void RaceNetworkRequestSimpleBufferManager::Finish() {
   peer_closed_watcher_.reset();
   producer_handle_.reset();
   if (clone_complete_callback_) {
-    std::move(clone_complete_callback_).Run();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(clone_complete_callback_));
   }
 }
 
