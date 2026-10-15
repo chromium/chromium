@@ -14297,6 +14297,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableOAuth2TokenFixDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOAuth2TokenFix)},
 
+    {"infobar-queued-count-pill",
+     flag_descriptions::kInfoBarQueuedCountPillName,
+     flag_descriptions::kInfoBarQueuedCountPillDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kInfoBarQueuedCountPill)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

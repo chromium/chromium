@@ -10558,6 +10558,7 @@ from previous Chrome versions.
   <int value="-1337873095" label="CompareManagementInterface:disabled"/>
   <int value="-1337433513" label="FilesGoogleDriveSettingsPage:disabled"/>
   <int value="-1337331698" label="WebRtcPqcForDtls:enabled"/>
+  <int value="-1337187633" label="InfoBarQueuedCountPill:enabled"/>
   <int value="-1337185440" label="enable-webvr"/>
   <int value="-1336701086" label="CleanupLegacyTabState:enabled"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
@@ -21353,6 +21354,7 @@ from previous Chrome versions.
   <int value="1917650219" label="ClassifyUrlOnProcessResponseEvent:enabled"/>
   <int value="1917756422" label="AIWriterAPI:enabled"/>
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
+  <int value="1918181078" label="InfoBarQueuedCountPill:disabled"/>
   <int value="1918229773"
       label="OmniboxMatchToolbarAndStatusBarColor:disabled"/>
   <int value="1918410646" label="enable-model-quality-dogfood-logging"/>

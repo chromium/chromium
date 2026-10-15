@@ -3161,6 +3161,12 @@ inline constexpr char kInfoBarInlineLinksName[] = "InfoBar inline links";
 inline constexpr char kInfoBarInlineLinksDescription[] =
     "Enables inline links in InfoBars when supported.";
 
+inline constexpr char kInfoBarQueuedCountPillName[] =
+    "InfoBar queued count pill";
+inline constexpr char kInfoBarQueuedCountPillDescription[] =
+    "Shows a \"+N\" count pill in the bottom-most InfoBar while lower-priority "
+    "InfoBars wait in the prioritization queue.";
+
 inline constexpr char kInlinePdfV2Name[] = "Inline PDF V2";
 inline constexpr char kInlinePdfV2Description[] =
     "Provides users a seamless, productive, and performant way to view, "
