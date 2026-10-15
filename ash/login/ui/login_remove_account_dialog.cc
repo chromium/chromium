@@ -145,7 +145,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     base::RepeatingClosure on_remove_user_warning_shown,
     base::RepeatingClosure on_remove_user_requested)
     : LoginBaseBubbleView(std::move(anchor_view)),
-      bubble_opener_(bubble_opener),
+      bubble_opener_(bubble_opener ? bubble_opener->AsWeakPtr() : nullptr),
       on_remove_user_warning_shown_(on_remove_user_warning_shown),
       on_remove_user_requested_(on_remove_user_requested) {
   const std::u16string& email =
@@ -246,7 +246,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
 
 LoginButton* LoginRemoveAccountDialog::GetBubbleOpener() const {
-  return bubble_opener_;
+  return bubble_opener_.get();
 }
 
 void LoginRemoveAccountDialog::RequestFocus() {

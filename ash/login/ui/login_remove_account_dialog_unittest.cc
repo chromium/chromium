@@ -185,10 +185,15 @@ TEST_F(LoginRemoveAccountDialogTest, LongUserNameAndEmailLaidOutCorrectly) {
 
   EXPECT_TRUE(bubble->GetVisible());
 
-  LoginRemoveAccountDialog::TestApi test_api(bubble);
-  views::View* remove_user_button = test_api.remove_user_button();
-  views::View* remove_user_confirm_data = test_api.remove_user_confirm_data();
-  views::View* username_label = test_api.username_label();
+  views::View* remove_user_button;
+  views::View* remove_user_confirm_data;
+  views::View* username_label;
+  {
+    LoginRemoveAccountDialog::TestApi test_api(bubble);
+    remove_user_button = test_api.remove_user_button();
+    remove_user_confirm_data = test_api.remove_user_confirm_data();
+    username_label = test_api.username_label();
+  }
 
   EXPECT_TRUE(bubble->GetBoundsInScreen().Contains(
       remove_user_button->GetBoundsInScreen()));
@@ -262,12 +267,14 @@ TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {
 
   bubble->Show();
 
-  LoginRemoveAccountDialog::TestApi test_api(bubble);
-  EXPECT_FALSE(test_api.remove_user_confirm_data()->GetVisible());
+  {
+    LoginRemoveAccountDialog::TestApi test_api(bubble);
+    EXPECT_FALSE(test_api.remove_user_confirm_data()->GetVisible());
 
-  test_api.remove_user_button()->RequestFocus();
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
-  EXPECT_TRUE(test_api.remove_user_confirm_data()->GetVisible());
+    test_api.remove_user_button()->RequestFocus();
+    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+    EXPECT_TRUE(test_api.remove_user_confirm_data()->GetVisible());
+  }
 }
 
 TEST_F(LoginRemoveAccountDialogTest, AccessibleRole) {

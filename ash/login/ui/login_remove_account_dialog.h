@@ -71,7 +71,7 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
   void UpdateAccessibleDescription();
   void UpdateAccessibleName();
 
-  raw_ptr<LoginButton, DanglingUntriaged> bubble_opener_ = nullptr;
+  base::WeakPtr<LoginButton> bubble_opener_;
   base::RepeatingClosure on_remove_user_warning_shown_;
   base::RepeatingClosure on_remove_user_requested_;
   raw_ptr<views::View> managed_user_data_ = nullptr;
