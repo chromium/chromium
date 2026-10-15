@@ -10,8 +10,8 @@
 namespace web {
 
 // Creates the rules json as a string for blocking all online resources loaded
-// from file:// or application specific scheme:// pages.
-NSString* CreateLocalBlockingJsonRuleList();
+// from application specific scheme:// pages.
+NSString* CreateAppSpecificURLsJsonRuleList();
 
 // Creates the rules json as a string for autoupgrading mixed content on
 // HTTPS URLs.

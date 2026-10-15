@@ -10,8 +10,8 @@
 
 namespace web {
 
-NSString* CreateLocalBlockingJsonRuleList() {
-  NSMutableArray* local_schemes_urls = [@[ @"^file://.*" ] mutableCopy];
+NSString* CreateAppSpecificURLsJsonRuleList() {
+  NSMutableArray* local_schemes_urls = [[NSMutableArray alloc] init];
   WebClient::Schemes schemes;
   GetWebClient()->AddAdditionalSchemes(&schemes);
   GetWebClient()->GetAdditionalWebUISchemes(&(schemes.standard_schemes));
@@ -25,11 +25,8 @@ NSString* CreateLocalBlockingJsonRuleList() {
       @"url-filter" : @"^https?://.*",
       @"if-top-url" : local_schemes_urls,
       @"resource-type" : @[
-        // These should be all resource types except document.
-        // "document" cannot be blocked because it breaks error pages displayed
-        // when a WebStatePolicyDecider blocks a navigation.
         @"image", @"style-sheet", @"script", @"font", @"raw", @"svg-document",
-        @"media", @"popup", @"ping"
+        @"media", @"popup", @"ping", @"document"
       ],
     },
     @"action" : @{

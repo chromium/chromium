@@ -20,20 +20,23 @@ namespace {
 
 // Returns whether `href` is allowed for a favicon on `page_url`.
 bool IsAllowedFaviconURL(const GURL& href, const GURL& page_url) {
-  // It is valid for favicon to be served via http, https or data: schemes.
-  if (href.SchemeIsHTTPOrHTTPS() || href.SchemeIs(url::kDataScheme)) {
+  // It is valid for a favicon to be served via the `data:` scheme on any page.
+  if (href.SchemeIs(url::kDataScheme)) {
     return true;
   }
 
-  // Only allow app specific URLs if the page itself is from app specific URL.
   if (WebClient* web_client = GetWebClient()) {
+    // App-specific pages may only load app-specific (or `data:`) favicons.
+    if (web_client->IsAppSpecificURL(page_url)) {
+      return web_client->IsAppSpecificURL(href);
+    }
+    // Non-app-specific pages may not load app-specific favicons.
     if (web_client->IsAppSpecificURL(href)) {
       return web_client->IsAppSpecificURL(page_url);
     }
   }
 
-  // Otherwise, the url is not allowed.
-  return false;
+  return href.SchemeIsHTTPOrHTTPS();
 }
 
 }  // namespace

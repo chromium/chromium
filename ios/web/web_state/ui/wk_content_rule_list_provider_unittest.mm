@@ -262,11 +262,11 @@ TEST_F(WKContentRuleListProviderTest, UpdateFailureDoesNotAffectExistingLists) {
 
 // Static List Compilation Tests
 
-// Tests that the JSON from CreateLocalBlockingJsonRuleList compiles.
+// Tests that the JSON from CreateAppSpecificURLsJsonRuleList compiles.
 TEST_F(WKContentRuleListProviderTest, StaticBlockLocalListCompiles) {
   const std::string key = "BlockLocalResources";
   std::string rules =
-      base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList());
+      base::SysNSStringToUTF8(CreateAppSpecificURLsJsonRuleList());
   EXPECT_TRUE(UpdateRuleListSync(key, rules));
   EXPECT_TRUE(CheckStoreForRuleListSync(key));
 }
@@ -365,15 +365,15 @@ class WKContentRuleListProviderSchemeTest
 
 // Tests that the local blocking content rule list blocks outbound network
 // connections for all disallowed schemes (`http`, `https`, `ws`, `wss`) from
-// privileged pages (`file://` and app-specific WebUI pages), while permitting
-// connections from unprivileged pages.
+// privileged app-specific WebUI pages, while permitting connections from
+// unprivileged pages.
 TEST_P(WKContentRuleListProviderSchemeTest,
        LocalBlockingRuleBlocksSchemeFromPrivilegedPages) {
   const std::string_view scheme = GetParam();
 
   const std::string key = "BlockLocalResources";
   ASSERT_TRUE(UpdateRuleListSync(
-      key, base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList())));
+      key, base::SysNSStringToUTF8(CreateAppSpecificURLsJsonRuleList())));
 
   WKContentRuleListStore* store = [WKContentRuleListStore
       storeWithURL:base::apple::FilePathToNSURL(temp_dir_.GetPath())];
@@ -411,16 +411,8 @@ TEST_P(WKContentRuleListProviderSchemeTest,
       test_server.GetURL("/probe").ReplaceComponents(replacements);
   NSString* probe_script = CreateProbeScript(scheme, target_url.spec());
 
-  // Privileged page (vector): a `file://` page cannot connect to the target.
-  connection_listener.Reset();
-  ASSERT_TRUE(test::LoadHtml(web_view, @"<html><body>Privileged</body></html>",
-                             [NSURL URLWithString:@"file:///privileged.html"]));
-  std::ignore = test::ExecuteAsyncJavaScript(web_view, probe_script, nil);
-  EXPECT_EQ(0, connection_listener.socket_count())
-      << scheme << ":// connection should have been blocked from file:// page.";
-
   // Privileged page (vector): a WebUI page, the test counterpart of the
-  // `chrome://` pages registered by the embedder, cannot connect either.
+  // `chrome://` pages registered by the embedder, cannot connect to the target.
   connection_listener.Reset();
   NSURL* web_ui_url = [NSURL
       URLWithString:base::SysUTF8ToNSString(
@@ -435,7 +427,18 @@ TEST_P(WKContentRuleListProviderSchemeTest,
       << scheme << ":// connection should have been blocked from "
       << kTestWebUIScheme << ":// page.";
 
-  // Unprivileged page (control): connections to the target are allowed.
+  // Unprivileged `file://` page (control): connections to the target are
+  // allowed.
+  connection_listener.Reset();
+  ASSERT_TRUE(test::LoadHtml(web_view,
+                             @"<html><body>Unprivileged</body></html>",
+                             [NSURL URLWithString:@"file:///page.html"]));
+  std::ignore = test::ExecuteAsyncJavaScript(web_view, probe_script, nil);
+  EXPECT_GT(connection_listener.socket_count(), 0)
+      << scheme << ":// connection should be allowed from file:// page.";
+
+  // Unprivileged `http://` page (control): connections to the target are
+  // allowed.
   connection_listener.Reset();
   GURL http_page_url = test_server.GetURL("/page.html");
   ASSERT_TRUE(test::LoadHtml(

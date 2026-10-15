@@ -131,7 +131,7 @@ void WKWebViewConfigurationProvider::Initialize() {
   // 1. Create Block Local List
   content_rule_list_provider_->UpdateRuleList(
       kBlockLocalResourcesRuleListKey,
-      base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList()),
+      base::SysNSStringToUTF8(CreateAppSpecificURLsJsonRuleList()),
       base::DoNothing());
   // 2. Create Mixed Content Autoupgrade List
   content_rule_list_provider_->UpdateRuleList(

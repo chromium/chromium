@@ -272,7 +272,7 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLFromNormalOrigin) {
   EXPECT_EQ(0U, urls[2].icon_sizes.size());
 }
 
-// Tries to extract favicons from various origins from a custom orign.
+// Tries to extract favicons from various origins from a custom origin.
 TEST_F(FaviconUtilTest, ExtractFaviconURLFromCustomOrigin) {
   const base::ListValue favicons =
       base::ListValue()
@@ -298,7 +298,44 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLFromCustomOrigin) {
   const std::vector<web::FaviconURL> urls =
       web::ExtractFaviconURL(favicons, GURL("testwebui://internal-ui"));
 
-  ASSERT_EQ(4U, urls.size());
+  ASSERT_EQ(2U, urls.size());
+  EXPECT_EQ(GURL("data:favicon.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
+
+  EXPECT_EQ(GURL("testwebui:favicon.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
+}
+
+// Tests that extracting favicons from a file:// origin allows HTTP(S) and data:
+// URLs.
+TEST_F(FaviconUtilTest, ExtractFaviconURLFromFileOrigin) {
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "https://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "data:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "file:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "testwebui:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "non-webui:favicon.ico")
+                      .Set("rel", "icon"));
+
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("file:///path/to/index.html"));
+
+  ASSERT_EQ(3U, urls.size());
   EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
   EXPECT_EQ(0U, urls[0].icon_sizes.size());
@@ -310,8 +347,4 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLFromCustomOrigin) {
   EXPECT_EQ(GURL("data:favicon.ico"), urls[2].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[2].icon_type);
   EXPECT_EQ(0U, urls[2].icon_sizes.size());
-
-  EXPECT_EQ(GURL("testwebui:favicon.ico"), urls[3].icon_url);
-  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[3].icon_type);
-  EXPECT_EQ(0U, urls[3].icon_sizes.size());
 }
