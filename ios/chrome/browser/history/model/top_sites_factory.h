@@ -19,7 +19,7 @@ class TopSitesFactory
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<TopSitesFactory,
                                                           history::TopSites> {
  public:
-  TopSitesFactory(PassKey key);
+  explicit TopSitesFactory(PassKey key);
 
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.

@@ -18,7 +18,7 @@ class HostContentSettingsMapFactory
           HostContentSettingsMapFactory,
           HostContentSettingsMap> {
  public:
-  HostContentSettingsMapFactory(PassKey key);
+  explicit HostContentSettingsMapFactory(PassKey key);
 
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.

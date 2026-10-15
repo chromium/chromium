@@ -21,7 +21,7 @@ class DeviceInfoSyncServiceFactory
     : public TypedProfileKeyedServiceFactoryIOS<DeviceInfoSyncServiceFactory,
                                                 syncer::DeviceInfoSyncService> {
  public:
-  DeviceInfoSyncServiceFactory(PassKey key);
+  explicit DeviceInfoSyncServiceFactory(PassKey key);
 
   // Iterates over profiles and returns any trackers that can be found.
   static void GetAllDeviceInfoTrackers(

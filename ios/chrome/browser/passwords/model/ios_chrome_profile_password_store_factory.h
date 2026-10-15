@@ -17,7 +17,7 @@ class IOSChromeProfilePasswordStoreFactory
           password_manager::PasswordStoreInterface,
           RejectImplicitAccessIfIncognito> {
  public:
-  IOSChromeProfilePasswordStoreFactory(PassKey key);
+  explicit IOSChromeProfilePasswordStoreFactory(PassKey key);
 
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.

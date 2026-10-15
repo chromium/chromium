@@ -20,7 +20,7 @@ class SyncServiceFactory
     : public TypedProfileKeyedServiceFactoryIOS<SyncServiceFactory,
                                                 syncer::SyncService> {
  public:
-  SyncServiceFactory(PassKey key);
+  explicit SyncServiceFactory(PassKey key);
 
   // Returns the service instance as syncer::SyncServiceImpl. Behavior
   // is undefined if a test factory has been installed and the service

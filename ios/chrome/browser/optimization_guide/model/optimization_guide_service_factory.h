@@ -16,7 +16,7 @@ class OptimizationGuideServiceFactory
     : public TypedProfileKeyedServiceFactoryIOS<OptimizationGuideServiceFactory,
                                                 OptimizationGuideService> {
  public:
-  OptimizationGuideServiceFactory(PassKey key);
+  explicit OptimizationGuideServiceFactory(PassKey key);
 
   // Initializes the prediction model store.
   static void InitializePredictionModelStore();

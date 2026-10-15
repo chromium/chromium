@@ -19,7 +19,7 @@ class ShortcutsBackendFactory
           ShortcutsBackendFactory,
           ShortcutsBackend> {
  public:
-  ShortcutsBackendFactory(PassKey key);
+  explicit ShortcutsBackendFactory(PassKey key);
 
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();

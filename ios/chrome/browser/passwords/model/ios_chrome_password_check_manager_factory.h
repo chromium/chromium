@@ -14,7 +14,7 @@ class IOSChromePasswordCheckManagerFactory
           IOSChromePasswordCheckManagerFactory,
           IOSChromePasswordCheckManager> {
  public:
-  IOSChromePasswordCheckManagerFactory(PassKey key);
+  explicit IOSChromePasswordCheckManagerFactory(PassKey key);
 
   // Returns the default factory for tests.
   static TestingFactory GetDefaultFactory();

@@ -25,7 +25,7 @@ class DeviceAuthenticatorProxyFactory
     : public TypedProfileKeyedServiceFactoryIOS<DeviceAuthenticatorProxyFactory,
                                                 DeviceAuthenticatorProxy> {
  public:
-  DeviceAuthenticatorProxyFactory(PassKey key);
+  explicit DeviceAuthenticatorProxyFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

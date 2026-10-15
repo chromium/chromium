@@ -62,7 +62,7 @@ class SessionProtoDBFactory final
       TypedProfileKeyedServiceFactoryIOS<SessionProtoDBFactory<T>,
                                          SessionProtoDB<T>>;
 
-  SessionProtoDBFactory(SuperClass::PassKey key)
+  explicit SessionProtoDBFactory(SuperClass::PassKey key)
       : SuperClass(std::move(key), "SessionProtoDB") {}
 
  private:
