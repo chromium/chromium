@@ -16,7 +16,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -70,10 +70,9 @@ std::unique_ptr<views::View> BuildManageAccountDevicesLinkView(
           round_avatar, skia::ImageOperations::RESIZE_BEST,
           gfx::Size(kAccountAvatarSize, kAccountAvatarSize))));
 
-  auto* link_view =
-      container->AddChildView(std::make_unique<views::StyledLabel>());
-  link_view->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  link_view->SetText(base::UTF8ToUTF16(account.GetEmail()));
+  container->AddChildView(std::make_unique<views::Label>(
+      base::UTF8ToUTF16(account.GetEmail()), views::style::CONTEXT_LABEL,
+      views::style::STYLE_SECONDARY));
 
   return container;
 }

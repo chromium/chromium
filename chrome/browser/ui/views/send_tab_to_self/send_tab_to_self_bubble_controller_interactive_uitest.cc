@@ -91,22 +91,6 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
     });
   }
 
-  auto ShowToast(ToastParams params) {
-    return Do(base::BindOnce(
-        [](ToastController* toast_controller, ToastParams toast_params) {
-          toast_controller->MaybeShowToast(std::move(toast_params));
-          toast_controller->GetToastCloseTimerForTesting()->Stop();
-        },
-        ToastController::From(browser()), std::move(params)));
-  }
-
-  SendTabToSelfDevicePickerBubbleView* GetBubbleView() {
-    return static_cast<SendTabToSelfDevicePickerBubbleView*>(
-        SendTabToSelfBubbleController::GetOrCreateForWebContents(
-            browser()->GetTabStripModel()->GetActiveWebContents())
-            ->send_tab_to_self_bubble_view());
-  }
-
   auto SetUpTargetDevicesAndShowBubble(
       std::vector<RemoteDeviceInfo> target_devices) {
     const GURL test_url = embedded_test_server()->GetURL("/empty.html");

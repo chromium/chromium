@@ -79,7 +79,6 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
                   CreateCheckmarkIcon()) {
   device_name_ = device_info.device_name;
   device_guid_ = device_info.cache_guid;
-  device_form_factor_ = device_info.form_factor;
   SetEnabled(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
   ApplyDeviceSelectionStyling();

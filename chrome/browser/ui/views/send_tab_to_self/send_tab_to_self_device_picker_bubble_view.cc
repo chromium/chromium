@@ -32,8 +32,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SendTabToSelfDevicePickerBubbleView,
 
 namespace {
 
-// The valid device button height for the device selection bubble flow.
-constexpr int kDeviceSelectionButtonHeight = 54;
+// The valid device button height.
+constexpr int kDeviceButtonHeight = 54;
 // Maximum number of buttons that are shown without scroll. If the device
 // number is larger than kMaximumButtons, the bubble content will be
 // scrollable.
@@ -167,7 +167,7 @@ void SendTabToSelfDevicePickerBubbleView::HandleSendClicked() {
 
 void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view_->ClipHeightTo(0, kDeviceSelectionButtonHeight * kMaximumButtons);
+  scroll_view_->ClipHeightTo(0, kDeviceButtonHeight * kMaximumButtons);
 
   auto* device_list_view =
       scroll_view_->SetContents(std::make_unique<views::View>());

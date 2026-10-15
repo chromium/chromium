@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "components/sync_device_info/device_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace syncer {
@@ -45,7 +44,6 @@ class SendTabToSelfBubbleDeviceButton : public HoverButton {
 
   std::string device_name_;
   std::string device_guid_;
-  syncer::DeviceInfo::FormFactor device_form_factor_;
   bool is_selected_ = false;
 };
 

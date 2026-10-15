@@ -154,9 +154,10 @@ TEST_F(SendTabToSelfNoTargetDeviceBubbleViewTest, LoadsDeviceActivityDesign) {
   // Ok button should not be visible.
   EXPECT_FALSE(bubble_->GetOkButton());
 
-  // Verify label contains the correct "no devices" notice.
+  // Verify labels contain the correct "no devices" notice and account email.
   EXPECT_NE(nullptr, FindLabelWithText(l10n_util::GetStringUTF16(
                          IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL)));
+  EXPECT_NE(nullptr, FindLabelWithText(u"user@host.com"));
 
   // Frame view should not have a header view.
   EXPECT_EQ(nullptr, bubble_->GetBubbleFrameView()->GetHeaderViewForTesting());
