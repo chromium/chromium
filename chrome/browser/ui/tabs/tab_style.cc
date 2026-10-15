@@ -273,8 +273,23 @@ SkColor TabStyle::GetTabBackgroundColor(
 
   switch (state) {
     case TabStyle::TabSelectionState::kActive:
-    case TabStyle::TabSelectionState::kSelected:
       return color;
+    case TabStyle::TabSelectionState::kSelected: {
+      // Apply the glass opacity to the unhovered selected tab color first so
+      // that hovering blends the translucent hover state over the translucent
+      // selected tab color rather than overriding its alpha after blending.
+      constexpr SkAlpha kSelectedTabOpacity = 0.80 * SK_AlphaOPAQUE;
+      const SkColor selected_color =
+          SkColorSetA(GetTabBackgroundColor(state, /*hovered=*/false,
+                                            frame_active, color_provider),
+                      kSelectedTabOpacity);
+      if (hovered) {
+        return color_utils::GetResultingPaintColor(
+            color_provider->GetColor(ui::kColorSysStateHoverDimBlendProtection),
+            selected_color);
+      }
+      return selected_color;
+    }
     case TabStyle::TabSelectionState::kInactive: {
       // When the frame is transparent, using the unhovered color
       // as the background can produce jarring effects. So we just use the

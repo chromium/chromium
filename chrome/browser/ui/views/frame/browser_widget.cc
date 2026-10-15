@@ -218,14 +218,6 @@ void BrowserWidget::InitBrowserWidget() {
 
   Init(std::move(params));
 
-  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
-    glass_frame_subscription_ =
-        glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
-            browser_view_->browser(),
-            base::BindRepeating(&BrowserWidget::OnGlassFrameEligibilityChanged,
-                                base::Unretained(this)));
-  }
-
 #if BUILDFLAG(IS_LINUX)
   SelectNativeTheme();
 #else
@@ -528,13 +520,6 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   }
 #endif
 
-  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
-    if (glass_frame_service->IsBrowserWindowEligible(
-            browser_view_->browser())) {
-      key.frame_style = ui::ColorProviderKey::FrameStyle::kGlass;
-    }
-  }
-
   return key;
 }
 
@@ -579,12 +564,6 @@ void BrowserWidget::OnTouchUiChanged() {
     non_client_view()->InvalidateLayout();
   }
   GetRootView()->InvalidateLayout();
-}
-
-void BrowserWidget::OnGlassFrameEligibilityChanged(bool is_eligible) {
-  // TODO(crbug.com/40280130): Update to NotifyColorProviderChanged() once it
-  // properly triggers ThemeChanged().
-  ThemeChanged();
 }
 
 bool BrowserWidget::RegenerateFrameOnThemeChange(

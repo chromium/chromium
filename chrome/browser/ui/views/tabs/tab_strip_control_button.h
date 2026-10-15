@@ -122,6 +122,10 @@ class TabStripControlButton : public views::LabelButton,
   // additional changes.
   virtual void UpdateColors();
 
+  void set_paint_transparent_for_glass(bool paint_transparent_for_glass) {
+    paint_transparent_for_glass_ = paint_transparent_for_glass;
+  }
+
  protected:
   // views::Button
   void NotifyClick(const ui::Event& event) override;
@@ -140,6 +144,7 @@ class TabStripControlButton : public views::LabelButton,
 
  private:
   void UpdateInkDrop();
+  void OnGlassFrameEligibilityChanged(bool is_eligible);
 
   bool IsWidgetAlive() const;
 
@@ -149,6 +154,7 @@ class TabStripControlButton : public views::LabelButton,
   raw_ref<const gfx::VectorIcon> icon_;
 
   bool paint_transparent_for_custom_image_theme_ = false;
+  bool paint_transparent_for_glass_ = false;
 
   // Button edge which should always render without rounded corners.
   Edge fixed_flat_edge_;
@@ -180,6 +186,7 @@ class TabStripControlButton : public views::LabelButton,
   std::optional<int> right_corner_radius_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
+  base::CallbackListSubscription glass_frame_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROL_BUTTON_H_

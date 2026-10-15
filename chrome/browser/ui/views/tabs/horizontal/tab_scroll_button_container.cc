@@ -169,6 +169,7 @@ TabScrollButtonContainer::TabScrollButtonContainer(
       kColorTabStripScrollButtonBackground);
   start_scroll_button_->SetBackgroundFrameInactiveColorId(
       kColorTabStripScrollButtonBackground);
+  start_scroll_button_->set_paint_transparent_for_glass(true);
 
   end_scroll_button_ = AddChildView(std::make_unique<TabStripControlButton>(
       browser_window_interface,
@@ -190,6 +191,7 @@ TabScrollButtonContainer::TabScrollButtonContainer(
       kColorTabStripScrollButtonBackground);
   end_scroll_button_->SetBackgroundFrameInactiveColorId(
       kColorTabStripScrollButtonBackground);
+  end_scroll_button_->set_paint_transparent_for_glass(true);
   start_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   end_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   animation_.SetDuration(kScrollAnimationTime);

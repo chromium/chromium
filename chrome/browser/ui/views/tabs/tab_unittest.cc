@@ -993,6 +993,36 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
   }
 }
 
+TEST_F(TabTest, GlassFrameTabBackgroundColors) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  const ui::ColorProvider* color_provider = widget->GetColorProvider();
+
+  // In a glass frame, selected tabs should have 80% opacity, and hovering a
+  // selected tab should blend the hover state over the translucent color.
+  constexpr SkAlpha kExpectedSelectedAlpha = 0.80 * SK_AlphaOPAQUE;
+  for (bool frame_active : {false, true}) {
+    const SkColor selected_bg = TabStyle::Get()->GetTabBackgroundColor(
+        TabStyle::TabSelectionState::kSelected, /*hovered=*/false, frame_active,
+        /*frame_glass=*/true, color_provider);
+    EXPECT_EQ(SkColorGetA(selected_bg), kExpectedSelectedAlpha);
+
+    const SkColor selected_hovered_bg = TabStyle::Get()->GetTabBackgroundColor(
+        TabStyle::TabSelectionState::kSelected, /*hovered=*/true, frame_active,
+        /*frame_glass=*/true, color_provider);
+    EXPECT_NE(selected_hovered_bg, selected_bg);
+    EXPECT_LT(SkColorGetA(selected_hovered_bg), SK_AlphaOPAQUE);
+  }
+
+  // Unhovered inactive tabs in a glass frame should be fully transparent.
+  for (bool frame_active : {false, true}) {
+    const SkColor inactive_bg = TabStyle::Get()->GetTabBackgroundColor(
+        TabStyle::TabSelectionState::kInactive, /*hovered=*/false, frame_active,
+        /*frame_glass=*/true, color_provider);
+    EXPECT_EQ(SkColorGetA(inactive_bg), 0u);
+  }
+}
+
 // This test verifies that the tab has its icon state updated when the alert
 // animation fade-out finishes.
 TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
