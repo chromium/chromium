@@ -21,6 +21,7 @@ from codegen import natives_header
 from codegen import placeholder_gen_jni_java
 from codegen import placeholder_java_type
 from codegen import proxy_impl_java
+from codegen import proxy_impl_kotlin
 import common
 import java_parse
 import java_types
@@ -649,12 +650,16 @@ def _ParseClassFiles(jar_file, class_files, args):
   return ret
 
 
+def _IsKotlin(jni_obj):
+  return jni_obj.filename.endswith('.kt')
+
+
 def _CreateSrcJar(srcjar_path, jni_mode, gen_jni_class, jni_objs, *,
                   script_name):
   with common.atomic_output(srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for jni_obj in jni_objs:
-        if not jni_obj.proxy_natives:
+        if not jni_obj.proxy_natives or _IsKotlin(jni_obj):
           continue
         content = proxy_impl_java.Generate(jni_mode,
                                            jni_obj,
@@ -669,6 +674,31 @@ def _CreateSrcJar(srcjar_path, jni_mode, gen_jni_class, jni_objs, *,
                                                     script_name=script_name)
         zip_path = f'{gen_jni_class.full_name_with_slashes}.java'
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+
+
+def _WriteKotlinProxies(output_dir, jni_mode, gen_jni_class, jni_objs, *,
+                        script_name):
+  """Writes FooJni.kt next to the headers for each Kotlin input.
+
+  Unlike FooJni.java, these cannot go in the .srcjar since build systems detect
+  Kotlin via loose .kt sources. A file is always written (a comment-only stub
+  when the class has no @NativeMethods) so that the build's declared outputs
+  exist.
+  """
+  for jni_obj in jni_objs:
+    if not _IsKotlin(jni_obj):
+      continue
+    basename = os.path.splitext(os.path.basename(jni_obj.filename))[0]
+    if jni_obj.proxy_natives:
+      content = proxy_impl_kotlin.Generate(jni_mode,
+                                           jni_obj,
+                                           gen_jni_class=gen_jni_class,
+                                           script_name=script_name)
+    else:
+      content = f'// {basename}.kt has no @NativeMethods.\n'
+    with common.atomic_output(os.path.join(output_dir, f'{basename}Jni.kt'),
+                              'w') as f:
+      f.write(content)
 
 
 def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
@@ -871,6 +901,13 @@ def GenerateFromSource(parser, args, jni_mode):
     else:
       # Only @CalledByNatives.
       zipfile.ZipFile(args.srcjar_path, 'w').close()
+    # gen_jni_class is only used when there are proxy natives, in which case it
+    # was set to the non-short class above.
+    _WriteKotlinProxies(args.output_dir,
+                        jni_mode,
+                        gen_jni_class,
+                        jni_objs,
+                        script_name=GetScriptName())
   if args.jni_pickle:
     with common.atomic_output(args.jni_pickle, 'wb') as f:
       pickle.dump(

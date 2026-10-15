@@ -87,6 +87,7 @@ template("_invoke_jni_zero") {
                             "codegen/placeholder_gen_jni_java.py",
                             "codegen/placeholder_java_type.py",
                             "codegen/proxy_impl_java.py",
+                            "codegen/proxy_impl_kotlin.py",
                             "codegen/register_natives.py",
                             "common.py",
                             "gen_register_natives.py",
@@ -473,10 +474,21 @@ template("generate_jni_impl") {
       }
     }
 
+    _subdir = rebase_path(target_gen_dir, root_gen_dir)
+    _jni_output_dir = "$jni_headers_dir/$_subdir/$_target_name"
+
+    if (_from_source) {
+      # Kotlin inputs get a FooJni.kt (rather than FooJni.java in the srcjar),
+      # since kotlinc cannot resolve a Java FooJni.class against the Kotlin
+      # Foo.Natives that is being compiled alongside it. These are loose files
+      # because Kotlin sources are detected via "sources" rather than srcjars.
+      _kt_proxy_sources =
+          process_file_template(filter_include(invoker.sources, [ "*.kt" ]),
+                                "$_jni_output_dir/{{source_name_part}}Jni.kt")
+    }
+
     _invoke_jni_zero(_jni_zero_action_target_name) {
       forward_variables_from(invoker, [ "testonly" ])
-      _subdir = rebase_path(target_gen_dir, root_gen_dir)
-      _jni_output_dir = "$jni_headers_dir/$_subdir/$_target_name"
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -555,6 +567,7 @@ template("generate_jni_impl") {
           _placeholder_srcjar_output,
           _type_catalog_output,
         ]
+        outputs += _kt_proxy_sources
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
         _input_names = invoker.sources
@@ -666,6 +679,13 @@ template("generate_jni_impl") {
           ":$_jni_zero_action_target_name",
           "//third_party/jni_zero:gendeps_java",
         ]
+        if (_kt_proxy_sources != []) {
+          sources = _kt_proxy_sources
+          deps += [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+
+          # kotlinc gets java.* from the Android SDK (it runs with -no-jdk).
+          requires_android = true
+        }
         if (defined(invoker.public_deps)) {
           public_deps = []
           foreach(_dep, invoker.public_deps) {
@@ -692,10 +712,11 @@ template("generate_jni_impl") {
   }
 }
 
-# Given a set of Java files, generates a header file to call into Java for all
-# @CalledByNative functions. If @NativeMethods is present, also generates a
-# .srcjar containing <ClassName>Jni.java, which should be depended on via the
-# generated GN target <generate_jni's target name>_java.
+# Given a set of Java or Kotlin files, generates a header file to call into Java
+# for all @CalledByNative functions. If @NativeMethods is present, also
+# generates <ClassName>Jni.java (in a .srcjar) or <ClassName>Jni.kt (for .kt
+# sources), which should be depended on via the generated GN target
+# <generate_jni's target name>_java.
 #
 # Variables
 #   sources: List of .java files to generate JNI bindings for.

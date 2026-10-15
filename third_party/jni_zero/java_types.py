@@ -74,6 +74,37 @@ _DEFAULT_VALUE_BY_PRIMITIVE_TYPE = {
 
 PRIMITIVES = frozenset(_DEFAULT_VALUE_BY_PRIMITIVE_TYPE)
 
+# The inverse of kotlin_parse's type maps, used to render Kotlin source.
+_KOTLIN_NAME_BY_PRIMITIVE_TYPE = {
+    'boolean': 'Boolean',
+    'byte': 'Byte',
+    'char': 'Char',
+    'double': 'Double',
+    'float': 'Float',
+    'int': 'Int',
+    'long': 'Long',
+    'short': 'Short',
+    'void': 'Unit',
+}
+
+# Classes that Kotlin spells differently and imports implicitly.
+KOTLIN_NAME_BY_CLASS = {
+    'java/lang/Boolean': 'Boolean',
+    'java/lang/Byte': 'Byte',
+    'java/lang/Character': 'Char',
+    'java/lang/Double': 'Double',
+    'java/lang/Float': 'Float',
+    'java/lang/Integer': 'Int',
+    'java/lang/Long': 'Long',
+    'java/lang/Object': 'Any',
+    'java/lang/Short': 'Short',
+    'java/lang/String': 'String',
+    'java/util/Collection': 'Collection',
+    'java/util/List': 'List',
+    'java/util/Map': 'Map',
+    'java/util/Set': 'Set',
+}
+
 
 @dataclasses.dataclass(frozen=True, order=True)
 class JavaClass:
@@ -378,6 +409,34 @@ class JavaType:
       ret += '[]' * self.array_dimensions
     return ret
 
+  def to_kotlin(self, type_resolver=None):
+    """Like to_java(), but renders Kotlin syntax."""
+    if self.is_primitive_array() and self.array_dimensions == 1:
+      ret = _KOTLIN_NAME_BY_PRIMITIVE_TYPE[self.primitive_name] + 'Array'
+    elif self.array_dimensions:
+      # Element nullability is not tracked, so render as Array<T> not Array<T?>.
+      element_type = dataclasses.replace(
+          self, array_dimensions=self.array_dimensions - 1, nullable=False)
+      ret = f'Array<{element_type.to_kotlin(type_resolver)}>'
+    elif self.primitive_name:
+      return _KOTLIN_NAME_BY_PRIMITIVE_TYPE[self.primitive_name]
+    else:
+      ret = KOTLIN_NAME_BY_CLASS.get(self.java_class.full_name_with_slashes)
+      if ret is None:
+        ret = self.java_class.to_java(type_resolver)
+      # Like FooJni.java, FooJni.kt is compiled against raw placeholder types.
+      # Star projections are Kotlin's raw types. Placeholders are not generic.
+      num_generics = self.num_generics
+      if self.java_class == CLASS_CLASS:
+        num_generics = 1  # Parser drops Class<T> generics.
+      if num_generics and (
+          self.java_class.full_name_with_slashes.startswith('java/')
+          or self.java_class == JNI_PTR_CLASS):
+        ret += '<' + ', '.join(['*'] * num_generics) + '>'
+    if self.nullable:
+      ret += '?'
+    return ret
+
   def to_mirror_cpp(self, fully_qualified=True):
     if not self.enable_mirror():
       return self.to_cpp()
@@ -467,6 +526,9 @@ class JavaParam:
   def to_java_declaration(self, type_resolver=None):
     return '%s %s' % (self.java_type.to_java(type_resolver), self.name)
 
+  def to_kotlin_declaration(self, type_resolver=None):
+    return '%s: %s' % (self.name, self.java_type.to_kotlin(type_resolver))
+
 
 class JavaParamList(tuple):
   """Represents a parameter list."""
@@ -482,6 +544,10 @@ class JavaParamList(tuple):
   def to_java_declaration(self, type_resolver=None):
     return ', '.join(
         p.to_java_declaration(type_resolver=type_resolver) for p in self)
+
+  def to_kotlin_declaration(self, type_resolver=None):
+    return ', '.join(
+        p.to_kotlin_declaration(type_resolver=type_resolver) for p in self)
 
 
 @dataclasses.dataclass(frozen=True, order=True)
