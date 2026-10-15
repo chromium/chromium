@@ -884,12 +884,6 @@ export class NetworkRequest {
       });
     }
 
-    // If we don't modify the response
-    // just continue the request
-    if (!overrides.body && !overrides.headers) {
-      return await this.#continueRequest();
-    }
-
     const overrideHeaders = this.#getOverrideHeader(
       overrides.headers,
       overrides.cookies,
