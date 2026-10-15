@@ -241,6 +241,77 @@ cq_build_perf_builder(
     siso_profile_mode = "cloud",
 )
 
+# Prototype builders for Chrome Build Service (b/571342297). These use the
+# same build configs as *-build-perf-siso, but run on the highest spec GCE
+# machines available, to measure how fast Chrome can be built.
+cq_build_perf_builder(
+    name = "linux-build-service",
+    description_html = "This is a prototype builder for Chrome Build Service (<a href=\"http://b/571342297\">b/571342297</a>). " +
+                       "It uses the same build configs as " + linkify_builder("build", "linux-build-perf-siso", "chromium") +
+                       ", but runs on the highest spec GCE machine available (c4d-standard-384-lssd), to measure how fast Chrome can be built.",
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient"]),
+        "no_clang_modules": gn_args.config(configs = ["try/linux-rel", "no_reclient", "no_clang_modules"]),
+    },
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "build perf|linux",
+        short_name = "svc",
+    ),
+    siso_profile_mode = "local",
+)
+
+cq_build_perf_builder(
+    name = "win-build-service",
+    description_html = "This is a prototype builder for Chrome Build Service (<a href=\"http://b/571342297\">b/571342297</a>). " +
+                       "It uses the same build configs as " + linkify_builder("build", "win-build-perf-siso", "chromium") +
+                       ", but runs on the highest spec GCE machine available for Windows (c4d-standard-192-lssd, Windows 11), to measure how fast Chrome can be built.",
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["try/win-rel", "no_reclient"]),
+        "no_clang_modules": gn_args.config(configs = ["try/win-rel", "no_reclient", "no_clang_modules"]),
+    },
+    # The bot runs on Windows 11 (C4D VMs require UEFI images).
+    os = os.WINDOWS_11,
+    console_view_entry = consoles.console_view_entry(
+        category = "build perf|windows",
+        short_name = "svc",
+    ),
+    # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
+    siso_profile_mode = "cloud",
+)
+
 ci_build_perf_builder(
     name = "win-build-perf-ci-siso",
     description_html = "This builder measures Windows CI build performance with Siso.<br/>" +

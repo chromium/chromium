@@ -8,6 +8,7 @@ build/ios-build-perf-siso
 build/linux-build-perf-developer
 build/linux-build-perf-no-rbe
 build/linux-build-perf-siso
+build/linux-build-service
 build/linux-chromeos-build-perf-siso
 build/linux-rbe-trusted-test
 build/linux-rbe-untrusted-test
@@ -16,6 +17,7 @@ build/mac-build-perf-siso
 build/win-build-perf-ci-siso
 build/win-build-perf-developer
 build/win-build-perf-siso
+build/win-build-service
 build/win-rbe-trusted-test
 build/win-rbe-untrusted-test
 ci/Deterministic Linux

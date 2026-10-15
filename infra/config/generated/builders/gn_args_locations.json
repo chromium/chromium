@@ -115,6 +115,7 @@
     "linux-build-perf-developer": "build/linux-build-perf-developer/gn-args.json",
     "linux-build-perf-no-rbe": "build/linux-build-perf-no-rbe/gn-args.json",
     "linux-build-perf-siso": "build/linux-build-perf-siso/gn-args.json",
+    "linux-build-service": "build/linux-build-service/gn-args.json",
     "linux-chromeos-build-perf-siso": "build/linux-chromeos-build-perf-siso/gn-args.json",
     "linux-rbe-trusted-test": "build/linux-rbe-trusted-test/gn-args.json",
     "linux-rbe-untrusted-test": "build/linux-rbe-untrusted-test/gn-args.json",
@@ -123,6 +124,7 @@
     "win-build-perf-ci-siso": "build/win-build-perf-ci-siso/gn-args.json",
     "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json",
     "win-build-perf-siso": "build/win-build-perf-siso/gn-args.json",
+    "win-build-service": "build/win-build-service/gn-args.json",
     "win-rbe-trusted-test": "build/win-rbe-trusted-test/gn-args.json",
     "win-rbe-untrusted-test": "build/win-rbe-untrusted-test/gn-args.json"
   },
