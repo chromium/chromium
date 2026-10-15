@@ -75,6 +75,19 @@ std::optional<PRFInput> PRFInput::FromCBOR(const cbor::Value& v) {
   return ret;
 }
 
+// static
+PRFInput PRFInput::FromUnhashedInputs(
+    base::span<const uint8_t> input1,
+    std::optional<base::span<const uint8_t>> input2) {
+  PRFInput ret;
+  ret.input1.assign(input1.begin(), input1.end());
+  if (input2.has_value()) {
+    ret.input2.emplace(input2->begin(), input2->end());
+  }
+  ret.HashInputsIntoSalts();
+  return ret;
+}
+
 cbor::Value::MapValue PRFInput::ToCBOR() const {
   cbor::Value::MapValue ret;
   ret.emplace(kExtensionPRFFirst,

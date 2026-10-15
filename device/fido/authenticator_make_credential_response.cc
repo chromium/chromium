@@ -79,7 +79,7 @@ AuthenticatorMakeCredentialResponse::~AuthenticatorMakeCredentialResponse() =
 
 std::vector<uint8_t>
 AuthenticatorMakeCredentialResponse::GetCBOREncodedAttestationObject() const {
-  return cbor::Writer::Write(AsCBOR(attestation_object))
+  return cbor::Writer::Write(attestation_object.AsCBOR())
       .value_or(std::vector<uint8_t>());
 }
 

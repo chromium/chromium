@@ -26,6 +26,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PRFInput {
   ~PRFInput();
 
   static std::optional<PRFInput> FromCBOR(const cbor::Value& v);
+  static PRFInput FromUnhashedInputs(
+      base::span<const uint8_t> input1,
+      std::optional<base::span<const uint8_t>> input2);
 
   cbor::Value::MapValue ToCBOR() const;
 

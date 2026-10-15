@@ -34,6 +34,7 @@ source_set("ios") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util:child_frame_registrar",
+    "//components/cbor",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/webauthn/core/browser",

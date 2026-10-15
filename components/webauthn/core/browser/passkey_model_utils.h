@@ -7,15 +7,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "device/fido/attestation_object.h"
+#include "device/fido/authenticator_data.h"
 #include "device/fido/prf_input.h"
-
-namespace cbor {
-class Value;
-}  // namespace cbor
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -60,39 +59,14 @@ struct ExtensionOutputData {
   std::vector<uint8_t> prf_result;
 };
 
-// PRF extension input data for passkey creation and assertion.
-struct PRFInputData {
-  PRFInputData(base::span<const uint8_t> prf_input1,
-               std::optional<base::span<const uint8_t>> prf_input2);
-
-  PRFInputData(const PRFInputData&);
-  PRFInputData(PRFInputData&&);
-  PRFInputData& operator=(PRFInputData&& other);
-  ~PRFInputData();
-
-  inline const device::PRFInput& prf_input() const { return input; }
-
- private:
-  device::PRFInput input;
-};
-
 // Extension input data for passkey creation and assertion.
 struct ExtensionInputData {
-  // This constructor must be used if there is an extension present in the
-  // passkey request. Even if there's no PRF data, this constructor will
-  // initialize `prf_input` so that `hasPRF` can later return true, so that PRF
-  // support can be returned as part of the creation or assertion response.
-  explicit ExtensionInputData(PRFInputData prf_input_data);
-
-  // This constructor must be used when there are no extensions present in the
-  // passkey request.
   ExtensionInputData();
+  explicit ExtensionInputData(std::optional<device::PRFInput> prf_input);
+  ExtensionInputData(bool has_prf, std::optional<device::PRFInput> prf_input);
 
   ExtensionInputData(const ExtensionInputData&);
   ~ExtensionInputData();
-
-  // Returns whether the extension data contains the PRF extension.
-  bool hasPRF() const;
 
   // Generates the extensions output data from the input data and encrypted
   // secrets. See:
@@ -100,24 +74,17 @@ struct ExtensionInputData {
   ExtensionOutputData ToOutputData(
       const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const;
 
- private:
-  // Evaluates HMAC to produce the PRF result, using the hmac secret if it
-  // exists, or derives one from the private key otherwise.
-  std::vector<uint8_t> EvaluateHMAC(
-      const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const;
-
-  std::optional<PRFInputData> prf_input_data;
+  // Whether the PRF extension is present in the request.
+  bool has_prf = false;
+  // Optional PRF evaluation inputs.
+  std::optional<device::PRFInput> prf_input;
 };
 
-// Serialized versions of the attestation object and authenticator data.
-struct SerializedAttestationObject {
-  SerializedAttestationObject();
-  SerializedAttestationObject(SerializedAttestationObject&& other);
-  ~SerializedAttestationObject();
-
-  std::vector<uint8_t> attestation_object;
-  std::vector<uint8_t> authenticator_data;
-};
+// Evaluates the PRF extension HMAC for `prf_input` using the hmac secret in
+// `encrypted` if present, or deriving one from the private key otherwise.
+std::vector<uint8_t> EvaluateHMAC(
+    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted,
+    const device::PRFInput& prf_input);
 
 // Returns a list containing members from `passkeys` that are not shadowed.
 // A credential is shadowed if another credential contains it in its
@@ -190,17 +157,17 @@ bool EncryptWebauthnCredentialSpecificsData(
 // For assertion signatures, the AT flag MUST NOT be set and the
 // attestedCredentialData MUST NOT be included. See
 // https://w3c.github.io/webauthn/#authenticator-data
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
-                                                       bool did_complete_uv);
+device::AuthenticatorData MakeAuthenticatorDataForAssertion(
+    std::string_view rp_id,
+    bool did_complete_uv);
 
-// Returns the WebAuthn attestation object for the GPM authenticator and
-// the serialized authenticator data used to create the attestation object.
+// Returns the WebAuthn attestation object for the GPM authenticator.
 // Set `did_complete_uv` iff the user has completed user verification (e.g.,
 // biometrics or PIN) during this operation.
 // For attestation signatures, the authenticator MUST set the AT flag and
 // include the attestedCredentialData. See
 // https://w3c.github.io/webauthn/#authenticator-data
-SerializedAttestationObject MakeAttestationObjectForCreation(
+device::AttestationObject MakeAttestationObjectForCreation(
     std::string_view rp_id,
     bool did_complete_uv,
     base::span<const uint8_t> credential_id,

@@ -107,18 +107,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationObject {
     return *attestation_statement_.get();
   }
 
+  // Produces a WebAuthN style CBOR-encoded byte-array in the following format,
+  // when written:
+  // {"authData": authenticator data bytes,
+  //  "fmt": attestation format name,
+  //  "attStmt": attestation statement bytes }
+  cbor::Value AsCBOR() const;
+
  private:
   AuthenticatorData authenticator_data_;
   std::unique_ptr<AttestationStatement> attestation_statement_;
 };
-
-// Produces a WebAuthN style CBOR-encoded byte-array
-// in the following format, when written:
-// {"authData": authenticator data bytes,
-//  "fmt": attestation format name,
-//  "attStmt": attestation statement bytes }
-COMPONENT_EXPORT(DEVICE_FIDO)
-cbor::Value AsCBOR(const AttestationObject&);
 
 }  // namespace device
 

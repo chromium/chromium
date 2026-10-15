@@ -9,6 +9,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/cbor/writer.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
@@ -36,13 +37,15 @@ webauthn::passkey_model_utils::ExtensionInputData
 ExtensionInputDataFromPRFInputs(NSArray<NSData*>* prf_inputs) {
   if ([prf_inputs count] > 0) {
     return webauthn::passkey_model_utils::ExtensionInputData(
-        {base::apple::NSDataToSpan(prf_inputs[0]),
-         ([prf_inputs count] > 1)
-             ? std::optional<base::span<const uint8_t>>(
-                   base::apple::NSDataToSpan(prf_inputs[1]))
-             : std::nullopt});
+        device::PRFInput::FromUnhashedInputs(
+            base::apple::NSDataToSpan(prf_inputs[0]),
+            ([prf_inputs count] > 1)
+                ? std::optional<base::span<const uint8_t>>(
+                      base::apple::NSDataToSpan(prf_inputs[1]))
+                : std::nullopt));
   }
-  return webauthn::passkey_model_utils::ExtensionInputData();
+  return webauthn::passkey_model_utils::ExtensionInputData(
+      /*has_prf=*/prf_inputs != nil, /*prf_input=*/std::nullopt);
 }
 
 // Reads the PRF's result into 1 or 2 PRF outputs if the passkey request had
@@ -83,7 +86,8 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id,
                                           bool did_complete_uv) {
   std::vector<uint8_t> authenticator_data =
       webauthn::passkey_model_utils::MakeAuthenticatorDataForAssertion(
-          SysNSStringToUTF8(rp_id), did_complete_uv);
+          SysNSStringToUTF8(rp_id), did_complete_uv)
+          .SerializeToByteArray();
   return [NSData dataWithBytes:authenticator_data.data()
                         length:authenticator_data.size()];
 }
@@ -211,10 +215,10 @@ PasskeyCreationOutput PerformPasskeyCreation(
 
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
-  webauthn::passkey_model_utils::SerializedAttestationObject
-      serialized_attestation_object =
-          webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
-              rp_id_str, did_complete_uv, cred_id, public_key_spki_der);
+  std::vector<uint8_t> serialized_attestation_object = *cbor::Writer::Write(
+      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
+          rp_id_str, did_complete_uv, cred_id, public_key_spki_der)
+          .AsCBOR());
 
   SavePasskeyCredential([[ArchivableCredential alloc] initWithFavicon:nil
                                                                  gaia:gaia
@@ -222,9 +226,9 @@ PasskeyCreationOutput PerformPasskeyCreation(
 
   NSData* credential_id = [NSData dataWithBytes:cred_id.data()
                                          length:cred_id.size()];
-  NSData* attestation_object = [NSData
-      dataWithBytes:serialized_attestation_object.attestation_object.data()
-             length:serialized_attestation_object.attestation_object.size()];
+  NSData* attestation_object =
+      [NSData dataWithBytes:serialized_attestation_object.data()
+                     length:serialized_attestation_object.size()];
   return {[ASPasskeyRegistrationCredential
               credentialWithRelyingParty:rp_id
                           clientDataHash:client_data_hash

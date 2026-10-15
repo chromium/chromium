@@ -25,11 +25,10 @@ struct PasskeyExtensionData {
   ~PasskeyExtensionData();
 
   // Main PRF input data.
-  std::optional<passkey_model_utils::PRFInputData> prf_eval;
+  std::optional<device::PRFInput> prf_eval;
   // Per credential input data.
   // The map's keys (std::vector<uint8_t>) are credential IDs.
-  absl::flat_hash_map<std::vector<uint8_t>,
-                      std::optional<passkey_model_utils::PRFInputData>>
+  absl::flat_hash_map<std::vector<uint8_t>, std::optional<device::PRFInput>>
       prf_eval_by_credential;
 };
 

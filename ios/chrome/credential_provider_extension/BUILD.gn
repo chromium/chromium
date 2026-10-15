@@ -156,6 +156,7 @@ source_set("passkey_util") {
   ]
   deps = [
     "//base",
+    "//components/cbor",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/ios:passkey_types",

@@ -265,9 +265,9 @@ ReadCredentials(const base::ListValue* serialized_descriptors) {
   return credential_descriptors;
 }
 
-// Builds a PRFInputData object from a dictionary.
-base::expected<passkey_model_utils::PRFInputData, PasskeysParsingError>
-BuildPRFInputData(const base::DictValue& dict) {
+// Builds a PRFInput object from a dictionary.
+base::expected<device::PRFInput, PasskeysParsingError> BuildPRFInput(
+    const base::DictValue& dict) {
   // Get base 64 encoded strings.
   const std::string* first64 = dict.FindString(device::kExtensionPRFFirst);
   const std::string* second64 = dict.FindString(device::kExtensionPRFSecond);
@@ -299,7 +299,7 @@ BuildPRFInputData(const base::DictValue& dict) {
     return base::unexpected(PasskeysParsingError::kPRFInputTooLarge);
   }
 
-  return passkey_model_utils::PRFInputData(*first, second);
+  return device::PRFInput::FromUnhashedInputs(*first, second);
 }
 
 // Reads all extension data from the extensions dictionary.
@@ -316,11 +316,11 @@ base::expected<PasskeyExtensionData, PasskeysParsingError> BuildExtensionData(
 
   const base::DictValue* prf_eval = prf->FindDict(device::kExtensionPRFEval);
   if (prf_eval) {
-    auto prf_input_data = BuildPRFInputData(*prf_eval);
-    if (!prf_input_data.has_value()) {
-      return base::unexpected(prf_input_data.error());
+    auto prf_input = BuildPRFInput(*prf_eval);
+    if (!prf_input.has_value()) {
+      return base::unexpected(prf_input.error());
     }
-    extension_data.prf_eval = std::move(*prf_input_data);
+    extension_data.prf_eval = std::move(*prf_input);
   }
 
   const base::DictValue* eval_by_credential =
@@ -355,13 +355,12 @@ base::expected<PasskeyExtensionData, PasskeysParsingError> BuildExtensionData(
             PasskeysParsingError::kEvalByCredentialNotAllowed);
       }
 
-      auto prf_input_data =
-          BuildPRFInputData(per_credential_data.second.GetDict());
-      if (!prf_input_data.has_value()) {
-        return base::unexpected(prf_input_data.error());
+      auto prf_input = BuildPRFInput(per_credential_data.second.GetDict());
+      if (!prf_input.has_value()) {
+        return base::unexpected(prf_input.error());
       }
       extension_data.prf_eval_by_credential.emplace(*credential_id,
-                                                    std::move(*prf_input_data));
+                                                    std::move(*prf_input));
     }
   }
 

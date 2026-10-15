@@ -22,15 +22,6 @@ std::set<std::vector<uint8_t>> GetIdsFromDescriptors(
   return descriptor_ids;
 }
 
-// Builds a new ExtensionInputData.
-// Uses the PRFInputData if prf_eval is not std::nullopt.
-passkey_model_utils::ExtensionInputData BuildExtensionInputData(
-    const std::optional<passkey_model_utils::PRFInputData>& prf_eval) {
-  return prf_eval.has_value()
-             ? passkey_model_utils::ExtensionInputData(*prf_eval)
-             : passkey_model_utils::ExtensionInputData();
-}
-
 }  // namespace
 
 PasskeyExtensionData::PasskeyExtensionData() = default;
@@ -96,16 +87,17 @@ PasskeyRequestParams::RequestType PasskeyRequestParams::Type() const {
 
 passkey_model_utils::ExtensionInputData
 PasskeyRequestParams::ExtensionInputForCreation() const {
-  return BuildExtensionInputData(extension_data_.prf_eval);
+  return passkey_model_utils::ExtensionInputData(extension_data_.prf_eval);
 }
 
 passkey_model_utils::ExtensionInputData
 PasskeyRequestParams::ExtensionInputForCredential(
     std::vector<uint8_t> credential_id) const {
-  auto it = extension_data_.prf_eval_by_credential.find(credential_id);
-  auto itEnd = extension_data_.prf_eval_by_credential.end();
-  return BuildExtensionInputData((it != itEnd) ? it->second
-                                               : extension_data_.prf_eval);
+  if (auto it = extension_data_.prf_eval_by_credential.find(credential_id);
+      it != extension_data_.prf_eval_by_credential.end()) {
+    return passkey_model_utils::ExtensionInputData(it->second);
+  }
+  return passkey_model_utils::ExtensionInputData(extension_data_.prf_eval);
 }
 
 AssertionRequestParams::AssertionRequestParams(

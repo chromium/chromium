@@ -695,7 +695,7 @@ TEST(CTAPResponseTest, TestSerializeU2fAttestationObject) {
 
   ASSERT_TRUE(attestation_object);
   EXPECT_EQ(GetTestAttestationObjectBytes(),
-            cbor::Writer::Write(AsCBOR(*attestation_object))
+            cbor::Writer::Write(attestation_object->AsCBOR())
                 .value_or(std::vector<uint8_t>()));
 }
 

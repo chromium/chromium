@@ -24,7 +24,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
-#include "components/cbor/writer.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #include "crypto/aead.h"
@@ -145,58 +144,42 @@ ExtensionOutputData::ExtensionOutputData() = default;
 ExtensionOutputData::ExtensionOutputData(const ExtensionOutputData&) = default;
 ExtensionOutputData::~ExtensionOutputData() = default;
 
-PRFInputData::PRFInputData(
-    base::span<const uint8_t> prf_input1,
-    std::optional<base::span<const uint8_t>> prf_input2) {
-  input.input1.assign(prf_input1.begin(), prf_input1.end());
-  if (prf_input2.has_value()) {
-    input.input2.emplace(prf_input2->begin(), prf_input2->end());
-  }
-  input.HashInputsIntoSalts();
+ExtensionInputData::ExtensionInputData() = default;
+
+ExtensionInputData::ExtensionInputData(
+    std::optional<device::PRFInput> prf_input)
+    : has_prf(prf_input.has_value()), prf_input(std::move(prf_input)) {}
+
+ExtensionInputData::ExtensionInputData(
+    bool has_prf,
+    std::optional<device::PRFInput> prf_input)
+    : has_prf(has_prf), prf_input(std::move(prf_input)) {
+  CHECK(this->has_prf || !this->prf_input.has_value());
 }
 
-PRFInputData::PRFInputData(const PRFInputData&) = default;
-PRFInputData::PRFInputData(PRFInputData&&) = default;
-PRFInputData& PRFInputData::operator=(PRFInputData&&) = default;
-PRFInputData::~PRFInputData() = default;
-
-ExtensionInputData::ExtensionInputData(PRFInputData prf_input_data)
-    :  // prf_input_data must be created even if prf_input1 is empty, as it is
-       // an indication that the PRF extension is requested.
-      prf_input_data(std::move(prf_input_data)) {}
-
-ExtensionInputData::ExtensionInputData() = default;
 ExtensionInputData::ExtensionInputData(const ExtensionInputData&) = default;
 ExtensionInputData::~ExtensionInputData() = default;
 
-bool ExtensionInputData::hasPRF() const {
-  return prf_input_data.has_value();
-}
-
 ExtensionOutputData ExtensionInputData::ToOutputData(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
-  if (!hasPRF()) {
+  if (!prf_input.has_value()) {
     return {};
   }
 
   ExtensionOutputData extension_output_data;
-  extension_output_data.prf_result = EvaluateHMAC(encrypted);
+  extension_output_data.prf_result = EvaluateHMAC(encrypted, *prf_input);
   return extension_output_data;
 }
 
-std::vector<uint8_t> ExtensionInputData::EvaluateHMAC(
-    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
+std::vector<uint8_t> EvaluateHMAC(
+    const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted,
+    const device::PRFInput& prf_input) {
   const std::string& hmac_secret = encrypted.hmac_secret();
-  return prf_input_data->prf_input().EvaluateHMAC(
+  return prf_input.EvaluateHMAC(
       hmac_secret.empty() ? DeriveHmacSecretFromPrivateKey(
                                 base::as_byte_span(encrypted.private_key()))
                           : base::as_byte_span(hmac_secret));
 }
-
-SerializedAttestationObject::SerializedAttestationObject() = default;
-SerializedAttestationObject::SerializedAttestationObject(
-    SerializedAttestationObject&& other) = default;
-SerializedAttestationObject::~SerializedAttestationObject() = default;
 
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
@@ -260,7 +243,7 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   std::vector<uint8_t> private_key_pkcs8 = ec_key.ToPrivateKeyInfo();
   encrypted.set_private_key(
       {private_key_pkcs8.begin(), private_key_pkcs8.end()});
-  if (extension_input_data.hasPRF()) {
+  if (extension_input_data.has_prf) {
     encrypted.set_hmac_secret(base::RandBytesAsString(kHmacSecretSize));
   }
   CHECK(EncryptWebauthnCredentialSpecificsData(trusted_vault_key, encrypted,
@@ -389,8 +372,9 @@ bool EncryptWebauthnCredentialSpecificsData(
   return true;
 }
 
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
-                                                       bool did_complete_uv) {
+device::AuthenticatorData MakeAuthenticatorDataForAssertion(
+    std::string_view rp_id,
+    bool did_complete_uv) {
   using Flag = device::AuthenticatorData::Flag;
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
@@ -400,11 +384,10 @@ std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
   }
   return device::AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                                    kSignatureCounter, /*data=*/std::nullopt,
-                                   /*extensions=*/std::nullopt)
-      .SerializeToByteArray();
+                                   /*extensions=*/std::nullopt);
 }
 
-SerializedAttestationObject MakeAttestationObjectForCreation(
+device::AttestationObject MakeAttestationObjectForCreation(
     std::string_view rp_id,
     bool did_complete_uv,
     base::span<const uint8_t> credential_id,
@@ -430,17 +413,9 @@ SerializedAttestationObject MakeAttestationObjectForCreation(
   device::AuthenticatorData authenticator_data(
       crypto::hash::Sha256(rp_id), flags, kSignatureCounter,
       std::move(attested_credential_data), /*extensions=*/std::nullopt);
-  SerializedAttestationObject serialized_attestation_object;
-  serialized_attestation_object.authenticator_data =
-      authenticator_data.SerializeToByteArray();
-
-  device::AttestationObject attestationObject(
+  return device::AttestationObject(
       std::move(authenticator_data),
       std::make_unique<device::NoneAttestationStatement>());
-  serialized_attestation_object.attestation_object =
-      cbor::Writer::Write(device::AsCBOR(attestationObject)).value();
-
-  return serialized_attestation_object;
 }
 
 std::optional<std::vector<uint8_t>> GenerateEcSignature(
