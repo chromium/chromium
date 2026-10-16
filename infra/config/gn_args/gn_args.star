@@ -54,11 +54,18 @@ gn_args.config(
 # android:debuggable="true" causes ART to run more slowly, so tests run
 # faster without it. https://crbug.com/1276429
 gn_args.config(
-    name = "android_builder_without_codecs",
-    configs = ["android"],
+    name = "android_non_debuggable",
     args = {
         "debuggable_apks": False,
     },
+)
+
+gn_args.config(
+    name = "android_builder_without_codecs",
+    configs = [
+        "android",
+        "android_non_debuggable",
+    ],
 )
 
 # For builds requiring debuggable_apks.
