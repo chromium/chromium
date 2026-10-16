@@ -6468,7 +6468,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="VoiceSearch.QuerySubmission.Source"
-    enum="VoiceSearchQuerySource" expires_after="2026-11-20">
+    enum="VoiceSearchQuerySource" expires_after="2027-01-14">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
