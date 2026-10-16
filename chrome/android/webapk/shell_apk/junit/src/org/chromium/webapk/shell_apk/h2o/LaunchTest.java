@@ -13,6 +13,7 @@ import static org.chromium.webapk.shell_apk.ManageDataLauncherActivity.SITE_SETT
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +52,7 @@ import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /** Tests launching WebAPK. */
@@ -270,6 +272,246 @@ public final class LaunchTest {
                 shareActivityClassName,
                 browserLaunchIntent.getStringExtra(
                         WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME));
+    }
+
+    /**
+     * Tests that a shared file's read grant reaches {@link SplashActivity} when driven through the
+     * real activity chain, from the share target activity to the host browser launch, and that a
+     * WebAPK activity still holds it when the host browser is launched. Robolectric's {@link
+     * Context#checkUriPermission} treats every URI as readable, so the file provider does not
+     * actually need to be registered in the test.
+     */
+    @Test
+    public void testShareWithFileEndToEnd() {
+        final Uri sharedUri = Uri.parse("content://com.example.provider/shared.jpg");
+        final String shareActivityClassName = registerWebApkWithShareTarget();
+        Intent launchIntent = createShareIntent(shareActivityClassName, sharedUri);
+        List<Activity> launchedActivities = new ArrayList<>();
+
+        ArrayList<Intent> launchedIntents =
+                launchAndCheckBrowserLaunched(
+                        /* opaqueMainActivityInitiallyEnabled= */ true,
+                        launchIntent,
+                        H2OTransparentLauncherActivity.class,
+                        /* beforeActivityLaunch= */ intent -> {},
+                        launchedActivities);
+        Assert.assertTrue(launchedIntents.size() > 1);
+
+        // The first hop is from the share target activity to SplashActivity.
+        Intent splashIntent = launchedIntents.get(0);
+        assertIntentComponentClassNameEquals(SplashActivity.class, splashIntent);
+        assertClipDataUris(splashIntent, sharedUri);
+        assertTrue((splashIntent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0);
+        Assert.assertEquals(sharedUri, splashIntent.getParcelableExtra(Intent.EXTRA_STREAM));
+
+        // The last hop is the host browser launch; it must record the share path was taken.
+        Intent browserLaunchIntent = launchedIntents.get(launchedIntents.size() - 1);
+        Assert.assertEquals(
+                shareActivityClassName,
+                browserLaunchIntent.getStringExtra(
+                        WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME));
+
+        // The host browser checks that the WebAPK can read the file, which needs a running WebAPK
+        // activity to hold the read grant.
+        assertTrue(anyRunningActivityHoldsReadGrant(launchedActivities, sharedUri));
+    }
+
+    /**
+     * Tests the behavior before the read grant was passed on: if the grant is removed from the
+     * {@link SplashActivity} intent, no running WebAPK activity holds a read grant for the file
+     * when the host browser is launched, so the host browser would drop the file.
+     */
+    @Test
+    public void testShareWithFileEndToEndFailsWithoutGrantInSplashActivity() {
+        final Uri sharedUri = Uri.parse("content://com.example.provider/shared.jpg");
+        final String shareActivityClassName = registerWebApkWithShareTarget();
+        Intent launchIntent = createShareIntent(shareActivityClassName, sharedUri);
+        List<Activity> launchedActivities = new ArrayList<>();
+
+        ArrayList<Intent> launchedIntents =
+                launchAndCheckBrowserLaunched(
+                        /* opaqueMainActivityInitiallyEnabled= */ true,
+                        launchIntent,
+                        H2OTransparentLauncherActivity.class,
+                        /* beforeActivityLaunch= */ intent -> {
+                            if (SplashActivity.class
+                                    .getName()
+                                    .equals(intent.getComponent().getClassName())) {
+                                WebApkUtils.detachUrisWithReadGrant(intent);
+                            }
+                        },
+                        launchedActivities);
+
+        // The chain still reached SplashActivity and the host browser, without the grant.
+        Intent splashIntent = launchedIntents.get(0);
+        assertIntentComponentClassNameEquals(SplashActivity.class, splashIntent);
+        Assert.assertNull(splashIntent.getClipData());
+        Assert.assertTrue(
+                intentIsForBrowser(
+                        launchedIntents.get(launchedIntents.size() - 1), BROWSER_PACKAGE_NAME));
+        // The share target activity, which got the sharing app's grant, has finished.
+        assertTrue(launchedActivities.get(0).isFinishing());
+
+        assertFalse(anyRunningActivityHoldsReadGrant(launchedActivities, sharedUri));
+    }
+
+    /**
+     * Tests that a shared file's read grant is passed on to {@link SplashActivity}, so that the
+     * WebAPK can still read the file after the activity which received the share has finished.
+     */
+    @Test
+    public void testShareGrantPassedToSplashActivity() {
+        final Uri sharedUri = Uri.parse("content://com.example.provider/shared.jpg");
+        ArrayList<Intent> startedIntents = new ArrayList<>();
+        Context context = createMockContextForShare(startedIntents, sharedUri);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, sharedUri);
+
+        launchSplashActivityForShare(context, shareIntent);
+
+        Assert.assertEquals(1, startedIntents.size());
+        Intent splashIntent = startedIntents.get(0);
+        assertIntentComponentClassNameEquals(SplashActivity.class, splashIntent);
+        assertClipDataUris(splashIntent, sharedUri);
+        assertTrue((splashIntent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0);
+    }
+
+    /** Tests that the read grants for several shared files are passed on, in order. */
+    @Test
+    public void testShareGrantPassedToSplashActivityForSeveralFiles() {
+        final Uri firstUri = Uri.parse("content://com.example.provider/first.jpg");
+        final Uri secondUri = Uri.parse("content://com.example.provider/second.jpg");
+        ArrayList<Intent> startedIntents = new ArrayList<>();
+        Context context = createMockContextForShare(startedIntents, firstUri, secondUri);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        shareIntent.putParcelableArrayListExtra(
+                Intent.EXTRA_STREAM, new ArrayList<>(List.of(firstUri, secondUri)));
+
+        launchSplashActivityForShare(context, shareIntent);
+
+        Assert.assertEquals(1, startedIntents.size());
+        assertClipDataUris(startedIntents.get(0), firstUri, secondUri);
+        assertTrue((startedIntents.get(0).getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0);
+    }
+
+    /**
+     * Tests that a shared file the WebAPK cannot read is not attached with a read grant, which
+     * would make the whole launch fail, while the shared file list itself is passed on unchanged.
+     */
+    @Test
+    public void testUnreadableSharedUriNotPassedToSplashActivity() {
+        final Uri readableUri = Uri.parse("content://com.example.provider/readable.jpg");
+        final Uri unreadableUri = Uri.parse("content://com.example.provider/unreadable.jpg");
+        ArrayList<Intent> startedIntents = new ArrayList<>();
+        Context context = createMockContextForShare(startedIntents, readableUri);
+        ArrayList<Uri> sharedUris = new ArrayList<>(List.of(readableUri, unreadableUri));
+        Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, sharedUris);
+
+        launchSplashActivityForShare(context, shareIntent);
+
+        Assert.assertEquals(1, startedIntents.size());
+        Intent splashIntent = startedIntents.get(0);
+        assertClipDataUris(splashIntent, readableUri);
+        Assert.assertEquals(
+                sharedUris, splashIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
+    }
+
+    /** Tests that no read grant is attached to {@link SplashActivity} for non-share launches. */
+    @Test
+    public void testNoGrantPassedToSplashActivityForNonShareLaunch() {
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ false);
+        Intent launchIntent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse("https://pwa.rocks/deep.html"));
+        launchIntent.setPackage(sWebApkPackageName);
+
+        ArrayList<Intent> launchedIntents =
+                launchAndCheckBrowserLaunched(
+                        /* opaqueMainActivityInitiallyEnabled= */ true,
+                        launchIntent,
+                        H2OTransparentLauncherActivity.class);
+
+        Intent splashIntent = launchedIntents.get(0);
+        assertIntentComponentClassNameEquals(SplashActivity.class, splashIntent);
+        Assert.assertNull(splashIntent.getClipData());
+        assertFalse((splashIntent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0);
+    }
+
+    /**
+     * Tests that if passing on the read grant fails, {@link SplashActivity} is still launched
+     * without it.
+     */
+    @Test
+    public void testShareLaunchesSplashActivityWithoutGrantIfGrantFails() {
+        final Uri sharedUri = Uri.parse("content://com.example.provider/shared.jpg");
+        ArrayList<Intent> startedIntents = new ArrayList<>();
+        Context context = createMockContextForShare(startedIntents, sharedUri);
+        Mockito.doAnswer(
+                        invocation -> {
+                            Intent intent = invocation.getArgument(0);
+                            startedIntents.add(new Intent(intent));
+                            if (intent.getClipData() != null) throw new SecurityException();
+                            return null;
+                        })
+                .when(context)
+                .startActivity(Mockito.any(Intent.class));
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, sharedUri);
+
+        launchSplashActivityForShare(context, shareIntent);
+
+        Assert.assertEquals(2, startedIntents.size());
+        Assert.assertNotNull(startedIntents.get(0).getClipData());
+        Intent retryIntent = startedIntents.get(1);
+        Assert.assertNull(retryIntent.getClipData());
+        assertFalse((retryIntent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0);
+        // Dropping the grant flag must not clobber the other launch flags.
+        assertTrue((retryIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
+        Assert.assertEquals(sharedUri, retryIntent.getParcelableExtra(Intent.EXTRA_STREAM));
+    }
+
+    /**
+     * Tests that a share launch failure is not swallowed when no read grant was attached, since
+     * launching again without grants could not change the outcome.
+     */
+    @Test
+    public void testShareLaunchFailureWithoutGrantIsNotRetried() {
+        final Uri unreadableUri = Uri.parse("content://com.example.provider/unreadable.jpg");
+        ArrayList<Intent> startedIntents = new ArrayList<>();
+        // No readable URIs: every checkUriPermission() call is denied.
+        Context context = createMockContextForShare(startedIntents);
+        Mockito.doThrow(new SecurityException())
+                .when(context)
+                .startActivity(Mockito.any(Intent.class));
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, unreadableUri);
+
+        Assert.assertThrows(
+                SecurityException.class, () -> launchSplashActivityForShare(context, shareIntent));
+        Mockito.verify(context, Mockito.times(1)).startActivity(Mockito.any(Intent.class));
+    }
+
+    /** Tests that a launch failure unrelated to a read grant is not swallowed. */
+    @Test
+    public void testNonShareLaunchFailureIsNotRetried() {
+        Context context = Mockito.mock(Context.class);
+        Mockito.doThrow(new SecurityException())
+                .when(context)
+                .startActivity(Mockito.any(Intent.class));
+        Intent intentToCopy = new Intent(Intent.ACTION_VIEW);
+        ComponentName splashComponent =
+                new ComponentName(sWebApkPackageName, SplashActivity.class.getName());
+
+        Assert.assertThrows(
+                SecurityException.class,
+                () ->
+                        H2OLauncher.copyIntentExtrasAndLaunch(
+                                context,
+                                intentToCopy,
+                                /* selectedShareTargetActivity= */ null,
+                                /* launchTimeMs= */ -1,
+                                splashComponent));
+        Mockito.verify(context, Mockito.times(1)).startActivity(Mockito.any(Intent.class));
     }
 
     /**
@@ -700,6 +942,104 @@ public final class LaunchTest {
         registerWebApkWithCustomHostBrowser(isArcChromeOs, null);
     }
 
+    /** Registers a WebAPK with one share target and returns the share activity's class name. */
+    private static String registerWebApkWithShareTarget() {
+        Bundle metadata = new Bundle();
+        metadata.putString(WebApkMetaDataKeys.START_URL, DEFAULT_START_URL);
+        Bundle[] shareMetadata = new Bundle[1];
+        shareMetadata[0] = new Bundle();
+        shareMetadata[0].putString(WebApkMetaDataKeys.SHARE_ACTION, "https://pwa.rocks/share");
+        WebApkTestHelper.registerWebApkWithMetaData(sWebApkPackageName, metadata, shareMetadata);
+        return WebApkTestHelper.getGeneratedShareTargetActivityClassName(0);
+    }
+
+    /**
+     * Returns a share intent for `uri`, with the read grant the sharing app would attach (the
+     * platform copies EXTRA_STREAM into ClipData for ACTION_SEND).
+     */
+    private static Intent createShareIntent(String shareActivityClassName, Uri uri) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setComponent(new ComponentName(sWebApkPackageName, shareActivityClassName));
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setClipData(ClipData.newRawUri("", uri));
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        return intent;
+    }
+
+    /**
+     * Returns whether any of the activities that are still running holds a read grant for `uri`.
+     * This mirrors the platform: a grant from ClipData with FLAG_GRANT_READ_URI_PERMISSION belongs
+     * to the activity that received it and is released when that activity finishes.
+     */
+    private static boolean anyRunningActivityHoldsReadGrant(List<Activity> activities, Uri uri) {
+        for (Activity activity : activities) {
+            if (activity.isFinishing()) continue;
+            Intent intent = activity.getIntent();
+            ClipData clipData = intent.getClipData();
+            if ((intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION) == 0
+                    || clipData == null) {
+                continue;
+            }
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                if (uri.equals(clipData.getItemAt(i).getUri())) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns a mock context for which only `readableUris` pass the WebAPK's read check, and which
+     * records a copy of each started activity intent in `startedIntents`.
+     */
+    private static Context createMockContextForShare(
+            List<Intent> startedIntents, Uri... readableUris) {
+        Context context = Mockito.mock(Context.class);
+        Mockito.when(
+                        context.checkUriPermission(
+                                Mockito.any(Uri.class),
+                                Mockito.anyInt(),
+                                Mockito.anyInt(),
+                                Mockito.anyInt()))
+                .thenReturn(PackageManager.PERMISSION_DENIED);
+        for (Uri uri : readableUris) {
+            Mockito.when(
+                            context.checkUriPermission(
+                                    Mockito.eq(uri),
+                                    Mockito.anyInt(),
+                                    Mockito.anyInt(),
+                                    Mockito.eq(Intent.FLAG_GRANT_READ_URI_PERMISSION)))
+                    .thenReturn(PackageManager.PERMISSION_GRANTED);
+        }
+        Mockito.doAnswer(
+                        invocation -> {
+                            startedIntents.add(new Intent((Intent) invocation.getArgument(0)));
+                            return null;
+                        })
+                .when(context)
+                .startActivity(Mockito.any(Intent.class));
+        return context;
+    }
+
+    /** Runs the hop from the activity which received `shareIntent` to {@link SplashActivity}. */
+    private static void launchSplashActivityForShare(Context context, Intent shareIntent) {
+        H2OLauncher.copyIntentExtrasAndLaunch(
+                context,
+                shareIntent,
+                /* selectedShareTargetActivity= */ "ShareActivity0",
+                /* launchTimeMs= */ -1,
+                new ComponentName(sWebApkPackageName, SplashActivity.class.getName()));
+    }
+
+    /** Checks that `intent`'s ClipData holds exactly `expectedUris`, in order. */
+    private static void assertClipDataUris(Intent intent, Uri... expectedUris) {
+        ClipData clipData = intent.getClipData();
+        Assert.assertNotNull(clipData);
+        Assert.assertEquals(expectedUris.length, clipData.getItemCount());
+        for (int i = 0; i < expectedUris.length; i++) {
+            Assert.assertEquals(expectedUris[i], clipData.getItemAt(i).getUri());
+        }
+    }
+
     private static void registerWebApkWithCustomHostBrowser(
             boolean isArcChromeOs, String browserPackageName) {
         Bundle metadata = new Bundle();
@@ -740,6 +1080,24 @@ public final class LaunchTest {
             boolean opaqueMainActivityInitiallyEnabled,
             Intent launchIntent,
             Class<? extends Activity> launchActivity) {
+        return launchAndCheckBrowserLaunched(
+                opaqueMainActivityInitiallyEnabled,
+                launchIntent,
+                launchActivity,
+                /* beforeActivityLaunch= */ intent -> {},
+                /* launchedActivities= */ new ArrayList<>());
+    }
+
+    /**
+     * Same as above, but runs `beforeActivityLaunch` on each intent in the chain before its
+     * activity is created, and collects the created activities in `launchedActivities`.
+     */
+    private ArrayList<Intent> launchAndCheckBrowserLaunched(
+            boolean opaqueMainActivityInitiallyEnabled,
+            Intent launchIntent,
+            Class<? extends Activity> launchActivity,
+            Consumer<Intent> beforeActivityLaunch,
+            List<Activity> launchedActivities) {
         changeEnabledActivity(
                 opaqueMainActivityInitiallyEnabled
                         ? H2OOpaqueMainActivity.class
@@ -747,10 +1105,12 @@ public final class LaunchTest {
 
         installBrowser(BROWSER_PACKAGE_NAME);
 
-        ArrayList<Intent> launchedIntents =
-                runActivityChain(launchIntent, launchActivity, BROWSER_PACKAGE_NAME);
-
-        return launchedIntents;
+        return runActivityChain(
+                launchIntent,
+                launchActivity,
+                BROWSER_PACKAGE_NAME,
+                beforeActivityLaunch,
+                launchedActivities);
     }
 
     /**
@@ -807,14 +1167,32 @@ public final class LaunchTest {
      * Launches activity with the given intent. Runs till the browser package is launched. Returns
      * the chain of launched activities (including the browser launch).
      */
-    @SuppressWarnings("unchecked")
     private ArrayList<Intent> runActivityChain(
             Intent launchIntent, Class<? extends Activity> launchActivity, String browserPackage) {
+        return runActivityChain(
+                launchIntent,
+                launchActivity,
+                browserPackage,
+                /* beforeActivityLaunch= */ intent -> {},
+                /* launchedActivities= */ new ArrayList<>());
+    }
+
+    /**
+     * Same as above, but runs `beforeActivityLaunch` on each intent before its activity is created,
+     * and collects the created activities in `launchedActivities`.
+     */
+    @SuppressWarnings("unchecked")
+    private ArrayList<Intent> runActivityChain(
+            Intent launchIntent,
+            Class<? extends Activity> launchActivity,
+            String browserPackage,
+            Consumer<Intent> beforeActivityLaunch,
+            List<Activity> launchedActivities) {
         ArrayList<Intent> activityIntentChain = new ArrayList<>();
 
         // Android modifies the intent when the intent is used to launch an activity. Clone the
         // intent so as not to affect test cases which use the same intent.
-        buildActivityFully(launchActivity, (Intent) launchIntent.clone());
+        launchedActivities.add(buildActivityFully(launchActivity, (Intent) launchIntent.clone()));
         for (; ; ) {
             Intent startedActivityIntent = mShadowApplication.getNextStartedActivity();
             if (startedActivityIntent == null) break;
@@ -849,7 +1227,8 @@ public final class LaunchTest {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            buildActivityFully(startedActivityClass, startedActivityIntent);
+            beforeActivityLaunch.accept(startedActivityIntent);
+            launchedActivities.add(buildActivityFully(startedActivityClass, startedActivityIntent));
         }
         return activityIntentChain;
     }
@@ -860,12 +1239,14 @@ public final class LaunchTest {
                         && browserPackage.equals(intent.getComponent().getPackageName()));
     }
 
-    private static void buildActivityFully(Class<? extends Activity> activityClass, Intent intent) {
+    private static Activity buildActivityFully(
+            Class<? extends Activity> activityClass, Intent intent) {
         ActivityController<? extends Activity> controller =
                 Robolectric.buildActivity(activityClass, intent);
         setAppTaskTopActivity(controller.get().getTaskId(), controller.get());
         controller.create().start().resume().visible();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        return controller.get();
     }
 
     /** Installs browser with the given package name and version. */

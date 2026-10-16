@@ -7,6 +7,7 @@ package org.chromium.webapk.shell_apk;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +23,10 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -38,6 +42,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Contains utility methods for interacting with WebAPKs. */
 @NullMarked
@@ -295,17 +300,7 @@ public class WebApkUtils {
             Context context, HostBrowserLauncherParams params) {
         if (params.getSelectedShareTargetActivityClassName() == null) return;
 
-        Intent originalIntent = params.getOriginalIntent();
-        ArrayList<Uri> uris = originalIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        if (uris == null) {
-            uris = new ArrayList<>();
-            Uri uri = originalIntent.getParcelableExtra(Intent.EXTRA_STREAM);
-            if (uri != null) {
-                uris.add(uri);
-            }
-        }
-        for (Uri uri : uris) {
-            if (uri == null) continue;
+        for (Uri uri : getSharedStreamUris(params.getOriginalIntent())) {
             try {
                 context.grantUriPermission(
                         params.getHostBrowserPackageName(),
@@ -315,6 +310,101 @@ public class WebApkUtils {
                 Log.w(TAG, "Unable to grant Uri permission", e);
             }
         }
+    }
+
+    /**
+     * Returns the distinct shared URIs this WebAPK can read. Only these can be attached with a read
+     * grant.
+     */
+    public static List<Uri> getReadableSharedUris(Context context, Intent intent) {
+        List<Uri> readable = new ArrayList<>();
+        int unreadableCount = 0;
+        for (Uri uri : getSharedStreamUris(intent)) {
+            if (readable.contains(uri)) continue;
+            // This runs only in the WebAPK's own process, so myPid() & myUid() identify the WebAPK,
+            // which is the uid the sharing app granted read access to.
+            if (context.checkUriPermission(
+                            uri,
+                            Process.myPid(),
+                            Process.myUid(),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                readable.add(uri);
+            } else {
+                unreadableCount++;
+            }
+        }
+        if (unreadableCount > 0) {
+            Log.w(
+                    TAG,
+                    "Not forwarding " + unreadableCount + " shared URI(s) the WebAPK cannot read");
+        }
+        return readable;
+    }
+
+    /** Returns the non-null {@link Intent#EXTRA_STREAM} URIs of `intent` (single or list). */
+    private static List<Uri> getSharedStreamUris(Intent intent) {
+        List<Uri> result = new ArrayList<>();
+        ArrayList<Uri> uris = getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri.class);
+        if (uris == null) {
+            uris = new ArrayList<>(1);
+            uris.add(getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri.class));
+        }
+        for (Uri uri : uris) {
+            if (uri != null) {
+                result.add(uri);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * {@link Intent#getParcelableArrayListExtra(String, Class)} with a fallback for older
+     * platforms. The typed overload is API 33+, but is only used from API 34.
+     * TODO(crbug.com/574045571): Drop the fallback once the shell's minSdkVersion is 34 or higher.
+     */
+    @SuppressWarnings("deprecation")
+    private static <T extends Parcelable> @Nullable ArrayList<T> getParcelableArrayListExtra(
+            Intent intent, String name, Class<T> clazz) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return intent.getParcelableArrayListExtra(name, clazz);
+        }
+        return intent.getParcelableArrayListExtra(name);
+    }
+
+    /** See {@link #getParcelableArrayListExtra(Intent, String, Class)}. */
+    @SuppressWarnings("deprecation")
+    private static <T extends Parcelable> @Nullable T getParcelableExtra(
+            Intent intent, String name, Class<T> clazz) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return intent.getParcelableExtra(name, clazz);
+        }
+        return intent.getParcelableExtra(name);
+    }
+
+    /** Attaches non-null `uris` as ClipData with a read grant. Does nothing if there are none. */
+    public static void attachUrisWithReadGrant(Intent intent, List<Uri> uris) {
+        ClipData clipData = null;
+        for (Uri uri : uris) {
+            if (uri == null) continue;
+            if (clipData == null) {
+                clipData = ClipData.newRawUri("webapk_share", uri);
+            } else {
+                clipData.addItem(new ClipData.Item(uri));
+            }
+        }
+
+        if (clipData == null) return;
+        intent.setClipData(clipData);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    /** Removes anything added by {@link #attachUrisWithReadGrant}. */
+    public static void detachUrisWithReadGrant(Intent intent) {
+        intent.setClipData(null);
+
+        // Note: {@link Intent#removeFlags} is API 26+; the shell's minSdkVersion is 24.
+        intent.setFlags(intent.getFlags() & ~Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
     /** Returns the ComponentName for the top activity in {@link taskId}'s task stack. */

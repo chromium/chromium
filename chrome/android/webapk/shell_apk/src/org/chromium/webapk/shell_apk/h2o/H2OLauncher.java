@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -19,6 +20,9 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
+import org.chromium.webapk.shell_apk.WebApkUtils;
+
+import java.util.List;
 
 /** Contains methods for launching host browser where ShellAPK shows the splash screen. */
 @NullMarked
@@ -74,6 +78,13 @@ public class H2OLauncher {
     /**
      * Launches the given component, passing extras from the given intent.
      *
+     * <p>For shares, pass the read grant on to the next activity. The grant from the sharing app is
+     * owned by the activity that received the share, which finishes right after this hop. Chrome
+     * verifies that the WebAPK uid still holds a read grant when it launches the web app
+     * (checkUriPermission on Android 14 and below; on 15+ the ComponentCaller snapshot taken when
+     * SplashActivity starts Chrome), so an activity that is still alive at that point must own one.
+     * See crbug.com/561685220.
+     *
      * @param intentToCopy Intent whose extras should be copied.
      * @param selectedShareTargetActivity Class name of the share activity that the user selected.
      * @param launchTimeMs Timestamp of when WebAPK's initial activity was launched. -1 if the time
@@ -106,7 +117,27 @@ public class H2OLauncher {
             intent.putExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, launchTimeMs);
         }
 
-        context.startActivity(intent);
+        // For shares, pass the read grant on to the next activity. The grant from the sharing app
+        // is tied to the receiving activity.
+        boolean attachedSharedUris = false;
+        if (selectedShareTargetActivity != null) {
+            List<Uri> readableUris = WebApkUtils.getReadableSharedUris(context, intentToCopy);
+            WebApkUtils.attachUrisWithReadGrant(intent, readableUris);
+            attachedSharedUris = !readableUris.isEmpty();
+        }
+
+        // The platform throws SecurityException if access to a shared URI is revoked between the
+        // check above and this launch, in which case it fallbacks to launching again without the
+        // grants. Any other failure would recur on a second launch and should propagate as it did
+        // before grants were attached.
+        try {
+            context.startActivity(intent);
+        } catch (SecurityException e) {
+            if (!attachedSharedUris) throw e;
+            Log.w(TAG, "Unable to pass shared URI grants along, launching without them.", e);
+            WebApkUtils.detachUrisWithReadGrant(intent);
+            context.startActivity(intent);
+        }
     }
 
     /** Sends intent to host browser to request that the host browser relaunch the WebAPK. */

@@ -8,12 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Robolectric.setupActivity;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +25,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Process;
 import android.view.View;
 
 import org.junit.Assert;
@@ -207,5 +210,111 @@ public class WebApkUtilsTest {
                         eq("com.chrome.beta"),
                         eq(grantedUri),
                         eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+    }
+
+    /** Also drops duplicates and nulls. */
+    @Test
+    public void testGetReadableSharedUrisFiltersUnreadable() {
+        Context spyContext = spy(mContext);
+        Uri readable = Uri.parse("content://com.example.provider/readable");
+        Uri unreadable = Uri.parse("content://com.example.provider/unreadable");
+        doReturn(PackageManager.PERMISSION_GRANTED)
+                .when(spyContext)
+                .checkUriPermission(
+                        eq(readable),
+                        eq(Process.myPid()),
+                        eq(Process.myUid()),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+        doReturn(PackageManager.PERMISSION_DENIED)
+                .when(spyContext)
+                .checkUriPermission(
+                        eq(unreadable),
+                        eq(Process.myPid()),
+                        eq(Process.myUid()),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+
+        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        intent.putParcelableArrayListExtra(
+                Intent.EXTRA_STREAM,
+                new ArrayList<>(Arrays.asList(null, readable, unreadable, readable)));
+
+        assertEquals(
+                Arrays.asList(readable), WebApkUtils.getReadableSharedUris(spyContext, intent));
+    }
+
+    @Test
+    public void testGetReadableSharedUrisSingleStream() {
+        Context spyContext = spy(mContext);
+        Uri readable = Uri.parse("content://com.example.provider/readable");
+        doReturn(PackageManager.PERMISSION_GRANTED)
+                .when(spyContext)
+                .checkUriPermission(
+                        eq(readable),
+                        eq(Process.myPid()),
+                        eq(Process.myUid()),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, readable);
+
+        assertEquals(
+                Arrays.asList(readable), WebApkUtils.getReadableSharedUris(spyContext, intent));
+    }
+
+    @Test
+    public void testAttachAndDetachUrisWithReadGrant() {
+        Uri first = Uri.parse("content://com.example.provider/first");
+        Uri second = Uri.parse("content://com.example.provider/second");
+        Intent intent = new Intent();
+
+        WebApkUtils.attachUrisWithReadGrant(intent, Arrays.asList(first, second));
+
+        ClipData clipData = intent.getClipData();
+        Assert.assertNotNull(clipData);
+        assertEquals(2, clipData.getItemCount());
+        assertEquals(first, clipData.getItemAt(0).getUri());
+        assertEquals(second, clipData.getItemAt(1).getUri());
+        Assert.assertNotEquals(0, intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        WebApkUtils.detachUrisWithReadGrant(intent);
+
+        Assert.assertNull(intent.getClipData());
+        assertEquals(0, intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    @Test
+    public void testAttachUrisWithReadGrantEmpty() {
+        Intent intent = new Intent();
+
+        WebApkUtils.attachUrisWithReadGrant(intent, new ArrayList<>());
+
+        Assert.assertNull(intent.getClipData());
+        assertEquals(0, intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    @Test
+    public void testAttachUrisWithReadGrantSkipsNullEntries() {
+        Uri first = Uri.parse("content://com.example.provider/first");
+        Uri second = Uri.parse("content://com.example.provider/second");
+        Intent intent = new Intent();
+
+        WebApkUtils.attachUrisWithReadGrant(intent, Arrays.asList(null, first, null, second));
+
+        ClipData clipData = intent.getClipData();
+        Assert.assertNotNull(clipData);
+        assertEquals(2, clipData.getItemCount());
+        assertEquals(first, clipData.getItemAt(0).getUri());
+        assertEquals(second, clipData.getItemAt(1).getUri());
+        Assert.assertNotEquals(0, intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    @Test
+    public void testAttachUrisWithReadGrantAllNull() {
+        Intent intent = new Intent();
+
+        WebApkUtils.attachUrisWithReadGrant(intent, Arrays.asList(null, null));
+
+        Assert.assertNull(intent.getClipData());
+        assertEquals(0, intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 }
