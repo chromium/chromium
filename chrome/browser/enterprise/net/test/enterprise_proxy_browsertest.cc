@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/net/test/enterprise_proxy_browsertest_base.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -16,10 +17,12 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
+#include "components/enterprise/net/core/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -378,4 +381,190 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
           .size());
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyBrowserTest,
+    AppliedForAffiliatedUserWhenEnablePORForAllUsersDisabled) {
+  SetEnableForAllUsers(false);
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(profile->GetPrefs()
+                   ->GetList(enterprise_net::kProxyProvisioningDomains)
+                   .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyBrowserTest,
+    AppliedForAffiliatedUserWhenEnablePORForAllUsersEnabled) {
+  SetEnableForAllUsers(true);
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(profile->GetPrefs()
+                   ->GetList(enterprise_net::kProxyProvisioningDomains)
+                   .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+}
+
+class EnterpriseProxyUnaffiliatedBrowserTest
+    : public EnterpriseProxyBrowserTestBase {
+ public:
+  EnterpriseProxyUnaffiliatedBrowserTest()
+      : EnterpriseProxyBrowserTestBase(ManagementContext{
+            .is_cloud_user_managed = true,
+            .is_cloud_machine_managed = true,
+            .affiliated = false,
+        }) {}
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyUnaffiliatedBrowserTest,
+                       IgnoredForUnaffiliatedUserByDefault) {
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_TRUE(profile->GetPrefs()
+                  ->GetList(enterprise_net::kProxyProvisioningDomains)
+                  .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->GetProvisioningDomainConfigs().empty());
+  EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_FALSE(was_proxy_accessed());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyUnaffiliatedBrowserTest,
+    IgnoredForUnaffiliatedUserWhenEnablePORForAllUsersDisabled) {
+  SetEnableForAllUsers(false);
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_TRUE(profile->GetPrefs()
+                  ->GetList(enterprise_net::kProxyProvisioningDomains)
+                  .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->GetProvisioningDomainConfigs().empty());
+  EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_FALSE(was_proxy_accessed());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyUnaffiliatedBrowserTest,
+    AppliedForUnaffiliatedUserWhenEnablePORForAllUsersEnabled) {
+  SetEnableForAllUsers(true);
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(profile->GetPrefs()
+                   ->GetList(enterprise_net::kProxyProvisioningDomains)
+                   .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+}
+
+class EnterpriseProxyUnmanagedDeviceBrowserTest
+    : public EnterpriseProxyBrowserTestBase {
+ public:
+  EnterpriseProxyUnmanagedDeviceBrowserTest()
+      : EnterpriseProxyBrowserTestBase(ManagementContext{
+            .is_cloud_user_managed = true,
+            .is_cloud_machine_managed = false,
+        }) {}
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyUnmanagedDeviceBrowserTest,
+                       AppliedForUserOnUnmanagedDevice) {
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  WaitForDynamicRoutesReady();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_FALSE(profile->GetPrefs()
+                   ->GetList(enterprise_net::kProxyProvisioningDomains)
+                   .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 }  // namespace enterprise::test

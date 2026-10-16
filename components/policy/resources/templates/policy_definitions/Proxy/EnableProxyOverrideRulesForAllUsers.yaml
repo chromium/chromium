@@ -1,8 +1,8 @@
-caption: Controls which managed users can set the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy.
+caption: Controls which managed users can set the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> and <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME">ProxyProvisioningDomains</ph> policies.
 desc:
-  When this policy is set to 0 or left unset, the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy will only be applied at the user scope for affiliated users.
+  When this policy is set to 0 or left unset, the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> and <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME">ProxyProvisioningDomains</ph> policies will only be applied at the user scope for affiliated users on a managed browser.
 
-  When this policy is set to 1, the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy will be applied at the user scope, even that user is unaffiliated.
+  When this policy is set to 1, the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> and <ph name="PROXY_PROVISIONING_DOMAINS_POLICY_NAME">ProxyProvisioningDomains</ph> policies will be applied at the user scope, even if that user is unaffiliated.
 
 example_value: 1
 default: 0

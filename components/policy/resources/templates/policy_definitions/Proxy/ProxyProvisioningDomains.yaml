@@ -14,6 +14,8 @@ desc: |-
 
   The fetched configurations are parsed according to the RFC 8801 schema. Only proxy configuration-related routing rules and proxies from the PvD's JSON payload are applied. If this policy is unset, no Provisioning Domains will be queried or used to fetch proxy configurations.
 
+  This policy can be set at the user level only if the user is affiliated with the browser, if the browser is not managed, or if the <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME">EnableProxyOverrideRulesForAllUsers</ph> policy is set to 1.
+
 example_value:
 - pvd_id: 'https://api.prod.securegateway.goog:443'
   auth_config:

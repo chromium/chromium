@@ -174,6 +174,16 @@ void EnterpriseProxyBrowserTestBase::SetMachineProxyProvisioningDomains(
   management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
+void EnterpriseProxyBrowserTestBase::SetEnableForAllUsers(bool enable) {
+  base::flat_map<std::string, std::optional<base::Value>> policies;
+  policies.emplace(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                   base::Value(enable ? 1 : 0));
+  management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
+}
+#endif
+
 base::DictValue EnterpriseProxyBrowserTestBase::CreateDomainPolicyEntry(
     const std::string& domain_id,
     bool use_oauth,

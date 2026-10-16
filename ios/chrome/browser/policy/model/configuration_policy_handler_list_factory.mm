@@ -32,7 +32,7 @@
 #import "components/enterprise/device_trust/prefs.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/enterprise/isolated_mode/prefs.h"
-#import "components/enterprise/net/core/prefs.h"
+#import "components/enterprise/net/core/proxy_provisioning_domains_policy_handler.h"
 #import "components/enterprise/watermarking/watermark_style_policy_handler.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
@@ -435,10 +435,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
 
   handlers->AddHandler(
-      std::make_unique<
-          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
-          policy::key::kProxyProvisioningDomains,
-          enterprise_net::kProxyProvisioningDomains, chrome_schema));
+      std::make_unique<enterprise_net::ProxyProvisioningDomainsPolicyHandler>(
+          chrome_schema));
 
   handlers->AddHandler(std::make_unique<policy::DataRegionPolicyHandler>(
       policy::key::kChromeDataRegionSetting, prefs::kChromeDataRegionSetting));
