@@ -79,6 +79,18 @@ void MerchantPromoCodeManager::OnFieldTypesDetermined(
               manager.client()
                   .GetLastCommittedPrimaryMainFrameOrigin()
                   .GetURL());
+
+  // Log the page load funnel event on the first detection of a visible promo
+  // code field on the current page.
+  if (!page_metrics_.has_logged_if_promo_code_exists_for_page) {
+    page_metrics_.has_logged_if_promo_code_exists_for_page = true;
+    autofill_metrics::LogPromoCodeFormEvent(
+        promo_code_offers.empty() ? autofill_metrics::PromoCodeFormEvent::
+                                        kNavigatedToPageWithoutPromoCode
+                                  : autofill_metrics::PromoCodeFormEvent::
+                                        kNavigatedToPageWithPromoCode);
+  }
+
   if (promo_code_offers.empty()) {
     return;
   }

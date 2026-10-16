@@ -22,10 +22,13 @@ namespace autofill_metrics {
 //
 // LINT.IfChange(AutofillPromoCodeFormEvent)
 enum class PromoCodeFormEvent {
-  // Enum value 0 is reserved for kNavigatedToPageWithPromoCode (navigated to a
-  // page with a promo code field and promo code present).
-  // Enum value 1 is reserved for kNavigatedToPageWithoutPromoCode (navigated to
-  // a page with a promo code field and no promo code present).
+  // Navigated to a page with a visible promo code field and an active promo
+  // code offer present for the page origin.
+  kNavigatedToPageWithPromoCode = 0,
+
+  // Navigated to a page with a visible promo code field and no active promo
+  // code offer present for the page origin.
+  kNavigatedToPageWithoutPromoCode = 1,
 
   // Promo code suggestions shown.
   kPromoCodeSuggestionsShown = 2,
@@ -54,7 +57,7 @@ enum class PromoCodeFormEvent {
 
   kMaxValue = kFormSubmittedWithPromoCodeFieldContainingValue,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillPromoCodeFormEvent)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillPromoCodeFormEvent)
 
 // Logs a promo code form event to Autofill.FormEvents.PromoCode.
 void LogPromoCodeFormEvent(PromoCodeFormEvent event);

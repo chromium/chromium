@@ -348,6 +348,79 @@ TEST_F(MerchantPromoCodeManagerTest,
   EXPECT_FALSE(client().IsShowingWalletDirectOffersIph());
 }
 
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFieldTypesDetermined_NoOffer_LogsNavigatedWithoutPromoCode) {
+  base::HistogramTester histogram_tester;
+
+  FormData form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  autofill_manager().OnFormsSeen({form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kNavigatedToPageWithoutPromoCode,
+      1);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFieldTypesDetermined_NoPromoCodeField_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData form_data = CreateCreditCardFormData();
+  autofill_manager().OnFormsSeen({form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(form_data.global_id()));
+
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.PromoCode", 0);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFieldTypesDetermined_InvisiblePromoCodeField_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = false}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+  autofill_manager().OnFormsSeen({form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(autofill_manager().FindCachedFormById(form_data.global_id()));
+
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.PromoCode", 0);
+}
+
+// Tests that the page load event is logged at most once per page load, and is
+// logged again after `Reset()` (i.e. after a navigation).
+TEST_F(MerchantPromoCodeManagerTest,
+       OnFieldTypesDetermined_LogsOncePerPageLoad_ResetAllowsLoggingAgain) {
+  base::HistogramTester histogram_tester;
+  SetUpPromoCodeOffer(kTestOriginUrl);
+
+  FormData promo_form_data = test::GetFormData(test::FormDescription{
+      .fields = {{.role = MERCHANT_PROMO_CODE, .is_visible = true}},
+      .main_frame_origin = url::Origin::Create(GURL(kTestOriginUrl))});
+
+  // Seeing the promo code field twice on the same page only logs once.
+  autofill_manager().OnFormsSeen({promo_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  autofill_manager().OnFormsSeen({promo_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kNavigatedToPageWithPromoCode, 1);
+
+  // After a reset, seeing the promo code field logs a second time.
+  promo_manager().Reset();
+  autofill_manager().OnFormsSeen({promo_form_data}, {},
+                                 AutofillManagerTestApi::pass_key());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kNavigatedToPageWithPromoCode, 2);
+}
+
 TEST_F(MerchantPromoCodeManagerTest, DidShowSuggestions_LogsOncePerPageLoad) {
   base::HistogramTester histogram_tester;
 
@@ -452,7 +525,7 @@ TEST_F(MerchantPromoCodeManagerTest,
 
   promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.PromoCode",
       autofill_metrics::PromoCodeFormEvent::
           kFormSubmittedWithPromoCodePresentForPage,
@@ -478,7 +551,7 @@ TEST_F(MerchantPromoCodeManagerTest,
 
   promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.PromoCode",
       autofill_metrics::PromoCodeFormEvent::
           kFormSubmittedWithoutPromoCodePresentForPage,
@@ -502,7 +575,7 @@ TEST_F(
 
   promo_manager().OnBeforeFormSubmitted(autofill_manager(), cc_form_data);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.PromoCode",
       autofill_metrics::PromoCodeFormEvent::
           kFormSubmittedWithPromoCodePresentForPage,
@@ -572,7 +645,10 @@ TEST_F(MerchantPromoCodeManagerTest,
 
   promo_manager().OnBeforeFormSubmitted(autofill_manager(), form_data);
 
-  histogram_tester.ExpectTotalCount("Autofill.FormEvents.PromoCode", 0);
+  // Only the page load event is logged, not any form submission events.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kNavigatedToPageWithPromoCode, 1);
 }
 
 TEST_F(MerchantPromoCodeManagerTest,

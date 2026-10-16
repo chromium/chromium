@@ -67,6 +67,11 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
 
  private:
   struct PageMetrics {
+    // Indicates whether the page load metric has already been logged for the
+    // current page load. This metric is only logged on pages with a promo code
+    // field, and records whether the user has a promo code saved for the page.
+    bool has_logged_if_promo_code_exists_for_page = false;
+
     // Indicates whether promo code suggestions shown metric has already been
     // logged for the current page load.
     bool has_logged_suggestions_shown = false;

@@ -17,8 +17,18 @@ namespace {
 TEST(PromoCodeMetricsTest, LogPromoCodeFormEvent) {
   base::HistogramTester histogram_tester;
 
-  LogPromoCodeFormEvent(PromoCodeFormEvent::kPromoCodeSuggestionsShown);
+  LogPromoCodeFormEvent(PromoCodeFormEvent::kNavigatedToPageWithPromoCode);
   histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kNavigatedToPageWithPromoCode, 1);
+
+  LogPromoCodeFormEvent(PromoCodeFormEvent::kNavigatedToPageWithoutPromoCode);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kNavigatedToPageWithoutPromoCode, 1);
+
+  LogPromoCodeFormEvent(PromoCodeFormEvent::kPromoCodeSuggestionsShown);
+  histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.PromoCode",
       PromoCodeFormEvent::kPromoCodeSuggestionsShown, 1);
 
