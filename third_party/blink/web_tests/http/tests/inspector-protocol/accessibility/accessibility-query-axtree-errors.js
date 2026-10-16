@@ -30,5 +30,16 @@
     accessibleName: 'name',
   }));
 
+  // Expected: error because the document is no longer active after reload.
+  await dp.Page.enable();
+  const {result: {root}} = await dp.DOM.getDocument({depth: 0});
+  const loadPromise = dp.Page.onceLoadEventFired();
+  await dp.Page.reload();
+  await loadPromise;
+  testRunner.log(await dp.Accessibility.queryAXTree({
+    backendNodeId: root.backendNodeId,
+    accessibleName: 'name',
+  }));
+
   testRunner.completeTest();
 });

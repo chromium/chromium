@@ -1964,6 +1964,12 @@ export class BrowsingContextImpl {
           if (!parsed) {
             throw new NoSuchNodeException(`Invalid sharedId: ${node.sharedId}`);
           }
+          // Reject stale sharedIds from unloaded documents.
+          if (this.navigableId !== parsed.documentId) {
+            throw new NoSuchNodeException(
+              `SharedId "${node.sharedId}" belongs to different document. Current document is ${this.navigableId}.`,
+            );
+          }
           startBackendNodeIds.push(parsed.backendNodeId);
         } else {
           if (node.handle) {
