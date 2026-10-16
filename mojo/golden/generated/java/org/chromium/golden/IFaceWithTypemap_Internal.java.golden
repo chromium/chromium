@@ -218,20 +218,14 @@ Echo_Response callback) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            IFaceWithTypemapEchoParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new IFaceWithTypemapEchoParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            IFaceWithTypemapEchoParams result = new IFaceWithTypemapEchoParams(elementsOrVersion);
                     {
                         
                     org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(8, false);
                     result.param = Typemapped.decode(decoder1);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -280,20 +274,14 @@ Echo_Response callback) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            IFaceWithTypemapEchoResponseParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new IFaceWithTypemapEchoResponseParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            IFaceWithTypemapEchoResponseParams result = new IFaceWithTypemapEchoResponseParams(elementsOrVersion);
                     {
                         
                     org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(8, false);
                     result.out = Typemapped.decode(decoder1);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 

@@ -190,11 +190,9 @@ if ({{variable}} != null) {
         if (decoder0 == null) {
             return null;
         }
-        decoder0.increaseStackDepth();
-        {{struct|name}} result;
-        try {
-            final int elementsOrVersion = decoder0.readAndValidateStructHeader({{'VERSION_ARRAY' if struct.versions|length > 1 else 'STRUCT_SIZE'}});
-            result = new {{struct|name}}(elementsOrVersion);
+        {#- readAndValidateStructHeader() also increases the stack depth. #}
+        final int elementsOrVersion = decoder0.readAndValidateStructHeader({{'VERSION_ARRAY' if struct.versions|length > 1 else 'STRUCT_SIZE'}});
+        {{struct|name}} result = new {{struct|name}}(elementsOrVersion);
 
 {%- set prev_ver = [0] %}
 {%- for byte in struct.bytes %}
@@ -227,10 +225,7 @@ if ({{variable}} != null) {
 {%- if prev_ver[-1] != 0 %}
             }
 {%- endif %}
-
-        } finally {
-            decoder0.decreaseStackDepth();
-        }
+        decoder0.decreaseStackDepth();
         return result;
     }
 

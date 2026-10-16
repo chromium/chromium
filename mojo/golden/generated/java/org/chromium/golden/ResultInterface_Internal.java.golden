@@ -284,19 +284,13 @@ SyncMethod_Response callback) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            ResultInterfaceMethodParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new ResultInterfaceMethodParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            ResultInterfaceMethodParams result = new ResultInterfaceMethodParams(elementsOrVersion);
                     {
                         
                     result.a = decoder0.readBoolean(8, 0);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -345,19 +339,13 @@ SyncMethod_Response callback) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            ResultInterfaceMethodResponseParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new ResultInterfaceMethodResponseParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            ResultInterfaceMethodResponseParams result = new ResultInterfaceMethodResponseParams(elementsOrVersion);
                     {
                         
                     result.result = ResultInterfaceMethodResponseParamResult.decode(decoder0, 8);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -494,19 +482,13 @@ SyncMethod_Response callback) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            ResultInterfaceSyncMethodParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new ResultInterfaceSyncMethodParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            ResultInterfaceSyncMethodParams result = new ResultInterfaceSyncMethodParams(elementsOrVersion);
                     {
                         
                     result.a = decoder0.readBoolean(8, 0);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -555,19 +537,13 @@ SyncMethod_Response callback) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            ResultInterfaceSyncMethodResponseParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new ResultInterfaceSyncMethodResponseParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            ResultInterfaceSyncMethodResponseParams result = new ResultInterfaceSyncMethodResponseParams(elementsOrVersion);
                     {
                         
                     result.result = ResultInterfaceSyncMethodResponseParamResult.decode(decoder0, 8);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 

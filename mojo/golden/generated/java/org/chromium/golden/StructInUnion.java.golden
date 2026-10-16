@@ -54,11 +54,8 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
         if (decoder0 == null) {
             return null;
         }
-        decoder0.increaseStackDepth();
-        StructInUnion result;
-        try {
-            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-            result = new StructInUnion(elementsOrVersion);
+        final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+        StructInUnion result = new StructInUnion(elementsOrVersion);
                 {
                     
                 result.flag = decoder0.readBoolean(8, 0);
@@ -67,10 +64,7 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
                     
                 result.value = decoder0.readString(16, false);
                 }
-
-        } finally {
-            decoder0.decreaseStackDepth();
-        }
+        decoder0.decreaseStackDepth();
         return result;
     }
 

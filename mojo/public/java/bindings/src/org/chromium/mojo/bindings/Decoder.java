@@ -176,11 +176,14 @@ public class Decoder {
 
     /**
      * Deserializes and validates the header of a struct that has only a single version (version 0).
+     * Also increases the stack depth. Callers must call {@link #decreaseStackDepth()} once the
+     * struct has been decoded.
      *
      * @param size the size of the struct, in bytes.
      * @return the version of the received struct.
      */
     public int readAndValidateStructHeader(int size) throws DeserializationException {
+        mValidator.increaseStackDepth();
         DataHeader header = readDataHeader();
         int version = header.elementsOrVersion;
         if (version == 0) {
@@ -194,13 +197,16 @@ public class Decoder {
     }
 
     /**
-     * Deserializes and validates the header of a struct that has multiple versions.
+     * Deserializes and validates the header of a struct that has multiple versions. Also increases
+     * the stack depth. Callers must call {@link #decreaseStackDepth()} once the struct has been
+     * decoded.
      *
      * @param versionArray flattened (size, version) pairs for each known version of the struct,
      *     ordered by increasing version.
      * @return the version of the received struct.
      */
     public int readAndValidateStructHeader(int[] versionArray) throws DeserializationException {
+        mValidator.increaseStackDepth();
         DataHeader header = readDataHeader();
         int version = header.elementsOrVersion;
         int maxVersionIndex = versionArray.length - 2;
@@ -943,10 +949,10 @@ public class Decoder {
         }
     }
 
-    public void increaseStackDepth() throws DeserializationException {
-        mValidator.increaseStackDepth();
-    }
-
+    /**
+     * Must be called once a struct has been decoded. Not called when decoding fails, since the
+     * message is then discarded.
+     */
     public void decreaseStackDepth() {
         mValidator.decreaseStackDepth();
     }

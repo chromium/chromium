@@ -215,11 +215,8 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
             if (decoder0 == null) {
                 return null;
             }
-            decoder0.increaseStackDepth();
-            WebUiPageHandlerFactoryCreatePageHandlerParams result;
-            try {
-                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-                result = new WebUiPageHandlerFactoryCreatePageHandlerParams(elementsOrVersion);
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
+            WebUiPageHandlerFactoryCreatePageHandlerParams result = new WebUiPageHandlerFactoryCreatePageHandlerParams(elementsOrVersion);
                     {
                         
                     result.page = decoder0.readServiceInterface(8, false, Page.MANAGER);
@@ -228,10 +225,7 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
                         
                     result.handler = decoder0.readInterfaceRequest(16, false);
                     }
-
-            } finally {
-                decoder0.decreaseStackDepth();
-            }
+            decoder0.decreaseStackDepth();
             return result;
         }
 
