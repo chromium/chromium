@@ -73,6 +73,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
@@ -93,11 +94,15 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/render_text.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_test_api.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -2926,8 +2931,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForOmniboxFocus(true));
 }
 
-// Verifies that input entered into the native Omnibox during startup
-// before popup readiness is seamlessly transferred to WebUI upon readiness.
+// Verifies that text typed into the omnibox at startup reaches WebUI, whether
+// or not the popup is ready yet. On the Views toolbar,
+// `NativeFocusHandoffKeepsDraftAndSelection` forces the not-ready case.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ColdStartTypingHandoffToWebUI) {
   RunTestSequence(
@@ -2954,8 +2960,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           "chromium|8|8")));
 }
 
-// Verifies that text selection highlighted in native Omnibox during handoff
-// is preserved when transferred to WebUI.
+// Verifies that a selection made in the omnibox at startup reaches WebUI,
+// whether or not the popup is ready yet. On the Views toolbar,
+// `NativeFocusHandoffKeepsDraftAndSelection` forces the not-ready case.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ColdStartSelectionHandoffToWebUI) {
   RunTestSequence(
@@ -2982,6 +2989,117 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           kPopupWebView, kWebUIInput,
           "el => `${el.value}|${el.selectionStart}|${el.selectionEnd}`",
           "chromium|0|4")));
+}
+
+// Verifies that handing off focus from the native omnibox textfield to the
+// WebUI omnibox keeps the draft, selection, and autocomplete results, rather
+// than blurring the omnibox. `LocationBarView::OnFullWebUiOmniboxReady()` does
+// this when the user types in a new window before the popup is ready. The popup
+// is already ready here, so this restores the native textfield's pre-ready
+// focus state and then calls it again.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       NativeFocusHandoffKeepsDraftAndSelection) {
+  if (!BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView()) {
+    GTEST_SKIP() << "Only the Views toolbar has a native omnibox textfield.";
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForBrowserWidgetActive(),
+      PollUntil(
+          [this]() {
+            return BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView()
+                ->IsFullWebUiOmniboxReady();
+          },
+          "WaitForFullWebUiOmniboxReady"),
+      CheckPopupState(OmniboxPopupState::kNone), Do([this]() {
+        LocationBarView* location_bar_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView();
+        OmniboxViewViews* omnibox_view = location_bar_view->omnibox_view();
+        // Focus the native textfield and type a draft into it, as happens
+        // while WebUI is loading.
+        location_bar_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+        omnibox_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+        omnibox_view->RequestFocus();
+        ASSERT_TRUE(omnibox_view->HasFocus());
+        omnibox_view->SetUserText(u"chromium");
+        omnibox_view->SetSelectionBounds(gfx::Range(0, 4));
+        const AutocompleteController* autocomplete_controller =
+            GetOmniboxControllerForTest()->autocomplete_controller();
+        ASSERT_FALSE(autocomplete_controller->result().empty());
+
+        // Run the handoff itself. The popup is already ready, so this takes
+        // the same path as when it first becomes ready.
+        location_bar_view->OnFullWebUiOmniboxReady();
+
+        // Blurring the omnibox would have stopped autocomplete and cleared
+        // its results.
+        EXPECT_FALSE(autocomplete_controller->result().empty());
+        EXPECT_TRUE(GetOmniboxControllerForTest()
+                        ->edit_model()
+                        ->user_input_in_progress());
+        // The native textfield tail-elides again, as it does while unfocused.
+        EXPECT_EQ(gfx::ELIDE_TAIL, views::TextfieldTestApi(omnibox_view)
+                                       .GetRenderText()
+                                       ->elide_behavior());
+      }),
+      WaitForPopupReady(), CheckPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForWebUIInputValue("chromium")),
+      InAnyContext(CheckWebUIInputSelection(0, 4)));
+}
+
+// Verifies that clicking the page while the native omnibox textfield has focus
+// still blurs the omnibox, so the handoff early return in
+// `OmniboxViewViews::OnBlur()` only covers focus moving to `LocationBarView`.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       PageClickStillBlursNativeOmnibox) {
+  if (!BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView()) {
+    GTEST_SKIP() << "Only the Views toolbar has a native omnibox textfield.";
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForBrowserWidgetActive(),
+      PollUntil(
+          [this]() {
+            return BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView()
+                ->IsFullWebUiOmniboxReady();
+          },
+          "WaitForFullWebUiOmniboxReady"),
+      CheckPopupState(OmniboxPopupState::kNone), Do([this]() {
+        LocationBarView* location_bar_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView();
+        OmniboxViewViews* omnibox_view = location_bar_view->omnibox_view();
+        // Focus the native textfield and type a draft into it, as happens
+        // while WebUI is loading.
+        location_bar_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+        omnibox_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+        omnibox_view->RequestFocus();
+        ASSERT_TRUE(omnibox_view->HasFocus());
+        omnibox_view->SetUserText(u"chromium");
+        omnibox_view->SetSelectionBounds(gfx::Range(0, 4));
+        ASSERT_TRUE(GetOmniboxControllerForTest()->edit_model()->has_focus());
+      }),
+      // Leave the omnibox the way a user does, by clicking the page.
+      ClickWebPageBody(kTab1), WaitForEditModelFocus(false),
+      CheckNativeOmniboxViewUnfocused(), Do([this]() {
+        LocationBarView* location_bar_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView();
+        // A real blur collapses the selection.
+        EXPECT_TRUE(
+            location_bar_view->omnibox_view()->GetSelectedRange().is_empty());
+        location_bar_view->UpdateFocusBehavior(
+            location_bar_view->is_toolbar_visible());
+      }));
 }
 
 // Verifies that when a user types a draft in the omnibox and then navigates the
