@@ -76,16 +76,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/managed_ui.h"  // nogncheck crbug.com/40147906
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#else
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
+#include "chrome/browser/ui/managed_ui.h"  // nogncheck crbug.com/40147906
 #include "components/device_signals/core/browser/user_permission_service.h"  // nogncheck
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_util.h"
@@ -410,12 +405,12 @@ void ManagementUIHandler::AddBrowserReportingInfo(
     report_sources->Append(std::move(data));
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto device_signal_data = GetDeviceSignalGrantedMessage();
   if (!device_signal_data.empty()) {
     report_sources->Append(std::move(device_signal_data));
   }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void ManagementUIHandler::AddProfileReportingInfo(
@@ -445,12 +440,12 @@ void ManagementUIHandler::AddProfileReportingInfo(
     report_sources->Append(std::move(data));
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto device_signal_data = GetDeviceSignalGrantedMessage();
   if (!device_signal_data.empty()) {
     report_sources->Append(std::move(device_signal_data));
   }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   base::DictValue learn_more_data;
   learn_more_data.Set("messageId", kProfileReportingLearnMore);
   report_sources->Append(std::move(learn_more_data));
@@ -637,7 +632,7 @@ policy::PolicyService* ManagementUIHandler::GetPolicyService() {
       ->policy_service();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
 device_signals::UserPermissionService*
 ManagementUIHandler::GetUserPermissionService() {
   return enterprise_signals::UserPermissionServiceFactory::GetForProfile(
@@ -657,7 +652,7 @@ base::DictValue ManagementUIHandler::GetDeviceSignalGrantedMessage() {
   }
   return base::DictValue();
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool ManagementUIHandler::managed() const {
   return account_managed() || browser_managed_;
