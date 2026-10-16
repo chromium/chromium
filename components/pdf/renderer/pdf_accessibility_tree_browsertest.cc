@@ -750,8 +750,9 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
   // landscape page.
   gfx::RectF page_bounds = gfx::RectF(1, 2);
   for (size_t i = 1; i <= 2; ++i) {
-    if (i == 2)
+    if (i == 2) {
       page_bounds.Transpose();
+    }
 
     page_info_.bounds = gfx::ToEnclosingRect(page_bounds);
     pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
@@ -5179,7 +5180,7 @@ TEST_F(PdfAccessibilityTreeTest,
   CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"});
 }
 
-TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRunBreaksItem) {
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListMixedMarkerRuns) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -5195,11 +5196,83 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRunBreaksItem) {
           gfx::RectF(45.0f, 66.0f, 50.0f, 12.0f),  // Item 3 text
       });
   ASSERT_NE(nullptr, page);
-  ASSERT_EQ(3u, page->GetChildCount());
+  ASSERT_EQ(1u, page->GetChildCount());
 
-  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1"});
-  CheckParagraph(page->GetChildAtIndex(1u), "• Item 2");
-  CheckUnorderedList(page->GetChildAtIndex(2u), {"Item 3"});
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2", "Item 3"});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRuns) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Preceding paragraph", "• Alpha", "• Beta", "• Gamma"},
+      {
+          gfx::RectF(30.0f, 20.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 53.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 66.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Preceding paragraph");
+  const ui::AXNode* list = page->GetChildAtIndex(1u);
+  CheckUnorderedList(list, {"Alpha", "Beta", "Gamma"});
+
+  for (size_t i = 0; i < 3; ++i) {
+    const ui::AXNode* item = list->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, item);
+    const ui::AXNode* marker = item->GetChildAtIndex(0u);
+    ASSERT_NE(nullptr, marker);
+    const ui::AXNode* static_text = item->GetChildAtIndex(1u);
+    ASSERT_NE(nullptr, static_text);
+    ASSERT_EQ(1u, static_text->GetChildCount());
+    const ui::AXNode* inline_text = static_text->GetChildAtIndex(0u);
+    ASSERT_NE(nullptr, inline_text);
+
+    EXPECT_EQ(30.0f, marker->data().relative_bounds.bounds.x());
+    EXPECT_LT(marker->data().relative_bounds.bounds.width(), 80.0f);
+    EXPECT_GT(marker->data().relative_bounds.bounds.width(), 0.0f);
+    EXPECT_GT(inline_text->data().relative_bounds.bounds.x(),
+              marker->data().relative_bounds.bounds.x());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRunWrapsLine) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"• First item line 1", "First item line 2", "• Second"},
+      {
+          gfx::RectF(30.0f, 40.0f, 150.0f, 12.0f),
+          gfx::RectF(50.0f, 53.0f, 130.0f, 12.0f),
+          gfx::RectF(30.0f, 66.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u),
+                     {"First item line 1First item line 2", "Second"});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicMidLineBulletNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Home • About • Contact"}, {gfx::RectF(50.0f, 20.0f, 150.0f, 12.0f)});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Home • About • Contact");
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListFeatureDisabled) {

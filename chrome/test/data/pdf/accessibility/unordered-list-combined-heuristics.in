@@ -1,0 +1,75 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 300 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+  /Encoding /WinAnsiEncoding
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 10 260 Tm
+(Introductory paragraph line one.) Tj
+1 0 0 1 10 245 Tm
+(Introductory paragraph line two.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 20 215 Tm
+(\225 First list item line one.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 35 200 Tm
+(First list item line two.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 20 185 Tm
+(\225) Tj
+1 0 0 1 35 185 Tm
+(Second list item.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 20 155 Tm
+(\225 Third list item.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 125 Tm
+(Trailing paragraph after list.) Tj
+ET
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

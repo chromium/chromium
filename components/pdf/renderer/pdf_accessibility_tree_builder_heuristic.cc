@@ -37,6 +37,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -209,9 +210,6 @@ enum class ListMarkerKind {
   // text run on the same visual line.
   kStandaloneUnordered,
   // A single run combining an unordered marker and item text (e.g. "• Item").
-  // TODO(crbug.com/525509231): Split combined runs into `kListMarker` and
-  // `kStaticText` nodes so they can be classified as `kListItem`s instead of
-  // only breaking a preceding `kListItem`.
   kCombinedUnordered,
 };
 
@@ -1458,30 +1456,78 @@ ListMarkerKind ClassifyListMarker(const TextRunContext& run_context) {
   return ListMarkerKind::kNone;
 }
 
+struct ListMarkerPrefix {
+  // Number of leading characters belonging to the marker prefix (leading
+  // whitespace, marker code point, and trailing whitespace).
+  size_t char_count = 0;
+  // Visual width of the marker character itself.
+  float marker_width = 0.0f;
+};
+
+// Returns the prefix info for a combined marker+text run: the number of leading
+// chars belonging to the marker (leading whitespace, marker code point,
+// trailing whitespace) and the visual width of the marker character itself.
+ListMarkerPrefix GetListMarkerPrefix(
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  ListMarkerPrefix prefix;
+  size_t prefix_char_count = 0;
+  // Skip leading whitespace before the marker.
+  while (
+      prefix_char_count < chars.size() &&
+      base::IsUnicodeWhitespace(chars[prefix_char_count].unicode_character)) {
+    ++prefix_char_count;
+  }
+  // Record the marker code point width and skip it. All supported unordered
+  // markers are single code points.
+  if (prefix_char_count < chars.size()) {
+    prefix.marker_width =
+        static_cast<float>(chars[prefix_char_count].char_width);
+    ++prefix_char_count;
+  }
+  // Skip trailing whitespace between the marker and the item text.
+  while (
+      prefix_char_count < chars.size() &&
+      base::IsUnicodeWhitespace(chars[prefix_char_count].unicode_character)) {
+    ++prefix_char_count;
+  }
+  prefix.char_count = prefix_char_count;
+  return prefix;
+}
+
+// Returns the total visual width of `chars`.
+float GetCharsWidth(base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  float width = 0.0f;
+  for (const auto& char_info : chars) {
+    width += static_cast<float>(char_info.char_width);
+  }
+  return width;
+}
+
+// Adjusts `text_run` to skip `prefix_char_count` leading characters, shifting
+// its visual bounds rightward by `prefix_width`.
+void TrimTextRunPrefix(size_t prefix_char_count,
+                       float prefix_width,
+                       chrome_pdf::AccessibilityTextRunInfo& text_run) {
+  CHECK_LE(prefix_char_count, text_run.len);
+  text_run.start_index += prefix_char_count;
+  text_run.len -= prefix_char_count;
+  text_run.bounds.Inset(gfx::InsetsF().set_left(prefix_width));
+}
+
 // Returns whether to break before `next_run_context` due to a list boundary,
-// such as a new standalone marker run, a combined marker-and-text run, or an
-// outdent past the current list's indent.
+// such as a new standalone or combined marker run, or an outdent past the
+// current list's indent.
 bool BreakAtListBoundary(const TextRunContext& next_run_context,
                          const ui::AXNodeData* block_node,
                          float current_list_indent) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   CHECK(block_node);
-  // End the current list item if the next line is a combined marker-and-text
-  // run or outdents to the left of the list's marker indent, so neither is
-  // merged into this item as a continuation line.
-  const bool current_block_is_list_item =
-      block_node->role == ax::mojom::Role::kListItem;
-  switch (ClassifyListMarker(next_run_context)) {
-    case ListMarkerKind::kStandaloneUnordered:
-      return true;
-    case ListMarkerKind::kCombinedUnordered:
-      return current_block_is_list_item;
-    case ListMarkerKind::kNone:
-      return current_block_is_list_item &&
-             next_run_context.run->bounds.x() <
-                 current_list_indent - kListIndentThreshold;
+  if (ClassifyListMarker(next_run_context) != ListMarkerKind::kNone) {
+    return true;
   }
-  NOTREACHED();
+  return block_node->role == ax::mojom::Role::kListItem &&
+         next_run_context.run->bounds.x() <
+             current_list_indent - kListIndentThreshold;
 }
 
 bool BreakParagraphByLineSpacing(
@@ -1926,23 +1972,24 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       }
     }
 
+    size_t marker_prefix_char_count = 0;
     if (is_list_marker) {
       CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
       CHECK(current_list_node_);
-      ui::AXNodeData* marker = builder_->CreateAndAppendNode(
-          ax::mojom::Role::kListMarker, ax::mojom::Restriction::kReadOnly);
-      marker->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                 "::marker");
-      // Text run bounds are relative to the page, so offset them by the page
-      // node bounds, matching inline text boxes.
-      marker->relative_bounds.bounds =
-          text_run.bounds +
-          builder_->page_node()->relative_bounds.bounds.OffsetFromOrigin();
-      block_node->child_ids.push_back(marker->id);
-      block_node->relative_bounds.bounds.Union(marker->relative_bounds.bounds);
-      current_list_node_->relative_bounds.bounds.Union(
-          marker->relative_bounds.bounds);
-      continue;
+      const ListMarkerKind marker_kind = ClassifyListMarker(run_context);
+      gfx::RectF marker_bounds = text_run.bounds;
+      if (marker_kind == ListMarkerKind::kCombinedUnordered) {
+        const ListMarkerPrefix prefix = GetListMarkerPrefix(run_context.chars);
+        marker_prefix_char_count = prefix.char_count;
+        marker_bounds.set_width(prefix.marker_width);
+      }
+
+      AddListMarkerToNode(marker_bounds, block_node);
+      // Standalone runs consist solely of the marker, so proceed to the next
+      // run. Combined runs fall through to process the remaining item text.
+      if (marker_kind == ListMarkerKind::kStandaloneUnordered) {
+        continue;
+      }
     }
 
     // If the `text_run_index` is less than or equal to the link's
@@ -1982,7 +2029,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
         current_heading_classifier = HeadingClassifier::kNone;
       }
       ui::AXNodeData* inline_text_box_node =
-          AddTextRunToNode(text_run_index, block_node, &static_text_state);
+          AddTextRunToNode(text_run_index, block_node, &static_text_state,
+                           marker_prefix_char_count);
 
       if (previous_on_line_node) {
         ConnectPreviousAndNextOnLine(previous_on_line_node,
@@ -2156,7 +2204,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   // marker run itself becomes the item's `kListMarker` in `BuildPageTree()`.
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
       !header_footer_ax_role.has_value() &&
-      ClassifyListMarker(run_context) == ListMarkerKind::kStandaloneUnordered) {
+      ClassifyListMarker(run_context) != ListMarkerKind::kNone) {
     if (!list) {
       // Leave `language` empty on `kList` because `current_block_node_` tracks
       // language changes per `kListItem`, not across the enclosing list.
@@ -2232,19 +2280,48 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   return block_node;
 }
 
+void PdfAccessibilityTreeBuilderHeuristic::AddListMarkerToNode(
+    const gfx::RectF& bounds,
+    ui::AXNodeData* item_node) {
+  CHECK(current_list_node_);
+  ui::AXNodeData* marker = builder_->CreateAndAppendNode(
+      ax::mojom::Role::kListMarker, ax::mojom::Restriction::kReadOnly);
+  marker->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "::marker");
+  // Text run bounds are relative to the page, so offset them by the page node
+  // bounds, matching inline text boxes.
+  marker->relative_bounds.bounds =
+      bounds + builder_->page_node()->relative_bounds.bounds.OffsetFromOrigin();
+  item_node->child_ids.push_back(marker->id);
+  item_node->relative_bounds.bounds.Union(marker->relative_bounds.bounds);
+  current_list_node_->relative_bounds.bounds.Union(
+      marker->relative_bounds.bounds);
+}
+
 ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
     size_t text_run_index,
     ui::AXNodeData* parent_node,
-    StaticTextState* static_text_state) {
-  const chrome_pdf::AccessibilityTextRunInfo& text_run =
+    StaticTextState* static_text_state,
+    size_t marker_prefix_char_count) {
+  chrome_pdf::AccessibilityTextRunInfo text_run =
       builder_->text_runs()[text_run_index];
   chrome_pdf::PageCharacterIndex page_char_index = {
       builder_->page_index(),
       builder_->text_run_start_indices()[text_run_index]};
+
+  if (marker_prefix_char_count > 0) {
+    CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+    const float prefix_width = GetCharsWidth(
+        base::span(builder_->chars())
+            .subspan(page_char_index.char_index, marker_prefix_char_count));
+    TrimTextRunPrefix(marker_prefix_char_count, prefix_width, text_run);
+    page_char_index.char_index += marker_prefix_char_count;
+  }
+
+  base::span<const chrome_pdf::AccessibilityCharInfo> char_span =
+      base::span(builder_->chars())
+          .subspan(page_char_index.char_index, text_run.len);
   ax::mojom::TextPosition text_position =
-      GetTextPosition(builder_->text_runs(), text_run_index,
-                      base::span(builder_->chars())
-                          .subspan(page_char_index.char_index, text_run.len));
+      GetTextPosition(builder_->text_runs(), text_run_index, char_span);
 
   // If the current block was given the opening run's language and a later run
   // in the block has a different language, move the language attribute from the
