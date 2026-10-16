@@ -1,0 +1,164 @@
+agentic_review {
+  capability_groups {
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/separate-api-removal-from-caller-migrations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/separate-refactoring-from-behavior-changes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/split-backend-logic-and-frontend-ui-into-separate-cls.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/split-preparatory-test-fixes-into-separate-cl.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/assert-raii-preconditions-in-constructors.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-parameters-when-only-single-value-supported.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-redundant-size-parameters-in-helper-apis.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-redundant-timestamp-resets-under-mock-time.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-trivial-single-use-wrapper-functions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/bundle-related-parameters-into-struct.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/centralize-platform-type-aliases-in-shared-headers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/colocate-bitmask-constants-with-packed-members.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/compare-std-variant-directly-with-equality-operator.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/consolidate-duplicate-lookup-helpers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/defer-complex-callee-modernization-to-follow-up-cl.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/delegate-between-function-overloads-to-avoid-duplication.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/derive-iterator-dereference-on-demand.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/do-not-treat-all-reparse-points-as-links.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/emit-static-strings-or-typed-arguments-for-field-tracing.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/encapsulate-bitmask-checks-in-predicate-helpers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/encapsulate-feature-with-preconditions-in-helper.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/encapsulate-format-offsets-in-reader-classes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/encapsulate-object-construction-and-parsing.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/encapsulate-repetitive-atomic-accessors.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/factor-shared-variant-over-suppressing-error-logging.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/initialize-nodestructor-statics-at-declaration.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/inject-collaborators-via-optional-unique-ptr-over-callbacks.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/keep-paired-helpers-in-same-module.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/keep-platform-and-cpu-architecture-guards-orthogonal.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/keep-raii-guards-and-leases-non-movable.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/keep-utility-classes-platform-agnostic.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/log-errors-at-failure-point-in-helpers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/no-optional-string-when-empty-denotes-absence.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/no-test-only-stream-operators-in-production.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/omit-unnecessary-postfix-increment-on-custom-iterators.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/override-data-acquisition-hooks-in-test-doubles.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/parameterize-helpers-instead-of-inlining-formatting.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-cc-unnamed-namespace-helpers-over-private-methods.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-explicit-parameter-helpers-over-lambda-wrappers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-lightweight-non-cryptographic-hash-for-identifiers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-transparent-functors-over-container-wrapper-aliases.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-virtual-methods-over-function-pointers-for-test-injec.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/remove-unused-test-friend-declarations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/reuse-dedicated-accessors-in-composite-functions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/reuse-member-helpers-in-constexpr-methods.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/separate-public-initiation-from-retry-execution.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/standalone-functions-for-ambient-context.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-completion-and-cancellation-in-multi-step-flows.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-error-handling-and-failure-metrics.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/unify-scalar-and-tuple-template-overloads-via-type-normaliza.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-base-traits-bag-for-variadic-trait-packs.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-descriptive-public-callback-type-aliases.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-non-joinable-threads-for-fire-and-forget-work.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-placeholders-for-dynamic-localized-strings.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/validate-crypto-and-hash-with-standard-test-vectors.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:FUZZ_TEST|fuzzer_test)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/colocate-fuzztest-with-unit-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-fuzztest-over-libfuzzer.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:ResettersForTesting|ForTesting|for_testing)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-create-for-testing-over-public-constructor.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/capture-sufficient-ui-context-in-translation-screenshots.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-overloads-over-type-suffixed-names.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:dlopen|dlsym)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-dlopen-dlsym-for-android-ndk.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:nocompile|NCTEST)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/add-no-compile-tests-for-compile-time-constraints.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bGTEST_SKIP\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-gtest-skip-over-early-return.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bHeapArray\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-heap-array-over-bespoke-buffer-wrappers.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bThread::Restartable\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-unnecessary-thread-restartable.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*fuzz[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/retain-unit-tests-until-function-removal.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/assert-instance-distinction-and-isolation-in-multi-instance.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/assert-query-out-params-in-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/assert-resource-cleanup-and-state-in-move-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-platform-guards-around-dcheck-death-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-redundant-assertions-on-initialized-test-variables.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-redundant-empty-view-test-assertions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/compare-optional-to-nullopt-in-gtest-assertions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/document-invalid-condition-in-malformed-data-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/document-pass-condition-in-assertion-free-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/force-jump-table-in-compiler-hardening-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/include-duplicates-when-testing-deduplicating-containers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/include-dynamic-state-in-test-failure-messages.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/keep-unit-tests-focused-on-target-operation.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-assert-over-expect-before-dereference.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-test-future-over-runloop.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/scope-or-reset-test-tracking-variables-across-subcases.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/spell-out-pointer-types-in-type-focused-unit-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/split-omnibus-tests-into-separate-unit-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-cleanup-idempotency-after-resource-creation.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-empty-boundary-state-for-query-apis.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-exhaustive-bitmask-flag-combinations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-type-traits-directly-not-via-wrappers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-assert-ok-and-assign-for-expected-values-in-tests.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-consistent-time-units-in-test-advancements.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/use-test-timeouts-instead-of-hardcoded-durations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/verify-windows-handle-isolation-with-maximum-allowed.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:Callback|Closure|Bind(?:Once|Repeating|LambdaForTesting))\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-bind-lambda-for-testing-in-tests.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:EXPECT_THAT|ASSERT_THAT|ElementsAre\\w*|HasSubstr)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-redundant-eq-inside-gmock-optional.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-gmock-elements-are-for-container-assertions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-gmock-matchers-for-string-search-assertions.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:PlatformThread::Sleep|SleepFor|Thread::sleep)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/avoid-arbitrary-sleeps-in-multithreaded-unit-tests.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bEnumSet\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/test-multi-word-boundaries-for-bitsets-and-enum-sets.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bWaitableEvent\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_design_and_testing/prefer-manual-reset-for-initially-signaled-waitable-events.md"
+  }
+}
