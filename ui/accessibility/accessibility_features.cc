@@ -263,7 +263,7 @@ bool IsAccessibilityChromeVoxJapaneseBrailleEnabled() {
 }
 
 BASE_FEATURE(kAccessibilityGoogleTtsAutomaticReconnect,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityGoogleTtsAutomaticReconnectEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityGoogleTtsAutomaticReconnect);
