@@ -478,6 +478,24 @@ suite('NewTabPageLogoTest', () => {
     assertFalse(!!logo.shadowRoot.querySelector('ntp-doodle-share-dialog'));
   });
 
+  [true, false].forEach(roundedIcons => {
+    test(`share button icon with rounded icons ${roundedIcons}`, async () => {
+      // Arrange.
+      loadTimeData.overrideValues({webuiRoundedIconsEnabled: roundedIcons});
+
+      // Act.
+      const logo =
+          await createLogo(createImageDoodle(), createTheme({isDark: false}));
+
+      // Assert.
+      const shareButtonIcon = $$(logo, '#shareButtonIcon');
+      assertTrue(!!shareButtonIcon);
+      assertEquals(
+          roundedIcons ? 'ntp-doodle:share' : 'ntp-doodle:share-old',
+          shareButtonIcon.getAttribute('icon'));
+    });
+  });
+
   [true, false].forEach(dark => {
     const darkStr = dark ? 'dark' : 'light';
     test(`${darkStr} simple doodle logging flow`, async () => {

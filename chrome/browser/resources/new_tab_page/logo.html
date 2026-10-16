@@ -16,7 +16,10 @@ ${this.showDoodle_ ? html`
       </div>
       <cr-button id="shareButton" title="$i18n{shareDoodle}"
           @click="${this.onShareButtonClick_}">
-        <div id="shareButtonIcon"></div>
+        <cr-icon id="shareButtonIcon"
+            icon="${this.webuiRoundedIconsEnabled_ ?
+                'ntp-doodle:share' : 'ntp-doodle:share-old'}">
+        </cr-icon>
       </cr-button>
     </div>
   </div>

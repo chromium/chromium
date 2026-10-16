@@ -131,16 +131,10 @@
 }
 
 #shareButtonIcon {
-  width: 18px;
-  height: 18px;
+  --iron-icon-fill-color:
+      var(--color-new-tab-page-doodle-share-button-icon, none);
+  --iron-icon-height: 18px;
+  --iron-icon-width: 18px;
   margin: 7px;
   vertical-align: bottom;
-  mask-image: url(chrome://new-tab-page/icons/share_unfilled_old.svg);
-  background-color: var(--color-new-tab-page-doodle-share-button-icon, none);
-}
-
-:host-context([webui-rounded-icons]) #shareButtonIcon {
-  mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
-  mask-repeat: no-repeat;
-  mask-size: contain;
 }

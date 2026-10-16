@@ -4,11 +4,14 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './doodle_icons.html.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './doodle_share_dialog.css.js';
@@ -53,11 +56,15 @@ export class DoodleShareDialogElement extends CrLitElement {
 
       /** Share URL provided to the user. */
       url: {type: String},
+
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   override accessor title: string = '';
   accessor url: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   protected onFacebookClick_() {
     const url = 'https://www.facebook.com/dialog/share' +

@@ -12,6 +12,7 @@ all_ts_files = [
                  "background_manager.ts",
                  "customize_buttons_proxy.ts",
                  "customize_dialog_types.ts",
+                 "doodle_icons.html.ts",
                  "i18n_setup.ts",
                  "image_processor.ts",
                  "lazy_load.ts",
