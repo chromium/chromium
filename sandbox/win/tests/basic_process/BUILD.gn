@@ -26,6 +26,9 @@ if (is_win && is_basic_api_shim) {
       "/errorlimit:100",
     ]
     cflags = [ "/GS-" ]
+
+    # /GS- is incompatible with the stack protector mode in Clang modules.
+    use_libcxx_modules = false
     sources = [
       "nocrt.cc",
       "nocrt.h",
