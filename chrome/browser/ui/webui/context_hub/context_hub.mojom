@@ -249,6 +249,9 @@ struct TopicCollectionItem {
   url.mojom.Url url;
   // Name of the site the page belongs to, if known.
   string? site_name;
+  // Time of the Topic's visit the page was resolved to. Identifies the page in
+  // `TopicCollectionFeedback.rejected_item_visits`.
+  mojo_base.mojom.Time visit_time;
 };
 
 // A titled group of pages related to a Topic, shown as a carousel on the topic
@@ -362,6 +365,19 @@ enum TopicRating {
   kDisliked = 2,
 };
 
+// A fishfood rating of one of a Topic's collections.
+struct TopicCollectionFeedback {
+  // Title of the rated collection, which identifies it among the Topic's
+  // collections.
+  string title;
+  // Whether the collection is useful. kUnrated if the rater only flagged
+  // pages.
+  TopicRating rating;
+  // Visit times of the collection's pages the rater flagged as not belonging
+  // in it. See `TopicCollectionItem.visit_time`.
+  array<mojo_base.mojom.Time> rejected_item_visits;
+};
+
 // A fishfood rater's complete feedback on one Topic. Only collected when the
 // `fishfood_feedback` param of kTopics is enabled.
 struct TopicFeedback {
@@ -377,6 +393,9 @@ struct TopicFeedback {
   // Visit times of visits the rater flagged as not belonging to the Topic.
   array<mojo_base.mojom.Time> rejected_visits;
   DuplicateTopicSnapshot? duplicate_of;
+  // Ratings of the Topic's collections. The WebUI keeps at most one per
+  // collection title.
+  array<TopicCollectionFeedback> collection_feedbacks;
 };
 
 // Summary counts of the Topics fishfood feedback export.

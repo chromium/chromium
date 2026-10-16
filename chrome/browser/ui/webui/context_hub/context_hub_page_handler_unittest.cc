@@ -3103,6 +3103,8 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
   EXPECT_EQ(topics[0]->collections[0]->items[0]->url,
             GURL("https://example.com/collection-item"));
   EXPECT_FALSE(topics[0]->collections[0]->items[0]->site_name);
+  EXPECT_EQ(topics[0]->collections[0]->items[0]->visit_time,
+            base::Time::FromTimeT(600));
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTopics_NoJourneys) {

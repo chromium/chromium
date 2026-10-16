@@ -69,11 +69,13 @@ function createCollection(overrides: Partial<TopicCollection> = {}):
         title: 'Item 1',
         url: 'https://example.com/item-1',
         siteName: 'Site name',
+        visitTime: {internalValue: 11n},
       },
       {
         title: 'Item 2',
         url: 'https://www.example.org/item-2',
         siteName: null,
+        visitTime: {internalValue: 12n},
       },
     ],
     ...overrides,
@@ -186,11 +188,13 @@ suite('TopicUtils', () => {
               title: 'Item 1',
               url: 'https://example.com/item-1',
               siteName: 'Site name',
+              visitTime: {internalValue: 11n},
             },
             {
               title: 'Item 2',
               url: 'https://www.example.org/item-2',
               siteName: 'example.org',
+              visitTime: {internalValue: 12n},
             },
           ],
         }],
@@ -202,20 +206,45 @@ suite('TopicUtils', () => {
       collections: [
         createCollection({
           items: [
-            {title: 'Settings', url: 'chrome://settings', siteName: null},
-            {title: ' ', url: 'https://a.com/', siteName: null},
-            {title: 'B', url: 'https://b.com/', siteName: ' '},
+            {
+              title: 'Settings',
+              url: 'chrome://settings',
+              siteName: null,
+              visitTime: {internalValue: 1n},
+            },
+            {
+              title: ' ',
+              url: 'https://a.com/',
+              siteName: null,
+              visitTime: {internalValue: 2n},
+            },
+            {
+              title: 'B',
+              url: 'https://b.com/',
+              siteName: ' ',
+              visitTime: {internalValue: 3n},
+            },
           ],
         }),
         createCollection({title: ' '}),
         createCollection({
-          items: [{title: 'History', url: 'chrome://history', siteName: null}],
+          items: [{
+            title: 'History',
+            url: 'chrome://history',
+            siteName: null,
+            visitTime: {internalValue: 4n},
+          }],
         }),
       ],
     }));
     assertEquals(1, item.collections.length);
     assertDeepEquals(
-        [{title: 'B', url: 'https://b.com/', siteName: 'b.com'}],
+        [{
+          title: 'B',
+          url: 'https://b.com/',
+          siteName: 'b.com',
+          visitTime: {internalValue: 3n},
+        }],
         item.collections[0]!.items);
   });
 
@@ -1630,6 +1659,7 @@ suite('TopicCollectionCarousel', () => {
         title: `Page ${i}`,
         url: `https://site${i}.com/`,
         siteName: `Site ${i}`,
+        visitTime: {internalValue: BigInt(i)},
       });
     }
     return items;

@@ -21,6 +21,9 @@ export interface CollectionItem {
   url: string;
   // The backend's site name, or the page's domain when it didn't send one.
   siteName: string;
+  // Time of the topic's visit the page was resolved to, which identifies it
+  // among the topic's visits.
+  visitTime: Time;
 }
 
 // A titled group of pages related to a topic, shown as a carousel on the
@@ -241,6 +244,7 @@ export function createEmptyTopicFeedback(topic: TopicItem): TopicFeedback {
     queryFeedbacks: [],
     rejectedVisits: [],
     duplicateOf: null,
+    collectionFeedbacks: [],
   };
 }
 
@@ -405,6 +409,7 @@ function toCollectionItem(item: TopicCollectionItem): CollectionItem {
     title: item.title.trim(),
     url: item.url,
     siteName: item.siteName?.trim() || getDisplayDomain(item.url),
+    visitTime: item.visitTime,
   };
 }
 

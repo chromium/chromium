@@ -1255,7 +1255,7 @@ browser::context_hub::mojom::TopicPtr ToMojoTopic(Journey journey) {
                 base::ToVector(collection.visits, [](JourneyVisit& visit) {
                   return browser::context_hub::mojom::TopicCollectionItem::New(
                       base::UTF16ToUTF8(visit.title), std::move(visit.url),
-                      /*site_name=*/std::nullopt);
+                      /*site_name=*/std::nullopt, visit.visit_time);
                 }));
           });
 
