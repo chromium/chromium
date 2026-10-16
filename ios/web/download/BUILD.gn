@@ -95,15 +95,25 @@ source_set("download_unittests") {
 source_set("download_inttests") {
   testonly = true
   deps = [
+    ":download",
+    "//base",
     "//base/test:test_support",
+    "//ios/testing:embedded_test_server_support",
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/test",
     "//ios/web/public/test:download_test_utils",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//ios/web/test:test_support",
+    "//ios/web/web_state/ui:web_controller_header",
+    "//net",
     "//net:test_support",
+    "//testing/gtest",
   ]
 
-  sources = [ "download_inttest.mm" ]
+  sources = [
+    "crw_web_view_download_inttest.mm",
+    "download_inttest.mm",
+  ]
 }
