@@ -60,6 +60,15 @@ const CGFloat kMultilineHeightMultiplier = 1.5;
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)suggestionStripAtMemoryButton {
+  NSString* accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE),
+      u"");
+  return grey_allOf(grey_accessibilityLabel(accessibilityLabel),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)closeButton {
   return grey_accessibilityID(kAtMemoryCloseButtonAccessibilityIdentifier);
 }

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import <optional>
+#import <string>
+#import <string_view>
 
 #import "base/path_service.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
@@ -12,6 +14,7 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/atmemory/test/at_memory_test_util.h"
+#import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -33,6 +36,17 @@ constexpr char kHttpServerFilesDirectory[] =
 constexpr char kMockPersonalContextVehicleMakeResultType[] = "14";
 constexpr CGFloat kAIDisclosureLinkTapXPercentage = 0.15;
 constexpr CGFloat kAIDisclosureLinkTapYPercentage = 0.75;
+
+// Override parameter used to simulate server predictions for
+// `kVehicleFormPageURL`.
+constexpr std::string_view kVehicleOverrideParam =
+    "2031728383716307484_1092605073_178-"
+    "2031728383716307484_2435123338_179-"
+    "2031728383716307484_3040116536_185-"
+    "2031728383716307484_1294171443_7-"
+    "2031728383716307484_3811017579_176-"
+    "2031728383716307484_2296829005_186-"
+    "2031728383716307484_3849212670_177";
 
 // Element IDs for SSL warning bypass.
 NSString* const kDetailsButtonID = @"details-button";
@@ -207,6 +221,18 @@ void DismissSettings() {
         personal_context::features::debug::
             kPersonalContextResetNoticePrefsOnStartup);
   }
+
+  if ([self
+          isRunningTest:@selector(
+                            testShowsAtMemoryBottomSheetFromSuggestionStrip)]) {
+    config.features_enabled.push_back(
+        autofill::features::debug::kAutofillAiForceOptIn);
+    config.features_enabled_and_params.push_back(
+        {autofill::features::debug::kAutofillOverridePredictions,
+         {{"spec", std::string(kVehicleOverrideParam)}}});
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiAlwaysTriggerServerModel);
+  }
   return config;
 }
 
@@ -217,7 +243,11 @@ void DismissSettings() {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey closeTabAtIndex:0];
   LoadVehicleFormPage(&_HTTPSServer.value());
-  OpenAtMemoryForVehicleMakeField();
+  if (![self
+          isRunningTest:@selector(
+                            testShowsAtMemoryBottomSheetFromSuggestionStrip)]) {
+    OpenAtMemoryForVehicleMakeField();
+  }
 }
 
 - (void)tearDownHelper {
@@ -238,6 +268,31 @@ void DismissSettings() {
 - (void)testShowsAtMemoryBottomSheet {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil emptyStateImage]];
+}
+
+// Tests that tapping the AtMemory suggestion chip in the keyboard suggestion
+// scroll view opens the AtMemory bottom sheet.
+- (void)testShowsAtMemoryBottomSheetFromSuggestionStrip {
+  GREYAssertTrue([AutofillAppInterface saveVehicleEntity],
+                 @"Failed to save vehicle entity.");
+
+  // Focus on the vehicle make field to trigger suggestions.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kVehicleMakeFieldID)];
+
+  // Scroll to the right of the keyboard accessory so that the AtMemory
+  // suggestion chip is visible.
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+
+  // Tap the AtMemory suggestion chip in the suggestion strip.
+  [[EarlGrey
+      selectElementWithMatcher:[AtMemoryTestUtil suggestionStripAtMemoryButton]]
+      performAction:grey_tap()];
+
+  // Verify the AtMemory bottom sheet is visible.
+  [[EarlGrey selectElementWithMatcher:[AtMemoryTestUtil bottomSheetTitle]]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that searching for a query with no matching data ("flight") displays

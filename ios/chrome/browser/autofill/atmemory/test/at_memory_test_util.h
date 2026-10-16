@@ -26,6 +26,9 @@
 // search bar inside the AtMemory bottom sheet.
 + (id<GREYMatcher>)searchButton;
 
+// Returns a matcher for the AtMemory chip in the suggestion strip.
++ (id<GREYMatcher>)suggestionStripAtMemoryButton;
+
 // Returns a matcher for the close button inside the AtMemory bottom sheet.
 + (id<GREYMatcher>)closeButton;
 
