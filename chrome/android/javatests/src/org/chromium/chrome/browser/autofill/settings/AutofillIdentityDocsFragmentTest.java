@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.Entity
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
@@ -638,6 +639,7 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
     public void testAutofillAiEntities_opensEditorOnSuccessfulReauth() {
         EntityType passportType = getPassportEntityType();
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
@@ -675,6 +677,7 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
     public void testAutofillAiEntities_doesNotOpenEditorOnFailedReauth() {
         EntityType passportType = getPassportEntityType();
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
@@ -710,6 +713,128 @@ public class AutofillIdentityDocsFragmentTest {
 
         // Editor should NOT be open.
         onView(withText("Edit passport")).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void testAutofillAiEntities_refactorFlagEnabled_opensEditorOnSuccessfulReauth() {
+        EntityType passportType = getPassportEntityType();
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(
+                passportType, Arrays.asList(TestUtils.buildGermanyPassportWithLabels("guid1")));
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(passportType)
+                        .setGuid("guid1")
+                        .setRecordType(RecordType.LOCAL)
+                        .setUseCount(0)
+                        .setRequiresReauthToSee(true)
+                        .build();
+
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
+
+        mSettingsTestRule.startSettingsActivity();
+
+        Preference passportEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mSettingsTestRule.getFragment().findPreference("guid1"));
+
+        // Click entity and capture reauth callback.
+        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
+        verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
+        verify(mMockReauthenticatorBridge, never()).getBiometricAvailabilityStatus();
+
+        // Simulate successful reauth.
+        ThreadUtils.runOnUiThreadBlocking(() -> callbackCaptor.getValue().onResult(true));
+
+        onView(withText("Edit passport")).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void testAutofillAiEntities_refactorFlagEnabled_doesNotOpenEditorOnFailedReauth() {
+        EntityType passportType = getPassportEntityType();
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(
+                passportType, Arrays.asList(TestUtils.buildGermanyPassportWithLabels("guid1")));
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(passportType)
+                        .setGuid("guid1")
+                        .setRecordType(
+                                org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
+                        .setUseCount(0)
+                        .setRequiresReauthToSee(true)
+                        .build();
+
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
+
+        mSettingsTestRule.startSettingsActivity();
+
+        Preference passportEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mSettingsTestRule.getFragment().findPreference("guid1"));
+
+        // Click entity and capture reauth callback.
+        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
+        verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
+        verify(mMockReauthenticatorBridge, never()).getBiometricAvailabilityStatus();
+
+        // Simulate failed reauth.
+        ThreadUtils.runOnUiThreadBlocking(() -> callbackCaptor.getValue().onResult(false));
+
+        // Editor should NOT be open.
+        onView(withText("Edit passport")).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void
+            testAutofillAiEntities_refactorFlagEnabled_biometricsUnavailable_opensEditorWithoutReauth() {
+        EntityType passportType = getPassportEntityType();
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(
+                passportType, Arrays.asList(TestUtils.buildGermanyPassportWithLabels("guid1")));
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(passportType)
+                        .setGuid("guid1")
+                        .setRecordType(RecordType.LOCAL)
+                        .setUseCount(0)
+                        .setRequiresReauthToSee(true)
+                        .build();
+
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.UNAVAILABLE);
+
+        mSettingsTestRule.startSettingsActivity();
+
+        Preference passportEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mSettingsTestRule.getFragment().findPreference("guid1"));
+
+        // Click entity - reauth should not be triggered since biometrics are unavailable.
+        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
+        verify(mMockReauthenticatorBridge, never()).getBiometricAvailabilityStatus();
+        verify(mMockReauthenticatorBridge, never()).reauthenticate(any());
+
+        onView(withText("Edit passport")).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     @Test

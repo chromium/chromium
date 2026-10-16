@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFrag
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -263,6 +264,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
         // The ReauthenticatorBridge is always needed for reauthentication to view/edit
         // payment methods.
+        // TODO(crbug.com/574399005): Instantiate the reauthenticator bridge only if biometric
+        // authentication is available/required.
         createReauthenticatorBridge();
 
         // TODO(crbug.com/40261690): Confirm with Product on the order of the toggles.
@@ -486,10 +489,15 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         // party mode.
         // `getBiometricAvailabilityStatus` also checks if screen lock is available and returns
         // `ONLY_LSKF_AVAILABLE` if it is.
+        boolean isDeviceLockSetUp =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+                        ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
+                                != BiometricStatus.UNAVAILABLE
+                        : assumeNonNull(mReauthenticatorBridge).getBiometricAvailabilityStatus()
+                                != BiometricStatus.UNAVAILABLE;
         boolean enableReauthSwitch =
                 personalDataManager.isAutofillPaymentMethodsEnabled()
-                        && (assumeNonNull(mReauthenticatorBridge).getBiometricAvailabilityStatus()
-                                != BiometricStatus.UNAVAILABLE)
+                        && isDeviceLockSetUp
                         && !isPlatformAutofillEnabledForProfile(getProfile());
         mandatoryReauthSwitch.setEnabled(enableReauthSwitch);
         mandatoryReauthSwitch.setOnPreferenceChangeListener(this::onMandatoryReauthSwitchToggled);

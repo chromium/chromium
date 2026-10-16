@@ -20,8 +20,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -109,6 +111,8 @@ class BatchUploadCardMediator
             mSyncService.addSyncStateChangedListener(this);
         }
 
+        // TODO(crbug.com/574315008): Instantiate the reauthenticator bridge only if biometric
+        // authentication is available/required.
         mReauthenticatorBridge =
                 ReauthenticatorBridge.create(
                         activity,
@@ -207,9 +211,12 @@ class BatchUploadCardMediator
             return;
         }
 
+        int biometricStatus =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+                        ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
+                        : mReauthenticatorBridge.getBiometricAvailabilityStatus();
         mSyncService.getLocalDataDescriptions(
-                mReauthenticatorBridge.getBiometricAvailabilityStatus()
-                                == BiometricStatus.UNAVAILABLE
+                biometricStatus == BiometricStatus.UNAVAILABLE
                         ? Set.of(DataType.BOOKMARKS, DataType.READING_LIST)
                         : Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS),
                 localDataDescriptionsMap -> {

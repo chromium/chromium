@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -266,18 +267,27 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
         return prefs().getBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA);
     }
 
+    private void createReauthenticatorBridge() {
+        if (mReauthenticatorBridge == null) {
+            mReauthenticatorBridge =
+                    ReauthenticatorBridge.create(mActivity, mProfile, DeviceAuthSource.AUTOFILL);
+        }
+    }
+
     private void onAutofillAiReauthSettingToggled(boolean isOn) {
         if (isOn == isAutofillAiReauthOn()) {
             return;
         }
 
-        if (mReauthenticatorBridge == null) {
-            mReauthenticatorBridge =
-                    ReauthenticatorBridge.create(mActivity, mProfile, DeviceAuthSource.AUTOFILL);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)) {
+            createReauthenticatorBridge();
         }
 
-        if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
-                == BiometricStatus.UNAVAILABLE) {
+        int biometricStatus =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+                        ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
+                        : assumeNonNull(mReauthenticatorBridge).getBiometricAvailabilityStatus();
+        if (biometricStatus == BiometricStatus.UNAVAILABLE) {
             prefs().setBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA, isOn);
             mModel.set(
                     AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON,
@@ -285,7 +295,10 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
             return;
         }
 
-        mReauthenticatorBridge.reauthenticate(
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)) {
+            createReauthenticatorBridge();
+        }
+        assumeNonNull(mReauthenticatorBridge).reauthenticate(
                 (success) -> {
                     if (success) {
                         prefs().setBoolean(

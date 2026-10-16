@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.AutofillClientProviderUtils.isPlatformAutofillEnabledForProfile;
 
 import android.app.Activity;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFrag
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -706,29 +708,46 @@ public class AutofillAiDelegate {
         return UserPrefs.get(mFragment.getProfile()).getBoolean(mToggleConfig.prefName);
     }
 
-    private void editEntity(EntityInstance entityInstance) {
-        if (entityInstance.requiresReauthToSee()) {
-            if (mReauthenticatorBridge == null) {
-                mReauthenticatorBridge =
-                        ReauthenticatorBridge.create(
-                                mFragment.getActivity(),
-                                mFragment.getProfile(),
-                                DeviceAuthSource.AUTOFILL);
-            }
-            if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
-                    != BiometricStatus.UNAVAILABLE) {
-                mReauthenticatorBridge.reauthenticate(
-                        success -> {
-                            if (success) {
-                                showEntityEditor(entityInstance);
-                            }
-                        });
-            } else {
-                showEntityEditor(entityInstance);
-            }
-        } else {
-            showEntityEditor(entityInstance);
+    private void createReauthenticatorBridge() {
+        if (mReauthenticatorBridge == null) {
+            mReauthenticatorBridge =
+                    ReauthenticatorBridge.create(
+                            mFragment.getActivity(),
+                            mFragment.getProfile(),
+                            DeviceAuthSource.AUTOFILL);
         }
+    }
+
+    private void editEntity(EntityInstance entityInstance) {
+        final boolean isDeviceReauthRefactorEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR);
+        if (!entityInstance.requiresReauthToSee()) {
+            showEntityEditor(entityInstance);
+            return;
+        }
+
+        if (!isDeviceReauthRefactorEnabled) {
+            createReauthenticatorBridge();
+        }
+
+        int biometricStatus =
+                isDeviceReauthRefactorEnabled
+                        ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
+                        : assumeNonNull(mReauthenticatorBridge).getBiometricAvailabilityStatus();
+        if (biometricStatus == BiometricStatus.UNAVAILABLE) {
+            showEntityEditor(entityInstance);
+            return;
+        }
+
+        if (isDeviceReauthRefactorEnabled) {
+            createReauthenticatorBridge();
+        }
+        assumeNonNull(mReauthenticatorBridge).reauthenticate(
+                success -> {
+                    if (success) {
+                        showEntityEditor(entityInstance);
+                    }
+                });
     }
 
     void showEntityEditor(EntityInstance entityInstance) {

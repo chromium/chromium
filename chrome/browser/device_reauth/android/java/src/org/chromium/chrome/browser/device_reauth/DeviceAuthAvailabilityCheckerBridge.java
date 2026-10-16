@@ -14,7 +14,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Provides static helper methods to check biometric and screen lock availability via Android system
@@ -22,7 +24,18 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public final class DeviceAuthAvailabilityCheckerBridge {
+    private static @Nullable @BiometricStatus Integer sBiometricAvailabilityStatusForTesting;
+
     private DeviceAuthAvailabilityCheckerBridge() {}
+
+    /** For testing only. */
+    public static void setBiometricAvailabilityStatusForTesting(
+            @Nullable @BiometricStatus Integer status) {
+        Integer previous = sBiometricAvailabilityStatusForTesting;
+        sBiometricAvailabilityStatusForTesting = status;
+        ResettersForTesting.register(
+                () -> sBiometricAvailabilityStatusForTesting = previous);
+    }
 
     @CalledByNative
     static @JniType("device_reauth::BiometricsAvailability") @BiometricsAvailability int
@@ -52,6 +65,28 @@ public final class DeviceAuthAvailabilityCheckerBridge {
     static boolean canAuthenticateWithBiometricOrScreenLock() {
         @BiometricsAvailability int availability = canAuthenticateWithBiometric();
         return (availability == BiometricsAvailability.AVAILABLE) || hasScreenLockSetUp();
+    }
+
+    public static @BiometricStatus int getBiometricAvailabilityStatus() {
+        if (sBiometricAvailabilityStatusForTesting != null) {
+            return sBiometricAvailabilityStatusForTesting;
+        }
+        @BiometricsAvailability int availability = canAuthenticateWithBiometric();
+        switch (availability) {
+            case BiometricsAvailability.AVAILABLE:
+                return BiometricStatus.BIOMETRICS_AVAILABLE;
+            case BiometricsAvailability.AVAILABLE_NO_FALLBACK:
+            case BiometricsAvailability.NO_HARDWARE:
+            case BiometricsAvailability.HW_UNAVAILABLE:
+            case BiometricsAvailability.NOT_ENROLLED:
+            case BiometricsAvailability.SECURITY_UPDATE_REQUIRED:
+            case BiometricsAvailability.OTHER_ERROR:
+                break;
+        }
+        if (canAuthenticateWithBiometricOrScreenLock()) {
+            return BiometricStatus.ONLY_LSKF_AVAILABLE;
+        }
+        return BiometricStatus.UNAVAILABLE;
     }
 
     private static boolean hasScreenLockSetUp() {

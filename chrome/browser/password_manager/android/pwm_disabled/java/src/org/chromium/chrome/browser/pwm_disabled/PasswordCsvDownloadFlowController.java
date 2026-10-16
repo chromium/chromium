@@ -18,8 +18,10 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvDialogType;
@@ -77,12 +79,24 @@ public class PasswordCsvDownloadFlowController {
                 getCurrentDialogType(isGooglePlayServicesAvailable, isPasswordManagerAvailable);
     }
 
+    private void createReauthenticatorBridge() {
+        if (mReauthenticatorBridge == null) {
+            mReauthenticatorBridge =
+                    ReauthenticatorBridge.create(
+                            mFragmentActivity, mProfile, DeviceAuthSource.PASSWORDS_CSV_DOWNLOAD);
+        }
+    }
+
     private void reauthenticateUser() {
-        mReauthenticatorBridge =
-                ReauthenticatorBridge.create(
-                        mFragmentActivity, mProfile, DeviceAuthSource.PASSWORDS_CSV_DOWNLOAD);
-        if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
-                == BiometricStatus.UNAVAILABLE) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)) {
+            createReauthenticatorBridge();
+        }
+
+        int biometricStatus =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+                        ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
+                        : assumeNonNull(mReauthenticatorBridge).getBiometricAvailabilityStatus();
+        if (biometricStatus == BiometricStatus.UNAVAILABLE) {
             mLastFlowStep = DownloadCsvFlowStep.NO_SCREEN_LOCK;
             Toast.makeText(
                             mFragmentActivity.getApplicationContext(),
@@ -93,7 +107,11 @@ public class PasswordCsvDownloadFlowController {
             endFlow();
             return;
         }
-        mReauthenticatorBridge.reauthenticate(this::onReauthResult);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)) {
+            createReauthenticatorBridge();
+        }
+        assumeNonNull(mReauthenticatorBridge).reauthenticate(this::onReauthResult);
     }
 
     private void onReauthResult(boolean success) {

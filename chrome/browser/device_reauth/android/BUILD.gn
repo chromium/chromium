@@ -48,12 +48,16 @@ java_cpp_enum("device_reauth_java_enums_srcjar") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorControllerTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthAvailabilityCheckerBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorControllerTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
+    "//components/device_reauth:device_reauth_java_enums",
     "//third_party/androidx:androidx_biometric_biometric_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/junit",

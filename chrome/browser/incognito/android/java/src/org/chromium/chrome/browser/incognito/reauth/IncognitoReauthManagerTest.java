@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -21,8 +24,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 /** Mock tests for testing the functionality of {@link IncognitoReauthManager}. */
@@ -42,6 +49,7 @@ public class IncognitoReauthManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
     public void
             testIncognitoReauthManager_WhenCantUseAuthentication_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
@@ -50,6 +58,7 @@ public class IncognitoReauthManagerTest {
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
+        verify(mReauthenticatorBridgeMock, never()).reauthenticate(any());
         verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
     }
 
@@ -61,10 +70,12 @@ public class IncognitoReauthManagerTest {
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
+        verify(mReauthenticatorBridgeMock, never()).reauthenticate(any());
         verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
     public void
             testIncognitoReauthManager_WhenReauthenticationSucceeded_FiresCallbackWithSuccess() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
@@ -85,6 +96,7 @@ public class IncognitoReauthManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
     public void testIncognitoReauthManager_WhenReauthenticationFailed_FiresCallbackWithFailed() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
@@ -100,6 +112,62 @@ public class IncognitoReauthManagerTest {
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthFailure();
+        verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void testIncognitoReauthManager_refactorFlagEnabled_biometricsUnavailable() {
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.UNAVAILABLE);
+
+        mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
+        verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
+        verify(mReauthenticatorBridgeMock, never()).getBiometricAvailabilityStatus();
+        verifyNoInteractions(mReauthenticatorBridgeMock);
+        verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void testIncognitoReauthManager_refactorFlagEnabled_biometricsAvailable() {
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<Boolean> callback = invocationOnMock.getArgument(0);
+                            callback.onResult(true);
+                            return true;
+                        })
+                .when(mReauthenticatorBridgeMock)
+                .reauthenticate(notNull());
+
+        mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
+        verify(mIncognitoReauthCallbackMock).onIncognitoReauthSuccess();
+        verify(mReauthenticatorBridgeMock, never()).getBiometricAvailabilityStatus();
+        verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void testIncognitoReauthManager_refactorFlagEnabled_reauthenticationFailed() {
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<Boolean> callback = invocationOnMock.getArgument(0);
+                            callback.onResult(false);
+                            return false;
+                        })
+                .when(mReauthenticatorBridgeMock)
+                .reauthenticate(notNull());
+
+        mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
+        verify(mIncognitoReauthCallbackMock).onIncognitoReauthFailure();
+        verify(mReauthenticatorBridgeMock, never()).getBiometricAvailabilityStatus();
         verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
     }
 }

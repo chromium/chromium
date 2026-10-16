@@ -14,8 +14,10 @@ import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthAvailabilityCheckerBridge;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -43,6 +45,8 @@ public class IncognitoReauthManager {
     }
 
     public IncognitoReauthManager(Activity activity, Profile profile) {
+        // TODO(crbug.com/574398039): Instantiate the reauthenticator bridge only if biometric
+        // authentication is available/required.
         this(ReauthenticatorBridge.create(activity, profile, DeviceAuthSource.INCOGNITO));
     }
 
@@ -59,8 +63,13 @@ public class IncognitoReauthManager {
      *     once the authentication is executed.
      */
     public void startReauthenticationFlow(IncognitoReauthCallback incognitoReauthCallback) {
-        if (mReauthenticatorBridge.getBiometricAvailabilityStatus() == BiometricStatus.UNAVAILABLE
-                || !isIncognitoReauthFeatureAvailable()) {
+        boolean isBiometricUnavailable =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+                        ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
+                                == BiometricStatus.UNAVAILABLE
+                        : mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                                == BiometricStatus.UNAVAILABLE;
+        if (isBiometricUnavailable || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
             return;
         }
