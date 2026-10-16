@@ -193,8 +193,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path) const override;
 
-  SkImageInfo CreateSkImageInfo() const;
-
   // Signals that an external write has completed, passing the token that should
   // be waited on to ensure that the service-side operations of the external
   // write have completed. Ensures that the next read of this resource (whether
@@ -210,6 +208,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   ~CanvasResourceSharedImage() override;
 
+  SkImageInfo CreateSkImageInfo() const;
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   gpu::raster::RasterInterface* RasterInterface() const;
 
