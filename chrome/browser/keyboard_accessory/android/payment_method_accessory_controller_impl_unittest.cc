@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -868,6 +869,57 @@ TEST_F(PaymentMethodAccessoryControllerTestForBnpl,
           .AppendSimpleField(AccessorySuggestionType::kCreditCardNameFull,
                              bnpl_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
           .AppendSimpleField(AccessorySuggestionType::kCreditCardCvc, cvc)
+          .Build());
+}
+
+class PlatformAutofillTestClient : public TestContentAutofillClient {
+ public:
+  using TestContentAutofillClient::TestContentAutofillClient;
+
+  bool HasPersonalDataManager() const override { return false; }
+
+  TestPersonalDataManager& GetPersonalDataManager() override { NOTREACHED(); }
+
+  bool UsesPlatformAutofill() const override { return true; }
+
+  std::unique_ptr<AutofillManager> CreateManager(
+      base::PassKey<ContentAutofillDriver> pass_key,
+      ContentAutofillDriver& driver) override {
+    return std::make_unique<testing::NiceMock<MockAutofillManager>>(&driver);
+  }
+};
+
+class PaymentMethodAccessoryControllerPlatformAutofillTest
+    : public ChromeRenderViewHostTestHarness {
+ protected:
+  TestAutofillClientInjector<PlatformAutofillTestClient>
+      autofill_client_injector_;
+};
+
+TEST_F(PaymentMethodAccessoryControllerPlatformAutofillTest,
+       DoesNotCrashWhenUsingPlatformAutofill) {
+  NavigateAndCommit(GURL("https://example.com"));
+  FocusWebContentsOnMainFrame();
+
+  PaymentMethodAccessoryController* controller =
+      PaymentMethodAccessoryController::GetOrCreate(web_contents());
+  ASSERT_TRUE(controller);
+
+  base::MockCallback<AccessoryController::FillingSourceObserver> observer;
+  controller->RegisterFillingSourceObserver(observer.Get());
+  EXPECT_CALL(observer, Run(controller, IsFillingSourceAvailable(false)));
+  controller->RefreshSuggestions();
+
+  EXPECT_EQ(
+      controller->GetSheetData(),
+      AccessorySheetData::Builder(
+          AccessoryTabType::CREDIT_CARDS,
+          l10n_util::GetStringUTF16(
+              IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE))
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+              AccessoryAction::MANAGE_CREDIT_CARDS)
           .Build());
 }
 

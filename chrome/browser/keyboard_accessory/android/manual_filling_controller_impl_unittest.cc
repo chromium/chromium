@@ -4,10 +4,14 @@
 
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 
+#include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
@@ -19,10 +23,9 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -31,8 +34,6 @@ using autofill::AccessorySheetData;
 using autofill::AccessorySuggestionType;
 using autofill::AccessoryTabType;
 using autofill::NavigationDirection;
-using autofill::TestAutofillClientInjector;
-using autofill::TestContentAutofillClient;
 using autofill::mojom::FocusedFieldType;
 using testing::_;
 using testing::AnyNumber;
@@ -139,9 +140,6 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   AccessoryController::FillingSourceObserver cc_source_observer_;
   AccessoryController::FillingSourceObserver address_source_observer_;
   AccessoryController::FillingSourceObserver at_memory_source_observer_;
-
-  TestAutofillClientInjector<autofill::TestContentAutofillClient>
-      autofill_client_injector_;
 };
 
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
@@ -661,6 +659,25 @@ TEST_F(ManualFillingControllerTest, NavigateSuggestions) {
       .WillOnce(testing::Return(false));
   EXPECT_FALSE(
       controller()->NavigateSuggestions(NavigationDirection::kBackward));
+}
+
+TEST_F(ManualFillingControllerTest,
+       GetOrCreateWithoutPasswordManagerClientDoesNotCrash) {
+  std::unique_ptr<content::WebContents> test_web_contents =
+      CreateTestWebContents();
+  base::WeakPtr<ManualFillingController> mf_controller =
+      ManualFillingController::GetOrCreate(test_web_contents.get());
+  ASSERT_TRUE(mf_controller);
+
+  // Requesting the password sheet or triggering password filling when no
+  // PasswordAccessoryController is present should safely no-op.
+  base::MockCallback<base::OnceCallback<void(AccessorySheetData)>> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  mf_controller->RequestAccessorySheet(AccessoryTabType::PASSWORDS,
+                                       callback.Get());
+  mf_controller->OnFillingTriggered(
+      AccessoryTabType::PASSWORDS,
+      autofill::AccessorySheetField::Builder().Build());
 }
 
 }  // namespace

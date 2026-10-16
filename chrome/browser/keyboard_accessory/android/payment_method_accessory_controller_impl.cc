@@ -20,14 +20,13 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/android/autofill_fallback_surface_launcher.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -409,7 +408,7 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
           *web_contents) {
   ContentAutofillClient* client =
       ContentAutofillClient::FromWebContents(web_contents);
-  if (!client) {
+  if (!client || !client->HasPersonalDataManager()) {
     return;
   }
   paydm_observation_.Observe(
@@ -557,11 +556,12 @@ PaymentMethodAccessoryControllerImpl::GetAutofillManager() {
     ContentAutofillDriver* driver =
         ContentAutofillDriver::GetForRenderFrameHost(
             GetWebContents().GetFocusedFrame());
-    // This cast is always safe in Chrome - only WebView has a different
-    // AutofillManager implementation.
-    return driver ? static_cast<BrowserAutofillManager*>(
-                        &driver->GetAutofillManager())
-                  : nullptr;
+    if (!driver || driver->GetAutofillClient().UsesPlatformAutofill()) {
+      return nullptr;
+    }
+    // This cast is safe when platform autofill (WebView or 3P Autofill on
+    // Android) is not used.
+    return static_cast<BrowserAutofillManager*>(&driver->GetAutofillManager());
   }
 }
 

@@ -6,7 +6,10 @@
 
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider.h"
+#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -41,7 +44,9 @@ ExtensionViewHost::ExtensionViewHost(
   // Attach WebContents helpers. Extension tabs automatically get them attached
   // in TabHelpers::AttachTabHelpers, but popups don't.
   // TODO(kalman): How much of TabHelpers::AttachTabHelpers should be here?
-  autofill::ChromeAutofillClient::CreateForWebContents(host_contents());
+  autofill::AutofillClientProviderFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context()))
+      .CreateClientForWebContents(host_contents());
 
   host_contents()->SetIgnoreZoomGestures(true);
 }

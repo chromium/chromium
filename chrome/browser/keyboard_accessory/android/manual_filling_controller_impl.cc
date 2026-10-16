@@ -85,7 +85,6 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
     std::unique_ptr<ManualFillingViewInterface> view) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(pwd_controller);
   DCHECK(address_controller);
   DCHECK(payment_method_controller);
   DCHECK(at_memory_controller);
@@ -247,8 +246,11 @@ void ManualFillingControllerImpl::RequestAccessorySheet(
     autofill::AccessoryTabType tab_type,
     base::OnceCallback<void(autofill::AccessorySheetData)> callback) {
   // TODO(crbug.com/40165275): Consider to execute this async to reduce jank.
-  std::optional<AccessorySheetData> sheet =
-      GetControllerForTabType(tab_type)->GetSheetData();
+  AccessoryController* controller = GetControllerForTabType(tab_type);
+  if (!controller) {
+    return;  // Controller not available anymore.
+  }
+  std::optional<AccessorySheetData> sheet = controller->GetSheetData();
   // After they were loaded, all currently existing sheet types always return a
   // value and will always result in a called callback.
   // The only case where they are not available is before their first load (so
@@ -285,10 +287,12 @@ void ManualFillingControllerImpl::Initialize() {
 ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents)
     : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents) {
-  pwd_controller_ = ChromePasswordManagerClient::FromWebContents(web_contents)
-                        ->GetOrCreatePasswordAccessory()
-                        ->AsWeakPtr();
-  DCHECK(pwd_controller_);
+  if (ChromePasswordManagerClient* password_client =
+          ChromePasswordManagerClient::FromWebContents(web_contents)) {
+    pwd_controller_ =
+        password_client->GetOrCreatePasswordAccessory()->AsWeakPtr();
+    DCHECK(pwd_controller_);
+  }
 
   address_controller_ =
       AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
