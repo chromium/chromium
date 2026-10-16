@@ -503,6 +503,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FrameTreeNodeId GetFrameTreeNodeId() const override;
   blink::DOMNodeIdType GetFocusedDOMNodeId() const override;
   EditableLevel GetFocusedEditableLevel() const override;
+  bool IsFocusedElementPasswordLike() override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
   std::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;

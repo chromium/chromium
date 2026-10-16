@@ -306,6 +306,88 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   EXPECT_TRUE(provider->GetTarget()->richly_editable());
 }
 
+// Not parameterized: password-field handling does not depend on
+// `kSessionEndsOnStreamEnd`.
+class DictationPasswordLikeFieldBrowserTest
+    : public DictationKeyedServiceBrowserTest {
+ public:
+  DictationPasswordLikeFieldBrowserTest()
+      : DictationKeyedServiceBrowserTest(
+            kSessionEndsOnStreamEnd.default_value) {}
+
+ protected:
+  void SetUpOnMainThread() override {
+    DictationKeyedServiceBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents(),
+        embedded_test_server()->GetURL("/textinput/all_input_node.html")));
+    // Turn the contenteditable into a CSS-masked custom password field.
+    ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+        const editable = document.getElementById('contenteditable_id');
+        editable.style.webkitTextSecurity = 'disc';
+        editable.textContent = 'secret';
+    )"));
+  }
+
+  content::RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  blink::DOMNodeIdType NodeId(std::string_view selector) {
+    return blink::DOMNodeIdType(
+        content::GetDOMNodeId(*main_frame(), selector).value());
+  }
+
+  // Focuses `selector` and waits until the browser knows it is focused. If
+  // `password_like`, also waits for the text input state identifying it as a
+  // password-like field.
+  void FocusAndWait(std::string_view selector, bool password_like) {
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace("document.querySelector($1).focus();", selector)));
+    blink::DOMNodeIdType expected = NodeId(selector);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return main_frame()->GetFocusedDOMNodeId() == expected &&
+             (!password_like || main_frame()->IsFocusedElementPasswordLike());
+    })) << selector;
+  }
+
+  bool IsContextMenuItemPresent(std::string_view selector) {
+    content::ContextMenuParams params;
+    params.is_editable = true;
+    params.form_field_dom_node_id = content::GlobalDOMNodeId(
+        main_frame()->GetWeakDocumentPtr(), NodeId(selector));
+    TestRenderViewContextMenu menu(*main_frame(), params);
+    menu.Init();
+    return menu.IsItemPresent(IDC_CONTENT_CONTEXT_DICTATION);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DictationPasswordLikeFieldBrowserTest,
+                       ContextMenuHiddenForPasswordLikeFields) {
+  FocusAndWait("#password_id", /*password_like=*/true);
+  EXPECT_FALSE(IsContextMenuItemPresent("#password_id"));
+
+  FocusAndWait("#contenteditable_id", /*password_like=*/true);
+  EXPECT_FALSE(IsContextMenuItemPresent("#contenteditable_id"));
+
+  FocusAndWait("#text_id", /*password_like=*/false);
+  EXPECT_TRUE(IsContextMenuItemPresent("#text_id"));
+}
+
+IN_PROC_BROWSER_TEST_F(DictationPasswordLikeFieldBrowserTest,
+                       HotkeyIgnoredInPasswordLikeField) {
+  FocusAndWait("#password_id", /*password_like=*/true);
+  dictation_service().ToggleHotkeyHandler();
+  EXPECT_EQ(session_controller(), nullptr);
+
+  FocusAndWait("#text_id", /*password_like=*/false);
+  dictation_service().ToggleHotkeyHandler();
+  ASSERT_NE(session_controller(), nullptr);
+  EXPECT_NE(session_controller()->attached_stream_provider(), nullptr);
+  dictation_service().EndSession();
+}
+
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
 // stream failures, including on start and mid stream.
 

@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
@@ -124,6 +125,13 @@ TextInputManager::~TextInputManager() {
   while (!view_map_.empty()) {
     Unregister(view_map_.begin()->first);
   }
+}
+
+// static
+bool TextInputManager::IsPasswordLike(const ui::mojom::TextInputState& state) {
+  return state.type == ui::TEXT_INPUT_TYPE_PASSWORD ||
+         ((state.flags & (ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD |
+                          ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD)) != 0);
 }
 
 RenderWidgetHostImpl* TextInputManager::GetActiveWidget() const {

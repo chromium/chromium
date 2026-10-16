@@ -359,7 +359,8 @@ void DictationKeyedService::ToggleHotkeyHandler() {
 
   content::EditableLevel editable_level =
       focused_frame->GetFocusedEditableLevel();
-  if (editable_level == content::EditableLevel::kNotEditable) {
+  if (editable_level == content::EditableLevel::kNotEditable ||
+      focused_frame->IsFocusedElementPasswordLike()) {
     return;
   }
 

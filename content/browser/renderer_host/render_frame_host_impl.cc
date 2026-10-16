@@ -335,8 +335,6 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/ime/text_input_flags.h"
-#include "ui/base/ime/text_input_type.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -3532,6 +3530,29 @@ blink::DOMNodeIdType RenderFrameHostImpl::GetFocusedDOMNodeId() const {
 
 EditableLevel RenderFrameHostImpl::GetFocusedEditableLevel() const {
   return focused_editable_level_;
+}
+
+bool RenderFrameHostImpl::IsFocusedElementPasswordLike() {
+  if (focused_editable_dom_node_id_.is_null()) {
+    return false;
+  }
+  RenderWidgetHostViewBase* view = GetView();
+  TextInputManager* text_input_manager =
+      view ? view->GetTextInputManager() : nullptr;
+  if (!text_input_manager ||
+      text_input_manager->GetActiveWidget() != GetRenderWidgetHost()) {
+    return false;
+  }
+  const ui::mojom::TextInputState* state =
+      text_input_manager->GetTextInputState();
+  // FocusedElementChanged and the text input state update arrive over
+  // separate IPCs, so the state may still describe the previously focused
+  // element. Only trust it if it refers to the currently focused element.
+  if (!state ||
+      state->node_id != focused_editable_dom_node_id_.GetUnsafeValue()) {
+    return false;
+  }
+  return TextInputManager::IsPasswordLike(*state);
 }
 
 const base::UnguessableToken& RenderFrameHostImpl::GetDevToolsFrameToken() {
@@ -9904,10 +9925,7 @@ void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
     if (auto* text_input_manager = view->GetTextInputManager()) {
       if (const ui::mojom::TextInputState* state =
               text_input_manager->GetTextInputState()) {
-        is_password =
-            state->type == ui::TEXT_INPUT_TYPE_PASSWORD ||
-            (state->flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) ||
-            (state->flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD);
+        is_password = TextInputManager::IsPasswordLike(*state);
       }
     }
   }

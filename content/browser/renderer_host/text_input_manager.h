@@ -150,6 +150,11 @@ class CONTENT_EXPORT TextInputManager {
 
   ~TextInputManager();
 
+  // Returns true if `state` describes a password or password-like field: a
+  // native password input, a password input that has been revealed, or a field
+  // heuristically detected as a custom password field.
+  static bool IsPasswordLike(const ui::mojom::TextInputState& state);
+
   // Returns the currently active widget, i.e., the RWH which is associated with
   // |active_view_|.
   RenderWidgetHostImpl* GetActiveWidget() const;

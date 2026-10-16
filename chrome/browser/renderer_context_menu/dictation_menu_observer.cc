@@ -34,6 +34,11 @@ void DictationMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   target_details_.richly_editable =
       params.edit_flags & blink::ContextMenuDataEditFlags::kCanEditRichly;
 
+  content::RenderFrameHost* rfh = proxy_->GetRenderFrameHost();
+  if (rfh && rfh->IsFocusedElementPasswordLike()) {
+    return;
+  }
+
   DictationKeyedService* service = GetDictationService();
   if (service && service->ShouldShowContextMenuItem()) {
     CHECK(base::FeatureList::IsEnabled(kDictation));

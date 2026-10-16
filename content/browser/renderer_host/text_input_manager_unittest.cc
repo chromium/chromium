@@ -635,4 +635,29 @@ TEST_F(TextInputManagerReentrancyTest, ViewUnregisteredDuringActiveViewReset) {
   EXPECT_EQ(nullptr, manager_->active_view_for_testing());
 }
 
+TEST_F(TextInputManagerTest, IsPasswordLike) {
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  EXPECT_FALSE(TextInputManager::IsPasswordLike(state));
+
+  state.type = ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE;
+  state.flags = ui::TEXT_INPUT_FLAG_SPELLCHECK_ON;
+  EXPECT_FALSE(TextInputManager::IsPasswordLike(state));
+
+  // Native password input.
+  state.type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  state.flags = 0;
+  EXPECT_TRUE(TextInputManager::IsPasswordLike(state));
+
+  // Revealed password input (type switched back to text).
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.flags = ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD;
+  EXPECT_TRUE(TextInputManager::IsPasswordLike(state));
+
+  // Heuristic custom password field, including contenteditable.
+  state.type = ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE;
+  state.flags = ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD;
+  EXPECT_TRUE(TextInputManager::IsPasswordLike(state));
+}
+
 }  // namespace content

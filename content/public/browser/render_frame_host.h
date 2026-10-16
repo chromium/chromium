@@ -470,6 +470,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns the editability level of the focused element in this frame.
   virtual EditableLevel GetFocusedEditableLevel() const = 0;
 
+  // Returns true if the focused editable element in this frame is a password or
+  // password-like field, per its text input state. Returns false if that state
+  // has not yet arrived for the currently focused element.
+  virtual bool IsFocusedElementPasswordLike() = 0;
+
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/
   // can tag calls and requests with this token in order to attribute them
