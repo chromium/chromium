@@ -358,6 +358,9 @@ bool TabGroupView::IsCollapsed() const {
 }
 
 views::ScrollView* TabGroupView::GetScrollViewForContainer() const {
+  if (!collection_node_) {
+    return nullptr;
+  }
   return views::ScrollView::GetScrollViewForContents(
       const_cast<views::View*>(parent()));
 }

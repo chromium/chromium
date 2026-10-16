@@ -304,6 +304,9 @@ void PinnedTabContainerView::OnCollapseStateChanged(
 }
 
 views::ScrollView* PinnedTabContainerView::GetScrollViewForContainer() const {
+  if (!collection_node_) {
+    return nullptr;
+  }
   return views::ScrollView::GetScrollViewForContents(
       const_cast<PinnedTabContainerView*>(this));
 }

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/normalized_geometry.h"
@@ -122,6 +124,32 @@ IN_PROC_BROWSER_TEST_P(TabStripViewBrowserTest,
   // tab strip's main-axis size when unpinned tabs do not fill the space.
   EXPECT_GT(GetMainAxisSize(pinned_tabs_scroll_view()),
             GetMainAxisSize(tab_strip_view()) / 2);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    TabStripViewBrowserTest,
+    SwitchingOrientationWithHoveredAndFocusedTabDoesNotCrash) {
+  AppendPinnedTab();
+  RunScheduledLayouts();
+
+  ASSERT_NE(unpinned_collection_node(), nullptr);
+  ASSERT_FALSE(unpinned_collection_node()->children().empty());
+  views::View* tab_view = unpinned_collection_node()->children()[0]->view();
+  ASSERT_NE(tab_view, nullptr);
+
+  // Hover and focus the tab before switching orientation.
+  ui::MouseEvent hover_event(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  tab_view->OnMouseEntered(hover_event);
+  tab_view->RequestFocus();
+
+  if (is_horizontal()) {
+    EnterVerticalTabsMode();
+  } else {
+    ExitVerticalTabsMode();
+  }
+
+  EXPECT_NE(tab_strip_view(), nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(

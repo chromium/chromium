@@ -280,6 +280,9 @@ void UnpinnedTabContainerView::OnCollapseStateChanged(
 }
 
 views::ScrollView* UnpinnedTabContainerView::GetScrollViewForContainer() const {
+  if (!collection_node_) {
+    return nullptr;
+  }
   return views::ScrollView::GetScrollViewForContents(
       const_cast<UnpinnedTabContainerView*>(this));
 }
