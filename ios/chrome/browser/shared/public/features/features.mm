@@ -40,7 +40,6 @@ BASE_FEATURE(kHideToolbar, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsHideToolbarEnabled() {
   return base::FeatureList::IsEnabled(kHideToolbar);
 }
-BASE_FEATURE(kHideFuseboxVoiceLensActions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedHighlightingIOS, base::FEATURE_ENABLED_BY_DEFAULT);
 

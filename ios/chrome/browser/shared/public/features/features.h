@@ -109,9 +109,6 @@ BASE_DECLARE_FEATURE(kHideToolbar);
 // Returns true if the "Hide Toolbar" button is enabled.
 bool IsHideToolbarEnabled();
 
-// Flag to hide voice and lens actions in fusebox.
-BASE_DECLARE_FEATURE(kHideFuseboxVoiceLensActions);
-
 // Whether the Safety Check Manager can automatically trigger Safety Checks.
 bool IsSafetyCheckAutorunByManagerEnabled();
 

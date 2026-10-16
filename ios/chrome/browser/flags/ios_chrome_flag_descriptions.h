@@ -1028,11 +1028,6 @@ inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =
     "Enables the mdm error handling feature for dasher accounts";
 
-inline constexpr char kHideFuseboxVoiceLensActionsName[] =
-    "Hide Voice and Lens in Fusebox";
-inline constexpr char kHideFuseboxVoiceLensActionsDescription[] =
-    "Hides voice and lens shortcuts in fusebox.";
-
 inline constexpr char kHideToolbarName[] = "Hide Toolbar";
 inline constexpr char kHideToolbarDescription[] =
     "When enabled, adds a button in the long press omnibox menu that forces "
