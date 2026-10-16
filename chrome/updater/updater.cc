@@ -139,7 +139,12 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     base::ThreadPoolInstance* thread_pool = base::ThreadPoolInstance::Get();
     thread_pool->Shutdown();
     thread_pool->JoinForTesting();  // IN-TEST
-    base::ThreadPoolInstance::Set(nullptr);
+
+    // The thread pool instance is intentionally leaked. On Windows, the MTA is
+    // kept alive until the process exits (see below), so COM can dispatch RPC
+    // calls to the COM server objects after this point, and these objects use
+    // `base::ThreadPool`. Posting to a shut down thread pool is a no-op, but
+    // using a destroyed one crashes (crbug.com/452661602).
   }));
 
 #if BUILDFLAG(IS_WIN)
