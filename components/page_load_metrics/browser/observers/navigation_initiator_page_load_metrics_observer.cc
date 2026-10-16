@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/navigation_initiator_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/navigation_initiator_page_load_metrics_observer.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +13,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr char kObserverName[] = "NavigationInitiatorPageLoadMetricsObserver";
 
 void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   const ui::PageTransition transition = navigation_handle.GetPageTransition();
@@ -49,6 +51,11 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
 }
 
 }  // namespace
+
+const char* NavigationInitiatorPageLoadMetricsObserver::GetObserverName()
+    const {
+  return kObserverName;
+}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 NavigationInitiatorPageLoadMetricsObserver::OnEnterBackForwardCache(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -22,6 +22,7 @@ class NavigationInitiatorPageLoadMetricsObserver
   ~NavigationInitiatorPageLoadMetricsObserver() override = default;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  const char* GetObserverName() const override;
   ObservePolicy OnEnterBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnRestoreFromBackForwardCache(
@@ -37,4 +38,4 @@ class NavigationInitiatorPageLoadMetricsObserver
                                  const GURL& currently_committed_url) override;
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_

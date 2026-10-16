@@ -41,6 +41,8 @@ source_set("browser") {
     "observers/cross_origin_page_load_metrics_observer.h",
     "observers/early_hints_page_load_metrics_observer.cc",
     "observers/early_hints_page_load_metrics_observer.h",
+    "observers/navigation_initiator_page_load_metrics_observer.cc",
+    "observers/navigation_initiator_page_load_metrics_observer.h",
     "observers/paid_content_page_load_metrics_observer.cc",
     "observers/paid_content_page_load_metrics_observer.h",
     "observers/performance_manager_metrics_observer.cc",
