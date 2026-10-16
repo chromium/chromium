@@ -905,18 +905,14 @@ void WebContentsAccessibilityBase::SetBrowserAXMode(
     bool is_known_screen_reader_enabled,
     bool is_complex_accessibility_service_enabled,
     bool is_form_controls_candidate,
-    bool is_on_screen_mode_candidate,
-    bool is_any_accessibility_service_enabled) {
+    bool is_on_screen_mode_candidate) {
   // Set the AXMode based on currently running services, sent from Java-side
-  // code. If neither an accessibility service nor a password manager is
-  // enabled, do not enable an AXMode (disabling an existing AXMode is left to
-  // AutoDisableAccessibilityHandler). Otherwise, set the AXMode in the
-  // following priority:
+  // code, in the following priority:
   //
-  // (Note: This must /always/ take the top priority when an AXMode is set.)
+  // (Note: This must /always/ take the top priority.)
   // 1. If the performance filtering enterprise policy is disabled, then the
   // mode must be the most complete mode possible (i.e. no performance
-  // optimizations). (ui::kAXModeComplete | ui::AXMode::kScreenReader)
+  // optimizations). (ui::kAXModeComplete)
   //
   // 2. When a known screen reader is running, use
   // ui::kAXModeComplete | ui::AXMode::kAXModeScreenReader.
@@ -935,18 +931,19 @@ void WebContentsAccessibilityBase::SetBrowserAXMode(
   // and the union of all services has not requested enough information to be in
   // a complete state, but has requested more than a limited state such as form
   // controls, so fallback to a basic state. (ui::kAXModeBasic)
+  //
+  // TODO(crbug.com/413016129): Consider adding the ability to turn off the
+  // AXMode here by sending whether or not any service is running. This case is
+  // currently handled by the AutoDisableAccessibilityHandler, which waits ~5
+  // seconds before turning off accessibility, to account for quick toggling of
+  // the state. Analysis of existing data could show whether the 5 second wait
+  // is necessary.
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
   if (!accessibility_state->IsAXModeChangeAllowed() ||
       !accessibility_state->IsActivationFromPlatformEnabled()) {
     scoped_accessibility_mode_.reset();
     inner_scoped_accessibility_modes_.clear();
-    return;
-  }
-  // Without accessibility services or password managers, do not enable an
-  // AXMode. Do not turn it off immediately, this is left to
-  // AutoDisableAccessibilityHandler.
-  if (!is_form_controls_candidate && !is_any_accessibility_service_enabled) {
     return;
   }
   ui::AXMode target_mode;
@@ -1309,10 +1306,6 @@ void WebContentsAccessibilityBase::SignalEndOfTestForTesting(JNIEnv* env) {
   ui::BrowserAccessibilityManager* manager =
       web_contents_->GetRootBrowserAccessibilityManager();
   manager->SignalEndOfTest();
-}
-
-bool WebContentsAccessibilityBase::HasScopedAXModeForTesting(JNIEnv* env) {
-  return scoped_accessibility_mode_ != nullptr;
 }
 
 void WebContentsAccessibilityBase::HandleEndOfTestSignal() {

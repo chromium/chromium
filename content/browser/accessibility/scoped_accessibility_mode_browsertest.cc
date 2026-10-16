@@ -670,34 +670,14 @@ IN_PROC_BROWSER_TEST_F(
   // WebContents via RenderWidgetHostConnector.
   auto* wcax1 = new WebContentsAccessibilityBase(&web_contents1());
 
-  // Case 1: No accessibility services or password managers enabled (e.g.
-  // framework probe during view/autofill structure query).
+  // Case 1: No accessibility services enabled (e.g. framework probe during
+  // view/autofill structure query).
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/false,
       /*is_complex_accessibility_service_enabled=*/false,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/false);
-  // Without any accessibility service or password manager, no AXMode is set.
-  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::AXMode());
-  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
-  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
-  EXPECT_EQ(web_contents3().GetAccessibilityMode(), ui::AXMode());
-  histogram_tester.ExpectTotalCount("Accessibility.Bundle", 0);
-  histogram_tester.ExpectTotalCount("Accessibility.ModeFlag", 0);
-  histogram_tester.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart",
-                                    0);
-
-  // Case 2: Basic accessibility service enabled (neither complex nor screen
-  // reader).
-  wcax1->SetBrowserAXMode(
-      /*env=*/nullptr,
-      /*is_known_screen_reader_enabled=*/false,
-      /*is_complex_accessibility_service_enabled=*/false,
-      /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
   // GetAccessibilityMode() reflects the active mode across WebContents
   // (ui::kAXModeBasic), while web_contents2() and web_contents3() remain at
   // ui::AXMode().
@@ -716,14 +696,13 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart",
                                     1);
 
-  // Case 3: Password manager only (FormControls candidate).
+  // Case 2: Password manager only (FormControls candidate).
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/false,
       /*is_complex_accessibility_service_enabled=*/false,
       /*is_form_controls_candidate=*/true,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/false);
+      /*is_on_screen_mode_candidate=*/false);
   EXPECT_EQ(accessibility_state().GetAccessibilityMode(),
             ui::kAXModeFormControls);
   EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeFormControls);
@@ -732,40 +711,37 @@ IN_PROC_BROWSER_TEST_F(
       "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kFormControls,
       1);
 
-  // Case 4: Single basic on-screen service.
+  // Case 3: Single basic on-screen service.
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/false,
       /*is_complex_accessibility_service_enabled=*/false,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/true,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/true);
   EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeBasic);
   EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeBasic);
   EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
 
-  // Case 5: Complex user interaction accessibility service.
+  // Case 4: Complex user interaction accessibility service.
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/false,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
   EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeComplete);
   EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeComplete);
   EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
   histogram_tester.ExpectBucketCount(
       "Accessibility.Bundle", ui::AXMode::BundleHistogramValue::kComplete, 1);
 
-  // Case 6: Known screen reader (TalkBack) enabled.
+  // Case 5: Known screen reader (TalkBack) enabled.
   wcax1->SetBrowserAXMode(
       /*env=*/nullptr,
       /*is_known_screen_reader_enabled=*/true,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
   EXPECT_EQ(accessibility_state().GetAccessibilityMode(),
             ui::kAXModeComplete | ui::AXMode::kScreenReader);
   EXPECT_EQ(accessibility_state().ActiveAssistiveTech(),
@@ -805,8 +781,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_known_screen_reader_enabled=*/true,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
 
   ASSERT_EQ(accessibility_state().ActiveAssistiveTech(),
             ui::AssistiveTech::kTalkback);
@@ -837,8 +812,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_known_screen_reader_enabled=*/true,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
 
   EXPECT_EQ(new_wc->GetAccessibilityMode(),
             ui::kAXModeComplete | ui::AXMode::kScreenReader);
@@ -868,24 +842,9 @@ IN_PROC_BROWSER_TEST_F(
       /*is_known_screen_reader_enabled=*/false,
       /*is_complex_accessibility_service_enabled=*/false,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/false);
+      /*is_on_screen_mode_candidate=*/false);
 
-  // Without any accessibility service or password manager, neither tab gets an
-  // AXMode.
-  EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::AXMode());
-  EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
-  EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::AXMode());
-
-  // Even when a basic accessibility service is enabled on the background tab,
-  // the foreground tab (web_contents1) must remain at ui::AXMode().
-  wcax_bg->SetBrowserAXMode(
-      /*env=*/nullptr,
-      /*is_known_screen_reader_enabled=*/false,
-      /*is_complex_accessibility_service_enabled=*/false,
-      /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+  // Foreground tab (web_contents1) must remain at ui::AXMode().
   EXPECT_EQ(accessibility_state().GetAccessibilityMode(), ui::kAXModeBasic);
   EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::AXMode());
   EXPECT_EQ(web_contents2().GetAccessibilityMode(), ui::kAXModeBasic);
@@ -910,8 +869,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
       /*is_known_screen_reader_enabled=*/true,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
 
   ASSERT_EQ(accessibility_state().GetAccessibilityMode(),
             ui::kAXModeComplete | ui::AXMode::kScreenReader);
@@ -962,8 +920,7 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
       /*is_known_screen_reader_enabled=*/true,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
 
   ASSERT_EQ(accessibility_state().GetAccessibilityMode(),
             ui::kAXModeComplete | ui::AXMode::kScreenReader);
@@ -1020,8 +977,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_known_screen_reader_enabled=*/true,
       /*is_complex_accessibility_service_enabled=*/true,
       /*is_form_controls_candidate=*/false,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/true);
+      /*is_on_screen_mode_candidate=*/false);
 
   const ui::AXMode expected_mode =
       ui::kAXModeComplete | ui::AXMode::kScreenReader;
@@ -1043,8 +999,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_known_screen_reader_enabled=*/false,
       /*is_complex_accessibility_service_enabled=*/false,
       /*is_form_controls_candidate=*/true,
-      /*is_on_screen_mode_candidate=*/false,
-      /*is_any_accessibility_service_enabled=*/false);
+      /*is_on_screen_mode_candidate=*/false);
   EXPECT_EQ(web_contents1().GetAccessibilityMode(), ui::kAXModeFormControls);
   EXPECT_EQ(inner_before->GetAccessibilityMode(), ui::kAXModeFormControls);
   EXPECT_EQ(inner_after->GetAccessibilityMode(), ui::kAXModeFormControls);
