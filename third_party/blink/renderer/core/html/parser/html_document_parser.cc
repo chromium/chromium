@@ -489,6 +489,7 @@ unsigned HTMLDocumentParser::GetChunkCountForTesting() const {
 }
 
 void HTMLDocumentParser::Detach() {
+  CHECK(!fragment_parser_abort_requested_);
   // Deschedule any pending tokenizer pumps.
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kNotScheduled);
@@ -537,6 +538,28 @@ void HTMLDocumentParser::StopParsing() {
   }
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kNotScheduled);
+}
+
+void HTMLDocumentParser::AbortFragmentParser() {
+  if (IsDetached()) {
+    return;
+  }
+  CHECK(IsParsingFragment());
+  CHECK(task_runner_state_);
+  // <spec>If parser's fragment parser running is true, then set parser's
+  // fragment parser abort requested to true and return.</spec>
+  //
+  // The parser is running while a tokenizer pump is on the stack. This is the
+  // case when a streamed script or a custom element reaction aborts the stream
+  // while the parser resumes after a parser-blocking script, where there is no
+  // in-flight write() for the WritableStream to queue the abort behind.
+  if (task_runner_state_->InPumpSession()) {
+    fragment_parser_abort_requested_ = true;
+    return;
+  }
+  // <spec>Abort parser.</spec>
+  StopParsing();
+  Detach();
 }
 
 // This kicks off "Once the user agent stops parsing" as described by:
@@ -663,6 +686,19 @@ void HTMLDocumentParser::PumpTokenizerIfPossible() {
   if (!IsStopped() &&
       (!IsPaused() || task_runner_state_->ShouldEndIfDelayed())) {
     yielded = PumpTokenizer();
+  }
+
+  // <spec href="https://html.spec.whatwg.org/C/#run-a-fragment-parser">If
+  // parser's fragment parser abort requested is true, then abort
+  // parser.</spec>
+  //
+  // Nested pumps leave this to the outermost one, so that the whole run of the
+  // parser has returned before the stack of open elements is popped.
+  if (fragment_parser_abort_requested_ &&
+      !task_runner_state_->InPumpSession()) {
+    fragment_parser_abort_requested_ = false;
+    AbortFragmentParser();
+    return;
   }
 
   if (yielded) {
