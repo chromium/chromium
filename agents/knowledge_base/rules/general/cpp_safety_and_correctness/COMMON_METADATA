@@ -1,0 +1,215 @@
+agentic_review {
+  capability_groups {
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/run-official-trybots-for-branded-builds.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/assert-associative-container-erasure-count.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/assert-delimiters-when-slicing-packed-buffers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/audit-callers-and-remove-obsolete-metrics-on-query-semantic.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-broad-addpatchset-in-project-config.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-eager-fallbacks-in-value-or.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-intermediate-string-when-parsing-hex-bytes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-premature-fallback-logging.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-reserving-worst-case-capacity.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-string-conversion-before-hashing.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-trace-events-in-datasource-onstop.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/bind-string-accessors-by-const-ref-to-avoid-copies.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/bundle-ui-strings-with-call-sites.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/cache-expensive-function-results-in-local-variable.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/check-fast-paths-before-scoped-blocking-call-will-block.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/check-validity-in-comparison-operators.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/compare-posix-threads-with-pthread-equal.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/do-not-post-to-inherited-thread-type-runner-from-higher-prio.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/document-non-obvious-live-queries-bypassing-cached-metadata.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/eliminate-spoofable-arguments-across-privilege-boundaries.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/ensure-backing-storage-outlives-string-views.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/fill-random-byte-buffers-in-word-chunks.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/guard-or-remove-wait-for-debugger.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/guard-platform-strings-and-webui-resources-at-build-time.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/initialize-valid-indices-to-sentinel-not-zero.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/invoke-plog-or-save-errno-immediately.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/match-platform-buildflag-guards-between-features-and-apis.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/pass-read-only-objects-by-const-reference.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-span-copy-from-over-memcpy.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-string-view-for-transient-parsing-and-lookups.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-string-view-return-for-static-or-literal-lookups.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-try-emplace-to-avoid-redundant-lookups.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/preserve-sentinel-loop-termination-in-range-for.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/promote-operands-before-addition-to-avoid-overflow.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/provide-rvalue-overloads-for-repeating-callbacks.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/recheck-error-condition-in-retry-loop.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/register-exit-handlers-at-entrypoint-not-static-initializers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/resolve-main-bundle-id-across-macos-process-hierarchy.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/restrict-span-reinterpretation-to-raw-bytes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/return-nullopt-for-empty-optional-string.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/reuse-member-sentinels-for-moved-state.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/short-circuit-expensive-operations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/store-offsets-for-parsed-sub-slices-to-preserve-sso.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/teardown-in-inverse-order-of-construction.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/update-callers-and-contracts-on-sentinel-changes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/update-counterpart-platform-implementations-for-cross-platfo.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/update-in-repo-third-party-callers-for-deprecated-apis.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/update-stats-struct-fields-when-widening-counters.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-debug-alias-for-cstr-to-record-strings-in-crash-dumps.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-guarded-by-context-with-ts-unchecked-read-for-shutdown.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-min-max-element-for-range-extrema-instead-of-min-max.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-ptrauth-instead-of-arm-feature-pauth.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-single-insert-for-multiple-elements.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-uint64-for-cumulative-byte-counters.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-uintptr-t-arithmetic-for-non-dereferenced-offsets.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/verify-android-kernel-version-for-syscalls.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/verify-shutdown-or-cleanup-in-destructor.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/wrap-pointer-and-size-into-span-at-boundary.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/wrap-windows-handles-in-raii-wrappers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/zero-initialize-c-struct-out-parameters.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "(?i)\\bhistogram\\w*\\b|CreateAllocatorDump"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/allowlist-all-storage-backends-in-memory-infra-tracing.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-umahistogrammemorykb-for-sub-megabyte-sizes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/make-one-shot-priming-state-consumable-via-optional.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:BASE_(?:DECLARE_)?FEATURE|FeatureParam|FeatureList)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/ensure-feature-flag-branches-not-inverted.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:Checked|Clamped)Num\\w*\\b|\\b(?:checked|saturated)_cast\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-explicit-template-arg-on-make-checked-num.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:CreateProcess\\w*|HRESULT_FROM_WIN32|ReplaceFile|CoCreateInstance|OpenProcessToken|GetTokenInformation)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/explicit-application-name-in-win32-createprocess.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-get-current-process-token-pseudo-handle.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/request-process-query-limited-information-for-token-queries.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:FilePath|PathExists|DeleteFile|DeletePathRecursively|MakeAbsoluteFilePath)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/do-not-rely-on-makeabsolutefilepath-for-existence.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/no-pathexists-before-delete-file.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:LoadLibrary|ScopedNativeLibrary|ScopedBlockingCall)\\w*\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/scope-may-load-library-at-background-priority.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:NOTREACHED|ImmediateCrash)\\b|\\[\\[noreturn\\]\\]"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/no-breaking-error-return-when-replacing-notreached.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/no-check-in-diagnostic-and-logging-helpers.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:PA_)?UNSAFE_(?:BUFFERS|TODO|BUFFER_USAGE)\\b|allow_unsafe_buffers"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-unsafe-buffers-over-cstr-when-copying-null-terminated.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/deprecate-unsafe-buffer-overloads-in-favor-of-span.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/remove-unsafe-buffer-wrappers-on-safe-containers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-unsafe-todo-for-incremental-spanification.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:SEQUENCE|THREAD)_CHECKER\\b|DCHECK_CALLED_ON_VALID_"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/assert-sequence-affinity-on-sequence-bound-methods.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:UTF8|UTF16|ASCII|UnicodeString|icu4x|Locale)\\w*\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-utf16-to-utf8-for-ascii-parsing.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-ascii-to-utf16-for-ascii-strings.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/validate-bounds-before-icu-utf-macros.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/ensure-sequence-affine-destruction-for-thread-safe-ref-count.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:mt19937|minstd_rand\\w*|RandomBitGenerator)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/pass-prng-engines-by-reference.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:raw_ptr|raw_ref|Unretained|WeakPtr)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-weakptr-over-unretained-for-posted-tasks.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:sysctl\\w*|IsVirtualMachine|setgroups|initgroups|CFBundleDocumentTypes)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/allowlist-macos-sysctls-in-sandbox-policies.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-setgroups-zero-when-dropping-privileges-on-macos.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:u16|w)?cstring_view\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/access-terminating-null-in-cstring-view-at-size.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-cstring-view-for-null-terminated-c-api-strings.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:volatile|@GuardedBy|synchronized|Atomic\\w+)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/avoid-calling-unsynchronized-utilities-from-worker-threads.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bChannel::(?:UNKNOWN|DEFAULT)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/do-not-include-channel-unknown-in-prerelease-gating.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bPickle(?:Iterator)?\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/do-not-assume-pickle-unowned-buffer-alignment.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bSpan(?:Reader|Writer)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/reset-span-reader-on-failure-for-sticky-exhaustion.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b[a-z_]*span[a-z_]*\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/assert-span-bounds-within-backing-buffer.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/check-empty-before-span-data-when-null-expected.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/expose-span-accessors-for-buffer-classes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-bulk-span-copy-over-element-insertion.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/use-unchecked-tag-for-known-valid-span-construction.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/validate-pointer-and-size-before-span-construction.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bmake_(?:optional|pair|tuple|move_iterator|reverse_iterator)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/provide-matching-deduction-guides-for-class-template-constru.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\branges::(?:equal|rbegin|rend|contains|find)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/prefer-member-contains-over-ranges-contains-on-associative-c.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bstd::array\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/value-initialize-std-array-buffers.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm|rs)"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/guard-risky-refactoring-with-feature-killswitch.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/remove-sanitizer-suppressions-when-fixing-defects.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm|rs)"
+    content_patterns: "\\bstatic_assert\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/enforce-pod-and-layout-invariants-with-static-assert.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*test[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/remove-platform-guards-when-disabling-gtests-unconditionally.md"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/run-taskobserver-dependent-checks-inside-posted-tasks.md"
+  }
+}
