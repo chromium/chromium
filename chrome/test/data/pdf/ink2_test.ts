@@ -29,6 +29,12 @@ async function enableTextAnnotations(enabled: boolean) {
   await microtasksFinished();
 }
 
+async function enableSignatures(enabled: boolean) {
+  loadTimeData.overrideValues({'pdfSignaturesEnabled': enabled});
+  viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+  await microtasksFinished();
+}
+
 async function setAnnotationMode(mode: AnnotationMode) {
   viewerToolbar.setAnnotationMode(mode);
   await microtasksFinished();
@@ -152,6 +158,7 @@ chrome.test.runTests([
 
     // Disable text annotations.
     await enableTextAnnotations(false);
+    await enableSignatures(false);
 
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
@@ -176,11 +183,14 @@ chrome.test.runTests([
 
   // Test that the correct side panel is shown for the annotation mode when
   // text annotations are enabled.
+  // TODO(crbug.com/410859904): Remove this test once signatures
+  // launches, since it will be fully covered by the test below.
   async function testSidePanelVisibleTextEnabled() {
     mockMetricsPrivate.reset();
 
     // Enable text annotations.
     await enableTextAnnotations(true);
+    await enableSignatures(false);
 
     const drawPanelQuery = 'viewer-side-panel';
     const textPanelQuery = 'viewer-text-side-panel';
@@ -208,6 +218,60 @@ chrome.test.runTests([
     await setAnnotationMode(AnnotationMode.OFF);
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
+
+    chrome.test.succeed();
+  },
+
+  // Test that the correct side panel is shown for the annotation mode when
+  // text and signature annotations are enabled.
+  async function testSidePanelVisibleSignaturesEnabled() {
+    mockMetricsPrivate.reset();
+
+    // Enable text and signature annotations.
+    await enableTextAnnotations(true);
+    await enableSignatures(true);
+
+    const drawPanelQuery = 'viewer-side-panel';
+    const textPanelQuery = 'viewer-text-side-panel';
+    const signaturePanelQuery = 'viewer-signature-side-panel';
+
+    // Panels are not in the DOM in NONE annotation mode.
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
+    chrome.test.assertFalse(
+        !!viewer.shadowRoot.querySelector(signaturePanelQuery));
+
+    // In text mode, only the text panel is visible.
+    await setAnnotationMode(AnnotationMode.TEXT);
+    const drawPanel = viewer.shadowRoot.querySelector(drawPanelQuery);
+    const textPanel = viewer.shadowRoot.querySelector(textPanelQuery);
+    const signaturePanel = viewer.shadowRoot.querySelector(signaturePanelQuery);
+    chrome.test.assertTrue(!!drawPanel);
+    chrome.test.assertTrue(!!textPanel);
+    chrome.test.assertTrue(!!signaturePanel);
+    chrome.test.assertFalse(isVisible(drawPanel));
+    chrome.test.assertTrue(isVisible(textPanel));
+    chrome.test.assertFalse(isVisible(signaturePanel));
+
+    // In draw mode, only the draw panel is visible.
+    await setAnnotationMode(AnnotationMode.DRAW);
+    chrome.test.assertTrue(isVisible(drawPanel));
+    chrome.test.assertFalse(isVisible(textPanel));
+    chrome.test.assertFalse(isVisible(signaturePanel));
+
+    // In signature mode, only the signature panel is visible.
+    await setAnnotationMode(AnnotationMode.SIGNATURE);
+    chrome.test.assertFalse(isVisible(drawPanel));
+    chrome.test.assertFalse(isVisible(textPanel));
+    chrome.test.assertTrue(isVisible(signaturePanel));
+
+    // All removed from the DOM again when annotation mode is disabled.
+    await setAnnotationMode(AnnotationMode.OFF);
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
+    chrome.test.assertFalse(
+        !!viewer.shadowRoot.querySelector(signaturePanelQuery));
 
     chrome.test.succeed();
   },

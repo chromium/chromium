@@ -60,6 +60,7 @@ export {ViewerSaveToDriveControlsElement} from './elements/viewer_save_to_drive_
 // </if>
 // <if expr="enable_pdf_ink2">
 export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
+export {ViewerSignatureSidePanelElement} from './elements/viewer_signature_side_panel.js';
 export {ViewerTextBottomToolbarElement} from './elements/viewer_text_bottom_toolbar.js';
 export {ViewerTextSidePanelElement} from './elements/viewer_text_side_panel.js';
 // </if>

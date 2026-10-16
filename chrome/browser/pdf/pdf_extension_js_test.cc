@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -130,8 +131,8 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
     if (coverage_handler_ && coverage_handler_->CoverageEnabled()) {
       const auto* test_info =
           ::testing::UnitTest::GetInstance()->current_test_info();
-      const std::string full_test_name = base::StrCat(
-          {test_info->test_suite_name(), test_info->name()});
+      const std::string full_test_name =
+          base::StrCat({test_info->test_suite_name(), test_info->name()});
       coverage_handler_->CollectCoverage(full_test_name);
     }
 
@@ -243,8 +244,7 @@ class PDFExtensionJSMochaTest : public WebUIMochaBrowserTest {
                     const std::string& pdf_filename) {
     GURL url(embedded_test_server()->GetURL("/pdf/" + pdf_filename));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
@@ -254,6 +254,10 @@ class PDFExtensionJSMochaTest : public WebUIMochaBrowserTest {
 
     ASSERT_TRUE(RunTestOnRenderFrameHost(extension_host, "pdf/" + filename,
                                          "mocha.run()"));
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 };
 
@@ -345,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerAttachment) {
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
 #if BUILDFLAG(IS_MAC)
   if (!UseOopif()) {
-      GTEST_SKIP() << "TODO(crbug.com/463783828): Test is flaky on Mac.";
+    GTEST_SKIP() << "TODO(crbug.com/463783828): Test is flaky on Mac.";
   }
 #endif
   // Use a PDF document with multiple pages, to exercise navigating between
@@ -782,6 +786,25 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest,
   // The window must be at least 960px to show the text side panel.
   GetActiveWebContents()->Resize({0, 0, 1200, 1000});
   RunTestsInJsModule("ink2_text_state_management_test.js", "test.pdf");
+}
+
+class PDFExtensionJSInk2SignaturesTest : public PDFExtensionJSMochaTest {
+ protected:
+  PDFExtensionJSInk2SignaturesTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        chrome_pdf::features::kPdfInk2,
+        {{chrome_pdf::features::kPdfInk2Signatures.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2SignaturesTest,
+                       Ink2SignaturesSidePanel) {
+  // The window must be at least 960px to show the side panel.
+  GetActiveWebContents()->Resize({0, 0, 1200, 1000});
+  RunMochaTest("ink2_signature_side_panel_test.js", "test.pdf");
 }
 
 class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
