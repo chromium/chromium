@@ -1258,6 +1258,7 @@ if (build_with_chromium) {
     sources = [
       "partition_alloc_perftest.cc",
       "partition_lock_perftest.cc",
+      "scheduler_loop_quarantine_perftest.cc",
     ]
 
     deps = [
