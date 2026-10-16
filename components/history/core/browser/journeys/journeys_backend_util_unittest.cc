@@ -16,7 +16,9 @@
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/journeys/journeys_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "sql/database.h"
 #include "sql/init_status.h"
+#include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -26,6 +28,7 @@ namespace {
 
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -79,12 +82,39 @@ class JourneysBackendUtilTest : public testing::Test {
                       std::move(history_entries));
   }
 
+  // Stores `journey` in `db_` and checks that it can be read back. Call with
+  // ASSERT_NO_FATAL_FAILURE().
+  void StoreJourney(const JourneyRow& journey) {
+    ASSERT_TRUE(db_.AddOrUpdateJourneys({journey}));
+    ASSERT_TRUE(db_.GetJourney(journey.journey_id).has_value());
+  }
+
+  // Stores `journey` in `db_` and resolves it via
+  // `GetJourneyWithResolvedVisits()`. Returns std::nullopt if storing fails.
+  std::optional<Journey> StoreJourneyAndResolveVisits(
+      const JourneyRow& journey) {
+    StoreJourney(journey);
+    if (HasFatalFailure()) {
+      return std::nullopt;
+    }
+    return GetJourneyWithResolvedVisits(db_, journey.journey_id);
+  }
+
+  // Overwrites the URL of `url_id` in the `urls` table with an invalid one.
+  void SetInvalidUrl(URLID url_id) {
+    sql::Statement update_url(db_.GetDBForTesting().GetUniqueStatement(
+        "UPDATE urls SET url = '' WHERE id = ?"));
+    update_url.BindInt64(0, url_id);
+    ASSERT_TRUE(update_url.Run());
+  }
+
   base::ScopedTempDir temp_dir_;
   base::FilePath db_file_;
   TestHistoryDatabase db_;
 };
 
-TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
+TEST_F(JourneysBackendUtilTest,
+       GetJourneyWithResolvedVisits_SuccessWithMetadata) {
   URLID url_id1 = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   URLID url_id2 = AddTestURL(GURL("http://www.example.com/page2"), u"Page 2");
   ASSERT_NE(url_id1, 0);
@@ -112,10 +142,12 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
        JourneyVisit(GURL("http://www.example.com/page2"), u"Page 2",
                     visit_time_2, /*is_foreign=*/false)},
       /*continuation_queries=*/{JourneyContinuationQuery("query", "prompt")});
-  EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
+  EXPECT_THAT(StoreJourneyAndResolveVisits(journey),
+              Optional(expected_journey));
 }
 
-TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_ResolvesCollections) {
+TEST_F(JourneysBackendUtilTest,
+       GetJourneyWithResolvedVisits_ResolvesCollections) {
   URLID url_id1 = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   URLID url_id2 = AddTestURL(GURL("http://www.example.com/page2"), u"Page 2");
   ASSERT_NE(url_id1, 0);
@@ -149,7 +181,7 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_ResolvesCollections) {
       JourneyHistoryEntryCollection("Last page",
                                     {JourneyHistoryEntry(visit_time_2)})};
 
-  std::optional<Journey> resolved = ResolveJourneyVisits(db_, journey);
+  std::optional<Journey> resolved = StoreJourneyAndResolveVisits(journey);
   ASSERT_TRUE(resolved.has_value());
   JourneyVisit visit_1(GURL("http://www.example.com/page1"), u"Page 1",
                        visit_time_1, /*is_foreign=*/false);
@@ -198,38 +230,49 @@ TEST_F(JourneysBackendUtilTest,
   EXPECT_THAT(resolved[1].collections, IsEmpty());
 }
 
-TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_EmptyVisits) {
+TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_EmptyVisits) {
   base::Time creation_time = TimeFromMicros(5000);
   JourneyRow journey("empty_journey", "Empty", creation_time);
 
   Journey expected_journey("empty_journey", "Empty", creation_time);
-  EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
+  EXPECT_THAT(StoreJourneyAndResolveVisits(journey),
+              Optional(expected_journey));
 }
 
 TEST_F(JourneysBackendUtilTest,
-       ResolveJourneyVisits_MissingVisitReturnsNullopt) {
-  base::Time unknown_time = TimeFromMicros(9999);
-  JourneyRow missing_journey = CreateJourneyRow("missing_journey", /*title=*/"",
-                                                /*creation_time=*/base::Time(),
-                                                /*visit_times=*/{unknown_time});
-
-  EXPECT_EQ(ResolveJourneyVisits(db_, missing_journey), std::nullopt);
-}
-
-TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_MissingUrlReturnsNullopt) {
+       GetJourneyWithResolvedVisits_MissingUrlReturnsNullopt) {
   base::Time visit_time = TimeFromMicros(1000);
   // Add visit referencing non-existent URLID 999.
   ASSERT_NE(AddTestVisit(999, visit_time), 0);
 
-  JourneyRow journey = CreateJourneyRow("orphaned_visit_journey", /*title=*/"",
-                                        /*creation_time=*/base::Time(),
-                                        /*visit_times=*/{visit_time});
+  ASSERT_NO_FATAL_FAILURE(StoreJourney(CreateJourneyRow(
+      "orphaned_visit_journey", /*title=*/"", /*creation_time=*/base::Time(),
+      /*visit_times=*/{visit_time})));
 
-  EXPECT_EQ(ResolveJourneyVisits(db_, journey), std::nullopt);
+  EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "orphaned_visit_journey"),
+            std::nullopt);
+}
+
+// Like URLDatabase::FillURLRow(), a URL row with an invalid URL counts as
+// missing.
+TEST_F(JourneysBackendUtilTest,
+       GetJourneyWithResolvedVisits_InvalidUrlReturnsNullopt) {
+  URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
+  ASSERT_NE(url_id, 0);
+  base::Time visit_time = TimeFromMicros(1000);
+  ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
+  ASSERT_NO_FATAL_FAILURE(SetInvalidUrl(url_id));
+
+  ASSERT_NO_FATAL_FAILURE(StoreJourney(CreateJourneyRow(
+      "invalid_url_journey", /*title=*/"", /*creation_time=*/base::Time(),
+      /*visit_times=*/{visit_time})));
+
+  EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "invalid_url_journey"),
+            std::nullopt);
 }
 
 TEST_F(JourneysBackendUtilTest,
-       ResolveJourneyVisits_ResolvesLatestInRedirectChain) {
+       GetJourneyWithResolvedVisits_ResolvesLatestInRedirectChain) {
   URLID source_id =
       AddTestURL(GURL("http://www.example.com/source"), u"Source");
   URLID dest_id =
@@ -260,7 +303,8 @@ TEST_F(JourneysBackendUtilTest,
       /*visits=*/
       {JourneyVisit(GURL("http://www.example.com/dest"), u"Destination",
                     shared_visit_time, /*is_foreign=*/false)});
-  EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
+  EXPECT_THAT(StoreJourneyAndResolveVisits(journey),
+              Optional(expected_journey));
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -269,6 +313,78 @@ TEST_F(JourneysBackendUtilTest,
   EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_), IsEmpty());
 
   histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 0);
+}
+
+// Each journey only resolves its own history entries, including when journeys
+// share a visit timestamp, and one journey failing to resolve doesn't affect
+// the others.
+TEST_F(JourneysBackendUtilTest,
+       GetAllJourneysWithResolvedVisits_ResolvesEachJourneyIndependently) {
+  URLID page_id = AddTestURL(GURL("http://www.example.com/page"), u"Page");
+  URLID source_id =
+      AddTestURL(GURL("http://www.example.com/source"), u"Source");
+  URLID dest_id =
+      AddTestURL(GURL("http://www.example.com/dest"), u"Destination");
+  URLID invalid_id =
+      AddTestURL(GURL("http://www.example.com/invalid"), u"Invalid");
+  ASSERT_NE(page_id, 0);
+  ASSERT_NE(source_id, 0);
+  ASSERT_NE(dest_id, 0);
+  ASSERT_NE(invalid_id, 0);
+  ASSERT_NO_FATAL_FAILURE(SetInvalidUrl(invalid_id));
+
+  base::Time page_time = TimeFromMicros(1000);
+  base::Time redirect_time = TimeFromMicros(2000);
+  base::Time invalid_url_time = TimeFromMicros(3000);
+  base::Time unknown_time = TimeFromMicros(4000);
+  ASSERT_NE(AddTestVisit(page_id, page_time), 0);
+  // A redirect chain shares one timestamp; the chain end has the larger ID.
+  // Two journeys reference it, to check that a shared timestamp resolves the
+  // same for each journey.
+  VisitID source_visit_id =
+      AddTestVisit(source_id, redirect_time,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START));
+  VisitID dest_visit_id = AddTestVisit(
+      dest_id, redirect_time,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END));
+  ASSERT_NE(source_visit_id, 0);
+  ASSERT_GT(dest_visit_id, source_visit_id);
+  ASSERT_NE(AddTestVisit(invalid_id, invalid_url_time), 0);
+
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {CreateJourneyRow("resolvable", "Resolvable", TimeFromMicros(9000),
+                        {page_time, redirect_time}),
+       CreateJourneyRow("shares_timestamp", "Shares timestamp",
+                        TimeFromMicros(8000), {redirect_time}),
+       CreateJourneyRow("missing_visit", "Missing visit", TimeFromMicros(7000),
+                        {page_time, unknown_time}),
+       CreateJourneyRow("invalid_url", "Invalid URL", TimeFromMicros(6000),
+                        {page_time, invalid_url_time}),
+       CreateJourneyRow("no_entries", "No entries", TimeFromMicros(5000),
+                        {})}));
+
+  const JourneyVisit page_visit(GURL("http://www.example.com/page"), u"Page",
+                                page_time, /*is_foreign=*/false);
+  const JourneyVisit dest_visit(GURL("http://www.example.com/dest"),
+                                u"Destination", redirect_time,
+                                /*is_foreign=*/false);
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(
+      GetAllJourneysWithResolvedVisits(db_),
+      ElementsAre(
+          AllOf(Field(&Journey::journey_id, "resolvable"),
+                Field(&Journey::visits, ElementsAre(page_visit, dest_visit))),
+          AllOf(Field(&Journey::journey_id, "shares_timestamp"),
+                Field(&Journey::visits, ElementsAre(dest_visit))),
+          AllOf(Field(&Journey::journey_id, "no_entries"),
+                Field(&Journey::visits, IsEmpty()))));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kResolutionResultHistogram),
+      BucketsAre(Bucket(SyncedJourneyResolutionResult::kResolved, 3),
+                 Bucket(SyncedJourneyResolutionResult::kMissingVisit, 1),
+                 Bucket(SyncedJourneyResolutionResult::kMissingUrl, 1)));
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -380,10 +496,9 @@ TEST_F(JourneysBackendUtilTest,
 
 TEST_F(JourneysBackendUtilTest,
        GetJourneyWithResolvedVisits_UnresolvedVisitReturnsNullopt) {
-  ASSERT_TRUE(db_.AddOrUpdateJourneys({CreateJourneyRow(
+  ASSERT_NO_FATAL_FAILURE(StoreJourney(CreateJourneyRow(
       "journey_incomplete", "Incomplete", /*creation_time=*/base::Time(),
-      /*visit_times=*/
-      {TimeFromMicros(9999)})}));
+      /*visit_times=*/{TimeFromMicros(9999)})));
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "journey_incomplete"),
@@ -393,7 +508,7 @@ TEST_F(JourneysBackendUtilTest,
   histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 0);
 }
 
-TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SetsIsForeign) {
+TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_SetsIsForeign) {
   URLID local_url_id =
       AddTestURL(GURL("http://www.example.com/local"), u"Local");
   URLID foreign_url_id =
@@ -421,7 +536,7 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SetsIsForeign) {
                     /*is_foreign=*/false),
        JourneyVisit(GURL("http://www.example.com/foreign"), u"Foreign", t2,
                     /*is_foreign=*/true)});
-  EXPECT_THAT(ResolveJourneyVisits(db_, row), Optional(expected_journey));
+  EXPECT_THAT(StoreJourneyAndResolveVisits(row), Optional(expected_journey));
 }
 
 TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {
