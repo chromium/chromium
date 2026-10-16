@@ -1519,7 +1519,10 @@ class AXPosition {
         if (!position->GetAnchor())
           return CreateNullPosition();
 
-        if (const AXNode* empty_object_node = GetEmptyObjectAncestorNode()) {
+        // An empty text field can be its own empty-object ancestor. Positions
+        // on that anchor still use normal offset clamping.
+        const AXNode* empty_object_node = GetEmptyObjectAncestorNode();
+        if (empty_object_node && empty_object_node != position->GetAnchor()) {
           // This is needed because an empty object as defined in this class can
           // have descendants that should not be exposed. See comment above in
           // similar implementation for AXPositionKind::TREE_POSITION.

@@ -9418,6 +9418,91 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                   /*expected_count*/ 0);
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       GetTextPreservesBackwardMovementInNamedEmptyTextField) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
+
+  // ++1 RootWebArea
+  // ++++2 GenericContainer "ab" (editable, non-atomic field, empty content)
+  // UIA exposes the name as text: 0 a 1 b 2.
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  AXNodeData field_data;
+  field_data.id = 2;
+  field_data.role = ax::mojom::Role::kGenericContainer;
+  field_data.AddState(ax::mojom::State::kEditable);
+  field_data.AddBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot,
+                              true);
+  field_data.SetName("ab");
+  field_data.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.root_id = root.id;
+  update.nodes = {root, field_data};
+  AXNode* field = Init(update)->GetFromId(field_data.id);
+  auto* owner = static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(field));
+  ComPtr<ITextRangeProvider> range;
+  CreateTextRangeProviderWin(range, owner, field, 2,
+                             ax::mojom::TextAffinity::kDownstream, field, 2,
+                             ax::mojom::TextAffinity::kDownstream);
+  ComPtr<ITextRangeProvider> full_field_range;
+  CreateTextRangeProviderWin(full_field_range, owner, field, 0,
+                             ax::mojom::TextAffinity::kDownstream, field, 2,
+                             ax::mojom::TextAffinity::kDownstream);
+
+  // Move the start back one character: [2,2] -> [1,2].
+  int moved = 0;
+  ASSERT_HRESULT_SUCCEEDED(range->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, -1, &moved));
+  ASSERT_EQ(-1, moved);
+  ASSERT_EQ(1, GetStart(range.Get())->text_offset());
+  ASSERT_EQ(2, GetEnd(range.Get())->text_offset());
+
+  // GetText must return "b" without undoing the move.
+  base::win::ScopedBstr text;
+  ASSERT_HRESULT_SUCCEEDED(range->GetText(-1, text.Receive()));
+  EXPECT_STREQ(L"b", text.Get());
+  ASSERT_EQ(field->id(), GetStart(range.Get())->anchor_id());
+  ASSERT_EQ(1, GetStart(range.Get())->text_offset());
+  ASSERT_EQ(2, GetEnd(range.Get())->text_offset());
+
+  int comparison = 0;
+  ASSERT_HRESULT_SUCCEEDED(range->CompareEndpoints(
+      TextPatternRangeEndpoint_Start, full_field_range.Get(),
+      TextPatternRangeEndpoint_Start, &comparison));
+  EXPECT_GT(comparison, 0);
+  ASSERT_EQ(1, GetStart(range.Get())->text_offset());
+
+  // The next move reaches [0,2], rather than revisiting [1,2].
+  ASSERT_HRESULT_SUCCEEDED(range->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, -1, &moved));
+  ASSERT_EQ(-1, moved);
+  ASSERT_EQ(0, GetStart(range.Get())->text_offset());
+  text.Reset();
+  ASSERT_HRESULT_SUCCEEDED(range->GetText(-1, text.Receive()));
+  EXPECT_STREQ(L"ab", text.Get());
+  ASSERT_EQ(0, GetStart(range.Get())->text_offset());
+  ASSERT_EQ(2, GetEnd(range.Get())->text_offset());
+  ASSERT_HRESULT_SUCCEEDED(range->CompareEndpoints(
+      TextPatternRangeEndpoint_Start, full_field_range.Get(),
+      TextPatternRangeEndpoint_Start, &comparison));
+  EXPECT_EQ(0, comparison);
+  ASSERT_EQ(0, GetStart(range.Get())->text_offset());
+
+  // At the start, further backward movement returns zero.
+  ASSERT_HRESULT_SUCCEEDED(range->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, -1, &moved));
+  EXPECT_EQ(0, moved);
+  EXPECT_EQ(0, GetStart(range.Get())->text_offset());
+  EXPECT_EQ(2, GetEnd(range.Get())->text_offset());
+}
+
 // Moving by character should land on generated paragraph-break newlines,
 // and `GetText()` should return "\n" for those positions.
 TEST_F(AXPlatformNodeTextRangeProviderTest,

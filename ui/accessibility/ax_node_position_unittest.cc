@@ -118,6 +118,8 @@ class AXPositionTest : public ::testing::Test, public TestSingleAXTreeManager {
       const std::vector<AXNodeData>& nodes,
       const AXTreeID& parent_tree_id = AXTreeID()) const;
 
+  AXNodeData SetTreeToNonAtomicTextField(const std::u16string& name);
+
   AXNodeData root_;
   AXNodeData button_;
   AXNodeData check_box_;
@@ -716,6 +718,25 @@ std::unique_ptr<AXTree> AXPositionTest::CreateAXTree(
   update.root_id = nodes[0].id;
   update.nodes = nodes;
   return std::make_unique<AXTree>(update);
+}
+
+AXNodeData AXPositionTest::SetTreeToNonAtomicTextField(
+    const std::u16string& name) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kGenericContainer;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot,
+                              true);
+  text_field.SetName(name);
+  text_field.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  SetTree(CreateAXTree({root, text_field}));
+  return text_field;
 }
 
 }  // namespace
@@ -9840,6 +9861,122 @@ TEST_F(AXPositionTest, AsValidPosition) {
 
   EXPECT_TRUE(text_position->IsNullPosition());
   EXPECT_TRUE(tree_position->IsNullPosition());
+}
+
+TEST_F(AXPositionTest, AsValidPositionInNamedEmptyTextField) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
+
+  // ++1 RootWebArea
+  // ++++2 GenericContainer "ab" (editable, non-atomic field, empty content)
+  // AsValidPosition() preserves the interior offset:
+  // TextPosition anchor_id=2 text_offset=1 annotated_text=a<b>
+  AXNodeData text_field = SetTreeToNonAtomicTextField(u"ab");
+
+  TestPositionType position =
+      CreateTextPosition(text_field, 1, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_TRUE(position->IsValid());
+  ASSERT_EQ(2, position->MaxTextOffset());
+  TestPositionType valid_position = position->AsValidPosition();
+  EXPECT_EQ(text_field.id, valid_position->anchor_id());
+  EXPECT_EQ(1, valid_position->text_offset());
+}
+
+TEST_F(AXPositionTest, AsValidPositionInEmptyTextFields) {
+  // ++1 RootWebArea
+  // ++++2 GenericContainer <name> (editable, non-atomic field, empty content)
+  for (const std::u16string name :
+       {u"", u"a", u"abcd", u"a\U0001F600e\u0301b"}) {
+    const struct {
+      AXEmbeddedObjectBehavior behavior;
+      int text_length;
+    } policies[] = {
+        {AXEmbeddedObjectBehavior::kSuppressCharacter, 0},
+        {AXEmbeddedObjectBehavior::kExposeCharacterForHypertext, 1},
+        {AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent,
+         name.empty() ? 1 : static_cast<int>(name.size())},
+    };
+    for (const auto& policy : policies) {
+      ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+          policy.behavior);
+      SCOPED_TRACE(base::UTF16ToUTF8(name));
+      SCOPED_TRACE(static_cast<int>(policy.behavior));
+      AXNodeData text_field = SetTreeToNonAtomicTextField(name);
+      TestPositionType start = CreateTextPosition(
+          text_field, 0, ax::mojom::TextAffinity::kDownstream);
+      ASSERT_EQ(policy.text_length, start->MaxTextOffset());
+
+      // Valid offsets stay unchanged.
+      for (int offset = 0; offset <= policy.text_length; ++offset) {
+        SCOPED_TRACE(offset);
+        for (auto affinity : {ax::mojom::TextAffinity::kDownstream,
+                              ax::mojom::TextAffinity::kUpstream}) {
+          TestPositionType position =
+              CreateTextPosition(text_field, offset, affinity);
+          ASSERT_TRUE(position->IsValid());
+          TestPositionType valid = position->AsValidPosition();
+          EXPECT_EQ(text_field.id, valid->anchor_id());
+          EXPECT_EQ(offset, valid->text_offset());
+          EXPECT_EQ(
+              offset == 0 ? ax::mojom::TextAffinity::kDownstream : affinity,
+              valid->affinity());
+          EXPECT_EQ(*valid, *valid->AsValidPosition());
+        }
+      }
+
+      // Invalid offsets clamp to the start or end.
+      for (int offset : {-1, policy.text_length + 1}) {
+        SCOPED_TRACE(offset);
+        TestPositionType position = CreateTextPosition(
+            text_field, offset, ax::mojom::TextAffinity::kUpstream);
+        TestPositionType valid = position->AsValidPosition();
+        ASSERT_TRUE(valid->IsTextPosition());
+        EXPECT_EQ(text_field.id, valid->anchor_id());
+        EXPECT_EQ(offset < 0 ? 0 : policy.text_length, valid->text_offset());
+        EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, valid->affinity());
+      }
+    }
+  }
+}
+
+TEST_F(AXPositionTest, AsValidPositionInEmptyTextFieldDescendant) {
+  // ++1 RootWebArea
+  // ++++2 TextField "abcd" (empty value)
+  // ++++++3 GenericContainer (hidden by the empty field)
+  // Validation moves positions from node 3 to node 2's start or end.
+  for (AXEmbeddedObjectBehavior behavior :
+       {AXEmbeddedObjectBehavior::kExposeCharacterForHypertext,
+        AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent}) {
+    ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(behavior);
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    AXNodeData text_field;
+    text_field.id = 2;
+    text_field.role = ax::mojom::Role::kTextField;
+    text_field.SetName("abcd");
+    text_field.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+    text_field.child_ids = {3};
+
+    AXNodeData container;
+    container.id = 3;
+    container.role = ax::mojom::Role::kGenericContainer;
+    SetTree(CreateAXTree({root, text_field, container}));
+
+    TestPositionType parent =
+        CreateTextPosition(text_field, 0, ax::mojom::TextAffinity::kDownstream);
+    for (int offset : {0, 1}) {
+      TestPositionType position = CreateTextPosition(
+          container, offset, ax::mojom::TextAffinity::kDownstream);
+      TestPositionType valid = position->AsValidPosition();
+      ASSERT_TRUE(valid->IsTextPosition());
+      EXPECT_EQ(text_field.id, valid->anchor_id());
+      EXPECT_EQ(offset == 0 ? 0 : parent->MaxTextOffset(),
+                valid->text_offset());
+    }
+  }
 }
 
 TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
