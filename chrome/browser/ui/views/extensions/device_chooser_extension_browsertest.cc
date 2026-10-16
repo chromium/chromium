@@ -10,19 +10,25 @@
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -61,8 +67,8 @@ class DeviceChooserExtensionBrowserTest
     dir.WriteFile(FILE_PATH_LITERAL("page.html"), {});
     extension_ = LoadExtension(dir.UnpackedPath());
     ASSERT_TRUE(extension_);
-    ASSERT_TRUE(extensions_container()->GetVisible());
-    ASSERT_TRUE(extensions_container()->GetViewForId(extension_->id()));
+    ASSERT_TRUE(extensions_container_views()->IsVisible());
+    ASSERT_TRUE(extensions_container()->GetActionForId(extension_->id()));
 
     // Navigate to the extension page.
     auto url = extension_->GetResourceURL("page.html");
@@ -81,10 +87,33 @@ class DeviceChooserExtensionBrowserTest
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
-  ExtensionsToolbarDesktop* extensions_container() {
+  ExtensionsContainer* extensions_container() {
+    return ExtensionsContainer::From(*browser());
+  }
+
+  ExtensionsContainerViews* extensions_container_views() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetExtensionsContainerViews();
+  }
+
+  ExtensionsToolbarDesktop* extensions_toolbar_desktop() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
         ->extensions_container_for_testing();
+  }
+
+  views::Widget* GetAnchoredWidgetForExtension(
+      const extensions::ExtensionId& extension_id) {
+    if (extensions_toolbar_desktop()) {
+      return extensions_toolbar_desktop()
+          ->GetAnchoredWidgetForExtensionForTesting(extension_id);
+    }
+    views::BubbleDialogDelegate* dialog =
+        views::BubbleDialogDelegate::GetAnchoredDialog(
+            extensions_container_views()->GetReferenceButtonForPopup(
+                extension_id));
+    return dialog ? dialog->GetWidget() : nullptr;
   }
 
   bool ShowChooser() {
@@ -106,7 +135,7 @@ class DeviceChooserExtensionBrowserTest
       // TODO(crbug.com/40670141): Use IsActionVisibleOnToolbar() because it
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
-      return extensions_container()->IsActionVisibleOnToolbar(
+      return extensions_toolbar_desktop()->IsActionVisibleOnToolbar(
           action->view_model()->GetId());
 #else
       return action->GetVisible();
@@ -114,7 +143,7 @@ class DeviceChooserExtensionBrowserTest
     };
 
     std::vector<ToolbarActionView*> result;
-    for (views::View* child : extensions_container()->children()) {
+    for (views::View* child : extensions_toolbar_desktop()->children()) {
       // Ensure we don't downcast the ExtensionsToolbarButton.
       if (views::IsViewClass<ToolbarActionView>(child)) {
         auto* action = static_cast<ToolbarActionView*>(child);
@@ -127,18 +156,32 @@ class DeviceChooserExtensionBrowserTest
   }
 
   std::vector<std::string> GetPinnedExtensionNames() {
-    return base::ToVector(GetPinnedExtensionViews(), [](auto* view) {
-      return base::UTF16ToUTF8(view->view_model()->GetActionName());
-    });
+    if (extensions_toolbar_desktop()) {
+      return base::ToVector(GetPinnedExtensionViews(), [](auto* view) {
+        return base::UTF16ToUTF8(view->view_model()->GetActionName());
+      });
+    }
+    std::vector<std::string> result;
+    for (const auto& action_id :
+         ToolbarActionsModel::Get(profile())->action_ids()) {
+      if (extensions_container_views()->IsActionVisibleOnToolbar(action_id)) {
+        if (auto* action = extensions_container()->GetActionForId(action_id)) {
+          result.push_back(base::UTF16ToUTF8(action->GetActionName()));
+        }
+      }
+    }
+    return result;
   }
 
   void WaitForAnimation() {
+    if (extensions_toolbar_desktop()) {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/40670141): we avoid using animations on Mac due to the
-    // lack of support in unit tests. Therefore this is a no-op.
+      // TODO(crbug.com/40670141): we avoid using animations on Mac due to the
+      // lack of support in unit tests. Therefore this is a no-op.
 #else
-    views::test::WaitForAnimatingLayoutManager(extensions_container());
+      views::test::WaitForAnimatingLayoutManager(extensions_toolbar_desktop());
 #endif
+    }
   }
 
  private:
@@ -149,8 +192,7 @@ class DeviceChooserExtensionBrowserTest
 IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,
                        ChooserAnchoredToExtensionIcon) {
   // Check that no widget is anchored to the extension icon.
-  EXPECT_FALSE(extensions_container()->GetAnchoredWidgetForExtensionForTesting(
-      extension_id()));
+  EXPECT_FALSE(GetAnchoredWidgetForExtension(extension_id()));
 
   // Check that no extensions are pinned in the toolbar.
   EXPECT_TRUE(GetPinnedExtensionNames().empty());
@@ -164,9 +206,7 @@ IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,
   EXPECT_TRUE(chooser_bubble_ui_waiter->has_shown());
 
   // Ensure the widget is visible and anchored to the extension icon.
-  auto* chooser_widget =
-      extensions_container()->GetAnchoredWidgetForExtensionForTesting(
-          extension_id());
+  auto* chooser_widget = GetAnchoredWidgetForExtension(extension_id());
   ASSERT_TRUE(chooser_widget);
   views::test::WidgetVisibleWaiter(chooser_widget).Wait();
 
@@ -186,8 +226,7 @@ IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,
   WaitForAnimation();
 
   // Check that no widget is anchored to the extension icon.
-  EXPECT_FALSE(extensions_container()->GetAnchoredWidgetForExtensionForTesting(
-      extension_id()));
+  EXPECT_FALSE(GetAnchoredWidgetForExtension(extension_id()));
 
   // Check that no extensions are pinned in the toolbar.
   EXPECT_TRUE(GetPinnedExtensionNames().empty());
