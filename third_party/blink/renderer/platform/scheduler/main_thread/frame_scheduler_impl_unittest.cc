@@ -1613,7 +1613,7 @@ TEST_F(FrameSchedulerImplTest, TaskTypeToTaskQueueMapping) {
   EXPECT_EQ(GetTaskQueue(TaskType::kWebSocket), DeferrableTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kDatabaseAccess), PausableTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kPostedMessage), PausableTaskQueue());
-  EXPECT_EQ(GetTaskQueue(TaskType::kWebLocks), UnpausableTaskQueue());
+  EXPECT_EQ(GetTaskQueue(TaskType::kWebLocks), PausableTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kNetworking), LoadingTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kNetworkingControl),
             LoadingControlTaskQueue());

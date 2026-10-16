@@ -578,6 +578,9 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kInternalUserInteraction:
     case TaskType::kInternalIntersectionObserver:
     case TaskType::kInternalAutofill:
+    // Web Locks tasks invoke script callbacks and must not run while the page
+    // is frozen or the frame is paused.
+    case TaskType::kWebLocks:
       return PausableTaskQueueTraits();
     case TaskType::kBackForwardCachePostedMessage:
       return PausableTaskQueueTraits().SetCanRunInBFCache(true);
@@ -606,9 +609,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // Some tasks in the tests need to run when objects are paused e.g. to hook
     // when recovering from debugger JavaScript statetment.
     case TaskType::kInternalTest:
-    // kWebLocks can be frozen if for entire page, but not for individual
-    // frames. See https://crrev.com/c/1687716
-    case TaskType::kWebLocks:
     case TaskType::kInternalFrameLifecycleControl:
       return UnpausableTaskQueueTraits();
     case TaskType::kInternalTranslation:

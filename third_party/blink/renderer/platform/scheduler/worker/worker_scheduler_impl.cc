@@ -204,6 +204,9 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kClipboard:
     case TaskType::kMachineLearning:
     case TaskType::kInternalAutofill:
+    // Web Locks tasks invoke script callbacks and must not run while the worker
+    // is paused or frozen.
+    case TaskType::kWebLocks:
       // UnthrottledTaskRunner is generally discouraged in future.
       // TODO(nhiroki): Identify which tasks can be throttled / suspendable and
       // move them into other task runners. See also comments in
@@ -215,9 +218,6 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kInternalInspector:
     case TaskType::kInternalTest:
     case TaskType::kInternalNavigationAssociatedUnfreezable:
-      // kWebLocks can be frozen if for entire page, but not for individual
-      // frames. See https://crrev.com/c/1687716
-    case TaskType::kWebLocks:
       // UnthrottledTaskRunner is generally discouraged in future.
       // TODO(nhiroki): Identify which tasks can be throttled / suspendable and
       // move them into other task runners. See also comments in
