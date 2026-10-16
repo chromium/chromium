@@ -523,6 +523,13 @@ TEST_F(D3D12VideoEncodeH265DelegateTest,
   scoped_feature_list.InitAndEnableFeature(kPlatformHEVCHbdEncoderSupport);
 
   SetUpBaseProfileProbes();
+  ON_CALL(*video_device3_.Get(),
+          CheckFeatureSupport(D3D12_FEATURE_VIDEO_PROCESS_SUPPORT, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT) {
+        static_cast<D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT*>(data)
+            ->SupportFlags = D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED;
+        return S_OK;
+      });
 
   auto supported_profiles = D3D12VideoEncodeDelegate::GetSupportedProfiles(
       video_device3_.Get(), gpu::GpuDriverBugWorkarounds{},
