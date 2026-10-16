@@ -15,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -159,8 +161,16 @@ std::unique_ptr<MetafilePlayer> PdfConverterImpl::GetMetaFileFromMapping(
   } else {
     metafile = std::make_unique<Emf>();
   }
-  if (!metafile->InitFromData(mapping.GetMemoryAsSpan<const uint8_t>()))
+
+  CHECK(metafile->ShouldCopySharedMemoryRegionData());
+
+  // The original data in `mapping` may change, so make a copy to `data` first.
+  // `data` stays constant for the duration of the InitFromData() call.
+  auto data = base::HeapArray<uint8_t>::CopiedFrom(
+      mapping.GetMemoryAsSpan<const uint8_t>());
+  if (!metafile->InitFromData(data)) {
     metafile.reset();
+  }
   return metafile;
 }
 
