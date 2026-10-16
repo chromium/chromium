@@ -12,11 +12,11 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1168,7 +1168,8 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerWebUIOmniboxPopupTest,
 
 class DetachToBrowserTabDragControllerTest
     : public TabDragControllerInteractiveTestMixin<TabDragControllerTest>,
-      public ::testing::WithParamInterface<testing::tuple<bool, const char*>> {
+      public ::testing::WithParamInterface<
+          testing::tuple<bool, std::string_view>> {
  public:
   DetachToBrowserTabDragControllerTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features_with_params;
@@ -1213,7 +1214,7 @@ class DetachToBrowserTabDragControllerTest
   }
 
   InputSource input_source() override {
-    return UNSAFE_TODO(strstr(std::get<1>(GetParam()), "mouse"))
+    return std::get<1>(GetParam()).contains("mouse")
                ? InputSource::INPUT_SOURCE_MOUSE
                : InputSource::INPUT_SOURCE_TOUCH;
   }

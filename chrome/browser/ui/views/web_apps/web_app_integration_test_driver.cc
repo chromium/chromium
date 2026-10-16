@@ -16,7 +16,6 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -4413,8 +4412,9 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
-bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
-  UNSAFE_TODO(CHECK(strstr(function, "Check") != nullptr)) << function;
+bool WebAppIntegrationTestDriver::BeforeStateCheckAction(
+    std::string_view function) {
+  CHECK(function.contains("Check")) << function;
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
     return false;
   }

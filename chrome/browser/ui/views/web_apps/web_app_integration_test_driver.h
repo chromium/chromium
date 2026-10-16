@@ -435,7 +435,7 @@ class WebAppIntegrationTestDriver {
   void AfterStateChangeAction();
   // Must be called at the beginning of every state check action function.
   // Returns if the test should continue.
-  [[nodiscard]] bool BeforeStateCheckAction(const char* function);
+  [[nodiscard]] bool BeforeStateCheckAction(std::string_view function);
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
 
