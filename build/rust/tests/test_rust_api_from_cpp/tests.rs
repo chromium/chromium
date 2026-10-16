@@ -113,3 +113,25 @@ fn test_std_optional_field() {
     let value: ::cc_std::std::trivial_optional<i32> = s.value;
     assert_eq!(Option::from(value), Some(123));
 }
+
+#[gtest(TestRustApiFromCpp, StdUniquePtr)]
+fn test_std_unique_ptr() {
+    use ::cc_std::std::unique_ptr;
+    use ::test_std_types::{CreateUniquePtr, GetValueFromUniquePtr};
+
+    // `std::unique_ptr<int>` uses a layout-compatible type from `cc_std`.
+    let mut ptr: unique_ptr<i32> = CreateUniquePtr(123);
+    assert_eq!(*ptr.as_mut(), 123);
+    assert_eq!(GetValueFromUniquePtr(ptr), 123);
+
+    // Ownership can move between C++ and Rust.  (Both sides allocate and free
+    // through C++ `operator new` and `operator delete`, because Rust code uses
+    // `cc_std::std::Allocator`.)
+    //
+    // Memory allocated by C++ can be freed by Rust.
+    let boxed = unique_ptr::into_box(CreateUniquePtr(456));
+    assert_eq!(*boxed, 456);
+
+    // Memory allocated by Rust can be freed by C++.
+    assert_eq!(GetValueFromUniquePtr(unique_ptr::new(789)), 789);
+}

@@ -5,6 +5,7 @@
 #ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_
 #define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_
 
+#include <memory>
 #include <optional>
 
 inline std::optional<int> AddOneIfPresent(std::optional<int> x) {
@@ -20,6 +21,14 @@ struct StructWithOptionalField {
 
 inline StructWithOptionalField CreateStructWithOptionalField(int value) {
   return StructWithOptionalField{value};
+}
+
+inline std::unique_ptr<int> CreateUniquePtr(int value) {
+  return std::make_unique<int>(value);
+}
+
+inline int GetValueFromUniquePtr(std::unique_ptr<int> ptr) {
+  return *ptr;
 }
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_

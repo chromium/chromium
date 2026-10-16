@@ -108,17 +108,37 @@ if (enable_rust_api_from_cpp) {
     override_target_label = "//third_party/crubit/support/cc_std:cc_std"
 
     # Other C++ standard library types to cover (in dependency order):
-    # TODO(crbug.com/40226863): std::unique_ptr (+allocator.*, non_null.rs).
-    # TODO(crbug.com/40226863): std::vector (+allocator.*, crate feature).
-    # TODO(crbug.com/40226863): std::shared_ptr (needs std::unique_ptr).
+    # TODO(crbug.com/40226863): std::vector (+crate feature).
+    # TODO(crbug.com/40226863): std::shared_ptr.
     # TODO(crbug.com/40226863): std::string_view (+lossy_utf8, slice_ptr).
     # TODO(crbug.com/40226863): std::string (needs std::string_view).
     # TODO(crbug.com/40226863): Other headers from Crubit's `headers.bzl`.
-    public_headers = [ "${libcxx_prefix}/include/optional" ]
+    public_headers = [
+      "${libcxx_prefix}/include/memory",
+      "${libcxx_prefix}/include/optional",
+
+      # Helpers used by `allocator.rs` (e.g. `cpp_new` and `cpp_delete`).
+      "${crubit_src_dir}/support/cc_std_impl/allocator.h",
+    ]
+
+    # Some standard library types (e.g. `std::unique_ptr`) are defined in
+    # internal libc++ headers.
+    #
+    # TODO(crbug.com/40226863): Cover all libc++ headers (e.g. `libcxx_headers`
+    # from `//buildtools/third_party/libc++/libcxx_headers.gni`).  This requires
+    # first covering all the public headers from Crubit's `headers.bzl`
+    # (otherwise the generated C++ code may refer to types like
+    # `std::input_iterator_tag` without including their public header).
+    internal_headers = [ "${libcxx_prefix}/include/__memory/unique_ptr.h" ]
 
     # Hand-written Rust types (e.g. `cc_std::std::optional<T>`) that
     # Crubit-generated code expects in the `std` module.
-    extra_rust_sources = [ "${crubit_src_dir}/support/cc_std_impl/optional.rs" ]
+    extra_rust_sources = [
+      "${crubit_src_dir}/support/cc_std_impl/allocator.rs",
+      "${crubit_src_dir}/support/cc_std_impl/non_null.rs",
+      "${crubit_src_dir}/support/cc_std_impl/optional.rs",
+      "${crubit_src_dir}/support/cc_std_impl/unique_ptr.rs",
+    ]
     extra_rust_sources_mod = "std"
   }
 
