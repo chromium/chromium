@@ -1,0 +1,92 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  PassRemote(pending_remote<RemoteFromJs> remote);
+  PassReceiver(pending_receiver<ReceiverFromJs> receiver);
+  ReturnRemote() => (pending_remote<RemoteFromBrowser> remote);
+  ReturnReceiver() => (pending_receiver<ReceiverFromBrowser> receiver);
+
+  PassMixed(pending_remote<MixedRemoteFromJs> remote,
+            pending_associated_remote<MixedRemoteFromJs> associated_remote);
+  // TODO(crbug.com/522372048): Use the same interface as `PassMixed` once an
+  // interface can be both a remote and a receiver.
+  ReturnMixed()
+      => (pending_remote<MixedRemoteFromBrowser> remote,
+          pending_associated_remote<MixedRemoteFromBrowser> associated_remote);
+};
+
+interface RemoteFromJs {
+  PassRemote(pending_remote<RemoteFromBrowserViaRemoteFromJs> remote);
+  PassReceiver(pending_receiver<ReceiverFromBrowserViaRemoteFromJs> receiver);
+  ReturnRemote() => (pending_remote<RemoteFromJsViaRemoteFromJs> remote);
+  ReturnReceiver()
+      => (pending_receiver<ReceiverFromJsViaRemoteFromJs> receiver);
+};
+
+interface ReceiverFromJs {
+  PassRemote(pending_remote<RemoteFromJsViaReceiverFromJs> remote);
+  PassReceiver(pending_receiver<ReceiverFromJsViaReceiverFromJs> receiver);
+  ReturnRemote()
+      => (pending_remote<RemoteFromBrowserViaReceiverFromJs> remote);
+  ReturnReceiver()
+      => (pending_receiver<ReceiverFromBrowserViaReceiverFromJs> receiver);
+};
+
+interface RemoteFromBrowser {
+  PassRemote(pending_remote<RemoteFromJsViaRemoteFromBrowser> remote);
+  PassReceiver(
+      pending_receiver<ReceiverFromJsViaRemoteFromBrowser> receiver);
+  ReturnRemote()
+      => (pending_remote<RemoteFromBrowserViaRemoteFromBrowser> remote);
+  ReturnReceiver()
+      => (pending_receiver<ReceiverFromBrowserViaRemoteFromBrowser> receiver);
+};
+
+interface ReceiverFromBrowser {
+  PassRemote(pending_remote<RemoteFromBrowserViaReceiverFromBrowser> remote);
+  PassReceiver(
+      pending_receiver<ReceiverFromBrowserViaReceiverFromBrowser> receiver);
+  ReturnRemote()
+      => (pending_remote<RemoteFromJsViaReceiverFromBrowser> remote);
+  ReturnReceiver()
+      => (pending_receiver<ReceiverFromJsViaReceiverFromBrowser> receiver);
+};
+
+interface RemoteFromJsViaRemoteFromJs {};
+
+interface ReceiverFromJsViaRemoteFromJs {};
+
+interface RemoteFromBrowserViaRemoteFromJs {};
+
+interface ReceiverFromBrowserViaRemoteFromJs {};
+
+interface RemoteFromJsViaReceiverFromJs {};
+
+interface ReceiverFromJsViaReceiverFromJs {};
+
+interface RemoteFromBrowserViaReceiverFromJs {};
+
+interface ReceiverFromBrowserViaReceiverFromJs {};
+
+interface RemoteFromJsViaRemoteFromBrowser {};
+
+interface ReceiverFromJsViaRemoteFromBrowser {};
+
+interface RemoteFromBrowserViaRemoteFromBrowser {};
+
+interface ReceiverFromBrowserViaRemoteFromBrowser {};
+
+interface RemoteFromJsViaReceiverFromBrowser {};
+
+interface ReceiverFromJsViaReceiverFromBrowser {};
+
+interface RemoteFromBrowserViaReceiverFromBrowser {};
+
+interface ReceiverFromBrowserViaReceiverFromBrowser {};
+
+interface MixedRemoteFromJs {};
+
+interface MixedRemoteFromBrowser {};

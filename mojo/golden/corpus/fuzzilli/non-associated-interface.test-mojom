@@ -4,38 +4,21 @@
 module golden;
 
 interface Primary {
-  SendObserver(pending_remote<Observer> observer);
-  SendDelegate(pending_receiver<Delegate> delegate) => (bool result);
-  GetFactory() => (pending_remote<Factory> factory);
-  GetClient() => (pending_receiver<Client> client);
+  PassRemote(pending_remote<RemoteFromJs> remote);
+  PassReceiver(pending_receiver<ReceiverFromJs> receiver);
+  ReturnRemote() => (pending_remote<RemoteFromBrowser> remote);
+  ReturnReceiver() => (pending_receiver<ReceiverFromBrowser> receiver);
 
-  // `Mixed` is passed both as a non-associated and as an associated remote.
-  SendMixed(pending_remote<Mixed> remote,
-            pending_associated_remote<Mixed> associated_remote);
-
-  // TODO(crbug.com/522372048): Update to use Mixed interface once an
-  // interface can be both a remote and a receiver.
-  GetOtherMixed() => (pending_remote<OtherMixed> remote,
-                      pending_associated_remote<OtherMixed> associated_remote);
+  [Sync]
+  SyncReturnRemote() => (pending_remote<RemoteFromBrowser> remote);
+  [Sync]
+  SyncReturnReceiver() => (pending_receiver<ReceiverFromBrowser> receiver);
 };
 
-interface Observer {
-  OnEvent(pending_remote<Delegate> delegate);
-};
+interface RemoteFromJs {};
 
-interface Delegate {
-  Method(int32 param);
-};
+interface ReceiverFromJs {};
 
-interface Factory {
-  CreateDelegate(pending_receiver<Delegate> delegate);
-};
+interface RemoteFromBrowser {};
 
-interface Client {
-};
-
-interface Mixed {
-};
-
-interface OtherMixed {
-};
+interface ReceiverFromBrowser {};

@@ -4,29 +4,22 @@
 module golden;
 
 interface Primary {
-  SendObserver(bool param, pending_associated_remote<ObserverOne> remote) => (string result);
-  SendDelegateTwo(pending_associated_receiver<DelegateTwo> remote, int32 param);
-  GetDelegateOne() => (pending_associated_remote<DelegateOne> delegate);
-  GetObserverTwo(float param) => (pending_associated_receiver<ObserverTwo> observer, bool flag);
+  PassRemote(pending_associated_remote<RemoteFromJs> remote);
+  PassReceiver(pending_associated_receiver<ReceiverFromJs> receiver);
+  ReturnRemote() => (pending_associated_remote<RemoteFromBrowser> remote);
+  ReturnReceiver() => (pending_associated_receiver<ReceiverFromBrowser> receiver);
 
   [Sync]
-  SyncGetObserverTwo(float param) => (pending_associated_receiver<ObserverTwo> observer, bool flag);
+  SyncReturnReceiver()
+      => (pending_associated_receiver<ReceiverFromBrowser> receiver);
+  [Sync]
+  SyncReturnRemote() => (pending_associated_remote<RemoteFromBrowser> remote);
 };
 
-interface ObserverOne {
-  SendDelegateOne(int32? id, pending_associated_remote<DelegateOne> remote) => (bool result);
-};
+interface RemoteFromJs {};
 
-interface ObserverTwo {
-};
+interface ReceiverFromJs {};
 
-interface DelegateOne {
-  Method(int32 param);
-};
+interface RemoteFromBrowser {};
 
-interface DelegateTwo {
-  SendNestedDelegate(pending_associated_receiver<NestedDelegate> delegate);
-};
-
-interface NestedDelegate {
-};
+interface ReceiverFromBrowser {};
