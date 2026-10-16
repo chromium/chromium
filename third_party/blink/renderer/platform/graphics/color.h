@@ -151,11 +151,18 @@ class PLATFORM_EXPORT Color {
            color_space == ColorSpace::kHSL || color_space == ColorSpace::kHWB;
   }
 
-  static bool ColorSpaceHasHue(ColorSpace color_space) {
-    return color_space == Color::ColorSpace::kLch ||
-           color_space == Color::ColorSpace::kOklch ||
-           color_space == Color::ColorSpace::kHSL ||
-           color_space == Color::ColorSpace::kHWB;
+  // Returns the index of the hue component if the color space `color_space`
+  // has one, otherwise std::nullopt.
+  static std::optional<int> HueComponentIndex(Color::ColorSpace color_space) {
+    if (color_space == Color::ColorSpace::kHSL ||
+        color_space == Color::ColorSpace::kHWB) {
+      return 0;
+    }
+    if (color_space == Color::ColorSpace::kLch ||
+        color_space == Color::ColorSpace::kOklch) {
+      return 2;
+    }
+    return std::nullopt;
   }
 
   // The default constructor creates a transparent color.

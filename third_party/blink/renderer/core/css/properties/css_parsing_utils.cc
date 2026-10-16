@@ -2143,10 +2143,7 @@ static std::optional<ColorInterpolationSpace> ConsumeColorInterpolationSpace(
     ConsumeIdent(stream);
     auto& color_space = read_color_space.value();
     std::optional<Color::HueInterpolationMethod> read_hue{};
-    if (color_space == Color::ColorSpace::kHSL ||
-        color_space == Color::ColorSpace::kHWB ||
-        color_space == Color::ColorSpace::kLch ||
-        color_space == Color::ColorSpace::kOklch) {
+    if (Color::HueComponentIndex(color_space)) {
       switch (stream.Peek().Id()) {
         case CSSValueID::kShorter:
           read_hue = Color::HueInterpolationMethod::kShorter;

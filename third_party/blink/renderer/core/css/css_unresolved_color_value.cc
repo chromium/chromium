@@ -254,22 +254,6 @@ static double ResolveColorChannel(const CSSPrimitiveValue& value,
   }
 }
 
-static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
-  if (color_space == Color::ColorSpace::kHSL ||
-      color_space == Color::ColorSpace::kHWB) {
-    if (channel == 0) {
-      return true;
-    }
-  }
-  if (color_space == Color::ColorSpace::kLch ||
-      color_space == Color::ColorSpace::kOklch) {
-    if (channel == 2) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // See ColorFunctionParser::ConsumeFunctionalSyntaxColor().
 Color CSSUnresolvedColorValue::Resolve(
     const CSSLengthResolver& length_resolver) const {
@@ -283,12 +267,6 @@ Color CSSUnresolvedColorValue::Resolve(
       channels[i] = ResolveColorChannel(*channels_[i], channel_types_[i],
                                         function_metadata.channel_percentage[i],
                                         length_resolver);
-      // If the channel is a hue then clamp it as an <angle>. If the channel
-      // was parsed as a <number> it will not have been clamped the same way as
-      // if it was an <angle>.
-      if (ColorChannelIsHue(color_space_, i)) {
-        channels[i] = CSSValueClampingUtils::ClampAngle(*channels[i]);
-      }
     }
   }
 
@@ -299,6 +277,16 @@ Color CSSUnresolvedColorValue::Resolve(
         ResolveColorChannel(*alpha_, alpha_channel_type_,
                             /*percentage_base=*/1.0, length_resolver),
         0.0, 1.0);
+  }
+
+  // If the color has a hue component then clamp it as an <angle>. If the
+  // channel was parsed as a <number> it will not have been clamped the same
+  // way as if it was an <angle>.
+  if (std::optional<int> hue_index = Color::HueComponentIndex(color_space_)) {
+    std::optional<double>& hue = channels[*hue_index];
+    if (hue) {
+      *hue = CSSValueClampingUtils::ClampAngle(*hue);
+    }
   }
 
   ColorFunctionParser::MakePerColorSpaceAdjustments(

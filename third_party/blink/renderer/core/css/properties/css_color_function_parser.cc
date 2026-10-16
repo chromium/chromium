@@ -104,22 +104,6 @@ Color::ColorSpace ColorSpaceFromColorSpaceArgument(CSSValueID id) {
   }
 }
 
-bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
-  if (color_space == Color::ColorSpace::kHSL ||
-      color_space == Color::ColorSpace::kHWB) {
-    if (channel == 0) {
-      return true;
-    }
-  }
-  if (color_space == Color::ColorSpace::kLch ||
-      color_space == Color::ColorSpace::kOklch) {
-    if (channel == 2) {
-      return true;
-    }
-  }
-  return false;
-}
-
 CSSValue* ConsumeRelativeColorChannel(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -235,7 +219,7 @@ bool ColorFunctionParser::ConsumeChannel(
     return true;
   }
 
-  if (ColorChannelIsHue(color_space_, i)) {
+  if (Color::HueComponentIndex(color_space_) == i) {
     if ((unresolved_channels_[i] = css_parsing_utils::ConsumeAngle(
              stream, context, local_context, std::nullopt))) {
       channel_types_[i] = ChannelType::kNumber;
@@ -336,17 +320,17 @@ void ColorFunctionParser::MakePerColorSpaceAdjustments(
     Color::ColorSpace color_space,
     std::array<std::optional<double>, 3>& channels,
     std::optional<double>& alpha) {
-  for (int i = 0; i < 3; i++) {
-    if (channels[i].has_value() && ColorChannelIsHue(color_space, i)) {
+  if (std::optional<int> hue_index = Color::HueComponentIndex(color_space)) {
+    std::optional<double>& hue = channels[*hue_index];
+    if (hue.has_value()) {
       // Non-finite values should be clamped to the range [0, 360].
       // Since 0 = 360 in this case, they can all simply become zero.
-      if (!isfinite(channels[i].value())) {
-        channels[i] = 0.0;
+      if (!std::isfinite(hue.value())) {
+        hue = 0.0;
       }
 
       // Wrap hue to be in the range [0, 360].
-      channels[i].value() =
-          fmod(fmod(channels[i].value(), 360.0) + 360.0, 360.0);
+      hue.value() = std::fmod(std::fmod(hue.value(), 360.0) + 360.0, 360.0);
     }
   }
 

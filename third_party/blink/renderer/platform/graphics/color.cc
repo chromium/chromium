@@ -565,11 +565,11 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
     hue_method = HueInterpolationMethod::kShorter;
   }
 
+  const std::optional<int> hue_index = HueComponentIndex(interpolation_space);
   std::optional<float> param0 =
       (color1.param0_is_none_ && color2.param0_is_none_)
           ? std::optional<float>(std::nullopt)
-      : (interpolation_space == ColorSpace::kHSL ||
-         interpolation_space == ColorSpace::kHWB)
+      : hue_index == 0
           ? HueInterpolation(color1.param0_, color2.param0_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param0_, color2.param0_, percentage);
@@ -582,7 +582,7 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
   std::optional<float> param2 =
       (color1.param2_is_none_ && color2.param2_is_none_)
           ? std::optional<float>(std::nullopt)
-      : (IsChromaSecondComponent(interpolation_space))
+      : hue_index == 2
           ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
@@ -888,11 +888,13 @@ float Color::PremultiplyColor() {
   // is the same as unpremultiplied.
   if (alpha_is_none_)
     return alpha_;
+  const std::optional<int> hue_index = HueComponentIndex(color_space_);
   float alpha = alpha_;
-  if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
+  if (hue_index != 0) {
     param0_ = param0_ * alpha_;
+  }
   param1_ = param1_ * alpha_;
-  if (!IsChromaSecondComponent(color_space_)) {
+  if (hue_index != 2) {
     param2_ = param2_ * alpha_;
   }
   alpha_ = 1.0f;
@@ -903,13 +905,15 @@ void Color::UnpremultiplyColor() {
   // By the spec (https://www.w3.org/TR/css-color-4/#interpolation) Hue values
   // are not premultiplied, and if alpha is none, the color premultiplied value
   // is the same as unpremultiplied.
-  if (alpha_is_none_ || alpha_ == 0.0f)
+  if (alpha_is_none_ || alpha_ == 0.0f) {
     return;
-
-  if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
+  }
+  const std::optional<int> hue_index = HueComponentIndex(color_space_);
+  if (hue_index != 0) {
     param0_ = param0_ / alpha_;
+  }
   param1_ = param1_ / alpha_;
-  if (!IsChromaSecondComponent(color_space_)) {
+  if (hue_index != 2) {
     param2_ = param2_ / alpha_;
   }
 }
@@ -1404,7 +1408,7 @@ String Color::SerializeInterpolationSpace(
       break;
   }
 
-  if (ColorSpaceHasHue(color_space)) {
+  if (HueComponentIndex(color_space)) {
     switch (hue_interpolation_method) {
       case Color::HueInterpolationMethod::kDecreasing:
         result.Append(" decreasing hue");
