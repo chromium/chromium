@@ -12,11 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
@@ -41,8 +41,8 @@ bool DoWriteOnTaskRunner(
     PasswordManagerExporter::SetPosixFilePermissionsCallback
         set_permissions_function,
     const base::FilePath& destination,
-    const std::string& serialised) {
-  if (!write_function.Run(destination, serialised)) {
+    const std::string& serialized) {
+  if (!write_function.Run(destination, serialized)) {
     return false;
   }
 
@@ -60,6 +60,27 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
 }
 
 }  // namespace
+
+// static
+PasswordManagerExporter::SerializedPasswords
+PasswordManagerExporter::SerializeAndCountPasswords(
+    const std::vector<CredentialUIEntry>& credentials) {
+  SerializedPasswords result;
+  for (const auto& credential : credentials) {
+    size_t count = credential.GetAffiliatedDomains().size();
+    // An entry can group passwords from both stores, possibly saved on
+    // different affiliated sites. All of its rows count toward the account
+    // store.
+    if (credential.stored_in.contains(PasswordForm::Store::kAccountStore)) {
+      result.account_store_count += count;
+    } else if (credential.stored_in.contains(
+                   PasswordForm::Store::kProfileStore)) {
+      result.profile_store_count += count;
+    }
+  }
+  result.csv_data = PasswordCSVWriter::SerializePasswords(credentials);
+  return result;
+}
 
 PasswordManagerExporter::PasswordManagerExporter(
     SavedPasswordsPresenter& presenter,
@@ -93,13 +114,12 @@ void PasswordManagerExporter::PreparePasswordsForExport() {
     return credential.blocked_by_user;
   });
 
-  size_t credentials_size = credentials.size();
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordCSVWriter::SerializePasswords,
+      base::BindOnce(&PasswordManagerExporter::SerializeAndCountPasswords,
                      std::move(credentials)),
-      base::BindOnce(&PasswordManagerExporter::SetSerialisedPasswordList,
-                     weak_factory_.GetWeakPtr(), credentials_size));
+      base::BindOnce(&PasswordManagerExporter::SetSerializedPasswordList,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PasswordManagerExporter::SetDestination(
@@ -115,11 +135,9 @@ void PasswordManagerExporter::SetDestination(
   OnProgress({.status = ExportProgressStatus::kInProgress});
 }
 
-void PasswordManagerExporter::SetSerialisedPasswordList(
-    size_t count,
-    const std::string& serialised) {
-  serialised_password_list_ = serialised;
-  password_count_ = count;
+void PasswordManagerExporter::SetSerializedPasswordList(
+    SerializedPasswords serialized) {
+  serialized_passwords_ = std::move(serialized);
   if (IsReadyForExport()) {
     Export();
   }
@@ -129,7 +147,7 @@ void PasswordManagerExporter::Cancel() {
   // Tasks which had their pointers invalidated won't run.
   weak_factory_.InvalidateWeakPtrs();
 
-  // If we are currently still serialising, Export() will see the cancellation
+  // If we are currently still serializing, Export() will see the cancellation
   // status and won't schedule writing.
   OnProgress({.status = ExportProgressStatus::kFailedCancelled});
 
@@ -160,14 +178,14 @@ void PasswordManagerExporter::SetSetPosixFilePermissionsForTesting(
 }
 
 bool PasswordManagerExporter::IsReadyForExport() {
-  return !destination_.empty() && !serialised_password_list_.empty();
+  return !destination_.empty() && !serialized_passwords_.csv_data.empty();
 }
 
 void PasswordManagerExporter::Export() {
-  // If cancelling was requested while we were serialising the passwords, don't
+  // If cancelling was requested while we were serializing the passwords, don't
   // write anything to the disk.
   if (GetProgressStatus() == ExportProgressStatus::kFailedCancelled) {
-    serialised_password_list_.clear();
+    serialized_passwords_ = {};
     return;
   }
 
@@ -175,7 +193,7 @@ void PasswordManagerExporter::Export() {
       FROM_HERE,
       base::BindOnce(DoWriteOnTaskRunner, write_function_,
                      set_permissions_function_, destination_,
-                     std::move(serialised_password_list_)),
+                     std::move(serialized_passwords_.csv_data)),
       base::BindOnce(&PasswordManagerExporter::OnPasswordsExported,
                      weak_factory_.GetWeakPtr()));
 }
@@ -190,6 +208,12 @@ void PasswordManagerExporter::OnPasswordsExported(bool success) {
     OnProgress(
         {.status = ExportProgressStatus::kSucceeded, .file_path = file_path});
 
+    base::UmaHistogramCounts10000(
+        "PasswordManager.AccountStore.ExportedPasswordsToCSV",
+        serialized_passwords_.account_store_count);
+    base::UmaHistogramCounts10000(
+        "PasswordManager.ProfileStore.ExportedPasswordsToCSV",
+        serialized_passwords_.profile_store_count);
   } else {
     OnProgress(
         {.status = ExportProgressStatus::kFailedWrite,
@@ -197,6 +221,7 @@ void PasswordManagerExporter::OnPasswordsExported(bool success) {
     // Don't leave partial password files, if we tell the user we couldn't write
     Cleanup();
   }
+  serialized_passwords_ = {};
 
   // Resets the unique pointer to the current object instance.
   std::move(completion_callback_).Run();

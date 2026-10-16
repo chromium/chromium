@@ -4473,6 +4473,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram name="PasswordManager.{Store}ExportedPasswordsToCSV"
+    units="passwords" expires_after="2027-10-13">
+  <owner>natiahlyi@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the number of passwords exported to a CSV file {Store}
+    (corresponding to the number of rows in the CSV file). Credentials present
+    in both stores count toward the account store only. Recorded when a password
+    export succeeds.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram name="PasswordManager.{Store}InaccessiblePasswords3"
     units="saved passwords" expires_after="2027-04-11">
   <owner>derinel@google.com</owner>

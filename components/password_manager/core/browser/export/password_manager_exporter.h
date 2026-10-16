@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
@@ -17,6 +18,7 @@
 
 namespace password_manager {
 
+struct CredentialUIEntry;
 class SavedPasswordsPresenter;
 
 // Information about passwort export in progress.
@@ -81,10 +83,19 @@ class PasswordManagerExporter {
       SetPosixFilePermissionsCallback set_permissions_callback);
 
  private:
-  // Caches the serialised password list. It proceeds to export, if all the
-  // parts are ready. |count| is the number of passwords which were serialised.
-  // |serialised| is the serialised list of passwords.
-  void SetSerialisedPasswordList(size_t count, const std::string& serialised);
+  struct SerializedPasswords {
+    std::string csv_data;
+    // The number of passwords (CSV rows) exported from each store.
+    size_t account_store_count = 0;
+    size_t profile_store_count = 0;
+  };
+
+  static SerializedPasswords SerializeAndCountPasswords(
+      const std::vector<CredentialUIEntry>& credentials);
+
+  // Caches the serialized password list. It proceeds to export, if all the
+  // parts are ready.
+  void SetSerializedPasswordList(SerializedPasswords serialized);
 
   // Returns true if all the necessary data is available.
   bool IsReadyForExport();
@@ -93,10 +104,8 @@ class PasswordManagerExporter {
   // At the end, it clears cached fields.
   void Export();
 
-  // Callback after the passwords have been serialised. It reports the result to
-  // the UI and to metrics. |destination| is the folder we wrote to. |count| is
-  // the number of passwords exported. |success| is whether they were actually
-  // written.
+  // Callback after the passwords have been written. It reports the result to
+  // the UI and to metrics. |success| is whether they were actually written.
   void OnPasswordsExported(bool success);
 
   // Wrapper for the |on_progress_| callback, which caches |status|, so that
@@ -116,10 +125,9 @@ class PasswordManagerExporter {
   // The most recent progress status update, as was seen on |on_progress_|.
   ExportProgressStatus last_progress_status_;
 
-  // The password list that was read from the store and serialised.
-  std::string serialised_password_list_;
-  // The number of passwords that were serialised. Useful for metrics.
-  size_t password_count_;
+  // The password list that was read from the store and serialized, along with
+  // per-store password counts.
+  SerializedPasswords serialized_passwords_;
 
   // The destination which was provided and where the password list will be
   // sent. It will be cleared once exporting is complete.

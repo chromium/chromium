@@ -18,7 +18,6 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -58,6 +57,7 @@ const base::FilePath::CharType kNullFileName[] = FILE_PATH_LITERAL("/dev/null");
 // Creates a hardcoded set of credentials for tests.
 PasswordForm CreateTestPassword() {
   PasswordForm password_form;
+  password_form.signon_realm = "http://accounts.google.com/";
   password_form.url = GURL("http://accounts.google.com/a/LoginAuth");
   password_form.username_value = u"test@gmail.com";
   password_form.password_value = PasswordString(u"test1");
@@ -101,7 +101,8 @@ class PasswordManagerExporterTest : public testing::Test {
     exporter_.SetDeleteForTesting(mock_delete_file_.Get());
     exporter_.SetSetPosixFilePermissionsForTesting(
         mock_set_posix_file_permissions_.Get());
-    store_->Init();
+    profile_store_->Init();
+    account_store_->Init();
     presenter_.Init();
     task_environment_.RunUntilIdle();
   }
@@ -111,27 +112,36 @@ class PasswordManagerExporterTest : public testing::Test {
       delete;
 
   ~PasswordManagerExporterTest() override {
-    store_->ShutdownOnUIThread();
+    account_store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
     task_environment_.RunUntilIdle();
   }
 
   void SetPasswordList(const std::vector<PasswordForm>& forms) {
     for (const auto& form : forms) {
-      store_->AddLogin(password_manager::FromPasswordForm(form));
+      if (form.IsUsingAccountStore()) {
+        account_store_->AddLogin(FromPasswordForm(form));
+      }
+      if (form.IsUsingProfileStore()) {
+        profile_store_->AddLogin(FromPasswordForm(form));
+      }
     }
     task_environment_.RunUntilIdle();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<TestPasswordStore> store_ =
-      base::MakeRefCounted<TestPasswordStore>();
+  scoped_refptr<TestPasswordStore> profile_store_ =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  scoped_refptr<TestPasswordStore> account_store_ =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
   affiliations::FakeAffiliationService affiliation_service_;
-  SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
-                                     /*account_store=*/nullptr};
-  base::MockCallback<base::RepeatingCallback<void(const PasswordExportInfo&)>>
+  SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
+                                     account_store_};
+  NiceMock<
+      base::MockCallback<base::RepeatingCallback<void(const PasswordExportInfo&)>>>
       mock_on_progress_;
-  base::MockOnceClosure mock_completion_callback_;
+  NiceMock<base::MockOnceClosure> mock_completion_callback_;
   PasswordManagerExporter exporter_;
   StrictMock<base::MockCallback<WriteCallback>> mock_write_file_;
   StrictMock<base::MockCallback<DeleteCallback>> mock_delete_file_;
@@ -144,10 +154,10 @@ class PasswordManagerExporterTest : public testing::Test {
 TEST_F(PasswordManagerExporterTest, PasswordExportSetPasswordListFirst) {
   PasswordForm form = CreateTestPassword();
   SetPasswordList({form});
-  const std::string serialised(
+  const std::string serialized(
       PasswordCSVWriter::SerializePasswords({CredentialUIEntry(form)}));
 
-  EXPECT_CALL(mock_write_file_, Run(destination_path_, StrEq(serialised)))
+  EXPECT_CALL(mock_write_file_, Run(destination_path_, StrEq(serialized)))
       .WillOnce(Return(true));
   EXPECT_CALL(mock_on_progress_, Run(CreateExportInProgressInfo()));
   EXPECT_CALL(mock_on_progress_,
@@ -270,14 +280,14 @@ TEST_F(PasswordManagerExporterTest, DeduplicatesAcrossPasswordStores) {
   PasswordForm password_duplicate = password;
   password_duplicate.in_store = PasswordForm::Store::kAccountStore;
 
-  const std::string single_password_serialised(
+  const std::string single_password_serialized(
       PasswordCSVWriter::SerializePasswords({CredentialUIEntry(password)}));
   SetPasswordList({password, password_duplicate});
 
   // The content written to the file should be the same as what would be
   // computed before the duplicated password was added.
   EXPECT_CALL(mock_write_file_,
-              Run(destination_path_, StrEq(single_password_serialised)))
+              Run(destination_path_, StrEq(single_password_serialized)))
       .WillOnce(Return(true));
   EXPECT_CALL(mock_on_progress_, Run(CreateExportInProgressInfo()));
   EXPECT_CALL(mock_on_progress_,
@@ -287,6 +297,94 @@ TEST_F(PasswordManagerExporterTest, DeduplicatesAcrossPasswordStores) {
   exporter_.SetDestination(destination_path_);
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(PasswordManagerExporterTest, RecordsExportedPasswordsPerStore) {
+  PasswordForm profile_form = CreateTestPassword();
+  PasswordForm account_form = CreateTestPassword();
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+  account_form.signon_realm = "https://example.com/";
+  account_form.url = GURL("https://example.com/login");
+  SetPasswordList({profile_form, account_form});
+
+  EXPECT_CALL(mock_write_file_, Run).WillOnce(Return(true));
+
+  exporter_.PreparePasswordsForExport();
+  exporter_.SetDestination(destination_path_);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.ExportedPasswordsToCSV", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.AccountStore.ExportedPasswordsToCSV", 1, 1);
+}
+
+TEST_F(PasswordManagerExporterTest,
+       RecordsExportedPasswordsCountsAffiliatedDomains) {
+  affiliations::GroupedFacets group;
+  group.facets = {
+      affiliations::Facet(
+          affiliations::FacetURI::FromCanonicalSpec("https://a.example.com")),
+      affiliations::Facet(
+          affiliations::FacetURI::FromCanonicalSpec("https://b.example.com")),
+  };
+  affiliation_service_.AddGroupedFacets(group);
+
+  PasswordForm form1 = CreateTestPassword();
+  form1.in_store = PasswordForm::Store::kAccountStore;
+  form1.signon_realm = "https://a.example.com/";
+  form1.url = GURL("https://a.example.com/login");
+
+  PasswordForm form2 = form1;
+  form2.signon_realm = "https://b.example.com/";
+  form2.url = GURL("https://b.example.com/login");
+
+  SetPasswordList({form1, form2});
+
+  EXPECT_CALL(mock_write_file_, Run).WillOnce(Return(true));
+
+  exporter_.PreparePasswordsForExport();
+  exporter_.SetDestination(destination_path_);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.AccountStore.ExportedPasswordsToCSV", 2, 1);
+}
+
+TEST_F(PasswordManagerExporterTest,
+       RecordsExportedPasswordsAttributesDuplicateToAccountStore) {
+  PasswordForm profile_form = CreateTestPassword();
+  PasswordForm account_form = profile_form;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+  SetPasswordList({profile_form, account_form});
+
+  EXPECT_CALL(mock_write_file_, Run).WillOnce(Return(true));
+
+  exporter_.PreparePasswordsForExport();
+  exporter_.SetDestination(destination_path_);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.AccountStore.ExportedPasswordsToCSV", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.ExportedPasswordsToCSV", 0, 1);
+}
+
+TEST_F(PasswordManagerExporterTest,
+       DoesNotRecordExportedPasswordsOnWriteFailure) {
+  SetPasswordList({CreateTestPassword()});
+
+  EXPECT_CALL(mock_write_file_, Run).WillOnce(Return(false));
+  EXPECT_CALL(mock_delete_file_, Run);
+
+  exporter_.PreparePasswordsForExport();
+  exporter_.SetDestination(destination_path_);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.AccountStore.ExportedPasswordsToCSV", 0);
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ProfileStore.ExportedPasswordsToCSV", 0);
 }
 
 }  // namespace
