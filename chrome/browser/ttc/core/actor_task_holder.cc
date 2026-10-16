@@ -12,7 +12,7 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/actor/core/task_source_info.h"

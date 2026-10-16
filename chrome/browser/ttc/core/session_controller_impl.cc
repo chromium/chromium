@@ -20,7 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
@@ -69,13 +69,13 @@ SessionControllerImpl::SessionControllerImpl(
     TtcKeyedService& service,
     std::unique_ptr<AudioController> audio_controller)
     : service_(service),
-      session_view_(MakeSessionView(*this)),
-      voice_focused_contents_tracker_(
-          VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
       actor_task_holder_(*this),
       journal_(CHECK_DEREF(actor::ActorKeyedService::Get(service.profile()))
                    .GetJournal(),
                actor_task_holder_.task_id()),
+      session_view_(MakeSessionView(*this)),
+      voice_focused_contents_tracker_(
+          VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
       tool_controller_(*this) {
   GetJournal().Log("TtcSessionStart", {});
 
@@ -105,7 +105,7 @@ SessionControllerImpl::~SessionControllerImpl() {
       actor::JournalDetailsBuilder().Add("state", session_lifecycle_).Build());
 }
 
-SessionJournal& SessionControllerImpl::GetJournal() {
+SessionJournalImpl& SessionControllerImpl::GetJournal() {
   return journal_;
 }
 

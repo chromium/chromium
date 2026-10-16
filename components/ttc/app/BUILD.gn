@@ -23,6 +23,7 @@ source_set("impl") {
   deps = [
     ":app",
     "//base",
+    "//components/actor/core",
     "//components/optimization_guide/core:features",
   ]
 }
@@ -51,6 +52,7 @@ source_set("unit_tests") {
       ":impl",
       ":test_support",
       "//base/test:test_support",
+      "//components/actor/core",
       "//components/optimization_guide/core:model_execution",
       "//components/optimization_guide/core:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",

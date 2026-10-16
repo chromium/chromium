@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 
 #include <utility>
 
@@ -14,13 +14,28 @@
 
 namespace ttc {
 
-SessionJournal::SessionJournal(actor::AggregatedJournal& journal,
-                               actor::TaskId task_id)
+namespace {
+
+uint64_t MakeTrackUUID(SessionJournal::Track track, actor::TaskId task_id) {
+  switch (track) {
+    case SessionJournal::Track::kFrontEnd:
+      return actor::MakeFrontEndTrackUUID(task_id);
+    case SessionJournal::Track::kMesClientRecv:
+      return actor::MakeTtcMesClientRecvTrackUUID(task_id);
+    case SessionJournal::Track::kMesClientSend:
+      return actor::MakeTtcMesClientSendTrackUUID(task_id);
+  }
+}
+
+}  // namespace
+
+SessionJournalImpl::SessionJournalImpl(actor::AggregatedJournal& journal,
+                                       actor::TaskId task_id)
     : journal_(journal), task_id_(task_id) {}
 
-SessionJournal::~SessionJournal() = default;
+SessionJournalImpl::~SessionJournalImpl() = default;
 
-void SessionJournal::SetTaskId(actor::TaskId new_task_id) {
+void SessionJournalImpl::SetTaskId(actor::TaskId new_task_id) {
   CHECK_NE(new_task_id, task_id_);
 
   const actor::TaskId previous_task_id = task_id_;
@@ -36,14 +51,16 @@ void SessionJournal::SetTaskId(actor::TaskId new_task_id) {
   }
 }
 
-void SessionJournal::Log(std::string_view event_name,
-                         std::vector<actor::mojom::JournalDetailsPtr> details) {
-  journal_->Log(GURL(), task_id_, actor::MakeFrontEndTrackUUID(task_id_),
-                event_name, std::move(details));
+void SessionJournalImpl::Log(
+    std::string_view event_name,
+    std::vector<actor::mojom::JournalDetailsPtr> details,
+    Track track) {
+  journal_->Log(GURL(), task_id_, MakeTrackUUID(track, task_id_), event_name,
+                std::move(details));
 }
 
-std::unique_ptr<SessionJournal::PendingAsyncEvent>
-SessionJournal::BeginAsyncEvent(
+std::unique_ptr<SessionJournalImpl::PendingAsyncEvent>
+SessionJournalImpl::BeginAsyncEvent(
     std::string_view event_name,
     std::vector<actor::mojom::JournalDetailsPtr> details) {
   return journal_->CreatePendingAsyncEntry(
@@ -51,7 +68,8 @@ SessionJournal::BeginAsyncEvent(
       std::move(details));
 }
 
-void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
+void SessionJournalImpl::HandleServerJournalEvent(
+    const ServerJournalEvent& event) {
   actor::JournalDetailsBuilder details_builder;
   for (const ServerJournalEvent::Details& detail : event.details) {
     details_builder.Add(detail.key, detail.value);

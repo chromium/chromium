@@ -18,12 +18,10 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ttc/app/audio_controller_impl.h"
 #include "chrome/browser/ttc/core/session_controller.h"
-#include "chrome/browser/ttc/core/session_journal.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/actor/core/aggregated_journal.h"
-#include "components/actor/core/task_id.h"
 #include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/session_journal.h"
 #include "components/ttc/app/test_utils.h"
 #include "components/ttc/app/ttc_backend.h"
 #include "content/public/test/browser_task_environment.h"
@@ -41,6 +39,14 @@
 namespace ttc {
 
 namespace {
+
+class FakeSessionJournal : public SessionJournal {
+ public:
+  void Log(std::string_view event_name,
+           std::vector<actor::mojom::JournalDetailsPtr> details,
+           Track track) override {}
+  void HandleServerJournalEvent(const ServerJournalEvent& event) override {}
+};
 
 class FakeSessionController : public SessionController {
  public:
@@ -126,8 +132,7 @@ class FakeSessionController : public SessionController {
   std::string last_output_transcription_;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
-  actor::AggregatedJournal journal_;
-  SessionJournal session_journal_{journal_, actor::TaskId()};
+  FakeSessionJournal session_journal_;
 };
 
 }  // namespace

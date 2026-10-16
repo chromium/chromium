@@ -35,7 +35,7 @@
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -58,7 +58,7 @@ namespace ttc {
 namespace {
 
 void OnToolCallFinished(
-    std::unique_ptr<SessionJournal::PendingAsyncEvent> journal_event,
+    std::unique_ptr<SessionJournalImpl::PendingAsyncEvent> journal_event,
     ToolResponseCallback callback,
     ToolResponse response) {
   actor::JournalDetailsBuilder details;

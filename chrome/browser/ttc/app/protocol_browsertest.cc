@@ -8,7 +8,7 @@
 #include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
 #include "chrome/browser/ttc/app/app_browser_test_base.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 
 #include <map>
 #include <optional>
@@ -35,11 +35,11 @@ using JournalEntries = std::vector<ActorJournalRecorder::Entry>;
 
 // Tests that a session's journal records under the session's actor task,
 // including after the task is replaced. The journal's mechanics are covered by
-// SessionJournalTest.
-class TtcSessionJournalBrowserTest : public TtcCoreBrowserTestBase {
+// SessionJournalImplTest.
+class TtcSessionJournalImplBrowserTest : public TtcCoreBrowserTestBase {
  public:
-  TtcSessionJournalBrowserTest() = default;
-  ~TtcSessionJournalBrowserTest() override = default;
+  TtcSessionJournalImplBrowserTest() = default;
+  ~TtcSessionJournalImplBrowserTest() override = default;
 
   // TtcCoreBrowserTestBase:
   void SetUpOnMainThread() override {
@@ -92,7 +92,7 @@ class TtcSessionJournalBrowserTest : public TtcCoreBrowserTestBase {
   std::optional<ActorJournalRecorder> recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(TtcSessionJournalBrowserTest,
+IN_PROC_BROWSER_TEST_F(TtcSessionJournalImplBrowserTest,
                        JournalFollowsTheSessionTask) {
   ttc_service().StartSession();
   SessionJournal& journal = ttc_service().session_controller()->GetJournal();

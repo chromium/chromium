@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 
 #include <memory>
 #include <vector>
@@ -31,7 +31,7 @@ using JournalEntries = std::vector<ActorJournalRecorder::Entry>;
 constexpr actor::TaskId kFirstTaskId(1);
 constexpr actor::TaskId kSecondTaskId(2);
 
-class SessionJournalTest : public testing::Test {
+class SessionJournalImplTest : public testing::Test {
  protected:
   ActorJournalRecorder& recorder() { return recorder_; }
 
@@ -45,10 +45,10 @@ class SessionJournalTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   actor::AggregatedJournal aggregated_journal_;
   ActorJournalRecorder recorder_{aggregated_journal_};
-  SessionJournal journal_{aggregated_journal_, kFirstTaskId};
+  SessionJournalImpl journal_{aggregated_journal_, kFirstTaskId};
 };
 
-TEST_F(SessionJournalTest, LogsOnTheTaskTrack) {
+TEST_F(SessionJournalImplTest, LogsOnTheTaskTrack) {
   journal_.Log("TestEvent",
                actor::JournalDetailsBuilder().Add("key", "value").Build());
 
@@ -59,7 +59,32 @@ TEST_F(SessionJournalTest, LogsOnTheTaskTrack) {
   EXPECT_THAT(entries[0].details, Contains(Pair("key", "value")));
 }
 
-TEST_F(SessionJournalTest, SetTaskIdLogsTheChangeUnderBothTasks) {
+TEST_F(SessionJournalImplTest, LogsOnMesClientTracks) {
+  journal_.Log("RecvEvent",
+               actor::JournalDetailsBuilder().Add("dir", "recv").Build(),
+               SessionJournal::Track::kMesClientRecv);
+  journal_.Log("SendEvent",
+               actor::JournalDetailsBuilder().Add("dir", "send").Build(),
+               SessionJournal::Track::kMesClientSend);
+
+  const JournalEntries recv_entries = recorder().GetEntries("RecvEvent");
+  ASSERT_EQ(recv_entries.size(), 1u);
+  EXPECT_EQ(recv_entries[0].type, JournalEntryType::kInstant);
+  EXPECT_EQ(recv_entries[0].task_id, kFirstTaskId);
+  EXPECT_EQ(recv_entries[0].track_uuid,
+            actor::MakeTtcMesClientRecvTrackUUID(kFirstTaskId));
+  EXPECT_THAT(recv_entries[0].details, Contains(Pair("dir", "recv")));
+
+  const JournalEntries send_entries = recorder().GetEntries("SendEvent");
+  ASSERT_EQ(send_entries.size(), 1u);
+  EXPECT_EQ(send_entries[0].type, JournalEntryType::kInstant);
+  EXPECT_EQ(send_entries[0].task_id, kFirstTaskId);
+  EXPECT_EQ(send_entries[0].track_uuid,
+            actor::MakeTtcMesClientSendTrackUUID(kFirstTaskId));
+  EXPECT_THAT(send_entries[0].details, Contains(Pair("dir", "send")));
+}
+
+TEST_F(SessionJournalImplTest, SetTaskIdLogsTheChangeUnderBothTasks) {
   journal_.SetTaskId(kSecondTaskId);
 
   EXPECT_EQ(journal_.task_id(), kSecondTaskId);
@@ -75,11 +100,11 @@ TEST_F(SessionJournalTest, SetTaskIdLogsTheChangeUnderBothTasks) {
   }
 }
 
-TEST_F(SessionJournalTest, SetTaskIdToTheCurrentTaskCrashes) {
+TEST_F(SessionJournalImplTest, SetTaskIdToTheCurrentTaskCrashes) {
   EXPECT_CHECK_DEATH(journal_.SetTaskId(kFirstTaskId));
 }
 
-TEST_F(SessionJournalTest, LogsOnTheNewTaskTrackAfterSetTaskId) {
+TEST_F(SessionJournalImplTest, LogsOnTheNewTaskTrackAfterSetTaskId) {
   journal_.SetTaskId(kSecondTaskId);
   journal_.Log("TestEvent", {});
 
@@ -88,8 +113,8 @@ TEST_F(SessionJournalTest, LogsOnTheNewTaskTrackAfterSetTaskId) {
   ExpectOnTaskTrack(entries[0], kSecondTaskId);
 }
 
-TEST_F(SessionJournalTest, AsyncEventEndsWithDetails) {
-  std::unique_ptr<SessionJournal::PendingAsyncEvent> event =
+TEST_F(SessionJournalImplTest, AsyncEventEndsWithDetails) {
+  std::unique_ptr<SessionJournalImpl::PendingAsyncEvent> event =
       journal_.BeginAsyncEvent("TestAsyncEvent", {});
   event->EndEntry(actor::JournalDetailsBuilder().Add("result", "ok").Build());
 
@@ -102,8 +127,8 @@ TEST_F(SessionJournalTest, AsyncEventEndsWithDetails) {
   ExpectOnTaskTrack(entries[1], kFirstTaskId);
 }
 
-TEST_F(SessionJournalTest, AsyncEventEndsWhenDestroyed) {
-  std::unique_ptr<SessionJournal::PendingAsyncEvent> event =
+TEST_F(SessionJournalImplTest, AsyncEventEndsWhenDestroyed) {
+  std::unique_ptr<SessionJournalImpl::PendingAsyncEvent> event =
       journal_.BeginAsyncEvent("TestAsyncEvent", {});
   ASSERT_EQ(recorder().GetEntries("TestAsyncEvent").size(), 1u);
 
@@ -116,8 +141,8 @@ TEST_F(SessionJournalTest, AsyncEventEndsWhenDestroyed) {
 
 // An async event that spans a task change stays on the track it began on, so
 // that its begin and end entries match up.
-TEST_F(SessionJournalTest, AsyncEventStaysOnItsTaskTrackAcrossSetTaskId) {
-  std::unique_ptr<SessionJournal::PendingAsyncEvent> event =
+TEST_F(SessionJournalImplTest, AsyncEventStaysOnItsTaskTrackAcrossSetTaskId) {
+  std::unique_ptr<SessionJournalImpl::PendingAsyncEvent> event =
       journal_.BeginAsyncEvent("TestAsyncEvent", {});
   journal_.SetTaskId(kSecondTaskId);
   event->EndEntry({});

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_H_
-#define CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_H_
+#ifndef CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_IMPL_H_
+#define CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_IMPL_H_
 
 #include <stdint.h>
 
@@ -16,29 +16,30 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/ttc/app/public/session_journal.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ttc {
 
 struct ServerJournalEvent;
 
-// Records a TTC session's events in the actor journal, on the "Front End"
-// track of the session's current actor task.
+// Records a TTC session's events in the actor journal, under the session's
+// current actor task.
 //
 // TODO(b/555804825): Entries aren't associated with a page. Rather than tagging
 // each entry with a URL, journal the active page's details on a track of their
 // own, updated whenever the active page changes (e.g. from ActiveTabTracker).
-class SessionJournal {
+class SessionJournalImpl : public SessionJournal {
  public:
   // An async event that ends when EndEntry() is called on it or when it's
   // destroyed.
   using PendingAsyncEvent = actor::AggregatedJournal::PendingAsyncEntry;
 
   // `journal` must outlive `this`.
-  SessionJournal(actor::AggregatedJournal& journal, actor::TaskId task_id);
-  SessionJournal(const SessionJournal&) = delete;
-  SessionJournal& operator=(const SessionJournal&) = delete;
-  ~SessionJournal();
+  SessionJournalImpl(actor::AggregatedJournal& journal, actor::TaskId task_id);
+  SessionJournalImpl(const SessionJournalImpl&) = delete;
+  SessionJournalImpl& operator=(const SessionJournalImpl&) = delete;
+  ~SessionJournalImpl() override;
 
   // Attributes subsequent events to `new_task_id`, e.g. when the session's task
   // is replaced, and logs the change under both the previous and new tasks.
@@ -52,17 +53,17 @@ class SessionJournal {
   // by the session itself.
   void SetTaskId(actor::TaskId new_task_id);
 
-  // Logs an instant event.
+  // SessionJournal:
+  using SessionJournal::Log;
   void Log(std::string_view event_name,
-           std::vector<actor::mojom::JournalDetailsPtr> details);
+           std::vector<actor::mojom::JournalDetailsPtr> details,
+           Track track) override;
+  void HandleServerJournalEvent(const ServerJournalEvent& event) override;
 
   // Begins an async event, which lasts until the returned object ends it.
   [[nodiscard]] std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(
       std::string_view event_name,
       std::vector<actor::mojom::JournalDetailsPtr> details);
-
-  // Records a journal event received from the server.
-  void HandleServerJournalEvent(const ServerJournalEvent& event);
 
   actor::TaskId task_id() const { return task_id_; }
   base::TimeDelta server_clock_delta() const { return server_clock_delta_; }
@@ -78,4 +79,4 @@ class SessionJournal {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_H_
+#endif  // CHROME_BROWSER_TTC_CORE_SESSION_JOURNAL_IMPL_H_

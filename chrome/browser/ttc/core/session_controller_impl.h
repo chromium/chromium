@@ -17,7 +17,7 @@
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/actor_task_holder.h"
 #include "chrome/browser/ttc/core/session_controller.h"
-#include "chrome/browser/ttc/core/session_journal.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
@@ -54,7 +54,7 @@ class SessionControllerImpl : public SessionController,
   void SendTextInput(const std::string& text) override;
   void OnSessionInitialized() override;
   void OnError(ErrorCode error) override;
-  SessionJournal& GetJournal() override;
+  SessionJournalImpl& GetJournal() override;
   SessionLifecycle GetSessionLifecycle() const override;
   void SetSessionLifecycle(SessionLifecycle lifecycle) override;
   void ProcessToolCall(const ToolRequest& tool_request,
@@ -90,6 +90,14 @@ class SessionControllerImpl : public SessionController,
   // assigned on construction.
   const raw_ref<TtcKeyedService> service_;
 
+  // TODO(bokan): A ref to journal gets passed to components/ since there's no
+  // interface back to SessionController yet. Therefore journal_ (which depends
+  // on actor task id) needs to be destructed after these objects. We should
+  // add an interface back to SessionController in components/ which would
+  // remove the need for explicit destruction ordering.
+  ActorTaskHolder actor_task_holder_;
+  SessionJournalImpl journal_;
+
   // Neither is ever null.
   std::unique_ptr<Conversation> conversation_;
   std::unique_ptr<SessionView> session_view_;
@@ -100,8 +108,6 @@ class SessionControllerImpl : public SessionController,
                           VoiceFocusedContentsTracker::Observer>
       voice_focused_contents_tracker_observation_{this};
 
-  ActorTaskHolder actor_task_holder_;
-  SessionJournal journal_;
   ToolController tool_controller_;
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
 

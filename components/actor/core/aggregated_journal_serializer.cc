@@ -253,6 +253,30 @@ void AggregatedJournalSerializer::ObservedTaskId(TaskId task_id) {
     track_descriptor->set_name("TtcCurrentTurn");
     WriteTracePacket(msg.SerializeAsArray());
   }
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+    track_descriptor->set_uuid(MakeTtcMesClientRecvTrackUUID(task_id));
+    track_descriptor->set_parent_uuid(task_id.value());
+    track_descriptor->set_name("TtcMESClientRecv");
+    WriteTracePacket(msg.SerializeAsArray());
+  }
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+    track_descriptor->set_uuid(MakeTtcMesClientSendTrackUUID(task_id));
+    track_descriptor->set_parent_uuid(task_id.value());
+    track_descriptor->set_name("TtcMESClientSend");
+    WriteTracePacket(msg.SerializeAsArray());
+  }
   observed_task_ids_.insert(task_id);
   observed_track_ids_.insert(task_id.value());
   observed_track_ids_.insert(MakeFrontEndTrackUUID(task_id));
@@ -260,6 +284,8 @@ void AggregatedJournalSerializer::ObservedTaskId(TaskId task_id) {
   observed_track_ids_.insert(MakeRendererTrackUUID(task_id));
   observed_track_ids_.insert(MakeTtcBackendTrackUUID(task_id));
   observed_track_ids_.insert(MakeTtcCurrentTurnTrackUUID(task_id));
+  observed_track_ids_.insert(MakeTtcMesClientRecvTrackUUID(task_id));
+  observed_track_ids_.insert(MakeTtcMesClientSendTrackUUID(task_id));
 }
 
 void AggregatedJournalSerializer::ObservedTrackId(

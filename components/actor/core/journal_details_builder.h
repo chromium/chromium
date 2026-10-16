@@ -107,6 +107,18 @@ inline uint64_t MakeTtcCurrentTurnTrackUUID(TaskId task_id) {
   return kTtcCurrentTurnTrack + task_id.value();
 }
 
+// A specific TTC MES client receive track for a task.
+inline uint64_t MakeTtcMesClientRecvTrackUUID(TaskId task_id) {
+  constexpr uint64_t kTtcMesClientRecvTrack = 0xda00000600000000LL;
+  return kTtcMesClientRecvTrack + task_id.value();
+}
+
+// A specific TTC MES client send track for a task.
+inline uint64_t MakeTtcMesClientSendTrackUUID(TaskId task_id) {
+  constexpr uint64_t kTtcMesClientSendTrack = 0xda00000700000000LL;
+  return kTtcMesClientSendTrack + task_id.value();
+}
+
 // A specific Glic Experimental Triggering track for a context ID.
 inline uint64_t MakeGlicExperimentalTriggeringTrackUUID(
     std::string_view context_id) {
