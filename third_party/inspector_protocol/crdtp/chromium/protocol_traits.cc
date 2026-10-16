@@ -4,6 +4,8 @@
 
 #include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
 
+#include <cstring>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -98,10 +100,13 @@ bool ProtocolTypeTraits<std::string>::Deserialize(DeserializerState* state,
   }
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::STRING16) {
     const auto str = tokenizer->GetString16WireRep();
+    // The payload is a raw slice of the CBOR message and may not be aligned
+    // for char16_t, so copy it into an aligned buffer before reading it.
+    std::u16string utf16(str.size() / 2, u'\0');
+    memcpy(utf16.data(), str.data(), utf16.size() * sizeof(char16_t));
     // In Chromium, we do not support big endian architectures, so no conversion
     // is needed to interpret UTF16LE.
-    base::UTF16ToUTF8(reinterpret_cast<const char16_t*>(str.data()),
-                      str.size() / 2, value);
+    base::UTF16ToUTF8(utf16.data(), utf16.size(), value);
     return true;
   }
   state->RegisterError(Error::BINDINGS_STRING_VALUE_EXPECTED);
@@ -181,9 +186,11 @@ bool ProtocolTypeTraits<base::Value>::Deserialize(DeserializerState* state,
     }
     case cbor::CBORTokenTag::STRING16: {
       const auto str = tokenizer->GetString16WireRep();
+      // The payload may not be aligned for char16_t; copy it before reading.
+      std::u16string utf16(str.size() / 2, u'\0');
+      memcpy(utf16.data(), str.data(), utf16.size() * sizeof(char16_t));
       // TODO(caseq): support big-endian architectures when needed.
-      *value = base::Value(std::u16string_view(
-          reinterpret_cast<const char16_t*>(str.data()), str.size() / 2));
+      *value = base::Value(std::u16string_view(utf16));
       break;
     }
 

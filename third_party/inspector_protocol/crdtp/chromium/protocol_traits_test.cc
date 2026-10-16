@@ -4,6 +4,8 @@
 
 #include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
 
+#include <cstdint>
+
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
@@ -44,6 +46,51 @@ TEST(ProtocolTraits, String) {
   for (size_t i = 0; i < all_values.size(); ++i)
     all_values[i] = i;
   EXPECT_THAT(RoundTrip(all_values), Eq(all_values));
+}
+
+template <typename T>
+class String16ProtocolTraitsTest : public testing::Test {};
+
+using String16ProtocolTraitsTypes = testing::Types<std::string, base::Value>;
+TYPED_TEST_SUITE(String16ProtocolTraitsTest, String16ProtocolTraitsTypes);
+
+TYPED_TEST(String16ProtocolTraitsTest, MisalignedString) {
+  // The one-byte CBOR header leaves the UTF-16LE payload misaligned.
+  alignas(char16_t) const uint8_t bytes[] = {0x42, 0xe9, 0x00};
+  DeserializerState deserializer(nullptr, bytes);
+  ASSERT_EQ(deserializer.tokenizer()->TokenTag(), cbor::CBORTokenTag::STRING16);
+  const auto payload = deserializer.tokenizer()->GetString16WireRep();
+  ASSERT_NE(reinterpret_cast<uintptr_t>(payload.data()) % alignof(char16_t), 0u);
+
+  TypeParam value;
+  ASSERT_TRUE(ProtocolTypeTraits<TypeParam>::Deserialize(&deserializer, &value))
+      << deserializer.ErrorMessage(MakeSpan("string"));
+  EXPECT_EQ(value, TypeParam("\xc3\xa9"));
+}
+
+TYPED_TEST(String16ProtocolTraitsTest, MisalignedSurrogatePair) {
+  // U+1F600 encoded as the UTF-16LE surrogate pair D83D DE00.
+  alignas(char16_t) const uint8_t bytes[] = {0x44, 0x3d, 0xd8, 0x00, 0xde};
+  DeserializerState deserializer(nullptr, bytes);
+  ASSERT_EQ(deserializer.tokenizer()->TokenTag(), cbor::CBORTokenTag::STRING16);
+  const auto payload = deserializer.tokenizer()->GetString16WireRep();
+  ASSERT_NE(reinterpret_cast<uintptr_t>(payload.data()) % alignof(char16_t), 0u);
+
+  TypeParam value;
+  ASSERT_TRUE(ProtocolTypeTraits<TypeParam>::Deserialize(&deserializer, &value))
+      << deserializer.ErrorMessage(MakeSpan("string"));
+  EXPECT_EQ(value, TypeParam("\xf0\x9f\x98\x80"));
+}
+
+TYPED_TEST(String16ProtocolTraitsTest, EmptyString) {
+  alignas(char16_t) const uint8_t bytes[] = {0x40};
+  DeserializerState deserializer(nullptr, bytes);
+  ASSERT_EQ(deserializer.tokenizer()->TokenTag(), cbor::CBORTokenTag::STRING16);
+
+  TypeParam value;
+  ASSERT_TRUE(ProtocolTypeTraits<TypeParam>::Deserialize(&deserializer, &value))
+      << deserializer.ErrorMessage(MakeSpan("string"));
+  EXPECT_EQ(value, TypeParam(""));
 }
 
 std::vector<uint8_t> MakeVector(const Binary& b) {
