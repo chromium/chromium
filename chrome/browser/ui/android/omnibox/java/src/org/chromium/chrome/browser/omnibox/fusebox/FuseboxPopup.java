@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,7 +18,11 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.core.graphics.Insets;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 
@@ -28,6 +34,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -95,6 +102,35 @@ class FuseboxPopup {
     private boolean mIsFirstShow = true;
     private @Nullable Integer mPreviousAccessibilityImportance;
     private @Nullable View mCachedContentView;
+    private boolean mIsAccordionExpanded;
+
+    /** Exposes the accordion's expanded/collapsed state on the "More options" row. */
+    private final AccessibilityDelegateCompat mMoreOptionsAccessibilityDelegate =
+            new AccessibilityDelegateCompat() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfoCompat info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    info.setExpandedState(
+                            mIsAccordionExpanded
+                                    ? AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL
+                                    : AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED);
+                    info.addAction(
+                            mIsAccordionExpanded
+                                    ? AccessibilityActionCompat.ACTION_COLLAPSE
+                                    : AccessibilityActionCompat.ACTION_EXPAND);
+                }
+
+                @Override
+                public boolean performAccessibilityAction(
+                        View host, int action, @Nullable Bundle args) {
+                    if (action == AccessibilityActionCompat.ACTION_EXPAND.getId()
+                            || action == AccessibilityActionCompat.ACTION_COLLAPSE.getId()) {
+                        return host.performClick();
+                    }
+                    return super.performAccessibilityAction(host, action, args);
+                }
+            };
 
     private final RectProvider.Observer mDynamicRectObserver =
             new RectProvider.Observer() {
@@ -263,6 +299,7 @@ class FuseboxPopup {
         ImageView startIcon = mMoreOptionsButton.findViewById(R.id.start_icon);
         startIcon.setVisibility(View.GONE);
         updateMoreOptionsButtonIcon(/* expand= */ false);
+        ViewCompat.setAccessibilityDelegate(mMoreOptionsButton, mMoreOptionsAccessibilityDelegate);
 
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
@@ -418,9 +455,20 @@ class FuseboxPopup {
 
     /** Toggles the accordion menu. */
     void setAccordionExpanded(boolean expand) {
+        mIsAccordionExpanded = expand;
         updateMoreOptionsButtonIcon(expand);
         mAccordionContainer.setVisibility(expand ? View.VISIBLE : View.GONE);
         updateLayout();
+        notifyAccordionExpandedStateChanged();
+    }
+
+    /** Lets accessibility services announce the new expanded state of the "More options" row. */
+    private void notifyAccordionExpandedStateChanged() {
+        if (!isShowing() || !AccessibilityState.isAccessibilityManagerEnabled()) return;
+        AccessibilityEvent event =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_EXPANDED);
+        mMoreOptionsButton.sendAccessibilityEventUnchecked(event);
     }
 
     private void updateMoreOptionsButtonIcon(boolean expand) {

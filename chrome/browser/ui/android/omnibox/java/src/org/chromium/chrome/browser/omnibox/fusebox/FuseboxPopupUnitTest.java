@@ -33,6 +33,8 @@ import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 import androidx.window.layout.WindowMetricsCalculatorDecorator;
@@ -769,6 +771,23 @@ public class FuseboxPopupUnitTest {
 
         mFuseboxPopup.setAccordionExpanded(false);
         assertEquals(View.GONE, mFuseboxPopup.mAccordionContainer.getVisibility());
+    }
+
+    @Test
+    public void moreOptionsButton_exposesAccordionExpandedState() {
+        mFuseboxPopup.setAccordionEnabled(true);
+        View button = mFuseboxPopup.mMoreOptionsButton;
+
+        mFuseboxPopup.setAccordionExpanded(false);
+        AccessibilityNodeInfoCompat info =
+                AccessibilityNodeInfoCompat.wrap(button.createAccessibilityNodeInfo());
+        assertEquals(AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED, info.getExpandedState());
+        assertTrue(info.getActionList().contains(AccessibilityActionCompat.ACTION_EXPAND));
+
+        mFuseboxPopup.setAccordionExpanded(true);
+        info = AccessibilityNodeInfoCompat.wrap(button.createAccessibilityNodeInfo());
+        assertEquals(AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL, info.getExpandedState());
+        assertTrue(info.getActionList().contains(AccessibilityActionCompat.ACTION_COLLAPSE));
     }
 
     @Test
