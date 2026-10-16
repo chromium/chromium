@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
+
 import {EntryType} from '../context_hub.mojom-webui.js';
 import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 
@@ -27,9 +29,7 @@ export function convertMojoTimeToDate(mojoTime?: {internalValue: bigint}|null):
 export function formatEntryAsMarkdown(entry: MemoryBankEntry): string {
   const date = convertMojoTimeToDate(entry.timestamp);
   const dateStr = date ? date.toLocaleString() : '';
-  const typeStr = entry.type === EntryType.kTextSelection ?
-      'Saved Text Selection' :
-      'Saved Tab';
+  const typeStr = getEntryTypeLabel(entry.type);
   const lines = [
     `## [${typeStr}]`,
     `- **Title:** ${entry.tabTitle}`,
@@ -52,6 +52,9 @@ export function formatEntryAsMarkdown(entry: MemoryBankEntry): string {
     const formattedContent = entry.selectedText.replace(/\r?\n/g, '\n  > ');
     lines.push(`- **Content:**\n  > ${formattedContent}`);
   }
+  if (entry.imageUrl) {
+    lines.push(`- **Image URL:** ${entry.imageUrl}`);
+  }
   return lines.join('\n');
 }
 
@@ -61,4 +64,20 @@ export function formatEntryAsMarkdown(entry: MemoryBankEntry): string {
  */
 export function formatEntriesAsMarkdown(entries: MemoryBankEntry[]): string {
   return entries.map(entry => formatEntryAsMarkdown(entry)).join('\n\n---\n\n');
+}
+
+/**
+ * Maps an entry type enum to its human-readable Markdown label.
+ */
+function getEntryTypeLabel(type: EntryType): string {
+  switch (type) {
+    case EntryType.kTab:
+      return 'Saved Tab';
+    case EntryType.kTextSelection:
+      return 'Saved Text Selection';
+    case EntryType.kImage:
+      return 'Saved Image';
+    default:
+      assertNotReachedCase(type);
+  }
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
+
 import {EntryType} from '../context_hub.mojom-webui.js';
 import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 
@@ -18,7 +20,10 @@ export interface ParsedSearchQuery {
   collection: string[];
   /** Note filters parsed from "note:<val>". */
   note: string[];
-  /** URL filters parsed from "url:<val>". */
+  /**
+   * URL filters parsed from "url:<val>" (matches entry.url or
+   * entry.imageUrl).
+   */
   url: string[];
   /** Title filters parsed from "title:<val>" (matches entry.tabTitle). */
   title: string[];
@@ -29,7 +34,7 @@ export interface ParsedSearchQuery {
   text: string[];
   /**
    * Entry type filters parsed from "type:<val>" (matches entry.type; e.g.
-   * "tab", "selected_text").
+   * "tab", "selected_text", "image").
    */
   entryType: string[];
   /** Freeform search terms matching any searchable property. */
@@ -72,7 +77,7 @@ const QUALIFIERS: readonly QualifierDef[] = [
   },
   {
     prefix: 'type:',
-    description: 'Filter by type (tab / selected_text)',
+    description: 'Filter by type (tab / selected_text / image)',
   },
   {
     prefix: 'title:',
@@ -80,7 +85,8 @@ const QUALIFIERS: readonly QualifierDef[] = [
   },
   {
     prefix: 'url:',
-    description: 'Filter by URL or domain (e.g. url:github.com)',
+    description:
+        'Filter by page URL, domain, or image URL (e.g. url:github.com)',
   },
   {
     prefix: 'note:',
@@ -96,7 +102,7 @@ const QUALIFIERS: readonly QualifierDef[] = [
 const MAX_SUGGESTIONS = 10;
 
 /** Candidate values suggested for "type:". */
-const TYPE_CANDIDATES: readonly string[] = ['tab', 'selected_text'];
+const TYPE_CANDIDATES: readonly string[] = ['tab', 'selected_text', 'image'];
 
 /** The qualifiers whose values come from a known set and can be completed. */
 const ENUMERABLE_QUALIFIERS: ReadonlySet<string> =
@@ -114,7 +120,8 @@ export function hasEnumerableValues(qualifier: string): boolean {
  * Parses a raw search query string into structured filter fields.
  *
  * Supports qualifiers (e.g. `tag:recipes`, `collection:"My Project"`,
- * `type:tab`, `type:selected_text`), quoted phrases, and freeform terms.
+ * `type:tab`, `type:selected_text`, `type:image`), quoted phrases, and freeform
+ * terms.
  *
  * @param rawQuery The raw query input string.
  * @return Structured filters split into specific qualifiers and freeform terms.
@@ -201,7 +208,8 @@ export function matchesMemoryBankEntry(
   // Within each qualifier, matching any of its values succeeds (OR).
   if (!matchesAny(parsed.collection, entry.collection) ||
       !matchesAny(parsed.title, entry.tabTitle) ||
-      !matchesAny(parsed.url, entry.url) ||
+      (!matchesAny(parsed.url, entry.url) &&
+       !matchesAny(parsed.url, entry.imageUrl)) ||
       !matchesAny(parsed.note, entry.note) ||
       !matchesAny(parsed.text, entry.selectedText) ||
       !matchesAny(parsed.entryType, getEntryTypeName(entry.type))) {
@@ -211,8 +219,8 @@ export function matchesMemoryBankEntry(
   // Check that every freeform term matches at least one field on the entry.
   for (const term of parsed.freeform) {
     const matched = matches(entry.tabTitle, term) || matches(entry.url, term) ||
-        matches(entry.selectedText, term) || matches(entry.note, term) ||
-        matches(entry.collection, term) ||
+        matches(entry.imageUrl, term) || matches(entry.selectedText, term) ||
+        matches(entry.note, term) || matches(entry.collection, term) ||
         entry.tags.some(t => matches(t, term));
     if (!matched) {
       return false;
@@ -357,11 +365,20 @@ function matchesAny(queries: string[], value: string|null|undefined): boolean {
 }
 
 /**
- * Maps an entry type enum to its queryable string name ('tab' or
- * 'selected_text').
+ * Maps an entry type enum to its queryable string name ('tab',
+ * 'selected_text', or 'image').
  */
 function getEntryTypeName(type: EntryType): string {
-  return type === EntryType.kTab ? 'tab' : 'selected_text';
+  switch (type) {
+    case EntryType.kTab:
+      return 'tab';
+    case EntryType.kTextSelection:
+      return 'selected_text';
+    case EntryType.kImage:
+      return 'image';
+    default:
+      assertNotReachedCase(type);
+  }
 }
 
 /**
