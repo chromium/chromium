@@ -13,7 +13,7 @@ MockNewTabFooterDocument::~MockNewTabFooterDocument() = default;
 
 mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
 MockNewTabFooterDocument::BindAndGetRemote() {
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M162);
   return receiver_.BindNewPipeAndPassRemote();
 }
 

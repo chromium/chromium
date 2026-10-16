@@ -479,7 +479,7 @@ void PolicyUIHandler::GetPolicyLogs(GetPolicyLogsCallback callback) {
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
   upload_report_count_ += 1;
-  DCHECK_EQ(1u, args.size());
+  CHECK_EQ(1u, args.size(), base::NotFatalUntil::M162);
   const std::string& callback_id = args[0].GetString();
 
   auto* browser_controller = g_browser_process->browser_policy_connector()

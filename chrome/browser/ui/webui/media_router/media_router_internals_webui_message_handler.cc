@@ -49,7 +49,7 @@ MediaRouterInternalsWebUIMessageHandler::
     MediaRouterInternalsWebUIMessageHandler(MediaRouter* router,
                                             MediaRouterDebugger& debugger)
     : router_(router), debugger_(debugger) {
-  DCHECK(router_);
+  CHECK(router_, base::NotFatalUntil::M162);
   debugger_->AddObserver(*this);
   if (router_->GetLogger()) {
     router_->GetLogger()->AddObserver(this);

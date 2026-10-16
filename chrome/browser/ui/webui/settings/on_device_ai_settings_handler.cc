@@ -113,7 +113,7 @@ void OnDeviceAiSettingsHandler::HandleOpenFeedbackDialog(
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   std::string unused;
   chrome::ShowFeedbackPage(browser, feedback::kFeedbackSourceOnDeviceAI, unused,
                            unused, "on_device_ai", unused);

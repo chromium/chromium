@@ -175,7 +175,7 @@ void ThemeSource::StartDataRequest(
     // This will extract and scale frame 0 of animated images.
     // TODO(reveman): Support scaling of animated images and avoid scaling and
     // re-encode when specific frame is specified (crbug.com/40532347).
-    DCHECK_LE(frame, 0);
+    CHECK_LE(frame, 0, base::NotFatalUntil::M162);
     SendThemeImage(std::move(callback), resource_id, scale);
   } else {
     SendThemeBitmap(std::move(callback), resource_id, scale);
@@ -241,7 +241,7 @@ void ThemeSource::SendThemeImage(
     content::URLDataSource::GotDataCallback callback,
     int resource_id,
     float scale) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   gfx::ImageSkia* image = nullptr;
 #if BUILDFLAG(ENABLE_EXTENSIONS)

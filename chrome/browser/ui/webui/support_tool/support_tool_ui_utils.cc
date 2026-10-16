@@ -265,7 +265,7 @@ std::set<redaction::PIIType> GetPIITypesToKeep(
   std::set<redaction::PIIType> pii_to_keep;
   for (const auto& item : *pii_items) {
     const base::DictValue* item_as_dict = item.GetIfDict();
-    DCHECK(item_as_dict);
+    CHECK(item_as_dict, base::NotFatalUntil::M162);
     std::optional<bool> keep =
         item_as_dict->FindBool(support_tool_ui::kPiiItemKeepKey);
     if (keep && keep.value()) {
@@ -316,7 +316,7 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   std::set<support_tool::DataCollectorType> included_data_collectors;
   for (const auto& item : *data_collector_items) {
     const base::DictValue* item_as_dict = item.GetIfDict();
-    DCHECK(item_as_dict);
+    CHECK(item_as_dict, base::NotFatalUntil::M162);
     std::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
     if (isIncluded && isIncluded.value()) {
       included_data_collectors.insert(

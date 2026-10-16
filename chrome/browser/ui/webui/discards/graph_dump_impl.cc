@@ -112,7 +112,7 @@ DiscardsGraphDumpImpl::DiscardsGraphDumpImpl() = default;
 
 DiscardsGraphDumpImpl::~DiscardsGraphDumpImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!change_subscriber_);
+  CHECK(!change_subscriber_, base::NotFatalUntil::M162);
 }
 
 // static
@@ -270,14 +270,14 @@ void DiscardsGraphDumpImpl::OnBeforePageNodeRemoved(
 void DiscardsGraphDumpImpl::OnOpenerFrameNodeChanged(
     const performance_manager::PageNode* page_node,
     const performance_manager::FrameNode* previous_opener) {
-  DCHECK(HasNode(page_node));
+  CHECK(HasNode(page_node), base::NotFatalUntil::M162);
   SendPageNotification(page_node, false);
 }
 
 void DiscardsGraphDumpImpl::OnEmbedderFrameNodeChanged(
     const performance_manager::PageNode* page_node,
     const performance_manager::FrameNode*) {
-  DCHECK(HasNode(page_node));
+  CHECK(HasNode(page_node), base::NotFatalUntil::M162);
   SendPageNotification(page_node, false);
 }
 
@@ -366,7 +366,7 @@ void DiscardsGraphDumpImpl::OnBeforeClientWorkerRemoved(
 }
 
 void DiscardsGraphDumpImpl::AddNode(const performance_manager::Node* node) {
-  DCHECK(node_ids_.find(node) == node_ids_.end());
+  CHECK(node_ids_.find(node) == node_ids_.end(), base::NotFatalUntil::M162);
   NodeId new_id = node_id_generator_.GenerateNextId();
   node_ids_.insert(std::make_pair(node, new_id));
   nodes_by_id_.insert(std::make_pair(new_id, node));
@@ -378,7 +378,7 @@ void DiscardsGraphDumpImpl::RemoveNode(const performance_manager::Node* node) {
   NodeId node_id = it->second;
   node_ids_.erase(it);
   size_t erased = nodes_by_id_.erase(node_id);
-  DCHECK_EQ(1u, erased);
+  CHECK_EQ(1u, erased, base::NotFatalUntil::M162);
 }
 
 bool DiscardsGraphDumpImpl::HasNode(
@@ -593,7 +593,7 @@ void DiscardsGraphDumpImpl::SendFaviconNotification(
     int64_t serialization_id,
     scoped_refptr<base::RefCountedMemory> bitmap_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(0u, bitmap_data->size());
+  CHECK_NE(0u, bitmap_data->size(), base::NotFatalUntil::M162);
 
   discards::mojom::FavIconInfoPtr icon_info =
       discards::mojom::FavIconInfo::New();

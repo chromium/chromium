@@ -112,7 +112,7 @@ void FaviconSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile_,
@@ -301,7 +301,7 @@ void FaviconSource::SendDefaultResponse(
                                                      icon_size, icon_size);
   std::optional<std::vector<uint8_t>> bitmap_data =
       gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
-  DCHECK(bitmap_data);
+  CHECK(bitmap_data, base::NotFatalUntil::M162);
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>(
       std::move(bitmap_data).value()));
 }

@@ -55,8 +55,10 @@ discards::mojom::SiteDataEntryPtr ConvertEntryFromProto(SiteDataProto* proto) {
 
   if (proto->has_load_time_estimates()) {
     const auto& load_time_estimates_proto = proto->load_time_estimates();
-    DCHECK(load_time_estimates_proto.has_avg_cpu_usage_us());
-    DCHECK(load_time_estimates_proto.has_avg_footprint_kb());
+    CHECK(load_time_estimates_proto.has_avg_cpu_usage_us(),
+          base::NotFatalUntil::M162);
+    CHECK(load_time_estimates_proto.has_avg_footprint_kb(),
+          base::NotFatalUntil::M162);
 
     discards::mojom::SiteDataPerformanceMeasurementPtr load_time_estimates =
         discards::mojom::SiteDataPerformanceMeasurement::New();
@@ -124,7 +126,7 @@ void SiteDataProviderImpl::GetSiteDataArray(
   OriginToReaderMap prev_requested_origins;
   prev_requested_origins.swap(requested_origins_);
   performance_manager::SiteDataCache* data_cache = inspector->GetDataCache();
-  DCHECK(data_cache);
+  CHECK(data_cache, base::NotFatalUntil::M162);
 
   for (const std::string& origin : explicitly_requested_origins) {
     auto it = prev_requested_origins.find(origin);

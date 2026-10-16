@@ -136,7 +136,7 @@ void VersionHandler::HandleRequestPathInfo(const base::ListValue& args) {
 void VersionHandler::OnGotFilePaths(std::string callback_id,
                                     std::u16string* executable_path_data,
                                     std::u16string* profile_path_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   base::DictValue response;
   response.Set(version_ui::kKeyExecPath, *executable_path_data);
   response.Set(version_ui::kKeyProfilePath, *profile_path_data);

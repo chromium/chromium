@@ -165,7 +165,7 @@ void ExtensionPrinterHandler::StartGetPrinters(
     AddedPrintersCallback callback,
     GetPrintersDoneCallback done_callback) {
   // Assume that there can only be one printer enumeration occurring at once.
-  DCHECK_EQ(pending_enumeration_count_, 0);
+  CHECK_EQ(pending_enumeration_count_, 0, base::NotFatalUntil::M162);
   pending_enumeration_count_ = 1;
   done_callback_ = std::move(done_callback);
   PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::StartGetPrinters() called";
@@ -185,7 +185,7 @@ void ExtensionPrinterHandler::StartGetPrinters(
                        << "usb printers detected";
     pending_enumeration_count_++;
     UsbDeviceManager* usb_manager = UsbDeviceManager::Get(profile_);
-    DCHECK(usb_manager);
+    CHECK(usb_manager, base::NotFatalUntil::M162);
     usb_manager->GetDevices(
         base::BindOnce(&ExtensionPrinterHandler::OnUsbDevicesEnumerated,
                        weak_ptr_factory_.GetWeakPtr(), callback));
@@ -329,7 +329,7 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
     AddedPrintersCallback callback,
     base::ListValue printers,
     bool done) {
-  DCHECK_GT(pending_enumeration_count_, 0);
+  CHECK_GT(pending_enumeration_count_, 0, base::NotFatalUntil::M162);
   PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::WrapGetPrintersCallback(): "
                      << "printers.size()=" << printers.size()
                      << " done=" << done;
@@ -420,7 +420,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
     }
   }
 
-  DCHECK_GT(pending_enumeration_count_, 0);
+  CHECK_GT(pending_enumeration_count_, 0, base::NotFatalUntil::M162);
   pending_enumeration_count_--;
   base::ListValue list = std::move(printer_list);
   if (!list.empty()) {

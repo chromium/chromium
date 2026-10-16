@@ -160,7 +160,7 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue& args) {
 #if BUILDFLAG(IS_CHROMEOS)
 void CrashesDOMHandler::HandleRequestUploads(const base::ListValue& args) {
   ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
-  DCHECK(debugd_client);
+  CHECK(debugd_client, base::NotFatalUntil::M162);
 
   debugd_client->UploadCrashes(base::BindOnce([](bool success) {
     if (!success) {

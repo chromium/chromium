@@ -300,7 +300,7 @@ double GetSiteEngagementScore(content::WebContents* contents) {
   }
 
   auto* nav_entry = controller.GetEntryAtIndex(current_entry_index);
-  DCHECK(nav_entry);
+  CHECK(nav_entry, base::NotFatalUntil::M162);
 
   auto* engagement_svc = site_engagement::SiteEngagementService::Get(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
@@ -376,7 +376,7 @@ class DiscardsDetailsProviderImpl
 
     DiscardEligibilityPolicy* eligiblity_policy =
         DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
-    DCHECK(eligiblity_policy);
+    CHECK(eligiblity_policy, base::NotFatalUntil::M162);
 
     std::vector<performance_manager::policies::PageNodeSortProxy> candidates;
     for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {

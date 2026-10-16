@@ -177,7 +177,7 @@ LocalPrinterHandlerDefault::~LocalPrinterHandlerDefault() = default;
 void LocalPrinterHandlerDefault::Reset() {}
 
 void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (IsOopPrintingEnabled()) {
@@ -204,7 +204,7 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
 void LocalPrinterHandlerDefault::StartGetPrinters(
     AddedPrintersCallback callback,
     GetPrintersDoneCallback done_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (IsOopPrintingEnabled()) {
@@ -233,7 +233,7 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
 void LocalPrinterHandlerDefault::StartGetCapability(
     const std::string& device_name,
     GetCapabilityCallback cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (IsOopPrintingEnabled()) {

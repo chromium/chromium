@@ -68,8 +68,9 @@ bool NearbyShareDialogUIConfig::IsWebUIEnabled(
 NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
-      profile));
+  CHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+            profile),
+        base::NotFatalUntil::M162);
 
   nearby_service_ = NearbySharingServiceFactory::GetForBrowserContext(profile);
 

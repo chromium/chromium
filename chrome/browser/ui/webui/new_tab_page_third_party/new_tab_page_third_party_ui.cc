@@ -235,7 +235,7 @@ void NewTabPageThirdPartyUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page_third_party::mojom::Page> pending_page,
     mojo::PendingReceiver<new_tab_page_third_party::mojom::PageHandler>
         pending_page_handler) {
-  DCHECK(pending_page.is_valid());
+  CHECK(pending_page.is_valid(), base::NotFatalUntil::M162);
 
   page_handler_ = std::make_unique<NewTabPageThirdPartyHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
@@ -246,7 +246,7 @@ void NewTabPageThirdPartyUI::CreatePageHandler(
     mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
     mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
         pending_page_handler) {
-  DCHECK(pending_page.is_valid());
+  CHECK(pending_page.is_valid(), base::NotFatalUntil::M162);
 
   most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,

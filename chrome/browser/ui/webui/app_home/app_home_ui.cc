@@ -85,7 +85,7 @@ scoped_refptr<base::RefCountedMemory> AppHomeUI::GetFaviconResourceBytes(
 void AppHomeUI::CreatePageHandler(
     mojo::PendingRemote<app_home::mojom::Page> page,
     mojo::PendingReceiver<app_home::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
   Profile* profile = Profile::FromWebUI(web_ui());
   page_handler_ = std::make_unique<AppHomePageHandler>(
       web_ui(), profile, std::move(receiver), std::move(page));

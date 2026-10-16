@@ -79,7 +79,8 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
 }
 
 void MetricsReportingHandler::OnPrefChanged(const std::string& pref_name) {
-  DCHECK_EQ(metrics::prefs::kMetricsReportingEnabled, pref_name);
+  CHECK_EQ(metrics::prefs::kMetricsReportingEnabled, pref_name,
+           base::NotFatalUntil::M162);
   SendMetricsReportingChange();
 }
 

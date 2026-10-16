@@ -56,7 +56,7 @@ void FeedbackDialog::CreateOrShow(
     Profile* profile,
     const extensions::api::feedback_private::FeedbackInfo& info) {
   if (current_instance_) {
-    DCHECK(current_instance_->widget_);
+    CHECK(current_instance_->widget_, base::NotFatalUntil::M162);
     Profile* current_profile = current_instance_->profile_keep_alive_.profile();
     if (profile == current_profile) {
       // Focus the window hosting the dialog that has already been created.
@@ -106,7 +106,7 @@ FeedbackDialog::FeedbackDialog(
       // straightforward.
       profile_keep_alive_(profile->GetOriginalProfile(),
                           ProfileKeepAliveOrigin::kFeedbackDialog) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   set_can_close(true);
   set_can_resize(false);
   set_can_minimize(true);
@@ -130,7 +130,7 @@ FeedbackDialog::FeedbackDialog(
 }
 
 FeedbackDialog::~FeedbackDialog() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (attached_to_current_instance_) {
     current_instance_ = nullptr;
   }

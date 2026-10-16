@@ -644,7 +644,7 @@ void SafetyHubHandler::OnExtensionUninstalled(
 }
 
 void SafetyHubHandler::OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {
-  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  CHECK(prefs_observation_.IsObservingSource(prefs), base::NotFatalUntil::M162);
   prefs_observation_.Reset();
 }
 

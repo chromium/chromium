@@ -140,7 +140,7 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   dse_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));
 
-  DCHECK(counters_.empty());
+  CHECK(counters_.empty(), base::NotFatalUntil::M162);
 
   for (const std::string& pref : kCounterPrefs) {
     AddCounter(
@@ -453,7 +453,7 @@ void ClearBrowsingDataHandler::UpdateHistoryDeletionDialog(bool show) {
 
 void ClearBrowsingDataHandler::AddCounter(
     std::unique_ptr<browsing_data::BrowsingDataCounter> counter) {
-  DCHECK(counter);
+  CHECK(counter, base::NotFatalUntil::M162);
   counter->InitWithoutPeriodPref(
       profile_->GetPrefs(), base::Time(),
       base::BindRepeating(&ClearBrowsingDataHandler::UpdateCounterText,

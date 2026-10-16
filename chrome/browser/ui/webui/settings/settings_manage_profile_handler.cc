@@ -142,7 +142,7 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 
 void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
     const base::ListValue& args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   PrefService* pref_service = profile_->GetPrefs();
   bool previously_using_gaia_icon =
@@ -160,7 +160,7 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
 
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
     const base::ListValue& args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK_EQ(1u, args.size());
   CHECK(args[0].is_int());
 
@@ -169,7 +169,7 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
 }
 
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue& args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK_EQ(1u, args.size());
 
   std::u16string new_profile_name = base::UTF8ToUTF16(args[0].GetString());
@@ -182,8 +182,8 @@ void ManageProfileHandler::HandleSetProfileName(const base::ListValue& args) {
 void ManageProfileHandler::HandleRequestProfileShortcutStatus(
     const base::ListValue& args) {
   AllowJavascript();
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ProfileShortcutManager::IsFeatureEnabled());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(ProfileShortcutManager::IsFeatureEnabled(), base::NotFatalUntil::M162);
 
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -199,7 +199,7 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
 
   ProfileShortcutManager* shortcut_manager =
       g_browser_process->profile_manager()->profile_shortcut_manager();
-  DCHECK(shortcut_manager);
+  CHECK(shortcut_manager, base::NotFatalUntil::M162);
   if (!shortcut_manager->CanCreateProfileShortcut(profile_->GetPath())) {
     ResolveJavascriptCallback(base::Value(callback_id),
                               base::Value(kProfileShortcutSettingHidden));
@@ -213,7 +213,7 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
 
 void ManageProfileHandler::OnHasProfileShortcuts(const std::string& callback_id,
                                                  bool has_shortcuts) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   ResolveJavascriptCallback(
       base::Value(callback_id),
       base::Value(has_shortcuts ? kProfileShortcutFound
@@ -222,20 +222,20 @@ void ManageProfileHandler::OnHasProfileShortcuts(const std::string& callback_id,
 
 void ManageProfileHandler::HandleAddProfileShortcut(
     const base::ListValue& args) {
-  DCHECK(ProfileShortcutManager::IsFeatureEnabled());
+  CHECK(ProfileShortcutManager::IsFeatureEnabled(), base::NotFatalUntil::M162);
   ProfileShortcutManager* shortcut_manager =
       g_browser_process->profile_manager()->profile_shortcut_manager();
-  DCHECK(shortcut_manager);
+  CHECK(shortcut_manager, base::NotFatalUntil::M162);
 
   shortcut_manager->CreateProfileShortcut(profile_->GetPath());
 }
 
 void ManageProfileHandler::HandleRemoveProfileShortcut(
     const base::ListValue& args) {
-  DCHECK(ProfileShortcutManager::IsFeatureEnabled());
+  CHECK(ProfileShortcutManager::IsFeatureEnabled(), base::NotFatalUntil::M162);
   ProfileShortcutManager* shortcut_manager =
       g_browser_process->profile_manager()->profile_shortcut_manager();
-  DCHECK(shortcut_manager);
+  CHECK(shortcut_manager, base::NotFatalUntil::M162);
 
   shortcut_manager->RemoveProfileShortcuts(profile_->GetPath());
 }

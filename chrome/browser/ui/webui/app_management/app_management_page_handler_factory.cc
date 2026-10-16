@@ -44,7 +44,7 @@ void AppManagementPageHandlerFactory::Bind(
 void AppManagementPageHandlerFactory::CreatePageHandler(
     mojo::PendingRemote<app_management::mojom::Page> page,
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(IS_CHROMEOS)
   page_handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(

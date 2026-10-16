@@ -57,10 +57,10 @@ void MetricsHandler::HandleRecordInHistogram(const base::ListValue& args) {
   int int_value = static_cast<int>(args[1].GetDouble());
   int int_exclusive_max = static_cast<int>(args[2].GetDouble());
 
-  DCHECK_GE(int_value, 0);
+  CHECK_GE(int_value, 0, base::NotFatalUntil::M162);
   // Note: int_exclusive_max must be strictly greater than all logged values,
   // i.e. MAX_VALUE + 1 or COUNT for enum histograms.
-  DCHECK_LT(int_value, int_exclusive_max);
+  CHECK_LT(int_value, int_exclusive_max, base::NotFatalUntil::M162);
 
   // As |histogram_name| may change between calls, the UMA_HISTOGRAM_ENUMERATION
   // macro cannot be used here.
@@ -81,7 +81,7 @@ void MetricsHandler::HandleRecordTime(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   double value = args[1].GetDouble();
 
-  DCHECK_GE(value, 0);
+  CHECK_GE(value, 0, base::NotFatalUntil::M162);
 
   base::UmaHistogramTimes(histogram_name, base::Milliseconds(value));
 }
@@ -90,7 +90,7 @@ void MetricsHandler::HandleRecordMediumTime(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   double value = args[1].GetDouble();
 
-  DCHECK_GE(value, 0);
+  CHECK_GE(value, 0, base::NotFatalUntil::M162);
 
   base::UmaHistogramMediumTimes(histogram_name, base::Milliseconds(value));
 }

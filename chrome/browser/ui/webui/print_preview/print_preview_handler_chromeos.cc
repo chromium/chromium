@@ -159,11 +159,11 @@ void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
 
 void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
     const base::ListValue& args) {
-  DCHECK(args[0].is_string());
-  DCHECK(args[1].is_string());
+  CHECK(args[0].is_string(), base::NotFatalUntil::M162);
+  CHECK(args[1].is_string(), base::NotFatalUntil::M162);
   std::string callback_id = args[0].GetString();
   std::string printer_id = args[1].GetString();
-  DCHECK(!callback_id.empty());
+  CHECK(!callback_id.empty(), base::NotFatalUntil::M162);
   MaybeAllowJavascript();
 
   PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kExtension);

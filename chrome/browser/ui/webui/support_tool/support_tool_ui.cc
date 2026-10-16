@@ -286,9 +286,9 @@ void SupportToolMessageHandler::HandleStartDataCollection(
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
   const base::DictValue* issue_details = args[1].GetIfDict();
-  DCHECK(issue_details);
+  CHECK(issue_details, base::NotFatalUntil::M162);
   const base::ListValue* data_collectors = args[2].GetIfList();
-  DCHECK(data_collectors);
+  CHECK(data_collectors, base::NotFatalUntil::M162);
   std::set<support_tool::DataCollectorType> included_data_collectors =
       GetIncludedDataCollectorTypes(data_collectors);
   // Send error message to UI if there's no selected data collectors to include.
@@ -337,7 +337,7 @@ void SupportToolMessageHandler::HandleStartDataExport(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::ListValue* pii_items = args[0].GetIfList();
-  DCHECK(pii_items);
+  CHECK(pii_items, base::NotFatalUntil::M162);
   // Early return if the select file dialog is already active.
   if (select_file_dialog_) {
     return;

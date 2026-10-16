@@ -25,7 +25,7 @@ const char OnStartupHandler::kOnStartupNtpExtensionEventName[] =
     "update-ntp-extension";
 
 OnStartupHandler::OnStartupHandler(Profile* profile) : profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 }
 OnStartupHandler::~OnStartupHandler() = default;
 

@@ -438,7 +438,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   if (extension->from_webstore()) {
     GURL store_url = GURL(base::StrCat(
         {"https://chrome.google.com/webstore/detail/", extension->id()}));
-    DCHECK(store_url.is_valid());
+    CHECK(store_url.is_valid(), base::NotFatalUntil::M162);
     app_info->store_page_url = store_url;
   }
   app_info->may_uninstall =

@@ -237,7 +237,8 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
 void AccessCodeCastHandler::OnSinkAddedResult(
     access_code_cast::mojom::AddSinkResultCode add_sink_result,
     std::optional<MediaSink::Id> sink_id) {
-  DCHECK(sink_id || add_sink_result != AddSinkResultCode::OK);
+  CHECK(sink_id || add_sink_result != AddSinkResultCode::OK,
+        base::NotFatalUntil::M162);
 
   if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND) {
     access_code_not_found_count_++;

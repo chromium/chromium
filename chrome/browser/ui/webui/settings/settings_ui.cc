@@ -766,11 +766,11 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
     auto* account_manager =
         ash::AccountManagerFactory::Get()->GetAccountManager(
             profile->GetPath().value());
-    DCHECK(account_manager);
+    CHECK(account_manager, base::NotFatalUntil::M162);
     auto* account_manager_facade =
         ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
             profile->GetPath().value());
-    DCHECK(account_manager_facade);
+    CHECK(account_manager_facade, base::NotFatalUntil::M162);
 
     web_ui()->AddMessageHandler(
         std::make_unique<ash::settings::AccountManagerUIHandler>(
@@ -841,7 +841,7 @@ void SettingsUI::BindInterface(
 
 void SettingsUI::AddSettingsPageUIHandler(
     std::unique_ptr<content::WebUIMessageHandler> handler) {
-  DCHECK(handler);
+  CHECK(handler, base::NotFatalUntil::M162);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

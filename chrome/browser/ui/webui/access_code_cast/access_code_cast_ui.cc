@@ -111,7 +111,7 @@ void AccessCodeCastUI::BindInterface(
 void AccessCodeCastUI::CreatePageHandler(
     mojo::PendingRemote<access_code_cast::mojom::Page> page,
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
 
   if (dialog_creation_timestamp_.has_value()) {
     base::TimeDelta dialog_load_time =

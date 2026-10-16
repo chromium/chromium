@@ -11,7 +11,7 @@ MockAppHomePage::MockAppHomePage() = default;
 MockAppHomePage::~MockAppHomePage() = default;
 
 mojo::PendingRemote<app_home::mojom::Page> MockAppHomePage::BindAndGetRemote() {
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M162);
   return receiver_.BindNewPipeAndPassRemote();
 }
 

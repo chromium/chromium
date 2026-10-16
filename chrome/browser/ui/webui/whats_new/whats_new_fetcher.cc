@@ -207,7 +207,7 @@ class WhatsNewFetcher {
   }
 
   void OnResponseLoaded(std::optional<std::string> body) {
-    DCHECK(browser_);
+    CHECK(browser_, base::NotFatalUntil::M162);
 
     int error_or_response_code = simple_loader_->NetError();
     const auto& headers = simple_loader_->ResponseInfo()

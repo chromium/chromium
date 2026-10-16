@@ -82,7 +82,7 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
 #else
   const ui::ThemeProvider* theme_provider =
       webui::GetThemeProviderDeprecated(web_contents_);
-  DCHECK(theme_provider);
+  CHECK(theme_provider, base::NotFatalUntil::M162);
   theme->color_background = color_utils::SkColorToRgbaString(GetThemeColor(
       webui::GetNativeThemeDeprecated(web_contents_),
       web_contents_->GetColorProvider(), kColorNewTabPageBackground));

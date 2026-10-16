@@ -52,7 +52,7 @@ class VersionUpdaterWin : public VersionUpdater, public UpdateCheckDelegate {
 
   // UpdateCheckDelegate:
   void OnUpdateCheckComplete(const std::u16string& new_version) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     if (new_version.empty()) {
       // Google Update says that no new version is available. Check to see if a
       // restart is needed for a previously-applied update to take effect.
@@ -73,13 +73,13 @@ class VersionUpdaterWin : public VersionUpdater, public UpdateCheckDelegate {
 
   void OnUpgradeProgress(int progress,
                          const std::u16string& new_version) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     callback_.Run(UPDATING, progress, false, false, std::string(), 0,
                   std::u16string());
   }
 
   void OnUpgradeComplete(const std::u16string& new_version) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     callback_.Run(NEARLY_UPDATED, 0, false, false, std::string(), 0,
                   std::u16string());
   }
@@ -87,7 +87,7 @@ class VersionUpdaterWin : public VersionUpdater, public UpdateCheckDelegate {
   void OnError(GoogleUpdateErrorCode error_code,
                const std::u16string& html_error_message,
                const std::u16string& new_version) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     std::u16string message;
     Status status = FAILED;
 

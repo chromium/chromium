@@ -132,10 +132,10 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue& list) {
 void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
     const gcm::GCMClient::GCMStatistics& stats) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   gcm::GCMProfileService* profile_service =
       gcm::GCMProfileServiceFactory::GetForProfile(profile);
-  DCHECK(profile_service);
+  CHECK(profile_service, base::NotFatalUntil::M162);
   ReturnResults(profile, profile_service, &stats);
 }
 

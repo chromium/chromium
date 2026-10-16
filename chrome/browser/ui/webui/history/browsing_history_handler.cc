@@ -148,8 +148,8 @@ void GetDeviceNameAndType(const syncer::DeviceInfoTracker* tracker,
                           std::string* type) {
   // DeviceInfoTracker must be syncing in order for remote history entries to
   // be available.
-  DCHECK(tracker);
-  DCHECK(tracker->IsSyncing());
+  CHECK(tracker, base::NotFatalUntil::M162);
+  CHECK(tracker->IsSyncing(), base::NotFatalUntil::M162);
 
   const syncer::DeviceInfo* device_info =
       tracker->GetChromeDeviceInfo(client_id);
@@ -647,7 +647,7 @@ void BrowsingHistoryHandler::RemoveVisits(
       NOTREACHED() << "Unable to extract arguments";
     }
 
-    DCHECK_GT(timestamps.size(), 0U);
+    CHECK_GT(timestamps.size(), 0U, base::NotFatalUntil::M162);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = GURL(url);
 
@@ -946,7 +946,7 @@ void BrowsingHistoryHandler::HandleQueryResults(
       DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker();
 
-  DCHECK(tracker);
+  CHECK(tracker, base::NotFatalUntil::M162);
 
   // Deduplicate actions belonging to the same task and visit.
   // 5 seconds is chosen as a safe heuristic upper bound to accommodate

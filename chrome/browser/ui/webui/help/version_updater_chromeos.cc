@@ -166,8 +166,9 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
 void VersionUpdaterCros::ApplyDeferredUpdateAdvanced() {
   UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
 
-  DCHECK(update_engine_client->GetLastStatus().current_operation() ==
-         update_engine::Operation::UPDATED_BUT_DEFERRED);
+  CHECK(update_engine_client->GetLastStatus().current_operation() ==
+            update_engine::Operation::UPDATED_BUT_DEFERRED,
+        base::NotFatalUntil::M162);
 
   update_engine_client->ApplyDeferredUpdateAdvanced(
       /*shutdown_after_update=*/false, base::DoNothing());

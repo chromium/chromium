@@ -75,7 +75,8 @@ void AppearanceHandler::RegisterMessages() {
 
 void AppearanceHandler::HandleUseTheme(ui::SystemTheme system_theme,
                                        const base::ListValue& args) {
-  DCHECK(system_theme != ui::SystemTheme::kDefault || !profile_->IsChild());
+  CHECK(system_theme != ui::SystemTheme::kDefault || !profile_->IsChild(),
+        base::NotFatalUntil::M162);
   ThemeServiceFactory::GetForProfile(profile_)->UseTheme(system_theme);
   settings_utils::MaybeNotifySettingsCustomEvent(
       web_ui(), settings::kAppearanceThemeChangedId);

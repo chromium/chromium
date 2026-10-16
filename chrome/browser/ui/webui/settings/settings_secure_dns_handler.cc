@@ -201,10 +201,11 @@ void SecureDnsHandler::HandleProbeConfig(const base::ListValue& args) {
 
   probe_callback_id_ = args[0].GetString();
   const std::string& doh_config = args[1].GetString();
-  DCHECK(!runner_);
+  CHECK(!runner_, base::NotFatalUntil::M162);
   std::optional<net::DnsOverHttpsConfig> parsed =
       net::DnsOverHttpsConfig::FromString(doh_config);
-  DCHECK(parsed.has_value());  // `doh_config` must be valid.
+  CHECK(parsed.has_value(),
+        base::NotFatalUntil::M162);  // `doh_config` must be valid.
   runner_ =
       secure_dns::MakeProbeRunner(std::move(*parsed), network_context_getter_);
   runner_->RunProbe(base::BindOnce(&SecureDnsHandler::OnProbeComplete,

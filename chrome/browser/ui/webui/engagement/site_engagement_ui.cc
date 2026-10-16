@@ -40,7 +40,7 @@ class SiteEngagementDetailsProviderImpl
       mojo::PendingReceiver<
           site_engagement::mojom::SiteEngagementDetailsProvider> receiver)
       : profile_(profile), receiver_(this, std::move(receiver)) {
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M162);
   }
 
   SiteEngagementDetailsProviderImpl(const SiteEngagementDetailsProviderImpl&) =

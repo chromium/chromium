@@ -394,7 +394,8 @@ base::Value PolicyUI::GetSchema(Profile* profile) {
       continue;
     }
     for (const auto& [component_id, schema] : *components) {
-      DCHECK_EQ(schema.type(), base::Value::Type::DICT);
+      CHECK_EQ(schema.type(), base::Value::Type::DICT,
+               base::NotFatalUntil::M162);
       base::ListValue policy_names;
       auto it = schema.GetPropertiesIterator();
       for (; !it.IsAtEnd(); it.Advance()) {

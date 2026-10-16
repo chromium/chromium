@@ -37,8 +37,8 @@ bool DefaultBrowserIsDisabledByPolicy() {
   const PrefService::Preference* pref =
       g_browser_process->local_state()->FindPreference(
           prefs::kDefaultBrowserSettingEnabled);
-  DCHECK(pref);
-  DCHECK(pref->GetValue()->is_bool());
+  CHECK(pref, base::NotFatalUntil::M162);
+  CHECK(pref->GetValue()->is_bool(), base::NotFatalUntil::M162);
   return pref->IsManaged() && !pref->GetValue()->GetBool();
 }
 

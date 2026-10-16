@@ -55,7 +55,7 @@ void MetricsReporter::MeasureInternal(const std::string& start_mark,
     return;
   }
 
-  DCHECK(page_.is_bound());
+  CHECK(page_.is_bound(), base::NotFatalUntil::M162);
   page_->OnGetMark(
       start_mark,
       base::BindOnce(
@@ -80,7 +80,7 @@ void MetricsReporter::HasMark(const std::string& name,
     return;
   }
 
-  DCHECK(page_.is_bound());
+  CHECK(page_.is_bound(), base::NotFatalUntil::M162);
   page_->OnGetMark(name, base::BindOnce(
                              [](HasMarkCallback callback,
                                 std::optional<base::TimeDelta> time) {

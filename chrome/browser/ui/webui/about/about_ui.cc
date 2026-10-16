@@ -134,7 +134,7 @@ class ChromeOSTermsHandler
   virtual ~ChromeOSTermsHandler() = default;
 
   void StartOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     if (path_ == ash::kChromeUITermsOemEulaURLPath) {
       // Load local OEM EULA from the disk.
       base::ThreadPool::PostTaskAndReply(
@@ -170,7 +170,7 @@ class ChromeOSTermsHandler
   }
 
   void ResponseOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     // If we fail to load Chrome OS EULA from disk, load it from resources.
     // Do nothing if OEM EULA or Play Store ToS load failed.
     if (contents_.empty() && path_.empty()) {
@@ -221,7 +221,7 @@ class ChromeOSCreditsHandler
   virtual ~ChromeOSCreditsHandler() = default;
 
   void StartOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     // Load local Chrome OS credits from the disk.
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -265,7 +265,7 @@ class ChromeOSCreditsHandler
   }
 
   void ResponseOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     // If we fail to load Chrome OS credits from disk, load it from resources.
     if (contents_.empty()) {
       contents_ =
@@ -314,7 +314,7 @@ class CrostiniCreditsHandler
   virtual ~CrostiniCreditsHandler() = default;
 
   void StartOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
       crostini::CrostiniManager::GetForProfile(profile_)->GetInstallLocation(
           base::BindOnce(&CrostiniCreditsHandler::LoadCredits, this));
@@ -351,7 +351,7 @@ class CrostiniCreditsHandler
   }
 
   void RespondOnUIThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     // If we fail to load Linux credits from disk, use the placeholder.
     if (contents_.empty()) {
       contents_ = l10n_util::GetStringUTF8(IDS_CROSTINI_CREDITS_PLACEHOLDER);

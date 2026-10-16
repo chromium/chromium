@@ -451,7 +451,7 @@ WebContents* PrintPreviewHandler::preview_web_contents() {
 
 PrefService* PrintPreviewHandler::GetPrefs() {
   auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M162);
   return prefs;
 }
 
@@ -585,7 +585,7 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
 }
 
 void PrintPreviewHandler::HandleGetPreview(const base::ListValue& args) {
-  DCHECK_EQ(2U, args.size());
+  CHECK_EQ(2U, args.size(), base::NotFatalUntil::M162);
 
   // All of the conditions below should be guaranteed by the print preview
   // javascript.
@@ -618,7 +618,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue& args) {
   // headers and footers are to be displayed.
   std::optional<bool> display_header_footer_opt =
       settings.FindBool(kSettingHeaderFooterEnabled);
-  DCHECK(display_header_footer_opt);
+  CHECK(display_header_footer_opt, base::NotFatalUntil::M162);
   if (display_header_footer_opt.value_or(false)) {
     settings.Set(kSettingHeaderFooterTitle, initiator->GetTitle());
 
@@ -672,7 +672,7 @@ void PrintPreviewHandler::HandleDoPrint(const base::ListValue& args) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value("NO_DATA"));
     return;
   }
-  DCHECK(data->size());
+  CHECK(data->size(), base::NotFatalUntil::M162);
 
   // After validating `settings`, record metrics.
   std::optional<bool> maybe_is_pdf = IsPrintingPdf();
@@ -835,7 +835,7 @@ void PrintPreviewHandler::GetLocaleInformation(base::DictValue* settings) {
     thousands_delimiter.clear();
   }
   size_t decimal_pos = number_format.find('6') + 1;
-  DCHECK_NE(number_format[decimal_pos], '7');
+  CHECK_NE(number_format[decimal_pos], '7', base::NotFatalUntil::M162);
   std::u16string decimal_delimiter = number_format.substr(decimal_pos, 1);
   settings->Set(kDecimalDelimiter, decimal_delimiter);
   settings->Set(kThousandsDelimiter, thousands_delimiter);
@@ -1002,7 +1002,7 @@ void PrintPreviewHandler::OnPrintPreviewFailed(int request_id) {
 
   // Keep track of failures.
   bool inserted = preview_failures_.insert(request_id).second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M162);
   RejectJavascriptCallback(base::Value(callback_id),
                            base::Value("PREVIEW_FAILED"));
 }
@@ -1137,11 +1137,12 @@ PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
 
 void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
                                           base::ListValue printers) {
-  DCHECK(printer_type == mojom::PrinterType::kExtension ||
-         printer_type == mojom::PrinterType::kLocal);
+  CHECK(printer_type == mojom::PrinterType::kExtension ||
+            printer_type == mojom::PrinterType::kLocal,
+        base::NotFatalUntil::M162);
   // Save the count here, as `printers` gets moved below.
   const size_t printer_count = printers.size();
-  DCHECK(printer_count);
+  CHECK(printer_count, base::NotFatalUntil::M162);
   FireWebUIListener("printers-added",
                     base::Value(static_cast<int>(printer_type)), printers);
 

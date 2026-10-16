@@ -63,13 +63,16 @@ void ProfileInfoHandler::OnJavascriptAllowed() {
 void ProfileInfoHandler::OnJavascriptDisallowed() {
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  DCHECK(profile_observation_.IsObservingSource(
-      &g_browser_process->profile_manager()->GetProfileAttributesStorage()));
+  CHECK(
+      profile_observation_.IsObservingSource(
+          &g_browser_process->profile_manager()->GetProfileAttributesStorage()),
+      base::NotFatalUntil::M162);
   profile_observation_.Reset();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(user_manager_observation_.IsObservingSource(
-      user_manager::UserManager::Get()));
+  CHECK(user_manager_observation_.IsObservingSource(
+            user_manager::UserManager::Get()),
+        base::NotFatalUntil::M162);
   user_manager_observation_.Reset();
 #endif
 }
@@ -133,7 +136,7 @@ base::DictValue ProfileInfoHandler::GetAccountNameAndIcon() {
 #if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   name = base::UTF16ToUTF8(user->GetDisplayName());
 
   // Get image as data URL instead of using chrome://userimage source to avoid

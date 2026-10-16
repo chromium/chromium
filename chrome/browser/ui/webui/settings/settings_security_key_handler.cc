@@ -54,7 +54,7 @@ base::flat_set<device::FidoTransportProtocol> supported_transports() {
 
 void HandleClose(base::RepeatingClosure close_callback,
                  const base::ListValue& args) {
-  DCHECK_EQ(0u, args.size());
+  CHECK_EQ(0u, args.size(), base::NotFatalUntil::M162);
   close_callback.Run();
 }
 

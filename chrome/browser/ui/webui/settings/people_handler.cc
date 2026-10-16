@@ -227,7 +227,7 @@ std::string_view GetSyncErrorAction(SyncStatusActionType action_type) {
 // accounts list.
 base::DictValue GetAccountValue(signin::IdentityManager* identity_manager,
                                 const AccountInfo& account) {
-  DCHECK(!account.IsEmpty());
+  CHECK(!account.IsEmpty(), base::NotFatalUntil::M162);
   auto dict =
       base::DictValue()
           .Set("email", account.GetEmail())
@@ -506,7 +506,8 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     // Note: this sets the consent level to `signin::ConsentLevel::kSignin`.
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
-    DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+          base::NotFatalUntil::M162);
   }
 
   // If the identity manager already has a primary account, this is a
@@ -516,7 +517,7 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
       signin_util::IsSigninPending(identity_manager)) {
     SigninErrorController* error_controller =
         SigninErrorControllerFactory::GetForProfile(profile_);
-    DCHECK(error_controller->HasError());
+    CHECK(error_controller->HasError(), base::NotFatalUntil::M162);
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(profile_,
                                                              access_point);
     return;
@@ -696,8 +697,9 @@ base::ListValue PeopleHandler::GetStoredAccountsList() {
 // TODO(crbug.com/457426419): Rename this method once syncing is removed.
 void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue& args) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) ||
-         AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_));
+  CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) ||
+            AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_),
+        base::NotFatalUntil::M162);
   const base::Value& email = args[0];
   const base::Value& is_default_promo_account = args[1];
 
@@ -835,8 +837,9 @@ void PeopleHandler::HandleStartSignin(const base::ListValue& args) {
   // Should only be called if the user is not already signed in, has a auth
   // error, or a unrecoverable sync error requiring re-auth.
   syncer::SyncService* service = GetSyncService();
-  DCHECK(IsProfileAuthNeededOrHasErrors() ||
-         (service && service->HasUnrecoverableError()));
+  CHECK(IsProfileAuthNeededOrHasErrors() ||
+            (service && service->HasUnrecoverableError()),
+        base::NotFatalUntil::M162);
   DisplayGaiaLogin(access_point);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -927,9 +930,11 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void PeopleHandler::HandlePauseSync(const base::ListValue& args) {
-  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
+  CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_),
+        base::NotFatalUntil::M162);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync),
+        base::NotFatalUntil::M162);
 
   identity_manager->GetAccountsMutator()
       ->InvalidateRefreshTokenForPrimaryAccount(
@@ -1087,7 +1092,7 @@ void PeopleHandler::CloseSyncSetup() {
 }
 
 void PeopleHandler::InitializeSyncBlocker() {
-  DCHECK(web_ui());
+  CHECK(web_ui(), base::NotFatalUntil::M162);
   WebContents* web_contents = web_ui()->GetWebContents();
   if (!web_contents) {
     return;
@@ -1169,11 +1174,13 @@ void PeopleHandler::OnSyncShutdown(syncer::SyncService* sync_service) {
 
 void PeopleHandler::BeforeUnloadDialogCancelled() {
   // The before unload dialog is only shown during the first sync setup.
-  DCHECK(IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-      signin::ConsentLevel::kSync));
+  CHECK(IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+            signin::ConsentLevel::kSync),
+        base::NotFatalUntil::M162);
   syncer::SyncService* service = GetSyncService();
-  DCHECK(service && service->IsSetupInProgress() &&
-         !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+  CHECK(service && service->IsSetupInProgress() &&
+            !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete(),
+        base::NotFatalUntil::M162);
 
   base::RecordAction(
       base::UserMetricsAction("Signin_Signin_CancelAbortAdvancedSyncSettings"));
@@ -1190,7 +1197,7 @@ base::DictValue PeopleHandler::GetSyncStatusDictionary() const {
   sync_status.Set("supervisedUser", profile_->IsChild());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  DCHECK(identity_manager);
+  CHECK(identity_manager, base::NotFatalUntil::M162);
 
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo primary_account_info =

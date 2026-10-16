@@ -117,7 +117,7 @@ void FeedbackHandler::HandleShowAssistantLogsInfo(const base::ListValue& args) {
 
 void FeedbackHandler::HandleShowAutofillMetadataInfo(
     const base::ListValue& args) {
-  DCHECK(!args.empty());
+  CHECK(!args.empty(), base::NotFatalUntil::M162);
   ShowChildPage(
       Profile::FromWebUI(web_ui()), dialog_,
       ChildPageURL("html/autofill_metadata_info.html"),
