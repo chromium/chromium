@@ -83,7 +83,7 @@ class GlicActorTaskManager {
   bool IsActuating() const;
 
   // Returns the last acted tabs for the current task.
-  std::vector<tabs::TabInterface*> GetLastActedTabs() const;
+  std::vector<raw_ptr<tabs::TabInterface>> GetLastActedTabs() const;
 
   // Returns the ID of the current active task, if any.
   std::optional<int> current_task_id() const;

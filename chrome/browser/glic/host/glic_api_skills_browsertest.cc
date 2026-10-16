@@ -372,7 +372,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills, testShowManageSkillsUiNoWindow) {
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
     auto all_bwis = GetAllBrowserWindowInterfaces();
     for (auto* bwi : all_bwis) {
-      for (auto* tab : TabListInterface::From(bwi)->GetAllTabs()) {
+      for (tabs::TabInterface* tab :
+           TabListInterface::From(bwi)->GetAllTabs()) {
         if (tab->GetContents()->GetLastCommittedURL().spec().starts_with(
                 chrome::kChromeUISkillsURL)) {
           return true;
@@ -396,7 +397,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills, testCreateSkillNoWindow) {
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
     auto all_bwis = GetAllBrowserWindowInterfaces();
     for (auto* bwi : all_bwis) {
-      for (auto* tab : TabListInterface::From(bwi)->GetAllTabs()) {
+      for (tabs::TabInterface* tab :
+           TabListInterface::From(bwi)->GetAllTabs()) {
         if (tab->GetContents()->GetLastCommittedURL().spec().starts_with(
                 chrome::kChromeUISkillsURL)) {
           return true;

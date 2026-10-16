@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -36,8 +37,8 @@ class GlicPinnedTabManager {
 
   // Registers a callback to be invoked when the collection of pinned tabs
   // changes.
-  using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<tabs::TabInterface*>&)>;
+  using PinnedTabsChangedCallback = base::RepeatingCallback<void(
+      const std::vector<raw_ptr<tabs::TabInterface>>&)>;
   virtual base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) = 0;
 
@@ -107,7 +108,7 @@ class GlicPinnedTabManager {
       tabs::TabHandle tab_handle) const = 0;
 
   // Fetches the current list of pinned tabs.
-  virtual std::vector<tabs::TabInterface*> GetPinnedTabs() const = 0;
+  virtual std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const = 0;
 
   // Subscribes to changes in pin candidates.
   virtual void SubscribeToPinCandidates(

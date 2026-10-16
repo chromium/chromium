@@ -253,7 +253,7 @@ void GlicTabObserverAndroid::TabClosureUndone(TabAndroid* tab) {
 
 void GlicTabObserverAndroid::OnTabCloseUndone(
     const std::vector<TabAndroid*>& tabs) {
-  for (auto* tab : tabs) {
+  for (TabAndroid* tab : tabs) {
     DidAddTab(tab, TabModel::TabLaunchType::FROM_CHROME_UI);
   }
 }
@@ -272,7 +272,7 @@ void GlicTabObserverAndroid::WillCloseTabs(
 
   // Remove closing tabs from `last_active_tab_map_` before they get detached
   // from their model.
-  for (auto* tab : tabs) {
+  for (TabAndroid* tab : tabs) {
     MaybeClearLastActiveTab(closing_tab_tab_model, tab);
   }
 }

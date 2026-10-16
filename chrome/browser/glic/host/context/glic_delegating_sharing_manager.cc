@@ -205,10 +205,10 @@ void GlicDelegatingSharingManagerBase::GetImageBytes(
                                            std::move(callback));
 }
 
-std::vector<tabs::TabInterface*>
+std::vector<raw_ptr<tabs::TabInterface>>
 GlicDelegatingSharingManagerBase::GetPinnedTabs() const {
   return sharing_manager_delegate_ ? sharing_manager_delegate_->GetPinnedTabs()
-                                   : std::vector<tabs::TabInterface*>{};
+                                   : std::vector<raw_ptr<tabs::TabInterface>>{};
 }
 
 void GlicDelegatingSharingManagerBase::OnConversationTurnSubmitted() {
@@ -268,7 +268,7 @@ void GlicDelegatingSharingManagerBase::OnTabPinningStatusEventCallback(
 }
 
 void GlicDelegatingSharingManagerBase::OnPinnedTabsChangedCallback(
-    const std::vector<tabs::TabInterface*>& pinned_tabs) {
+    const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs) {
   pinned_tabs_changed_callback_list_.Notify(pinned_tabs);
 }
 
@@ -330,13 +330,13 @@ void GlicDelegatingSharingManagerBase::RefreshDelegateSubscriptions() {
 }
 
 void GlicDelegatingSharingManagerBase::ForceNotify(
-    const std::vector<tabs::TabInterface*>& old_pinned_tabs) {
-  for (auto* tab : old_pinned_tabs) {
+    const std::vector<raw_ptr<tabs::TabInterface>>& old_pinned_tabs) {
+  for (tabs::TabInterface* tab : old_pinned_tabs) {
     tab_pinning_status_changed_callback_list_.Notify(tab, false);
     tab_pinning_status_event_callback_list_.Notify(tab, GetEmptyUnpinEvent());
   }
 
-  for (auto* tab : GetPinnedTabs()) {
+  for (tabs::TabInterface* tab : GetPinnedTabs()) {
     tab_pinning_status_changed_callback_list_.Notify(tab, true);
     tab_pinning_status_event_callback_list_.Notify(tab, GetEmptyPinEvent());
   }

@@ -25,8 +25,8 @@ class GlicActivePinnedFocusedTabManagerBrowserTest : public GlicBrowserTest {
  protected:
   // Setup tabs for test and return handles. Uses current tab, but if count > 1
   // then additional tabs will be created.
-  std::vector<tabs::TabInterface*> SetupTabs(int count) {
-    std::vector<tabs::TabInterface*> tabs;
+  std::vector<raw_ptr<tabs::TabInterface>> SetupTabs(int count) {
+    std::vector<raw_ptr<tabs::TabInterface>> tabs;
     tabs.push_back(GetTabListInterface()->GetActiveTab());
     for (int i = 1; i < count; ++i) {
       tabs.push_back(CreateUserInitiatedTab(GURL("about:blank")));
@@ -35,7 +35,7 @@ class GlicActivePinnedFocusedTabManagerBrowserTest : public GlicBrowserTest {
   }
 
   [[nodiscard]] TestResult<> WaitForPinnedTabs(
-      const std::vector<tabs::TabInterface*>& expected_tabs) {
+      const std::vector<raw_ptr<tabs::TabInterface>>& expected_tabs) {
     return RunUntilEqual(
         [&]() {
           return service()->active_instance_sharing_manager().GetPinnedTabs();
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   auto& manager = service()->active_instance_sharing_manager();
 
   // 2. Open a tab.
-  std::vector<tabs::TabInterface*> tabs = SetupTabs(1);
+  std::vector<raw_ptr<tabs::TabInterface>> tabs = SetupTabs(1);
   ASSERT_FALSE(tabs.empty());
   tabs::TabInterface* tab = tabs[0];
   ASSERT_TRUE(tab);
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        TakesActiveTabStatusIntoAccount) {
   auto& manager = service()->active_instance_sharing_manager();
 
-  std::vector<tabs::TabInterface*> tabs = SetupTabs(2);
+  std::vector<raw_ptr<tabs::TabInterface>> tabs = SetupTabs(2);
   ASSERT_EQ(tabs.size(), 2u);
   tabs::TabInterface* tab1 = tabs[0];
   tabs::TabInterface* tab2 = tabs[1];
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   auto& manager = service()->active_instance_sharing_manager();
 
   // Open two tabs.
-  std::vector<tabs::TabInterface*> tabs = SetupTabs(2);
+  std::vector<raw_ptr<tabs::TabInterface>> tabs = SetupTabs(2);
   ASSERT_EQ(tabs.size(), 2u);
   tabs::TabInterface* tab1 = tabs[0];
   tabs::TabInterface* tab2 = tabs[1];

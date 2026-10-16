@@ -31,10 +31,10 @@ BrowserWindowInterface* FindBrowserWithTabGroup(
   return found_window;
 }
 
-std::vector<tabs::TabInterface*> GetTabsInTabGroup(
+std::vector<raw_ptr<tabs::TabInterface>> GetTabsInTabGroup(
     BrowserWindowInterface* window,
     tab_groups::TabGroupId group_id) {
-  std::vector<tabs::TabInterface*> group_tabs;
+  std::vector<raw_ptr<tabs::TabInterface>> group_tabs;
   auto* tab_list = TabListInterface::From(window);
   if (!tab_list) {
     return group_tabs;
@@ -51,7 +51,7 @@ std::vector<tabs::TabInterface*> GetTabsInTabGroup(
   return group_tabs;
 }
 
-std::vector<tabs::TabInterface*> GetTabsInTabGroup(
+std::vector<raw_ptr<tabs::TabInterface>> GetTabsInTabGroup(
     Profile* profile,
     tab_groups::TabGroupId group_id) {
   BrowserWindowInterface* window = FindBrowserWithTabGroup(profile, group_id);

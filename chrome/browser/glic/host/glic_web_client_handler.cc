@@ -1723,7 +1723,8 @@ class GlicWebClientHandler
     }
   }
 
-  void OnPinningChanged(const std::vector<tabs::TabInterface*>& pinned_tabs) {
+  void OnPinningChanged(
+      const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs) {
     std::vector<glic::mojom::TabDataPtr> tab_data;
     for (tabs::TabInterface* tab : pinned_tabs) {
       tab_data.push_back(CreateTabData(tab));

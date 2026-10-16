@@ -629,9 +629,9 @@ bool GlicActorTaskManager::IsActuating() const {
   return session_ && session_->IsActuating();
 }
 
-std::vector<tabs::TabInterface*> GlicActorTaskManager::GetLastActedTabs()
-    const {
-  std::vector<tabs::TabInterface*> target_tabs;
+std::vector<raw_ptr<tabs::TabInterface>>
+GlicActorTaskManager::GetLastActedTabs() const {
+  std::vector<raw_ptr<tabs::TabInterface>> target_tabs;
   if (!session_) {
     return target_tabs;
   }

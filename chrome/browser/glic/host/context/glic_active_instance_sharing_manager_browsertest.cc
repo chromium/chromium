@@ -25,7 +25,7 @@ class GlicActiveInstanceSharingManagerBrowserTest : public GlicBrowserTest {
   }
 
   [[nodiscard]] TestResult<> WaitForPinnedTabs(
-      const std::vector<tabs::TabInterface*>& expected_tabs) {
+      const std::vector<raw_ptr<tabs::TabInterface>>& expected_tabs) {
     return RunUntilEqual(
         [&]() { return active_instance_sharing_manager().GetPinnedTabs(); },
         expected_tabs);

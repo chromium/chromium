@@ -358,7 +358,8 @@ void GlicSharingManagerImpl::GetImageBytes(
       base::BindOnce(&TransformImageBytesResult).Then(std::move(callback)));
 }
 
-std::vector<tabs::TabInterface*> GlicSharingManagerImpl::GetPinnedTabs() const {
+std::vector<raw_ptr<tabs::TabInterface>> GlicSharingManagerImpl::GetPinnedTabs()
+    const {
   return pinned_tab_manager()->GetPinnedTabs();
 }
 

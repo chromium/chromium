@@ -65,7 +65,7 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
   std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
       tabs::TabHandle tab_handle) const override;
 
-  std::vector<tabs::TabInterface*> GetPinnedTabs() const override;
+  std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const override;
 
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
@@ -96,7 +96,7 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
 
   // Returns a vector of tabs for potential pin candidates. The vector
   // is not sorted or truncated.
-  std::vector<tabs::TabInterface*> GetUnsortedPinCandidates();
+  std::vector<raw_ptr<tabs::TabInterface>> GetUnsortedPinCandidates();
 
   class PinnedTabObserver;
   friend PinnedTabObserver;
@@ -137,7 +137,8 @@ class GlicPinnedTabManagerImpl : public GlicPinnedTabManager {
 
   // List of callbacks to invoke when the collection of pinned tabs changes
   // (including changes to metadata).
-  base::RepeatingCallbackList<void(const std::vector<tabs::TabInterface*>&)>
+  base::RepeatingCallbackList<void(
+      const std::vector<raw_ptr<tabs::TabInterface>>&)>
       pinned_tabs_changed_callback_list_;
 
   // List of callbacks to invoke when the tab data for a pinned tab changes.

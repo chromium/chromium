@@ -74,8 +74,8 @@ std::optional<GlicPinnedTabUsage> GlicEmptyPinnedTabManager::GetPinnedTabUsage(
   return std::nullopt;
 }
 
-std::vector<tabs::TabInterface*> GlicEmptyPinnedTabManager::GetPinnedTabs()
-    const {
+std::vector<raw_ptr<tabs::TabInterface>>
+GlicEmptyPinnedTabManager::GetPinnedTabs() const {
   return {};
 }
 

@@ -119,7 +119,7 @@ bool IsTabValidForSharing(tabs::TabInterface* tab) {
 }
 
 tabs::TabInterface* GetMostRecentlyActiveTab(
-    const std::vector<tabs::TabInterface*>& tabs) {
+    const std::vector<raw_ptr<tabs::TabInterface>>& tabs) {
   CHECK(!tabs.empty());
   auto it = std::max_element(
       tabs.begin(), tabs.end(),

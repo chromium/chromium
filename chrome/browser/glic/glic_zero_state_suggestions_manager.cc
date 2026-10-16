@@ -61,7 +61,7 @@ mojom::ZeroStateSuggestionsV2Ptr MakePendingSuggestionsPtr(
 }
 
 std::vector<raw_ptr<content::WebContents>> GetWebContentsFromTabs(
-    const std::vector<tabs::TabInterface*>& tabs) {
+    const std::vector<raw_ptr<tabs::TabInterface>>& tabs) {
   std::vector<raw_ptr<content::WebContents>> web_contents;
   web_contents.reserve(tabs.size());
   for (tabs::TabInterface* tab : tabs) {
@@ -170,7 +170,7 @@ void GlicZeroStateSuggestionsManager::
     NotifyZeroStateSuggestionsOnPinnedTabChanged(
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
-        const std::vector<tabs::TabInterface*>& pinned_tabs) {
+        const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs) {
   if (!glic_instance_->HasActiveEmbedder()) {
     return;
   }

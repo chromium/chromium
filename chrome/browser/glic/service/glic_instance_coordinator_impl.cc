@@ -404,7 +404,7 @@ GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
     return GlicInstanceCoordinator::ActivateTabResult::kConversationNotFound;
   }
 
-  std::vector<tabs::TabInterface*> target_tabs;
+  std::vector<raw_ptr<tabs::TabInterface>> target_tabs;
 
   // Try to get tabs from the actor task manager first.
   GlicActorTaskManager* task_manager = instance->GetActorTaskManager();
@@ -1369,7 +1369,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       // BindTab is not called again, so we must manually overwrite all
       // currently pinned tabs' pin triggers to kConversationChange to make the
       // pin trigger correct.
-      for (auto* tab :
+      for (tabs::TabInterface* tab :
            target_instance->GetSharingManagerInternal().GetPinnedTabs()) {
         target_instance->GetSharingManagerInternal().SetPinTrigger(
             tab->GetHandle(), GlicPinTrigger::kConversationChange);

@@ -51,8 +51,8 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManagerInternal {
       base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
   base::CallbackListSubscription AddTabPinningStatusChangedCallback(
       TabPinningStatusChangedCallback callback) override;
-  using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<tabs::TabInterface*>&)>;
+  using PinnedTabsChangedCallback = base::RepeatingCallback<void(
+      const std::vector<raw_ptr<tabs::TabInterface>>&)>;
   base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) override;
   using PinnedTabDataChangedCallback =
@@ -81,7 +81,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManagerInternal {
   bool IsTabShared(tabs::TabInterface* tab) const override;
   bool IsTabFocused(tabs::TabHandle tab_handle) const override;
   int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) override;
-  std::vector<tabs::TabInterface*> GetPinnedTabs() const override;
+  std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const override;
   std::optional<GlicGetContextError> CheckPreliminaryContextSharingEligibility(
       tabs::TabHandle tab_handle) const override;
 
@@ -117,7 +117,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManagerInternal {
   void OnTabPinningStatusEventCallback(tabs::TabInterface* tab,
                                        GlicPinningStatusEvent event);
   void OnPinnedTabsChangedCallback(
-      const std::vector<tabs::TabInterface*>& pinned_tabs);
+      const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs);
   void OnPinnedTabDataChangedCallback(const TabDataChange& tab_data_change);
 
   // Refreshes all internal subscriptions to point at current delegate.
@@ -129,7 +129,8 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManagerInternal {
   // Forces notifications where possible.
   // TODO(b:444463509): split sharing manager interface up so it's clear which
   // notifications we actually force (i.e. what delegation is possible).
-  void ForceNotify(const std::vector<tabs::TabInterface*>& old_pinned_tabs);
+  void ForceNotify(
+      const std::vector<raw_ptr<tabs::TabInterface>>& old_pinned_tabs);
 
   raw_ptr<GlicSharingManagerInternal> sharing_manager_delegate_;
 
@@ -145,7 +146,8 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManagerInternal {
       tab_pinning_status_changed_callback_list_;
   base::RepeatingCallbackList<void(tabs::TabInterface*, GlicPinningStatusEvent)>
       tab_pinning_status_event_callback_list_;
-  base::RepeatingCallbackList<void(const std::vector<tabs::TabInterface*>&)>
+  base::RepeatingCallbackList<void(
+      const std::vector<raw_ptr<tabs::TabInterface>>&)>
       pinned_tabs_changed_callback_list_;
   base::RepeatingCallbackList<void(const TabDataChange&)>
       pinned_tab_data_changed_callback_list_;

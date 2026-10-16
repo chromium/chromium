@@ -111,7 +111,7 @@ enum class GlicTurnSource {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnSource)
 
 void RecordSelectionOverlayMetrics(
-    const std::vector<tabs::TabInterface*>& pinned_tabs,
+    const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs,
     const GlicMetricReporter& reporter) {
 // Selection Overlays are not currently implemented on Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -301,7 +301,7 @@ void GlicInstanceMetrics::OnGlicScrollComplete(bool success) {
 }
 
 void GlicInstanceMetrics::OnPinnedTabsChanged(
-    const std::vector<tabs::TabInterface*>& pinned_tabs) {
+    const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs) {
   pinned_tab_count_ = pinned_tabs.size();
   session_manager_.SetPinnedTabCount(pinned_tab_count_);
 }

@@ -1061,8 +1061,9 @@ GlicInstanceImpl::GetInitialInvocationSource() const {
   return instance_metrics_.initial_invocation_source();
 }
 
-std::vector<tabs::TabInterface*> GlicInstanceImpl::GetBoundTabs() const {
-  std::vector<tabs::TabInterface*> tabs;
+std::vector<raw_ptr<tabs::TabInterface>> GlicInstanceImpl::GetBoundTabs()
+    const {
+  std::vector<raw_ptr<tabs::TabInterface>> tabs;
   for (const auto& [key, entry] : embedders_) {
     if (tabs::TabInterface* tab = GetTabFromEmbedderKey(key)) {
       tabs.push_back(tab);
@@ -1530,7 +1531,7 @@ void GlicInstanceImpl::ShowForTabGroup(tab_groups::TabGroupId group_id,
     return;
   }
 
-  std::vector<tabs::TabInterface*> group_tabs =
+  std::vector<raw_ptr<tabs::TabInterface>> group_tabs =
       GetTabsInTabGroup(window, group_id);
   if (group_tabs.empty()) {
     return;
@@ -2077,7 +2078,7 @@ void GlicInstanceImpl::UnbindTabGroup() {
 
   tab_group_binding_.reset();
 
-  std::vector<tabs::TabInterface*> bound_tabs = GetBoundTabs();
+  std::vector<raw_ptr<tabs::TabInterface>> bound_tabs = GetBoundTabs();
   std::vector<tabs::TabHandle> handles;
   for (tabs::TabInterface* t : bound_tabs) {
     handles.push_back(t->GetHandle());

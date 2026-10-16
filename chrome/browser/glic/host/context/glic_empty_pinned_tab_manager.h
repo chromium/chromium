@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_EMPTY_PINNED_TAB_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_EMPTY_PINNED_TAB_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
 
 namespace glic {
@@ -40,7 +41,7 @@ class GlicEmptyPinnedTabManager : public GlicPinnedTabManager {
   bool IsTabPinned(tabs::TabHandle tab_handle) const override;
   std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
       tabs::TabHandle tab_handle) const override;
-  std::vector<tabs::TabInterface*> GetPinnedTabs() const override;
+  std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const override;
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;

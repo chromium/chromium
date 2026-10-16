@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
@@ -65,8 +66,8 @@ class GlicSharingManagerImpl : public GlicSharingManagerInternal,
   base::CallbackListSubscription AddTabPinningStatusChangedCallback(
       TabPinningStatusChangedCallback callback) override;
 
-  using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<tabs::TabInterface*>&)>;
+  using PinnedTabsChangedCallback = base::RepeatingCallback<void(
+      const std::vector<raw_ptr<tabs::TabInterface>>&)>;
   base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) override;
 
@@ -106,7 +107,7 @@ class GlicSharingManagerImpl : public GlicSharingManagerInternal,
 
   int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) override;
 
-  std::vector<tabs::TabInterface*> GetPinnedTabs() const override;
+  std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const override;
 
   std::optional<GlicGetContextError> CheckPreliminaryContextSharingEligibility(
       tabs::TabHandle tab_handle) const override;

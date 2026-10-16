@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
       pin_status_future.GetRepeatingCallback());
 
   // Close all tabs, which should destroy them.
-  for (auto* tab : GetTabListInterface()->GetAllTabs()) {
+  for (tabs::TabInterface* tab : GetTabListInterface()->GetAllTabs()) {
     GetTabListInterface()->CloseTab(tab->GetHandle());
   }
 

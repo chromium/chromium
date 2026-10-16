@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 
 class BrowserWindowInterface;
@@ -22,11 +23,11 @@ BrowserWindowInterface* FindBrowserWithTabGroup(
     Profile* profile,
     tab_groups::TabGroupId group_id);
 
-std::vector<tabs::TabInterface*> GetTabsInTabGroup(
+std::vector<raw_ptr<tabs::TabInterface>> GetTabsInTabGroup(
     BrowserWindowInterface* window,
     tab_groups::TabGroupId group_id);
 
-std::vector<tabs::TabInterface*> GetTabsInTabGroup(
+std::vector<raw_ptr<tabs::TabInterface>> GetTabsInTabGroup(
     Profile* profile,
     tab_groups::TabGroupId group_id);
 

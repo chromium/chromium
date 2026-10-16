@@ -121,7 +121,7 @@ void GlicExperimentalTriggeringManager::CaptureAndUploadEncryptedScreenshot(
   tabs::TabInterface* tab = nullptr;
   if (glic::GlicActorTaskManager* task_manager =
           instance_->GetActorTaskManager()) {
-    std::vector<tabs::TabInterface*> target_tabs =
+    std::vector<raw_ptr<tabs::TabInterface>> target_tabs =
         task_manager->GetLastActedTabs();
     if (!target_tabs.empty()) {
       tab = glic::GetMostRecentlyActiveTab(target_tabs);

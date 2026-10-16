@@ -242,7 +242,7 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<int> task_id() const override;
   std::optional<mojom::InvocationSource> GetInitialInvocationSource()
       const override;
-  std::vector<tabs::TabInterface*> GetBoundTabs() const;
+  std::vector<raw_ptr<tabs::TabInterface>> GetBoundTabs() const;
 
   // If the key corresponds to a tab-associated embedder (such as a side panel),
   // returns the corresponding TabInterface pointer. Otherwise (e.g., a floating

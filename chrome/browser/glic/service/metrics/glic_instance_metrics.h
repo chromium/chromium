@@ -307,7 +307,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnSessionStarted();
   void OnSessionFinished();
 
-  void OnPinnedTabsChanged(const std::vector<tabs::TabInterface*>& pinned_tabs);
+  void OnPinnedTabsChanged(
+      const std::vector<raw_ptr<tabs::TabInterface>>& pinned_tabs);
 
   // Records the response latency (from user input submitted to response stop)
   // by the number of attached tabs.

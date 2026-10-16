@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -179,7 +180,7 @@ class GlicSharingManager {
   }
 
   // Fetches the current list of pinned tabs.
-  virtual std::vector<tabs::TabInterface*> GetPinnedTabs() const = 0;
+  virtual std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const = 0;
 
   // Queries whether the given tab has been explicitly pinned.
   virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
@@ -246,8 +247,8 @@ class GlicSharingManagerInternal : public GlicSharingManager {
 
   // Registers a callback to be invoked when the collection of pinned tabs
   // changes.
-  using PinnedTabsChangedCallback =
-      base::RepeatingCallback<void(const std::vector<tabs::TabInterface*>&)>;
+  using PinnedTabsChangedCallback = base::RepeatingCallback<void(
+      const std::vector<raw_ptr<tabs::TabInterface>>&)>;
   virtual base::CallbackListSubscription AddPinnedTabsChangedCallback(
       PinnedTabsChangedCallback callback) = 0;
 
@@ -292,7 +293,7 @@ class GlicSharingManagerInternal : public GlicSharingManager {
   virtual int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) = 0;
 
   // GlicSharingManager override.
-  std::vector<tabs::TabInterface*> GetPinnedTabs() const override = 0;
+  std::vector<raw_ptr<tabs::TabInterface>> GetPinnedTabs() const override = 0;
   bool IsTabPinned(tabs::TabHandle tab_handle) const override = 0;
   bool IsTabShared(tabs::TabInterface* tab) const override = 0;
 
