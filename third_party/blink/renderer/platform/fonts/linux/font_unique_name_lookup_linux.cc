@@ -31,7 +31,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupLinux::MatchUniqueName(
     return nullptr;
   }
 
-  return SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
+  return CreateSkTypefaceFromFontConfigInterfaceIdAndTtcIndex(
       uniquely_matched_font.fontconfig_interface_id,
       uniquely_matched_font.ttc_index);
 }

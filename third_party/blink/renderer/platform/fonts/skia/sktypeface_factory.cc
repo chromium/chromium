@@ -17,8 +17,7 @@
 
 namespace blink {
 
-// static
-sk_sp<SkTypeface> SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
+sk_sp<SkTypeface> CreateSkTypefaceFromFontConfigInterfaceIdAndTtcIndex(
     int config_id,
     int ttc_index) {
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && \
@@ -33,8 +32,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
 #endif
 }
 
-// static
-sk_sp<SkTypeface> SkTypeface_Factory::FromFilenameAndTtcIndex(
+sk_sp<SkTypeface> CreateSkTypefaceFromFilenameAndTtcIndex(
     const std::string& filename,
     int ttc_index) {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && \
