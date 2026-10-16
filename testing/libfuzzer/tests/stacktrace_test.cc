@@ -239,17 +239,20 @@ TEST(FuzzerStacktraceTest, CheckFailureRegexesAreValid) {
   EXPECT_EQ(re2::RE2(CheckFailureStackRegexWin()).error(), "");
 }
 
-// Fuzzer fails to run under MSan or ASan debug builds.
-// TODO(https://crbug.com/326101784): Re-enable this once MSan build is fixed.
-// TODO(https://crbug.com/529790472): Fix stacktrace regex for ASan debug
-// builds.
-#if defined(MEMORY_SANITIZER) || \
-    (defined(ADDRESS_SANITIZER) && !defined(NDEBUG))
-#define MAYBE_SymbolizesCheck DISABLED_SymbolizesCheck
-#else
-#define MAYBE_SymbolizesCheck SymbolizesCheck
-#endif
-TEST(FuzzerStacktraceTest, MAYBE_SymbolizesCheck) {
+// // Fuzzer fails to run under MSan or ASan debug builds.
+// // TODO(https://crbug.com/326101784): Re-enable this once MSan build is
+// fixed.
+// // TODO(https://crbug.com/529790472): Fix stacktrace regex for ASan debug
+// // builds.
+// #if defined(MEMORY_SANITIZER) || \
+//     (defined(ADDRESS_SANITIZER) && !defined(NDEBUG))
+// #define MAYBE_SymbolizesCheck DISABLED_SymbolizesCheck
+// #else
+// #define MAYBE_SymbolizesCheck SymbolizesCheck
+// #endif
+// TODO(crbug.com/574485660): Revert to MAYBE_SymbolizesCheck once flakiness
+// is resolved.
+TEST(FuzzerStacktraceTest, DISABLED_SymbolizesCheck) {
   base::CommandLine cmd(FuzzerPath());
   cmd.AppendArgPath(FuzzerInputPath("check"));
 
