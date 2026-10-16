@@ -206,11 +206,12 @@ public class GroupWindowCheckerUnitTest {
         TabModelSelector selector = mock(TabModelSelector.class);
         TabModel headlessModel = mock(TabModel.class);
         when(headlessModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(headlessModel.containsTabGroup(token)).thenReturn(true);
         when(selector.getModel(false)).thenReturn(headlessModel);
         when(tabWindowManager.getTabModelSelectorById(1)).thenReturn(selector);
 
         @GroupWindowState int state = mSyncUtils.getState(group);
-        assertEquals(GroupWindowState.HIDDEN, state);
+        assertEquals(GroupWindowState.IN_ANOTHER, state);
     }
 
     @Test
@@ -258,7 +259,7 @@ public class GroupWindowCheckerUnitTest {
     }
 
     @Test
-    public void testGetState_Token_hidden() {
+    public void testGetState_Token_headlessWindow() {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
 
@@ -271,11 +272,12 @@ public class GroupWindowCheckerUnitTest {
         TabModelSelector selector = mock(TabModelSelector.class);
         TabModel headlessModel = mock(TabModel.class);
         when(headlessModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(headlessModel.containsTabGroup(token)).thenReturn(true);
         when(selector.getModel(false)).thenReturn(headlessModel);
         when(tabWindowManager.getTabModelSelectorById(1)).thenReturn(selector);
 
         @GroupWindowState int state = mSyncUtils.getState(token);
-        assertEquals(GroupWindowState.HIDDEN, state);
+        assertEquals(GroupWindowState.IN_ANOTHER, state);
     }
 
     @Test
@@ -629,15 +631,15 @@ public class GroupWindowCheckerUnitTest {
     @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     @DisableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations")
-    public void testHasOtherGroups_hiddenGroupInHeadlessWindow_remoteDisabled_returnsFalse() {
+    public void testHasOtherGroups_groupInHeadlessWindow_remoteDisabled_returnsTrue() {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         Token token1 = Token.createRandom();
-        SavedTabGroup hiddenGroup = createSavedTabGroup(token1, "headlessGroupTitle");
-        hiddenGroup.savedTabs.add(new SavedTabGroupTab());
+        SavedTabGroup headlessGroup = createSavedTabGroup(token1, "headlessGroupTitle");
+        headlessGroup.savedTabs.add(new SavedTabGroupTab());
 
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"syncId1"});
-        when(mSyncService.getGroup("syncId1")).thenReturn(hiddenGroup);
+        when(mSyncService.getGroup("syncId1")).thenReturn(headlessGroup);
 
         when(mTabList.iterator()).thenAnswer(invocation -> Collections.emptyIterator());
 
@@ -645,24 +647,26 @@ public class GroupWindowCheckerUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
 
-        assertEquals(GroupWindowState.HIDDEN, mSyncUtils.getState(hiddenGroup));
-        assertFalse(mSyncUtils.hasOtherGroups(null));
-        assertFalse(mSyncUtils.hasOtherGroups(Token.createRandom()));
+        assertEquals(GroupWindowState.IN_ANOTHER, mSyncUtils.getState(headlessGroup));
+        assertTrue(mSyncUtils.hasOtherGroups(null));
+        assertTrue(mSyncUtils.hasOtherGroups(Token.createRandom()));
+        assertFalse(mSyncUtils.hasOtherGroups(token1));
     }
 
     @Test
     @EnableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
-    public void testHasOtherGroups_hiddenGroupInHeadlessWindow_remoteEnabled_returnsTrue() {
+    public void testHasOtherGroups_groupInHeadlessWindow_remoteEnabled_returnsTrue() {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         Token token1 = Token.createRandom();
-        SavedTabGroup hiddenGroup = createSavedTabGroup(token1, "headlessGroupTitle");
-        hiddenGroup.savedTabs.add(new SavedTabGroupTab());
+        SavedTabGroup headlessGroup = createSavedTabGroup(token1, "headlessGroupTitle");
+        headlessGroup.savedTabs.add(new SavedTabGroupTab());
 
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"syncId1"});
-        when(mSyncService.getGroup("syncId1")).thenReturn(hiddenGroup);
+        when(mSyncService.getGroup("syncId1")).thenReturn(headlessGroup);
 
         when(mTabList.iterator()).thenAnswer(invocation -> Collections.emptyIterator());
 
@@ -670,8 +674,9 @@ public class GroupWindowCheckerUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
 
-        assertEquals(GroupWindowState.HIDDEN, mSyncUtils.getState(hiddenGroup));
+        assertEquals(GroupWindowState.IN_ANOTHER, mSyncUtils.getState(headlessGroup));
         assertTrue(mSyncUtils.hasOtherGroups(null));
         assertTrue(mSyncUtils.hasOtherGroups(Token.createRandom()));
         assertFalse(mSyncUtils.hasOtherGroups(token1));

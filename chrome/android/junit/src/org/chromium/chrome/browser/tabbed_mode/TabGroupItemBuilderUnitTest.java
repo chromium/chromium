@@ -1160,7 +1160,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
-        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mModelWindow2.containsTabGroup(token1)).thenReturn(false);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1204,7 +1204,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
-        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mModelWindow2.containsTabGroup(token1)).thenReturn(false);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1229,5 +1229,103 @@ public class TabGroupItemBuilderUnitTest {
         assertNull(groupItem);
         ListItem headerItem = findItemById(tabGroupsSubmenuItems, R.id.tab_groups_header_menu_id);
         assertNull(headerItem);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    @DisableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations")
+    public void testBuildAddToGroupItem_remoteOperationsDisabled_includesHeadlessWindowGroup() {
+        Token token1 = Token.createRandom();
+        SavedTabGroup headlessGroup = new SavedTabGroup();
+        headlessGroup.syncId = "headless_id";
+        headlessGroup.localId = new LocalTabGroupId(token1);
+        headlessGroup.title = "Headless Group";
+        headlessGroup.color = TabGroupColorId.BLUE;
+        headlessGroup.savedTabs = List.of(new SavedTabGroupTab());
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"headless_id"});
+        when(mTabGroupSyncService.getGroup("headless_id")).thenReturn(headlessGroup);
+        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mComprehensiveTabList.iterator())
+                .thenAnswer(invocation -> Collections.emptyIterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
+
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
+        when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
+        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        assertTrue(builder.shouldShowAddToGroup(mTab));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    @DisableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations")
+    public void
+            testBuildTabGroupsParentItem_remoteOperationsDisabled_includesHeadlessWindowGroup() {
+        Token token1 = Token.createRandom();
+        SavedTabGroup headlessGroup = new SavedTabGroup();
+        headlessGroup.syncId = "headless_id";
+        headlessGroup.localId = new LocalTabGroupId(token1);
+        headlessGroup.title = "Headless Group";
+        headlessGroup.color = TabGroupColorId.BLUE;
+        headlessGroup.savedTabs = List.of(new SavedTabGroupTab());
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"headless_id"});
+        when(mTabGroupSyncService.getGroup("headless_id")).thenReturn(headlessGroup);
+        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mComprehensiveTabList.iterator())
+                .thenAnswer(invocation -> Collections.emptyIterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
+
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
+        when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
+        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        ListItem tabGroupsParent = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(tabGroupsParent);
+
+        List<ListItem> tabGroupsSubmenuItems =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        ListItem groupItem = findItemById(tabGroupsSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        assertEquals("Headless Group", groupItem.model.get(AppMenuItemProperties.TITLE));
+        ListItem headerItem = findItemById(tabGroupsSubmenuItems, R.id.tab_groups_header_menu_id);
+        assertNotNull(headerItem);
     }
 }

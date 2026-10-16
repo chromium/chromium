@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -202,7 +201,7 @@ public class GroupWindowChecker {
      */
     public @GroupWindowState int getState(Token groupId) {
         if (!containsGroup(groupId)) {
-            if (isWindowForGroupNotActive(groupId) || isGroupClosingInAnotherWindow(groupId)) {
+            if (isGroupClosingInAnotherWindow(groupId)) {
                 return GroupWindowState.HIDDEN;
             }
             return GroupWindowState.IN_ANOTHER;
@@ -285,25 +284,5 @@ public class GroupWindowChecker {
         }
         TabModel otherModel = selector.getModel(mCurrentTabModel.isIncognito());
         return !otherModel.containsTabGroup(groupId);
-    }
-
-    private boolean isWindowForGroupNotActive(Token groupId) {
-        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-        if (windowManager == null) {
-            return false;
-        }
-
-        @WindowId int windowId = windowManager.findWindowIdForTabGroup(groupId);
-        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
-            return false;
-        }
-
-        TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
-        if (selector == null) {
-            return false;
-        }
-
-        return selector.getModel(mCurrentTabModel.isIncognito()).getTabModelType()
-                == TabModelType.HEADLESS;
     }
 }
