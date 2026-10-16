@@ -4,15 +4,15 @@
 
 #include "media/filters/ffmpeg_glue.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
+#include "build/buildflag.h"
 #include "media/base/container_names.h"
 #include "media/base/media_switches.h"
 #include "media/base/supported_types.h"
@@ -83,20 +83,15 @@ static void LogContainer(bool is_local_file,
   }
 }
 
-static const char* GetAllowedDemuxers() {
-  static const base::NoDestructor<std::string> kAllowedDemuxers([]() {
-    // This should match the configured lists in //third_party/ffmpeg.
-    std::vector<std::string> allowed_demuxers = {"ogg",  "matroska", "wav",
-                                                 "flac", "mp3",      "mov"};
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    allowed_demuxers.push_back("aac");
-#endif
-    return base::JoinString(allowed_demuxers, ",");
-  }());
-  return kAllowedDemuxers->c_str();
-}
-
 FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
+  // This should match the configured lists in //third_party/ffmpeg.
+  static constexpr const char* kAllowedDemuxers =
+      "ogg,matroska,wav,flac,mp3,mov"
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      ",aac"
+#endif
+      ;
+
   // Initialize an AVIOContext using our custom read and seek operations.  Don't
   // keep pointers to the buffer since FFmpeg may reallocate it on the fly.  It
   // will be cleaned up
@@ -143,7 +138,7 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   //
   // Note: FFmpeg will try to free these strings, so we must duplicate them.
   format_context_->codec_whitelist = av_strdup(GetAllowedAudioDecoders());
-  format_context_->format_whitelist = av_strdup(GetAllowedDemuxers());
+  format_context_->format_whitelist = av_strdup(kAllowedDemuxers);
 }
 
 bool FFmpegGlue::OpenContext(bool is_local_file) {
