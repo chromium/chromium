@@ -1339,7 +1339,6 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                                  ClientLoadErrorReason::kGuestProcessGone);
   }));
 }
-
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                        RecordsNavigationCommitAndLoadCompleteMetricsOnce) {
   base::HistogramTester histogram_tester;
@@ -1428,4 +1427,64 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewGuestInitialSizeBrowserTest,
   EXPECT_GT(actual_size.height(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       UnconnectedHiddenManagerHibernatesAfterTimeout) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  PreventDeletionOnClose(instance, "test_conversation");
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
+  EXPECT_FALSE(instance->IsHibernated());
+  EXPECT_FALSE(instance->host().IsWebClientConnected());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager->unconnected_hibernation_timer_for_testing().IsRunning();
+  }));
+
+  manager->unconnected_hibernation_timer_for_testing().FireNow();
+  EXPECT_TRUE(instance->IsHibernated());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       ConnectedHiddenManagerDoesNotHibernate) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_TRUE(instance->host().IsWebClientConnected());
+
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  PreventDeletionOnClose(instance, "test_conversation");
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
+  EXPECT_FALSE(instance->IsHibernated());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager->unconnected_hibernation_timer_for_testing().IsRunning();
+  }));
+
+  manager->unconnected_hibernation_timer_for_testing().FireNow();
+  EXPECT_FALSE(instance->IsHibernated());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       ReshownManagerDoesNotHibernateOnTimerExpiry) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  PreventDeletionOnClose(instance, "test_conversation");
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager->unconnected_hibernation_timer_for_testing().IsRunning();
+  }));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  EXPECT_FALSE(
+      manager->unconnected_hibernation_timer_for_testing().IsRunning());
+  EXPECT_FALSE(instance->IsHibernated());
+}
 }  // namespace glic

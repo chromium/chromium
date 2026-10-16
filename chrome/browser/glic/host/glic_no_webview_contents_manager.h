@@ -253,6 +253,10 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   base::OneShotTimer& loading_timer_for_testing() { return loading_timer_; }
 
+  base::OneShotTimer& unconnected_hibernation_timer_for_testing() {
+    return unconnected_hibernation_timer_;
+  }
+
  private:
   class Metrics;
   // Ensures that the overlay WebContents exists and returns it.
@@ -334,6 +338,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void OnZoomLevelChange();
   void OnProfileReadyStateChanged();
   void UpdateForProfileReadyState(bool is_initial);
+  void OnHibernationTimerExpired();
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_ = nullptr;
@@ -375,6 +380,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   base::OneShotTimer overlay_deletion_timer_;
   base::OneShotTimer loading_timer_;
+  base::OneShotTimer unconnected_hibernation_timer_;
   base::RepeatingClosure error_callback_;
 
   base::WeakPtrFactory<GlicNoWebviewContentsManager> weak_ptr_factory_{this};

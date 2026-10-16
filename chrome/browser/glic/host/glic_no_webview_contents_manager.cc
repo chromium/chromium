@@ -71,6 +71,8 @@
 namespace glic {
 
 namespace {
+constexpr base::TimeDelta kHibernateDisconnectedClientDelay = base::Seconds(20);
+
 content::WebContents::CreateParams MakeOverlayCreateParams(
     Profile* profile,
     bool initially_hidden) {
@@ -1142,6 +1144,16 @@ void GlicNoWebviewContentsManager::OnProfileReadyStateChanged() {
 void GlicNoWebviewContentsManager::SetVisibility(
     content::Visibility visibility) {
   is_visible_ = (visibility == content::Visibility::VISIBLE);
+  // Don't keep hidden guest contents, if they're not in a good state. Check on
+  // delay after hide.
+  if (is_visible_) {
+    unconnected_hibernation_timer_.Stop();
+  } else {
+    unconnected_hibernation_timer_.Start(
+        FROM_HERE, kHibernateDisconnectedClientDelay, this,
+        &GlicNoWebviewContentsManager::OnHibernationTimerExpired);
+  }
+
   // Update the guest WebContents visibility before `UpdateDisplayState()` so
   // that if transitioning to `kShowingGuest` requests a visual state callback
   // (`InsertVisualStateCallback`) on an already-warmed guest, its
@@ -1237,6 +1249,12 @@ void GlicNoWebviewContentsManager::OnLoadingTimeout() {
   }
   SetErrorState(mojom::ErrorPanelType::kError,
                 ClientLoadErrorReason::kClientLoadTimeout);
+}
+
+void GlicNoWebviewContentsManager::OnHibernationTimerExpired() {
+  if (host_ && !host_->IsWebClientConnected()) {
+    host_->Hibernate();
+  }
 }
 
 }  // namespace glic
