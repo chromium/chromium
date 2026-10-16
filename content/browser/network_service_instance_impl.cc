@@ -134,14 +134,27 @@ network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
 
 // When enabled, sets the in-process network service thread to
+// base::ThreadType::kPresentation during startup.
+BASE_FEATURE(kNetworkServiceIncreasedPriorityDuringStartup,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
+
+// When enabled, sets the in-process network service thread to
 // base::ThreadType::kPresentation when the scenario indicates that the user is
 // actively loading the visible page and not scrolling.
 BASE_FEATURE(kNetworkServiceIncreasedPriorityWhileLoading,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Boosts the priority of the network service thread when the scenario indicates
-// that the user is actively loading a page, if
-// `kNetworkServiceIncreasedPriorityWhileLoading` is enabled.
+// Boosts the priority of the network service thread depending on the feature
+// that is enabled. If `kNetworkServiceIncreasedPriorityDuringStartup` is
+// enabled, the network service thread will be boosted until the startup is
+// completed. If `kNetworkServiceIncreasedPriorityWhileLoading` is enabled, the
+// network service thread will be boosted when the scenario indicates that the
+// user is actively loading a page.
 class BoostNetworkThreadPriority
     : public performance_scenarios::MatchingScenarioObserver {
  public:
@@ -164,11 +177,27 @@ class BoostNetworkThreadPriority
     }
 
     if (base::FeatureList::IsEnabled(
+            kNetworkServiceIncreasedPriorityDuringStartup)) {
+      startup_boost_.emplace(boosted_thread_type_);
+
+      // Unretained is safe here because this object is a singleton.
+      GetContentClient()->browser()->PostAfterStartupTask(
+          FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&BoostNetworkThreadPriority::OnStartupComplete,
+                         base::Unretained(this)));
+    }
+
+    if (base::FeatureList::IsEnabled(
             kNetworkServiceIncreasedPriorityWhileLoading)) {
       // Add to the global scope since the goal is to boost the network thread
       // while any page is loading.
       observer_list->AddMatchingObserver(this);
     }
+  }
+
+  void OnStartupComplete() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    startup_boost_.reset();
   }
 
   // performance_scenarios::MatchingScenarioObserver::OnScenarioMatchChanged
@@ -208,6 +237,7 @@ class BoostNetworkThreadPriority
   THREAD_CHECKER(thread_checker_);
 
   const base::ThreadType boosted_thread_type_;
+  std::optional<base::PlatformThreadBase::RaiseThreadTypeLease> startup_boost_;
   std::optional<base::PlatformThreadBase::RaiseThreadTypeLease>
       performance_scenario_boost_;
 };
@@ -859,33 +889,6 @@ void RestartNetworkService() {
   GetNetworkService();
   OnNetworkServiceProcessGone(/*crashed=*/false);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void BoostNetworkThreadPriorityDuringStartup() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsInProcessNetworkService() || !GetNetworkTaskRunner()) {
-    return;
-  }
-
-  static bool boost_triggered = false;
-  if (boost_triggered) {
-    return;
-  }
-  boost_triggered = true;
-
-  static base::NoDestructor<
-      std::optional<base::PlatformThreadBase::RaiseThreadTypeLease>>
-      startup_boost;
-
-  GetNetworkTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        startup_boost->emplace(base::ThreadType::kPresentation);
-      }));
-  GetContentClient()->browser()->PostAfterStartupTask(
-      FROM_HERE, GetNetworkTaskRunner(),
-      base::BindOnce([]() { startup_boost->reset(); }));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
