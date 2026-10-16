@@ -14,7 +14,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Size} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
-import {getLoadTimeBoolean} from './common.js';
+import {getLoadTimeBoolean, recordEnumerationValue} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import {SubmitButtonIconType} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
@@ -835,21 +835,15 @@ export class ComposeboxVoiceSearchElement extends
 
   private recordMetric_(
       type: VoiceSearchMetricType, metricEnumValue: number, max: number) {
-    // Safety return statement in rare case chrome metrics is not available.
-    if (!chrome.metricsPrivate) {
-      return;
-    }
     if (!this.metricSource) {
       return;
     }
 
     const metricName = `VoiceSearch.${type}.${this.metricSource}`;
-    chrome.metricsPrivate.recordEnumerationValue(
-        metricName, metricEnumValue, max);
+    recordEnumerationValue(metricName, metricEnumValue, max);
 
     const aggregateMetricName = `VoiceSearch.${type}`;
-    chrome.metricsPrivate.recordEnumerationValue(
-        aggregateMetricName, metricEnumValue, max);
+    recordEnumerationValue(aggregateMetricName, metricEnumValue, max);
 
     // Record query submission source.
     if (type === VoiceSearchMetricType.ACTION &&
@@ -868,7 +862,7 @@ export class ComposeboxVoiceSearchElement extends
         sourceEnum = VoiceSearchQuerySource.NEXTBOX_COMPOSEBOX;
       }
       if (sourceEnum !== null) {
-        chrome.metricsPrivate.recordEnumerationValue(
+        recordEnumerationValue(
             'VoiceSearch.QuerySubmission.Source', sourceEnum,
             VoiceSearchQuerySource.MAX_VALUE + 1);
       }
@@ -891,11 +885,10 @@ export class ComposeboxVoiceSearchElement extends
         if (legacyMetricEnumValue > 6) {
           return;
         }
-        chrome.metricsPrivate.recordEnumerationValue(
+        recordEnumerationValue(
             'NewTabPage.VoiceActions', legacyMetricEnumValue, max);
       } else if (type === VoiceSearchMetricType.ERROR) {
-        chrome.metricsPrivate.recordEnumerationValue(
-            'NewTabPage.VoiceErrors', metricEnumValue, max);
+        recordEnumerationValue('NewTabPage.VoiceErrors', metricEnumValue, max);
       }
     }
   }

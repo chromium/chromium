@@ -426,6 +426,13 @@ export function recordBoolean(metricName: string, value: boolean) {
   }
 }
 
+export function recordCount(metricName: string, value: number) {
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordCount(metricName, value);
+  }
+}
+
 // TODO(crbug.com/468329884): Consider making this a new contextual entry
 // source so the realbox and composebox don't both get logged as NTP.
 export function recordContextAdditionMethod(
