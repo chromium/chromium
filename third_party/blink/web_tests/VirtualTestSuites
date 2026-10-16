@@ -4816,7 +4816,8 @@
       "fast/parser/xml-cap-alert-xslt-enabled.html",
       "fast/parser/xml-xslt-warning-banner.html",
       "fast/parser/xml-xslt-warning-banner-polyfill.html",
-      "fast/parser/xml-xslt-warning-banner-appearance.html"
+      "fast/parser/xml-xslt-warning-banner-appearance.html",
+      "external/wpt/content-security-policy/xslt"
     ],
     "exclusive_tests": [
       "fast/parser/xml-xslt-warning-banner-appearance.html",
