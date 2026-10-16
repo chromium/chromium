@@ -35,11 +35,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -151,12 +154,12 @@ public class TabReparentingDelegateUnitTest {
 
         // Act.
         mDelegate.reparentTabsToNewWindow(
-                mCurrentActivity,
                 tabs,
                 INVALID_WINDOW_ID,
                 openAdjacently,
                 /* finalizeCallback= */ null,
-                NewWindowAppSource.MENU);
+                NewWindowAppSource.MENU,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID);
 
         // Verify that the reparenting task is initiated.
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -178,6 +181,10 @@ public class TabReparentingDelegateUnitTest {
                         .getValue()
                         .getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
         assertEquals(
+                "EXTRA_DEST_TAB_ID should not be set when invalid.",
+                Tab.INVALID_TAB_ID,
+                IntentHandler.getDestTabId(intentCaptor.getValue()));
+        assertEquals(
                 "New window source extra is incorrect.",
                 NewWindowAppSource.MENU,
                 intentCaptor
@@ -185,6 +192,86 @@ public class TabReparentingDelegateUnitTest {
                         .getIntExtra(
                                 IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
                                 NewWindowAppSource.UNKNOWN));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testReparentTabsToNewWindow_withDestGroupTabId() {
+        // Setup.
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        boolean openAdjacently = true;
+        int destGroupTabId = 42;
+
+        // Act.
+        mDelegate.reparentTabsToNewWindow(
+                tabs,
+                DEST_WINDOW_ID,
+                openAdjacently,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY,
+                destGroupTabId);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTabsTask)
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(null), eq(null));
+
+        assertEquals(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT is not set as expected.",
+                openAdjacently,
+                (intentCaptor.getValue().getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+        assertFalse(
+                "EXTRA_PREFER_NEW is not set as expected.",
+                intentCaptor.getValue().getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
+        assertEquals(
+                "EXTRA_WINDOW_ID is not set as expected.",
+                DEST_WINDOW_ID,
+                intentCaptor
+                        .getValue()
+                        .getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
+        assertEquals(
+                "EXTRA_DEST_TAB_ID is not set as expected.",
+                destGroupTabId,
+                IntentHandler.getDestTabId(intentCaptor.getValue()));
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY,
+                intentCaptor
+                        .getValue()
+                        .getIntExtra(
+                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
+                                NewWindowAppSource.UNKNOWN));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testReparentTabsToNewWindow_withDestGroupTabId_flagDisabled_doesNotSetExtra() {
+        // Setup.
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        boolean openAdjacently = true;
+        int destGroupTabId = 42;
+
+        // Act.
+        mDelegate.reparentTabsToNewWindow(
+                tabs,
+                DEST_WINDOW_ID,
+                openAdjacently,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY,
+                destGroupTabId);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTabsTask)
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(null), eq(null));
+
+        assertFalse(
+                "EXTRA_DEST_TAB_ID should not be set when flag is disabled.",
+                intentCaptor.getValue().hasExtra(IntentHandler.EXTRA_DEST_TAB_ID));
+        assertEquals(
+                "EXTRA_DEST_TAB_ID should be INVALID_TAB_ID when flag is disabled.",
+                Tab.INVALID_TAB_ID,
+                IntentHandler.getDestTabId(intentCaptor.getValue()));
     }
 
     @Test

@@ -209,7 +209,12 @@ import java.util.function.Supplier;
 
         boolean openAdjacently = shouldMoveTabsInAdjacentWindow(sourceActivity, tabs.size());
         mTabReparentingDelegate.reparentTabsToNewWindow(
-                sourceActivity, tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
+                tabs,
+                INVALID_WINDOW_ID,
+                openAdjacently,
+                finalizeCallback,
+                source,
+                /* destGroupTabId= */ Tab.INVALID_TAB_ID);
     }
 
     @Override
@@ -240,23 +245,19 @@ import java.util.function.Supplier;
         if (destActivity instanceof ChromeTabbedActivity tabbedActivity
                 && !tabbedActivity.isActivityFinishingOrDestroyed()) {
             mTabReparentingDelegate.reparentTabsToExistingWindow(
-                    tabbedActivity,
-                    tabs,
-                    destTabIndex,
-                    destGroupTabId,
-                    bringToFront);
-        } else {
+                    tabbedActivity, tabs, destTabIndex, destGroupTabId, bringToFront);
+        } else if (destActivity == null || !destActivity.isFinishing()) {
             Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
             boolean openAdjacently =
                     sourceActivity != null
                             && shouldMoveTabsInAdjacentWindow(sourceActivity, tabs.size());
             mTabReparentingDelegate.reparentTabsToNewWindow(
-                    tabs.get(0).getContext(),
                     tabs,
                     destWindowId,
                     openAdjacently,
                     /* finalizeCallback= */ null,
-                    NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
+                    NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY,
+                    destGroupTabId);
         }
     }
 
@@ -345,10 +346,7 @@ import java.util.function.Supplier;
         if (destActivity instanceof ChromeTabbedActivity tabbedActivity
                 && !tabbedActivity.isActivityFinishingOrDestroyed()) {
             mTabReparentingDelegate.reparentTabGroupToExistingWindow(
-                    tabbedActivity,
-                    tabGroupMetadata,
-                    destTabIndex,
-                    bringToFront);
+                    tabbedActivity, tabGroupMetadata, destTabIndex, bringToFront);
         } else {
             boolean openAdjacently =
                     sourceActivity != null

@@ -276,6 +276,7 @@ import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -2176,17 +2177,61 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     .getModel(tab.isIncognito())
                     .pinTab(tab.getId(), /* showUngroupDialog= */ false);
         }
-        int destTabId = IntentHandler.getDestTabId(intent);
-        if (destTabId != Tab.INVALID_TAB_ID) {
-            TabGroupUtils.mergeTabsToDest(
-                    Collections.singletonList(tab),
-                    destTabId,
-                    getTabModelSelector().getModel(tab.isIncognito()),
-                    null);
-            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
-        }
+        maybeScheduleTabGroupMerge(intent, Collections.singletonList(tab));
         GlicKeyedService.maybeInvokeGlic(
                 this, getTabModelSelector(), getProfileProviderSupplier(), tab, glicConversationId);
+    }
+
+    /**
+     * Merges incoming reparented tabs into their destination tab group. When {@link
+     * ChromeFeatureList#CROSS_WINDOW_TAB_GROUP_OPERATIONS} is enabled, schedules a deferred merge
+     * once tab state restoration has completed on cold start. Otherwise, performs an immediate
+     * merge.
+     */
+    private void maybeScheduleTabGroupMerge(Intent intent, List<Tab> tabs) {
+        @TabId int destTabId = IntentHandler.getDestTabId(intent);
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
+        if (destTabId == Tab.INVALID_TAB_ID || tabs.isEmpty()) {
+            return;
+        }
+
+        boolean isIncognito = tabs.get(0).isIncognito();
+        if (!ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
+            TabGroupUtils.mergeTabsToDest(
+                    tabs,
+                    destTabId,
+                    getTabModelSelector().getModel(isIncognito),
+                    /* tabMovedCallback= */ null);
+            return;
+        }
+
+        TabModelUtils.runOnTabStateInitialized(
+                getTabModelSelector(),
+                mCallbackController.makeCancelable(
+                        selector -> mergeValidTabsToDest(selector, tabs, destTabId, isIncognito)));
+    }
+
+    private static void mergeValidTabsToDest(
+            TabModelSelector selector, List<Tab> tabs, @TabId int destTabId, boolean isIncognito) {
+        TabModel model = selector.getModel(isIncognito);
+        Tab destTab = model.getTabById(destTabId);
+        if (destTab == null || destTab.isDestroyed() || destTab.isClosing()) {
+            return;
+        }
+
+        List<Tab> validTabs = new ArrayList<>();
+        for (Tab tab : tabs) {
+            if (!tab.isDestroyed()
+                    && !tab.isClosing()
+                    && model.indexOf(tab) != TabModel.INVALID_TAB_INDEX) {
+                validTabs.add(tab);
+            }
+        }
+        if (validTabs.isEmpty()) {
+            return;
+        }
+
+        TabGroupUtils.mergeTabsToDest(validTabs, destTabId, model, /* tabMovedCallback= */ null);
     }
 
     /**
@@ -2234,15 +2279,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             return false;
         }
 
-        int destTabId = IntentHandler.getDestTabId(intent);
-        if (destTabId != Tab.INVALID_TAB_ID) {
-            TabGroupUtils.mergeTabsToDest(
-                    tabs,
-                    destTabId,
-                    getTabModelSelector().getModel(multiTabMetadata.isIncognito),
-                    null);
-            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
-        }
+        maybeScheduleTabGroupMerge(intent, tabs);
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
         return true;
     }

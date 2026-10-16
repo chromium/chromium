@@ -406,12 +406,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
-                        mTabbedActivity1,
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ true,
                         /* finalizeCallback= */ null,
-                        NewWindowAppSource.KEYBOARD_SHORTCUT);
+                        NewWindowAppSource.KEYBOARD_SHORTCUT,
+                        /* destGroupTabId= */ Tab.INVALID_TAB_ID);
     }
 
     @Test
@@ -430,12 +430,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
-                        mTabbedActivity1,
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
                         /* finalizeCallback= */ null,
-                        NewWindowAppSource.KEYBOARD_SHORTCUT);
+                        NewWindowAppSource.KEYBOARD_SHORTCUT,
+                        /* destGroupTabId= */ Tab.INVALID_TAB_ID);
     }
 
     @Test
@@ -455,7 +455,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Verify that tab reparenting is not initiated, and a message is shown.
         verify(mTabReparentingDelegate, never())
-                .reparentTabsToNewWindow(any(), any(), anyInt(), anyBoolean(), any(), anyInt());
+                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), any(), anyInt(), anyInt());
         verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
     }
 
@@ -477,7 +477,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Verify that tab reparenting is not initiated, and a message is shown.
         verify(mTabReparentingDelegate, never())
-                .reparentTabsToNewWindow(any(), any(), anyInt(), anyBoolean(), any(), anyInt());
+                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), any(), anyInt(), anyInt());
         verify(mMultiInstanceManager1, never()).showInstanceCreationLimitMessage();
     }
 
@@ -606,14 +606,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate, never())
                 .reparentTabsToExistingWindow(any(), any(), anyInt(), anyInt(), anyBoolean());
-        verify(mTabReparentingDelegate)
-                .reparentTabsToNewWindow(
-                        eq(mTabbedActivity1),
-                        eq(tabs),
-                        eq(DEST_WINDOW_ID),
-                        eq(true),
-                        eq(null),
-                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY));
+        verify(mTabReparentingDelegate, never())
+                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), any(), anyInt(), anyInt());
     }
 
     @Test
@@ -633,12 +627,42 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
-                        eq(mTabbedActivity1),
                         eq(tabs),
                         eq(DEST_WINDOW_ID),
                         eq(true),
                         eq(null),
-                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY));
+                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY),
+                        eq(Tab.INVALID_TAB_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testMoveTabsToWindowByIdChecked_withDestroyedActivity_toDestTabGroup() {
+        // Setup.
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        when(mTab2.getTabGroupId()).thenReturn(null);
+        MultiWindowUtils.setActivityByWindowIdForTesting(DEST_WINDOW_ID, /* activity= */ null);
+
+        // Act.
+        mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
+                DEST_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ 3,
+                /* bringToFront= */ true);
+
+        // Verify.
+        verify(mTabReparentingDelegate, never())
+                .reparentTabsToExistingWindow(any(), any(), anyInt(), anyInt(), anyBoolean());
+        verify(mTabReparentingDelegate)
+                .reparentTabsToNewWindow(
+                        eq(tabs),
+                        eq(DEST_WINDOW_ID),
+                        eq(true),
+                        eq(null),
+                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY),
+                        eq(3));
     }
 
     @Test
@@ -664,12 +688,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
-                        eq(mTabbedActivity1),
                         eq(tabs),
                         eq(DEST_WINDOW_ID),
                         eq(false),
                         eq(null),
-                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY));
+                        eq(NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY),
+                        eq(Tab.INVALID_TAB_ID));
     }
 
     @Test
@@ -1554,12 +1578,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         if (!eligibleOtherWindowExists) {
             verify(mTabReparentingDelegate)
                     .reparentTabsToNewWindow(
-                            mTabbedActivity1,
                             tabs,
                             INVALID_WINDOW_ID,
                             /* openAdjacently= */ true,
                             /* finalizeCallback= */ null,
-                            NewWindowAppSource.MENU);
+                            NewWindowAppSource.MENU,
+                            /* destGroupTabId= */ Tab.INVALID_TAB_ID);
         } else {
             ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
             verify(mMultiInstanceManager1)

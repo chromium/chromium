@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -48,13 +49,14 @@ import java.util.List;
     private static @Nullable TabPersistentStore sPersistentStoreForTesting;
 
     /* package */ void reparentTabsToNewWindow(
-            Context context,
             List<Tab> tabs,
             int windowId,
             boolean openAdjacently,
             @Nullable Runnable finalizeCallback,
-            @NewWindowAppSource int source) {
+            @NewWindowAppSource int source,
+            @TabId int destGroupTabId) {
         if (tabs.isEmpty()) return;
+        Context context = tabs.get(0).getContext();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context,
@@ -62,6 +64,10 @@ import java.util.List;
                         /* preferNew= */ windowId == INVALID_WINDOW_ID,
                         openAdjacently,
                         source);
+        if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()
+                && destGroupTabId != Tab.INVALID_TAB_ID) {
+            IntentHandler.setDestTabId(intent, destGroupTabId);
+        }
         ReparentingTabsTask.from(tabs)
                 .begin(context, intent, /* startActivityOptions= */ null, finalizeCallback);
     }
