@@ -2461,7 +2461,7 @@
       "Win"
     ],
     "bases": [
-      "wpt_internal/persistent-widgets"
+      "external/wpt/html/semantics/embedded-content/the-persistentwidget-element/tentative"
     ],
     "args": [
       "--enable-features=PersistentWidgetAPI"

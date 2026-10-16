@@ -3,7 +3,7 @@
 
 'use strict';
 
-idl_test(['../wpt_internal/persistent-widgets/resources/persistent-widgets'],
+idl_test(['persistent-widgets.tentative'],
          ['html', 'dom'], idl_array => {
            idl_array.add_objects({
              HTMLPersistentWidgetElement:
