@@ -164,9 +164,8 @@ TEST_F(ShapeResultRunTest, CompactHitTestingUsesFixedPointPositions) {
     for (HarfBuzzRunGlyphData& glyph : run->glyph_data_.MutableGlyphs()) {
       glyph.advance = advance;
     }
-    const auto Position = [advance_raw](unsigned index) {
-      return InlineLayoutUnit::FromRawValue(int64_t{advance_raw} * index)
-          .ToFloat();
+    const auto Position = [advance](unsigned index) {
+      return (advance.To<InlineLayoutUnit>() * index).ToFloat();
     };
     run->width_ = Position(kNumGlyphs);
     ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
@@ -204,11 +203,8 @@ TEST_F(ShapeResultRunTest, CompactHitTestingAfterMaterialization) {
   for (HarfBuzzRunGlyphData& glyph : run->glyph_data_.MutableGlyphs()) {
     glyph.advance = advance;
   }
-  run->width_ =
-      InlineLayoutUnit::FromRawValue(int64_t{kAdvanceRaw} * kNumGlyphs)
-          .ToFloat();
-  const float target_x =
-      InlineLayoutUnit::FromRawValue(int64_t{kAdvanceRaw} * 30000).ToFloat();
+  run->width_ = (advance.To<InlineLayoutUnit>() * kNumGlyphs).ToFloat();
+  const float target_x = (advance.To<InlineLayoutUnit>() * 30000).ToFloat();
   GlyphIndexResult full_result;
   run->CharacterIndexForXPosition(target_x, BreakGlyphsOption(false),
                                   &full_result);
@@ -693,15 +689,11 @@ TEST_F(ShapeResultRunTest, CompactCharacterIndexCorrectsFloatRounding) {
     for (unsigned i = 0; i < kNumGlyphs; ++i) {
       run->glyph_data_.MutableGlyphAt(i).SetAdvance(advance);
     }
-    run->width_ =
-        InlineLayoutUnit::FromRawValue(int64_t{advance.RawValue()} * kNumGlyphs)
-            .ToFloat();
+    run->width_ = (advance.To<InlineLayoutUnit>() * kNumGlyphs).ToFloat();
     ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
 
     const float boundary =
-        InlineLayoutUnit::FromRawValue(int64_t{advance.RawValue()} *
-                                       test_case.boundary_index)
-            .ToFloat();
+        (advance.To<InlineLayoutUnit>() * test_case.boundary_index).ToFloat();
     const float target_x = test_case.target_precedes_boundary
                                ? std::nextafter(boundary, 0.0f)
                                : boundary;
