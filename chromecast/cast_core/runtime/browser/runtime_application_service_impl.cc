@@ -966,7 +966,13 @@ void RuntimeApplicationServiceImpl::InnerContentsCreated(
       runtime_application_->GetCastSessionId(), IsAudioOnly(), GURL(url),
       IsFeaturePermissionsEnforced(), std::vector<int>(),
       std::vector<std::string>());
-  CastWebContents::Observer::Observe(inner_contents);
+  // Do NOT re-target the observer to |inner_contents|:
+  // CastWebContents::Observer is single-target, so Observe(inner_contents)
+  // silently unsubscribes this service from the root CastWebContents — the
+  // only wrapper that dispatches InnerContentsCreated. Every guest created
+  // after the first would then miss SetAppProperties, leaving it without
+  // CastPermissionUserData (CastPermissionManager fails open to GRANTED for
+  // WebContents without it) and without the session-id/app-id binding.
 }
 
 }  // namespace chromecast
