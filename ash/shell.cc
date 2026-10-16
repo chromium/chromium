@@ -31,6 +31,7 @@
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
+#include "ash/accessibility/mouse_locator/mouse_shake_to_locate_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
@@ -938,6 +939,8 @@ Shell::~Shell() {
 
   ambient_controller_.reset();
 
+  mouse_shake_to_locate_controller_.reset();
+
   // Because this function will call |TabletModeController::RemoveObserver|, do
   // it before destroying |tablet_mode_controller_|.
   accessibility_controller_->Shutdown();
@@ -1690,6 +1693,13 @@ void Shell::Init(
 
   mouse_keys_controller_ = std::make_unique<MouseKeysController>();
   AddPreTargetHandler(mouse_keys_controller_.get());
+
+  // TODO(crbug.com/414450865): Toggle mouse shake-to-locate with a preference
+  // rather than having it always on.
+  if (::features::IsAccessibilityShakeToLocateEnabled()) {
+    mouse_shake_to_locate_controller_ =
+        std::make_unique<MouseShakeToLocateController>();
+  }
 
   color_enhancement_controller_ =
       std::make_unique<ColorEnhancementController>();

@@ -25,6 +25,7 @@
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
+#include "ash/accessibility/mouse_locator/mouse_shake_to_locate_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
@@ -3058,8 +3059,17 @@ FloatingMenuPosition AccessibilityController::GetFloatingMenuPosition() {
       prefs::kAccessibilityFloatingMenuPosition));
 }
 
+void AccessibilityController::MaybeCancelMouseShakeToLocateEffect() {
+  if (auto* mouse_shake_to_locate =
+          Shell::Get()->mouse_shake_to_locate_controller()) {
+    mouse_shake_to_locate->CancelEffect();
+  }
+}
+
 void AccessibilityController::UpdateLargeCursorFromPref() {
   DCHECK(active_user_prefs_);
+  MaybeCancelMouseShakeToLocateEffect();
+
   const bool enabled = large_cursor().enabled();
   const int size = enabled ? active_user_prefs_->GetInteger(
                                  prefs::kAccessibilityLargeCursorDipSize)
@@ -3882,6 +3892,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
           enabled);
       break;
     case FeatureType::kLargeCursor:
+      MaybeCancelMouseShakeToLocateEffect();
       Shell::Get()->cursor_manager()->SetCursorSize(
           large_cursor().enabled() ? ui::CursorSize::kLarge
                                    : ui::CursorSize::kNormal);
