@@ -325,7 +325,7 @@ struct GlicButtonState {
 enum AppMenuIconType {
   kNone,
   kUpgradeNotification,
-  kGlobalError, // e.g. sign-in error.
+  kGlobalError,  // e.g. sign-in error.
 };
 
 // The severity level of the app menu icon (e.g., for updates or errors).
@@ -427,10 +427,10 @@ enum ContentSettingImageType {
   kStorageAccess = 19,
   // kMidi = 20, // Deprecated.
   kNotifications = 21,
-  [EnableIf=is_chromeos]
-  kSmartCard = 22,
-  [EnableIf=is_win]
-  kProtectedMediaIdentifier = 23,
+
+  [EnableIf=is_chromeos] kSmartCard = 22,
+
+  [EnableIf=is_win] kProtectedMediaIdentifier = 23,
 };
 
 // These fields correspond to the accessors of ContentSettingImageModel.
@@ -504,6 +504,7 @@ enum PageActionId {
   kActionFakePageActionForDebug,
   kActionWalletReminderNotice,
 };
+
 // LINT.ThenChange(//chrome/browser/ui/page_action/page_action_properties_provider.cc:kPageActionProperties,//chrome/browser/ui/page_action/action_ids.h:kActionIds)
 
 // The input modality that causes the page action to trigger: click, keyboard
@@ -689,41 +690,41 @@ struct SelectedKeywordState {
 
 // Enum of all supported pinned toolbar actions.
 enum PinnedToolbarAction {
- kUnspecified, // Unused; triggers assert if used.
- kNewIncognitoWindow,
- kShowPasswordsBubbleOrPage,
- kShowPaymentsBubbleOrPage,
- kShowAddressesBubbleOrPage,
- kSidePanelShowBookmarks,
- kSidePanelShowReadingList,
- kSidePanelShowHistoryCluster,
- kShowDownloads,
- kClearBrowsingData,
- kPrint,
- kSidePanelShowLensOverlayResults,
- kShowTranslate,
- kQrCodeGenerator,
- kRouteMedia,
- kSidePanelShowReadAnything,
- kCopyUrl,
- kSendTabToSelf,
- kTaskManager,
- kDevTools,
- kTabSearch,
- kSidePanelShowContextualTasks,
- kSidePanelShowLens,
- kSidePanelShowAboutThisSite,
- kSidePanelShowCustomizeChrome,
- kSidePanelShowShoppingInsights,
- kSidePanelShowMerchantTrust,
- kSendSharedTabGroupFeedback,
- kSidePanelShowComments,
- kShowAiOverlayDialog,
- kTtcToolbar,
- kSidePanelShowHistory,
- kShowChromeLabs,
- kSidePanelShowGlic,
- kDivider, // A divider; not a clickable action.
+  kUnspecified,  // Unused; triggers assert if used.
+  kNewIncognitoWindow,
+  kShowPasswordsBubbleOrPage,
+  kShowPaymentsBubbleOrPage,
+  kShowAddressesBubbleOrPage,
+  kSidePanelShowBookmarks,
+  kSidePanelShowReadingList,
+  kSidePanelShowHistoryCluster,
+  kShowDownloads,
+  kClearBrowsingData,
+  kPrint,
+  kSidePanelShowLensOverlayResults,
+  kShowTranslate,
+  kQrCodeGenerator,
+  kRouteMedia,
+  kSidePanelShowReadAnything,
+  kCopyUrl,
+  kSendTabToSelf,
+  kTaskManager,
+  kDevTools,
+  kTabSearch,
+  kSidePanelShowContextualTasks,
+  kSidePanelShowLens,
+  kSidePanelShowAboutThisSite,
+  kSidePanelShowCustomizeChrome,
+  kSidePanelShowShoppingInsights,
+  kSidePanelShowMerchantTrust,
+  kSendSharedTabGroupFeedback,
+  kSidePanelShowComments,
+  kShowAiOverlayDialog,
+  kTtcToolbar,
+  kSidePanelShowHistory,
+  kShowChromeLabs,
+  kSidePanelShowGlic,
+  kDivider,  // A divider; not a clickable action.
 };
 
 // The status of the progress ring drawn around a pinned toolbar action
