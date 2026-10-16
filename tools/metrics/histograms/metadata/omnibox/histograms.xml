@@ -3355,7 +3355,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration"
-    units="ms" expires_after="2026-11-12">
+    units="ms" expires_after="2027-01-14">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3370,7 +3370,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumReceived"
-    units="count" expires_after="2026-11-12">
+    units="count" expires_after="2027-01-14">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3383,7 +3383,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumRequested"
-    units="count" expires_after="2026-11-12">
+    units="count" expires_after="2027-01-14">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
