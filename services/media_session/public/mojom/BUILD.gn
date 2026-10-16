@@ -70,6 +70,7 @@ mojom("mojom") {
       ]
       traits_deps = [
         "//mojo/public/mojom/base",
+        "//ui/gfx:gfx_skia",
         "//ui/gfx/geometry/mojom",
       ]
     },

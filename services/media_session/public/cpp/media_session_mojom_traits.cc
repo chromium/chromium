@@ -4,11 +4,11 @@
 
 #include "services/media_session/public/cpp/media_session_mojom_traits.h"
 
-#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/media_session/public/cpp/chapter_information.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/skia_span_util.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -56,8 +56,7 @@ bool StructTraits<media_session::mojom::MediaMetadataDataView,
 const base::span<const uint8_t>
 StructTraits<media_session::mojom::MediaImageBitmapDataView,
              SkBitmap>::pixel_data(const SkBitmap& r) {
-  return UNSAFE_TODO(
-      base::span(static_cast<uint8_t*>(r.getPixels()), r.computeByteSize()));
+  return gfx::SkPixmapToSpan(r.pixmap());
 }
 
 // static
