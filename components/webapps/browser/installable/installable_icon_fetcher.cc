@@ -129,6 +129,11 @@ void ProcessFaviconInBackground(
     return;
   }
 
+  if (decoded.width() != decoded.height()) {
+    decoded = content::ManifestIconDownloader::PadIconToSquare(
+        decoded, std::min(std::max(decoded.width(), decoded.height()),
+                          InstallableEvaluator::kMaximumIconSizeInPx));
+  }
   ui_thread_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(success_callback), decoded));
 }

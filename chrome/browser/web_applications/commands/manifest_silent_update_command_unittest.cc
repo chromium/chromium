@@ -261,13 +261,11 @@ TEST_F(ManifestSilentUpdateCommandTest,
           /*count=*/1)));
 }
 
-// The manifest declares a square icon, so it passes InstallableEvaluator and
-// GetTrustedIconsFromManifest(), but the served bitmap is not square.
-// PopulateTrustedIconBitmaps() filters it out, leaving trusted_icon_bitmaps
-// empty while trusted_icons is not. This can happen in production via
-// ManifestSilentUpdateCommand, and the update must fail gracefully.
+// The manifest declares a square icon but serves a non-square bitmap. The
+// bitmap is padded to the declared size, so the icon change is staged as a
+// pending security update instead of being dropped.
 TEST_F(ManifestSilentUpdateCommandTest,
-       SquareManifestIconWithNonSquareBitmapFailsGracefully) {
+       SquareManifestIconWithNonSquareBitmapIsPadded) {
   SetupBasicInstallablePageState();
   webapps::AppId app_id = test::InstallForWebContents(
       profile(), web_contents(),
@@ -283,22 +281,31 @@ TEST_F(ManifestSilentUpdateCommandTest,
       gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
-            ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError);
-  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
 
-  // No update happened; the existing trusted and manifest icons are retained.
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(app);
+  ASSERT_TRUE(app->pending_update_info().has_value());
+  const proto::PendingUpdateInfo& pending = *app->pending_update_info();
+  ASSERT_EQ(pending.trusted_icons_size(), 1);
+  EXPECT_EQ(pending.trusted_icons(0).url(), kIconUrl.spec());
+  EXPECT_THAT(pending.downloaded_trusted_icons(),
+              testing::Contains(testing::AllOf(
+                  testing::Property(&proto::DownloadedIconSizeInfo::purpose,
+                                    sync_pb::WebAppIconInfo_Purpose_ANY),
+                  testing::Property(&proto::DownloadedIconSizeInfo::icon_sizes,
+                                    testing::Contains(192)))));
+
+  // Installed icons stay unchanged until the pending update is applied.
   ASSERT_FALSE(app->trusted_icons().empty());
   EXPECT_EQ(app->trusted_icons().front().url, kDefaultIconUrl);
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
             kDefaultIconUrl);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(
-          "Webapp.Update.ManifestSilentUpdateCheckResult"),
-      BucketsAre(base::Bucket(
-          ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError,
-          /*count=*/1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate,
+                  /*count=*/1)));
 }
 
 // Regression test for crbug.com/553479924. InstallableEvaluator only inspects

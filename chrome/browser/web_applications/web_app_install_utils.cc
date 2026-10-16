@@ -56,6 +56,7 @@
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/base/mime_util.h"
@@ -84,32 +85,39 @@ constexpr int kMaxIcons = 20;
 constexpr SquareSizePx kMaxIconSize =
     webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
-// Append non-empty square icons from |icons_map| onto the |square_icons| list.
+SkBitmap EnsureSquareIcon(const SkBitmap& icon) {
+  CHECK(!icon.drawsNothing());
+  if (icon.width() == icon.height()) {
+    return icon;
+  }
+  return content::ManifestIconDownloader::PadIconToSquare(
+      icon, std::min(std::max(icon.width(), icon.height()), kMaxIconSize));
+}
+
 void AddSquareIconsFromMap(std::vector<SkBitmap>* square_icons,
                            const IconsMap& icons_map) {
-  for (const auto& url_icon : icons_map) {
-    for (const SkBitmap& icon : url_icon.second) {
-      if (!icon.empty() && icon.width() == icon.height()) {
-        square_icons->push_back(icon);
+  for (const auto& [url, bitmaps] : icons_map) {
+    for (const SkBitmap& icon : bitmaps) {
+      if (!icon.drawsNothing()) {
+        square_icons->push_back(EnsureSquareIcon(icon));
       }
     }
   }
 }
 
-// Append non-empty square icons from |icons_map| onto the |square_icons| list,
-// if they are also in |manifest_icons|.
 void AddSquareIconsFromMapMatchingIconInfos(
     std::vector<SkBitmap>* square_icons,
     const std::vector<apps::IconInfo>& manifest_icons,
     const IconsMap& icons_map) {
-  for (const auto& url_icon : icons_map) {
-    for (const SkBitmap& icon : url_icon.second) {
-      if (!icon.empty() && icon.width() == icon.height()) {
-        for (const auto& info : manifest_icons) {
-          if (info.url == url_icon.first) {
-            square_icons->push_back(icon);
-          }
-        }
+  for (const auto& [url, bitmaps] : icons_map) {
+    if (!std::ranges::any_of(manifest_icons, [&](const apps::IconInfo& info) {
+          return info.url == url;
+        })) {
+      continue;
+    }
+    for (const SkBitmap& icon : bitmaps) {
+      if (!icon.drawsNothing()) {
+        square_icons->push_back(EnsureSquareIcon(icon));
       }
     }
   }
@@ -193,26 +201,21 @@ void PopulateShortcutItemIcons(WebAppInstallInfo* web_app_info,
       for (const auto& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
         auto it = icons_map.find(icon.url);
-        // Resize bitmaps only if the icon size is non-zero. The alternative
-        // happens mostly for icons with a size of ANY passed in via the
-        // manifest, for which we do not need to resize since it is downloaded
-        // in all sizes..
         if (it != icons_map.end()) {
+          std::vector<SkBitmap> square_bitmaps;
+          for (const auto& bitmap : it->second) {
+            if (!bitmap.drawsNothing()) {
+              square_bitmaps.push_back(EnsureSquareIcon(bitmap));
+            }
+          }
           if (icon.square_size_px != 0) {
-            std::set<SquareSizePx> sizes_to_generate;
-            sizes_to_generate.emplace(icon.square_size_px);
+            std::set<SquareSizePx> sizes_to_generate = {icon.square_size_px};
             OrderedSizeToBitmap resized_bitmaps(
-                ConstrainBitmapsToSizes(it->second, sizes_to_generate));
-
-            // Don't overwrite as a shortcut item could have multiple icon urls.
+                ConstrainBitmapsToSizes(square_bitmaps, sizes_to_generate));
             bitmaps.insert(resized_bitmaps.begin(), resized_bitmaps.end());
           } else {
-            // For icons that do not need resizing, pass in the bitmaps as it
-            // is, barring ones that have no intrinsic size.
-            for (const auto& bitmap : it->second) {
-              if (!bitmap.empty()) {
-                bitmaps[bitmap.width()] = bitmap;
-              }
+            for (const auto& bitmap : square_bitmaps) {
+              bitmaps[bitmap.width()] = bitmap;
             }
           }
         }
@@ -255,15 +258,15 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
     }
 
     for (const SkBitmap& bitmap : downloaded_bitmaps_for_url->second) {
-      // Filter out bitmaps that are empty, non-square or are too large.
-      if (bitmap.empty() || bitmap.width() != bitmap.height() ||
-          bitmap.width() > kMaxIconSize) {
+      if (bitmap.drawsNothing()) {
         continue;
       }
-
-      // Add the bitmap to 'other_icon_bitmaps'.
+      SkBitmap square_bitmap = EnsureSquareIcon(bitmap);
+      if (square_bitmap.width() > kMaxIconSize) {
+        continue;
+      }
       if (!bitmaps_already_saved_for_url) {
-        other_icon_bitmaps[icon.src].emplace_back(bitmap);
+        other_icon_bitmaps[icon.src].push_back(std::move(square_bitmap));
       }
     }
 

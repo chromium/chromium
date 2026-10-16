@@ -115,6 +115,8 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
     return;
   }
 
+  // TODO(crbug.com/566319139): Ensure WebAPK minting receives padded
+  // non-square icon bytes.
   // If the image is png/jpg/jpeg, send the raw data to server to decode,
   // otherwise decode the image using Blink's image decoder.
   auto simple_url_loader = std::move(simple_url_loader_);

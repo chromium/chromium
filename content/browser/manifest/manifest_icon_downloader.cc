@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <limits>
 #include <utility>
 
@@ -20,6 +21,8 @@
 #include "content/public/common/url_constants.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 namespace content {
 
@@ -73,6 +76,33 @@ bool ManifestIconDownloader::Download(
   return true;
 }
 
+SkBitmap ManifestIconDownloader::PadIconToSquare(const SkBitmap& icon,
+                                                 int square_size) {
+  CHECK(!icon.drawsNothing());
+  CHECK_GT(square_size, 0);
+  const int longest_side = std::max(icon.width(), icon.height());
+  SkBitmap resized = icon;
+  if (longest_side > square_size) {
+    const float scale = static_cast<float>(square_size) / longest_side;
+    resized = skia::ImageOperations::Resize(
+        icon, skia::ImageOperations::RESIZE_BEST,
+        std::clamp(base::ClampRound(icon.width() * scale), 1, square_size),
+        std::clamp(base::ClampRound(icon.height() * scale), 1, square_size));
+  }
+  if (resized.width() == square_size && resized.height() == square_size) {
+    return resized;
+  }
+
+  SkBitmap square;
+  square.allocN32Pixels(square_size, square_size);
+  square.eraseColor(SK_ColorTRANSPARENT);
+  SkCanvas canvas(square);
+  canvas.drawImage(SkImages::RasterFromBitmap(resized),
+                   (square_size - resized.width()) / 2.0f,
+                   (square_size - resized.height()) / 2.0f);
+  return square;
+}
+
 void ManifestIconDownloader::OnIconFetched(
     int ideal_icon_size_in_px,
     int minimum_icon_size_in_px,
@@ -118,22 +148,39 @@ void ManifestIconDownloader::OnIconFetched(
   }
 
   const SkBitmap& chosen = bitmaps[closest_index];
-  float ratio = 1.0;
-  // Preserve width/height ratio if non-square icons allowed.
-  if (!square_only && !chosen.empty()) {
-    ratio = base::checked_cast<float>(chosen.width()) /
-            base::checked_cast<float>(chosen.height());
+
+  if (square_only) {
+    // Scaling down happens while padding, and icons are never scaled up.
+    const int square_size = std::min(std::max(chosen.width(), chosen.height()),
+                                     ideal_icon_size_in_px);
+    if (chosen.width() != square_size || chosen.height() != square_size) {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&ManifestIconDownloader::PadIcon,
+                                    square_size, chosen, std::move(callback)));
+      return;
+    }
+    std::move(callback).Run(chosen, ManifestIconDownloader::Result::kSuccess);
+    return;
   }
-  float ideal_icon_width_in_px = ratio * ideal_icon_size_in_px;
+
+  // Preserve the width/height ratio of non-square icons.
+  const float ratio = chosen.empty()
+                          ? 1.0f
+                          : base::checked_cast<float>(chosen.width()) /
+                                base::checked_cast<float>(chosen.height());
+  const int ideal_icon_width_in_px =
+      base::ClampRound(ratio * ideal_icon_size_in_px);
+  const int ideal_icon_height_in_px = ideal_icon_size_in_px;
   // Only scale if we need to scale down. For scaling up we will let the system
   // handle that when it is required to display it. This saves space in the
   // webapp storage system as well.
-  if (chosen.height() > ideal_icon_size_in_px ||
+  if (chosen.height() > ideal_icon_height_in_px ||
       chosen.width() > ideal_icon_width_in_px) {
     GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ManifestIconDownloader::ScaleIcon,
-                                  ideal_icon_width_in_px, ideal_icon_size_in_px,
-                                  chosen, std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&ManifestIconDownloader::ScaleIcon,
+                       ideal_icon_width_in_px, ideal_icon_height_in_px, chosen,
+                       std::move(callback)));
     return;
   }
 
@@ -155,6 +202,17 @@ void ManifestIconDownloader::ScaleIcon(int ideal_icon_width_in_px,
                                 ManifestIconDownloader::Result::kSuccess));
 }
 
+void ManifestIconDownloader::PadIcon(int square_size_in_px,
+                                     const SkBitmap& bitmap,
+                                     IconFetchCallbackWithResult callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                PadIconToSquare(bitmap, square_size_in_px),
+                                ManifestIconDownloader::Result::kSuccess));
+}
+
 int ManifestIconDownloader::FindClosestBitmapIndex(
     int ideal_icon_size_in_px,
     int minimum_icon_size_in_px,
@@ -166,8 +224,9 @@ int ManifestIconDownloader::FindClosestBitmapIndex(
       minimum_icon_size_in_px - ideal_icon_size_in_px;
 
   for (size_t i = 0; i < bitmaps.size(); ++i) {
-    if (bitmaps[i].empty())
+    if (bitmaps[i].drawsNothing()) {
       continue;
+    }
 
     // Check for valid width/height ratio.
     float width = base::checked_cast<float>(bitmaps[i].width());
@@ -195,22 +254,27 @@ int ManifestIconDownloader::FindClosestBitmapIndex(
   if (best_index != -1)
     return best_index;
 
-  // There was no square/landscape icon of a correct size found. Try to find the
-  // most square-like icon which has both dimensions greater than the minimum
-  // size.
+  // Try the most square-like bitmap that meets the minimum size.
   float best_ratio_difference = std::numeric_limits<float>::infinity();
   for (size_t i = 0; i < bitmaps.size(); ++i) {
-    if (bitmaps[i].height() < minimum_icon_size_in_px ||
-        bitmaps[i].width() < minimum_icon_size_in_px) {
+    if (bitmaps[i].drawsNothing()) {
+      continue;
+    }
+    // Non-square fallback frames are padded to their longest side.
+    const int bitmap_size =
+        square_only ? std::max(bitmaps[i].height(), bitmaps[i].width())
+                    : std::min(bitmaps[i].height(), bitmaps[i].width());
+    if (bitmap_size < minimum_icon_size_in_px) {
       continue;
     }
 
-    float height = static_cast<float>(bitmaps[i].height());
-    float width = static_cast<float>(bitmaps[i].width());
-    float ratio = width / height;
-    if (!square_only && ratio > kMaxWidthToHeightRatio)
+    const float ratio =
+        static_cast<float>(std::max(bitmaps[i].width(), bitmaps[i].height())) /
+        std::min(bitmaps[i].width(), bitmaps[i].height());
+    if (ratio > kMaxWidthToHeightRatio) {
       continue;
-    float ratio_difference = fabs(ratio - 1);
+    }
+    const float ratio_difference = ratio - 1.0f;
     if (ratio_difference < best_ratio_difference) {
       best_index = i;
       best_ratio_difference = ratio_difference;

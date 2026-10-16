@@ -2216,6 +2216,29 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
   EXPECT_THAT(web_app_info->display_override, testing::IsEmpty());
 }
 
+TEST_F(ManifestToWebAppInstallInfoJobTest,
+       NonSquareDownloadedIconBitmapsResizedToSquare) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  SkBitmap non_square_bitmap;
+  non_square_bitmap.allocN32Pixels(128, 64);
+  non_square_bitmap.eraseColor(SK_ColorGREEN);
+  web_contents_manager().GetOrCreateIconState(icon_url_).bitmaps = {
+      non_square_bitmap};
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  EXPECT_FALSE(web_app_info->is_generated_icon);
+  ASSERT_TRUE(web_app_info->icon_bitmaps.any.contains(kIconSize));
+  EXPECT_EQ(kIconSize, web_app_info->icon_bitmaps.any[kIconSize].width());
+  EXPECT_EQ(kIconSize, web_app_info->icon_bitmaps.any[kIconSize].height());
+  ASSERT_TRUE(web_app_info->trusted_icon_bitmaps.any.contains(kIconSize));
+  EXPECT_EQ(kIconSize,
+            web_app_info->trusted_icon_bitmaps.any[kIconSize].width());
+  EXPECT_EQ(kIconSize,
+            web_app_info->trusted_icon_bitmaps.any[kIconSize].height());
+}
+
 }  // namespace
 
 }  // namespace web_app

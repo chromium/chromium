@@ -220,6 +220,148 @@ class InstallableIconFetcherTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<TestLargeIconService> large_icon_service_;
 };
 
+TEST_F(InstallableIconFetcherTest, NonSquareManifestIconIsPaddedToSquare) {
+  const GURL kIconUrl("https://www.example.com/icon.png");
+
+  blink::Manifest::ImageResource icon;
+  icon.src = kIconUrl;
+  icon.type = u"image/png";
+  icon.sizes.emplace_back(144, 144);
+  icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+  std::vector<blink::Manifest::ImageResource> manifest_icons = {icon};
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/true,
+                                 /*fetch_favicon=*/false, future.GetCallback());
+
+  // Maskable icons are accepted down to 83px, so this bitmap is within the
+  // accepted range and is not scaled down to the ideal (square) size.
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kIconUrl));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kIconUrl, 200, {CreateTestBitmap(144, 120)}, {gfx::Size(144, 120)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_EQ(page_data.primary_icon_url(), kIconUrl);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(page_data.primary_icon()->width(), 144);
+  EXPECT_EQ(page_data.primary_icon()->height(), 144);
+  EXPECT_EQ(page_data.primary_icon()->getColor(72, 72), SK_ColorRED);
+  EXPECT_EQ(page_data.primary_icon()->getColor(72, 0), SK_ColorTRANSPARENT);
+}
+
+TEST_F(InstallableIconFetcherTest, NonSquareAnyIconBelowMinimumSideIsPadded) {
+  const GURL kIconUrl("https://www.example.com/icon-any.png");
+  blink::Manifest::ImageResource icon;
+  icon.src = kIconUrl;
+  icon.type = u"image/png";
+  icon.sizes.emplace_back(160, 160);
+  icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  InstallableIconFetcher fetcher(web_contents(), page_data, {icon},
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/false, future.GetCallback());
+
+  ASSERT_TRUE(web_contents_tester()->HasPendingDownloadImage(kIconUrl));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kIconUrl, 200, {CreateTestBitmap(160, 120)}, {gfx::Size(160, 120)}));
+
+  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, future.Get());
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(144, page_data.primary_icon()->width());
+  EXPECT_EQ(144, page_data.primary_icon()->height());
+  EXPECT_EQ(SK_ColorRED, page_data.primary_icon()->getColor(72, 72));
+  EXPECT_EQ(SK_ColorTRANSPARENT, page_data.primary_icon()->getColor(72, 0));
+}
+
+TEST_F(InstallableIconFetcherTest, LargeNonSquareManifestIconIsNotStretched) {
+  const GURL icon_url("https://www.example.com/large-icon.png");
+  blink::Manifest::ImageResource icon;
+  icon.src = icon_url;
+  icon.type = u"image/png";
+  icon.sizes.emplace_back(512, 512);
+  icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  InstallableIconFetcher fetcher(web_contents(), page_data, {icon},
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/false, future.GetCallback());
+
+  ASSERT_TRUE(web_contents_tester()->HasPendingDownloadImage(icon_url));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      icon_url, 200, {CreateTestBitmap(512, 384)}, {gfx::Size(512, 384)}));
+
+  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, future.Get());
+  ASSERT_TRUE(page_data.primary_icon());
+  const SkBitmap& bitmap = *page_data.primary_icon();
+  EXPECT_EQ(bitmap.width(), bitmap.height());
+  EXPECT_EQ(SK_ColorRED,
+            bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  EXPECT_EQ(SK_ColorTRANSPARENT, bitmap.getColor(bitmap.width() / 2, 0));
+}
+
+TEST_F(InstallableIconFetcherTest, NonSquareFaviconIsPaddedToSquare) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+
+  const GURL kTouchIconUrl("https://www.example.com/touch-icon.png");
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      kTouchIconUrl, blink::mojom::FaviconIconType::kTouchIcon,
+      std::vector<gfx::Size>(), /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  InstallableIconFetcher fetcher(web_contents(), page_data, manifest_icons,
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+
+  EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kTouchIconUrl));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      kTouchIconUrl, 200, {CreateTestBitmap(100, 144)}, {gfx::Size(100, 144)}));
+
+  EXPECT_EQ(future.Get(), InstallableStatusCode::NO_ERROR_DETECTED);
+  ASSERT_TRUE(page_data.primary_icon());
+  EXPECT_EQ(page_data.primary_icon()->width(), 144);
+  EXPECT_EQ(page_data.primary_icon()->height(), 144);
+  EXPECT_EQ(page_data.primary_icon()->getColor(72, 72), SK_ColorRED);
+  EXPECT_EQ(page_data.primary_icon()->getColor(0, 72), SK_ColorTRANSPARENT);
+}
+
+TEST_F(InstallableIconFetcherTest, LargeNonSquareFaviconIsNotStretched) {
+  base::AutoReset<int> scoped_min_favicon_size(
+      &test::g_minimum_favicon_size_for_testing, 48);
+  const GURL icon_url("https://www.example.com/touch-icon.png");
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      icon_url, blink::mojom::FaviconIconType::kTouchIcon,
+      std::vector<gfx::Size>(), /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(std::move(favicon_urls));
+
+  base::test::TestFuture<InstallableStatusCode> future;
+  InstallablePageData page_data;
+  InstallableIconFetcher fetcher(web_contents(), page_data, {},
+                                 /*prefer_maskable=*/false,
+                                 /*fetch_favicon=*/true, future.GetCallback());
+  ASSERT_TRUE(web_contents_tester()->HasPendingDownloadImage(icon_url));
+  EXPECT_TRUE(web_contents_tester()->TestDidDownloadImage(
+      icon_url, 200, {CreateTestBitmap(180, 120)}, {gfx::Size(180, 120)}));
+
+  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, future.Get());
+  ASSERT_TRUE(page_data.primary_icon());
+  const SkBitmap& bitmap = *page_data.primary_icon();
+  EXPECT_EQ(bitmap.width(), bitmap.height());
+  EXPECT_EQ(SK_ColorRED,
+            bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  EXPECT_EQ(SK_ColorTRANSPARENT, bitmap.getColor(bitmap.width() / 2, 0));
+}
+
 TEST_F(InstallableIconFetcherTest, FaviconFallbackDownloadsTouchIcon) {
   base::AutoReset<int> scoped_min_favicon_size(
       &test::g_minimum_favicon_size_for_testing, 48);

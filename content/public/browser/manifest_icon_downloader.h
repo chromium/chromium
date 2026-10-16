@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 class GURL;
-class SkBitmap;
 
 namespace gfx {
 class Size;
@@ -55,7 +55,8 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   // It will return false if the current context or information do not allow to
   // download the image.
   // |global_frame_routing_id| specifies the frame in which to initiate the
-  // download.
+  // download. With |square_only|, the returned bitmap is square: a non-square
+  // icon is centered in a transparent square at its longest side.
   static bool Download(
       content::WebContents* web_contents,
       const GURL& icon_url,
@@ -67,6 +68,9 @@ class CONTENT_EXPORT ManifestIconDownloader final {
       const GlobalRenderFrameHostId& initiator_frame_routing_id =
           GlobalRenderFrameHostId(),
       bool suppress_warnings = false);
+
+  // Centers |icon| in a transparent square, scaling it down if necessary.
+  static SkBitmap PadIconToSquare(const SkBitmap& icon, int square_size);
 
   // This threshold has been chosen arbitrarily and is open to any necessary
   // changes in the future.
@@ -91,6 +95,10 @@ class CONTENT_EXPORT ManifestIconDownloader final {
                         int ideal_icon_height_in_px,
                         const SkBitmap& bitmap,
                         IconFetchCallbackWithResult callback);
+
+  static void PadIcon(int square_size_in_px,
+                      const SkBitmap& bitmap,
+                      IconFetchCallbackWithResult callback);
 
   static int FindClosestBitmapIndex(int ideal_icon_size_in_px,
                                     int minimum_icon_size_in_px,

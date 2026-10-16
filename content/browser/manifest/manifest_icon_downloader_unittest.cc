@@ -155,7 +155,50 @@ TEST_P(ManifestIconDownloaderTest, NonSquareBelowMinimumIsNotPicked) {
   std::vector<SkBitmap> bitmaps = {gfx::test::CreateBitmap(10, 15),
                                    gfx::test::CreateBitmap(15, 10)};
 
-  ASSERT_EQ(-1, FindBitmap(15, 11, bitmaps));
+  // Square selection pads to the longest side, which meets the minimum here.
+  ASSERT_EQ(selects_square_only() ? 0 : -1, FindBitmap(15, 11, bitmaps));
+}
+
+TEST_P(ManifestIconDownloaderTest, LongestSideMeetsMinimumForSquareIcons) {
+  std::vector<SkBitmap> bitmaps = {gfx::test::CreateBitmap(160, 120)};
+  EXPECT_EQ(selects_square_only() ? 0 : -1, FindBitmap(144, 144, bitmaps));
+
+  bitmaps = {gfx::test::CreateBitmap(160, 20)};
+  EXPECT_EQ(-1, FindBitmap(144, 144, bitmaps));
+}
+
+TEST_P(ManifestIconDownloaderTest, EmptyBitmapIsIgnoredWithZeroMinimum) {
+  std::vector<SkBitmap> bitmaps = {SkBitmap(), gfx::test::CreateBitmap(32, 24)};
+  EXPECT_EQ(1, FindBitmap(144, 0, bitmaps));
+}
+
+TEST_P(ManifestIconDownloaderTest, BitmapWithoutPixelsIsIgnored) {
+  SkBitmap no_pixels;
+  ASSERT_TRUE(no_pixels.setInfo(SkImageInfo::MakeN32Premul(160, 120)));
+  ASSERT_FALSE(no_pixels.empty());
+  ASSERT_TRUE(no_pixels.drawsNothing());
+
+  EXPECT_EQ(-1, FindBitmap(144, 144, {no_pixels}));
+  EXPECT_EQ(
+      1, FindBitmap(144, 144, {no_pixels, gfx::test::CreateBitmap(144, 144)}));
+}
+
+TEST_P(ManifestIconDownloaderTest, SquareFramePreferredForIcon) {
+  std::vector<SkBitmap> bitmaps = {gfx::test::CreateBitmap(300, 144),
+                                   gfx::test::CreateBitmap(160, 160)};
+  // Without square-only selection the 300x144 frame matches the ideal height.
+  EXPECT_EQ(selects_square_only() ? 1 : 0, FindBitmap(144, 144, bitmaps));
+}
+
+TEST_P(ManifestIconDownloaderTest, AspectRatioIsSymmetricForFallback) {
+  std::vector<SkBitmap> bitmaps = {gfx::test::CreateBitmap(25, 100),
+                                   gfx::test::CreateBitmap(100, 50)};
+  EXPECT_EQ(1, FindBitmap(144, 0, bitmaps));
+}
+
+TEST_P(ManifestIconDownloaderTest, NarrowPortraitIsRejected) {
+  std::vector<SkBitmap> bitmaps = {gfx::test::CreateBitmap(1, 200)};
+  EXPECT_EQ(-1, FindBitmap(144, 0, bitmaps));
 }
 
 TEST_P(ManifestIconDownloaderTest, ImproperWidthtoHeightRatioIsNotPicked) {
@@ -172,5 +215,26 @@ TEST_P(ManifestIconDownloaderTest, ImproperWidthtoHeightRatioIsNotPicked) {
 INSTANTIATE_TEST_SUITE_P(All,
                          ManifestIconDownloaderTest,
                          ::testing::Bool());
+
+TEST(ManifestIconDownloaderPaddingTest, CentersIconInTransparentSquare) {
+  const SkBitmap padded = ManifestIconDownloader::PadIconToSquare(
+      gfx::test::CreateBitmap(120, 60), 120);
+
+  EXPECT_EQ(120, padded.width());
+  EXPECT_EQ(120, padded.height());
+  EXPECT_EQ(SK_ColorTRANSPARENT, padded.getColor(60, 0));
+  EXPECT_EQ(SK_ColorTRANSPARENT, padded.getColor(60, 119));
+  EXPECT_NE(SK_ColorTRANSPARENT, padded.getColor(60, 60));
+}
+
+TEST(ManifestIconDownloaderPaddingTest, ScalesDownLongestSideToFillCanvas) {
+  const SkBitmap padded = ManifestIconDownloader::PadIconToSquare(
+      gfx::test::CreateBitmap(37, 18), 3);
+
+  EXPECT_EQ(3, padded.width());
+  EXPECT_EQ(3, padded.height());
+  EXPECT_NE(SK_ColorTRANSPARENT, padded.getColor(0, 1));
+  EXPECT_NE(SK_ColorTRANSPARENT, padded.getColor(2, 1));
+}
 
 }  // namespace content

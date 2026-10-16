@@ -718,4 +718,182 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_DisplayOverride) {
       testing::ElementsAre(DisplayOverride::CreateUnframed({foo_pattern})));
 }
 
+TEST(WebAppInstallUtils, PopulateProductIcons_NonSquareIconsResizedToSquare) {
+  SkBitmap non_square_bitmap;
+  non_square_bitmap.allocN32Pixels(120, 80);
+  non_square_bitmap.eraseColor(SK_ColorGREEN);
+
+  const GURL kIconUrl("https://www.example.com/icon.png");
+  IconsMap icons_map;
+  icons_map.emplace(kIconUrl, std::vector<SkBitmap>{non_square_bitmap});
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  web_app_info.title = u"App Name";
+  apps::IconInfo info;
+  info.url = kIconUrl;
+  info.purpose = apps::IconInfo::Purpose::kAny;
+  info.square_size_px = 96;
+  web_app_info.manifest_icons.push_back(info);
+
+  PopulateProductIcons(&web_app_info, &icons_map);
+
+  EXPECT_FALSE(web_app_info.is_generated_icon);
+  EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info.icon_bitmaps.any));
+  ASSERT_TRUE(web_app_info.icon_bitmaps.any.contains(96));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            web_app_info.icon_bitmaps.any.at(96).getColor(0, 0));
+  for (const auto& [size, bitmap] : web_app_info.icon_bitmaps.any) {
+    EXPECT_EQ(size, bitmap.width());
+    EXPECT_EQ(size, bitmap.height());
+    EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(size / 2, size / 2));
+  }
+}
+
+TEST(WebAppInstallUtils,
+     PopulateTrustedIconBitmaps_NonSquareIconsResizedToSquare) {
+  SkBitmap non_square_bitmap;
+  non_square_bitmap.allocN32Pixels(200, 100);
+  non_square_bitmap.eraseColor(SK_ColorBLUE);
+
+  const GURL kIconUrl("https://www.example.com/trusted_icon.svg");
+  IconsMap icons_map;
+  icons_map.emplace(kIconUrl, std::vector<SkBitmap>{non_square_bitmap});
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  web_app_info.title = u"App Name";
+  apps::IconInfo trusted_info;
+  trusted_info.url = kIconUrl;
+  trusted_info.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_info.square_size_px = 1024;
+  web_app_info.trusted_icons.push_back(trusted_info);
+
+  PopulateTrustedIconBitmaps(web_app_info, icons_map);
+
+  EXPECT_FALSE(web_app_info.trusted_icon_bitmaps.any.empty());
+  ASSERT_TRUE(web_app_info.trusted_icon_bitmaps.any.contains(128));
+  EXPECT_EQ(128, web_app_info.trusted_icon_bitmaps.any[128].width());
+  EXPECT_EQ(128, web_app_info.trusted_icon_bitmaps.any[128].height());
+  EXPECT_EQ(SK_ColorBLUE,
+            web_app_info.trusted_icon_bitmaps.any[128].getColor(64, 48));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
+            web_app_info.trusted_icon_bitmaps.any[128].getColor(64, 0));
+  EXPECT_FALSE(web_app_info.trusted_icon_bitmaps.any.contains(1024));
+}
+
+TEST(WebAppInstallUtils,
+     PopulateTrustedIconBitmaps_RepeatedUrlWithMultipleFrames) {
+  SkBitmap small;
+  small.allocN32Pixels(48, 36);
+  small.eraseColor(SK_ColorRED);
+  SkBitmap large;
+  large.allocN32Pixels(256, 192);
+  large.eraseColor(SK_ColorBLUE);
+  const GURL icon_url("https://www.example.com/icon.ico");
+  IconsMap icons_map;
+  icons_map.emplace(icon_url, std::vector<SkBitmap>{small, large});
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  for (int size : {48, 256}) {
+    apps::IconInfo info;
+    info.url = icon_url;
+    info.purpose = apps::IconInfo::Purpose::kAny;
+    info.square_size_px = size;
+    web_app_info.trusted_icons.push_back(info);
+  }
+  PopulateTrustedIconBitmaps(web_app_info, icons_map);
+
+  ASSERT_TRUE(web_app_info.trusted_icon_bitmaps.any.contains(256));
+  EXPECT_EQ(SK_ColorBLUE,
+            web_app_info.trusted_icon_bitmaps.any.at(256).getColor(128, 128));
+  ASSERT_TRUE(web_app_info.trusted_icon_bitmaps.any.contains(48));
+  EXPECT_EQ(SK_ColorRED,
+            web_app_info.trusted_icon_bitmaps.any.at(48).getColor(24, 24));
+}
+
+TEST(WebAppInstallUtils, PopulateProductIcons_SkipsBitmapWithoutPixels) {
+  SkBitmap unallocated;
+  ASSERT_TRUE(unallocated.setInfo(SkImageInfo::MakeN32Premul(120, 80)));
+  ASSERT_FALSE(unallocated.empty());
+  ASSERT_TRUE(unallocated.drawsNothing());
+
+  const GURL icon_url("https://www.example.com/icon.png");
+  IconsMap icons_map;
+  icons_map.emplace(icon_url, std::vector<SkBitmap>{unallocated});
+  auto web_app_info = CreateWebAppInstallInfo();
+  web_app_info.title = u"App Name";
+  apps::IconInfo info;
+  info.url = icon_url;
+  info.purpose = apps::IconInfo::Purpose::kAny;
+  info.square_size_px = 120;
+  web_app_info.manifest_icons.push_back(info);
+
+  PopulateProductIcons(&web_app_info, &icons_map);
+  EXPECT_TRUE(web_app_info.is_generated_icon);
+}
+
+TEST(WebAppInstallUtils, PopulateOtherIcons_NonSquareShortcutAndHomeTabIcons) {
+  SkBitmap non_square_bitmap;
+  non_square_bitmap.allocN32Pixels(96, 48);
+  non_square_bitmap.eraseColor(SK_ColorRED);
+
+  const GURL kShortcutIconUrl1("https://www.example.com/shortcut1.png");
+  const GURL kShortcutIconUrl2("https://www.example.com/shortcut2.svg");
+  const GURL kHomeTabIconUrl("https://www.example.com/home_tab.png");
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  {
+    WebAppShortcutsMenuItemInfo shortcut_item;
+    shortcut_item.name = u"Shortcut 1";
+    shortcut_item.url = GURL("https://www.example.com/s1");
+
+    WebAppShortcutsMenuItemInfo::Icon icon1;
+    icon1.url = kShortcutIconUrl1;
+    icon1.square_size_px = 64;
+
+    WebAppShortcutsMenuItemInfo::Icon icon2;
+    icon2.url = kShortcutIconUrl2;
+    icon2.square_size_px = 0;
+
+    shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
+                                                 {icon1, icon2});
+    web_app_info.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
+  }
+
+  {
+    TabStrip tab_strip;
+    blink::Manifest::HomeTabParams home_tab_params;
+    blink::Manifest::ImageResource home_icon;
+    home_icon.src = kHomeTabIconUrl;
+    home_icon.purpose.push_back(Purpose::ANY);
+    home_icon.sizes.emplace_back(32, 32);
+    home_tab_params.icons.push_back(std::move(home_icon));
+    tab_strip.home_tab = std::move(home_tab_params);
+    web_app_info.tab_strip = std::move(tab_strip);
+  }
+
+  IconsMap icons_map;
+  icons_map.emplace(kShortcutIconUrl1,
+                    std::vector<SkBitmap>{non_square_bitmap});
+  icons_map.emplace(kShortcutIconUrl2,
+                    std::vector<SkBitmap>{non_square_bitmap});
+  icons_map.emplace(kHomeTabIconUrl, std::vector<SkBitmap>{non_square_bitmap});
+
+  PopulateOtherIcons(&web_app_info, icons_map);
+
+  ASSERT_EQ(1u, web_app_info.shortcuts_menu_icon_bitmaps.size());
+  EXPECT_TRUE(web_app_info.shortcuts_menu_icon_bitmaps[0].any.contains(64));
+  ASSERT_TRUE(web_app_info.shortcuts_menu_icon_bitmaps[0].any.contains(96));
+  EXPECT_EQ(
+      SK_ColorTRANSPARENT,
+      web_app_info.shortcuts_menu_icon_bitmaps[0].any.at(96).getColor(0, 0));
+  EXPECT_EQ(
+      SK_ColorRED,
+      web_app_info.shortcuts_menu_icon_bitmaps[0].any.at(96).getColor(48, 48));
+
+  ASSERT_TRUE(web_app_info.other_icon_bitmaps.contains(kHomeTabIconUrl));
+  ASSERT_EQ(1u, web_app_info.other_icon_bitmaps[kHomeTabIconUrl].size());
+  EXPECT_EQ(96, web_app_info.other_icon_bitmaps[kHomeTabIconUrl][0].width());
+  EXPECT_EQ(96, web_app_info.other_icon_bitmaps[kHomeTabIconUrl][0].height());
+}
+
 }  // namespace web_app
