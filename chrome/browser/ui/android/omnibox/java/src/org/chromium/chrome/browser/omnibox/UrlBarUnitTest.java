@@ -2297,4 +2297,17 @@ public class UrlBarUnitTest {
 
         assertEquals(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX, mUrlBar.getTextWidth());
     }
+
+    @Test
+    public void testMultilineExit_resetsVerticalScroll() {
+        focusUrlBar();
+        mUrlBar.setAllowMultilineInput(true);
+        mUrlBar.setInputIsMultilineEligible(true);
+        assertFalse(mUrlBar.isHorizontallyScrollable());
+
+        mUrlBar.setScrollY(48);
+        mUrlBar.setAllowMultilineInput(false);
+        assertTrue(mUrlBar.isHorizontallyScrollable());
+        assertEquals(0, mUrlBar.getScrollY());
+    }
 }
