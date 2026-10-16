@@ -252,6 +252,8 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
   if (!audio_allowed && !video_allowed)
     return nullptr;
 
+  content::BrowserContext* browser_context = web_contents_->GetBrowserContext();
+
   // TODO(crbug.com/40216442): Generalize to multiple streams.
   stream_devices_set->stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());
@@ -269,8 +271,7 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
                   request_.video_type);
         devices.audio_device =
             enumerator_->GetPreferredAudioDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(),
-                request_.requested_audio_device_ids);
+                browser_context, request_.requested_audio_device_ids);
       } else if (video_allowed &&
                  request_.video_type ==
                      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
@@ -279,8 +280,7 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
         // Pepper API opens only one device at a time.
         devices.video_device =
             enumerator_->GetPreferredVideoDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(),
-                request_.requested_video_device_ids);
+                browser_context, request_.requested_video_device_ids);
       }
       break;
     }
@@ -289,14 +289,12 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
       if (audio_allowed && !request_.requested_audio_device_ids.empty()) {
         devices.audio_device =
             enumerator_->GetPreferredAudioDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(),
-                request_.requested_audio_device_ids);
+                browser_context, request_.requested_audio_device_ids);
       }
       if (video_allowed && !request_.requested_video_device_ids.empty()) {
         devices.video_device =
             enumerator_->GetPreferredVideoDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(),
-                request_.requested_video_device_ids);
+                browser_context, request_.requested_video_device_ids);
       }
 
       break;
@@ -315,7 +313,7 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
         CHECK(request_.requested_audio_device_ids.empty());
         devices.audio_device =
             enumerator_->GetPreferredAudioDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(), {});
+                browser_context, {});
       }
       // MEDIA_DEVICE_ACCESS is only used for speech recognition, so it never
       // requests video access.
