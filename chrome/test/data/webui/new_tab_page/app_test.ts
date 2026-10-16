@@ -3750,6 +3750,22 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!leftHandSide);
       assertEquals('forcedLhs', leftHandSide.id);
     });
+
+    test('shortcuts use the window width when feature disabled', async () => {
+      await setThreadsRailEnabled(false);
+
+      const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
+      assertTrue(!!mostVisited);
+      assertEquals(null, mostVisited.widthContainer);
+    });
+
+    test('shortcuts use the RHS width when feature enabled', async () => {
+      await setThreadsRailEnabled(true);
+
+      const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
+      assertTrue(!!mostVisited);
+      assertEquals($$(app, '#rhsWrapper'), mostVisited.widthContainer);
+    });
   });
 
   suite('VoiceSearchCoherence', () => {

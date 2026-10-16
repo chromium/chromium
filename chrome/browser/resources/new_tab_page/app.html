@@ -122,6 +122,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               max-most-visited-tiles-in-expanded-state="${this.maxMostVisitedTilesInExpandedState_}"
               max-enterprise-shortcuts="${this.maxEnterpriseShortcuts_}"
               ?shortcuts-reorder-enabled="${this.shortcutsReorderEnabled_}"
+              .widthContainer="${this.enableThreadsRail_ ? this.rhsWrapper_ : null}"
               @most-visited-auto-removed="${this.onMostVisitedAutoRemoved_}">
           </cr-most-visited>
         ` : ''}
