@@ -1035,11 +1035,13 @@ TEST_P(GlyphDataRangeTest, Data) {
   auto glyphs = run.FindGlyphDataRange(data.start_offset, data.end_offset);
   const GlyphDataRange::Reader reader(glyphs);
   ASSERT_EQ(glyphs.size(), reader.size());
-  const auto [range_begin, range_end] = glyphs.NonCompactGlyphPointers();
   const auto& run_glyphs = run.glyph_data_.NonCompactGlyphs();
-  wtf_size_t start_glyph = CheckedDistance(run_glyphs.data(), range_begin);
+  const base::span<const HarfBuzzRunGlyphData> range_glyphs =
+      glyphs.NonCompactGlyphs();
+  wtf_size_t start_glyph =
+      CheckedDistance(run_glyphs.data(), range_glyphs.data());
   EXPECT_EQ(data.start_glyph, start_glyph);
-  wtf_size_t end_glyph = CheckedDistance(run_glyphs.data(), range_end);
+  const auto end_glyph = start_glyph + range_glyphs.size();
   EXPECT_EQ(data.end_glyph, end_glyph);
   for (wtf_size_t i = 0; i < reader.size(); ++i) {
     const HarfBuzzRunGlyphData glyph_data = reader[i];

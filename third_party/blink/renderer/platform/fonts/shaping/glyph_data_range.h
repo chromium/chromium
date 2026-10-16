@@ -28,14 +28,7 @@ class PLATFORM_EXPORT GlyphDataRange {
   bool IsEmpty() const { return !size_; }
   const ShapeResultRun* GetRun() const { return run_.Get(); }
 
-  struct NonCompactGlyphPointerRange {
-    STACK_ALLOCATED();
-
-   public:
-    const HarfBuzzRunGlyphData* begin;
-    const HarfBuzzRunGlyphData* end;
-  };
-  NonCompactGlyphPointerRange NonCompactGlyphPointers() const;
+  base::span<const HarfBuzzRunGlyphData> NonCompactGlyphs() const;
 
   bool HasOffsets() const;
 

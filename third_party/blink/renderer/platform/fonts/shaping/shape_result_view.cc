@@ -49,20 +49,21 @@ wtf_size_t ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
     return num_glyphs ? num_glyphs - 1 : 0;
   }
   offset += offset_;
-  const auto [begin, end] = range_.NonCompactGlyphPointers();
+  const base::span<const HarfBuzzRunGlyphData> glyphs =
+      range_.NonCompactGlyphs();
   const auto is_safe = [offset](const HarfBuzzRunGlyphData& glyph) {
     return glyph.IsSafeToBreakBefore() && glyph.character_index <= offset;
   };
   if (GetRunInfo()->IsLtr()) {
-    const auto rbegin = std::make_reverse_iterator(end);
-    const auto rend = std::make_reverse_iterator(begin);
+    const auto rbegin = glyphs.rbegin();
+    const auto rend = glyphs.rend();
     const auto glyph = std::find_if(rbegin, rend, is_safe);
     if (glyph != rend) {
       return glyph->character_index - offset_;
     }
   } else {
-    const auto* const glyph = std::find_if(begin, end, is_safe);
-    if (glyph != end) {
+    const auto glyph = std::find_if(glyphs.begin(), glyphs.end(), is_safe);
+    if (glyph != glyphs.end()) {
       return glyph->character_index - offset_;
     }
   }
@@ -277,9 +278,10 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
                 int64_t{range.CompactSourceAdvance().RawValue()} * range.size())
                 .ToFloat();
       } else {
-        const auto [begin, end] = range.NonCompactGlyphPointers();
+        const base::span<const HarfBuzzRunGlyphData> glyphs =
+            range.NonCompactGlyphs();
         part_width = std::accumulate(
-            begin, end, InlineLayoutUnit(),
+            glyphs.begin(), glyphs.end(), InlineLayoutUnit(),
             [](InlineLayoutUnit sum, const auto& glyph) {
               return sum + glyph.advance.template To<InlineLayoutUnit>();
             });

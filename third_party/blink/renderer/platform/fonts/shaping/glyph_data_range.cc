@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 
-#include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -13,16 +12,14 @@ namespace blink {
 GlyphDataRange::GlyphDataRange(const ShapeResultRun& run)
     : run_(&run), size_(run.glyph_data_.size()) {}
 
-GlyphDataRange::NonCompactGlyphPointerRange
-GlyphDataRange::NonCompactGlyphPointers() const {
+base::span<const HarfBuzzRunGlyphData> GlyphDataRange::NonCompactGlyphs()
+    const {
   if (!run_) {
     return {};
   }
-  const base::span<const HarfBuzzRunGlyphData> glyphs =
-      base::span<const HarfBuzzRunGlyphData>(
-          run_->glyph_data_.NonCompactGlyphs())
-          .subspan(index_, size_);
-  return {glyphs.data(), base::to_address(glyphs.end())};
+  return base::span<const HarfBuzzRunGlyphData>(
+             run_->glyph_data_.NonCompactGlyphs())
+      .subspan(index_, size_);
 }
 
 bool GlyphDataRange::HasOffsets() const {
@@ -94,7 +91,9 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
                            wtf_size_t index) {
     return glyph_data.character_index < index;
   };
-  const auto [range_begin, range_end] = NonCompactGlyphPointers();
+  const base::span<const HarfBuzzRunGlyphData> glyphs = NonCompactGlyphs();
+  const auto range_begin = glyphs.begin();
+  const auto range_end = glyphs.end();
   if (!is_rtl) {
     const auto start_glyph = std::lower_bound(range_begin, range_end,
                                               start_character_index, comparer);
