@@ -14,8 +14,8 @@ namespace net {
 
 // Implementation of ProxyResolverFactory that uses the Apple CFProxySupport to
 // implement proxies.
-// TODO(kapishnikov): make ProxyResolverApple async as per
-// https://bugs.chromium.org/p/chromium/issues/detail?id=166387#c95
+// TODO(crbug.com/570599719): Remove legacy synchronous path once
+// `features::kAsyncProxyResolverApple` is launched.
 class NET_EXPORT ProxyResolverFactoryApple : public ProxyResolverFactory {
  public:
   ProxyResolverFactoryApple();

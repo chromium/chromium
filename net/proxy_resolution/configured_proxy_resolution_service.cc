@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_info_source_list.h"
 #include "net/base/network_anonymization_key.h"
@@ -269,6 +270,17 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
 #endif
   }
 };
+
+std::unique_ptr<ProxyResolverFactory> CreateSystemProxyResolverFactory() {
+#if BUILDFLAG(IS_APPLE)
+  // `ProxyResolverApple` is asynchronous and cancellable under this feature, so
+  // it does not need `MultiThreadedProxyResolver`.
+  if (base::FeatureList::IsEnabled(features::kAsyncProxyResolverApple)) {
+    return std::make_unique<ProxyResolverFactoryApple>();
+  }
+#endif
+  return std::make_unique<ProxyResolverFactoryForSystem>(kDefaultNumPacThreads);
+}
 
 class ProxyResolverFactoryForNullResolver : public ProxyResolverFactory {
  public:
@@ -826,8 +838,7 @@ ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
   }
 
   return std::make_unique<ConfiguredProxyResolutionService>(
-      std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForSystem>(kDefaultNumPacThreads),
+      std::move(proxy_config_service), CreateSystemProxyResolverFactory(),
       host_resolver_for_override_rules, net_log, quick_check_enabled,
       /*enable_pac_runtime_backoff=*/true);
 }

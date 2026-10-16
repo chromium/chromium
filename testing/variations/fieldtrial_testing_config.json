@@ -1372,6 +1372,22 @@
             ]
         }
     ],
+    "AsyncProxyResolverApple": [
+        {
+            "platforms": [
+                "ios",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AsyncProxyResolverApple"
+                    ]
+                }
+            ]
+        }
+    ],
     "AsyncThreadPoolInit": [
         {
             "platforms": [

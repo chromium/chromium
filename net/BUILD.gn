@@ -3345,6 +3345,7 @@ target(_test_target_type, "net_unittests") {
     sources += [
       "cert/x509_util_apple_unittest.cc",
       "proxy_resolution/proxy_chain_util_apple_unittest.cc",
+      "proxy_resolution/proxy_resolver_apple_unittest.cc",
     ]
   }
 
