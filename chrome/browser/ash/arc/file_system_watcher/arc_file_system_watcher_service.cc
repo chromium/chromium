@@ -398,7 +398,9 @@ void ArcFileSystemWatcherService::StopWatchingFileSystem() {
 
 void ArcFileSystemWatcherService::OnMyFilesWatcherStarted() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(myfiles_watcher_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/573397873): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(myfiles_watcher_);
   watching_file_system_changes_ = true;
   TriggerSendAllMountEvents();
 }
