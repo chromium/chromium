@@ -13,8 +13,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {ACMatchClassification} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
-import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import type {FormattedString, FormattedStringFragment} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ColorType, SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
@@ -23,20 +23,6 @@ import {getHtml} from './searchbox_match.html.js';
 import {mojoTimeTicks} from './utils.js';
 
 
-
-// clang-format off
-/**
- * Bitmap used to decode the value of ACMatchClassification style
- * field.
- * See components/omnibox/browser/autocomplete_match.h.
- */
-enum AcMatchClassificationStyle {
-  NONE = 0,
-  URL =   1 << 0,  // A URL.
-  MATCH = 1 << 1,  // A match for the user's search term.
-  DIM =   1 << 2,  // A "helper text".
-}
-// clang-format on
 
 const ENTITY_MATCH_TYPE: string = 'search-suggest-entity';
 
@@ -392,9 +378,9 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   /**
-   * Sanitizes .innerHTML from `renderTextWithClassifications_()` through
+   * Sanitizes .innerHTML from `renderFormattedString_()` through
    * `sanitizeInnerHtml` to ensure it only contains allowed tags.
-   * @param innerHtml The .innerHTML from `renderTextWithClassifications_()`
+   * @param innerHtml The .innerHTML from `renderFormattedString_()`
    * @return Sanitized TrustedHTML safe for rendering
    */
   private sanitizeInnerHtml_(innerHtml: string): TrustedHTML {
@@ -412,9 +398,7 @@ export class SearchboxMatchElement extends CrLitElement {
     }
     // See //components/omnibox/browser/suggest_template_info_mojo_utils.cc
     return this.sanitizeInnerHtml_(
-        this.renderTextWithClassifications_(
-                this.getMatchPrimaryText_(),
-                this.getMatchPrimaryTextClassifications_())
+        this.renderFormattedString_(this.match.suggestTemplate.primaryText)
             .innerHTML);
   }
 
@@ -423,9 +407,7 @@ export class SearchboxMatchElement extends CrLitElement {
       return window.trustedTypes!.emptyHTML;
     }
     return this.sanitizeInnerHtml_(
-        this.renderTextWithClassifications_(
-                this.getMatchSecondaryText_(),
-                this.getMatchSecondaryTextClassifications_())
+        this.renderFormattedString_(this.match.suggestTemplate.secondaryText)
             .innerHTML);
   }
 
@@ -497,19 +479,18 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   /**
-   * Decodes the AcMatchClassificationStyle entries encoded in the given
-   * ACMatchClassification style field, maps each entry to a CSS
-   * class and returns them.
+   * Maps the color and weight of a FormattedString fragment to CSS classes.
+   * Colors without a CSS class yet are rendered with the default color.
    */
-  private convertClassificationStyleToCssClasses_(style: number): string[] {
+  private getFragmentCssClasses_(fragment: FormattedStringFragment): string[] {
     const classes = [];
-    if (style & AcMatchClassificationStyle.DIM) {
+    if (fragment.color === ColorType.kOnSurfaceDeemphasis) {
       classes.push('dim');
     }
-    if (style & AcMatchClassificationStyle.MATCH) {
+    if (fragment.isBolded) {
       classes.push('match');
     }
-    if (style & AcMatchClassificationStyle.URL) {
+    if (fragment.color === ColorType.kPrimary) {
       classes.push('url');
     }
     return classes;
@@ -525,59 +506,43 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   /**
-   * Renders |text| based on the given ACMatchClassification(s)
-   * Each classification contains an 'offset' and an encoded list of styles for
-   * styling a substring starting with the 'offset' and ending with the next.
+   * Renders the text of `formattedString` based on its fragments. Each
+   * fragment styles the text from its `startIndex` up to the next fragment's
+   * `startIndex`, or to the end of the text for the last one.
    * @return A <span> with <span> children for each styled substring.
    */
-  private renderTextWithClassifications_(
-      text: string, classifications: ACMatchClassification[]): Element {
+  private renderFormattedString_(formattedString: FormattedString): Element {
+    const {text, fragments} = formattedString;
     const container = document.createElement('span');
 
-    // If no classifications are provided, render the entire text unstyled.
-    if (classifications.length === 0) {
+    // If no fragments are provided, render the entire text unstyled.
+    if (fragments.length === 0) {
       container.appendChild(this.createSpanWithClasses_(text, []));
       return container;
     }
 
-    // If the first classification doesn't start at 0, render the prefix text
-    // unstyled. `AutocompleteMatch::ValidateClassifications()` guarantees the
-    // first offset is 0, however this is only validated in debug builds.
-    const firstClassification = classifications[0]!;
-    if (firstClassification.offset > 0) {
-      const prefix = text.substring(0, firstClassification.offset);
+    // If the first fragment doesn't start at 0, render the prefix text
+    // unstyled.
+    const firstFragment = fragments[0]!;
+    if (firstFragment.startIndex > 0) {
+      const prefix = text.substring(0, firstFragment.startIndex);
       container.appendChild(this.createSpanWithClasses_(prefix, []));
     }
 
-    classifications.map(({offset, style}, index) => {
-      // Each classification defines a region from its offset to the next
-      // classification's offset or end of string for the last one. This covers
-      // the entire string with no gaps.
-      const nextOffset = index + 1 < classifications.length ?
-          classifications[index + 1]!.offset :
+    fragments.forEach((fragment, index) => {
+      const nextStartIndex = index + 1 < fragments.length ?
+          fragments[index + 1]!.startIndex :
           text.length;
-      const subString = text.substring(offset, nextOffset);
-      const classes = this.convertClassificationStyleToCssClasses_(style);
+      const subString = text.substring(fragment.startIndex, nextStartIndex);
+      const classes = this.getFragmentCssClasses_(fragment);
       container.appendChild(this.createSpanWithClasses_(subString, classes));
     });
 
     return container;
   }
 
-  private getMatchPrimaryText_(): string {
-    return this.match ? this.match.suggestTemplate.primaryText.text : '';
-  }
-
   private getMatchSecondaryText_(): string {
     return this.match ? this.match.suggestTemplate.secondaryText.text : '';
-  }
-
-  private getMatchPrimaryTextClassifications_(): ACMatchClassification[] {
-    return this.match ? this.match.suggestTemplate.primaryTextClass : [];
-  }
-
-  private getMatchSecondaryTextClassifications_(): ACMatchClassification[] {
-    return this.match ? this.match.suggestTemplate.secondaryTextClass : [];
   }
 
   protected getFocusIndicatorCssClass_(): string {

@@ -5,7 +5,8 @@
 import {createAutocompleteMatch, createFormattedString, createSuggestTemplateInfo as createSuggestTemplateInfoBase} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from '//resources/cr_components/searchbox/searchbox_icon.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {FormattedString, SuggestTemplateInfo} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ColorType} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import type {FormattedString, FormattedStringFragment, SuggestTemplateInfo} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ToolMode as ComposeboxToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals} from '//webui-test/chai_assert.js';
@@ -151,6 +152,16 @@ function toFormattedString(text: string|FormattedString): FormattedString {
   return typeof text === 'string' ? createFormattedString(text) : text;
 }
 
+export function createFormattedStringFragment(
+    modifiers: Partial<FormattedStringFragment> = {}): FormattedStringFragment {
+  return {
+    startIndex: 0,
+    color: ColorType.kUnknown,
+    isBolded: false,
+    ...modifiers,
+  };
+}
+
 export function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
     AutocompleteMatch {
   return createAutocompleteMatch({
@@ -158,8 +169,9 @@ export function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
     fillIntoEdit: 'https://helloworld.com',
     type: 'url-what-you-typed',
     suggestTemplate: createSuggestTemplateInfo({
-      primaryText: 'helloworld.com',
-      primaryTextClass: [{offset: 0, style: 1}],
+      primaryText: createFormattedString(
+          'helloworld.com',
+          [createFormattedStringFragment({color: ColorType.kPrimary})]),
     }),
     ...modifiers,
   });
