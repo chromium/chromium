@@ -424,7 +424,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_deps_autorolled_version
   # and whatever else without interference from each other.
-  'android_deps_autorolled_version': 'UkAX0LKyvE-1pW746OVRZZaeey5A6fVDU3Z9fum8tU4C',
+  'android_deps_autorolled_version': 'splGSLyr2cWOcRWEq4dfmsuSRa8o5nZtt7NF1D72_L8C',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_emulator_version
   # and whatever else without interference from each other.
