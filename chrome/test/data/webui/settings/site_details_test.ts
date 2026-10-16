@@ -235,6 +235,7 @@ suite('SiteDetails', function() {
         ]);
 
     browserProxy = new TestSiteSettingsBrowserProxy();
+    browserProxy.setPrefs(prefs);
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -252,7 +253,6 @@ suite('SiteDetails', function() {
   }
 
   test('usage heading shows properly', async function() {
-    browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
     await websiteUsageProxy.whenCalled('fetchUsageTotal');
 
@@ -276,7 +276,6 @@ suite('SiteDetails', function() {
 
   test('storage gets trashed properly', async function() {
     const origin = 'https://foo.com:443';
-    browserProxy.setPrefs(prefs);
     testElement = createSiteDetails(origin);
 
     flush();
@@ -306,7 +305,6 @@ suite('SiteDetails', function() {
 
   test('cookies gets deleted properly', async function() {
     const origin = 'https://foo.com:443';
-    browserProxy.setPrefs(prefs);
     testElement = createSiteDetails(origin);
 
     const results = await Promise.all([
@@ -340,7 +338,6 @@ suite('SiteDetails', function() {
   });
 
   test('correct pref settings are shown', async function() {
-    browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
 
     await browserProxy.whenCalled('isOriginValid');
@@ -426,7 +423,6 @@ suite('SiteDetails', function() {
       });
 
   test('categories can be hidden', async function() {
-    browserProxy.setPrefs(prefs);
     // Only the categories in this list should be visible to the user.
     browserProxy.setCategoryList(
         [ContentSettingsTypes.NOTIFICATIONS, ContentSettingsTypes.GEOLOCATION]);
@@ -447,7 +443,6 @@ suite('SiteDetails', function() {
   });
 
   test('show confirmation dialog on reset settings', async function() {
-    browserProxy.setPrefs(prefs);
     const origin = 'https://foo.com:443';
     testElement = createSiteDetails(origin);
     flush();
@@ -473,7 +468,6 @@ suite('SiteDetails', function() {
   });
 
   test('show confirmation dialog on clear storage', function() {
-    browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
     flush();
 
@@ -492,7 +486,6 @@ suite('SiteDetails', function() {
   });
 
   test('permissions update dynamically', async function() {
-    browserProxy.setPrefs(prefs);
     const origin = 'https://foo.com:443';
     testElement = createSiteDetails(origin);
 
@@ -555,7 +548,6 @@ suite('SiteDetails', function() {
 
   test('call fetch block autoplay status', async function() {
     const origin = 'https://foo.com:443';
-    browserProxy.setPrefs(prefs);
     testElement = createSiteDetails(origin);
     await browserProxy.whenCalled('fetchBlockAutoplayStatus');
   });
@@ -564,7 +556,6 @@ suite('SiteDetails', function() {
       'check related website set membership label empty string',
       async function() {
         const origin = 'https://foo.com:443';
-        browserProxy.setPrefs(prefs);
         testElement = createSiteDetails(origin);
 
         const results = await Promise.all([
@@ -583,7 +574,6 @@ suite('SiteDetails', function() {
       'check related website set membership label populated string',
       async function() {
         const origin = 'https://foo.com:443';
-        browserProxy.setPrefs(prefs);
         testElement = createSiteDetails(origin);
 
         const results = await Promise.all([
@@ -610,7 +600,6 @@ suite('SiteDetails', function() {
       'related website set policy shown when managed key is set to true',
       async function() {
         const origin = 'https://foo.com:443';
-        browserProxy.setPrefs(prefs);
         testElement = createSiteDetails(origin);
 
         const results = await Promise.all([
@@ -637,7 +626,6 @@ suite('SiteDetails', function() {
       'clear data dialog warns about ad personalization data removal',
       function() {
         const origin = 'https://foo.com:443';
-        browserProxy.setPrefs(prefs);
         testElement = createSiteDetails(origin);
 
         flush();
@@ -678,7 +666,6 @@ suite('SiteDetails', function() {
       prefs.exceptions[category].push(createRawSiteException(isolatedAppOrigin));
     });
 
-    browserProxy.setPrefs(prefs);
     browserProxy.setSubAppsPermissionExplanation({
       isSubApp: true,
       hasSubApps: false,
@@ -751,7 +738,6 @@ suite('SiteDetails', function() {
       prefs.exceptions[category].push(createRawSiteException(parentAppOrigin));
     });
 
-    browserProxy.setPrefs(prefs);
     browserProxy.setSubAppsPermissionExplanation({
       isSubApp: true,
       hasSubApps: false,
