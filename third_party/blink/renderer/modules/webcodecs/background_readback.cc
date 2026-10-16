@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_converter_internals.h"
 #include "media/base/video_frame_pool.h"
@@ -76,6 +77,21 @@ bool CanUseYuvReadback(const media::VideoFrame& frame,
       visible_rect.width() % 2 != 0 || visible_rect.height() % 2 != 0) {
     return false;
   }
+  // On Skia Ganesh, multiplanar SharedImages without external sampling are
+  // wrapped as SkImage_GaneshYUVA, which does not implement
+  // onAsyncRescaleAndReadPixelsYUV420 and always fails with
+  // GL_INVALID_OPERATION.
+  if (frame.shared_image()->format().is_multi_plane() &&
+      !PrefersExternalSampler(frame)) {
+    auto wrapper = blink::SharedGpuContext::ContextProviderWrapper();
+    if (!wrapper ||
+        wrapper->ContextProvider()
+                .GetGpuFeatureInfo()
+                .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
+            gpu::kGpuFeatureStatusEnabled) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -93,6 +109,15 @@ gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
     return wrapper->ContextProvider().RasterInterface();
   }
   return nullptr;
+}
+
+void ClearGLError() {
+  auto wrapper = blink::SharedGpuContext::GetExistingContextProviderWrapper();
+  if (wrapper && !wrapper->ContextProvider().IsContextLost()) {
+    if (auto* ri = wrapper->ContextProvider().RasterInterface()) {
+      ri->GetError();
+    }
+  }
 }
 
 bool ReadbackTextureBackedFrameSyncImpl(media::VideoFrame& src_frame,
@@ -321,6 +346,7 @@ void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
                                                     txt_frame.get()),
                   "success", success);
   if (!success) {
+    ClearGLError();
     ReadbackOnThread(std::move(txt_frame), std::move(result_cb));
     return;
   }
@@ -406,6 +432,7 @@ void BackgroundReadback::OnARGBPixelsReadCompleted(
                                                     txt_frame.get()),
                   "success", success);
   if (!success) {
+    ClearGLError();
     ReadbackOnThread(std::move(txt_frame), std::move(dest_frame),
                      std::move(done_cb));
     return;
@@ -487,6 +514,7 @@ void BackgroundReadback::OnYUVReadCompleted(
                                                     txt_frame.get()),
                   "success", success);
   if (!success) {
+    ClearGLError();
     ReadbackOnThread(std::move(txt_frame), std::move(dest_frame),
                      std::move(done_cb));
     return;
