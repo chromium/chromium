@@ -63,7 +63,7 @@ void SubframeTask::Activate() {
 }
 
 std::u16string SubframeTask::GetTitle() {
-  DCHECK(site_instance_);
+  CHECK(site_instance_, base::NotFatalUntil::M162);
 
   // Subframe rows display the UrlIdentity of the SiteInstance URL.
   //

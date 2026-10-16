@@ -108,14 +108,15 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
         }
         break;
       case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
-        DCHECK(content_settings_type == ContentSettingsType::MEDIASTREAM_MIC);
+        CHECK(content_settings_type == ContentSettingsType::MEDIASTREAM_MIC,
+              base::NotFatalUntil::M162);
         return std::make_tuple(
             IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       case IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT:
-        DCHECK(content_settings_type ==
-               ContentSettingsType::MEDIASTREAM_CAMERA);
+        CHECK(content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA,
+              base::NotFatalUntil::M162);
         return std::make_tuple(
             IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,

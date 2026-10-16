@@ -170,7 +170,8 @@ class PlatformHandleImpl : public PlatformHandle {
         return;
       }
       case ContentSettingsType::GEOLOCATION: {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+        CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                           base::NotFatalUntil::M162);
         geolocation_callbacks_.push_back(std::move(callback));
         // The system permission prompt is modal and requires a user decision
         // (Allow or Deny) before it can be dismissed.

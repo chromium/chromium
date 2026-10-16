@@ -30,7 +30,7 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
     base::OnceCallback<void(PermissionUpdateMessageDelegate*)> delete_callback_)
     : content_settings_types_(content_settings_types),
       delete_callback_(std::move(delete_callback_)) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
   callbacks_.push_back(std::move(callback));
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::PERMISSION_UPDATE,

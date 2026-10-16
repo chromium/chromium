@@ -58,7 +58,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   }
 
   void CheckOrigin(const url::Origin& origin) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
     // Start the timer before the call to CheckNotificationAbuseUrl(), as it may
     // call back into OnCheckNotificationAbuseUrlResult() synchronously.
@@ -131,6 +131,6 @@ void CrowdDenySafeBrowsingRequest::OnReceivedResult(Verdict verdict) {
   base::UmaHistogramEnumeration("Permissions.CrowdDeny.SafeBrowsing.Verdict",
                                 verdict);
 
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
   std::move(callback_).Run(verdict);
 }

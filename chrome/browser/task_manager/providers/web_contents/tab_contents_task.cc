@@ -19,7 +19,7 @@ namespace task_manager {
 namespace {
 
 bool HostsExtension(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else   // BUILDFLAG(IS_ANDROID)

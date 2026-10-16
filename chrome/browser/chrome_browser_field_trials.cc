@@ -68,7 +68,7 @@
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
     : local_state_(local_state) {
-  DCHECK(local_state_);
+  CHECK(local_state_, base::NotFatalUntil::M162);
 }
 
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() = default;

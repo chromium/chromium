@@ -180,7 +180,7 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
   std::vector<float> averaged_data(embeddings[0].GetData().size(), 0.0f);
   for (const auto& embedding : embeddings) {
     const auto& data = embedding.GetData();
-    DCHECK_EQ(data.size(), averaged_data.size());
+    CHECK_EQ(data.size(), averaged_data.size(), base::NotFatalUntil::M162);
     for (size_t i = 0; i < averaged_data.size(); ++i) {
       averaged_data[i] += data[i];
     }

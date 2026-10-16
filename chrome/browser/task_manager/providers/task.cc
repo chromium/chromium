@@ -51,7 +51,7 @@ Task::~Task() = default;
 
 // static
 std::u16string Task::GetProfileNameFromProfile(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -74,7 +74,7 @@ bool Task::IsKillable() {
 bool Task::Kill() {
   if (!IsKillable())
     return false;
-  DCHECK_NE(process_id(), base::GetCurrentProcId());
+  CHECK_NE(process_id(), base::GetCurrentProcId(), base::NotFatalUntil::M162);
   base::Process process = base::Process::Open(process_id());
   return process.Terminate(content::RESULT_CODE_KILLED, false);
 }
@@ -131,8 +131,8 @@ Task::SubType Task::GetSubType() const {
 
 void Task::GetTerminationStatus(base::TerminationStatus* out_status,
                                 int* out_error_code) const {
-  DCHECK(out_status);
-  DCHECK(out_error_code);
+  CHECK(out_status, base::NotFatalUntil::M162);
+  CHECK(out_error_code, base::NotFatalUntil::M162);
 
   *out_status = base::TERMINATION_STATUS_STILL_RUNNING;
   *out_error_code = 0;

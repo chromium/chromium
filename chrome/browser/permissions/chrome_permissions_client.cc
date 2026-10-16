@@ -198,10 +198,10 @@ std::optional<url::Origin> GetCurrentKioskOrigin() {
     const AccountId& account_id =
         CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
             .account_id();
-    DCHECK(ash::KioskWebAppManager::IsInitialized());
+    CHECK(ash::KioskWebAppManager::IsInitialized(), base::NotFatalUntil::M162);
     const ash::KioskWebAppData* app_data =
         ash::KioskWebAppManager::Get()->GetAppByAccountId(account_id);
-    DCHECK(app_data);
+    CHECK(app_data, base::NotFatalUntil::M162);
     return url::Origin::Create(app_data->install_url());
   }
 

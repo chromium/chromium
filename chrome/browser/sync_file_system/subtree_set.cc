@@ -58,8 +58,9 @@ bool SubtreeSet::insert(const base::FilePath& subtree_root) {
   base::FilePath path(normalized_subtree_root);
   while (!storage::VirtualPath::IsRootPath(path)) {
     path = storage::VirtualPath::DirName(path);
-    DCHECK(!inclusive_ancestors_of_subtree_roots_[path.value()]
-                .contained_as_subtree_root);
+    CHECK(!inclusive_ancestors_of_subtree_roots_[path.value()]
+               .contained_as_subtree_root,
+          base::NotFatalUntil::M162);
     ++(inclusive_ancestors_of_subtree_roots_[path.value()]
            .number_of_subtrees_below);
   }
@@ -78,7 +79,8 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
         !found->second.contained_as_subtree_root)
       return false;
 
-    DCHECK_EQ(1u, found->second.number_of_subtrees_below);
+    CHECK_EQ(1u, found->second.number_of_subtrees_below,
+             base::NotFatalUntil::M162);
     inclusive_ancestors_of_subtree_roots_.erase(found);
   }
 
@@ -91,7 +93,7 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
       NOTREACHED();
     }
 
-    DCHECK(!found->second.contained_as_subtree_root);
+    CHECK(!found->second.contained_as_subtree_root, base::NotFatalUntil::M162);
     if (!--(found->second.number_of_subtrees_below))
       inclusive_ancestors_of_subtree_roots_.erase(found);
   }

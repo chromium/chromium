@@ -39,7 +39,7 @@ bool TaskManagerInterface::IsEndProcessEnabled() {
 
 // static
 TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   return TaskManagerImpl::GetInstance();
 }

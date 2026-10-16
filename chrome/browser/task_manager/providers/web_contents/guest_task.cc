@@ -32,7 +32,7 @@ Task::Type GuestTask::GetType() const {
 
 std::u16string GuestTask::GetCurrentTitle(
     content::WebContents* web_contents) const {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   auto* guest = guest_view::GuestViewBase::FromWebContents(web_contents);
   if (!guest) {

@@ -45,7 +45,7 @@ BackgroundContentsTag::BackgroundContentsTag(
     BackgroundContents* background_contents)
     : WebContentsTag(web_contents),
       background_contents_(background_contents) {
-  DCHECK(background_contents);
+  CHECK(background_contents, base::NotFatalUntil::M162);
 }
 
 BackgroundContentsTag::~BackgroundContentsTag() = default;

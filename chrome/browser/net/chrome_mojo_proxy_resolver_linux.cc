@@ -110,7 +110,7 @@ void RunCallback(
 ChromeMojoProxyResolverLinux::ChromeMojoProxyResolverLinux(
     scoped_refptr<dbus::Bus> bus)
     : bus_(std::move(bus)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(bus_);
 }
 
@@ -161,7 +161,8 @@ void ChromeMojoProxyResolverLinux::GetProxyForUrl(
 void ChromeMojoProxyResolverLinux::OnRequestXdgDesktopPortalComplete(
     uint32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(portal_state_, PortalState::kInitializing);
+  CHECK_EQ(portal_state_, PortalState::kInitializing,
+           base::NotFatalUntil::M162);
 
   if (version == 0) {
     VLOG(1) << kProxyResolverInterface
@@ -185,7 +186,7 @@ void ChromeMojoProxyResolverLinux::OnRequestXdgDesktopPortalComplete(
 void ChromeMojoProxyResolverLinux::Lookup(const GURL& url,
                                           GetProxyForUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(portal_proxy_);
+  CHECK(portal_proxy_, base::NotFatalUntil::M162);
   dbus_utils::CallMethod<"s", "as">(
       portal_proxy_, kProxyResolverInterface, kLookupMethod,
       base::BindOnce(&ChromeMojoProxyResolverLinux::OnLookupResponse,

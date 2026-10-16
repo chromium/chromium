@@ -17,7 +17,7 @@ WebContentsTagsManager* WebContentsTagsManager::GetInstance() {
 }
 
 void WebContentsTagsManager::AddTag(WebContentsTag* tag) {
-  DCHECK(tag);
+  CHECK(tag, base::NotFatalUntil::M162);
   tracked_tags_.push_back(tag);
 
   if (provider_)
@@ -25,7 +25,7 @@ void WebContentsTagsManager::AddTag(WebContentsTag* tag) {
 }
 
 void WebContentsTagsManager::RemoveTag(WebContentsTag* tag) {
-  DCHECK(tag);
+  CHECK(tag, base::NotFatalUntil::M162);
   tracked_tags_.erase(std::ranges::find(tracked_tags_, tag));
 
   // No need to inform the provider here. The provider will create an entry
@@ -39,13 +39,13 @@ void WebContentsTagsManager::RemoveTag(WebContentsTag* tag) {
 }
 
 void WebContentsTagsManager::SetProvider(WebContentsTaskProvider* provider) {
-  DCHECK(provider);
-  DCHECK(!provider_);
+  CHECK(provider, base::NotFatalUntil::M162);
+  CHECK(!provider_, base::NotFatalUntil::M162);
   provider_ = provider;
 }
 
 void WebContentsTagsManager::ClearProvider() {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
   provider_ = nullptr;
 }
 

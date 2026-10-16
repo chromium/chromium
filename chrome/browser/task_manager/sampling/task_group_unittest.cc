@@ -113,8 +113,12 @@ TEST_F(TaskGroupTest, RefreshZeroTasksDeathTest) {
   // Remove the fake Task from the group.
   task_group_->RemoveTask(fake_task_.get());
 
-  EXPECT_DCHECK_DEATH(
-      task_group_->Refresh(gpu::VideoMemoryUsageStats(), base::TimeDelta(), 0));
+  // TODO(crbug.com/555029697): TaskGroup::Refresh() validates `!empty()` with
+  // CHECK(..., base::NotFatalUntil::M162), which is not fatal in official
+  // non-DCHECK builds, so use EXPECT_DCHECK_DEATH_WITH until M162.
+  EXPECT_DCHECK_DEATH_WITH(
+      task_group_->Refresh(gpu::VideoMemoryUsageStats(), base::TimeDelta(), 0),
+      "Check failed");
 }
 
 // Verify that Refresh() for a field which can be refreshed synchronously

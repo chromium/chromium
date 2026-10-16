@@ -13,7 +13,7 @@
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_GroupSuggestionsServiceFactory_GetForProfile(JNIEnv* env,
                                                  Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   visited_url_ranking::GroupSuggestionsService* service =
       visited_url_ranking::GroupSuggestionsServiceFactory::GetForProfile(
           profile);

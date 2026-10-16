@@ -121,8 +121,9 @@ void ProxyConfigMonitor::AddToNetworkContextParams(
 }
 
 std::optional<bool> ProxyConfigMonitor::IsProxyConfigured() const {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M162);
   net::ProxyConfigWithAnnotation proxy_config;
   net::ProxyConfigService::ConfigAvailability availability =
       proxy_config_service_->GetLatestProxyConfig(&proxy_config);

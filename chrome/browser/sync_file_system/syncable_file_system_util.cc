@@ -87,7 +87,8 @@ bool SerializeSyncableFileSystemURL(const FileSystemURL& url,
 bool DeserializeSyncableFileSystemURL(const std::string& serialized_url,
                                       FileSystemURL* url) {
 #if !defined(FILE_PATH_USES_WIN_SEPARATORS)
-  DCHECK(serialized_url.find('\\') == std::string::npos);
+  CHECK(serialized_url.find('\\') == std::string::npos,
+        base::NotFatalUntil::M162);
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
 
   const GURL gurl(serialized_url);

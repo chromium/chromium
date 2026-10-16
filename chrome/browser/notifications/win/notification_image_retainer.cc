@@ -37,7 +37,7 @@ constexpr base::TimeDelta kDeletionDelay = base::Seconds(12);
 base::FilePath DetermineImageDirectory() {
   base::FilePath data_dir;
   bool success = base::PathService::Get(chrome::DIR_USER_DATA, &data_dir);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   return data_dir.Append(kImageRoot);
 }
 
@@ -82,8 +82,8 @@ NotificationImageRetainer::NotificationImageRetainer(
       image_dir_(DetermineImageDirectory()),
       tick_clock_(tick_clock),
       deletion_timer_(tick_clock) {
-  DCHECK(deletion_task_runner_);
-  DCHECK(tick_clock);
+  CHECK(deletion_task_runner_, base::NotFatalUntil::M162);
+  CHECK(tick_clock, base::NotFatalUntil::M162);
 
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -142,7 +142,8 @@ base::FilePath NotificationImageRetainer::RegisterTemporaryImage(
   }
 
   const base::TimeTicks now = tick_clock_->NowTicks();
-  DCHECK(registered_images_.empty() || now >= registered_images_.back().second);
+  CHECK(registered_images_.empty() || now >= registered_images_.back().second,
+        base::NotFatalUntil::M162);
   registered_images_.emplace_back(temp_file.BaseName(), now);
 
   // At this point, a temp file is already created. We need to clean it up even
@@ -170,7 +171,7 @@ base::OnceClosure NotificationImageRetainer::GetCleanupTask() {
 
 void NotificationImageRetainer::DeleteExpiredFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!registered_images_.empty());
+  CHECK(!registered_images_.empty(), base::NotFatalUntil::M162);
 
   // Find the first file that should not be deleted.
   const base::TimeTicks then = tick_clock_->NowTicks() - kDeletionDelay;

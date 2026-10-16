@@ -12,13 +12,13 @@ namespace task_manager {
 // static
 const WebContentsTag* WebContentsTag::FromWebContents(
     const content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
   return static_cast<const WebContentsTag*>(contents->GetUserData(kTagKey));
 }
 
 WebContentsTag::WebContentsTag(content::WebContents* contents)
     : web_contents_(contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
   // You can't tag the |contents| here. The object creation is not complete yet.
   // This will be done in the factory methods inside
   // |task_manager::WebContentsTags|.

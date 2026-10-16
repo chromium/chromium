@@ -59,17 +59,17 @@ TaskGroupSampler::TaskGroupSampler(
       on_open_fd_count_callback_(on_open_fd_count),
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
       on_process_priority_callback_(on_process_priority) {
-  DCHECK(blocking_pool_runner.get());
+  CHECK(blocking_pool_runner.get(), base::NotFatalUntil::M162);
 
   // This object will be created on the UI thread, however the sequenced checker
   // will be used to assert we're running the expensive operations on one of the
   // blocking pool threads.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DETACH_FROM_SEQUENCE(worker_pool_sequenced_checker_);
 }
 
 void TaskGroupSampler::Refresh(int64_t refresh_flags) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_CPU,
                                                     refresh_flags)) {

@@ -35,7 +35,7 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions = {};
 // when title is empty.
 std::u16string GetTitleOrAppNameFromWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   std::u16string title = web_contents->GetTitle();
   // Empty title falls back to navigation URL.
   if (base::StartsWith(title, webapps::kIsolatedAppSchemeUtf16,

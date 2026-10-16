@@ -23,9 +23,10 @@ PrerenderTask::PrerenderTask(content::RenderFrameHost* render_frame_host,
           /*subframe=*/render_frame_host),
       render_frame_host_(render_frame_host),
       task_provider_(task_provider) {
-  DCHECK(render_frame_host_);
-  DCHECK_EQ(render_frame_host->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kPrerendering);
+  CHECK(render_frame_host_, base::NotFatalUntil::M162);
+  CHECK_EQ(render_frame_host->GetLifecycleState(),
+           content::RenderFrameHost::LifecycleState::kPrerendering,
+           base::NotFatalUntil::M162);
   set_title(GetTitle());
 }
 

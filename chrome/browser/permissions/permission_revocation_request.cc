@@ -180,8 +180,8 @@ bool PermissionRevocationRequest::HasPreviouslyRevokedPermission(
 }
 
 void PermissionRevocationRequest::CheckAndRevokeIfBlocklisted() {
-  DCHECK(profile_);
-  DCHECK(callback_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(callback_, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) ||
@@ -228,7 +228,8 @@ void PermissionRevocationRequest::OnSiteReputationReady(
       default:
         should_revoke_permission = false;
     }
-    DCHECK(g_browser_process->safe_browsing_service());
+    CHECK(g_browser_process->safe_browsing_service(),
+          base::NotFatalUntil::M162);
     if (should_revoke_permission &&
         g_browser_process->safe_browsing_service()) {
       safe_browsing::V5GetHashProtocolManager* v5_manager =
@@ -250,9 +251,9 @@ void PermissionRevocationRequest::OnSiteReputationReady(
 void PermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
     const CrowdDenyPreloadData::SiteReputation* site_reputation,
     CrowdDenySafeBrowsingRequest::Verdict verdict) {
-  DCHECK(safe_browsing_request_);
-  DCHECK(profile_);
-  DCHECK(callback_);
+  CHECK(safe_browsing_request_, base::NotFatalUntil::M162);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(callback_, base::NotFatalUntil::M162);
 
   if (verdict == CrowdDenySafeBrowsingRequest::Verdict::kUnacceptable) {
     RevokePermission(origin_, profile_);

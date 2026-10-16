@@ -15,13 +15,13 @@ MockWebContentsTaskManager::MockWebContentsTaskManager() = default;
 MockWebContentsTaskManager::~MockWebContentsTaskManager() = default;
 
 void MockWebContentsTaskManager::TaskAdded(Task* task) {
-  DCHECK(task);
-  DCHECK(!std::ranges::contains(tasks_, task));
+  CHECK(task, base::NotFatalUntil::M162);
+  CHECK(!std::ranges::contains(tasks_, task), base::NotFatalUntil::M162);
   tasks_.push_back(task);
 }
 
 void MockWebContentsTaskManager::TaskRemoved(Task* task) {
-  DCHECK(task);
+  CHECK(task, base::NotFatalUntil::M162);
   const auto it = std::ranges::find(tasks_, task);
   CHECK(it != tasks_.end());
   tasks_.erase(it);

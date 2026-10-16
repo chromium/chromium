@@ -116,20 +116,20 @@ TaskGroup::~TaskGroup() {
 }
 
 void TaskGroup::AddTask(Task* task) {
-  DCHECK(task);
+  CHECK(task, base::NotFatalUntil::M162);
   tasks_.push_back(task);
 }
 
 void TaskGroup::RemoveTask(Task* task) {
-  DCHECK(task);
+  CHECK(task, base::NotFatalUntil::M162);
   std::erase(tasks_, task);
 }
 
 void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
                         base::TimeDelta update_interval,
                         int64_t refresh_flags) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!empty(), base::NotFatalUntil::M162);
   if (is_running_in_vm_)
     refresh_flags &= ~kUnsupportedVMRefreshFlags;
 
@@ -209,7 +209,7 @@ bool TaskGroup::AreBackgroundCalculationsDone() const {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void TaskGroup::SetArcSampler(ArcSharedSampler* sampler) {
-  DCHECK(sampler);
+  CHECK(sampler, base::NotFatalUntil::M162);
   arc_shared_sampler_ = sampler;
   arc_shared_sampler_->RegisterCallback(
       process_id_, base::BindRepeating(&TaskGroup::OnArcSamplerRefreshDone,
@@ -239,7 +239,7 @@ void TaskGroup::RefreshWindowsHandles() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 void TaskGroup::OnOpenFdCountRefreshDone(int open_fd_count) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   open_fd_count_ = open_fd_count;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_FD_COUNT);
@@ -247,28 +247,28 @@ void TaskGroup::OnOpenFdCountRefreshDone(int open_fd_count) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
 void TaskGroup::OnCpuRefreshDone(double cpu_usage) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   platform_independent_cpu_usage_ = cpu_usage;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_CPU);
 }
 
 void TaskGroup::OnSwappedMemRefreshDone(base::ByteSize swapped_mem_bytes) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   swapped_mem_ = swapped_mem_bytes;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_SWAPPED_MEM);
 }
 
 void TaskGroup::OnProcessPriorityDone(base::Process::Priority priority) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   is_backgrounded_ = priority == base::Process::Priority::kBestEffort;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_PRIORITY);
 }
 
 void TaskGroup::OnIdleWakeupsRefreshDone(int idle_wakeups_per_second) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   idle_wakeups_per_second_ = idle_wakeups_per_second;
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_IDLE_WAKEUPS);
@@ -276,7 +276,7 @@ void TaskGroup::OnIdleWakeupsRefreshDone(int idle_wakeups_per_second) {
 
 void TaskGroup::OnSamplerRefreshDone(
     std::optional<SharedSampler::SamplingResult> results) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // If any of the Optional<> fields have no value then replace them with
   // sentinel values.
@@ -312,7 +312,7 @@ void TaskGroup::OnArcSamplerRefreshDone(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void TaskGroup::OnBackgroundRefreshTypeFinished(int64_t finished_refresh_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   current_on_bg_done_flags_ |= finished_refresh_type;
   if (AreBackgroundCalculationsDone())

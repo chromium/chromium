@@ -137,7 +137,7 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
           ContentSettingsType::SERIAL_CHOOSER_DATA,
           HostContentSettingsMapFactory::GetForProfile(profile)),
       profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
   permission_observation_.Observe(this);
 }
 
@@ -245,7 +245,7 @@ bool SerialChooserContext::IsValidObject(const base::DictValue& object) {
 std::u16string SerialChooserContext::GetObjectDisplayName(
     const base::DictValue& object) {
   const std::string* name = object.FindString(kPortNameKey);
-  DCHECK(name);
+  CHECK(name, base::NotFatalUntil::M162);
   return base::UTF8ToUTF16(*name);
 }
 
@@ -401,7 +401,7 @@ void SerialChooserContext::RevokeObjectPermissionInternal(
     return;
   std::set<base::UnguessableToken>& ports = it->second;
 
-  DCHECK(IsValidObject(object));
+  CHECK(IsValidObject(object), base::NotFatalUntil::M162);
   base::UnguessableToken decoded_token = DecodeToken(*token);
   if (decoded_token.is_empty()) {
     return;
@@ -479,7 +479,7 @@ bool SerialChooserContext::HasPortPermission(
     const base::DictValue& device = object->value;
 
     // Objects provided by the parent class can be assumed valid.
-    DCHECK(IsValidObject(device));
+    CHECK(IsValidObject(device), base::NotFatalUntil::M162);
 
     if (port.bluetooth_service_class_id &&
         port.bluetooth_service_class_id->IsValid()) {
@@ -582,7 +582,7 @@ bool SerialChooserContext::CanStorePersistentEntry(
 
 const device::mojom::SerialPortInfo* SerialChooserContext::GetPortInfo(
     const base::UnguessableToken& token) {
-  DCHECK(is_initialized_);
+  CHECK(is_initialized_, base::NotFatalUntil::M162);
   auto it = port_info_.find(token);
   return it == port_info_.end() ? nullptr : it->second.get();
 }
@@ -720,9 +720,9 @@ void SerialChooserContext::OnPortManagerConnectionError() {
 bool SerialChooserContext::CanApplyPortSpecificPolicy() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* profile_helper = ash::ProfileHelper::Get();
-  DCHECK(profile_helper);
+  CHECK(profile_helper, base::NotFatalUntil::M162);
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   return user->IsAffiliated();
 #else
   return true;

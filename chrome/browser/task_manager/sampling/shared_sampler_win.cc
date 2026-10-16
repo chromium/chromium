@@ -60,12 +60,12 @@ class ByteBuffer {
   base::span<const BYTE> data_span() const { return data_.first(size_); }
 
   void set_size(size_t new_size) {
-    DCHECK_LE(new_size, data_.size());
+    CHECK_LE(new_size, data_.size(), base::NotFatalUntil::M162);
     size_ = new_size;
   }
 
   void grow(size_t new_capacity) {
-    DCHECK_GT(new_capacity, data_.size());
+    CHECK_GT(new_capacity, data_.size(), base::NotFatalUntil::M162);
     auto new_data = base::HeapArray<BYTE>::Uninit(new_capacity);
     new_data.copy_prefix_from(span());
     data_ = std::move(new_data);
@@ -105,7 +105,7 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
         result == STATUS_BUFFER_TOO_SMALL) {
       // Insufficient buffer. Grow to the returned |data_size| plus 10% extra
       // to avoid frequent reallocations and try again.
-      DCHECK_GT(data_size, buffer_size);
+      CHECK_GT(data_size, buffer_size, base::NotFatalUntil::M162);
       buffer->grow(static_cast<ULONG>(data_size * 1.1));
     } else {
       // An error other than the two above.
@@ -225,12 +225,12 @@ SharedSampler::SharedSampler(
     : refresh_flags_(0), previous_buffer_size_(0),
       supported_image_names_(GetSupportedImageNames()),
       blocking_pool_runner_(blocking_pool_runner) {
-  DCHECK(blocking_pool_runner.get());
+  CHECK(blocking_pool_runner.get(), base::NotFatalUntil::M162);
 
   // This object will be created on the UI thread, however the sequenced checker
   // will be used to assert we're running the expensive operations on one of the
   // blocking pool threads.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DETACH_FROM_SEQUENCE(worker_pool_sequenced_checker_);
 }
 
@@ -244,7 +244,7 @@ int64_t SharedSampler::GetSupportedFlags() const {
 void SharedSampler::RegisterCallback(
     base::ProcessId process_id,
     OnSamplingCompleteCallback on_sampling_complete) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (process_id == 0)
     return;
@@ -252,11 +252,11 @@ void SharedSampler::RegisterCallback(
   bool result =
       callbacks_map_.emplace(process_id, std::move(on_sampling_complete))
           .second;
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
 }
 
 void SharedSampler::UnregisterCallback(base::ProcessId process_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (process_id == 0)
     return;
@@ -268,13 +268,14 @@ void SharedSampler::UnregisterCallback(base::ProcessId process_id) {
 }
 
 void SharedSampler::Refresh(base::ProcessId process_id, int64_t refresh_flags) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(0, refresh_flags & GetSupportedFlags());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK_NE(0, refresh_flags & GetSupportedFlags(), base::NotFatalUntil::M162);
 
   if (process_id == 0)
     return;
 
-  DCHECK(callbacks_map_.find(process_id) != callbacks_map_.end());
+  CHECK(callbacks_map_.find(process_id) != callbacks_map_.end(),
+        base::NotFatalUntil::M162);
 
   if (refresh_flags_ == 0) {
     blocking_pool_runner_->PostTaskAndReplyWithResult(
@@ -432,7 +433,7 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
             reinterpret_cast<uintptr_t>(pi->ProcessId));
         bool inserted = snapshot->processes.insert(
             std::make_pair(process_id, std::move(process_data))).second;
-        DCHECK(inserted);
+        CHECK(inserted, base::NotFatalUntil::M162);
       }
     }
 
@@ -517,8 +518,8 @@ SharedSampler::AllSamplingResults SharedSampler::MakeResultsFromSnapshot(
 }
 
 void SharedSampler::OnRefreshDone(AllSamplingResults refresh_results) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(0, refresh_flags_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK_NE(0, refresh_flags_, base::NotFatalUntil::M162);
 
   size_t result_index = 0;
 

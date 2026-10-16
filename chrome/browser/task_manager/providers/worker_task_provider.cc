@@ -20,7 +20,7 @@ Task* WorkerTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
 }
 
 void WorkerTaskProvider::OnProfileAdded(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // It is possible for this method to be called multiple times for the same
   // profile, if the profile loads an extension during initialization which also
@@ -36,7 +36,7 @@ void WorkerTaskProvider::OnProfileAdded(Profile* profile) {
       per_profile_worker_task_trackers_
           .emplace(profile, std::move(per_profile_worker_task_tracker))
           .second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M162);
 }
 
 void WorkerTaskProvider::OnProfileManagerDestroying() {
@@ -44,13 +44,13 @@ void WorkerTaskProvider::OnProfileManagerDestroying() {
 }
 
 void WorkerTaskProvider::OnOffTheRecordProfileCreated(Profile* off_the_record) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   OnProfileAdded(off_the_record);
 }
 
 void WorkerTaskProvider::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   observed_profiles_.RemoveObservation(profile);
 
@@ -60,13 +60,13 @@ void WorkerTaskProvider::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 void WorkerTaskProvider::OnWorkerTaskAdded(Task* worker_task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   NotifyObserverTaskAdded(worker_task);
 }
 
 void WorkerTaskProvider::OnWorkerTaskRemoved(Task* worker_task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Do not forward the notification when StopUpdating() has been called, as the
   // observer is now null.
@@ -77,7 +77,7 @@ void WorkerTaskProvider::OnWorkerTaskRemoved(Task* worker_task) {
 }
 
 void WorkerTaskProvider::StartUpdating() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(profile_manager);
@@ -95,7 +95,7 @@ void WorkerTaskProvider::StartUpdating() {
 }
 
 void WorkerTaskProvider::StopUpdating() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Stop observing profile creation and destruction.
   profile_manager_observation_.Reset();

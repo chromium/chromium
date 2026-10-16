@@ -49,9 +49,10 @@ namespace {
 void TagWebContents(content::WebContents* contents,
                     std::unique_ptr<WebContentsTag> tag,
                     const void* tag_key) {
-  DCHECK(contents);
-  DCHECK(tag);
-  DCHECK(WebContentsTag::FromWebContents(contents) == nullptr);
+  CHECK(contents, base::NotFatalUntil::M162);
+  CHECK(tag, base::NotFatalUntil::M162);
+  CHECK(WebContentsTag::FromWebContents(contents) == nullptr,
+        base::NotFatalUntil::M162);
   WebContentsTag* tag_ptr = tag.get();
   contents->SetUserData(tag_key, std::move(tag));
   WebContentsTagsManager::GetInstance()->AddTag(tag_ptr);
@@ -59,7 +60,7 @@ void TagWebContents(content::WebContents* contents,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 bool IsExtensionWebContents(content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch) &&
@@ -163,7 +164,7 @@ void WebContentsTags::CreateForGuestContents(
 void WebContentsTags::CreateForExtension(
     content::WebContents* web_contents,
     extensions::mojom::ViewType view_type) {
-  DCHECK(IsExtensionWebContents(web_contents));
+  CHECK(IsExtensionWebContents(web_contents), base::NotFatalUntil::M162);
 
   if (!WebContentsTag::FromWebContents(web_contents)) {
     TagWebContents(web_contents,

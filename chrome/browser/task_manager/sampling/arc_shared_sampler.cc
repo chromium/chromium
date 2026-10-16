@@ -29,20 +29,20 @@ ArcSharedSampler::~ArcSharedSampler() = default;
 void ArcSharedSampler::RegisterCallback(
     base::ProcessId process_id,
     OnSamplingCompleteCallback on_sampling_complete) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(process_id, base::kNullProcessId);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK_NE(process_id, base::kNullProcessId, base::NotFatalUntil::M162);
   const bool result =
       callbacks_.emplace(process_id, std::move(on_sampling_complete)).second;
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
 }
 
 void ArcSharedSampler::UnregisterCallback(base::ProcessId process_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   callbacks_.erase(process_id);
 }
 
 void ArcSharedSampler::Refresh() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
   if (!arc_process_service)
     return;
@@ -74,7 +74,7 @@ void ArcSharedSampler::Refresh() {
 void ArcSharedSampler::OnReceiveMemoryDump(
     int type,
     std::vector<arc::mojom::ArcMemoryDumpPtr> process_dump) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   pending_memory_dump_types_ &= ~type;
 
   const auto now = base::Time::Now();

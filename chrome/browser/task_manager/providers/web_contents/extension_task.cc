@@ -117,7 +117,7 @@ int ExtensionTask::GetKeepaliveCount() const {
 }
 
 void ExtensionTask::OnExtensionIconImageChanged(extensions::IconImage* image) {
-  DCHECK_EQ(extension_icon_.get(), image);
+  CHECK_EQ(extension_icon_.get(), image, base::NotFatalUntil::M162);
 
   if (!image->image_skia().isNull())
     set_icon(image->image_skia());
@@ -127,7 +127,7 @@ std::u16string ExtensionTask::GetExtensionTitle(
     content::WebContents* web_contents,
     const extensions::Extension* extension,
     extensions::mojom::ViewType view_type) const {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   std::u16string title =
       extension ? base::UTF8ToUTF16(extension->name())

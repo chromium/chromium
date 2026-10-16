@@ -92,7 +92,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
     delegates.geolocation_system_permission_manager =
         device::GeolocationSystemPermissionManager::GetInstance();
-    DCHECK(delegates.geolocation_system_permission_manager);
+    CHECK(delegates.geolocation_system_permission_manager,
+          base::NotFatalUntil::M162);
   }
 #endif
   delegates.media_stream_device_enumerator =

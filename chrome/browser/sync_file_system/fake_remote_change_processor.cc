@@ -41,7 +41,7 @@ void FakeRemoteChangeProcessor::PrepareForProcessRemoteChange(
   // Override |local_metadata| by applied changes.
   auto found = applied_changes_.find(url);
   if (found != applied_changes_.end()) {
-    DCHECK(!found->second.empty());
+    CHECK(!found->second.empty(), base::NotFatalUntil::M162);
     const FileChange& applied_change = found->second.back();
     if (applied_change.IsAddOrUpdate()) {
       local_metadata = SyncFileMetadata(

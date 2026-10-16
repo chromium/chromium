@@ -45,7 +45,7 @@ FallbackTaskProvider::FallbackTaskProvider(
     : secondary_source_(std::make_unique<SubproviderSource>(
           this,
           std::move(secondary_subprovider))) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   for (auto& provider : primary_subproviders) {
     primary_sources_.push_back(
@@ -56,7 +56,7 @@ FallbackTaskProvider::FallbackTaskProvider(
 FallbackTaskProvider::~FallbackTaskProvider() = default;
 
 Task* FallbackTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   for (const auto& source : primary_sources_) {
     Task* task = source->subprovider()->GetTaskOfUrlRequest(child_id, route_id);
@@ -69,20 +69,20 @@ Task* FallbackTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
 }
 
 void FallbackTaskProvider::StartUpdating() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(shown_tasks_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(shown_tasks_.empty(), base::NotFatalUntil::M162);
 
   for (auto& source : primary_sources_) {
-    DCHECK(source->tasks()->empty());
+    CHECK(source->tasks()->empty(), base::NotFatalUntil::M162);
     source->subprovider()->SetObserver(source.get());
   }
 
-  DCHECK(secondary_source_->tasks()->empty());
+  CHECK(secondary_source_->tasks()->empty(), base::NotFatalUntil::M162);
   secondary_source_->subprovider()->SetObserver(secondary_source_.get());
 }
 
 void FallbackTaskProvider::StopUpdating() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   for (auto& source : primary_sources_) {
     source->subprovider()->ClearObserver();
@@ -198,7 +198,7 @@ void FallbackTaskProvider::OnTaskRemovedBySource(Task* task,
 }
 
 void FallbackTaskProvider::OnTaskUnresponsive(Task* task) {
-  DCHECK(task);
+  CHECK(task, base::NotFatalUntil::M162);
   if (std::ranges::contains(shown_tasks_, task)) {
     NotifyObserverTaskUnresponsive(task);
   }
@@ -213,13 +213,13 @@ FallbackTaskProvider::SubproviderSource::SubproviderSource(
 FallbackTaskProvider::SubproviderSource::~SubproviderSource() = default;
 
 void FallbackTaskProvider::SubproviderSource::TaskAdded(Task* task) {
-  DCHECK(task);
+  CHECK(task, base::NotFatalUntil::M162);
   tasks_.push_back(task);
   fallback_task_provider_->OnTaskAddedBySource(task, this);
 }
 
 void FallbackTaskProvider::SubproviderSource::TaskRemoved(Task* task) {
-  DCHECK(task);
+  CHECK(task, base::NotFatalUntil::M162);
 
   std::erase(tasks_, task);
   fallback_task_provider_->OnTaskRemovedBySource(task, this);

@@ -26,7 +26,7 @@ ChildProcessTaskProvider::~ChildProcessTaskProvider() = default;
 
 Task* ChildProcessTaskProvider::GetTaskOfUrlRequest(int child_id,
                                                     int route_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   auto itr = tasks_by_child_id_.find(content::ChildProcessId(child_id));
   if (itr == tasks_by_child_id_.end())
     return nullptr;
@@ -37,7 +37,7 @@ Task* ChildProcessTaskProvider::GetTaskOfUrlRequest(int child_id,
 void ChildProcessTaskProvider::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data,
     const base::Process& process) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!process.IsValid()) {
     return;
   }
@@ -47,13 +47,13 @@ void ChildProcessTaskProvider::BrowserChildProcessLaunchedAndConnected(
 
 void ChildProcessTaskProvider::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   DeleteTask(data.GetChildProcessId());
 }
 
 void ChildProcessTaskProvider::StartUpdating() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(tasks_by_child_id_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(tasks_by_child_id_.empty(), base::NotFatalUntil::M162);
 
   // First, get the pre-existing child processes data.
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
@@ -73,7 +73,7 @@ void ChildProcessTaskProvider::StartUpdating() {
 }
 
 void ChildProcessTaskProvider::StopUpdating() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // First, stop observing.
   BrowserChildProcessObserver::Remove(this);

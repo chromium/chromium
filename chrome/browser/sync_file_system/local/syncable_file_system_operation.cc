@@ -53,13 +53,13 @@ class SyncableFileSystemOperation::QueueableTask
   void Run() override {
     if (!operation_)
       return;
-    DCHECK(!task_.is_null());
+    CHECK(!task_.is_null(), base::NotFatalUntil::M162);
     std::move(task_).Run();
     operation_.reset();
   }
 
   void Cancel() override {
-    DCHECK(!task_.is_null());
+    CHECK(!task_.is_null(), base::NotFatalUntil::M162);
     if (operation_)
       operation_->OnCancelled();
     task_.Reset();
@@ -81,12 +81,12 @@ SyncableFileSystemOperation::~SyncableFileSystemOperation() = default;
 void SyncableFileSystemOperation::CreateFile(const FileSystemURL& url,
                                              bool exclusive,
                                              StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   if (!operation_runner_.get()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
-  DCHECK(operation_runner_.get());
+  CHECK(operation_runner_.get(), base::NotFatalUntil::M162);
   target_paths_.push_back(url);
   completion_callback_ = std::move(callback);
   auto task = std::make_unique<QueueableTask>(
@@ -102,12 +102,12 @@ void SyncableFileSystemOperation::CreateDirectory(const FileSystemURL& url,
                                                   bool exclusive,
                                                   bool recursive,
                                                   StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   if (!operation_runner_.get()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
-  DCHECK(operation_runner_.get());
+  CHECK(operation_runner_.get(), base::NotFatalUntil::M162);
   target_paths_.push_back(url);
   completion_callback_ = std::move(callback);
   auto task = std::make_unique<QueueableTask>(
@@ -126,12 +126,12 @@ void SyncableFileSystemOperation::Copy(
     ErrorBehavior error_behavior,
     std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   if (!operation_runner_.get()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
-  DCHECK(operation_runner_.get());
+  CHECK(operation_runner_.get(), base::NotFatalUntil::M162);
   target_paths_.push_back(dest_url);
   completion_callback_ = std::move(callback);
   auto task = std::make_unique<QueueableTask>(
@@ -151,12 +151,12 @@ void SyncableFileSystemOperation::Move(
     ErrorBehavior error_behavior,
     std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   if (!operation_runner_.get()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
-  DCHECK(operation_runner_.get());
+  CHECK(operation_runner_.get(), base::NotFatalUntil::M162);
   target_paths_.push_back(src_url);
   target_paths_.push_back(dest_url);
   completion_callback_ = std::move(callback);
@@ -172,13 +172,13 @@ void SyncableFileSystemOperation::Move(
 
 void SyncableFileSystemOperation::DirectoryExists(const FileSystemURL& url,
                                                   StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   impl_->DirectoryExists(url, std::move(callback));
 }
 
 void SyncableFileSystemOperation::FileExists(const FileSystemURL& url,
                                              StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   impl_->FileExists(url, std::move(callback));
 }
 

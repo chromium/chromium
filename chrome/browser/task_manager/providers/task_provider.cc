@@ -13,14 +13,14 @@ TaskProvider::TaskProvider()
 TaskProvider::~TaskProvider() = default;
 
 void TaskProvider::SetObserver(TaskProviderObserver* observer) {
-  DCHECK(observer);
-  DCHECK(!observer_);
+  CHECK(observer, base::NotFatalUntil::M162);
+  CHECK(!observer_, base::NotFatalUntil::M162);
   observer_ = observer;
   StartUpdating();
 }
 
 void TaskProvider::ClearObserver() {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M162);
   observer_ = nullptr;
   StopUpdating();
 }
@@ -30,17 +30,17 @@ bool TaskProvider::IsUpdating() const {
 }
 
 void TaskProvider::NotifyObserverTaskAdded(Task* task) const {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M162);
   observer_->TaskAdded(task);
 }
 
 void TaskProvider::NotifyObserverTaskRemoved(Task* task) const {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M162);
   observer_->TaskRemoved(task);
 }
 
 void TaskProvider::NotifyObserverTaskUnresponsive(Task* task) const {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M162);
   observer_->TaskUnresponsive(task);
 }
 
@@ -48,14 +48,14 @@ void TaskProvider::UpdateTaskProcessInfoAndNotifyObserver(
     Task* existing_task,
     base::ProcessHandle new_process_handle,
     base::ProcessId new_process_id) const {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M162);
   existing_task->UpdateProcessInfo(new_process_handle, new_process_id,
                                    observer_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void TaskProvider::NotifyObserverTaskIdsListToBeInvalidated() const {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M162);
   observer_->TaskIdsListToBeInvalidated();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

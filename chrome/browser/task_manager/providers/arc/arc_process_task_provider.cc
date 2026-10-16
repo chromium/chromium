@@ -65,7 +65,7 @@ void ArcProcessTaskProvider::UpdateProcessList(
     } else {
       // Update process state of existing process.
       std::unique_ptr<ArcProcessTask>& task = (*pid_to_task)[entry.nspid()];
-      DCHECK(task.get());
+      CHECK(task.get(), base::NotFatalUntil::M162);
       task->SetProcessState(entry.process_state());
     }
   }

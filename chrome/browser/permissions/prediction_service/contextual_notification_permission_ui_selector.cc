@@ -93,7 +93,7 @@ std::optional<Decision> GetDecisionBasedOnSiteReputation(
                                   Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR: {
-      DCHECK(!site_reputation->warning_only());
+      CHECK(!site_reputation->warning_only(), base::NotFatalUntil::M162);
 
       if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts))
         return std::nullopt;
@@ -139,7 +139,7 @@ void ContextualNotificationPermissionUiSelector::SelectUiToUse(
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   callback_ = std::move(callback);
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
 
   if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts)) {
     Notify(Decision::UseNormalUiAndShowNoWarning());
@@ -202,8 +202,8 @@ void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
     return;
   }
 
-  DCHECK(!safe_browsing_request_);
-  DCHECK(g_browser_process->safe_browsing_service());
+  CHECK(!safe_browsing_request_, base::NotFatalUntil::M162);
+  CHECK(g_browser_process->safe_browsing_service(), base::NotFatalUntil::M162);
 
   // It is fine to use base::Unretained() here, as |safe_browsing_request_|
   // guarantees not to fire the callback after its destruction.
@@ -218,8 +218,8 @@ void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
 void ContextualNotificationPermissionUiSelector::OnSafeBrowsingVerdictReceived(
     Decision candidate_decision,
     CrowdDenySafeBrowsingRequest::Verdict verdict) {
-  DCHECK(safe_browsing_request_);
-  DCHECK(callback_);
+  CHECK(safe_browsing_request_, base::NotFatalUntil::M162);
+  CHECK(callback_, base::NotFatalUntil::M162);
 
   safe_browsing_request_.reset();
 

@@ -16,8 +16,8 @@ PerProfileWorkerTaskTracker::PerProfileWorkerTaskTracker(
     WorkerTaskProvider* worker_task_provider,
     Profile* profile)
     : worker_task_provider_(worker_task_provider) {
-  DCHECK(worker_task_provider);
-  DCHECK(profile);
+  CHECK(worker_task_provider, base::NotFatalUntil::M162);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   content::StoragePartition* storage_partition =
       profile->GetDefaultStoragePartition();
@@ -66,7 +66,7 @@ void PerProfileWorkerTaskTracker::OnWorkerCreated(
     content::DedicatedWorkerCreator creator) {
   auto* worker_process_host =
       content::RenderProcessHost::FromID(worker_process_id);
-  DCHECK(worker_process_host);
+  CHECK(worker_process_host, base::NotFatalUntil::M162);
   CreateWorkerTask(worker_token, Task::Type::DEDICATED_WORKER,
                    worker_process_host, &dedicated_worker_tasks_);
 }
@@ -90,7 +90,7 @@ void PerProfileWorkerTaskTracker::OnWorkerCreated(
     const base::UnguessableToken& dev_tools_token) {
   auto* worker_process_host =
       content::RenderProcessHost::FromID(worker_process_id);
-  DCHECK(worker_process_host);
+  CHECK(worker_process_host, base::NotFatalUntil::M162);
   CreateWorkerTask(shared_worker_token, Task::Type::SHARED_WORKER,
                    worker_process_host, &shared_worker_tasks_);
 }
@@ -118,7 +118,7 @@ void PerProfileWorkerTaskTracker::OnVersionStartedRunning(
     // A matching OnVersionStoppedRunning() call is still expected for this
     // service worker.
     const bool inserted = ignored_service_worker_.insert(version_id).second;
-    DCHECK(inserted);
+    CHECK(inserted, base::NotFatalUntil::M162);
     return;
   }
 
@@ -145,12 +145,12 @@ void PerProfileWorkerTaskTracker::CreateWorkerTask(
     Task::Type task_type,
     content::RenderProcessHost* worker_process_host,
     base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks) {
-  DCHECK(worker_process_host);
+  CHECK(worker_process_host, base::NotFatalUntil::M162);
   auto insertion_result = out_worker_tasks->emplace(
       worker_id,
       std::make_unique<WorkerTask>(worker_process_host->GetProcess().Handle(),
                                    task_type, worker_process_host->GetID()));
-  DCHECK(insertion_result.second);
+  CHECK(insertion_result.second, base::NotFatalUntil::M162);
   worker_task_provider_->OnWorkerTaskAdded(
       insertion_result.first->second.get());
 }

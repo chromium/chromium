@@ -30,8 +30,8 @@ Task* SpareRenderProcessHostTaskProvider::GetTaskOfUrlRequest(int child_id,
 }
 
 void SpareRenderProcessHostTaskProvider::StartUpdating() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(tasks_by_rph_id_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(tasks_by_rph_id_.empty(), base::NotFatalUntil::M162);
 
   auto& spare_manager = content::SpareRenderProcessHostManager::Get();
   for (RenderProcessHost* spare_rph : spare_manager.GetSpares()) {
@@ -44,7 +44,7 @@ void SpareRenderProcessHostTaskProvider::StartUpdating() {
 }
 
 void SpareRenderProcessHostTaskProvider::StopUpdating() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   scoped_observation_.Reset();
 

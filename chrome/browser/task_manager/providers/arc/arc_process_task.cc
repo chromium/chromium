@@ -76,12 +76,12 @@ ArcProcessTask::ArcProcessTask(arc::ArcProcess arc_process)
            nullptr /* icon */,
            arc_process.pid()),
       arc_process_(std::move(arc_process)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   StartIconLoading();
 }
 
 void ArcProcessTask::StartIconLoading() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // TaskManager is not tied to BrowserContext. Thus, we just use the
   // BrowserContext which is tied to ARC.
@@ -146,7 +146,7 @@ bool ArcProcessTask::Kill() {
 }
 
 void ArcProcessTask::OnConnectionReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   VLOG(2) << "intent_helper instance is ready. Fetching the icon for "
           << FirstPackage(arc_process_.packages());
@@ -169,7 +169,7 @@ void ArcProcessTask::SetProcessState(arc::mojom::ProcessState process_state) {
 
 void ArcProcessTask::OnIconLoaded(
     std::unique_ptr<arc::ArcIntentHelperBridge::ActivityToIconsMap> icons) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   for (const auto& kv : *icons) {
     const gfx::Image& icon = kv.second.icon16;
     if (icon.IsEmpty())

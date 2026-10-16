@@ -109,7 +109,7 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_list) {
     const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
-    DCHECK(urls_value);
+    CHECK(urls_value, base::NotFatalUntil::M162);
 
     std::vector<url::Origin> urls;
     for (const auto& url_value : *urls_value) {
@@ -127,11 +127,11 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
 
     const base::ListValue* devices_value =
         item.GetDict().FindList(kPrefDevicesKey);
-    DCHECK(devices_value);
+    CHECK(devices_value, base::NotFatalUntil::M162);
     for (const auto& port_value : *devices_value) {
       const std::optional<int> vendor_id_value =
           port_value.GetDict().FindInt(kPrefVendorIdKey);
-      DCHECK(vendor_id_value);
+      CHECK(vendor_id_value, base::NotFatalUntil::M162);
 
       const std::optional<int> product_id_value =
           port_value.GetDict().FindInt(kPrefProductIdKey);

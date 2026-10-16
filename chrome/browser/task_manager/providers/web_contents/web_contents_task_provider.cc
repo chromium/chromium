@@ -150,7 +150,7 @@ WebContentsTaskProvider::WebContentsEntry::~WebContentsEntry() {
 }
 
 void WebContentsTaskProvider::WebContentsEntry::CreateAllTasks() {
-  DCHECK(web_contents()->GetPrimaryMainFrame());
+  CHECK(web_contents()->GetPrimaryMainFrame(), base::NotFatalUntil::M162);
   web_contents()->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
         const auto state = render_frame_host->GetLifecycleState();
@@ -374,7 +374,7 @@ void WebContentsTaskProvider::WebContentsEntry::TitleWasSetForMainFrame(
 
 void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host, base::NotFatalUntil::M162);
   // Currently we do not track speculative RenderFrameHosts or RenderFrameHosts
   // which are pending deletion.
   const auto rfh_state = render_frame_host->GetLifecycleState();
@@ -452,7 +452,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
 
   auto insert_result =
       site_instance_infos_[site_instance].frames.insert(render_frame_host);
-  DCHECK(insert_result.second);
+  CHECK(insert_result.second, base::NotFatalUntil::M162);
 
   if (new_task) {
     if (site_instance_exists) {
@@ -478,7 +478,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
 
 void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
     RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host, base::NotFatalUntil::M162);
   content::SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   auto itr = site_instance_infos_.find(site_instance);
   if (itr == site_instance_infos_.end())
@@ -516,9 +516,10 @@ void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
       }
     }
   }
-  DCHECK(only_bfcache_or_prerender_rfhs ||
-         site_instance_infos_.empty() ==
-             (primary_main_frame_site_instance_ == nullptr));
+  CHECK(only_bfcache_or_prerender_rfhs ||
+            site_instance_infos_.empty() ==
+                (primary_main_frame_site_instance_ == nullptr),
+        base::NotFatalUntil::M162);
 #endif
 }
 
@@ -544,9 +545,9 @@ WebContentsTaskProvider::~WebContentsTaskProvider() {
 
 void WebContentsTaskProvider::OnWebContentsTagCreated(
     const WebContentsTag* tag) {
-  DCHECK(tag);
+  CHECK(tag, base::NotFatalUntil::M162);
   content::WebContents* web_contents = tag->web_contents();
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   // TODO(afakhry): Check if we need this check. It seems that we no longer
   // need it in the new implementation.
@@ -565,9 +566,9 @@ void WebContentsTaskProvider::OnWebContentsTagCreated(
 
 void WebContentsTaskProvider::OnWebContentsTagRemoved(
     const WebContentsTag* tag) {
-  DCHECK(tag);
+  CHECK(tag, base::NotFatalUntil::M162);
   content::WebContents* web_contents = tag->web_contents();
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   auto itr = entries_map_.find(web_contents);
   CHECK(itr != entries_map_.end());
@@ -633,7 +634,7 @@ void WebContentsTaskProvider::DeleteEntry(content::WebContents* web_contents) {
   // This erase() will delete the WebContentsEntry, which is actually our
   // caller, but it's expecting us to delete it.
   bool success = entries_map_.erase(web_contents) != 0;
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
 }
 
 }  // namespace task_manager

@@ -171,7 +171,8 @@ class PlatformHandleImpl : public PlatformHandle {
                SystemPermissionResponseCallback callback) override {
     switch (type) {
       case ContentSettingsType::GEOLOCATION: {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+        CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                           base::NotFatalUntil::M162);
         auto* manager =
             device::GeolocationSystemPermissionManager::GetInstance();
         if (manager == nullptr) {
