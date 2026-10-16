@@ -560,9 +560,9 @@ export class ComposeboxVoiceSearchElement extends
     }
     // Fire event so `composebox_mixin.ts` knows to hide voice animation when
     // `isOpened`=`true`. `composebox_mixin.ts` will fire another event if
-    // conditions are met so `aim_app.ts` (omnibox popup) can resize to be at
-    // least as big as the permission prompt if needed. This voice component
-    // does not control any resizing or hiding:
+    // conditions are met so `omnibox_composebox.ts` (omnibox popup) can resize
+    // to be at least as big as the permission prompt if needed. This voice
+    // component does not control any resizing or hiding:
     this.fire('voice-permission-changed', {
       'isOpened': isOpened,
       'height': promptSize.height,
