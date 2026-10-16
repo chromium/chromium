@@ -2504,6 +2504,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "contextual-tasks-tab-based-suggestions",
+    "owners": [ "mercerd@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "contextual-tasks-updated-entry-points",
     "owners": [ "nguyenbryan@google.com", "chrome-contextual-tasks-eng@google.com" ],
     "expiry_milestone": 165

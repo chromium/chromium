@@ -11973,6 +11973,7 @@ from previous Chrome versions.
   <int value="-907481658" label="ArcMouseWheelSmoothScroll:enabled"/>
   <int value="-907413495" label="Apb144Patch9:disabled"/>
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
+  <int value="-907157106" label="ContextualTasksTabBasedSuggestions:enabled"/>
   <int value="-906695076" label="CCTPageContentRequestAllowed:disabled"/>
   <int value="-906173229" label="AutofillEnableCardBenefitsSync:disabled"/>
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
@@ -20640,6 +20641,7 @@ from previous Chrome versions.
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:enabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
   <int value="1702090999" label="ClearOldBrowsingData:disabled"/>
+  <int value="1702313424" label="ContextualTasksTabBasedSuggestions:disabled"/>
   <int value="1702653578" label="LocalNetworkAccessChecksWebTransport:enabled"/>
   <int value="1702985369"
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>

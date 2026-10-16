@@ -4,8 +4,10 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -14,13 +16,19 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/lens/contextual_input.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 
@@ -451,6 +459,303 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       /*is_active=*/false);
   EXPECT_EQ(frame1_messages.size(), 1u);
   EXPECT_EQ(frame2_messages.size(), 0u);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       OnSuggestInputsChanged_DisabledByDefault) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("suggest_session_disabled"));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> suggest_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_suggest_inputs_changed()) {
+          suggest_messages.push_back(message);
+        }
+      }));
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+  contextual_search::FileInfo file_info;
+  file_info.file_token = token;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(101);
+  file_info.request_id = req_id;
+  std::vector<contextual_search::FileInfo> uploaded_files = {file_info};
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  user_data->OnTabContextUploadStarted(token);
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_TRUE(suggest_messages.empty());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       OnSuggestInputsChanged_ExplicitTabUploadAndRemovalLifecycle) {
+  base::test::ScopedFeatureList feature_list{
+      kContextualTasksTabBasedSuggestions};
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("suggest_session_123"));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> suggest_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_suggest_inputs_changed()) {
+          suggest_messages.push_back(message);
+        }
+      }));
+
+  // Attach Tab 1 and start uploading: no OnSuggestInputsChanged while in
+  // flight.
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token1);
+  mock_handle->AttachTabPendingUpload(token1, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+
+  contextual_search::FileInfo file1;
+  file1.file_token = token1;
+  lens::LensOverlayRequestId req1;
+  req1.set_context_id(101);
+  file1.request_id = req1;
+  file1.input_data = std::make_unique<lens::ContextualInputData>();
+  file1.input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  std::vector<contextual_search::FileInfo> uploaded_files;
+  uploaded_files.push_back(file1);
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  user_data->OnTabContextUploadStarted(token1);
+  user_data->UpdateContextLibraryInputState();
+  EXPECT_TRUE(suggest_messages.empty());
+
+  // Tab 1 finishes uploading -> emits OnSuggestInputsChanged with Tab 1.
+  user_data->OnContextUploadStatusChanged(
+      token1, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ASSERT_EQ(suggest_messages.size(), 1u);
+  const auto& first_update =
+      suggest_messages.back().on_suggest_inputs_changed();
+  ASSERT_EQ(first_update.added_contexts_size(), 1);
+  EXPECT_EQ(first_update.added_contexts(0).search_session_id(),
+            "suggest_session_123");
+  EXPECT_EQ(first_update.added_contexts(0).request_id().context_id(), 101);
+  EXPECT_EQ(first_update.added_contexts(0).contextual_input_upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+
+  // Attach Tab 2 and start uploading: no redundant OnSuggestInputsChanged while
+  // Tab 2 is still uploading.
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token2);
+  mock_handle->AttachTabPendingUpload(token2, 20, GURL("https://example.com/2"),
+                                      "Tab 2");
+  contextual_search::FileInfo file2;
+  file2.file_token = token2;
+  lens::LensOverlayRequestId req2;
+  req2.set_context_id(202);
+  file2.request_id = req2;
+  uploaded_files.push_back(file2);
+
+  user_data->OnTabContextUploadStarted(token2);
+  user_data->UpdateContextLibraryInputState();
+  EXPECT_EQ(suggest_messages.size(), 1u);
+
+  // Tab 2 finishes uploading -> emits OnSuggestInputsChanged with both tabs.
+  user_data->OnContextUploadStatusChanged(
+      token2, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ASSERT_EQ(suggest_messages.size(), 2u);
+  const auto& second_update =
+      suggest_messages.back().on_suggest_inputs_changed();
+  ASSERT_EQ(second_update.added_contexts_size(), 2);
+  EXPECT_EQ(second_update.added_contexts(0).request_id().context_id(), 101);
+  EXPECT_EQ(second_update.added_contexts(1).request_id().context_id(), 202);
+
+  // Removing Tab 1 emits OnSuggestInputsChanged with only Tab 2.
+  user_data->DeleteContext(token1);
+  ASSERT_EQ(suggest_messages.size(), 3u);
+  const auto& third_update =
+      suggest_messages.back().on_suggest_inputs_changed();
+  ASSERT_EQ(third_update.added_contexts_size(), 1);
+  EXPECT_EQ(third_update.added_contexts(0).request_id().context_id(), 202);
+
+  // Clearing all files emits an empty OnSuggestInputsChanged once.
+  user_data->ClearFiles();
+  ASSERT_EQ(suggest_messages.size(), 4u);
+  EXPECT_EQ(
+      suggest_messages.back().on_suggest_inputs_changed().added_contexts_size(),
+      0);
+
+  // Subsequent no-op updates do not emit duplicate empty messages.
+  user_data->UpdateContextLibraryInputState();
+  EXPECT_EQ(suggest_messages.size(), 4u);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       OnSuggestInputsChanged_ImplicitAndDelayedTabsExcluded) {
+  base::test::ScopedFeatureList feature_list{
+      kContextualTasksTabBasedSuggestions};
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("suggest_session_implicit"));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> suggest_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_suggest_inputs_changed()) {
+          suggest_messages.push_back(message);
+        }
+      }));
+
+  // 1. Implicit upload (`is_implicit_upload = true`) must not emit suggest
+  // inputs.
+  base::UnguessableToken implicit_token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(implicit_token);
+  mock_handle->AttachTabPendingUpload(
+      implicit_token, 10, GURL("https://example.com/implicit"), "Implicit Tab");
+  contextual_search::FileInfo implicit_file;
+  implicit_file.file_token = implicit_token;
+  implicit_file.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(303);
+  implicit_file.request_id = req_id;
+
+  std::vector<contextual_search::FileInfo> uploaded_files = {implicit_file};
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  user_data->OnContextUploadStatusChanged(
+      implicit_token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_TRUE(suggest_messages.empty());
+
+  // 2. Delayed tab (`AddPendingDelayedTab`) must not emit suggest inputs.
+  mock_handle->AddPendingDelayedTab(20, GURL("https://example.com/delayed"),
+                                    "Delayed Tab");
+  user_data->UpdateContextLibraryInputState();
+  EXPECT_TRUE(suggest_messages.empty());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       OnSuggestInputsChanged_UploadFailureClearsAndRecoveryRestores) {
+  base::test::ScopedFeatureList feature_list{
+      kContextualTasksTabBasedSuggestions};
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("suggest_session_recovery"));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> suggest_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_suggest_inputs_changed()) {
+          suggest_messages.push_back(message);
+        }
+      }));
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+  contextual_search::FileInfo file_info;
+  file_info.file_token = token;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(404);
+  file_info.request_id = req_id;
+  std::vector<contextual_search::FileInfo> uploaded_files = {file_info};
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  user_data->OnTabContextUploadStarted(token);
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ASSERT_EQ(suggest_messages.size(), 1u);
+  EXPECT_EQ(
+      suggest_messages.back().on_suggest_inputs_changed().added_contexts_size(),
+      1);
+
+  // Expiry or failure removes the tab from suggest inputs.
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadExpired, std::nullopt);
+  ASSERT_EQ(suggest_messages.size(), 2u);
+  EXPECT_EQ(
+      suggest_messages.back().on_suggest_inputs_changed().added_contexts_size(),
+      0);
+
+  // Re-upload completion restores the tab in suggest inputs.
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ASSERT_EQ(suggest_messages.size(), 3u);
+  ASSERT_EQ(
+      suggest_messages.back().on_suggest_inputs_changed().added_contexts_size(),
+      1);
+  EXPECT_EQ(suggest_messages.back()
+                .on_suggest_inputs_changed()
+                .added_contexts(0)
+                .request_id()
+                .context_id(),
+            404);
 }
 
 }  // namespace contextual_tasks

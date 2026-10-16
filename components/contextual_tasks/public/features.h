@@ -162,6 +162,10 @@ extern const base::FeatureParam<bool> kOpenNewTabOnSidePanelLinkClick;
 // always open a new tab instead of focusing an existing affiliated tab.
 bool ShouldOpenNewTabOnSidePanelLinkClick();
 
+// Enables emitting attached tab context tokens in OnSuggestInputsChanged for
+// tab-based query suggestions.
+BASE_DECLARE_FEATURE(kContextualTasksTabBasedSuggestions);
+
 // When enabled, allows AIM search URLs to be created and navigated immediately
 // upon starting contextual input uploads without waiting for background
 // network uploads to complete.
@@ -553,6 +557,7 @@ extern bool GetIsWebpageApcComparisonEnabled();
 extern bool IsContextualTasksRearchitectureEnabled();
 extern bool IsContextualTasksSidePanelRearchitectureEnabled();
 extern bool IsContextualTasksClobberActiveTabEnabled();
+extern bool IsContextualTasksTabBasedSuggestionsEnabled();
 extern bool IsContextualTasksUnboundedMenuEnabled();
 
 inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
@@ -608,6 +613,8 @@ extern const char kContextualTasksSidePanelRearchitectureName[];
 extern const char kContextualTasksSidePanelRearchitectureDescription[];
 extern const char kContextualTasksClobberActiveTabName[];
 extern const char kContextualTasksClobberActiveTabDescription[];
+extern const char kContextualTasksTabBasedSuggestionsName[];
+extern const char kContextualTasksTabBasedSuggestionsDescription[];
 extern const char kContextualTasksBypassDismissedCapName[];
 extern const char kContextualTasksBypassDismissedCapDescription[];
 extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedName[];
