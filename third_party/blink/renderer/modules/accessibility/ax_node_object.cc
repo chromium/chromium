@@ -7205,7 +7205,7 @@ String AXNodeObject::TextAlternativeFromTooltip(
 }
 
 String AXNodeObject::TextAlternativeFromTitleAttribute(
-    const AtomicString& title,
+    AtomicString title,
     ax::mojom::blink::NameFrom& name_from,
     NameSources* name_sources,
     bool* found_text_alternative) const {
@@ -8159,7 +8159,8 @@ String AXNodeObject::Description(
           DescriptionSource(found_description, kTitleAttr));
       description_sources->back().type = description_from;
     }
-    const AtomicString& title = element->FastGetAttribute(kTitleAttr);
+    // Copy title as computing inner text can modify the attribute storage.
+    const AtomicString title = element->FastGetAttribute(kTitleAttr);
     if (!title.empty() &&
         String(title).StripWhiteSpace() !=
             element->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
