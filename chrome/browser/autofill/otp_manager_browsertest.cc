@@ -23,8 +23,8 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,15 +169,13 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_backend(std::make_unique<FakeSmsOtpBackend>());
-    one_time_token_service_ =
-        std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
-            GetSmsOtpBackend());
+    sms_otp_service_ = std::make_unique<one_time_tokens::SmsOtpServiceImpl>(
+        GetSmsOtpBackend());
   }
   ~OtpTestAutofillClient() override = default;
 
-  one_time_tokens::OneTimeTokenService* GetOneTimeTokenService()
-      const override {
-    return one_time_token_service_.get();
+  one_time_tokens::SmsOtpService* GetSmsOtpService() const override {
+    return sms_otp_service_.get();
   }
 
   FakeSmsOtpBackend& sms_otp_backend() {
@@ -185,8 +183,7 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
   }
 
  private:
-  std::unique_ptr<one_time_tokens::OneTimeTokenServiceImpl>
-      one_time_token_service_;
+  std::unique_ptr<one_time_tokens::SmsOtpServiceImpl> sms_otp_service_;
 };
 
 }  // namespace

@@ -45,7 +45,7 @@ struct ItemWithoutEquality {
 
 // A composite key struct and a test item struct without `operator==`. This
 // mirrors the production usage of `CacheKey` and `CacheProjection` in
-// `OneTimeTokenServiceImpl`, where equality is determined by a composite key
+// `SmsOtpServiceImpl`, where equality is determined by a composite key
 // of token attributes (e.g. type, value, sender) while explicitly excluding
 // the arrival timestamp.
 struct CompositeKey {

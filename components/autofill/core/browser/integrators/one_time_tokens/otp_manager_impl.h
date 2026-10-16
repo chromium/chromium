@@ -21,7 +21,7 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/gurl.h"
@@ -46,7 +46,7 @@ enum class OneTimeTokensPhishGuardVerdict {
 LogBuffer& operator<<(LogBuffer& buffer,
                       OneTimeTokensPhishGuardVerdict verdict);
 
-// This class triggers the fetching of SMS OTPs from the `OneTimeTokenService`
+// This class triggers the fetching of SMS OTPs from the `SmsOtpService`
 // and of Gmail OTPs from the `GmailOtpBackend` as soon as
 // `OnFieldTypesDetermined()` is notified about the classification of OTP
 // fields. OTPs are fetched only once per instantiation. This is ok if the
@@ -56,7 +56,7 @@ LogBuffer& operator<<(LogBuffer& buffer,
 class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
  public:
   OtpManagerImpl(BrowserAutofillManager& owner,
-                 one_time_tokens::OneTimeTokenService* one_time_token_service);
+                 one_time_tokens::SmsOtpService* sms_otp_service);
   OtpManagerImpl(const OtpManagerImpl&) = delete;
   OtpManagerImpl& operator=(const OtpManagerImpl&) = delete;
   ~OtpManagerImpl() override;
@@ -172,15 +172,14 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   raw_ref<BrowserAutofillManager> owner_;
 
   // May be nullptr on platforms that don't support SMS OTP fetching.
-  raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_ =
-      nullptr;
+  raw_ptr<one_time_tokens::SmsOtpService> sms_otp_service_ = nullptr;
 
   // Manages retrieval of a Gmail OTP for the target origin, started either when
   // an OTP field is detected on the page or in response to an incoming Gmail
   // OTP tickle notification.
   std::unique_ptr<one_time_tokens::GmailOtpRetriever> gmail_otp_retriever_;
 
-  // Subscription to the `OneTimeTokenService` for incoming SMS OTPs.
+  // Subscription to the `SmsOtpService` for incoming SMS OTPs.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;
   // Subscription to the `GmailOtpBackend` for incoming Gmail OTP tickles.
   one_time_tokens::ExpiringSubscription gmail_otp_tickle_subscription_;

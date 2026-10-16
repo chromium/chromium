@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service_impl.h"
 
 #include <string>
 #include <string_view>
@@ -84,8 +84,8 @@ class MockSmsOtpBackend : public SmsOtpBackend {
       callbacks_;
 };
 
-// A helper class to collect results from the OneTimeTokenService callbacks.
-class OneTimeTokenServiceTestObserver {
+// A helper class to collect results from the SmsOtpService callbacks.
+class SmsOtpServiceTestObserver {
  public:
   void OnTokenReceived(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
@@ -104,10 +104,10 @@ class OneTimeTokenServiceTestObserver {
 
 }  // namespace
 
-class OneTimeTokenServiceImplTest : public testing::Test {
+class SmsOtpServiceImplTest : public testing::Test {
  public:
-  OneTimeTokenServiceImplTest() = default;
-  ~OneTimeTokenServiceImplTest() override = default;
+  SmsOtpServiceImplTest() = default;
+  ~SmsOtpServiceImplTest() override = default;
 
   void TearDown() override { feature_list_.Reset(); }
 
@@ -119,20 +119,20 @@ class OneTimeTokenServiceImplTest : public testing::Test {
 };
 
 // Test that with no backend, nothing happens.
-TEST_F(OneTimeTokenServiceImplTest, NoBackend) {
-  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr);
-  OneTimeTokenServiceTestObserver observer;
+TEST_F(SmsOtpServiceImplTest, NoBackend) {
+  SmsOtpServiceImpl service(/*sms_otp_backend=*/nullptr);
+  SmsOtpServiceTestObserver observer;
 
   // GetRecentOneTimeTokens should not call the callback.
   service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
   EXPECT_TRUE(observer.results().empty());
 
   // Subscribe should notify that the platform is not supported.
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
   EXPECT_FALSE(subscription.IsAlive());
@@ -143,15 +143,15 @@ TEST_F(OneTimeTokenServiceImplTest, NoBackend) {
 }
 
 // Test that subscribing triggers a fetch.
-TEST_F(OneTimeTokenServiceImplTest, SubscriptionTriggersFetch) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver observer;
+TEST_F(SmsOtpServiceImplTest, SubscriptionTriggersFetch) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -159,13 +159,13 @@ TEST_F(OneTimeTokenServiceImplTest, SubscriptionTriggersFetch) {
 }
 
 // Test that a successful fetch notifies subscribers.
-TEST_F(OneTimeTokenServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver observer;
+TEST_F(SmsOtpServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver observer;
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
   sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
@@ -175,14 +175,14 @@ TEST_F(OneTimeTokenServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
 }
 
 // Test that after a successful fetch the backend is queried again.
-TEST_F(OneTimeTokenServiceImplTest, BackendIsQueriedForFreshTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver observer;
+TEST_F(SmsOtpServiceImplTest, BackendIsQueriedForFreshTokens) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
   sms_otp_backend_.SimulateOtpArrived(
@@ -201,22 +201,22 @@ TEST_F(OneTimeTokenServiceImplTest, BackendIsQueriedForFreshTokens) {
 }
 
 // Test that multiple subscriptions only trigger one fetch.
-TEST_F(OneTimeTokenServiceImplTest, MultipleSubscriptionsOneFetch) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver observer1;
-  OneTimeTokenServiceTestObserver observer2;
+TEST_F(SmsOtpServiceImplTest, MultipleSubscriptionsOneFetch) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver observer1;
+  SmsOtpServiceTestObserver observer2;
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription1 = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)),
       /*expiration_callback=*/base::DoNothing());
   // While the first request is in progress, a second subscription should not
   // trigger a new request.
   auto subscription2 = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -229,15 +229,15 @@ TEST_F(OneTimeTokenServiceImplTest, MultipleSubscriptionsOneFetch) {
 }
 
 // Test that an expired subscription does not receive notifications.
-TEST_F(OneTimeTokenServiceImplTest, ExpiredSubscription) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver observer;
+TEST_F(SmsOtpServiceImplTest, ExpiredSubscription) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -252,13 +252,13 @@ TEST_F(OneTimeTokenServiceImplTest, ExpiredSubscription) {
 
 // Test that after all subscriptions expire, a new subscription triggers a new
 // fetch.
-TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+TEST_F(SmsOtpServiceImplTest, NewSubscriptionAfterAllExpired) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
 
-  OneTimeTokenServiceTestObserver observer1;
+  SmsOtpServiceTestObserver observer1;
   auto subscription1 = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)),
       /*expiration_callback=*/base::DoNothing());
   sms_otp_backend_.SimulateOtpArrived(
@@ -273,10 +273,10 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
       base::unexpected(OneTimeTokenRetrievalError::kSmsOtpBackendError));
   EXPECT_FALSE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
 
-  OneTimeTokenServiceTestObserver observer2;
+  SmsOtpServiceTestObserver observer2;
   auto subscription2 = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)),
       /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
@@ -286,15 +286,15 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
 }
 
 // Test GetRecentOneTimeTokens returns cached tokens.
-TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver subscriber_observer;
+TEST_F(SmsOtpServiceImplTest, GetRecentOneTimeTokens) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver subscriber_observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -306,22 +306,22 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens) {
               ElementsAre(OneTimeTokenValueEq("123456")));
 
   // Now, get recent tokens.
-  OneTimeTokenServiceTestObserver recent_observer;
+  SmsOtpServiceTestObserver recent_observer;
   service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&recent_observer)));
   EXPECT_THAT(recent_observer.results(),
               ElementsAre(OneTimeTokenValueEq("123456")));
 }
 
 // Test GetRecentOneTimeTokens does not return expired tokens.
-TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_Expired) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver subscriber_observer;
+TEST_F(SmsOtpServiceImplTest, GetRecentOneTimeTokens_Expired) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver subscriber_observer;
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -335,24 +335,24 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_Expired) {
   task_environment_.FastForwardBy(base::Minutes(6));
 
   // Now, get recent tokens.
-  OneTimeTokenServiceTestObserver recent_observer;
+  SmsOtpServiceTestObserver recent_observer;
   service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&recent_observer)));
 
   EXPECT_TRUE(recent_observer.results().empty());
 }
 
 // Test that an error from the backend is propagated to subscribers.
-TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver observer;
+TEST_F(SmsOtpServiceImplTest, NewFetchAfterCompletion) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -367,14 +367,13 @@ TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
 }
 
 // Test GetCachedOneTimeTokens returns cached tokens, including expired ones.
-TEST_F(OneTimeTokenServiceImplTest,
-       GetCachedOneTimeTokens_ReturnsCachedTokens) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver subscriber_observer;
+TEST_F(SmsOtpServiceImplTest, GetCachedOneTimeTokens_ReturnsCachedTokens) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver subscriber_observer;
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -396,15 +395,15 @@ TEST_F(OneTimeTokenServiceImplTest,
 }
 
 // Test GetRecentOneTimeTokens returns the most recent token first.
-TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_MostRecentFirst) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
-  OneTimeTokenServiceTestObserver subscriber_observer;
+TEST_F(SmsOtpServiceImplTest, GetRecentOneTimeTokens_MostRecentFirst) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
+  SmsOtpServiceTestObserver subscriber_observer;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(AtLeast(1));
 
   auto subscription = service.Subscribe(
       base::Time::Now() + base::Minutes(5),
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)),
       /*expiration_callback=*/base::DoNothing());
 
@@ -419,9 +418,9 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_MostRecentFirst) {
       OneTimeTokenType::kSmsOtp, "222222", base::TimeTicks::Now()));
 
   // GetRecentOneTimeTokens should return both, with the newer token first.
-  OneTimeTokenServiceTestObserver recent_observer;
+  SmsOtpServiceTestObserver recent_observer;
   service.GetRecentOneTimeTokens(
-      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+      base::BindRepeating(&SmsOtpServiceTestObserver::OnTokenReceived,
                           base::Unretained(&recent_observer)));
   EXPECT_THAT(recent_observer.results(),
               ElementsAre(OneTimeTokenValueEq("222222"),
@@ -429,8 +428,8 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_MostRecentFirst) {
 }
 
 // Test that RequestOneTimeToken returns a token when the backend succeeds.
-TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Success) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+TEST_F(SmsOtpServiceImplTest, RequestOneTimeToken_Success) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -444,8 +443,8 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Success) {
 }
 
 // Test that RequestOneTimeToken returns nullopt when the backend fails.
-TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Failure) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+TEST_F(SmsOtpServiceImplTest, RequestOneTimeToken_Failure) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -457,8 +456,8 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Failure) {
 }
 
 // Test that RequestOneTimeToken returns nullopt when there is no backend.
-TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_NoBackend) {
-  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr);
+TEST_F(SmsOtpServiceImplTest, RequestOneTimeToken_NoBackend) {
+  SmsOtpServiceImpl service(/*sms_otp_backend=*/nullptr);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(callback, Run(Eq(std::nullopt)));
@@ -466,8 +465,8 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_NoBackend) {
 }
 
 // Test that RequestOneTimeToken returns nullopt when the timeout is reached.
-TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Timeout) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+TEST_F(SmsOtpServiceImplTest, RequestOneTimeToken_Timeout) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -480,8 +479,8 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Timeout) {
 
 // Test that if the backend responds after the timeout, it doesn't crash and the
 // second response is ignored.
-TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_LateResponse) {
-  OneTimeTokenServiceImpl service(&sms_otp_backend_);
+TEST_F(SmsOtpServiceImplTest, RequestOneTimeToken_LateResponse) {
+  SmsOtpServiceImpl service(&sms_otp_backend_);
   base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
@@ -497,11 +496,11 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_LateResponse) {
       OneTimeTokenType::kSmsOtp, "123456", base::TimeTicks::Now()));
 }
 
-// Tests that a `LogHandler` passed to `OneTimeTokenServiceImpl` is registered
+// Tests that a `LogHandler` passed to `SmsOtpServiceImpl` is registered
 // with `log_sink()` for the lifetime of the service.
-TEST_F(OneTimeTokenServiceImplTest, LogHandlerRegisteredInConstructor) {
+TEST_F(SmsOtpServiceImplTest, LogHandlerRegisteredInConstructor) {
   base::test::TestFuture<std::string> log_future;
-  OneTimeTokenServiceImpl service(
+  SmsOtpServiceImpl service(
       /*sms_otp_backend=*/nullptr,
       base::BindRepeating(
           [](base::RepeatingCallback<void(std::string)> cb,

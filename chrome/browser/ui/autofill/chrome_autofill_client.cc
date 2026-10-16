@@ -46,8 +46,8 @@
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
-#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/sms_otp_service_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/autofill/wallet_pass_access_manager_factory.h"
@@ -1561,10 +1561,9 @@ FormPredictionsTracker* ChromeAutofillClient::GetFormPredictionsTracker() {
   return form_predictions_tracker_.get();
 }
 
-one_time_tokens::OneTimeTokenService*
-ChromeAutofillClient::GetOneTimeTokenService() const {
+one_time_tokens::SmsOtpService* ChromeAutofillClient::GetSmsOtpService() const {
   Profile* profile = GetProfile();
-  return OneTimeTokenServiceFactory::GetForProfile(profile);
+  return SmsOtpServiceFactory::GetForProfile(profile);
 }
 
 one_time_tokens::GmailOtpBackend* ChromeAutofillClient::GetGmailOtpBackend()

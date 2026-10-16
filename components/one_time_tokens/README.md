@@ -27,7 +27,7 @@ components/one_time_tokens/
   - permissions/
     - [infrastructure to decide if a site is eligible to receive an OTP]
   - [datastructures]
-  - one_time_token_service.{cc,h}
+  - sms_otp_service.{cc,h}
 - android/backend/
   - java/
     - [android SMS backend]

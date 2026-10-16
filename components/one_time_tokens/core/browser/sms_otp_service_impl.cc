@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service_impl.h"
 
 #include <ranges>
 #include <utility>
@@ -18,7 +18,7 @@
 
 namespace one_time_tokens {
 
-OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
+SmsOtpServiceImpl::SmsOtpServiceImpl(
     SmsOtpBackend* sms_otp_backend,
     OneTimeTokenLogSink::LogHandler log_handler)
     : sms_{.has_pending_request = false, .backend = sms_otp_backend},
@@ -30,13 +30,13 @@ OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
   }
 }
 
-OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() = default;
+SmsOtpServiceImpl::~SmsOtpServiceImpl() = default;
 
-OneTimeTokenLogSink* OneTimeTokenServiceImpl::log_sink() {
+OneTimeTokenLogSink* SmsOtpServiceImpl::log_sink() {
   return &log_sink_;
 }
 
-void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
+void SmsOtpServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   // The tokens in `cache_` are sorted by `on_device_arrival_time` in ascending
   // order. Iterate in reverse so that the most recent token is delivered first.
   std::vector<OneTimeToken> recent_tokens =
@@ -46,7 +46,7 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   }
 }
 
-ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
+ExpiringSubscription SmsOtpServiceImpl::Subscribe(
     base::Time expiration,
     Callback callback,
     base::OnceClosure expiration_callback) {
@@ -61,12 +61,11 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
   return subscription;
 }
 
-std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
-    const {
+std::vector<OneTimeToken> SmsOtpServiceImpl::GetCachedOneTimeTokens() const {
   return base::ToVector(cache_.GetItems());
 }
 
-void OneTimeTokenServiceImpl::RequestOneTimeToken(
+void SmsOtpServiceImpl::RequestOneTimeToken(
     base::TimeDelta timeout,
     base::OnceCallback<void(std::optional<OneTimeToken>)> callback) {
   auto on_request_finished = base::BindRepeating(
@@ -93,7 +92,7 @@ void OneTimeTokenServiceImpl::RequestOneTimeToken(
   }
 }
 
-void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {
+void SmsOtpServiceImpl::RetrieveSmsOtpIfNeeded() {
   if (sms_.has_pending_request ||
       !sms_subscription_manager_.GetNumberSubscribers()) {
     return;
@@ -101,11 +100,11 @@ void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {
   CHECK(sms_.backend);
   sms_.has_pending_request = true;
   sms_.backend->RetrieveSmsOtp(
-      base::BindOnce(&OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend,
+      base::BindOnce(&SmsOtpServiceImpl::OnResponseFromSmsOtpBackend,
                      weakptr_factory_.GetWeakPtr()));
 }
 
-void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
+void SmsOtpServiceImpl::OnResponseFromSmsOtpBackend(
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
   sms_.has_pending_request = false;
   if (!reply.has_value()) {
@@ -127,7 +126,7 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
   // Therefore, schedule a new retrieval to see if a new OTP arrives.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded,
+      base::BindOnce(&SmsOtpServiceImpl::RetrieveSmsOtpIfNeeded,
                      weakptr_factory_.GetWeakPtr()),
       kSmsRefetchInterval);
 }

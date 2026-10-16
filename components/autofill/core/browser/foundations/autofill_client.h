@@ -67,7 +67,7 @@ class SharedURLLoaderFactory;
 
 namespace one_time_tokens {
 class GmailOtpBackend;
-class OneTimeTokenService;
+class SmsOtpService;
 }  // namespace one_time_tokens
 
 namespace optimization_guide {
@@ -78,7 +78,6 @@ class RemoteModelExecutor;
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
 }
-
 
 namespace signin {
 class IdentityManager;
@@ -113,7 +112,7 @@ namespace personal_context {
 enum class PersonalContextEligibilityState;
 class PersonalContextEligibilityService;
 class PersonalContextFirstRunService;
-}
+}  // namespace personal_context
 
 namespace subscription_eligibility {
 class SubscriptionEligibilityService;
@@ -180,7 +179,7 @@ class FormInteractionsUkmLogger;
 namespace payments {
 class PaymentsAutofillClient;
 class WalletReminderNoticeManager;
-}
+}  // namespace payments
 
 // A client interface that needs to be supplied to the Autofill component by the
 // embedder.
@@ -589,8 +588,8 @@ class AutofillClient {
   // notice when required.
   virtual payments::WalletReminderNoticeManager*
   GetWalletReminderNoticeManager();
-  const payments::WalletReminderNoticeManager*
-  GetWalletReminderNoticeManager() const;
+  const payments::WalletReminderNoticeManager* GetWalletReminderNoticeManager()
+      const;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
@@ -883,7 +882,6 @@ class AutofillClient {
       FormGlobalId form_id,
       FieldGlobalId field_id) const;
 
-
   // Returns the service used in order to log metrics into MQLS.
   virtual optimization_guide::ModelQualityLogsUploaderService*
   GetMqlsUploadService();
@@ -1010,8 +1008,8 @@ class AutofillClient {
   // on platforms where it is not supported.
   virtual FormPredictionsTracker* GetFormPredictionsTracker();
 
-  // May return null on platforms where no OneTimeTokenService is supported.
-  virtual one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const;
+  // May return null on platforms where no SmsOtpService is supported.
+  virtual one_time_tokens::SmsOtpService* GetSmsOtpService() const;
 
   // May return null on platforms where no GmailOtpBackend is supported.
   virtual one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const;

@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
-#define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
+#ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_SMS_OTP_SERVICE_IMPL_H_
+#define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_SMS_OTP_SERVICE_IMPL_H_
 #include <optional>
 #include <string_view>
 
@@ -15,8 +15,8 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 
@@ -29,19 +29,18 @@ namespace one_time_tokens {
 inline constexpr base::TimeDelta kSmsRefetchInterval = base::Seconds(5);
 
 // Service to subscribe to one time tokens. One instance per profile.
-class OneTimeTokenServiceImpl : public OneTimeTokenService {
+class SmsOtpServiceImpl : public SmsOtpService {
  public:
   // If `sms_otp_backend` is null, this class does not do any SMS-based
   // subscriptions. If `log_handler` is provided, it is registered with
   // `log_sink_` for the lifetime of this service.
-  explicit OneTimeTokenServiceImpl(
-      SmsOtpBackend* sms_otp_backend,
-      OneTimeTokenLogSink::LogHandler log_handler = {});
-  OneTimeTokenServiceImpl(const OneTimeTokenServiceImpl&) = delete;
-  OneTimeTokenServiceImpl& operator=(const OneTimeTokenServiceImpl&) = delete;
-  ~OneTimeTokenServiceImpl() override;
+  explicit SmsOtpServiceImpl(SmsOtpBackend* sms_otp_backend,
+                             OneTimeTokenLogSink::LogHandler log_handler = {});
+  SmsOtpServiceImpl(const SmsOtpServiceImpl&) = delete;
+  SmsOtpServiceImpl& operator=(const SmsOtpServiceImpl&) = delete;
+  ~SmsOtpServiceImpl() override;
 
-  // OneTimeTokenService:
+  // SmsOtpService:
   OneTimeTokenLogSink* log_sink() override;
   void GetRecentOneTimeTokens(Callback callback) override;
   [[nodiscard]] ExpiringSubscription Subscribe(
@@ -60,10 +59,10 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   void OnResponseFromSmsOtpBackend(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
-  // Handles subscriptions to the `OneTimeTokenService`.
+  // Handles subscriptions to the `SmsOtpService`.
   ExpiringSubscriptionManager<CallbackSignature> sms_subscription_manager_;
 
-  // Handles requests of the `OneTimeTokenService` to the `SmsOtpBackend`.
+  // Handles requests of the `SmsOtpService` to the `SmsOtpBackend`.
   struct {
     bool has_pending_request = false;
     raw_ptr<SmsOtpBackend> backend;
@@ -100,9 +99,9 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   base::CallbackListSubscription log_subscription_;
 
   // Weak pointer factory (must be last member in class).
-  base::WeakPtrFactory<OneTimeTokenServiceImpl> weakptr_factory_{this};
+  base::WeakPtrFactory<SmsOtpServiceImpl> weakptr_factory_{this};
 };
 
 }  // namespace one_time_tokens
 
-#endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
+#endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_SMS_OTP_SERVICE_IMPL_H_

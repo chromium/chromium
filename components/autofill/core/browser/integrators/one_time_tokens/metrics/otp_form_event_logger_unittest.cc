@@ -15,8 +15,8 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -64,8 +64,8 @@ class OtpFormEventLoggerIntegrationTest
     // Inject the mocked SMS OTP backend into the TestAutofillClient.
     auto mock_sms_otp_backend = std::make_unique<MockSmsOtpBackend>();
     autofill_client().set_sms_otp_backend(std::move(mock_sms_otp_backend));
-    autofill_client().set_one_time_token_service(
-        std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
+    autofill_client().set_sms_otp_service(
+        std::make_unique<one_time_tokens::SmsOtpServiceImpl>(
             autofill_client().GetSmsOtpBackend()));
   }
 

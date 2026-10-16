@@ -536,8 +536,7 @@ FormPredictionsTracker* AutofillClient::GetFormPredictionsTracker() {
   return nullptr;
 }
 
-one_time_tokens::OneTimeTokenService* AutofillClient::GetOneTimeTokenService()
-    const {
+one_time_tokens::SmsOtpService* AutofillClient::GetSmsOtpService() const {
   return nullptr;
 }
 

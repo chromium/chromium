@@ -812,7 +812,7 @@ FilterSuggestionsByPrioritization(
 
 std::unique_ptr<OtpManager> CreateOtpManager(
     BrowserAutofillManager& owner,
-    one_time_tokens::OneTimeTokenService* service) {
+    one_time_tokens::SmsOtpService* service) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowGmailOtpSuggestions)) {
     return std::make_unique<OtpManagerImpl>(owner, service);
@@ -844,7 +844,7 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
       autofill_ai_access_manager_(
           std::make_unique<AutofillAiAccessManager>(this)),
-      otp_manager_(CreateOtpManager(*this, client().GetOneTimeTokenService())),
+      otp_manager_(CreateOtpManager(*this, client().GetSmsOtpService())),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)),
       address_on_typing_manager_(client()) {}
@@ -2862,7 +2862,7 @@ void BrowserAutofillManager::Reset() {
   }
   // Re-create the OtpManager in order to forget stored data (e.g. active
   // subscriptions and pending callbacks) after a navigation.
-  otp_manager_ = CreateOtpManager(*this, client().GetOneTimeTokenService());
+  otp_manager_ = CreateOtpManager(*this, client().GetSmsOtpService());
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();

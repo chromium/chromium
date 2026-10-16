@@ -59,7 +59,7 @@
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
@@ -233,10 +233,9 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   }
 
   std::vector<OneTimeToken> otps;
-  one_time_tokens::OneTimeTokenService* token_service =
-      client_->GetOneTimeTokenService();
-  if (token_service) {
-    otps = token_service->GetCachedOneTimeTokens();
+  one_time_tokens::SmsOtpService* sms_otp_service = client_->GetSmsOtpService();
+  if (sms_otp_service) {
+    otps = sms_otp_service->GetCachedOneTimeTokens();
   }
 
   VoteData vote_data = {
@@ -277,7 +276,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   std::set<FieldGlobalId> fields_that_match_state =
       PreProcessStateMatchingTypes(profiles, *form, client_->GetAppLocale());
 
-  if (token_service && vote_data.otps.empty() && has_potential_otp_field &&
+  if (sms_otp_service && vote_data.otps.empty() && has_potential_otp_field &&
       base::FeatureList::IsEnabled(
           features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore)) {
     // This is the 80 percentile latency of the otp success retrieval flow. The
@@ -287,7 +286,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     // The rest of the upload process is continued in `StartVoteUploadProcess`,
     // which will be called after a timeout, or when RequestOneTimeToken
     // returns.
-    token_service->RequestOneTimeToken(
+    sms_otp_service->RequestOneTimeToken(
         kOtpSubscriptionTimeout,
         base::BindOnce(
             [](base::WeakPtr<VotesUploader> weak_ptr,

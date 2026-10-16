@@ -397,7 +397,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
   FormPredictionsTracker* GetFormPredictionsTracker() override;
 
-  one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const final;
+  one_time_tokens::SmsOtpService* GetSmsOtpService() const final;
   one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const final;
 
  protected:
@@ -431,7 +431,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
   // Returns the ToastController for the current tab, if it exists.
   ToastController* GetToastController();
-
 
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(

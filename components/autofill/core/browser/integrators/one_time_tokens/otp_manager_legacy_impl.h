@@ -17,7 +17,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 
 namespace autofill {
@@ -26,7 +26,7 @@ class BrowserAutofillManager;
 class FormFieldData;
 class FormStructure;
 
-// This class triggers the fetching of OTPs from the `OneTimeTokenService` as
+// This class triggers the fetching of OTPs from the `SmsOtpService` as
 // soon as `OnFieldTypesDetermined()` is notified about the classification of
 // OTP fields. OTPs are fetched only once per instantiation. This is ok
 // if the `OtpManagerLegacyImpl` is recreated on each frame navigation.
@@ -35,9 +35,8 @@ class FormStructure;
 class OtpManagerLegacyImpl : public OtpManager,
                              public AutofillManager::Observer {
  public:
-  OtpManagerLegacyImpl(
-      BrowserAutofillManager& owner,
-      one_time_tokens::OneTimeTokenService* one_time_token_service);
+  OtpManagerLegacyImpl(BrowserAutofillManager& owner,
+                       one_time_tokens::SmsOtpService* sms_otp_service);
   OtpManagerLegacyImpl(const OtpManagerLegacyImpl&) = delete;
   OtpManagerLegacyImpl& operator=(const OtpManagerLegacyImpl&) = delete;
   ~OtpManagerLegacyImpl() override;
@@ -93,10 +92,9 @@ class OtpManagerLegacyImpl : public OtpManager,
   raw_ref<BrowserAutofillManager> owner_;
 
   // May be nullptr on platforms that don't support SMS OTP fetching.
-  raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_ =
-      nullptr;
+  raw_ptr<one_time_tokens::SmsOtpService> sms_otp_service_ = nullptr;
 
-  // Subscription to `OneTimeTokenService` for SMS OTPs.
+  // Subscription to `SmsOtpService` for SMS OTPs.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;
 
   // Only the last call from the UI to generate suggestions is retained as such

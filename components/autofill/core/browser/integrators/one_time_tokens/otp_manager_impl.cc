@@ -41,16 +41,16 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 
 using one_time_tokens::ExpiringSubscriptionHandle;
 using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenRetrievalError;
-using one_time_tokens::OneTimeTokenService;
 using one_time_tokens::OneTimeTokenType;
+using one_time_tokens::SmsOtpService;
 
 namespace autofill {
 
@@ -64,8 +64,8 @@ std::string GetMockOtpValue() {
 }  // namespace
 
 OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
-                               OneTimeTokenService* one_time_token_service)
-    : owner_(owner), one_time_token_service_(one_time_token_service) {
+                               SmsOtpService* sms_otp_service)
+    : owner_(owner), sms_otp_service_(sms_otp_service) {
   autofill_manager_observation_.Observe(&owner);
   if (PrefService* prefs = owner_->client().GetPrefs()) {
     pref_change_registrar_.Init(prefs);
@@ -87,7 +87,7 @@ void OtpManagerImpl::GetOtpSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
-  if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
+  if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
       !OtpFieldDetector::IsOtpField(form, field) ||
       !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
@@ -118,7 +118,7 @@ void OtpManagerImpl::GetOtpSuggestions(
 }
 
 void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
-  CHECK(one_time_token_service_);
+  CHECK(sms_otp_service_);
 
   one_time_tokens::GmailOtpBackend* gmail_otp_backend =
       owner_->client().GetGmailOtpBackend();
@@ -147,10 +147,10 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
 
   // Gmail OTPs are retrieved from the `GmailOtpBackend` via
   // `GmailOtpRetriever` (verifying domain affiliation against the frame
-  // origin). Therefore, only SMS OTPs are taken from the `OneTimeTokenService`
+  // origin). Therefore, only SMS OTPs are taken from the `SmsOtpService`
   // and any unverified Gmail OTPs returned by it are dropped.
   // This may call OnOneTimeTokenReceived() zero times, but ...
-  one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
+  sms_otp_service_->GetRecentOneTimeTokens(base::BindRepeating(
       [](base::WeakPtr<OtpManagerImpl> self,
          base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
         if (self && (!result.has_value() ||
@@ -165,7 +165,7 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
     sms_otp_subscription_.SetExpirationTime(base::Time::Now() +
                                             kSmsOtpSubscriptionDuration);
   } else {
-    sms_otp_subscription_ = one_time_token_service_->Subscribe(
+    sms_otp_subscription_ = sms_otp_service_->Subscribe(
         base::Time::Now() + kSmsOtpSubscriptionDuration,
         /*callback=*/
         base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
@@ -215,7 +215,7 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
 }
 
 void OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged() {
-  if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
+  if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
       !owner_->driver().IsActive() || !UserOptedIntoGmailOtpFilling() ||
       !IsOtpFieldDetected() || AnyOtpFieldContainsTypedInput()) {
     return;
@@ -244,7 +244,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
   // On non-Android platforms and in tests the backend may be not initialized.
   // Furthermore, do not retrieve or subscribe to OTPs for embedded frame trees
   // (such as fenced frames or GuestViews).
-  if (!one_time_token_service_ || manager.driver().IsEmbedded()) {
+  if (!sms_otp_service_ || manager.driver().IsEmbedded()) {
     return;
   }
 

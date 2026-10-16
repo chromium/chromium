@@ -32,15 +32,15 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 
 using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenRetrievalError;
-using one_time_tokens::OneTimeTokenService;
 using one_time_tokens::OneTimeTokenType;
+using one_time_tokens::SmsOtpService;
 
 namespace autofill {
 
@@ -53,10 +53,9 @@ std::string GetMockOtpValue() {
 
 }  // namespace
 
-OtpManagerLegacyImpl::OtpManagerLegacyImpl(
-    BrowserAutofillManager& owner,
-    OneTimeTokenService* one_time_token_service)
-    : owner_(owner), one_time_token_service_(one_time_token_service) {
+OtpManagerLegacyImpl::OtpManagerLegacyImpl(BrowserAutofillManager& owner,
+                                           SmsOtpService* sms_otp_service)
+    : owner_(owner), sms_otp_service_(sms_otp_service) {
   autofill_manager_observation_.Observe(&owner);
 }
 
@@ -71,7 +70,7 @@ void OtpManagerLegacyImpl::GetOtpSuggestions(
     const FormFieldData& field,
     OtpManagerLegacyImpl::GetOtpSuggestionsCallback callback) {
   // Reject ineligible fields, cross-origin/embedded contexts, or non-OTP forms.
-  if (!one_time_token_service_ || owner_->driver().IsEmbedded() ||
+  if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
       !OtpFieldDetector::IsOtpField(form, field) ||
       !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
@@ -101,10 +100,10 @@ void OtpManagerLegacyImpl::GetOtpSuggestions(
 }
 
 void OtpManagerLegacyImpl::GetRecentOtpsAndRenewSubscription() {
-  CHECK(one_time_token_service_);
+  CHECK(sms_otp_service_);
 
   // This may call OnOneTimeTokenReceived() zero times, but ...
-  one_time_token_service_->GetRecentOneTimeTokens(
+  sms_otp_service_->GetRecentOneTimeTokens(
       base::BindRepeating(&OtpManagerLegacyImpl::OnOneTimeTokenReceived,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -113,7 +112,7 @@ void OtpManagerLegacyImpl::GetRecentOtpsAndRenewSubscription() {
     sms_otp_subscription_.SetExpirationTime(base::Time::Now() +
                                             kSmsOtpSubscriptionDuration);
   } else {
-    sms_otp_subscription_ = one_time_token_service_->Subscribe(
+    sms_otp_subscription_ = sms_otp_service_->Subscribe(
         base::Time::Now() + kSmsOtpSubscriptionDuration,
         /*callback=*/
         base::BindRepeating(&OtpManagerLegacyImpl::OnOneTimeTokenReceived,
@@ -140,7 +139,7 @@ void OtpManagerLegacyImpl::OnFieldTypesDetermined(
   // On non-Android platforms and in tests the backend may be not initialized.
   // Furthermore, do not retrieve or subscribe to OTPs for embedded frame trees
   // (such as fenced frames or GuestViews).
-  if (!one_time_token_service_ || manager.driver().IsEmbedded()) {
+  if (!sms_otp_service_ || manager.driver().IsEmbedded()) {
     return;
   }
 
