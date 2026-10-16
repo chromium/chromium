@@ -25,7 +25,7 @@ source_set("wm") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/common/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",
@@ -38,8 +38,8 @@ source_set("unit_tests") {
   deps = [
     ":wm",
     "//base",
-    "//chrome/common/extensions/api",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//components/crx_file",
     "//content/public/browser",
     "//content/test:test_support",

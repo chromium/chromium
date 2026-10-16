@@ -131,7 +131,6 @@ if (enable_extensions) {
       "terminal_private.json",
       "vpn_provider.idl",
       "wallpaper.json",
-      "wm_desks_private.idl",
     ]
 
     if (use_cups) {

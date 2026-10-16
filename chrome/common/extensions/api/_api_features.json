@@ -1008,9 +1008,5 @@
       "chrome-untrusted://boca-app/*"
     ],
     "platforms": ["chromeos"]
-  }],
-  "wmDesksPrivate": {
-    "dependencies": ["permission:wmDesksPrivate"],
-    "contexts": ["privileged_extension"]
-  }
+  }]
 }

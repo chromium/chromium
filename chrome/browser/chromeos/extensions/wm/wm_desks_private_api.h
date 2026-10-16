@@ -7,7 +7,7 @@
 
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/wm_desks_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/wm_desks_private.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 

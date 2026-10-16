@@ -14,7 +14,7 @@
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/extensions/api/wm_desks_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/wm_desks_private.h"
 
 namespace extensions {
 

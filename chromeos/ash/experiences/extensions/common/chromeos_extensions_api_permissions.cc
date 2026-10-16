@@ -38,6 +38,7 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kUsersPrivate, "usersPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kWmDesksPrivate, "wmDesksPrivate"},
 
     // Platform-app permissions.
     {APIPermissionID::kFileSystemProvider, "fileSystemProvider",

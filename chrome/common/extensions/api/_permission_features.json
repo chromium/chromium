@@ -1107,19 +1107,5 @@
       "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/40546373
       "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/40546373
     ]
-  },
-  "wmDesksPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      // Extension id hash for API test.
-      "74801F84D31D23D08BEA48AB82C6A6120EDB4D45",
-      "6A4D7AEC6414492BD25219C7A479265BF1177D42",  // http://crbug.com/40181096
-      "F80B163C896D50A685E0B683BEEEA94217F253D6",  // http://crbug.com/40181096
-      "454738352012A22901C55B348E5E530BDE1AF2B0",  // http://crbug.com/1259253
-      "7D5A66C88A25019F997E548DEC5E0011E2855591",  // http://crbug.com/40181096
-      "F740D260E7E2107B3AE454F512B65AE6CF244433"   // http://b/273392894
-    ]
   }
 }

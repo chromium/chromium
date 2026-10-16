@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
+
 #include <memory>
 
 #include "base/uuid.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/common/extensions/api/wm_desks_private.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/extensions/common/api/wm_desks_private.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"

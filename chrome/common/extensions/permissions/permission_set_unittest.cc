@@ -902,7 +902,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kWebrtcDesktopCapturePrivate);
   skip.insert(APIPermissionID::kWebrtcLoggingPrivate);
   skip.insert(APIPermissionID::kWebrtcLoggingPrivateAudioDebug);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kWmDesksPrivate);
+#endif
   skip.insert(APIPermissionID::kSystemLog);
   skip.insert(APIPermissionID::kOdfsConfigPrivate);
   skip.insert(APIPermissionID::kIndigoPrivate);

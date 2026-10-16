@@ -7,7 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/wm_desks_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/wm_desks_private.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"

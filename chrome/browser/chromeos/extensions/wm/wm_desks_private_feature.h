@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/wm_desks_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/wm_desks_private.h"
 
 class Profile;
 

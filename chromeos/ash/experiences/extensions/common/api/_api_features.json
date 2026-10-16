@@ -160,5 +160,9 @@
     "matches": [
       "chrome://os-settings/*"
     ]
-  }]
+  }],
+  "wmDesksPrivate": {
+    "dependencies": ["permission:wmDesksPrivate"],
+    "contexts": ["privileged_extension"]
+  }
 }
