@@ -170,11 +170,6 @@
     return nil;
   }
 
-  // iPad does not have a New Tab button while browsing.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return nil;
-  }
-
   // Context menu for while browsing.
   CHECK(_templateURLService);
   const bool useLens =
