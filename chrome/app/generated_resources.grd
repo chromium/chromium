@@ -7996,7 +7996,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Show cards
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_FOOTER_LABEL" desc="The label for the option to show footer in the customization menu on the New Tab Page">
-        Show footer on New Tab page
+        Show footer on new tab page
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_CHIPS_LABEL" desc="The label for the option to show the Google Search tools options in the New Tab Page" meaning="Toggle to display/hide the Search tool options in the New Tab Page.">
         Show options
@@ -9357,10 +9357,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Learn about how your browser is managed
       </message>
       <message name="IDS_HIDE_NEW_TAB_FOOTER" desc="Label for option to hide New Tab Footer feature, a UI that may show at the bottom of the New Tab Page.">
-        Hide footer on New Tab page
+        Hide footer on new tab page
       </message>
       <message name="IDS_NEW_TAB_FOOTER_BACKGROUND_ATTRIBUTION_ARIA_DESC" desc="Attribution shown in the New Tab footer when the New Tab page has a background applied.">
-        Learn more about your New Tab page background
+        Learn more about your new tab page background
       </message>
       <message name="IDS_NEW_TAB_FOOTER_BACKGROUND_ATTRIBUTION_TEXT" desc="ARIA (accessibility) role description for a link in the New Tab footer which opens the page for the New Tab page background.">
         <ph name="ATTRIBUTION_LINE_1">$1<ex>Background Name</ex></ph>, <ph name="ATTRIBUTION_LINE_2">$2<ex>Artist Name</ex></ph>
@@ -14089,7 +14089,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Homepage
         </message>
         <message name="IDS_RESET_PROFILE_SETTINGS_HOMEPAGE_IS_NTP" desc="Tag in the feedback details of the Reset Profile Settings dialog">
-          Homepage is the New Tab page
+          Homepage is the new tab page
         </message>
         <message name="IDS_RESET_PROFILE_SETTINGS_YES" desc="'Yes' value for 'Homepage is NTP' and 'Show homebutton' in the feedback details of the Reset Profile Settings dialog">
           Yes

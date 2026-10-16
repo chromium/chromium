@@ -360,7 +360,7 @@
       Horizontal
     </message>
     <message name="IDS_SETTINGS_HOME_PAGE_NTP" desc="Description of the New Tab Page when set as the home page.">
-      New Tab page
+      New tab page
     </message>
     <message name="IDS_SETTINGS_CHANGE_HOME_PAGE" desc="Label of the control to change the home page.">
       Change
@@ -1043,7 +1043,7 @@
       On startup
     </message>
     <message name="IDS_SETTINGS_ON_STARTUP_OPEN_NEW_TAB" desc="Radio button option to open the new tab page.">
-      Open the New Tab page
+      Open the new tab page
     </message>
     <message name="IDS_SETTINGS_ON_STARTUP_CONTINUE" desc="Radio button option to continue where you left off.">
       Continue where you left off

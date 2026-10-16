@@ -130,7 +130,7 @@ suite('OnStartupPage', function() {
   test('open-ntp', async function() {
     await prefService.setPrefValue(
         'session.restore_on_startup', PrefValues.OPEN_NEW_TAB);
-    assertEquals('Open the New Tab page', getSelectedOptionLabel());
+    assertEquals('Open the new tab page', getSelectedOptionLabel());
   });
 
   test('open-specific', async function() {
