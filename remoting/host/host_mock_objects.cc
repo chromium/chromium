@@ -81,6 +81,10 @@ MockUrlForwarderConfigurator::MockUrlForwarderConfigurator() = default;
 
 MockUrlForwarderConfigurator::~MockUrlForwarderConfigurator() = default;
 
+MockAgentIntegrationConfigurator::MockAgentIntegrationConfigurator() = default;
+
+MockAgentIntegrationConfigurator::~MockAgentIntegrationConfigurator() = default;
+
 MockChromotingSessionServices::MockChromotingSessionServices() = default;
 
 MockChromotingSessionServices::~MockChromotingSessionServices() = default;
