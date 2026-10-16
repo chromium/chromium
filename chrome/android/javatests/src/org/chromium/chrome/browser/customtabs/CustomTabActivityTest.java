@@ -1417,6 +1417,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @RequiresRestart("Testing CCT startup/warmup behavior")
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/574149885
     public void testPrecreatedRenderer() throws Exception {
         var histograms =
                 HistogramWatcher.newBuilder()
