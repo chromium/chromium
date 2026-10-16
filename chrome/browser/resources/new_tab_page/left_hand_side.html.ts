@@ -10,13 +10,15 @@ export function getHtml(this: LeftHandSideElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   ${this.enableThreadsRailHybrid_
-      ? html`<cr-threads-rail id="folded"></cr-threads-rail>`
+      ? html`<cr-threads-rail id="folded"
+                 ?hidden="${this.isExpandedReady_ && this.isExpanded_}">
+             </cr-threads-rail>`
       : ''}
   <ntp-iframe id="expanded"
       allow="unbounded-element"
       style="width: ${this.expandedWidth_}px;"
       src="${this.expandedLhsUrl_}"
-      ?hidden="${!this.isExpandedReady_}">
+      ?hidden="${!this.isExpandedReady_ || !this.isExpanded_}">
   </ntp-iframe>
   <!--_html_template_end_-->`;
   // clang-format on

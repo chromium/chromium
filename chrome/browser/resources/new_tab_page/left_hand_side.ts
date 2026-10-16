@@ -10,12 +10,37 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from './i18n_setup.js';
 import {getCss} from './left_hand_side.css.js';
 import {getHtml} from './left_hand_side.html.js';
+import {WindowProxy} from './window_proxy.js';
 
 const DEFAULT_EXPANDED_LHS_WIDTH_PX = 261;
 
-enum NtpLhsMessageType {
-  READY = 'NTP_LHS_READY',
+export enum NtpLhsMessageType {
+  NTP_LHS_READY = 'NTP_LHS_READY',
+  NTP_LHS_CLOSE = 'NTP_LHS_CLOSE',
+  NTP_LHS_NEW_THREAD = 'NTP_LHS_NEW_THREAD',
+  NTP_LHS_NAVIGATE = 'NTP_LHS_NAVIGATE',
 }
+
+export interface NtpLhsReadyMessage {
+  type: NtpLhsMessageType.NTP_LHS_READY;
+  width?: number;
+}
+
+export interface NtpLhsCloseMessage {
+  type: NtpLhsMessageType.NTP_LHS_CLOSE;
+}
+
+export interface NtpLhsNewThreadMessage {
+  type: NtpLhsMessageType.NTP_LHS_NEW_THREAD;
+}
+
+export interface NtpLhsNavigateMessage {
+  type: NtpLhsMessageType.NTP_LHS_NAVIGATE;
+  url: string;
+}
+
+export type SearchToChromeLhsMessage = NtpLhsReadyMessage|NtpLhsCloseMessage|
+    NtpLhsNewThreadMessage|NtpLhsNavigateMessage;
 
 export class LeftHandSideElement extends CrLitElement {
   static get is() {
@@ -35,6 +60,7 @@ export class LeftHandSideElement extends CrLitElement {
       enableThreadsRailHybrid_: {type: Boolean},
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
+      isExpanded_: {type: Boolean},
       isExpandedReady_: {type: Boolean},
     };
   }
@@ -44,31 +70,74 @@ export class LeftHandSideElement extends CrLitElement {
   protected accessor expandedLhsUrl_: string =
       loadTimeData.getString('expandedLhsUrl');
   protected accessor expandedWidth_: number = DEFAULT_EXPANDED_LHS_WIDTH_PX;
+  protected accessor isExpanded_: boolean = false;
   protected accessor isExpandedReady_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
     super.connectedCallback();
-    const expectedOrigin = new URL(this.expandedLhsUrl_).origin;
-    this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
-      const data = event.data;
-      if (typeof data !== 'object' || !data) {
-        return;
-      }
-      if (event.origin === expectedOrigin &&
-          data.type === NtpLhsMessageType.READY) {
-        this.expandedWidth_ = typeof data.width === 'number' && data.width > 0 ?
-            data.width :
-            DEFAULT_EXPANDED_LHS_WIDTH_PX;
-        this.isExpandedReady_ = true;
-      }
-    });
+    if (!this.expandedLhsUrl_) {
+      return;
+    }
+    this.eventTracker_.add(window, 'message', this.onMessage_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
   }
+
+  private onMessage_ = (event: MessageEvent) => {
+    const expectedOrigin = new URL(this.expandedLhsUrl_).origin;
+    if (event.origin !== expectedOrigin) {
+      return;
+    }
+
+    const expanded = this.shadowRoot.querySelector<HTMLElement>('#expanded');
+    const iframe = expanded?.shadowRoot?.querySelector('iframe');
+    if (!expanded || !iframe || event.source !== iframe.contentWindow) {
+      return;
+    }
+
+    const data = event.data as SearchToChromeLhsMessage | null;
+    if (typeof data !== 'object' || !data) {
+      return;
+    }
+
+    switch (data.type) {
+      case NtpLhsMessageType.NTP_LHS_READY: {
+        this.expandedWidth_ = typeof data.width === 'number' && data.width > 0 ?
+            data.width :
+            DEFAULT_EXPANDED_LHS_WIDTH_PX;
+        this.isExpandedReady_ = true;
+        this.isExpanded_ = true;
+        break;
+      }
+      case NtpLhsMessageType.NTP_LHS_CLOSE: {
+        this.isExpanded_ = false;
+        break;
+      }
+      case NtpLhsMessageType.NTP_LHS_NEW_THREAD: {
+        this.fire('open-composebox');
+        break;
+      }
+      case NtpLhsMessageType.NTP_LHS_NAVIGATE: {
+        let url: URL;
+        try {
+          url = new URL(data.url);
+        } catch {
+          return;
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+          return;
+        }
+        WindowProxy.getInstance().navigate(data.url);
+        break;
+      }
+      default:
+        break;
+    }
+  };
 }
 
 declare global {
