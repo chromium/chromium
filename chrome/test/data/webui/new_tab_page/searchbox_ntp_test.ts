@@ -670,6 +670,15 @@ suite('SearchboxTest', () => {
         // Mock image finishing loading, which should remove the temporary
         // background color.
         const image = matchEls[1]!.$.icon.$.image;
+        // The real image request may still be pending; it fails in browser
+        // tests, which have no external network access. Let it settle first so
+        // that its result can't override the mocked load below.
+        if (!image.hidden && !image.naturalWidth) {
+          await Promise.race([
+            eventToPromise('load', image),
+            eventToPromise('error', image),
+          ]);
+        }
         const loadPromise = eventToPromise('load', image);
         image.dispatchEvent(new Event('load'));
         await loadPromise;
@@ -1354,11 +1363,13 @@ suite('SearchboxTest', () => {
 
         assertFalse(realbox.shareTabsFlyoutOpen);
 
+        // `openTabPicker()` opens the context menu, and an OS-generated window
+        // blur or resize would close it and reset `shareTabsFlyoutOpen`, so
+        // assert right away instead of yielding to the event loop first.
         await realbox.handleFuseboxAction(createFuseboxAction({
           preselectedInputSource: InputSource.kInputSourceTabPicker,
           searchboxOverride: SearchboxOverride.kRealbox,
         }));
-        await microtasksFinished();
 
         assertTrue(realbox.shareTabsFlyoutOpen);
       });
