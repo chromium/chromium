@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_PRICE_INSIGHTS_MODEL_PRICE_INSIGHTS_MODEL_FACTORY_H_
 #define IOS_CHROME_BROWSER_PRICE_INSIGHTS_MODEL_PRICE_INSIGHTS_MODEL_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class PriceInsightsModel;
+#import "ios/chrome/browser/price_insights/model/price_insights_model.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all PriceInsightsModels and associates them with
 // profile.
-class PriceInsightsModelFactory : public ProfileKeyedServiceFactoryIOS {
+class PriceInsightsModelFactory
+    : public TypedProfileKeyedServiceFactoryIOS<PriceInsightsModelFactory,
+                                                PriceInsightsModel> {
  public:
-  static PriceInsightsModel* GetForProfile(ProfileIOS* profile);
-  static PriceInsightsModelFactory* GetInstance();
+  explicit PriceInsightsModelFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<PriceInsightsModelFactory>;
-
-  PriceInsightsModelFactory();
-  ~PriceInsightsModelFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

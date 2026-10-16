@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_BACKEND_PROMO_MODEL_BACKEND_PROMO_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_BACKEND_PROMO_MODEL_BACKEND_PROMO_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class BackendPromoService;
+#import "ios/chrome/browser/backend_promo/model/backend_promo_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all BackendPromoServices and associates them with
 // profiles.
-class BackendPromoServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class BackendPromoServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<BackendPromoServiceFactory,
+                                                BackendPromoService> {
  public:
-  static BackendPromoService* GetForProfile(ProfileIOS* profile);
-  static BackendPromoServiceFactory* GetInstance();
+  explicit BackendPromoServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<BackendPromoServiceFactory>;
-
-  BackendPromoServiceFactory();
-  ~BackendPromoServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
