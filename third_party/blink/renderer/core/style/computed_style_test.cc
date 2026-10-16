@@ -188,6 +188,44 @@ TEST_F(ComputedStyleTest, ScrollMarkerGroupDifference) {
             ComputedStyle::ComputeDifference(before_links, before_tabs));
 }
 
+TEST_F(ComputedStyleTest, ScrollMarkerGroupScrollContainerDifference) {
+  auto create_style = [this](EOverflow overflow, bool has_group) {
+    ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+    if (has_group) {
+      builder.SetScrollMarkerGroup(MakeGarbageCollected<ScrollMarkerGroup>(
+          ScrollMarkerGroup::ScrollMarkerPosition::kBefore));
+    }
+    builder.SetOverflowX(overflow);
+    builder.SetOverflowY(overflow);
+    return builder.TakeStyle();
+  };
+
+  const ComputedStyle* visible_with_group =
+      create_style(EOverflow::kVisible, /*has_group=*/true);
+  const ComputedStyle* auto_with_group =
+      create_style(EOverflow::kAuto, /*has_group=*/true);
+
+  // Becoming or ceasing to be a scroll container affects descendant
+  // ::scroll-markers.
+  EXPECT_EQ(
+      ComputedStyle::Difference::kDescendantAffecting,
+      ComputedStyle::ComputeDifference(visible_with_group, auto_with_group));
+  EXPECT_EQ(
+      ComputedStyle::Difference::kDescendantAffecting,
+      ComputedStyle::ComputeDifference(auto_with_group, visible_with_group));
+
+  // Without scroll-marker-group, the overflow change does not affect
+  // descendants.
+  const ComputedStyle* visible_no_group =
+      create_style(EOverflow::kVisible, /*has_group=*/false);
+  const ComputedStyle* auto_no_group =
+      create_style(EOverflow::kAuto, /*has_group=*/false);
+  EXPECT_EQ(ComputedStyle::Difference::kNonInherited,
+            ComputedStyle::ComputeDifference(visible_no_group, auto_no_group));
+  EXPECT_EQ(ComputedStyle::Difference::kNonInherited,
+            ComputedStyle::ComputeDifference(auto_no_group, visible_no_group));
+}
+
 TEST_F(ComputedStyleTest, ForcesStackingContext) {
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   builder.SetForcesStackingContext(true);

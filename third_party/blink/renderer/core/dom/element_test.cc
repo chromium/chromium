@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -1716,6 +1717,100 @@ TEST_F(ElementTest, ChangeScrollMarkerGroupMode) {
   // The layout tree is reattached, so the group gets a new layout object.
   EXPECT_TRUE(group->GetLayoutObject());
   EXPECT_NE(old_layout_object, group->GetLayoutObject());
+}
+
+TEST_F(ElementTest, ChangeScrollMarkerGroupScrollContainer) {
+  SetBodyContent(R"HTML(
+    <style>
+      #scroller {
+        scroll-marker-group: before;
+        overflow: visible;
+      }
+      #item::scroll-marker {
+        content: 'a';
+      }
+    </style>
+    <div id="scroller"><div id="item"></div></div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  Element* item = GetElementById("item");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(item->GetPseudoElement(kPseudoIdScrollMarker));
+
+  // Make #scroller a scroll container.
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow, CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+
+  PseudoElement* group =
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+  PseudoElement* marker = item->GetPseudoElement(kPseudoIdScrollMarker);
+  ASSERT_TRUE(group);
+  ASSERT_TRUE(marker);
+  ASSERT_TRUE(group->GetLayoutObject());
+  ASSERT_TRUE(marker->GetLayoutObject());
+  EXPECT_TRUE(
+      marker->GetLayoutObject()->IsDescendantOf(group->GetLayoutObject()));
+
+  // Make #scroller no longer a scroll container.
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow,
+                                   CSSValueID::kVisible);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(item->GetPseudoElement(kPseudoIdScrollMarker));
+}
+
+TEST_F(ElementTest, TransferScrollMarkerBetweenNestedGroups) {
+  SetBodyContent(R"HTML(
+    <style>
+      #outer {
+        scroll-marker-group: before;
+        overflow: auto;
+      }
+      #inner {
+        scroll-marker-group: before;
+        overflow: visible;
+      }
+      #item::scroll-marker {
+        content: 'a';
+      }
+    </style>
+    <div id="outer"><div id="inner"><div id="item"></div></div></div>
+  )HTML");
+
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+  Element* item = GetElementById("item");
+
+  auto expect_marker_in = [&](Element* scroller) {
+    auto* group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+        scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+    auto* marker = DynamicTo<ScrollMarkerPseudoElement>(
+        item->GetPseudoElement(kPseudoIdScrollMarker));
+    ASSERT_TRUE(group);
+    ASSERT_TRUE(marker);
+    ASSERT_TRUE(group->GetLayoutObject());
+    ASSERT_TRUE(marker->GetLayoutObject());
+    EXPECT_EQ(group, marker->ScrollMarkerGroup());
+    EXPECT_TRUE(
+        marker->GetLayoutObject()->IsDescendantOf(group->GetLayoutObject()));
+  };
+
+  UpdateAllLifecyclePhasesForTest();
+  expect_marker_in(outer);
+
+  // Make #inner a scroll container. #item's marker moves to #inner's group.
+  inner->SetInlineStyleProperty(CSSPropertyID::kOverflow, CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+  expect_marker_in(inner);
+
+  // Make #inner no longer a scroll container. #item's marker moves back.
+  inner->SetInlineStyleProperty(CSSPropertyID::kOverflow, CSSValueID::kVisible);
+  UpdateAllLifecyclePhasesForTest();
+  expect_marker_in(outer);
 }
 
 TEST_F(ElementTest, NestedMarkerInheritsFromPseudoParent) {
