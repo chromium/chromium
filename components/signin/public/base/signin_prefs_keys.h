@@ -245,20 +245,6 @@ inline constexpr std::string_view kAvatarButtonSigninPromoLastShownTime =
 inline constexpr std::string_view kDeprecatedTestingPref =
     "DeprecatingTestingPref";
 
-// DEPRECATED(10/2025):
-// History Sync promo on the avatar button.
-//
-// Number of times the history sync promo was shown in the identity pill (avatar
-// toolbar button).
-inline constexpr std::string_view
-    kDeprecatedHistorySyncPromoIdentityPillShownCount =
-        "ChromeSigninSyncPromoIdentityPillShownCount";
-// Number of times the history sync promo was used (clicked) in the identity
-// pill (avatar toolbar button).
-inline constexpr std::string_view
-    kDeprecatedHistorySyncPromoIdentityPillUsedCount =
-        "ChromeSigninSyncPromoIdentityPillUsedCount";
-
 // DEPRECATED(09/2026):
 // Sync promo on the avatar button.
 //
@@ -293,8 +279,6 @@ inline constexpr std::string_view kDeprecatedPasswordSignInPromoDismissCount =
 // `SigninPrefs::MigrateObsoleteSigninPrefs()`.
 inline constexpr auto kDeprecatedSigninPrefs = std::to_array<std::string_view>({
     kDeprecatedTestingPref,
-    kDeprecatedHistorySyncPromoIdentityPillShownCount,
-    kDeprecatedHistorySyncPromoIdentityPillUsedCount,
     kDeprecatedSyncPromoIdentityPillShownCount,
     kDeprecatedSyncPromoIdentityPillUsedCount,
     kDeprecatedPasswordSignInPromoShownCountForLimitsExperiment,

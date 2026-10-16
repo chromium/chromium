@@ -2712,6 +2712,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
+  // Do not remove: `SigninPrefs::MigrateObsoleteSigninPrefs()` should remain
+  // active; obsolete per-account prefs are cleaned up internally within it.
+  SigninPrefs(*profile_prefs).MigrateObsoleteSigninPrefs();
+
 #if !BUILDFLAG(IS_ANDROID)
   // Added 08/2024, but DO NOT REMOVE after the usual year.
   // TODO(crbug.com/356148174): Remove once kMoveThemePrefsToSpecifics has been
@@ -2757,8 +2761,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 09/2025.
   profile_prefs->ClearPref(kLensOverlayEduActionChipShownCount);
-
-  SigninPrefs(*profile_prefs).MigrateObsoleteSigninPrefs();
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Added 10/2025
