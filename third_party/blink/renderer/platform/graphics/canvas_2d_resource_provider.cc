@@ -1011,16 +1011,13 @@ sk_sp<SkSurface> Canvas2DResourceProvider::CreateSkSurface() const {
   // When using software raster, we render into CPU memory managed internally by
   // SkSurface and copy the rendered results to the backing SharedImage before
   // dispatching that SharedImage to the display compositor.
-  const auto props = GetSkSurfaceProps();
+  const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
+  const auto props =
+      skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
   const auto info = SkImageInfo::Make(
       size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
       alpha_type_, color_space_.ToSkColorSpace());
   return SkSurfaces::Raster(info, &props);
-}
-
-SkSurfaceProps Canvas2DResourceProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
-  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
 void Canvas2DResourceProvider::ClearAtCreation() {

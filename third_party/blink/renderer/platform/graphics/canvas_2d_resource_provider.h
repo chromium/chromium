@@ -269,7 +269,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // by this provider.
   void WillDrawUnaccelerated();
 
-  SkSurfaceProps GetSkSurfaceProps() const;
   sk_sp<SkSurface> CreateSkSurface() const;
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
