@@ -133,6 +133,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionShowTravel, u"Travel");
   add_action(kActionShowHistory, u"History");
   add_action(kActionRecentTabsSubmenu, u"Recent Tabs");
+  add_action(kActionOtherDeviceTabsSubmenu, u"Other device tabs");
   add_action(kActionShowDownloadsPage, u"Downloads");
   add_action(kActionBookmarksSubmenu, u"Bookmarks and Lists");
   add_action(kActionBookmarkThisTab, u"Bookmark This Tab");

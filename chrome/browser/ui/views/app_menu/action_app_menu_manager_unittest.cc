@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 
+#include <algorithm>
+
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -42,6 +44,7 @@
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
@@ -1004,6 +1007,123 @@ TEST_F(ActionAppMenuManagerTest,
       stts_action->GetChildren().children()[1]->GetActionItem()->GetText(),
       l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE));
 #endif
+}
+
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuPlacement) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  const auto& children = your_chrome_section->GetChildren().children();
+  auto recent_tabs_it =
+      std::find_if(children.begin(), children.end(), [](const auto& child) {
+        return child->GetActionItem()->GetActionId() ==
+               kActionRecentTabsSubmenu;
+      });
+  ASSERT_NE(recent_tabs_it, children.end());
+
+  auto other_device_tabs_it =
+      std::find_if(children.begin(), children.end(), [](const auto& child) {
+        return child->GetActionItem()->GetActionId() ==
+               kActionOtherDeviceTabsSubmenu;
+      });
+  ASSERT_NE(other_device_tabs_it, children.end());
+
+  auto downloads_it =
+      std::find_if(children.begin(), children.end(), [](const auto& child) {
+        return child->GetActionItem()->GetActionId() ==
+               kActionShowDownloadsPage;
+      });
+  ASSERT_NE(downloads_it, children.end());
+
+  // "Other device tabs" sits directly below "History" and before "Downloads".
+  EXPECT_EQ(recent_tabs_it + 1, other_device_tabs_it);
+  EXPECT_EQ(other_device_tabs_it + 1, downloads_it);
+
+  actions::BaseAction* other_device_tabs_action = other_device_tabs_it->get();
+  EXPECT_TRUE(other_device_tabs_action->GetActionItem()->GetEnabled());
+  EXPECT_TRUE(other_device_tabs_action->GetActionItem()->GetVisible());
+  EXPECT_EQ(other_device_tabs_action->GetProperty(views::kElementIdentifierKey),
+            AppMenuModel::kOtherDeviceTabsMenuItem);
+  EXPECT_TRUE(
+      other_device_tabs_action->GetProperty(AppMenuActionItem::kIsSubmenuKey));
+}
+
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kCrossDeviceTabsInAppMenu);
+
+  actions::ActionItem* other_device_tabs_action =
+      actions::ActionManager::Get().FindAction(kActionOtherDeviceTabsSubmenu,
+                                               nullptr);
+  ASSERT_NE(other_device_tabs_action, nullptr);
+  other_device_tabs_action->SetVisible(false);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  actions::BaseAction* other_device_tabs =
+      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
+  ASSERT_NE(other_device_tabs, nullptr);
+  EXPECT_FALSE(other_device_tabs->GetActionItem()->GetVisible());
+
+  const auto& children = your_chrome_section->GetChildren().children();
+  auto recent_tabs_it =
+      std::find_if(children.begin(), children.end(), [](const auto& child) {
+        return child->GetActionItem()->GetActionId() ==
+               kActionRecentTabsSubmenu;
+      });
+  ASSERT_NE(recent_tabs_it, children.end());
+  auto other_device_tabs_it =
+      std::find_if(children.begin(), children.end(), [](const auto& child) {
+        return child->GetActionItem()->GetActionId() ==
+               kActionOtherDeviceTabsSubmenu;
+      });
+  ASSERT_NE(other_device_tabs_it, children.end());
+  auto downloads_it =
+      std::find_if(children.begin(), children.end(), [](const auto& child) {
+        return child->GetActionItem()->GetActionId() ==
+               kActionShowDownloadsPage;
+      });
+  ASSERT_NE(downloads_it, children.end());
+  EXPECT_EQ(recent_tabs_it + 1, other_device_tabs_it);
+  EXPECT_EQ(other_device_tabs_it + 1, downloads_it);
+}
+
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuIncognito) {
+  base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
+
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(otr_profile));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionRecentTabsSubmenu),
+            nullptr);
 }
 
 }  // namespace

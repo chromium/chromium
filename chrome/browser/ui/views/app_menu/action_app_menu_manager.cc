@@ -94,6 +94,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/skills/features.h"
+#include "components/sync/base/features.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
@@ -728,6 +729,11 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
                   recent_tabs_menu_->GetWeakPtr()),
               /*build_submenu=*/std::nullopt,
               {.element_id = AppMenuModel::kHistoryMenuItem});
+
+          section.AddSubmenu(
+              kActionOtherDeviceTabsSubmenu, [](AppMenuBuilder& sub) {},
+              {.element_id = AppMenuModel::kOtherDeviceTabsMenuItem,
+               .is_submenu = true});
         }
 
         section.AddAction(kActionShowDownloadsPage,

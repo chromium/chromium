@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -16,26 +17,31 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -94,11 +100,13 @@ class ActionAppMenuBrowserTest : public InProcessBrowserTest {
   }
   ~ActionAppMenuBrowserTest() override = default;
 
-  BrowserAppMenuButton* GetMenuButton() {
+  BrowserAppMenuButton* GetMenuButton(
+      BrowserWindowInterface* target_browser = nullptr) {
     return views::AsViewClass<BrowserAppMenuButton>(
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
             kToolbarAppMenuButtonElementId,
-            BrowserView::GetBrowserViewForBrowser(browser())
+            BrowserView::GetBrowserViewForBrowser(
+                target_browser ? target_browser : browser())
                 ->GetElementContext()));
   }
 
@@ -367,4 +375,122 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchQueryBrowserTest,
 
   menu_button->CloseMenu();
   EXPECT_FALSE(menu_button->IsMenuShowing());
+}
+
+class ActionAppMenuWithOtherDeviceTabsBrowserTest
+    : public ActionAppMenuBrowserTest {
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kCrossDeviceTabsInAppMenu};
+};
+
+class ActionAppMenuWithoutOtherDeviceTabsBrowserTest
+    : public ActionAppMenuBrowserTest {
+ public:
+  ActionAppMenuWithoutOtherDeviceTabsBrowserTest() {
+    feature_list_.InitAndDisableFeature(syncer::kCrossDeviceTabsInAppMenu);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenu) {
+  BrowserAppMenuButton* menu_button = GetMenuButton();
+  ASSERT_TRUE(menu_button);
+
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+
+  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* other_device_tabs_item =
+      root->GetMenuItemByID(kActionOtherDeviceTabsSubmenu);
+  ASSERT_TRUE(other_device_tabs_item);
+  EXPECT_TRUE(other_device_tabs_item->GetVisible());
+  EXPECT_TRUE(other_device_tabs_item->GetEnabled());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OTHER_DEVICE_TABS_MENU),
+            other_device_tabs_item->title());
+  EXPECT_FALSE(other_device_tabs_item->GetIcon().IsEmpty());
+  EXPECT_TRUE(other_device_tabs_item->HasSubmenu());
+  EXPECT_EQ(AppMenuModel::kOtherDeviceTabsMenuItem,
+            other_device_tabs_item->GetProperty(views::kElementIdentifierKey));
+
+  views::MenuItemView* recent_tabs_item =
+      root->GetMenuItemByID(kActionRecentTabsSubmenu);
+  ASSERT_TRUE(recent_tabs_item);
+
+  views::MenuItemView* downloads_item =
+      root->GetMenuItemByID(kActionShowDownloadsPage);
+  ASSERT_TRUE(downloads_item);
+
+  views::SubmenuView* submenu = root->GetSubmenu();
+  std::optional<size_t> recent_tabs_index =
+      submenu->GetIndexOf(recent_tabs_item);
+  std::optional<size_t> other_device_tabs_index =
+      submenu->GetIndexOf(other_device_tabs_item);
+  std::optional<size_t> downloads_index = submenu->GetIndexOf(downloads_item);
+
+  ASSERT_TRUE(recent_tabs_index.has_value());
+  ASSERT_TRUE(other_device_tabs_index.has_value());
+  ASSERT_TRUE(downloads_index.has_value());
+
+  EXPECT_EQ(recent_tabs_index.value() + 1, other_device_tabs_index.value());
+  EXPECT_EQ(other_device_tabs_index.value() + 1, downloads_index.value());
+
+  menu_button->CloseMenu();
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuIncognito) {
+  BrowserAppMenuButton* menu_button = GetMenuButton(CreateIncognitoBrowser());
+  ASSERT_TRUE(menu_button);
+
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  EXPECT_EQ(nullptr, root->GetMenuItemByID(kActionOtherDeviceTabsSubmenu));
+
+  menu_button->CloseMenu();
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithoutOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuFlagOff) {
+  BrowserAppMenuButton* menu_button = GetMenuButton();
+  ASSERT_TRUE(menu_button);
+
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+
+  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* other_device_tabs_item =
+      root->GetMenuItemByID(kActionOtherDeviceTabsSubmenu);
+  EXPECT_EQ(nullptr, other_device_tabs_item);
+
+  views::MenuItemView* recent_tabs_item =
+      root->GetMenuItemByID(kActionRecentTabsSubmenu);
+  ASSERT_TRUE(recent_tabs_item);
+  views::MenuItemView* downloads_item =
+      root->GetMenuItemByID(kActionShowDownloadsPage);
+  ASSERT_TRUE(downloads_item);
+
+  views::SubmenuView* submenu = root->GetSubmenu();
+  std::optional<size_t> recent_tabs_index =
+      submenu->GetIndexOf(recent_tabs_item);
+  std::optional<size_t> downloads_index = submenu->GetIndexOf(downloads_item);
+  ASSERT_TRUE(recent_tabs_index.has_value());
+  ASSERT_TRUE(downloads_index.has_value());
+  EXPECT_EQ(recent_tabs_index.value() + 1, downloads_index.value());
+
+  menu_button->CloseMenu();
 }

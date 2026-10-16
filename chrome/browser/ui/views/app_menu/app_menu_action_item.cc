@@ -154,6 +154,10 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     item->SetProperty(kIsAlertedKey, params.is_alerted.value());
   }
 
+  if (params.is_submenu.has_value()) {
+    item->SetProperty(kIsSubmenuKey, params.is_submenu.value());
+  }
+
   if (params.text_override.has_value()) {
     item->SetProperty(kTextOverrideKey, std::make_unique<std::u16string>(
                                             params.text_override.value()));

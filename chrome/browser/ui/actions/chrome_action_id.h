@@ -586,6 +586,7 @@
   E(kActionHelpSubmenu, IDC_HELP_MENU)                                     \
   E(kActionSavedTabGroupsSubmenu, IDC_SAVED_TAB_GROUPS_MENU)               \
   E(kActionRecentTabsSubmenu, IDC_RECENT_TABS_MENU)                       \
+  E(kActionOtherDeviceTabsSubmenu, IDC_OTHER_DEVICE_TABS_MENU)                 \
   E(kActionDeveloperSubmenu, IDC_DEVELOPER_MENU)                               \
   E(kActionExtensionsSubmenu, IDC_EXTENSIONS_SUBMENU)                          \
   E(kActionSkillsAndExtensionsSubmenu, IDC_SKILLS_AND_EXTENSIONS_MENU)         \

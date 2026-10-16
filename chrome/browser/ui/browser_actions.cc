@@ -227,6 +227,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
 #include "extensions/common/extension_urls.h"
@@ -5424,6 +5425,21 @@ void BrowserActions::InitializeSubmenuActions() {
           kActionRecentTabsSubmenu, IDS_HISTORY_MENU, IDS_HISTORY_MENU,
           features::IsRoundedIconsEnabled() ? kHistoryIcon : kHistoryOldIcon,
           /*is_pinnable=*/false)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {},
+              bwi),
+          kActionOtherDeviceTabsSubmenu, IDS_OTHER_DEVICE_TABS_MENU,
+          IDS_OTHER_DEVICE_TABS_MENU,
+          features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                            : vector_icons::kDevicesOldIcon,
+          /*is_pinnable=*/false)
+          .SetVisible(
+              base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu))
           .Build());
 
   root_action_item_->AddChild(

@@ -66,6 +66,7 @@ class AppMenuActionItem {
     raw_ptr<const base::Feature> new_badge_feature;
     ui::ElementIdentifier element_id;
     std::optional<bool> is_alerted;
+    std::optional<bool> is_submenu;
   };
 
   static const ui::ClassProperty<DisplayType>* const kDisplayTypeKey;
