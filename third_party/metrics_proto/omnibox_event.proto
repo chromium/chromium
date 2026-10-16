@@ -502,6 +502,8 @@ message OmniboxEventProto {
                                         // visits with similar embeddings to the
                                         // query.
       TAB_GROUP = 41;                   // Tab group suggestion result.
+      RECENTLY_CLOSED_TAB = 42;         // A recently closed tab that can be
+                                        // restored.
     }
 
     ResultType result_type = 2;
