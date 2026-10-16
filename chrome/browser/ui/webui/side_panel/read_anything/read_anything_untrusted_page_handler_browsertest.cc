@@ -1652,12 +1652,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        TreeRemoved_OnlyForwardsSentTrees) {
   handler_ = CreateHandler();
-  auto* observer = static_cast<ui::AXActionHandlerObserver*>(handler_.get());
+  auto* registry = ui::AXActionHandlerRegistry::GetInstance();
 
   // Unknown/unsent tree ID is not forwarded.
   ui::AXTreeID random_id = ui::AXTreeID::CreateNewAXTreeID();
   EXPECT_CALL(page_, OnAXTreeDestroyed(random_id)).Times(0);
-  observer->TreeRemoved(random_id);
+  registry->RemoveAXTreeID(random_id);
   page_.receiver_.FlushForTesting();
 
   // Main frame tree sent during construction is forwarded.
@@ -1667,12 +1667,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                                              ->GetPrimaryMainFrame();
   ui::AXTreeID main_tree_id = main_frame->GetAXTreeID();
   EXPECT_CALL(page_, OnAXTreeDestroyed(main_tree_id)).Times(1);
-  observer->TreeRemoved(main_tree_id);
+  registry->RemoveAXTreeID(main_tree_id);
   page_.receiver_.FlushForTesting();
 
   // Removing the same tree ID again produces no call.
   EXPECT_CALL(page_, OnAXTreeDestroyed(main_tree_id)).Times(0);
-  observer->TreeRemoved(main_tree_id);
+  registry->RemoveAXTreeID(main_tree_id);
   page_.receiver_.FlushForTesting();
 
   // Tree for an event that was dropped is not forwarded.
@@ -1683,7 +1683,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   page_.receiver_.FlushForTesting();
 
   EXPECT_CALL(page_, OnAXTreeDestroyed(dropped_tree_id)).Times(0);
-  observer->TreeRemoved(dropped_tree_id);
+  registry->RemoveAXTreeID(dropped_tree_id);
   page_.receiver_.FlushForTesting();
 }
 
