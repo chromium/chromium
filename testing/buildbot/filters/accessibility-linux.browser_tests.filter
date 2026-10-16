@@ -42,6 +42,9 @@
 # Recently starting failing on Linux: crbug.com/483514148
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 
+# Hits DCHECK(GetAXTreeID().token()) on Linux accessibility: crbug.com/526541651
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlLong/MPArch
+
 # Flaky on multiple bots: crbug.com/479257786, crbug.com/487147580
 -ContextualTasksBrowserTest.App
 
