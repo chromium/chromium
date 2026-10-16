@@ -22,9 +22,36 @@ component("session") {
   ]
 }
 
+# Must not be linked into a component (including :session): a component would
+# get its own copy of the KeepAliveRegistry singleton in component builds.
+source_set("process_shutdown") {
+  sources = [
+    "process_shutdown.cc",
+    "process_shutdown.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keep_alive_registry",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "scoped_process_shutting_down_override_for_testing.cc",
+    "scoped_process_shutting_down_override_for_testing.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keep_alive_registry",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":process_shutdown",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/cryptohome",
@@ -32,7 +59,11 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/session",
     "//chromeos/dbus/power",
+    "//components/keep_alive_registry",
     "//testing/gtest",
   ]
-  sources = [ "session_termination_manager_unittest.cc" ]
+  sources = [
+    "process_shutdown_unittest.cc",
+    "session_termination_manager_unittest.cc",
+  ]
 }

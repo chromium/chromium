@@ -15,10 +15,10 @@
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/session/process_shutdown.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
@@ -252,7 +252,7 @@ void OwnerKeyLoader::Run() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   DCHECK(callback_) << "Run() can only be called once.";
 
-  if (g_browser_process && g_browser_process->IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     return std::move(callback_).Run(/*public_key=*/nullptr,
                                     /*private_key=*/nullptr);
     // `this` might be deleted here.

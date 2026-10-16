@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/login/session/scoped_process_shutting_down_override_for_testing.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/ownership/owner_key_util_impl.h"
@@ -653,7 +654,7 @@ TEST_F(RegularOwnerKeyLoaderTest, ExitOnShutdown) {
   // In real code DeviceSettingsService must call this for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
   // Do not prepare any keys, so key_loader_ has to generate a new one.
-  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+  ScopedProcessShuttingDownOverrideForTesting shutting_down_override;
 
   key_loader_->Run();
 

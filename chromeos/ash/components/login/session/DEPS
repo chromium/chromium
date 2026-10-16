@@ -39,7 +39,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "(process_shutdown|scoped_process_shutting_down_override_for_testing)\\.cc": [
+    "+components/keep_alive_registry/keep_alive_registry.h",
+  ],
   ".*test\\.cc": [
+    "+components/keep_alive_registry/keep_alive_registry.h",
     "+testing",
   ]
 }
