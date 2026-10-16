@@ -7169,7 +7169,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"force-drive-disclaimer-accepted",
      flag_descriptions::kForceDriveDisclaimerAcceptedName,
-     flag_descriptions::kForceDriveDisclaimerAcceptedDescription, kOsDesktop,
+     flag_descriptions::kForceDriveDisclaimerAcceptedDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kForceDriveDisclaimerAccepted)},
 
     {"forced-colors", flag_descriptions::kForcedColorsName,
