@@ -525,11 +525,12 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
     if (!ancestor->CachedIsIncludedInTree()) {
       continue;
     }
-    if (!ancestor->has_dirty_descendants_) {
-      ancestor->SetHasDirtyDescendants(true);
+    if (ancestor->has_dirty_descendants_) {
+      break;
     }
+    ancestor->SetHasDirtyDescendants(true);
   }
-#if AX_FAIL_FAST_BUILD()
+#if DCHECK_IS_ON()
   // Walk up the tree looking for dirty bits that failed to be set. If any
   // are found, this is a bug.
   for (auto* obj = ParentObjectIfPresent(); obj;
@@ -539,7 +540,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
                    << ParentChainToStringHelper(this);
     }
   }
-#endif  // AX_FAIL_FAST_BUILD()
+#endif  // DCHECK_IS_ON()
 }
 
 void AXObject::Init(AXObject* parent) {
@@ -3849,8 +3850,10 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       // This is being inserted in the hierarchy as an included node: if the
       // parent has dirty descendants copy that bit to this as well, so as not
       // to interrupt the chain of descendant updates.
-      if (AXObject* unignored_parent = ParentObjectUnignored()) {
-        if (unignored_parent->HasDirtyDescendants()) {
+      if (AXObjectCache().EntireDocumentIsDirty()) {
+        has_dirty_descendants_ = true;
+      } else if (AXObject* included_parent = ParentObjectIncludedInTree()) {
+        if (included_parent->HasDirtyDescendants()) {
           has_dirty_descendants_ = true;
         }
       }

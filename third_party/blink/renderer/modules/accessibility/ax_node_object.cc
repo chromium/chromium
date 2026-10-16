@@ -6650,7 +6650,17 @@ void AXNodeObject::InsertChild(AXObject* child,
   // Set the parent:
   // - For a new object it will have already been set.
   // - For a reused, older object, it may need to be changed to a new parent.
-  child->SetParent(this);
+  if (child->ParentObjectIfPresent() != this) {
+    child->SetParent(this);
+  } else if (AXObject* ax_included_parent =
+                 CachedIsIncludedInTree() ? this
+                                          : ParentObjectIncludedInTree()) {
+    if (AXObjectCache().IsUpdatingTree()) {
+      ax_included_parent->SetHasDirtyDescendants(true);
+    } else if (!ax_included_parent->HasDirtyDescendants()) {
+      child->SetAncestorsHaveDirtyDescendants();
+    }
+  }
 
   if (ChildrenNeedToUpdateCachedValues()) {
     child->InvalidateCachedValues(TreeUpdateReason::kChildInserted);

@@ -5889,6 +5889,12 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   for (auto& object : objects) {
     if (!object->IsDetached()) {
       object->SetNeedsToUpdateChildren();
+      // `SetNeedsToUpdateChildren()` returns early if `children_dirty_` was
+      // already set. Explicitly mark all included objects so no ancestor is
+      // left with `has_dirty_descendants_` unset above a dirty descendant.
+      if (object->CachedIsIncludedInTree()) {
+        object->SetHasDirtyDescendants(true);
+      }
     }
   }
 

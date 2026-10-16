@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Becoming included under an ignored-but-included parent with a dirty sibling does not crash</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<main>
+  <button id="sibling">Sibling</button>
+  <div role="none" lang="en">
+    <span>
+      <button id="descendant">Descendant</button>
+    </span>
+  </div>
+</main>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Builds and finalizes the initial tree. The <div> has role="none" and
+  // lang="en", so it is ignored-but-included, while the bare <span> inside
+  // it is ignored and unincluded.
+  accessibilityController.rootElement;
+
+  // Marks <main> as having dirty descendants without dirtying the <div>.
+  sibling.setAttribute('aria-label', 'Updated sibling');
+
+  // Giving the <span> an id makes it included in the tree under the
+  // ignored-but-included <div>, and updating #descendant then walks up
+  // from #descendant to mark its ancestors as having dirty descendants.
+  document.querySelector('span').id = 'wrapper';
+  descendant.setAttribute('aria-label', 'Updated descendant');
+
+  accessibilityController.rootElement;
+}, 'Becoming included under an ignored-but-included parent with a dirty sibling does not crash');
+</script>

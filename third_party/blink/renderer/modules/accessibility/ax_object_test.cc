@@ -3598,5 +3598,117 @@ TEST_F(AccessibilityTest, ClearChildrenDetachesIncludedAndUnincludedChildren) {
   EXPECT_EQ(nullptr, included->ParentObjectIfPresent());
 }
 
+TEST_F(AccessibilityTest, SetAncestorsHaveDirtyDescendantsAndDynamicInclusion) {
+  SetBodyInnerHTML(R"HTML(
+      <main id="main">
+        <div id="ignored_included" role="none" lang="en">
+          <span>
+            <button id="leaf_1">One</button>
+            <button id="leaf_2">Two</button>
+          </span>
+        </div>
+        <div role="radiogroup" id="rg">
+          <div role="radio" id="radio_1">Choice 1</div>
+        </div>
+      </main>)HTML");
+
+  auto& cache = GetAXObjectCache();
+  AXObject* root = cache.Root();
+  ASSERT_NE(nullptr, root);
+  AXObject* main = GetAXObjectByElementId("main");
+  ASSERT_NE(nullptr, main);
+  AXObject* ignored_included = cache.Get(GetElementById("ignored_included"));
+  ASSERT_NE(nullptr, ignored_included);
+  ASSERT_TRUE(ignored_included->IsIgnored());
+  ASSERT_TRUE(ignored_included->IsIncludedInTree());
+
+  Element* unincluded_element =
+      GetDocument().QuerySelector(AtomicString("span"));
+  ASSERT_NE(nullptr, unincluded_element);
+  AXObject* unincluded = cache.Get(unincluded_element);
+  ASSERT_NE(nullptr, unincluded);
+  ASSERT_FALSE(unincluded->IsIncludedInTree());
+
+  AXObject* leaf_1 = GetAXObjectByElementId("leaf_1");
+  ASSERT_NE(nullptr, leaf_1);
+  AXObject* leaf_2 = GetAXObjectByElementId("leaf_2");
+  ASSERT_NE(nullptr, leaf_2);
+
+  // 1. Dirtying a leaf propagates `HasDirtyDescendants()` through unincluded
+  // ancestors to all included ancestors up to `Root()`.
+  leaf_1->SetNeedsToUpdateChildren();
+  EXPECT_FALSE(leaf_1->HasDirtyDescendants());
+  EXPECT_FALSE(unincluded->HasDirtyDescendants());
+  EXPECT_TRUE(ignored_included->HasDirtyDescendants());
+  EXPECT_TRUE(main->HasDirtyDescendants());
+  EXPECT_TRUE(root->HasDirtyDescendants());
+
+  // Dirtying a sibling leaf stops at the already-dirty included ancestor while
+  // preserving the upward invariant across the ancestor chain.
+  leaf_2->SetNeedsToUpdateChildren();
+  EXPECT_TRUE(ignored_included->HasDirtyDescendants());
+  EXPECT_TRUE(main->HasDirtyDescendants());
+  EXPECT_TRUE(root->HasDirtyDescendants());
+
+  // 2. When an unincluded node dynamically becomes included in the tree while
+  // its ignored-but-included parent has dirty descendants, it inherits
+  // `HasDirtyDescendants()` during deferred update processing so
+  // `FinalizeTree()` continues down to update `leaf_1` and `leaf_2`.
+  unincluded_element->setAttribute(html_names::kAriaLabelAttr,
+                                   AtomicString("label"));
+  cache.UpdateAXForAllDocuments();
+  EXPECT_TRUE(unincluded->IsIncludedInTree());
+  EXPECT_FALSE(unincluded->HasDirtyDescendants());
+  EXPECT_FALSE(leaf_1->NeedsToUpdateChildren());
+  EXPECT_FALSE(leaf_2->NeedsToUpdateChildren());
+  EXPECT_FALSE(ignored_included->HasDirtyDescendants());
+  EXPECT_FALSE(main->HasDirtyDescendants());
+  EXPECT_FALSE(root->HasDirtyDescendants());
+
+  // 3. If an ancestor already has `NeedsToUpdateChildren()` set before
+  // `MarkDocumentDirty()`, `MarkDocumentDirtyWithCleanLayout()` still sets
+  // `HasDirtyDescendants()` on that ancestor so subsequent dirty-descendant
+  // propagation on deeper nodes does not leave a gap in the ancestor chain.
+  main->SetNeedsToUpdateChildren();
+  ASSERT_TRUE(main->NeedsToUpdateChildren());
+  ASSERT_FALSE(main->HasDirtyDescendants());
+
+  cache.MarkDocumentDirty();
+  cache.UpdateAXForAllDocuments();
+
+  EXPECT_FALSE(main->NeedsToUpdateChildren());
+  EXPECT_FALSE(main->HasDirtyDescendants());
+  EXPECT_FALSE(root->HasDirtyDescendants());
+
+  // 4. When a sibling under `main` is dirtied (marking `main` dirty while
+  // leaving `ignored_included` clean), an unincluded node becoming included
+  // under `ignored_included` must not copy `HasDirtyDescendants()` from `main`
+  // while leaving `ignored_included` clean; otherwise dirtying a descendant
+  // under that node would stop early and skip `ignored_included`.
+  unincluded_element->removeAttribute(html_names::kAriaLabelAttr);
+  cache.UpdateAXForAllDocuments();
+  unincluded = cache.Get(unincluded_element);
+  ASSERT_NE(nullptr, unincluded);
+  ASSERT_FALSE(unincluded->IsIncludedInTree());
+  ASSERT_FALSE(ignored_included->HasDirtyDescendants());
+  ASSERT_FALSE(main->HasDirtyDescendants());
+
+  GetElementById("rg")->setAttribute(html_names::kAriaLabelAttr,
+                                     AtomicString("Updated sibling"));
+  unincluded_element->setAttribute(html_names::kIdAttr,
+                                   AtomicString("wrapper"));
+  GetElementById("leaf_1")->setAttribute(html_names::kAriaLabelAttr,
+                                         AtomicString("Updated descendant"));
+  cache.UpdateAXForAllDocuments();
+
+  unincluded = cache.Get(unincluded_element);
+  ASSERT_NE(nullptr, unincluded);
+  EXPECT_TRUE(unincluded->IsIncludedInTree());
+  EXPECT_FALSE(unincluded->HasDirtyDescendants());
+  EXPECT_FALSE(ignored_included->HasDirtyDescendants());
+  EXPECT_FALSE(main->HasDirtyDescendants());
+  EXPECT_FALSE(root->HasDirtyDescendants());
+}
+
 }  // namespace test
 }  // namespace blink
