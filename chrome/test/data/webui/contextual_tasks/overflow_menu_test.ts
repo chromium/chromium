@@ -193,6 +193,16 @@ suite('OverflowMenuTest', () => {
       assertFalse(!!pinButton);
     });
 
+    test('shows pin button when not on AI page if enablePinButtonOnSrp is true', async () => {
+      loadTimeData.overrideValues({enablePinButtonOnSrp: true});
+      overflowMenu.isAiPage = false;
+      await microtasksFinished();
+
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+    });
+
     test('updates isAiPage on callback', async () => {
       overflowMenu.isAiPage = false;
       await microtasksFinished();

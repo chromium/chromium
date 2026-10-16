@@ -8040,6 +8040,7 @@ from previous Chrome versions.
       label="AutofillCreditCardLastUsedDateDisplay:enabled"/>
   <int value="-2081943876"
       label="ExperimentalAccessibilityDictationHints:enabled"/>
+  <int value="-2081344698" label="EnableContextualTasksPinButtonOnSrp:enabled"/>
   <int value="-2080657940" label="DirectActions:disabled"/>
   <int value="-2080504230" label="TabHoverCards:disabled"/>
   <int value="-2080227937" label="ImeTrayHideVoiceButton:enabled"/>
@@ -21818,6 +21819,7 @@ from previous Chrome versions.
   <int value="2060099975" label="AndroidBottomToolbar:enabled"/>
   <int value="2060738464"
       label="ComposeboxPersistentAimButtonOmnibox:disabled"/>
+  <int value="2061382594" label="EnableContextualTasksPinButtonOnSrp:disabled"/>
   <int value="2061585881" label="EnableAIPromptAPI:enabled"/>
   <int value="2062051946" label="AccessCodeCastFreezeUI:disabled"/>
   <int value="2062665434" label="AddPrinterViaPrintscanmgr:enabled"/>

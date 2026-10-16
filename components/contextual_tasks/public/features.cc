@@ -66,6 +66,10 @@ BASE_FEATURE(kContextualTasksDriveOAuthScope, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableContextualTasksPinButtonInToolbar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the pin button in the side panel header when viewing the SRP.
+BASE_FEATURE(kEnableContextualTasksPinButtonOnSrp,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Keeps the ephemeral contextual tasks button visible even when the permanent
 // button is pinned in the toolbar.
 BASE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned,
@@ -785,6 +789,10 @@ bool IsContextualTasksPinButtonInToolbarEnabled() {
   return base::FeatureList::IsEnabled(kEnableContextualTasksPinButtonInToolbar);
 }
 
+bool IsContextualTasksPinButtonOnSrpEnabled() {
+  return base::FeatureList::IsEnabled(kEnableContextualTasksPinButtonOnSrp);
+}
+
 int GetContextualTasksNumSessionsBeforeRequestPinPromo() {
   return kContextualTasksNumSessionsBeforeRequestPinPromo.Get();
 }
@@ -1105,6 +1113,12 @@ const char kEnableContextualTasksPinButtonInToolbarName[] =
     "Contextual Tasks Pin Button In Toolbar";
 const char kEnableContextualTasksPinButtonInToolbarDescription[] =
     "Enables the pin button in the toolbar for contextual tasks.";
+
+const char kEnableContextualTasksPinButtonOnSrpName[] =
+    "Contextual Tasks Pin Button On SRP";
+const char kEnableContextualTasksPinButtonOnSrpDescription[] =
+    "Enables the option to pin the contextual tasks shortcut from the side "
+    "panel header when viewing the search results page (SRP).";
 
 const char kContextualTasksHideMenuOnAiPageName[] =
     "Contextual Tasks Hide Menu On AI Page";

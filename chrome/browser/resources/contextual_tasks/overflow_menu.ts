@@ -147,7 +147,10 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   }
 
   protected shouldShowPinButton_(): boolean {
-    return this.isPinButtonEnabled && this.isAiPage;
+    return this.isPinButtonEnabled &&
+        (this.isAiPage ||
+         (loadTimeData.valueExists('enablePinButtonOnSrp') &&
+          loadTimeData.getBoolean('enablePinButtonOnSrp')));
   }
 
   protected getPinButtonTooltip_(): string {

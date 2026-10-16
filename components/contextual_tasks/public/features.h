@@ -24,6 +24,7 @@ BASE_DECLARE_FEATURE(kContextualTasksUpdatedEntryPoints);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kContextualTasksDriveOAuthScope);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
+BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonOnSrp);
 BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonContextMenu);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss);
@@ -557,6 +558,9 @@ extern bool IsRoundedClipPathEnabled();
 // Returns whether the pin button in toolbar is enabled.
 extern bool IsContextualTasksPinButtonInToolbarEnabled();
 
+// Returns whether the pin button in the side panel header is enabled on SRP.
+extern bool IsContextualTasksPinButtonOnSrpEnabled();
+
 // Returns the number of sessions after onboarding before triggering the pinning
 // IPH.
 extern int GetContextualTasksNumSessionsBeforeRequestPinPromo();
@@ -609,6 +613,8 @@ extern const char kContextualTasksCookiePrefetchName[];
 extern const char kContextualTasksCookiePrefetchDescription[];
 extern const char kEnableContextualTasksPinButtonInToolbarName[];
 extern const char kEnableContextualTasksPinButtonInToolbarDescription[];
+extern const char kEnableContextualTasksPinButtonOnSrpName[];
+extern const char kEnableContextualTasksPinButtonOnSrpDescription[];
 extern const char kContextualTasksHideMenuOnAiPageName[];
 extern const char kContextualTasksHideMenuOnAiPageDescription[];
 extern const char kContextualTasksEnableSpatialModelToolbarLayoutName[];

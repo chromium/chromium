@@ -331,6 +331,9 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
           profile);
   dict.Set("enablePinButton", is_pinning_eligible);
+  dict.Set("enablePinButtonOnSrp",
+           is_pinning_eligible &&
+               contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled());
   dict.Set(
       "isSidePanelPinned",
       is_pinning_eligible && contextual_tasks::GetEffectivePinState(profile));

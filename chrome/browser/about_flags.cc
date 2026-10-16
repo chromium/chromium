@@ -12463,6 +12463,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          contextual_tasks::kEnableContextualTasksPinButtonInToolbar)},
 
+    {"enable-contextual-tasks-pin-button-on-srp",
+     contextual_tasks::flag_descriptions::
+         kEnableContextualTasksPinButtonOnSrpName,
+     contextual_tasks::flag_descriptions::
+         kEnableContextualTasksPinButtonOnSrpDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kEnableContextualTasksPinButtonOnSrp)},
+
     {"contextual-tasks-enable-spatial-model-toolbar-layout",
      contextual_tasks::flag_descriptions::
          kContextualTasksEnableSpatialModelToolbarLayoutName,

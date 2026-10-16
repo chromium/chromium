@@ -591,6 +591,9 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
           profile);
   dict.Set("enablePinButton", is_pinning_eligible);
+  dict.Set("enablePinButtonOnSrp",
+           is_pinning_eligible &&
+               contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled());
   dict.Set("isSidePanelPinned",
            is_pinning_eligible &&
                contextual_tasks::GetEffectivePinState(profile));
@@ -1230,9 +1233,13 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
     return;
   }
 
-  // 1. Verify we are still in AI Mode.
-  bool is_ai_page = ui_service_ && ui_service_->IsAiUrl(GetInnerFrameUrl());
-  if (!is_ai_page) {
+  // 1. Verify we are still in AI Mode (or on the SRP when pinning on SRP is
+  // enabled).
+  const GURL& inner_frame_url = GetInnerFrameUrl();
+  bool is_ai_page = ui_service_ && ui_service_->IsAiUrl(inner_frame_url);
+  bool is_srp = contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled() &&
+                ui_service_ && ui_service_->IsSearchResultsUrl(inner_frame_url);
+  if (!is_ai_page && !is_srp) {
     return;
   }
 
