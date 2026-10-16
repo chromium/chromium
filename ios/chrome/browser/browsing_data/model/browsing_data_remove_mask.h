@@ -9,6 +9,9 @@
 
 // Mask used to control which data to remove when clearing browsing
 // data.
+// Data types defined here usually also need to be defined on Desktop/Android.
+// Keep the two in sync.
+// LINT.IfChange(BrowsingDataRemoveMask)
 enum class BrowsingDataRemoveMask {
   REMOVE_NOTHING = 0,
 
@@ -53,6 +56,7 @@ enum class BrowsingDataRemoveMask {
                                REMOVE_FORM_DATA | REMOVE_HISTORY |
                                REMOVE_PASSWORDS | REMOVE_LAST_USER_ACCOUNT,
 };
+// LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h:DataTypes)
 
 // Implementation of bitwise "or", "and" operators and the corresponding
 // assignment operators too (as those are not automatically defined for

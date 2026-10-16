@@ -21,6 +21,9 @@ constexpr DataType DATA_TYPE_EMBEDDER_BEGIN =
     content::BrowsingDataRemover::DATA_TYPE_CONTENT_END << 1;
 
 // Chrome-specific datatypes.
+// Data types defined here usually also need to be defined on iOS. Keep the
+// two in sync.
+// LINT.IfChange(DataTypes)
 constexpr DataType DATA_TYPE_HISTORY = DATA_TYPE_EMBEDDER_BEGIN;
 constexpr DataType DATA_TYPE_FORM_DATA = DATA_TYPE_EMBEDDER_BEGIN << 1;
 constexpr DataType DATA_TYPE_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 2;
@@ -49,6 +52,7 @@ constexpr DataType DATA_TYPE_SEARCH_ENGINE_CHOICE = DATA_TYPE_EMBEDDER_BEGIN
 constexpr DataType DATA_TYPE_PRIVATE_VERIFICATION_TOKENS =
     DATA_TYPE_EMBEDDER_BEGIN << 17;
 constexpr DataType DATA_TYPE_SKILLS = DATA_TYPE_EMBEDDER_BEGIN << 18;
+// LINT.ThenChange(//ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h:BrowsingDataRemoveMask)
 
 // Group datatypes.
 
