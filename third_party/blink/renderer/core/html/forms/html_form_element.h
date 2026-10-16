@@ -245,6 +245,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void RemoveFromPastNamesMap(HTMLElement&);
   bool PastNamesEmpty() const;
 
+  // Whether `this`'s document can have declarative WebMCP tools at all,
+  // independent of `this`'s attributes.
+  bool CanDocumentHaveDeclarativeWebMCPTools() const;
   void ScheduleDeclarativeWebMCPToolRegistration();
   void RegisterDeclarativeWebMCPTool();
   void ReportInvalidMCPFormIssueIfNeeded(const String& name,
@@ -361,7 +364,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                                 ScriptState* script_state,
                                 ScriptValue value);
 
-  // Used only for (experimental) declarative WebMCP.
+  // Used only for (experimental) declarative WebMCP. Non-null iff this tool is
+  // registered with the `ModelContext` of `GetDocument()`.
   Member<HTMLFormMcpTool> active_webmcp_tool_;
 
   bool is_submitting_ = false;

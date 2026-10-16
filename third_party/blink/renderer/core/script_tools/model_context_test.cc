@@ -904,7 +904,7 @@ TEST_F(ModelContextTest, ForEachScriptToolGC) {
   {
     auto* mock_tool = MakeGarbageCollected<MockDeclarativeTool>();
     tool_id = mock_tool->ToolId();
-    model_context->RegisterDeclarativeTool(mock_tool);
+    ASSERT_TRUE(model_context->RegisterDeclarativeTool(mock_tool));
   }
 
   // Trigger GC, which should not reclaim mock_tool.
@@ -1141,7 +1141,7 @@ TEST_F(ModelContextTest, fileURLAllowedForDeclarativeTool) {
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
 
   auto* mock_tool = MakeGarbageCollected<MockDeclarativeTool>();
-  model_context->RegisterDeclarativeTool(mock_tool);
+  ASSERT_TRUE(model_context->RegisterDeclarativeTool(mock_tool));
 
   HeapVector<Member<const ToolData>> tools = model_context->ListTools();
   ASSERT_EQ(1u, tools.size());

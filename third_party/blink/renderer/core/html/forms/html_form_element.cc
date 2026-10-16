@@ -358,6 +358,19 @@ void HTMLFormElement::ReportInvalidMCPFormIssueIfNeeded(
                                   DOMNodeIds::IdForNode(this));
 }
 
+bool HTMLFormElement::CanDocumentHaveDeclarativeWebMCPTools() const {
+  // Declarative WebMCP tools require an active frame to bind to the browser
+  // process.
+  if (!GetDocument().GetFrame()) {
+    return false;
+  }
+  // Declarative WebMCP tools require script execution capability. Sandboxed
+  // frames without `allow-scripts` cannot register tools, consistent with the
+  // imperative `registerTool()` API.
+  return !GetExecutionContext()->IsSandboxed(
+      network::mojom::blink::WebSandboxFlags::kScripts);
+}
+
 // This gets called when a <form> is added or removed from the document, or
 // when `toolname` or `tooldescription` attributes are added, removed, or
 // changed, and when the children of `this` are changed.
@@ -365,18 +378,7 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
   if (!ModelContext::IsDeclarativeWebMCPEnabled(GetExecutionContext())) {
     return;
   }
-  // Declarative WebMCP tools require an active frame to bind to the browser
-  // process. If the document has no frame, there is nothing to schedule.
-  if (!GetDocument().GetFrame()) {
-    return;
-  }
-  // Declarative WebMCP tools require script execution capability. Sandboxed
-  // frames without `allow-scripts` cannot register tools, consistent with the
-  // imperative `registerTool()` API.
-  if (GetExecutionContext()->IsSandboxed(
-          network::mojom::blink::WebSandboxFlags::kScripts)) {
-    return;
-  }
+  const bool document_can_have_tools = CanDocumentHaveDeclarativeWebMCPTools();
   // The `<form>` must have *both* the `toolname` and `tooldescription`
   // attributes, and the form must be document-connected, to qualify for
   // declarative WebMCP inclusion.
@@ -389,19 +391,36 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
   // Only report issues if it is not a valid mcp form and
   // at least one of name or description is present.
   // If no name or description are present, ignore.
-  if (!is_valid_mcp_form && (name || description)) {
+  if (document_can_have_tools && !is_valid_mcp_form && (name || description)) {
     ReportInvalidMCPFormIssueIfNeeded(name, description);
   }
 
   // If we are unregistering/removing the tool, do so synchronously and
   // immediately to ensure DOM safety and correct event sequence.
-  if (!is_valid_mcp_form) {
+  //
+  // This must also run when the document can't have tools. A form only
+  // registers its tool in a document that can have tools, and a document's
+  // sandbox flags don't change, so the only way to get here with
+  // `active_webmcp_tool_` populated is when the document has *lost* its frame:
+  // e.g., the form registered its tool in an iframe's document, the iframe was
+  // removed, and the form is now being removed from that frameless document
+  // (possibly to be adopted into another document).
+  //
+  // If we returned early in that case, the form would keep
+  // `active_webmcp_tool_` after leaving the document whose `ModelContext` it is
+  // registered with. If the form were then adopted into another document
+  // without its attributes changing, a later unregistration would target the
+  // new document's `ModelContext` with the old document's tool.
+  if (!document_can_have_tools || !is_valid_mcp_form) {
     // Cancel the pending registration of `this`, since we no longer represent a
     // valid tool.
     mcp_registration_task_.Cancel();
     if (!active_webmcp_tool_) {
       return;
     }
+    // See above: only a frameless document can hold a registered tool that it
+    // can't have.
+    CHECK(document_can_have_tools || !GetDocument().GetFrame());
 
     ModelContext* model_context =
         ModelContextSupplement::modelContext(GetDocument());
@@ -433,12 +452,12 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
   String title = FastGetAttribute(html_names::kTooltitleAttr);
   const bool has_toolautosubmit =
       FastHasAttribute(html_names::kToolautosubmitAttr);
-  // We check that `this` is "still" a valid declarative WebMCP form because
-  // last we checked when this method was queued, it was, but that could've
-  // changed.
+  // We check that `this` is "still" a valid declarative WebMCP form, in a
+  // document that can have tools, because last we checked when this method was
+  // queued, it was, but that could've changed.
   const bool is_still_valid_mcp_form = isConnected() && name && description;
 
-  if (!is_still_valid_mcp_form) {
+  if (!CanDocumentHaveDeclarativeWebMCPTools() || !is_still_valid_mcp_form) {
     return;
   }
 
@@ -477,7 +496,11 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
   active_webmcp_tool_->SetLastComputedSchema(
       active_webmcp_tool_->ComputeInputSchema());
 
-  model_context->RegisterDeclarativeTool(active_webmcp_tool_);
+  // Registration can be rejected (e.g., for a duplicate or invalid name). In
+  // that case, don't hold onto a tool that `model_context` doesn't know about.
+  if (!model_context->RegisterDeclarativeTool(active_webmcp_tool_)) {
+    active_webmcp_tool_ = nullptr;
+  }
 }
 
 Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(

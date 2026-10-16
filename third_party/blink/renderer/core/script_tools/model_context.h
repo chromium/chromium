@@ -214,11 +214,12 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   bool CancelTool(base::UnguessableToken invocation_id);
 
-  void RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
-  // Unregisters the declarative tool identified by `tool_id`, if it is still
-  // registered. Keying on the ID rather than the name means this can't
-  // unregister a *different* tool that holds the same name, e.g., when this
-  // tool's registration was rejected because its name was already taken.
+  // Returns whether `tool` was registered. Registration is rejected if, e.g.,
+  // the `tools` permissions policy is disabled, or `tool`'s name is invalid or
+  // already taken. The caller must not unregister a rejected tool.
+  [[nodiscard]] bool RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
+  // Unregisters the declarative tool identified by `tool_id`, which must be
+  // registered.
   void UnregisterDeclarativeTool(const base::UnguessableToken& tool_id);
   void PauseExecution();
 
