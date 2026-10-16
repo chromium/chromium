@@ -12309,6 +12309,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          contextual_tasks::kContextualTasksEphemeralButtonContextMenu)},
 
+    {"contextual-tasks-ephemeral-button-auto-dismiss",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralButtonAutoDismissName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralButtonAutoDismissDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEphemeralButtonAutoDismiss)},
+
     {"contextual-tasks-private-api-no-animation",
      contextual_tasks::flag_descriptions::
          kContextualTasksPrivateApiNoAnimationName,

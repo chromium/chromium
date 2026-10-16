@@ -12687,6 +12687,8 @@ from previous Chrome versions.
   <int value="-699321605" label="OobeJellyModal:enabled"/>
   <int value="-699198009" label="KeyboardShortcutViewer:enabled"/>
   <int value="-698768314" label="FirstRunDesktopRefresh:disabled"/>
+  <int value="-698114504"
+      label="ContextualTasksEphemeralButtonAutoDismiss:disabled"/>
   <int value="-697887799"
       label="AutofillSaveCardDialogUnlabeledExpirationDate:disabled"/>
   <int value="-697751423" label="disable-quickoffice-component-app"/>
@@ -16532,6 +16534,8 @@ from previous Chrome versions.
   <int value="466421847" label="WebuiRefresh2026:enabled"/>
   <int value="467078443" label="FwupdDeveloperMode:disabled"/>
   <int value="467291749" label="LensOverlayVirtualFocusNavigation:disabled"/>
+  <int value="468615932"
+      label="ContextualTasksEphemeralButtonAutoDismiss:enabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
   <int value="468959230"

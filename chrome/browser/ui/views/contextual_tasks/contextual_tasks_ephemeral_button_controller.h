@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTROLLER_H_
 
+#include <map>
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -89,6 +94,9 @@ class ContextualTasksEphemeralButtonController
 
   bool ShouldShowEphemeralButton();
   void RemoveEphemeralButtonForCurrentTask();
+  bool HasAutoDismissTimerForTesting(SessionID tab_id) const;
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
   // content::WebContentsObserver:
@@ -104,6 +112,9 @@ class ContextualTasksEphemeralButtonController
   void OnTabDiscarded(tabs::TabInterface* tab,
                       content::WebContents* old_contents,
                       content::WebContents* new_contents);
+  base::TimeDelta GetAutoDismissDuration() const;
+  void DismissEphemeralButtonForTab(SessionID tab_id);
+  void CancelAutoDismissTimersForActiveTask();
 
   bool is_contextual_tasks_panel_open_ = false;
   bool is_hiding_contextual_tasks_panel_ = false;
@@ -114,6 +125,9 @@ class ContextualTasksEphemeralButtonController
   // zero-state task with no thread is destroyed as soon as it loses its last
   // tab, which would otherwise take the button down with it.
   std::vector<SessionID> ephemeral_button_eligible_tabs_;
+  std::map<SessionID, base::OneShotTimer>
+      ephemeral_button_auto_dismiss_timers_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_for_testing_;
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       contextual_task_entry_observation_{this};
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;

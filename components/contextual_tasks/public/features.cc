@@ -76,6 +76,30 @@ BASE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned,
 BASE_FEATURE(kContextualTasksEphemeralButtonContextMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Automatically dismisses the ephemeral contextual tasks toolbar button and
+// disassociates its task after a configurable period of inactivity (in
+// minutes). Defaults to 1440 minutes (24 hours).
+BASE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int>
+    kContextualTasksEphemeralButtonAutoDismissTimeMinutes(
+        &kContextualTasksEphemeralButtonAutoDismiss,
+        "ContextualTasksEphemeralButtonAutoDismissTimeMinutes",
+        1440);
+
+bool IsContextualTasksEphemeralButtonAutoDismissEnabled() {
+  return base::FeatureList::IsEnabled(
+      kContextualTasksEphemeralButtonAutoDismiss);
+}
+
+int GetContextualTasksEphemeralButtonAutoDismissTimeMinutes() {
+  if (!IsContextualTasksEphemeralButtonAutoDismissEnabled()) {
+    return 0;
+  }
+  return kContextualTasksEphemeralButtonAutoDismissTimeMinutes.Get();
+}
+
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1142,6 +1166,12 @@ const char kContextualTasksEphemeralButtonContextMenuName[] =
 const char kContextualTasksEphemeralButtonContextMenuDescription[] =
     "Enables a context menu on the ephemeral contextual tasks toolbar button "
     "to remove it from the toolbar.";
+
+const char kContextualTasksEphemeralButtonAutoDismissName[] =
+    "Contextual Tasks Ephemeral Button Auto Dismiss";
+const char kContextualTasksEphemeralButtonAutoDismissDescription[] =
+    "Automatically dismisses the ephemeral contextual tasks toolbar button "
+    "after a period of inactivity.";
 
 const char kABASearchJourneysName[] = "ABA Search Journeys";
 const char kABASearchJourneysDescription[] =
