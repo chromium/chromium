@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/common/event_args.h"
 
 namespace file_manager {
 namespace file_manager_private = extensions::api::file_manager_private;
@@ -210,9 +212,11 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
            file_manager_private::OnDriveSyncError::kEventName)) {
     event.file_url =
         ConvertDrivePathToFileSystemUrl(error.path, listener_url).spec();
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        file_manager_private::OnDriveSyncError::Create(event));
     BroadcastEvent(extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
                    file_manager_private::OnDriveSyncError::kEventName,
-                   file_manager_private::OnDriveSyncError::Create(event));
+                   std::move(event_args));
   }
 }
 
@@ -245,10 +249,12 @@ void DriveFsEventRouter::OnDriveIntegrationServiceDestroyed() {
 
 void DriveFsEventRouter::OnBulkPinProgress(
     const drivefs::pinning::Progress& progress) {
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnBulkPinProgress::Create(
+          util::BulkPinProgressToJs(progress)));
   BroadcastEvent(extensions::events::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS,
                  file_manager_private::OnBulkPinProgress::kEventName,
-                 file_manager_private::OnBulkPinProgress::Create(
-                     util::BulkPinProgressToJs(progress)));
+                 std::move(event_args));
 }
 
 void DriveFsEventRouter::ClearStaleSyncStates() {
@@ -284,10 +290,12 @@ void DriveFsEventRouter::DisplayConfirmDialog(
   for (const auto& listener_url : urls) {
     event.file_url =
         ConvertDrivePathToFileSystemUrl(reason.path, listener_url).spec();
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        file_manager_private::OnDriveConfirmDialog::Create(event));
     BroadcastEvent(
         extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG,
         file_manager_private::OnDriveConfirmDialog::kEventName,
-        file_manager_private::OnDriveConfirmDialog::Create(event));
+        std::move(event_args));
   }
 }
 
@@ -312,10 +320,11 @@ void DriveFsEventRouter::RestoreNotificationsForFilePath(
 void DriveFsEventRouter::BroadcastIndividualTransfersEvent(
     const extensions::events::HistogramValue event_type,
     const std::vector<IndividualFileTransferStatus>& status) {
-  BroadcastEvent(
-      event_type, kIndividualTransferEventName,
-      file_manager_private::OnIndividualFileTransfersUpdated::Create(status),
-      /*dispatch_to_system_notification=*/false);
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnIndividualFileTransfersUpdated::Create(status));
+  BroadcastEvent(event_type, kIndividualTransferEventName,
+                 std::move(event_args),
+                 /*dispatch_to_system_notification=*/false);
 }
 
 void DriveFsEventRouter::BroadcastOnDirectoryChangedEvent(
@@ -324,9 +333,11 @@ void DriveFsEventRouter::BroadcastOnDirectoryChangedEvent(
   if (!IsPathWatched(directory)) {
     return;
   }
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDirectoryChanged::Create(event));
   BroadcastEvent(extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
                  file_manager_private::OnDirectoryChanged::kEventName,
-                 file_manager_private::OnDirectoryChanged::Create(event));
+                 std::move(event_args));
 }
 
 drivefs::SyncState DriveFsEventRouter::GetDriveSyncStateForPath(

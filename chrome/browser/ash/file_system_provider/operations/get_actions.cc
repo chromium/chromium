@@ -54,12 +54,14 @@ bool GetActions::Execute(int request_id) {
   for (const auto& entry_path : entry_paths_)
     options.entry_paths.push_back(entry_path.AsUTF8Unsafe());
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnGetActionsRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_GET_ACTIONS_REQUESTED,
       extensions::api::file_system_provider::OnGetActionsRequested::kEventName,
-      extensions::api::file_system_provider::OnGetActionsRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void GetActions::OnSuccess(/*request_id=*/int,

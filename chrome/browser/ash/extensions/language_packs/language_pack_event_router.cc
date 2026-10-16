@@ -47,11 +47,11 @@ void LanguagePackEventRouter::OnPackStateChanged(
           ->GetInputMethodIdsFromHandwritingLanguage(pack_result.language_code);
   change.status = LanguagePackResultToExtensionStatus(pack_result);
 
-  base::ListValue args = OnLanguagePackStatusChanged::Create(change);
-
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      OnLanguagePackStatusChanged::Create(change));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_LANGUAGE_PACK_STATUS_CHANGED,
-      OnLanguagePackStatusChanged::kEventName, std::move(args), context_);
+      OnLanguagePackStatusChanged::kEventName, std::move(event_args), context_);
   router->BroadcastEvent(std::move(event));
 }
 

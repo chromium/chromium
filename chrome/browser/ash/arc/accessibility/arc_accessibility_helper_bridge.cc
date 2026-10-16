@@ -546,14 +546,14 @@ void ArcAccessibilityHelperBridge::DispatchEventTextAnnouncement(
   if (!event_data->event_text.has_value())
     return;
 
-  auto event_args(
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
       extensions::api::accessibility_private::OnAnnounceForAccessibility::
           Create(*(event_data->event_text)));
-  std::unique_ptr<extensions::Event> event(new extensions::Event(
+  auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_ANNOUNCE_FOR_ACCESSIBILITY,
       extensions::api::accessibility_private::OnAnnounceForAccessibility::
           kEventName,
-      std::move(event_args)));
+      std::move(event_args));
   GetEventRouter()->BroadcastEvent(std::move(event));
 }
 

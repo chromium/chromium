@@ -50,8 +50,8 @@ bool WriteFile::Execute(int request_id) {
   base::DictValue options_as_value = options.ToValue();
   options_as_value.Set("data", base::Value(buffer_->first(length_)));
 
-  base::ListValue event_args;
-  event_args.Append(std::move(options_as_value));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(std::move(options_as_value));
 
   return SendEvent(
       request_id,

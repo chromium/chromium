@@ -291,8 +291,8 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
   SetupHandlerHostFileAccessPermissions(file_definition_list.get(),
                                         extension_.get(), handler_pid);
 
-  base::ListValue event_args;
-  event_args.Append(action_id_);
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(action_id_);
   base::DictValue details;
   // Get file definitions. These will be replaced with Entry instances by
   // dispatchEvent() method from event_binding.js.
@@ -300,7 +300,7 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
       *entry_definition_list);
 
   details.Set("entries", std::move(file_entries));
-  event_args.Append(std::move(details));
+  event_args->data.Append(std::move(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_BROWSER_HANDLER_ON_EXECUTE,
       "fileBrowserHandler.onExecute", std::move(event_args), profile_);

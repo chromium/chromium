@@ -40,8 +40,8 @@ void ExtensionImeMenuEventRouter::ImeMenuActivationChanged(bool activation) {
   if (!router->HasEventListener(OnImeMenuActivationChanged::kEventName))
     return;
 
-  base::ListValue args;
-  args.Append(activation);
+  auto args = base::MakeRefCounted<extensions::EventArgs>();
+  args->data.Append(activation);
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
@@ -59,7 +59,7 @@ void ExtensionImeMenuEventRouter::ImeMenuListChanged() {
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_LIST_CHANGED,
-      OnImeMenuListChanged::kEventName, base::ListValue(), context_);
+      OnImeMenuListChanged::kEventName, nullptr, context_);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -95,12 +95,12 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
     menu_items.push_back(std::move(menu_item));
   }
 
-  auto args = OnImeMenuItemsChanged::Create(engine_id, menu_items);
-
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      OnImeMenuItemsChanged::Create(engine_id, menu_items));
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_ITEMS_CHANGED,
-      OnImeMenuItemsChanged::kEventName, std::move(args), context_);
+      OnImeMenuItemsChanged::kEventName, std::move(event_args), context_);
   router->BroadcastEvent(std::move(event));
 }
 

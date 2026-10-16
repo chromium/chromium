@@ -141,8 +141,8 @@ bool AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
   keyboard_event.shift_key = key_event->IsShiftDown();
 
   // Build the extension event.
-  base::ListValue event_args;
-  event_args.Append(keyboard_event.ToValue());
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(keyboard_event.ToValue());
   std::unique_ptr<extensions::Event> extension_event;
   if (is_pressed) {
     extension_event = std::make_unique<extensions::Event>(
@@ -189,8 +189,8 @@ void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  base::ListValue event_args;
-  event_args.Append(ToString(command));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,
@@ -210,8 +210,8 @@ void AccessibilityEventRewriterDelegateImpl::SendPointScanPoint(
   point_dict.Set("x", point.x());
   point_dict.Set("y", point.y());
 
-  base::ListValue event_args;
-  event_args.Append(std::move(point_dict));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(std::move(point_dict));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET,
@@ -227,8 +227,8 @@ void AccessibilityEventRewriterDelegateImpl::SendMagnifierCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  base::ListValue event_args;
-  event_args.Append(ToString(command));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,

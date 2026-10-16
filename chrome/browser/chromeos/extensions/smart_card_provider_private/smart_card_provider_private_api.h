@@ -8,12 +8,14 @@
 #include <variant>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/event_args.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -299,7 +301,7 @@ class SmartCardProviderPrivateAPI
       base::OnceCallback<void(ResultPtr)> callback,
       void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                      RequestId),
-      base::ListValue event_arguments = base::ListValue(),
+      scoped_refptr<extensions::EventArgs> event_arguments = nullptr,
       std::optional<base::TimeDelta> timeout = std::nullopt);
 
   device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(

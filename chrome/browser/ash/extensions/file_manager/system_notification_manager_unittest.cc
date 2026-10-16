@@ -75,6 +75,13 @@ struct Strings {
   std::vector<std::u16string> buttons;
 };
 
+scoped_refptr<extensions::EventArgs> MakeBulkPinProgressEventArgs(
+    const file_manager_private::BulkPinProgress& progress) {
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(progress.ToValue());
+  return event_args;
+}
+
 // DeviceEventRouter implementation for testing.
 class DeviceEventRouterImpl : public DeviceEventRouter {
  public:
@@ -969,12 +976,11 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
 
 // Tests the bulk-pinning notifications.
 TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
-  using List = base::ListValue;
   const std::string_view event_name = "unused-event-name";
 
   // Event with no args should be ignored.
   notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name, List()));
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name, nullptr));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -985,7 +991,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   // Handle an unparsable event.
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -995,7 +1001,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1004,7 +1010,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kListingFiles;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1013,7 +1019,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be one notification.
   EXPECT_EQ(1u, GetNotificationCount());
@@ -1038,7 +1044,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kSyncing;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1047,7 +1053,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be one notification.
   EXPECT_EQ(1u, GetNotificationCount());
@@ -1071,7 +1077,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1081,7 +1087,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.emptied_queue = true;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1090,7 +1096,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be one notification.
   EXPECT_EQ(1u, GetNotificationCount());
@@ -1114,7 +1120,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kSyncing;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1123,7 +1129,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kCannotGetFreeSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be one notification.
   EXPECT_EQ(1u, GetNotificationCount());
@@ -1147,7 +1153,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.should_pin = false;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1156,7 +1162,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
-            List().Append(progress.ToValue())));
+            MakeBulkPinProgressEventArgs(progress)));
 
   // There should be no notification.
   EXPECT_EQ(0u, GetNotificationCount());
@@ -1169,11 +1175,13 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   sync_error.type = fmp::DriveSyncErrorType::kDeleteWithoutPermission;
   sync_error.file_url = "drivefs://fake.txt";
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDriveSyncError::Create(sync_error));
   // Send the delete without permission sync error event.
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
             file_manager_private::OnDriveSyncError::kEventName,
-            file_manager_private::OnDriveSyncError::Create(sync_error)));
+            std::move(event_args)));
   // Check: We have one notification.
   ASSERT_EQ(1u, GetNotificationCount());
   const char* id = ToString(sync_error.type);
@@ -1188,11 +1196,13 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   // Setup for the service unavailable error.
   sync_error.type = fmp::DriveSyncErrorType::kServiceUnavailable;
 
+  event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDriveSyncError::Create(sync_error));
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
             file_manager_private::OnDriveSyncError::kEventName,
-            file_manager_private::OnDriveSyncError::Create(sync_error)));
+            std::move(event_args)));
   // Check: We have two notifications.
   ASSERT_EQ(2u, GetNotificationCount());
   id = ToString(sync_error.type);
@@ -1207,11 +1217,13 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   // Setup for the no server space error.
   sync_error.type = fmp::DriveSyncErrorType::kNoServerSpace;
 
+  event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDriveSyncError::Create(sync_error));
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
             file_manager_private::OnDriveSyncError::kEventName,
-            file_manager_private::OnDriveSyncError::Create(sync_error)));
+            std::move(event_args)));
   // Check: We have three notifications.
   ASSERT_EQ(3u, GetNotificationCount());
   id = ToString(sync_error.type);
@@ -1226,11 +1238,13 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   // Setup for the no local space error.
   sync_error.type = fmp::DriveSyncErrorType::kNoLocalSpace;
 
+  event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDriveSyncError::Create(sync_error));
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
             file_manager_private::OnDriveSyncError::kEventName,
-            file_manager_private::OnDriveSyncError::Create(sync_error)));
+            std::move(event_args)));
   // Check: We have four notifications.
   ASSERT_EQ(4u, GetNotificationCount());
   id = ToString(sync_error.type);
@@ -1243,11 +1257,13 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   // Setup for the miscellaneous sync error.
   sync_error.type = fmp::DriveSyncErrorType::kMisc;
 
+  event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDriveSyncError::Create(sync_error));
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
             file_manager_private::OnDriveSyncError::kEventName,
-            file_manager_private::OnDriveSyncError::Create(sync_error)));
+            std::move(event_args)));
   // Check: We have five notifications.
   ASSERT_EQ(5u, GetNotificationCount());
   id = ToString(sync_error.type);
@@ -1268,10 +1284,12 @@ TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
   drive_event.type =
       file_manager_private::DriveConfirmDialogType::kEnableDocsOffline;
   drive_event.file_url = "drivefs://fake";
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      file_manager_private::OnDriveConfirmDialog::Create(drive_event));
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG,
             file_manager_private::OnDriveConfirmDialog::kEventName,
-            file_manager_private::OnDriveConfirmDialog::Create(drive_event)));
+            std::move(event_args)));
   // Check: We have one notification.
   ASSERT_EQ(1u, GetNotificationCount());
   // Get the strings for the displayed notification.

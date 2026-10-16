@@ -6659,10 +6659,9 @@ void AutotestPrivateAPI::OnClipboardDataChanged() {
     return;
   }
 
-  std::unique_ptr<Event> event(
-      new Event(events::AUTOTESTPRIVATE_ON_CLIPBOARD_DATA_CHANGED,
-                api::autotest_private::OnClipboardDataChanged::kEventName,
-                base::ListValue()));
+  auto event = std::make_unique<Event>(
+      events::AUTOTESTPRIVATE_ON_CLIPBOARD_DATA_CHANGED,
+      api::autotest_private::OnClipboardDataChanged::kEventName, nullptr);
   event_router->BroadcastEvent(std::move(event));
 }
 

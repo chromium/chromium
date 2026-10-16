@@ -49,10 +49,13 @@ void NotifyExtensionAppUiClosed(
   cx_diag::ExceptionInfo exception;
   exception.reason = cx_diag::ExceptionReason::kAppUiClosed;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(exception.ToValue());
+
   auto event = std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION,
-      cx_diag::OnRoutineException::kEventName,
-      base::ListValue().Append(exception.ToValue()), browser_context);
+      cx_diag::OnRoutineException::kEventName, std::move(event_args),
+      browser_context);
 
   // The `EventRouter` might be unavailable in unittests.
   if (!extensions::EventRouter::Get(browser_context)) {

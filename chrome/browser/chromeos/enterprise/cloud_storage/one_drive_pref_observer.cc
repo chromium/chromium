@@ -206,12 +206,13 @@ void OneDrivePrefObserver::BroadcastModeChanged(Mount mode) {
   MountInfo metadata;
   metadata.mode = mode;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::odfs_config_private::OnMountChanged::Create(
+          std::move(metadata)));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ODFS_CONFIG_PRIVATE_MOUNT_CHANGED,
       extensions::api::odfs_config_private::OnMountChanged::kEventName,
-      extensions::api::odfs_config_private::OnMountChanged::Create(
-          std::move(metadata)),
-      profile_);
+      std::move(event_args), profile_);
 
   event_router_->BroadcastEvent(std::move(event));
 }
@@ -233,13 +234,14 @@ void OneDrivePrefObserver::BroadcastAccountRestrictionsChanged(
   AccountRestrictionsInfo event_data;
   event_data.restrictions = std::move(restrictions_vector);
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::odfs_config_private::OnAccountRestrictionsChanged::
+          Create(event_data));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ODFS_CONFIG_PRIVATE_ACCOUNT_RESTRICTIONS_CHANGED,
       extensions::api::odfs_config_private::OnAccountRestrictionsChanged::
           kEventName,
-      extensions::api::odfs_config_private::OnAccountRestrictionsChanged::
-          Create(event_data),
-      profile_);
+      std::move(event_args), profile_);
 
   event_router_->BroadcastEvent(std::move(event));
 }

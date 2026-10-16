@@ -35,12 +35,14 @@ bool CopyEntry::Execute(int request_id) {
   options.source_path = source_path_.AsUTF8Unsafe();
   options.target_path = target_path_.AsUTF8Unsafe();
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnCopyEntryRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_COPY_ENTRY_REQUESTED,
       extensions::api::file_system_provider::OnCopyEntryRequested::kEventName,
-      extensions::api::file_system_provider::OnCopyEntryRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void CopyEntry::OnSuccess(/*request_id=*/int,

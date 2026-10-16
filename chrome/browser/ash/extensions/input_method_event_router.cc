@@ -44,8 +44,8 @@ void ExtensionInputMethodEventRouter::InputMethodChanged(
   if (!router->HasEventListener(OnChanged::kEventName))
     return;
 
-  base::ListValue args;
-  args.Append(manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+  auto args = base::MakeRefCounted<extensions::EventArgs>();
+  args->data.Append(manager->GetActiveIMEState()->GetCurrentInputMethod().id());
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(

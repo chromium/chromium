@@ -92,12 +92,14 @@ bool ReadFile::Execute(int request_id) {
   options.offset = offset_;
   options.length = length_;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnReadFileRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_READ_FILE_REQUESTED,
       extensions::api::file_system_provider::OnReadFileRequested::kEventName,
-      extensions::api::file_system_provider::OnReadFileRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void ReadFile::OnSuccess(/*request_id=*/int,

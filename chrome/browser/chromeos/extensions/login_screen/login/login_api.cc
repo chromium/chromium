@@ -413,11 +413,12 @@ LoginRequestExternalLogoutFunction::~LoginRequestExternalLogoutFunction() =
 
 ExtensionFunction::ResponseAction LoginRequestExternalLogoutFunction::Run() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::login::OnRequestExternalLogout::Create());
   for (Profile* profile : profile_manager->GetLoadedProfiles()) {
-    EventRouter::Get(profile)->BroadcastEvent(
-        std::make_unique<Event>(events::LOGIN_ON_REQUEST_EXTERNAL_LOGOUT,
-                                api::login::OnRequestExternalLogout::kEventName,
-                                api::login::OnRequestExternalLogout::Create()));
+    EventRouter::Get(profile)->BroadcastEvent(std::make_unique<Event>(
+        events::LOGIN_ON_REQUEST_EXTERNAL_LOGOUT,
+        api::login::OnRequestExternalLogout::kEventName, event_args));
   }
   return RespondNow(NoArguments());
 }
@@ -429,11 +430,12 @@ LoginNotifyExternalLogoutDoneFunction::
 
 ExtensionFunction::ResponseAction LoginNotifyExternalLogoutDoneFunction::Run() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::login::OnExternalLogoutDone::Create());
   for (Profile* profile : profile_manager->GetLoadedProfiles()) {
-    EventRouter::Get(profile)->BroadcastEvent(
-        std::make_unique<Event>(events::LOGIN_ON_EXTERNAL_LOGOUT_DONE,
-                                api::login::OnExternalLogoutDone::kEventName,
-                                api::login::OnExternalLogoutDone::Create()));
+    EventRouter::Get(profile)->BroadcastEvent(std::make_unique<Event>(
+        events::LOGIN_ON_EXTERNAL_LOGOUT_DONE,
+        api::login::OnExternalLogoutDone::kEventName, event_args));
   }
   return RespondNow(NoArguments());
 }

@@ -23,11 +23,13 @@ bool Unmount::Execute(int request_id) {
   options.file_system_id = file_system_info_.file_system_id();
   options.request_id = request_id;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnUnmountRequested::Create(
+          options));
   return SendEvent(
       request_id, extensions::events::FILE_SYSTEM_PROVIDER_ON_UNMOUNT_REQUESTED,
       extensions::api::file_system_provider::OnUnmountRequested::kEventName,
-      extensions::api::file_system_provider::OnUnmountRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void Unmount::OnSuccess(/*request_id=*/int,

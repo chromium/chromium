@@ -6,6 +6,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/common/event_args.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
@@ -542,13 +544,14 @@ void SmartCardProviderPrivateAPI::RunOrQueueRequest(ContextId scard_context,
 void SmartCardProviderPrivateAPI::SendReleaseContext(ContextId scard_context) {
   RequestId request_id = request_id_generator_.GenerateNextId();
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      base::ListValue()
+          .Append(request_id.GetUnsafeValue())
+          .Append(scard_context.GetUnsafeValue()));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::
           SMART_CARD_PROVIDER_PRIVATE_ON_RELEASE_CONTEXT_REQUESTED,
-      scard_api::OnReleaseContextRequested::kEventName,
-      base::ListValue()
-          .Append(request_id.GetUnsafeValue())
-          .Append(scard_context.GetUnsafeValue()),
+      scard_api::OnReleaseContextRequested::kEventName, std::move(event_args),
       &*browser_context_);
 
   ASSIGN_OR_RETURN(const std::string provider_extension_id,
@@ -577,15 +580,16 @@ void SmartCardProviderPrivateAPI::SendDisconnect(
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessPlainResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+  event_arguments->data.Append(ToValue(disposition));
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnDisconnectRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnDisconnectTimeout,
-      /*event_arguments=*/
-      base::ListValue()
-          .Append(handle.GetUnsafeValue())
-          .Append(ToValue(disposition)));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendTransmit(
@@ -598,16 +602,17 @@ void SmartCardProviderPrivateAPI::SendTransmit(
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDataResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+  event_arguments->data.Append(ToValue(protocol));
+  event_arguments->data.Append(base::Value(std::move(data)));
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnTransmitRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_TRANSMIT_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnTransmitTimeout,
-      /*event_arguments=*/
-      base::ListValue()
-          .Append(handle.GetUnsafeValue())
-          .Append(ToValue(protocol))
-          .Append(base::Value(std::move(data))));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendControl(ContextId scard_context,
@@ -619,16 +624,17 @@ void SmartCardProviderPrivateAPI::SendControl(ContextId scard_context,
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDataResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+  event_arguments->data.Append(int(control_code));
+  event_arguments->data.Append(base::Value(std::move(data)));
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnControlRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_CONTROL_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnControlTimeout,
-      /*event_arguments=*/
-      base::ListValue()
-          .Append(handle.GetUnsafeValue())
-          .Append(int(control_code))
-          .Append(base::Value(std::move(data))));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendGetAttrib(ContextId scard_context,
@@ -639,13 +645,16 @@ void SmartCardProviderPrivateAPI::SendGetAttrib(ContextId scard_context,
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDataResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+  event_arguments->data.Append(int(id));
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnGetAttribRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_GET_ATTRIB_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnGetAttribTimeout,
-      /*event_arguments=*/
-      base::ListValue().Append(handle.GetUnsafeValue()).Append(int(id)));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendSetAttrib(
@@ -658,16 +667,17 @@ void SmartCardProviderPrivateAPI::SendSetAttrib(
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessPlainResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+  event_arguments->data.Append(int(id));
+  event_arguments->data.Append(base::Value(data));
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnSetAttribRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_SET_ATTRIB_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnSetAttribTimeout,
-      /*event_arguments=*/
-      base::ListValue()
-          .Append(handle.GetUnsafeValue())
-          .Append(int(id))
-          .Append(base::Value(data)));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendStatus(ContextId scard_context,
@@ -677,13 +687,15 @@ void SmartCardProviderPrivateAPI::SendStatus(ContextId scard_context,
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessStatusResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnStatusRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_STATUS_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnStatusTimeout,
-      /*event_arguments=*/
-      base::ListValue().Append(handle.GetUnsafeValue()));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendBeginTransaction(
@@ -694,14 +706,16 @@ void SmartCardProviderPrivateAPI::SendBeginTransaction(
       &SmartCardProviderPrivateAPI::ProcessBeginTransactionResult,
       weak_ptr_factory_.GetWeakPtr(), scard_context, handle);
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnBeginTransactionRequested::kEventName,
       extensions::events::
           SMART_CARD_PROVIDER_PRIVATE_ON_BEGIN_TRANSACTION_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnBeginTransactionTimeout,
-      /*event_arguments=*/
-      base::ListValue().Append(handle.GetUnsafeValue()));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::SendEndTransaction(
@@ -713,16 +727,17 @@ void SmartCardProviderPrivateAPI::SendEndTransaction(
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessPlainResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(handle.GetUnsafeValue());
+  event_arguments->data.Append(ToValue(disposition));
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnEndTransactionRequested::kEventName,
       extensions::events::
           SMART_CARD_PROVIDER_PRIVATE_ON_END_TRANSACTION_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnEndTransactionTimeout,
-      /*event_arguments=*/
-      base::ListValue()
-          .Append(handle.GetUnsafeValue())
-          .Append(ToValue(disposition)));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::ReportResult(
@@ -1107,14 +1122,17 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
     base::OnceCallback<void(ResultPtr)> callback,
     void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                    RequestId),
-    base::ListValue event_arguments,
+    scoped_refptr<extensions::EventArgs> event_arguments,
     std::optional<base::TimeDelta> timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RequestId request_id = request_id_generator_.GenerateNextId();
 
-  event_arguments.Insert(event_arguments.begin(),
-                         base::Value(request_id.GetUnsafeValue()));
+  if (!event_arguments) {
+    event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  }
+  event_arguments->data.Insert(event_arguments->data.begin(),
+                               base::Value(request_id.GetUnsafeValue()));
 
   auto event = std::make_unique<extensions::Event>(histogram_value, event_name,
                                                    std::move(event_arguments),
@@ -1166,12 +1184,15 @@ void SmartCardProviderPrivateAPI::SendListReaders(
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessListReadersResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(scard_context.GetUnsafeValue());
+
   DispatchEventWithTimeout(
       scard_context, scard_api::OnListReadersRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnListReadersTimeout,
-      base::ListValue().Append(scard_context.GetUnsafeValue()));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::GetStatusChange(
@@ -1212,10 +1233,10 @@ void SmartCardProviderPrivateAPI::SendGetStatusChange(
     reader_states_list.Append(ToValue(*reader_state.get()));
   }
 
-  auto event_args = base::ListValue()
-                        .Append(scard_context.GetUnsafeValue())
-                        .Append(timeout.ToValue())
-                        .Append(std::move(reader_states_list));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(scard_context.GetUnsafeValue());
+  event_args->data.Append(timeout.ToValue());
+  event_args->data.Append(std::move(reader_states_list));
 
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessGetStatusChangeResult,
@@ -1240,6 +1261,9 @@ void SmartCardProviderPrivateAPI::Cancel(CancelCallback callback) {
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessPlainResult,
                      weak_ptr_factory_.GetWeakPtr());
 
+  auto event_arguments = base::MakeRefCounted<extensions::EventArgs>();
+  event_arguments->data.Append(scard_context.GetUnsafeValue());
+
   DispatchEventWithTimeout(
       ContextId(),  // Passing an invalid context as Cancel can be called in
                     // parallel to other PC/SC calls and therefore never gets
@@ -1248,8 +1272,7 @@ void SmartCardProviderPrivateAPI::Cancel(CancelCallback callback) {
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnCancelTimeout,
-      /*event_arguments=*/
-      base::ListValue().Append(scard_context.GetUnsafeValue()));
+      std::move(event_arguments));
 }
 
 void SmartCardProviderPrivateAPI::Connect(
@@ -1283,11 +1306,11 @@ void SmartCardProviderPrivateAPI::SendConnect(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
 
-  auto event_args = base::ListValue()
-                        .Append(scard_context.GetUnsafeValue())
-                        .Append(reader)
-                        .Append(ToValue(share_mode))
-                        .Append(ToValue(*preferred_protocols.get()));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(scard_context.GetUnsafeValue());
+  event_args->data.Append(reader);
+  event_args->data.Append(ToValue(share_mode));
+  event_args->data.Append(ToValue(*preferred_protocols.get()));
 
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessConnectResult,

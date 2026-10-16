@@ -69,12 +69,14 @@ bool OpenFile::Execute(int request_id) {
       break;
   }
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnOpenFileRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_OPEN_FILE_REQUESTED,
       extensions::api::file_system_provider::OnOpenFileRequested::kEventName,
-      extensions::api::file_system_provider::OnOpenFileRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void OpenFile::OnSuccess(int request_id,

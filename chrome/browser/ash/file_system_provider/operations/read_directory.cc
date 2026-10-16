@@ -74,13 +74,15 @@ bool ReadDirectory::Execute(int request_id) {
   options.is_directory = true;
   options.name = true;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnReadDirectoryRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_READ_DIRECTORY_REQUESTED,
       extensions::api::file_system_provider::OnReadDirectoryRequested::
           kEventName,
-      extensions::api::file_system_provider::OnReadDirectoryRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void ReadDirectory::OnSuccess(/*request_id=*/int,

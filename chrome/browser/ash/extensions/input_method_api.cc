@@ -410,10 +410,11 @@ ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
   extensions::EventRouter* router =
       extensions::EventRouter::Get(browser_context());
   if (router->HasEventListener(OnInputMethodOptionsChanged::kEventName)) {
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        OnInputMethodOptionsChanged::Create(params->engine_id));
     auto event = std::make_unique<extensions::Event>(
         extensions::events::INPUT_IME_ON_INPUT_METHOD_OPTIONS_CHANGED,
-        OnInputMethodOptionsChanged::kEventName,
-        OnInputMethodOptionsChanged::Create(params->engine_id),
+        OnInputMethodOptionsChanged::kEventName, std::move(event_args),
         browser_context());
     router->BroadcastEvent(std::move(event));
   }

@@ -35,12 +35,14 @@ bool Truncate::Execute(int request_id) {
   options.file_path = file_path_.AsUTF8Unsafe();
   options.length = length_;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnTruncateRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_TRUNCATE_REQUESTED,
       extensions::api::file_system_provider::OnTruncateRequested::kEventName,
-      extensions::api::file_system_provider::OnTruncateRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void Truncate::OnSuccess(/*request_id=*/int,

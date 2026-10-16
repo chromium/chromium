@@ -206,12 +206,14 @@ bool GetMetadata::Execute(int request_id) {
   options.cloud_file_info =
       fields_ & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_FILE_INFO;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnGetMetadataRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_GET_METADATA_REQUESTED,
       extensions::api::file_system_provider::OnGetMetadataRequested::kEventName,
-      extensions::api::file_system_provider::OnGetMetadataRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void GetMetadata::OnSuccess(/*request_id=*/int,

@@ -75,9 +75,9 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionStopped(
   if (client_id.has_value())
     return_dict.Set("clientId", client_id.value());
 
-  base::ListValue event_args;
-  event_args.Append(std::move(return_dict));
-  std::unique_ptr<Event> event = std::make_unique<Event>(
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append(std::move(return_dict));
+  auto event = std::make_unique<Event>(
       events::SPEECH_RECOGNITION_PRIVATE_ON_STOP,
       api::speech_recognition_private::OnStop::kEventName,
       std::move(event_args));
@@ -98,8 +98,9 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionResult(
   event.is_final = is_final;
   event.client_id = client_id;
 
-  auto event_args = api::speech_recognition_private::OnResult::Create(event);
-  std::unique_ptr<Event> event_ptr = std::make_unique<Event>(
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::speech_recognition_private::OnResult::Create(event));
+  auto event_ptr = std::make_unique<Event>(
       events::SPEECH_RECOGNITION_PRIVATE_ON_RESULT,
       api::speech_recognition_private::OnResult::kEventName,
       std::move(event_args));
@@ -118,8 +119,9 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionError(
   event.message = message;
   event.client_id = client_id;
 
-  auto event_args = api::speech_recognition_private::OnError::Create(event);
-  std::unique_ptr<Event> event_ptr = std::make_unique<Event>(
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::speech_recognition_private::OnError::Create(event));
+  auto event_ptr = std::make_unique<Event>(
       events::SPEECH_RECOGNITION_PRIVATE_ON_ERROR,
       api::speech_recognition_private::OnError::kEventName,
       std::move(event_args));

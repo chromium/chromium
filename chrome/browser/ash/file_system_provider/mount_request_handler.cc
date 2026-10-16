@@ -21,9 +21,9 @@ MountRequestHandler::MountRequestHandler(RequestDispatcher* dispatcher,
 MountRequestHandler::~MountRequestHandler() = default;
 
 bool MountRequestHandler::Execute(int request_id) {
-  base::ListValue event_args;
-  event_args.reserve(1);
-  event_args.Append(base::Value(request_id));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.reserve(1);
+  event_args->data.Append(base::Value(request_id));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_SYSTEM_PROVIDER_ON_MOUNT_REQUESTED,

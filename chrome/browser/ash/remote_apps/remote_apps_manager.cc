@@ -342,12 +342,14 @@ void RemoteAppsManager::LaunchApp(const std::string& app_id) {
     return;
   std::string source_id = it->second;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::Create(
+          app_id));
   std::unique_ptr<extensions::Event> event = std::make_unique<
       extensions::Event>(
       extensions::events::ENTERPRISE_REMOTE_APPS_ON_REMOTE_APP_LAUNCHED,
       chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::kEventName,
-      chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::Create(
-          app_id));
+      std::move(event_args));
 
   event_router_->DispatchEventToExtension(source_id, std::move(event));
 

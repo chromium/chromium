@@ -32,12 +32,14 @@ bool AddWatcher::Execute(int request_id) {
   options.entry_path = entry_path_.AsUTF8Unsafe();
   options.recursive = recursive_;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnAddWatcherRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_ADD_WATCHER_REQUESTED,
       extensions::api::file_system_provider::OnAddWatcherRequested::kEventName,
-      extensions::api::file_system_provider::OnAddWatcherRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void AddWatcher::OnSuccess(/*request_id=*/int,

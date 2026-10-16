@@ -35,12 +35,14 @@ bool DeleteEntry::Execute(int request_id) {
   options.entry_path = entry_path_.AsUTF8Unsafe();
   options.recursive = recursive_;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnDeleteEntryRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_DELETE_ENTRY_REQUESTED,
       extensions::api::file_system_provider::OnDeleteEntryRequested::kEventName,
-      extensions::api::file_system_provider::OnDeleteEntryRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void DeleteEntry::OnSuccess(/*request_id=*/int,

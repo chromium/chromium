@@ -189,8 +189,8 @@ void TestCertificateProviderExtension::TriggerSetCertificates() {
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
   message_data.Set("certificateInfoList", std::move(cert_info_values));
 
-  base::ListValue message;
-  message.Append(std::move(message_data));
+  auto message = base::MakeRefCounted<extensions::EventArgs>();
+  message->data.Append(std::move(message_data));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FOR_TEST,
       extensions::api::test::OnMessage::kEventName, std::move(message),

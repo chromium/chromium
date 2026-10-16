@@ -42,96 +42,102 @@ class DefaultEventDelegate : public EventObservation::Delegate {
       }
       case api::os_events::EventCategory::kAudioJack: {
         CHECK(info->is_audio_jack_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_audio_jack_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_AUDIO_JACK_EVENT,
-            api::os_events::OnAudioJackEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_audio_jack_event_info()))
-                    .ToValue()),
+            api::os_events::OnAudioJackEvent::kEventName, std::move(event_args),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kLid: {
         CHECK(info->is_lid_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(converters::events::ConvertStructPtr(
+                                    std::move(info->get_lid_event_info()))
+                                    .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_LID_EVENT,
-            api::os_events::OnLidEvent::kEventName,
-            base::ListValue().Append(converters::events::ConvertStructPtr(
-                                         std::move(info->get_lid_event_info()))
-                                         .ToValue()),
+            api::os_events::OnLidEvent::kEventName, std::move(event_args),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kUsb: {
         CHECK(info->is_usb_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(converters::events::ConvertStructPtr(
+                                    std::move(info->get_usb_event_info()))
+                                    .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_USB_EVENT,
-            api::os_events::OnUsbEvent::kEventName,
-            base::ListValue().Append(converters::events::ConvertStructPtr(
-                                         std::move(info->get_usb_event_info()))
-                                         .ToValue()),
+            api::os_events::OnUsbEvent::kEventName, std::move(event_args),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kExternalDisplay: {
         CHECK(info->is_external_display_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_external_display_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_EXTERNAL_DISPLAY_EVENT,
             api::os_events::OnExternalDisplayEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_external_display_event_info()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kSdCard: {
         CHECK(info->is_sd_card_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(converters::events::ConvertStructPtr(
+                                    std::move(info->get_sd_card_event_info()))
+                                    .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_SD_CARD_EVENT,
-            api::os_events::OnSdCardEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_sd_card_event_info()))
-                    .ToValue()),
+            api::os_events::OnSdCardEvent::kEventName, std::move(event_args),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kPower: {
         CHECK(info->is_power_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(converters::events::ConvertStructPtr(
+                                    std::move(info->get_power_event_info()))
+                                    .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_POWER_EVENT,
-            api::os_events::OnPowerEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_power_event_info()))
-                    .ToValue()),
+            api::os_events::OnPowerEvent::kEventName, std::move(event_args),
             browser_context_);
         break;
       }
       case api::os_events::EventCategory::kKeyboardDiagnostic: {
         CHECK(info->is_keyboard_diagnostic_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_keyboard_diagnostic_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_KEYBOARD_DIAGNOSTIC_EVENT,
             api::os_events::OnKeyboardDiagnosticEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_keyboard_diagnostic_event_info()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kStylusGarage: {
         CHECK(info->is_stylus_garage_event_info());
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_stylus_garage_event_info()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_GARAGE_EVENT,
             api::os_events::OnStylusGarageEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_stylus_garage_event_info()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchpadButton: {
@@ -139,15 +145,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_touchpad_event_info()->is_button_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_touchpad_event_info()->get_button_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_BUTTON_EVENT,
             api::os_events::OnTouchpadButtonEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(
-                        info->get_touchpad_event_info()->get_button_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchpadTouch: {
@@ -155,15 +161,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_touchpad_event_info()->is_touch_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_touchpad_event_info()->get_touch_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_TOUCH_EVENT,
             api::os_events::OnTouchpadTouchEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(
-                        info->get_touchpad_event_info()->get_touch_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchpadConnected: {
@@ -171,15 +177,16 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_touchpad_event_info()->is_connected_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(
+                    info->get_touchpad_event_info()->get_connected_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHPAD_CONNECTED_EVENT,
             api::os_events::OnTouchpadConnectedEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(
-                        info->get_touchpad_event_info()->get_connected_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchscreenTouch: {
@@ -187,15 +194,16 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_touchscreen_event_info()->is_touch_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(
+                    info->get_touchscreen_event_info()->get_touch_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHSCREEN_TOUCH_EVENT,
             api::os_events::OnTouchscreenTouchEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(
-                        info->get_touchscreen_event_info()->get_touch_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kTouchscreenConnected: {
@@ -203,15 +211,16 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_touchscreen_event_info()->is_connected_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(
+                    info->get_touchscreen_event_info()->get_connected_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_TOUCHSCREEN_CONNECTED_EVENT,
             api::os_events::OnTouchscreenConnectedEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_touchscreen_event_info()
-                                  ->get_connected_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kStylusTouch: {
@@ -219,14 +228,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_stylus_event_info()->is_touch_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_stylus_event_info()->get_touch_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_TOUCH_EVENT,
             api::os_events::OnStylusTouchEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(info->get_stylus_event_info()->get_touch_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
       case api::os_events::EventCategory::kStylusConnected: {
@@ -234,15 +244,15 @@ class DefaultEventDelegate : public EventObservation::Delegate {
             !info->get_stylus_event_info()->is_connected_event()) {
           return;
         }
+        auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+        event_args->data.Append(
+            converters::events::ConvertStructPtr(
+                std::move(info->get_stylus_event_info()->get_connected_event()))
+                .ToValue());
         event = std::make_unique<extensions::Event>(
             extensions::events::OS_EVENTS_ON_STYLUS_CONNECTED_EVENT,
             api::os_events::OnStylusConnectedEvent::kEventName,
-            base::ListValue().Append(
-                converters::events::ConvertStructPtr(
-                    std::move(
-                        info->get_stylus_event_info()->get_connected_event()))
-                    .ToValue()),
-            browser_context_);
+            std::move(event_args), browser_context_);
         break;
       }
     }

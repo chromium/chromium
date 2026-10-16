@@ -11,10 +11,11 @@
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/values.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/common/event_args.h"
 #include "storage/browser/file_system/async_file_util.h"
 
 namespace ash::file_system_provider {
@@ -51,7 +52,7 @@ class Operation : public RequestManager::HandlerInterface {
   bool SendEvent(int request_id,
                  extensions::events::HistogramValue histogram_value,
                  const std::string& event_name,
-                 base::ListValue event_args);
+                 scoped_refptr<const extensions::EventArgs> event_args);
 
   ProvidedFileSystemInfo file_system_info_;
 

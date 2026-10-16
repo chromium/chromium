@@ -61,10 +61,13 @@ void DiagnosticRoutine::OnRoutineControlDisconnect(uint32_t error_code,
       static_cast<ash::cros_healthd::mojom::Exception::Reason>(error_code));
   exception.debug_message = message;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(exception.ToValue());
+
   auto event = std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION,
-      cx_diag::OnRoutineException::kEventName,
-      base::ListValue().Append(exception.ToValue()), info_.browser_context);
+      cx_diag::OnRoutineException::kEventName, std::move(event_args),
+      info_.browser_context);
 
   // The `EventRouter` might be unavailable in unittests.
   if (!extensions::EventRouter::Get(info_.browser_context)) {

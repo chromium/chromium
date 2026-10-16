@@ -963,8 +963,9 @@ void ArcAccessibilityTreeTracker::StartTrackingWindows(aura::Window* window) {
 
 void ArcAccessibilityTreeTracker::DispatchCustomSpokenFeedbackToggled(
     bool enabled) {
-  auto event_args(extensions::api::accessibility_private::
-                      OnCustomSpokenFeedbackToggled::Create(enabled));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::accessibility_private::OnCustomSpokenFeedbackToggled::
+          Create(enabled));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::
           ACCESSIBILITY_PRIVATE_ON_CUSTOM_SPOKEN_FEEDBACK_TOGGLED,

@@ -40,10 +40,12 @@ void SessionStateChangedEventDispatcher::OnSessionStateChanged() {
   api::login_state::SessionState new_state =
       ToApiEnum(session_manager::SessionManager::Get()->session_state());
 
-  std::unique_ptr<Event> event = std::make_unique<Event>(
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::login_state::OnSessionStateChanged::Create(new_state));
+  auto event = std::make_unique<Event>(
       events::LOGIN_STATE_ON_SESSION_STATE_CHANGED,
       api::login_state::OnSessionStateChanged::kEventName,
-      api::login_state::OnSessionStateChanged::Create(new_state));
+      std::move(event_args));
 
   event_router_->BroadcastEvent(std::move(event));
 }

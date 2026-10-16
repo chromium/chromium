@@ -100,13 +100,13 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
-                      base::ListValue event_args,
+                      scoped_refptr<const extensions::EventArgs> event_args,
                       bool dispatch_to_system_notification = true) override {
     if (dispatch_to_system_notification) {
-      BroadcastEventImpl(event_name, base::Value(std::move(event_args)));
+      BroadcastEventImpl(event_name, base::Value(event_args->data.Clone()));
     } else {
-      BroadcastEventForIndividualFilesImpl(event_name,
-                                           std::move(event_args[0].GetList()));
+      BroadcastEventForIndividualFilesImpl(
+          event_name, event_args->data[0].GetList().Clone());
     }
   }
 

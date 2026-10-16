@@ -31,11 +31,14 @@ void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id,
     return;
   }
 
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append(desk_id.AsLowercaseString());
+  event_args->data.Append(from_undo);
+
   auto event = std::make_unique<Event>(
       from_undo ? events::DESK_EVENTS_ON_DESK_REMOVAL_UNDONE
                 : events::DESK_EVENTS_ON_DESK_ADDED,
-      api::wm_desks_private::OnDeskAdded::kEventName,
-      base::ListValue().Append(desk_id.AsLowercaseString()).Append(from_undo));
+      api::wm_desks_private::OnDeskAdded::kEventName, std::move(event_args));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -45,10 +48,12 @@ void WMDesksEventsRouter::OnDeskRemoved(const base::Uuid& desk_id) {
     return;
   }
 
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append(desk_id.AsLowercaseString());
+
   auto event = std::make_unique<Event>(
       events::DESK_EVENTS_ON_DESK_REMOVED,
-      api::wm_desks_private::OnDeskRemoved::kEventName,
-      base::ListValue().Append(desk_id.AsLowercaseString()));
+      api::wm_desks_private::OnDeskRemoved::kEventName, std::move(event_args));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -59,12 +64,13 @@ void WMDesksEventsRouter::OnDeskSwitched(const base::Uuid& deactivated,
     return;
   }
 
-  auto event =
-      std::make_unique<Event>(events::DESK_EVENTS_ON_DESK_SWITCHED,
-                              api::wm_desks_private::OnDeskSwitched::kEventName,
-                              base::ListValue()
-                                  .Append(deactivated.AsLowercaseString())
-                                  .Append(activated.AsLowercaseString()));
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append(deactivated.AsLowercaseString());
+  event_args->data.Append(activated.AsLowercaseString());
+
+  auto event = std::make_unique<Event>(
+      events::DESK_EVENTS_ON_DESK_SWITCHED,
+      api::wm_desks_private::OnDeskSwitched::kEventName, std::move(event_args));
   event_router_->BroadcastEvent(std::move(event));
 }
 

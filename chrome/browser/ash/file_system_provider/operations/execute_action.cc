@@ -34,13 +34,15 @@ bool ExecuteAction::Execute(int request_id) {
     options.entry_paths.push_back(entry_path.AsUTF8Unsafe());
   options.action_id = action_id_;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnExecuteActionRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_EXECUTE_ACTION_REQUESTED,
       extensions::api::file_system_provider::OnExecuteActionRequested::
           kEventName,
-      extensions::api::file_system_provider::OnExecuteActionRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void ExecuteAction::OnSuccess(/*request_id=*/int,

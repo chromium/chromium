@@ -23,12 +23,14 @@ bool Configure::Execute(int request_id) {
   options.file_system_id = file_system_info_.file_system_id();
   options.request_id = request_id;
 
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::file_system_provider::OnConfigureRequested::Create(
+          options));
   return SendEvent(
       request_id,
       extensions::events::FILE_SYSTEM_PROVIDER_ON_CONFIGURE_REQUESTED,
       extensions::api::file_system_provider::OnConfigureRequested::kEventName,
-      extensions::api::file_system_provider::OnConfigureRequested::Create(
-          options));
+      std::move(event_args));
 }
 
 void Configure::OnSuccess(/*request_id=*/int,

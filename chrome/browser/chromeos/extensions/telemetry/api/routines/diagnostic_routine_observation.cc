@@ -31,10 +31,12 @@ CreateEventForLegacyFinishedVolumeButtonRoutine(
   cx_diag::LegacyVolumeButtonRoutineFinishedInfo finished_info;
   finished_info.uuid = uuid.AsLowercaseString();
   finished_info.has_passed = has_passed;
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(finished_info.ToValue());
   return std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED,
-      cx_diag::OnVolumeButtonRoutineFinished::kEventName,
-      base::ListValue().Append(finished_info.ToValue()), browser_context);
+      cx_diag::OnVolumeButtonRoutineFinished::kEventName, std::move(event_args),
+      browser_context);
 }
 
 std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
@@ -62,18 +64,22 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
       auto finished_info = converters::routines::ConvertPtr(
           std::move(finished->detail->get_memory()), uuid,
           finished->has_passed);
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+      event_args->data.Append(finished_info.ToValue());
       return std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED,
-          cx_diag::OnMemoryRoutineFinished::kEventName,
-          base::ListValue().Append(finished_info.ToValue()), browser_context);
+          cx_diag::OnMemoryRoutineFinished::kEventName, std::move(event_args),
+          browser_context);
     }
     case ash::cros_healthd::mojom::RoutineDetail::Tag::kFan: {
       auto finished_info = converters::routines::ConvertPtr(
           std::move(finished->detail->get_fan()), uuid, finished->has_passed);
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+      event_args->data.Append(finished_info.ToValue());
       return std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED,
-          cx_diag::OnFanRoutineFinished::kEventName,
-          base::ListValue().Append(finished_info.ToValue()), browser_context);
+          cx_diag::OnFanRoutineFinished::kEventName, std::move(event_args),
+          browser_context);
     }
     case ash::cros_healthd::mojom::RoutineDetail::Tag::kNetworkBandwidth:
     case ash::cros_healthd::mojom::RoutineDetail::Tag::kCameraFrameAnalysis:
@@ -102,10 +108,12 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
   bool has_passed = finished->has_passed;
   auto finished_info =
       converters::routines::ConvertPtr(std::move(finished), uuid, has_passed);
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(finished_info.ToValue());
   return std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_FINISHED,
-      cx_diag::OnRoutineFinished::kEventName,
-      base::ListValue().Append(finished_info.ToValue()), browser_context);
+      cx_diag::OnRoutineFinished::kEventName, std::move(event_args),
+      browser_context);
 }
 
 }  // namespace
@@ -133,20 +141,23 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
     case ash::cros_healthd::mojom::RoutineStateUnion::Tag::kInitialized: {
       auto init_info = converters::routines::ConvertPtr(
           std::move(state->state_union->get_initialized()), info_.uuid);
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+      event_args->data.Append(init_info.ToValue());
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED,
-          cx_diag::OnRoutineInitialized::kEventName,
-          base::ListValue().Append(init_info.ToValue()), info_.browser_context);
+          cx_diag::OnRoutineInitialized::kEventName, std::move(event_args),
+          info_.browser_context);
       break;
     }
     case ash::cros_healthd::mojom::RoutineStateUnion::Tag::kRunning: {
       auto running_info = converters::routines::ConvertPtr(
           std::move(state->state_union->get_running()), info_.uuid,
           state->percentage);
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+      event_args->data.Append(running_info.ToValue());
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_RUNNING,
-          cx_diag::OnRoutineRunning::kEventName,
-          base::ListValue().Append(running_info.ToValue()),
+          cx_diag::OnRoutineRunning::kEventName, std::move(event_args),
           info_.browser_context);
       break;
     }
@@ -154,10 +165,11 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
       auto running_info = converters::routines::ConvertPtr(
           std::move(state->state_union->get_waiting()), info_.uuid,
           state->percentage);
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+      event_args->data.Append(running_info.ToValue());
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_WAITING,
-          cx_diag::OnRoutineWaiting::kEventName,
-          base::ListValue().Append(running_info.ToValue()),
+          cx_diag::OnRoutineWaiting::kEventName, std::move(event_args),
           info_.browser_context);
       break;
     }

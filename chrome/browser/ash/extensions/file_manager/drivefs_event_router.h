@@ -13,14 +13,15 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/common/event_args.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -121,7 +122,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
   virtual void BroadcastEvent(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::ListValue event_args,
+      scoped_refptr<const extensions::EventArgs> event_args,
       bool dispatch_to_system_notification = true) = 0;
 
   // This is owned by EventRouter and only shared with this class.
