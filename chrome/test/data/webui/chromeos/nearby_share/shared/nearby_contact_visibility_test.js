@@ -146,6 +146,23 @@ suite('nearby-contact-visibility', () => {
     }
   }
 
+  /**
+   * Checks that the visibility explanation text matches the localized string
+   * for |stringId|.
+   * @param {string} stringId The i18n string ID to expect.
+   */
+  function assertVisibilityDescription(stringId) {
+    const explanation = visibilityElement.shadowRoot.querySelector(
+        '#explanation .cr-secondary-text');
+    assertTrue(!!explanation);
+    assertEquals(
+        visibilityElement
+            .i18nAdvanced(
+                stringId, {substitutions: [visibilityElement.profileEmail]})
+            .toString(),
+        explanation.innerHTML.trim());
+  }
+
 
   test('Downloads failed show failure ui', async function() {
     // Failed the download right away so we see the failure screen.
@@ -424,11 +441,13 @@ suite('nearby-contact-visibility', () => {
     visibilityElement.set('settings.visibility', Visibility.kAllContacts);
     await waitAfterNextRender(visibilityElement);
     assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertVisibilityDescription('nearbyShareContactVisibilityOwnAllSelfShare');
 
     // Toggles for each contact appear when some contacts is toggled on.
     visibilityElement.shadowRoot.querySelector('#AllContactsToggle').click();
     await waitAfterNextRender(visibilityElement);
     assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertVisibilityDescription('nearbyShareContactVisibilityOwnSomeSelfShare');
   });
 
   test('Toggle all contacts from some contacts LEGACY', async () => {
@@ -440,11 +459,13 @@ suite('nearby-contact-visibility', () => {
     visibilityElement.set('settings.visibility', Visibility.kSelectedContacts);
     await waitAfterNextRender(visibilityElement);
     assertTrue(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertVisibilityDescription('nearbyShareContactVisibilityOwnSomeSelfShare');
 
     // Toggles for each contact disappear when some contacts is toggled off.
     visibilityElement.shadowRoot.querySelector('#AllContactsToggle').click();
     await waitAfterNextRender(visibilityElement);
     assertFalse(areContactCheckBoxesVisibleAndAllContactsToggledOff());
+    assertVisibilityDescription('nearbyShareContactVisibilityOwnAllSelfShare');
   });
 
   test('Your devices visibility implies empty contact list', async () => {
