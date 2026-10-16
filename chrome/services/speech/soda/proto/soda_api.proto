@@ -13,7 +13,7 @@ package speech.soda.chrome;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// Next ID to use: 20
+// Next ID to use: 21
 message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
@@ -105,6 +105,11 @@ message ExtendedSodaConfigMsg {
   // Set to enable context biasing such as making the given phrases more likely
   // to appear in the results.
   optional RecognitionContext recognition_context = 19;
+
+  // If true, TFLite models run through the XNNPACK delegate, which selects
+  // SIMD kernels at runtime from the CPU's instruction set. Older SODA
+  // binaries ignore this field.
+  optional bool enable_xnnpack_delegate = 20 [default = false];
 }
 
 // Next ID: 3

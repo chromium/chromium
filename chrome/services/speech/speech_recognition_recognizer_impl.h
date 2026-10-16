@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -24,6 +25,9 @@ class SodaClient;
 }  // namespace soda
 
 namespace speech {
+
+// Asks SODA to run its TFLite models through the XNNPACK delegate.
+BASE_DECLARE_FEATURE(kSodaXnnpackDelegate);
 
 class SpeechTimestampEstimator;
 
