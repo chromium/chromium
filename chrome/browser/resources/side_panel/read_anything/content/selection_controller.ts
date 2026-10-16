@@ -8,14 +8,7 @@ import type {ContentBrowserProxy} from './content_browser_proxy.js';
 import {ContentBrowserProxyImpl} from './content_browser_proxy.js';
 import {NodeStore} from './node_store.js';
 import {ContentPositionSource} from './read_anything_types.js';
-import type {ContentPosition, SelectionWithIds} from './read_anything_types.js';
-
-interface ReadOnlySelection {
-  anchorNode: Node;
-  anchorOffset: number;
-  focusNode: Node;
-  focusOffset: number;
-}
+import type {ContentPosition, ReadingModeSelection, SelectionWithIds} from './read_anything_types.js';
 
 export interface SelectionEndpoint {
   nodeId?: number;
@@ -237,7 +230,7 @@ export class SelectionController {
     });
   }
 
-  private getNewSelection_(container: Node): ReadOnlySelection|null {
+  private getNewSelection_(container: Node): ReadingModeSelection|null {
     const selectionIds = {
       anchorNodeId: this.contentBrowserProxy_.getStartNodeId(),
       anchorOffset: this.contentBrowserProxy_.getStartOffset(),
@@ -255,7 +248,8 @@ export class SelectionController {
   }
 
   private getNewSelectionWithoutAxIds_(
-      container: Node, selectionIds: SelectionWithIds): ReadOnlySelection|null {
+      container: Node,
+      selectionIds: SelectionWithIds): ReadingModeSelection|null {
     const {anchorNodeId, focusNodeId} = selectionIds;
     let {anchorOffset, focusOffset} = selectionIds;
     if (!anchorNodeId || !focusNodeId) {
@@ -314,7 +308,7 @@ export class SelectionController {
   }
 
   private getNewSelectionWithAxIds_(selectionIds: SelectionWithIds):
-      ReadOnlySelection|null {
+      ReadingModeSelection|null {
     const {anchorNodeId, focusNodeId} = selectionIds;
     let {anchorOffset, focusOffset} = selectionIds;
     if (!anchorNodeId || !focusNodeId) {

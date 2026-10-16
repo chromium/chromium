@@ -45,6 +45,16 @@ export interface SelectionWithIds {
   focusOffset: number;
 }
 
+// A selection whose endpoints are DOM nodes in the reading mode panel and
+// offsets, as opposed to SelectionWithIds, whose endpoints are identified by
+// AXNodeIDs. The anchor may come after the focus.
+export interface ReadingModeSelection {
+  anchorNode: Node;
+  anchorOffset: number;
+  focusNode: Node;
+  focusOffset: number;
+}
+
 export enum LineFocusType {
   NONE = 0,
   LINE = 1,
