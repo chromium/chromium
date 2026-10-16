@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -48,8 +49,11 @@ class PaintStabilityMonitor
   // cannot occur until after `WaitForStable()` is called. Decoupling these
   // allows clients to enforce a minimum stability timeout threshold and tie
   // paint stability to other signals, while allowing this monitor to observe
-  // all relevant paints.
-  void Start();
+  // all relevant paints. If `first_contentful_paint_callback` is provided, it
+  // will be invoked on the first contentful paint observed before
+  // `WaitForStable()` is called.
+  void Start(
+      base::OnceClosure first_contentful_paint_callback = base::NullCallback());
 
   // Wait for paint stability and invoke `callback` once reached. `callback`
   // will only be invoked if `mode_` is enabled and not log-only. `callback`
@@ -83,6 +87,10 @@ class PaintStabilityMonitor
   // contentful paints are detected after reaching stability, which can happen
   // between `Start()` and `WaitForStable()`.
   bool is_stability_reached_ = false;
+
+  // Optional callback invoked on the first contentful paint before
+  // `WaitForStable()` is called.
+  base::OnceClosure first_contentful_paint_callback_;
 
   // The callback to invoke when stability has been reached, if `mode_` is
   // enabled and not log-only.

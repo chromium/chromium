@@ -34,7 +34,8 @@ PaintStabilityMonitor::PaintStabilityMonitor(
 
 PaintStabilityMonitor::~PaintStabilityMonitor() = default;
 
-void PaintStabilityMonitor::Start() {
+void PaintStabilityMonitor::Start(
+    base::OnceClosure first_contentful_paint_callback) {
   CHECK(!is_stable_callback_);
 
   is_started_ = true;
@@ -44,6 +45,8 @@ void PaintStabilityMonitor::Start() {
         .initial_painted_area =
             interaction_effects_monitor_->TotalPaintedArea()});
   }
+
+  first_contentful_paint_callback_ = std::move(first_contentful_paint_callback);
 
   if (base::FeatureList::IsEnabled(
           features::kPaintStabilityDeferInitialPaintTimeout)) {
@@ -66,6 +69,7 @@ void PaintStabilityMonitor::WaitForStable(base::OnceClosure callback) {
   CHECK(!is_stable_callback_);
   is_stable_callback_ = std::move(callback);
   is_wait_for_stable_started_ = true;
+  first_contentful_paint_callback_.Reset();
 
   // Paint stability might have been reached between `Start()` and now.
   if (is_stability_reached_) {
@@ -118,6 +122,10 @@ void PaintStabilityMonitor::OnContentfulPaint(uint64_t new_painted_area) {
 
   is_stability_reached_ = false;
   ScheduleContentfulPaintTimeoutTask(FROM_HERE, GetSubsequentPaintTimeout());
+
+  if (first_contentful_paint_callback_) {
+    std::move(first_contentful_paint_callback_).Run();
+  }
 }
 
 void PaintStabilityMonitor::OnPaintStabilityDetected() {

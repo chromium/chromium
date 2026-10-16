@@ -481,4 +481,52 @@ TEST_F(PaintStabilityMonitorTest,
   }
 }
 
+TEST_F(PaintStabilityMonitorTest, FirstContentfulPaintCallback) {
+  LoadHTML(R"HTML(
+      <button id="target" onclick="handleClick()">Press Me</button>
+      <div id="content"></div>
+      <script>
+        var clickCount = 0;
+        function handleClick() {
+          ++clickCount;
+          content.innerHTML = '<div>This is some content</div>';
+        }
+      </script>
+    )HTML");
+
+  bool did_invoke_contentful_paint_callback = false;
+  bool did_reach_paint_stability = false;
+  {
+    std::unique_ptr<PaintStabilityMonitor> monitor =
+        PaintStabilityMonitor::Create(*GetMainRenderFrame(),
+                                      /*delegate=*/nullptr);
+
+    bool result = SimulateElementClick("target");
+    ASSERT_TRUE(result);
+
+    int value;
+    EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"clickCount", &value));
+    EXPECT_EQ(value, 1);
+
+    monitor->Start(base::BindLambdaForTesting([&]() {
+      did_invoke_contentful_paint_callback = true;
+      monitor->WaitForStable(base::BindLambdaForTesting(
+          [&]() { did_reach_paint_stability = true; }));
+    }));
+    EXPECT_FALSE(did_invoke_contentful_paint_callback);
+
+    Render();
+    EXPECT_TRUE(did_invoke_contentful_paint_callback);
+    EXPECT_FALSE(did_reach_paint_stability);
+
+    // Since `WaitForStable()` was called inside the contentful paint callback,
+    // stability should be reached after `GetSubsequentPaintTimeout()`.
+    task_environment_.FastForwardBy(GetSubsequentPaintTimeout() -
+                                    base::Milliseconds(1));
+    EXPECT_FALSE(did_reach_paint_stability);
+    task_environment_.FastForwardBy(base::Milliseconds(1));
+    EXPECT_TRUE(did_reach_paint_stability);
+  }
+}
+
 }  // namespace page_content_annotations
