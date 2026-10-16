@@ -74,6 +74,14 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
   ScopedAggregate WrapAggregate(SurfaceManager& surface_manager,
                                 base::TimeTicks frame_time);
 
+  // Records Viz.FrameIntervalDecider.ActualInterval*: the display's actual
+  // frame interval `actual_interval`, while the client of the decider applies
+  // `decided_interval`. A zero `decided_interval` means the display's default.
+  // Only the default and a few common decided intervals are recorded. Callers
+  // are responsible for any sub-sampling.
+  static void RecordActualFrameInterval(base::TimeDelta decided_interval,
+                                        base::TimeDelta actual_interval);
+
  private:
   void Decide(base::TimeTicks frame_time,
               base::flat_map<FrameSinkId, FrameIntervalInputs> inputs_map);

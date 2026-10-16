@@ -10,6 +10,9 @@
 #include <variant>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
@@ -422,6 +425,54 @@ TEST_F(FrameIntervalDeciderTest, IncreaseIntervalDelayVariantSwitch) {
   DrawSurfaces({surface}, now);
   ExpectResult(TakeLastResult(), base::Milliseconds(32));
   EXPECT_EQ(FrameIntervalMatcherType::kInputBoost, TakeLastMatcherType());
+}
+
+constexpr char kActualIntervalPrefix[] =
+    "Viz.FrameIntervalDecider.ActualInterval";
+
+TEST(FrameIntervalDeciderActualIntervalTest, Default) {
+  base::HistogramTester histogram_tester;
+  FrameIntervalDecider::RecordActualFrameInterval(base::TimeDelta(),
+                                                  base::Milliseconds(8));
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Viz.FrameIntervalDecider.ActualIntervalDefault", base::Milliseconds(8),
+      1);
+  EXPECT_EQ(
+      1u,
+      histogram_tester.GetTotalCountsForPrefix(kActualIntervalPrefix).size());
+}
+
+TEST(FrameIntervalDeciderActualIntervalTest, DecidedRates) {
+  for (int hz : {10, 12, 15, 20, 24, 25, 30, 60}) {
+    SCOPED_TRACE(hz);
+    base::HistogramTester histogram_tester;
+    // Within the epsilon of the decided rate.
+    FrameIntervalDecider::RecordActualFrameInterval(
+        base::Hertz(hz) + base::Microseconds(300), base::Milliseconds(16));
+
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat({"Viz.FrameIntervalDecider.ActualIntervalFor",
+                      base::NumberToString(hz), "hz"}),
+        base::Milliseconds(16), 1);
+    EXPECT_EQ(
+        1u,
+        histogram_tester.GetTotalCountsForPrefix(kActualIntervalPrefix).size());
+  }
+}
+
+TEST(FrameIntervalDeciderActualIntervalTest, OtherRates) {
+  base::HistogramTester histogram_tester;
+  FrameIntervalDecider::RecordActualFrameInterval(base::Hertz(90),
+                                                  base::Milliseconds(11));
+  FrameIntervalDecider::RecordActualFrameInterval(base::Hertz(120),
+                                                  base::Milliseconds(8));
+  // Outside the epsilon of 30 Hz.
+  FrameIntervalDecider::RecordActualFrameInterval(
+      base::Hertz(30) + base::Milliseconds(1), base::Milliseconds(16));
+
+  EXPECT_TRUE(
+      histogram_tester.GetTotalCountsForPrefix(kActualIntervalPrefix).empty());
 }
 
 }  // namespace

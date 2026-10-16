@@ -2876,15 +2876,25 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     For a few common result intervals (named in hz), record the distribution of
-    actual frame intervals. Recorded every viz frame, sub-sampled with
+    actual frame intervals. Recorded regardless of which matcher produced the
+    result; for example, 60hz includes slow scroll throttling on devices with
+    adaptive refresh rate. Recorded every viz frame, sub-sampled with
     probability 0.001. Note this requires FrameIntervalDecider to be enabled as
     well as using an ExternalBeginFrameSource.
   </summary>
   <token key="DecidedHz">
+<!-- LINT.IfChange(ActualIntervalDecidedHz) -->
+
+    <variant name="10" summary="10hz"/>
+    <variant name="12" summary="12hz"/>
+    <variant name="15" summary="15hz"/>
     <variant name="20" summary="20hz"/>
     <variant name="24" summary="24hz"/>
     <variant name="25" summary="25hz"/>
     <variant name="30" summary="30hz"/>
+    <variant name="60" summary="60hz"/>
+<!-- LINT.ThenChange(//components/viz/service/display/frame_interval_decider.cc:ActualIntervalDecidedHz) -->
+
   </token>
 </histogram>
 

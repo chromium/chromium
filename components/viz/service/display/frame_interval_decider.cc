@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 
+#include <array>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -112,6 +114,46 @@ FrameIntervalDecider::ScopedAggregate FrameIntervalDecider::WrapAggregate(
     base::TimeTicks frame_time) {
   return FrameIntervalDecider::ScopedAggregate(*this, surface_manager,
                                                frame_time);
+}
+
+// static
+void FrameIntervalDecider::RecordActualFrameInterval(
+    base::TimeDelta decided_interval,
+    base::TimeDelta actual_interval) {
+  struct DecidedRate {
+    int hz;
+    std::string_view histogram_name;
+  };
+  // LINT.IfChange(ActualIntervalDecidedHz)
+  static constexpr auto kDecidedRates = std::to_array<DecidedRate>({
+      {10, "Viz.FrameIntervalDecider.ActualIntervalFor10hz"},
+      {12, "Viz.FrameIntervalDecider.ActualIntervalFor12hz"},
+      {15, "Viz.FrameIntervalDecider.ActualIntervalFor15hz"},
+      {20, "Viz.FrameIntervalDecider.ActualIntervalFor20hz"},
+      {24, "Viz.FrameIntervalDecider.ActualIntervalFor24hz"},
+      {25, "Viz.FrameIntervalDecider.ActualIntervalFor25hz"},
+      {30, "Viz.FrameIntervalDecider.ActualIntervalFor30hz"},
+      {60, "Viz.FrameIntervalDecider.ActualIntervalFor60hz"},
+  });
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/histograms.xml:ActualIntervalDecidedHz)
+  constexpr base::TimeDelta kEpsilon = base::Milliseconds(0.5);
+
+  std::string_view histogram_name;
+  if (decided_interval.is_zero()) {
+    histogram_name = "Viz.FrameIntervalDecider.ActualIntervalDefault";
+  } else {
+    for (const DecidedRate& rate : kDecidedRates) {
+      if ((decided_interval - base::Hertz(rate.hz)).magnitude() < kEpsilon) {
+        histogram_name = rate.histogram_name;
+        break;
+      }
+    }
+  }
+  if (!histogram_name.empty()) {
+    base::UmaHistogramCustomTimes(histogram_name, actual_interval,
+                                  base::Milliseconds(0),
+                                  base::Milliseconds(500), 50);
+  }
 }
 
 void FrameIntervalDecider::Decide(

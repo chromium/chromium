@@ -13,8 +13,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/rand_util.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -917,43 +917,9 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
   if (external_begin_frame_source_ &&
       external_begin_frame_source_->last_begin_frame_args().IsValid() &&
       base::ShouldRecordSubsampledMetric(0.001)) {
-    const BeginFrameArgs& begin_frame_args =
-        external_begin_frame_source_->last_begin_frame_args();
-    constexpr base::TimeDelta kEpsilonTimeDelta = base::Milliseconds(0.5);
-    if (decided_display_interval_.is_zero()) {
-      base::UmaHistogramCustomTimes(
-          "Viz.FrameIntervalDecider.ActualIntervalDefault",
-          begin_frame_args.interval, base::Milliseconds(0),
-          base::Milliseconds(500), 50);
-    }
-    if ((decided_display_interval_ - base::Hertz(30)).magnitude() <
-        kEpsilonTimeDelta) {
-      base::UmaHistogramCustomTimes(
-          "Viz.FrameIntervalDecider.ActualIntervalFor30hz",
-          begin_frame_args.interval, base::Milliseconds(0),
-          base::Milliseconds(500), 50);
-    }
-    if ((decided_display_interval_ - base::Hertz(25)).magnitude() <
-        kEpsilonTimeDelta) {
-      base::UmaHistogramCustomTimes(
-          "Viz.FrameIntervalDecider.ActualIntervalFor25hz",
-          begin_frame_args.interval, base::Milliseconds(0),
-          base::Milliseconds(500), 50);
-    }
-    if ((decided_display_interval_ - base::Hertz(24)).magnitude() <
-        kEpsilonTimeDelta) {
-      base::UmaHistogramCustomTimes(
-          "Viz.FrameIntervalDecider.ActualIntervalFor24hz",
-          begin_frame_args.interval, base::Milliseconds(0),
-          base::Milliseconds(500), 50);
-    }
-    if ((decided_display_interval_ - base::Hertz(20)).magnitude() <
-        kEpsilonTimeDelta) {
-      base::UmaHistogramCustomTimes(
-          "Viz.FrameIntervalDecider.ActualIntervalFor20hz",
-          begin_frame_args.interval, base::Milliseconds(0),
-          base::Milliseconds(500), 50);
-    }
+    FrameIntervalDecider::RecordActualFrameInterval(
+        decided_display_interval_,
+        external_begin_frame_source_->last_begin_frame_args().interval);
   }
 }
 
