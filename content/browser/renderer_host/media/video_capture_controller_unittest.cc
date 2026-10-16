@@ -1119,5 +1119,54 @@ TEST_F(VideoCaptureControllerTest, ReturnBufferTwiceFails) {
                                          media::VideoCaptureFeedback()));
 }
 
+TEST_F(VideoCaptureControllerTest, StopSessionStopsAllClientsForSession) {
+  media::VideoCaptureParams session_params;
+  session_params.requested_format = arbitrary_format_;
+
+  const VideoCaptureControllerID client_a_route_1 =
+      base::UnguessableToken::Create();
+  const VideoCaptureControllerID client_a_route_2 =
+      base::UnguessableToken::Create();
+  const VideoCaptureControllerID client_b_route_1 =
+      base::UnguessableToken::Create();
+
+  const media::VideoCaptureSessionId session_id_1 =
+      base::UnguessableToken::Create();
+  const media::VideoCaptureSessionId session_id_2 =
+      base::UnguessableToken::Create();
+
+  controller_->AddClient(client_a_route_1, {}, client_a_.get(), session_id_1,
+                         session_params);
+  controller_->AddClient(client_a_route_2, {}, client_a_.get(), session_id_1,
+                         session_params);
+  controller_->AddClient(client_b_route_1, {}, client_b_.get(), session_id_2,
+                         session_params);
+  ASSERT_EQ(3u, controller_->GetClientCount());
+
+  // Stopping session_id_1 must notify all clients sharing that session.
+  EXPECT_CALL(*client_a_, DoEnded(client_a_route_1)).Times(1);
+  EXPECT_CALL(*client_a_, DoEnded(client_a_route_2)).Times(1);
+  EXPECT_CALL(*client_b_, DoEnded(_)).Times(0);
+  controller_->StopSession(session_id_1);
+  Mock::VerifyAndClearExpectations(client_a_.get());
+  Mock::VerifyAndClearExpectations(client_b_.get());
+
+  // Closed-session clients must not receive frames before their pending
+  // RemoveClient tasks execute.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_a_, DoBufferCreated(_, _)).Times(0);
+  EXPECT_CALL(*client_a_, DoBufferReady(_)).Times(0);
+  EXPECT_CALL(*client_b_, DoBufferCreated(client_b_route_1, _)).Times(1);
+  EXPECT_CALL(*client_b_, DoBufferReady(ControllerIDAndSize(
+                              client_b_route_1, arbitrary_format_.frame_size)))
+      .WillOnce([&run_loop](const ControllerIDAndSize&) { run_loop.Quit(); });
+  SendStubFrameToDeviceClient(arbitrary_format_, arbitrary_color_space_);
+
+  run_loop.Run();
+  Mock::VerifyAndClearExpectations(client_a_.get());
+  Mock::VerifyAndClearExpectations(client_b_.get());
+  EXPECT_EQ(1u, controller_->GetClientCount());
+}
+
 }  // namespace
 }  // namespace content

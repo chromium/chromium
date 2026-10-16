@@ -225,9 +225,6 @@ class CONTENT_EXPORT VideoCaptureController
   ControllerClient* FindClient(const VideoCaptureControllerID& id,
                                VideoCaptureControllerEventHandler* handler);
 
-  // Find a client of |session_id| in |controller_clients_|.
-  ControllerClient* FindClient(const base::UnguessableToken& session_id);
-
   std::vector<BufferContext>::iterator FindBufferContextFromBufferContextId(
       int buffer_context_id);
   std::vector<BufferContext>::iterator FindUnretiredBufferContextFromBufferId(

@@ -391,11 +391,11 @@ void VideoCaptureController::StopSession(
                 << session_id;
   EmitLogMessage(string_stream.str(), 1);
 
-  ControllerClient* client = FindClient(session_id);
-
-  if (client) {
-    client->session_closed = true;
-    client->event_handler->OnEnded(client->controller_id);
+  for (const auto& client : controller_clients_) {
+    if (client->session_id == session_id && !client->session_closed) {
+      client->session_closed = true;
+      client->event_handler->OnEnded(client->controller_id);
+    }
   }
 }
 
@@ -814,15 +814,6 @@ VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
     VideoCaptureControllerEventHandler* handler) {
   for (const auto& client : controller_clients_) {
     if (client->controller_id == id && client->event_handler == handler)
-      return client.get();
-  }
-  return nullptr;
-}
-
-VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
-    const base::UnguessableToken& session_id) {
-  for (const auto& client : controller_clients_) {
-    if (client->session_id == session_id)
       return client.get();
   }
   return nullptr;

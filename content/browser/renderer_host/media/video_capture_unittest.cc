@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -495,6 +496,35 @@ TEST_F(VideoCaptureTest, CloseSessionWithoutStopping) {
   EXPECT_CALL(*this, DoOnStateChanged(media::mojom::VideoCaptureState::ENDED));
   CloseSession();
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(VideoCaptureTest, CloseSessionStopsAllClientsOnSameSession) {
+  StartCapture();
+
+  base::RunLoop start_run_loop;
+  mojo::Receiver<media::mojom::VideoCaptureObserver> second_receiver(this);
+  EXPECT_CALL(*this, DoOnStateChanged(media::mojom::VideoCaptureState::STARTED))
+      .WillOnce(ExitMessageLoop(task_runner(), start_run_loop.QuitClosure()));
+
+  media::VideoCaptureParams params;
+  params.requested_format = media::VideoCaptureFormat(gfx::Size(352, 288), 30,
+                                                      media::PIXEL_FORMAT_I420);
+  const base::UnguessableToken second_device_id =
+      base::UnguessableToken::Create();
+  host_remote()->Start(second_device_id, opened_session_id(), params,
+                       second_receiver.BindNewPipeAndPassRemote());
+  start_run_loop.Run();
+
+  // Closing the session must send ENDED to both clients on that session and
+  // clean up both controllers.
+  base::RunLoop end_run_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(2, end_run_loop.QuitClosure());
+  EXPECT_CALL(*this, DoOnStateChanged(media::mojom::VideoCaptureState::ENDED))
+      .Times(2)
+      .WillRepeatedly(ExitMessageLoop(task_runner(), barrier));
+  CloseSession();
+  end_run_loop.Run();
 }
 
 // Tests if RenderProcessHostDelegate methods are called as often as as
