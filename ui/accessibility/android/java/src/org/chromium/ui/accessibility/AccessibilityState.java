@@ -52,17 +52,21 @@ public class AccessibilityState {
         /**
          * Called when any aspect of the system's accessibility state changes. This can happen for
          * example when a user:
-         *     - enables/disables an accessibility service (e.g. TalkBack, VoiceAccess, etc.)
-         *     - enables/disables a pseudo-accessibility service (e.g. password manager, etc.)
-         *     - changes an accessibility-related system setting (e.g. animation duration, password
+         *
+         * <ul>
+         *   <li>enables/disables an accessibility service (e.g. TalkBack, VoiceAccess, etc.)
+         *   <li>enables/disables a pseudo-accessibility service (e.g. password manager, etc.)
+         *   <li>changes an accessibility-related system setting (e.g. animation duration, password
          *       obscuring, touch exploration, etc.)
+         * </ul>
          *
-         * For a full list of triggers, see: {AccessibilityState#registerObservers}
-         * For a full list of tracked settings, see: {AccessibilityState.State}
+         * For a full list of triggers, see: {AccessibilityState#registerObservers} For a full list
+         * of tracked settings, see: {AccessibilityState.State}
          *
-         * This method passes both the previous and new (old current vs. now current) accessibility
-         * state. Clients that are only interested in a subset of the state should compare the
-         * oldAccessibilityState to newAccessibilityState to see if a relevant setting changed.
+         * <p>This method passes both the previous and new (old current vs. now current)
+         * accessibility state. Clients that are only interested in a subset of the state should
+         * compare the oldAccessibilityState to newAccessibilityState to see if a relevant setting
+         * changed.
          *
          * @param oldAccessibilityState The previous accessibility state
          * @param newAccessibilityState The new accessibility state
