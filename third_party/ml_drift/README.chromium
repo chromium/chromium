@@ -1,0 +1,22 @@
+Name: ML Drift
+Short Name: ml-drift
+URL: https://github.com/google-ai-edge/ml-drift
+Version: N/A
+Revision: ba04e5aa30dc4758c68e00d5375861d2eef8ac0e
+Date: 2026-10-07
+Update Mechanism: Manual
+License: Apache-2.0
+License File: LICENSE
+Security Critical: Yes
+Shipped: yes
+CPEPrefix: unknown
+
+Description:
+ML Drift is a high-performance, cross-platform GPU-accelerated inference
+engine for on-device machine learning intelligence.
+
+Local Modifications:
+None
+
+Update Process/Notes:
+Manual update.

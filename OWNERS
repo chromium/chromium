@@ -245,6 +245,7 @@ per-file third_party/microsoft_dxheaders/src=*
 per-file third_party/microsoft_multimedia_redirection/src=*
 per-file third_party/microsoft_webauthn/src=*
 per-file third_party/minigbm/src=*
+per-file third_party/ml_drift/src=*
 per-file third_party/mutter/src=*
 per-file third_party/nasm=*
 per-file third_party/nearby/src=*

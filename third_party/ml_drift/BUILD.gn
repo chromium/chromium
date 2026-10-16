@@ -1,0 +1,417 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/litert/features.gni")
+import("//third_party/tflite/features.gni")
+
+# In google3 ml_drift maintains a build file per directory and a target per
+# file. This structure can be mirrored in chrome, but it proved tedious to
+# maintain. Instead a single build file is used. Having a single build file with
+# a single target is not possible, because gn does not allow a single target to
+# have multiple files with the same name (e.g. util.cc and task/util.cc cannot
+# exist in the same target). The structure used here is to put as many files as
+# possible into the main target (ml_drift) and create additional targets for
+# duplicate file names. To make the process of creating additional targets
+# easier, a template is used (ml_drift_source_set).
+
+config("ml_drift_config") {
+  cflags = [
+    "-Wno-deprecated-copy",
+    "-Wno-deprecated-copy-with-user-provided-copy",
+    "-Wno-deprecated-declarations",  # crbug.com/376315414
+    "-Wno-ignored-qualifiers",
+    "-Wno-macro-redefined",
+    "-Wno-shadow",
+    "-Wno-sign-compare",
+    "-Wno-switch",  # TODO(b/388311883): Remove
+    "-Wno-unused-function",
+    "-Wno-unused-private-field",
+  ]
+  defines = [ "DAWN_ENABLE_BACKEND_VULKAN" ]
+
+  include_dirs = [
+    "src",
+    "$root_gen_dir/third_party/ml_drift/src",
+  ]
+}
+
+template("ml_drift_source_set") {
+  source_set(target_name) {
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
+    }
+    sources = invoker.sources
+    public_deps = [
+      ":ml_drift_flatbuffers",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/dawn/include/dawn:cpp_headers",
+      "//third_party/dawn/src/dawn/native:headers",
+      "//third_party/farmhash",
+      "//third_party/flatbuffers",
+      "//third_party/fp16",
+    ]
+    if (use_litert_tflite) {
+      public_deps += [ "//third_party/litert:tflite_public_headers" ]
+    } else {
+      public_deps += [ "//third_party/tflite:tflite_public_headers" ]
+    }
+    if (build_litert_with_xnnpack) {
+      public_deps += [
+        "//third_party/pthreadpool",
+        "//third_party/xnnpack",
+      ]
+    }
+    if (defined(invoker.public_deps)) {
+      public_deps += invoker.public_deps
+    }
+    public_configs = [
+      ":ml_drift_config",
+      "//third_party/tflite:tflite_config",
+    ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/gemmlowp:gemmlowp_include",
+    ]
+  }
+}
+
+ml_drift_source_set("ml_drift_common_base") {
+  visibility = [ ":ml_drift_common" ]
+  sources = [
+    "src/ml_drift/common/data_type.cc",
+    "src/ml_drift/common/data_type.h",
+    "src/ml_drift/common/gpu_info.cc",
+    "src/ml_drift/common/gpu_info.h",
+    "src/ml_drift/common/precision.cc",
+    "src/ml_drift/common/precision.h",
+    "src/ml_drift/common/shape.cc",
+    "src/ml_drift/common/shape.h",
+    "src/ml_drift/common/types.h",
+    "src/ml_drift/common/util.cc",
+    "src/ml_drift/common/util.h",
+  ]
+}
+
+ml_drift_source_set("ml_drift_common") {
+  visibility = [ ":ml_drift" ]
+  sources = [
+    "src/ml_drift/common/access_type.h",
+    "src/ml_drift/common/custom_transformations.h",
+    "src/ml_drift/common/default/custom_transformations.cc",
+    "src/ml_drift/common/demangle.h",
+    "src/ml_drift/common/executor.h",
+    "src/ml_drift/common/flops_util.cc",
+    "src/ml_drift/common/flops_util.h",
+    "src/ml_drift/common/gpu_model.cc",
+    "src/ml_drift/common/gpu_model.h",
+    "src/ml_drift/common/gpu_model_builder.cc",
+    "src/ml_drift/common/gpu_model_builder.h",
+    "src/ml_drift/common/gpu_model_builder_moe_util.cc",
+    "src/ml_drift/common/gpu_model_builder_moe_util.h",
+    "src/ml_drift/common/gpu_model_util.cc",
+    "src/ml_drift/common/gpu_model_util.h",
+    "src/ml_drift/common/ir_model.cc",
+    "src/ml_drift/common/ir_model.h",
+    "src/ml_drift/common/ir_model_util.cc",
+    "src/ml_drift/common/ir_model_util.h",
+    "src/ml_drift/common/kernel_info.h",
+    "src/ml_drift/common/kernels/accumulate_input_channels.cc",
+    "src/ml_drift/common/kernels/accumulate_input_channels.h",
+    "src/ml_drift/common/kernels/add.cc",
+    "src/ml_drift/common/kernels/add.h",
+    "src/ml_drift/common/kernels/bitcast.cc",
+    "src/ml_drift/common/kernels/bitcast.h",
+    "src/ml_drift/common/kernels/bucket_argsort.cc",
+    "src/ml_drift/common/kernels/bucket_argsort.h",
+    "src/ml_drift/common/kernels/cast.cc",
+    "src/ml_drift/common/kernels/cast.h",
+    "src/ml_drift/common/kernels/concat_xy.cc",
+    "src/ml_drift/common/kernels/concat_xy.h",
+    "src/ml_drift/common/kernels/concat_z.cc",
+    "src/ml_drift/common/kernels/concat_z.h",
+    "src/ml_drift/common/kernels/conv_apple_mpp.cc",
+    "src/ml_drift/common/kernels/conv_apple_mpp.h",
+    "src/ml_drift/common/kernels/conv_constants.cc",
+    "src/ml_drift/common/kernels/conv_constants.h",
+    "src/ml_drift/common/kernels/conv_generic.cc",
+    "src/ml_drift/common/kernels/conv_generic.h",
+    "src/ml_drift/common/kernels/conv_wave_matrix.cc",
+    "src/ml_drift/common/kernels/conv_wave_matrix.h",
+    "src/ml_drift/common/kernels/conv_wave_matrix_mali.cc",
+    "src/ml_drift/common/kernels/conv_wave_matrix_mali.h",
+    "src/ml_drift/common/kernels/conv_wave_memory.cc",
+    "src/ml_drift/common/kernels/conv_wave_memory.h",
+    "src/ml_drift/common/kernels/conv_weights_converter.cc",
+    "src/ml_drift/common/kernels/conv_weights_converter.h",
+    "src/ml_drift/common/kernels/conversion.cc",
+    "src/ml_drift/common/kernels/conversion.h",
+    "src/ml_drift/common/kernels/convolution_transposed.cc",
+    "src/ml_drift/common/kernels/convolution_transposed.h",
+    "src/ml_drift/common/kernels/convolution_transposed_2x2.cc",
+    "src/ml_drift/common/kernels/convolution_transposed_2x2.h",
+    "src/ml_drift/common/kernels/convolution_transposed_3x3.cc",
+    "src/ml_drift/common/kernels/convolution_transposed_3x3.h",
+    "src/ml_drift/common/kernels/convolution_transposed_3x3_thin.cc",
+    "src/ml_drift/common/kernels/convolution_transposed_3x3_thin.h",
+    "src/ml_drift/common/kernels/convolution_transposed_4x4.cc",
+    "src/ml_drift/common/kernels/convolution_transposed_4x4.h",
+    "src/ml_drift/common/kernels/convolution_transposed_thin.cc",
+    "src/ml_drift/common/kernels/convolution_transposed_thin.h",
+    "src/ml_drift/common/kernels/convolution_transposed_util.cc",
+    "src/ml_drift/common/kernels/convolution_transposed_util.h",
+    "src/ml_drift/common/kernels/cumsum.cc",
+    "src/ml_drift/common/kernels/cumsum.h",
+    "src/ml_drift/common/kernels/depthwise_conv.cc",
+    "src/ml_drift/common/kernels/depthwise_conv.h",
+    "src/ml_drift/common/kernels/depthwise_conv_3x3.cc",
+    "src/ml_drift/common/kernels/depthwise_conv_3x3.h",
+    "src/ml_drift/common/kernels/depthwise_conv_tiled.cc",
+    "src/ml_drift/common/kernels/depthwise_conv_tiled.h",
+    "src/ml_drift/common/kernels/depthwise_conv_wave_memory.cc",
+    "src/ml_drift/common/kernels/depthwise_conv_wave_memory.h",
+    "src/ml_drift/common/kernels/dynamic_update_slice.cc",
+    "src/ml_drift/common/kernels/dynamic_update_slice.h",
+    "src/ml_drift/common/kernels/elementwise.cc",
+    "src/ml_drift/common/kernels/elementwise.h",
+    "src/ml_drift/common/kernels/embedding_lookup.cc",
+    "src/ml_drift/common/kernels/embedding_lookup.h",
+    "src/ml_drift/common/kernels/fully_connected.cc",
+    "src/ml_drift/common/kernels/fully_connected.h",
+    "src/ml_drift/common/kernels/fully_connected_util.cc",
+    "src/ml_drift/common/kernels/fully_connected_util.h",
+    "src/ml_drift/common/kernels/gather.cc",
+    "src/ml_drift/common/kernels/gather.h",
+    "src/ml_drift/common/kernels/lstm.cc",
+    "src/ml_drift/common/kernels/lstm.h",
+    "src/ml_drift/common/kernels/max_unpooling.cc",
+    "src/ml_drift/common/kernels/max_unpooling.h",
+    "src/ml_drift/common/kernels/mean_stddev_normalization.cc",
+    "src/ml_drift/common/kernels/mean_stddev_normalization.h",
+    "src/ml_drift/common/kernels/mean_stddev_normalization_parser.cc",
+    "src/ml_drift/common/kernels/mean_stddev_normalization_parser.h",
+    "src/ml_drift/common/kernels/mish.cc",
+    "src/ml_drift/common/kernels/mish.h",
+    "src/ml_drift/common/kernels/one_hot.cc",
+    "src/ml_drift/common/kernels/one_hot.h",
+    "src/ml_drift/common/kernels/padding.cc",
+    "src/ml_drift/common/kernels/padding.h",
+    "src/ml_drift/common/kernels/pooling.cc",
+    "src/ml_drift/common/kernels/pooling.h",
+    "src/ml_drift/common/kernels/positional_embedding.cc",
+    "src/ml_drift/common/kernels/positional_embedding.h",
+    "src/ml_drift/common/kernels/prelu.cc",
+    "src/ml_drift/common/kernels/prelu.h",
+    "src/ml_drift/common/kernels/quantize_and_dequantize.cc",
+    "src/ml_drift/common/kernels/quantize_and_dequantize.h",
+    "src/ml_drift/common/kernels/reduce.cc",
+    "src/ml_drift/common/kernels/reduce.h",
+    "src/ml_drift/common/kernels/reduce_parser.cc",
+    "src/ml_drift/common/kernels/reduce_parser.h",
+    "src/ml_drift/common/kernels/relu.cc",
+    "src/ml_drift/common/kernels/relu.h",
+    "src/ml_drift/common/kernels/resampler.cc",
+    "src/ml_drift/common/kernels/resampler.h",
+    "src/ml_drift/common/kernels/reshape.cc",
+    "src/ml_drift/common/kernels/reshape.h",
+    "src/ml_drift/common/kernels/reshapex4.cc",
+    "src/ml_drift/common/kernels/reshapex4.h",
+    "src/ml_drift/common/kernels/resize.cc",
+    "src/ml_drift/common/kernels/resize.h",
+    "src/ml_drift/common/kernels/reverse.cc",
+    "src/ml_drift/common/kernels/reverse.h",
+    "src/ml_drift/common/kernels/rope.cc",
+    "src/ml_drift/common/kernels/rope.h",
+    "src/ml_drift/common/kernels/select_v2.cc",
+    "src/ml_drift/common/kernels/select_v2.h",
+    "src/ml_drift/common/kernels/softmax.cc",
+    "src/ml_drift/common/kernels/softmax.h",
+    "src/ml_drift/common/kernels/softmax1x1.cc",
+    "src/ml_drift/common/kernels/softmax1x1.h",
+    "src/ml_drift/common/kernels/space_to_depth.cc",
+    "src/ml_drift/common/kernels/space_to_depth.h",
+    "src/ml_drift/common/kernels/special/concat_conv.cc",
+    "src/ml_drift/common/kernels/special/concat_conv.h",
+    "src/ml_drift/common/kernels/special/conv_pointwise.cc",
+    "src/ml_drift/common/kernels/special/conv_pointwise.h",
+    "src/ml_drift/common/kernels/special/conv_softmax_conv.cc",
+    "src/ml_drift/common/kernels/special/conv_softmax_conv.h",
+    "src/ml_drift/common/kernels/special/dw7x7_conv2to6_concat_conv8to8.cc",
+    "src/ml_drift/common/kernels/special/dw7x7_conv2to6_concat_conv8to8.h",
+    "src/ml_drift/common/kernels/special/experts_remap.cc",
+    "src/ml_drift/common/kernels/special/experts_remap.h",
+    "src/ml_drift/common/kernels/special/thin_local_memory_fuser.cc",
+    "src/ml_drift/common/kernels/special/thin_local_memory_fuser.h",
+    "src/ml_drift/common/kernels/special/thin_pointwise_fuser.cc",
+    "src/ml_drift/common/kernels/special/thin_pointwise_fuser.h",
+    "src/ml_drift/common/kernels/split.cc",
+    "src/ml_drift/common/kernels/split.h",
+    "src/ml_drift/common/kernels/strided_slice.cc",
+    "src/ml_drift/common/kernels/strided_slice.h",
+    "src/ml_drift/common/kernels/tile.cc",
+    "src/ml_drift/common/kernels/tile.h",
+    "src/ml_drift/common/kernels/top_k.cc",
+    "src/ml_drift/common/kernels/top_k.h",
+    "src/ml_drift/common/kernels/transpose.cc",
+    "src/ml_drift/common/kernels/transpose.h",
+    "src/ml_drift/common/kernels/winograd.cc",
+    "src/ml_drift/common/kernels/winograd.h",
+    "src/ml_drift/common/memory_management.cc",
+    "src/ml_drift/common/memory_management.h",
+    "src/ml_drift/common/memory_management/equality_assignment.h",
+    "src/ml_drift/common/memory_management/greedy_by_breadth_assignment.cc",
+    "src/ml_drift/common/memory_management/greedy_by_breadth_assignment.h",
+    "src/ml_drift/common/memory_management/greedy_by_size_assignment.cc",
+    "src/ml_drift/common/memory_management/greedy_by_size_assignment.h",
+    "src/ml_drift/common/memory_management/greedy_in_order_assignment.h",
+    "src/ml_drift/common/memory_management/internal.cc",
+    "src/ml_drift/common/memory_management/internal.h",
+    "src/ml_drift/common/memory_management/min_cost_flow_assignment.cc",
+    "src/ml_drift/common/memory_management/min_cost_flow_assignment.h",
+    "src/ml_drift/common/memory_management/naive_assignment.h",
+    "src/ml_drift/common/memory_management/types.cc",
+    "src/ml_drift/common/memory_management/types.h",
+    "src/ml_drift/common/merge_nodes.cc",
+    "src/ml_drift/common/merge_nodes.h",
+    "src/ml_drift/common/model.cc",
+    "src/ml_drift/common/model.h",
+    "src/ml_drift/common/model_hints.h",
+    "src/ml_drift/common/model_transformer.cc",
+    "src/ml_drift/common/model_transformer.h",
+    "src/ml_drift/common/op_api.h",
+    "src/ml_drift/common/op_attrs.h",
+    "src/ml_drift/common/op_base.h",
+    "src/ml_drift/common/op_registry.cc",
+    "src/ml_drift/common/op_registry.h",
+    "src/ml_drift/common/operations.cc",
+    "src/ml_drift/common/operations.h",
+    "src/ml_drift/common/selectors/convolution_selector.cc",
+    "src/ml_drift/common/selectors/convolution_selector.h",
+    "src/ml_drift/common/selectors/convolution_transposed_selector.cc",
+    "src/ml_drift/common/selectors/convolution_transposed_selector.h",
+    "src/ml_drift/common/selectors/default/default_selector.cc",
+    "src/ml_drift/common/selectors/default_selector.h",
+    "src/ml_drift/common/selectors/dw_convolution_selector.cc",
+    "src/ml_drift/common/selectors/dw_convolution_selector.h",
+    "src/ml_drift/common/selectors/operation_selector.cc",
+    "src/ml_drift/common/selectors/operation_selector.h",
+    "src/ml_drift/common/selectors/simple_selectors.cc",
+    "src/ml_drift/common/selectors/simple_selectors.h",
+    "src/ml_drift/common/selectors/special_selector.cc",
+    "src/ml_drift/common/selectors/special_selector.h",
+    "src/ml_drift/common/task/arguments.cc",
+    "src/ml_drift/common/task/arguments.h",
+    "src/ml_drift/common/task/buffer_desc.cc",
+    "src/ml_drift/common/task/buffer_desc.h",
+    "src/ml_drift/common/task/compiler_options.cc",
+    "src/ml_drift/common/task/compiler_options.h",
+    "src/ml_drift/common/task/gpu_object_desc.h",
+    "src/ml_drift/common/task/gpu_operation.cc",
+    "src/ml_drift/common/task/gpu_operation.h",
+    "src/ml_drift/common/task/gpu_tensor.h",
+    "src/ml_drift/common/task/profiling_info.cc",
+    "src/ml_drift/common/task/profiling_info.h",
+    "src/ml_drift/common/task/qcom_thin_filter_desc.cc",
+    "src/ml_drift/common/task/qcom_thin_filter_desc.h",
+    "src/ml_drift/common/task/serialization_base.cc",
+    "src/ml_drift/common/task/serialization_base.h",
+    "src/ml_drift/common/task/tensor_desc.cc",
+    "src/ml_drift/common/task/tensor_desc.h",
+    "src/ml_drift/common/task/tuning_type.h",
+    "src/ml_drift/common/task/util.cc",
+    "src/ml_drift/common/task/util.h",
+    "src/ml_drift/common/task/wave_matrix_util.cc",
+    "src/ml_drift/common/task/wave_matrix_util.h",
+    "src/ml_drift/common/task/wave_memory_util.cc",
+    "src/ml_drift/common/task/wave_memory_util.h",
+    "src/ml_drift/common/task/weights_conversion.cc",
+    "src/ml_drift/common/task/weights_conversion.h",
+    "src/ml_drift/common/task/weights_layout.cc",
+    "src/ml_drift/common/task/weights_layout.h",
+    "src/ml_drift/common/task/work_group_picking.cc",
+    "src/ml_drift/common/task/work_group_picking.h",
+    "src/ml_drift/common/tensor.h",
+    "src/ml_drift/common/tensor_handle.h",
+    "src/ml_drift/common/transformations/add_quant_adjustments.cc",
+    "src/ml_drift/common/transformations/add_quant_adjustments.h",
+    "src/ml_drift/common/transformations/fuse_add_to_conv.cc",
+    "src/ml_drift/common/transformations/fuse_add_to_conv.h",
+    "src/ml_drift/common/transformations/fuse_mul_to_conv.cc",
+    "src/ml_drift/common/transformations/fuse_mul_to_conv.h",
+    "src/ml_drift/common/transformations/global_pooling_to_reduce_op.cc",
+    "src/ml_drift/common/transformations/global_pooling_to_reduce_op.h",
+    "src/ml_drift/common/transformations/ir/transform.cc",
+    "src/ml_drift/common/transformations/ir/transform.h",
+    "src/ml_drift/common/transformations/make_fully_connected.cc",
+    "src/ml_drift/common/transformations/make_fully_connected.h",
+    "src/ml_drift/common/transformations/make_padding.cc",
+    "src/ml_drift/common/transformations/make_padding.h",
+    "src/ml_drift/common/transformations/matching.h",
+    "src/ml_drift/common/transformations/merge_padding_with.cc",
+    "src/ml_drift/common/transformations/merge_padding_with.h",
+    "src/ml_drift/common/transformations/model_transformations.cc",
+    "src/ml_drift/common/transformations/model_transformations.h",
+    "src/ml_drift/common/transformations/remove_noop.cc",
+    "src/ml_drift/common/transformations/remove_noop.h",
+    "src/ml_drift/common/winograd_util.cc",
+    "src/ml_drift/common/winograd_util.h",
+  ]
+  public_deps = [ ":ml_drift_common_base" ]
+}
+
+ml_drift_source_set("ml_drift") {
+  sources = [
+    "src/ml_drift/contrib/tflite_op_resolver.cc",
+    "src/ml_drift/contrib/tflite_op_resolver.h",
+    "src/ml_drift/webgpu/arguments.cc",
+    "src/ml_drift/webgpu/arguments.h",
+    "src/ml_drift/webgpu/buffer.cc",
+    "src/ml_drift/webgpu/buffer.h",
+    "src/ml_drift/webgpu/compute_pipeline_cache.h",
+    "src/ml_drift/webgpu/compute_task.cc",
+    "src/ml_drift/webgpu/compute_task.h",
+    "src/ml_drift/webgpu/converter.cc",
+    "src/ml_drift/webgpu/converter.h",
+    "src/ml_drift/webgpu/environment.cc",
+    "src/ml_drift/webgpu/environment.h",
+    "src/ml_drift/webgpu/execution_environment.h",
+    "src/ml_drift/webgpu/gpu_object.h",
+    "src/ml_drift/webgpu/inference_context.cc",
+    "src/ml_drift/webgpu/inference_context.h",
+    "src/ml_drift/webgpu/instance.cc",
+    "src/ml_drift/webgpu/instance.h",
+    "src/ml_drift/webgpu/memory_manager.cc",
+    "src/ml_drift/webgpu/memory_manager.h",
+    "src/ml_drift/webgpu/metrics_collector.cc",
+    "src/ml_drift/webgpu/metrics_collector.h",
+    "src/ml_drift/webgpu/metrics_collector_internal.h",
+    "src/ml_drift/webgpu/preprocessor.cc",
+    "src/ml_drift/webgpu/preprocessor.h",
+    "src/ml_drift/webgpu/registry.h",
+    "src/ml_drift/webgpu/spatial_tensor.cc",
+    "src/ml_drift/webgpu/spatial_tensor.h",
+    "src/ml_drift/webgpu/webgpu_api_util.cc",
+    "src/ml_drift/webgpu/webgpu_api_util.h",
+    "src/ml_drift/webgpu/webgpu_headers.h",
+    "src/ml_drift/webgpu/webgpu_weights_manager.cc",
+    "src/ml_drift/webgpu/webgpu_weights_manager.h",
+  ]
+
+  # NOTE: this should only include the internal targets. All other
+  # deps should go in the ml_drift_source_set template.
+  public_deps = [ ":ml_drift_common" ]
+}
+
+flatbuffer("ml_drift_flatbuffers") {
+  sources = [
+    "src/ml_drift/common/gpu_model.fbs",
+    "src/ml_drift/common/task/serialization_base.fbs",
+    "src/ml_drift/webgpu/serialization.fbs",
+  ]
+
+  flatc_include_dirs = [ "//third_party/ml_drift/src" ]
+  args = [ "--scoped-enums" ]
+}
