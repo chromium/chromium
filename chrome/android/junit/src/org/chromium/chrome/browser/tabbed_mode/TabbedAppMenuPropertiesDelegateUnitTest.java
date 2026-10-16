@@ -71,6 +71,9 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ChromeCommandIds;
+import org.chromium.chrome.browser.KeyboardShortcuts;
+import org.chromium.chrome.browser.KeyboardShortcutsJni;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
@@ -2707,6 +2710,29 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         model.set(AppMenuItemProperties.SHORTCUT_TEXT, null);
         assertEquals(View.GONE, shortcut.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void testShortcutTextPopulatedWhenEnabled() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+
+        KeyboardShortcuts.Natives keyboardShortcutsJniMock = mock(KeyboardShortcuts.Natives.class);
+        KeyboardShortcutsJni.setInstanceForTesting(keyboardShortcutsJniMock);
+        when(keyboardShortcutsJniMock.getShortcutTextForCommandId(anyInt())).thenReturn("");
+        when(keyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.NEW_TAB))
+                .thenReturn("Ctrl+T");
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        // Check an arbitrary item to verify the SHORTCUT_TEXT wiring.
+        assertEquals(
+                "Ctrl+T",
+                findItemById(modelList, R.id.new_tab_menu_id)
+                        .model
+                        .get(AppMenuItemProperties.SHORTCUT_TEXT));
     }
 
     @Test

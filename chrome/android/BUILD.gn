@@ -886,6 +886,7 @@ if (_is_default_toolchain) {
 
     srcjar_deps = [
       ":chrome_android_java_enums_srcjar",
+      ":chrome_command_ids_javagen",
       ":chrome_strict_mode_switch",
       ":resource_id_javagen",
       "//chrome:offline_pages_enum_javagen",
@@ -966,6 +967,22 @@ if (_is_default_toolchain) {
     if (page_info_use_internal_android_resources) {
       deps += [ "//clank/components/page_info:java_resources" ]
     }
+  }
+
+  java_cpp_template("chrome_command_ids_javagen") {
+    sources =
+        [ "java/src/org/chromium/chrome/browser/ChromeCommandIds.template" ]
+    inputs = [
+      "../app/chrome_command_ids.h",
+      "//build/build_config.h",
+      "//ui/base/command_id_constants.h",
+      "$root_gen_dir/build/branding_buildflags.h",
+      "$root_gen_dir/services/screen_ai/buildflags/buildflags.h",
+    ]
+    deps = [
+      "//build:branding_buildflags",
+      "//services/screen_ai/buildflags",
+    ]
   }
 
   # Template for strict mode detection enabling/disabling so that proguard

@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 
 #include <algorithm>
+#include <string>
 
+#include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/accelerator_table.h"
@@ -33,6 +35,16 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_KeyboardShortcuts_isChromeAccelerator(
       env, platform_event.AsKeyboardEventAndroid()->GetJavaObject());
+}
+
+static std::u16string JNI_KeyboardShortcuts_GetShortcutTextForCommandId(
+    JNIEnv* env,
+    int command_id) {
+  ui::Accelerator accelerator;
+  if (!GetAcceleratorForCommandId(command_id, &accelerator)) {
+    return std::u16string();
+  }
+  return accelerator.GetShortcutText();
 }
 
 DEFINE_JNI(KeyboardShortcuts)
