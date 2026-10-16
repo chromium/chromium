@@ -1925,7 +1925,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 
   static constexpr char kCardTextJs[] = R"js(
     el => el.shadowRoot.querySelector(
-        '#inlineFulfillmentHost > glic-explain-fulfillment > .explanation')
+        '#inlineFulfillmentHost > glic-explain-fulfillment .explanation')
         ?.textContent
   )js";
   static constexpr char kChipsHiddenJs[] = R"js(
@@ -2130,6 +2130,23 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(300, 300)),
       ClickMouse(), WaitForHide(OverlayBaseController::kOverlayId),
+      EnsureNotPresent(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CloseOverlayWithCardCloseButtonDoesNotShowHiddenToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kCardCloseButton = {
+      "selection-overlay-app", "glic-selection-overlay",
+      "#inlineFulfillmentHost > glic-explain-fulfillment .close-button"};
+
+  RunTestSequence(
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+      WaitForElementVisible(kOverlayWebContentsId, kCardCloseButton),
+      ClickElement(kOverlayWebContentsId, kCardCloseButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(OverlayBaseController::kOverlayId),
       EnsureNotPresent(toasts::ToastView::kToastViewId));
 }
 

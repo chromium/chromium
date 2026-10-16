@@ -104,6 +104,7 @@ export function getHtml(this: GlicSelectionOverlayElement) {
         </div>
 
         <glic-inline-fulfillment-host id="inlineFulfillmentHost"
+            @close-click="${this.onInlineFulfillmentCloseClick}"
             @pointerdown="${this.onPromptPointerdown}">
         </glic-inline-fulfillment-host>
       </div>

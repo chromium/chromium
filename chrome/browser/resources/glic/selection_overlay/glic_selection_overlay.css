@@ -397,6 +397,12 @@
   gap: 12px;
 }
 
+#inlineFulfillmentHost .content {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 20px;
+}
+
 #inlineFulfillmentHost .explanation > * {
   margin: 0;
 }
@@ -411,6 +417,21 @@
 
 #inlineFulfillmentHost .explanation a {
   color: var(--cr-link-color);
+}
+
+#inlineFulfillmentHost .close-button {
+  --cr-icon-button-fill-color: var(--cr-fallback-color-on-surface-subtle);
+  --cr-icon-button-size: 24px;
+  --cr-icon-image: url('/lens/icon_clear.svg');
+  /* Keep the 20px slot in the layout while the click target is 24px. */
+  margin: -2px;
+}
+
+#inlineFulfillmentHost .disclaimer {
+  color: var(--cr-fallback-color-on-surface-subtle);
+  font-size: 11px;
+  grid-column: 1 / -1;
+  line-height: 16px;
 }
 
 #inlineFulfillmentHost .ask-gemini {

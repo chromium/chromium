@@ -579,6 +579,13 @@ export class GlicSelectionOverlayElement extends
     });
   }
 
+  protected onInlineFulfillmentCloseClick() {
+    // Closes the overlay without the hidden toast, like a background click.
+    // TODO(b/546644969): Reorganize overlay close reasons once the UX is final.
+    (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+        .dismissOverlay(DismissOverlayReason.kBackgroundClick);
+  }
+
   protected submitPrompt(prompt: string) {
     (this.baseHandler as SelectionOverlayBaseHandlerImpl).submitPrompt(prompt);
   }

@@ -35,6 +35,9 @@ suite('ExplainFulfillment', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       askGeminiMore: 'Ask Gemini more about this',
+      close: 'Close',
+      sharingDisclaimer:
+          'This page and highlighted text are shared with Google',
     });
     fulfillment = new FakeExplainFulfillment();
     card = document.createElement('glic-explain-fulfillment');
@@ -68,5 +71,28 @@ suite('ExplainFulfillment', () => {
     assertTrue(!!askGemini.querySelector('.ask-gemini-icon'));
     askGemini.click();
     assertEquals(1, fulfillment.askGeminiCount);
+  });
+
+  test('CloseButtonFiresCloseClick', () => {
+    const closeButton = card.querySelector<HTMLElement>('.close-button')!;
+    assertEquals('Close', closeButton.ariaLabel);
+    assertEquals('Close', closeButton.title);
+
+    let closeClicks = 0;
+    // The event bubbles, so the overlay can listen on the card's host.
+    document.body.addEventListener(
+        'close-click', () => closeClicks++, {once: true});
+    closeButton.click();
+    assertEquals(1, closeClicks);
+  });
+
+  test('ShowsSharingDisclaimer', () => {
+    const disclaimer = card.querySelector<HTMLElement>('.disclaimer')!;
+    assertEquals(
+        'This page and highlighted text are shared with Google',
+        disclaimer.textContent);
+    // It's plain text, so it's neither focusable nor clickable.
+    assertEquals(-1, disclaimer.tabIndex);
+    assertEquals(null, disclaimer.querySelector('a, button'));
   });
 });
