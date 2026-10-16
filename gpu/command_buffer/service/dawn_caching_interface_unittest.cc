@@ -4,14 +4,16 @@
 
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
+#include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/mocks.h"
@@ -48,11 +50,10 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameInterface) {
   auto dawn_caching_interface = factory_.CreateInstance(handle_);
   dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 
-  char buffer[kDataSize];
+  std::array<uint8_t, kDataSize> buffer = {};
   EXPECT_EQ(kDataSize, dawn_caching_interface->FindKey(kKey));
-  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(
-                           kKey, base::as_writable_byte_span(buffer)));
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
+  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey, buffer));
+  EXPECT_EQ(kData, base::as_string_view(buffer));
 }
 
 TEST_F(DawnCachingInterfaceTest, LoadPartialData) {
@@ -60,10 +61,9 @@ TEST_F(DawnCachingInterfaceTest, LoadPartialData) {
   dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 
   static constexpr size_t kPartialSize = kDataSize / 2;
-  char buffer[kPartialSize];
+  std::array<uint8_t, kPartialSize> buffer = {};
   // Should return 0 because of size mismatch.
-  EXPECT_EQ(0u, dawn_caching_interface->LoadData(
-                    kKey, base::as_writable_byte_span(buffer)));
+  EXPECT_EQ(0u, dawn_caching_interface->LoadData(kKey, buffer));
 }
 
 TEST_F(DawnCachingInterfaceTest, LoadLargerBuffer) {
@@ -71,11 +71,10 @@ TEST_F(DawnCachingInterfaceTest, LoadLargerBuffer) {
   dawn_caching_interface->StoreData(kKey, base::as_byte_span(kData));
 
   static constexpr size_t kLargerSize = kDataSize * 2;
-  char buffer[kLargerSize];
+  std::array<uint8_t, kLargerSize> buffer = {};
   // Should return kDataSize and only copy kDataSize bytes.
-  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(
-                           kKey, base::as_writable_byte_span(buffer)));
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
+  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey, buffer));
+  EXPECT_EQ(kData, base::as_string_view(base::span(buffer).first(kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
@@ -83,11 +82,10 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
   store_interface->StoreData(kKey, base::as_byte_span(kData));
 
   auto load_interface = factory_.CreateInstance(handle_);
-  char buffer[kDataSize];
+  std::array<uint8_t, kDataSize> buffer = {};
   EXPECT_EQ(kDataSize, load_interface->FindKey(kKey));
-  EXPECT_EQ(kDataSize, load_interface->LoadData(
-                           kKey, base::as_writable_byte_span(buffer)));
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
+  EXPECT_EQ(kDataSize, load_interface->LoadData(kKey, buffer));
+  EXPECT_EQ(kData, base::as_string_view(buffer));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
@@ -96,11 +94,10 @@ TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
   store_interface.reset();
 
   auto load_interface = factory_.CreateInstance(handle_);
-  char buffer[kDataSize];
+  std::array<uint8_t, kDataSize> buffer = {};
   EXPECT_EQ(kDataSize, load_interface->FindKey(kKey));
-  EXPECT_EQ(kDataSize, load_interface->LoadData(
-                           kKey, base::as_writable_byte_span(buffer)));
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
+  EXPECT_EQ(kDataSize, load_interface->LoadData(kKey, buffer));
+  EXPECT_EQ(kData, base::as_string_view(buffer));
 }
 
 // If the handle is released before a new cache is created, the new cache should
