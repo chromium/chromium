@@ -1007,9 +1007,9 @@ import java.util.function.Supplier;
                                 mContext.getResources(),
                                 FuseboxAttachmentButtonType.SUGGESTED_TAB,
                                 /* isSuggestedTab= */ true);
-                attachment.setUploadIsComplete();
-                mModelList.add(attachment);
-                mMetrics.notifyAttachmentButtonShown(FuseboxAttachmentButtonType.SUGGESTED_TAB);
+                if (mModelList.add(attachment)) {
+                    mMetrics.notifyAttachmentButtonShown(FuseboxAttachmentButtonType.SUGGESTED_TAB);
+                }
             }
         }
     }
