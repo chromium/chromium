@@ -68,7 +68,7 @@ NetworkInfoBubble::NetworkInfoBubble(base::WeakPtr<Delegate> delegate,
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(kBubbleMargin));
   SetArrow(views::BubbleBorder::NONE);
-  set_shadow(views::BubbleBorder::NO_SHADOW);
+  set_shadow_config({.shadow_type = views::BubbleBorder::NO_SHADOW});
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
