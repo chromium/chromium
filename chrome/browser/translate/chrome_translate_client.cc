@@ -218,8 +218,16 @@ void ChromeTranslateClient::OnSidePanelClosed() {
 
   if (opened_side_panel_for_pdf_translation_ || is_pdf) {
     opened_side_panel_for_pdf_translation_ = false;
-    if (GetLanguageState().IsPageTranslated()) {
+    translate::LanguageState* language_state =
+        GetTranslateManager()->GetLanguageState();
+    if (language_state->IsPageTranslated()) {
       GetTranslateManager()->RevertTranslation();
+    } else if (language_state->pending_source_language().has_value()) {
+      // Reading Mode closed before the PDF translation started, which only
+      // happens once its content is distilled. Cancel the translation, which
+      // also clears the pending translation languages, so that it doesn't
+      // start while Reading Mode is closed.
+      language_state->set_translation_pending(false);
     }
   }
 #endif

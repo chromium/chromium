@@ -1782,7 +1782,37 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
     return !manager->GetLanguageState()->IsPageTranslated();
   }));
 }
-#endif
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       ClosingSidePanelCancelsPendingPdfTranslation) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+  ASSERT_TRUE(manager);
+  LanguageState* language_state = manager->GetLanguageState();
+
+  // A PDF translation requested while Reading Mode is closed is pending until
+  // Reading Mode distills its content.
+  language_state->set_translation_pending(true);
+  language_state->SetPendingTranslationLanguages(
+      base::i18n::GetKnownLanguageTag("fr"),
+      base::i18n::GetKnownLanguageTag("en"));
+  chrome_translate_client->TriggerPdfTranslation();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
+
+  // Closing the side panel before the translation started should cancel it.
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+
+  EXPECT_FALSE(language_state->translation_pending());
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+  EXPECT_FALSE(language_state->IsPageTranslated());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PDF)
 class TranslateManagerPdfBrowserTest : public TranslateManagerBrowserTest {
