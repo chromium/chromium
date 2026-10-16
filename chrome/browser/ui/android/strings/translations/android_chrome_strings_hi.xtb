@@ -1082,7 +1082,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5284295735376057059">दस्तावेज़ की जानकारी</translation>
 <translation id="5286907366254680517">भाषा का पता चला</translation>
 <translation id="5290322819358431297">पासवर्ड ऑटोमैटिक तरीके से भरें</translation>
-<translation id="5292796745632149097">इस पर भेजें</translation>
 <translation id="5301876394151419436">आपने <ph name="EMAIL" /> का इस्तेमाल करके साइन इन किया है. सेटिंग में जाकर, सिंक करने की सुविधा को कभी भी बंद किया जा सकता है. Google, आपके ब्राउज़िंग इतिहास के आधार पर, Search और अन्य सेवाओं को आपकी पसंद के मुताबिक बना सकता है.</translation>
 <translation id="5304593522240415983">यह फ़ील्‍ड खाली नहीं छोड़ी जा सकती</translation>
 <translation id="5306014156308790439">संग्रह में जोड़ने की सुविधा बंद की गई</translation>
@@ -1178,6 +1177,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5715150588940290235">क्या आपको सेव किए गए सुरक्षा कोड मिटाने हैं?</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>
 <translation id="5728072125198221967">लिंक की गई Google की सेवाएं</translation>
+<translation id="5733447028358645932">किसने ब्राउज़ किया</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, पिन किया गया ऐसा गुप्त टैब जिसमें ऑडियो चल रहा है</translation>
 <translation id="5744751019568455640">वेब पेजों के कॉन्टेंट को अपनी पसंदीदा आवाज़ में सुनने के लिए, इन आवाज़ों को आज़माया जा सकता है. अगर आपको यह आवाज़ पसंद है और आपको मुझसे इस आवाज़ में कॉन्टेंट पढ़ाना है, तो आवाज़ के नाम पर टैप करें.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> के तौर पर शेयर करें</translation>
@@ -2029,6 +2029,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> को फिर से अनुमतियां दी गईं</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> को <ph name="APP_NAME" /> के साथ शेयर किया जा रहा है</translation>
 <translation id="8865415417596392024">आपके खाते में मौजूद, Chrome का डेटा</translation>
+<translation id="886968456388055613">ब्राउज़ करने वाले के हिसाब से फ़िल्टर करें</translation>
 <translation id="8872506776304248286">ऐप्लिकेशन में खोलें</translation>
 <translation id="8880275451109933094">दो पेजों वाला व्यू</translation>
 <translation id="8890668505403261809">अपने गुप्त टैब खोजें</translation>

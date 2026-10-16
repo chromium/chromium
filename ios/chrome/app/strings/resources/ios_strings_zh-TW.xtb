@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">項目已更新</translation>
 <translation id="1018804590490383958">掃描並自動填入</translation>
 <translation id="1019990162050689579">Gemini 應用程式活動記錄</translation>
+<translation id="102471647093736603">按住即可移動</translation>
 <translation id="102645702181682900">工作已開始</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030376737535466765">開啟密碼管理工具</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">儲存空間已滿</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1191987227666124897">「選擇停用」要求</translation>
 <translation id="1196534270480620381">提供這個頁面的簡短摘要</translation>
 <translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199963004393929848">綠色主題</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4813345808229079766">連線</translation>
 <translation id="4821595350501541683">系統已關閉分頁並刪除瀏覽資料</translation>
+<translation id="4823322556950229674">按住網址列和返回按鈕，即可移到畫面底部</translation>
 <translation id="4824480232751123840">體積</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個分頁}other{{domain} 和另外 {count} 個分頁}}</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
 <translation id="7412027924265291969">繼續</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
+<translation id="7417055777338419059">編寫程式碼、撰寫內容或製作簡報</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7425053386765766120">新增付款方式…</translation>
@@ -2319,7 +2323,6 @@
 <translation id="8187200657863701733">目前的 Chrome 等級</translation>
 <translation id="8189484403434216074">建立分頁群組</translation>
 <translation id="8189615296021678665">輕觸「儲存」，下次登入時就能輕鬆存取這組密碼。</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">新增密碼</translation>
 <translation id="8195936400946057039">有效防範線上威脅</translation>
 <translation id="8205564605687841303">取消</translation>
@@ -2644,7 +2647,6 @@
 <translation id="9149866541089851383">編輯...</translation>
 <translation id="9152637745605628097">選擇主題、顏色或上傳圖片</translation>
 <translation id="9153159728062222866">免去複製貼上的麻煩</translation>
-<translation id="9159628751968616911">傳送網頁</translation>
 <translation id="9162412286847966593">貴組織的資料和錄音內容不會用於改良生成式 AI 模型。<ph name="BEGIN_LINK" />個人隱私權與 Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">開啟「自動填寫密碼」</translation>
 <translation id="9165320910061267720">如要接收降價快訊通知，請在 iOS 設定中開啟通知功能。</translation>

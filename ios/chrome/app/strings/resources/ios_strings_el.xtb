@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Το στοιχείο ενημερώθηκε</translation>
 <translation id="1018804590490383958">Σάρωση και αυτόματη συμπλήρωση</translation>
 <translation id="1019990162050689579">Δραστηριότητα στην Εφαρμογή Gemini</translation>
+<translation id="102471647093736603">Πατήστε παρατεταμένα για μετακίνηση</translation>
 <translation id="102645702181682900">Η εργασία ξεκίνησε</translation>
 <translation id="102916930470544692">Κλειδί πρόσβασης</translation>
 <translation id="1030376737535466765">Ανοίξτε τον Διαχειριστή κωδικών πρόσβασης.</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Ο αποθηκευτικός χώρος είναι πλήρης</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1190609913194133056">Κέντρο ειδοποιήσεων</translation>
+<translation id="1191987227666124897">Αίτημα εξαίρεσης</translation>
 <translation id="1196534270480620381">Θέλω μια σύντομη σύνοψη αυτής της σελίδας</translation>
 <translation id="1199631150313925648">Μη αυτόματη εισαγωγή</translation>
 <translation id="1199963004393929848">Πράσινο θέμα</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Ενημερώσεις</translation>
 <translation id="4813345808229079766">Σύνδεση</translation>
 <translation id="4821595350501541683">Οι καρτέλες έκλεισαν και τα δεδομένα περιήγησης διαγράφηκαν</translation>
+<translation id="4823322556950229674">Μπορείτε να πατήσετε παρατεταμένα, για να μετακινήσετε τη γραμμή διευθύνσεων και το κουμπί πίσω στο κάτω μέρος</translation>
 <translation id="4824480232751123840">Ένταση</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} και 1 ακόμα}other{{domain} και {count} ακόμα}}</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
@@ -2056,6 +2059,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Συνέχεια</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
+<translation id="7417055777338419059">Γράψτε κώδικα, συντάξτε κείμενο ή δημιουργήστε διαφάνειες</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
 <translation id="7423098979219808738">Να γίνεται ερώτηση πρώτα</translation>
 <translation id="7425053386765766120">Προσθήκη τρόπου πληρωμής…</translation>
@@ -2320,7 +2324,6 @@
 <translation id="8187200657863701733">Τρέχον επίπεδο Chrome</translation>
 <translation id="8189484403434216074">Δημιουργία ομάδας καρτελών</translation>
 <translation id="8189615296021678665">Πατήστε Αποθήκευση, για να αποκτήσετε εύκολα πρόσβαση σε αυτόν τον κωδικό πρόσβασης την επόμενη φορά που θα συνδεθείτε.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Οι συσκευές σας<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Προσθήκη κωδικού πρόσβασης</translation>
 <translation id="8195936400946057039">Προστατευτείτε από απειλές στο διαδίκτυο</translation>
 <translation id="8205564605687841303">Ακύρωση</translation>
@@ -2645,7 +2648,6 @@
 <translation id="9149866541089851383">Επεξεργασία...</translation>
 <translation id="9152637745605628097">Επιλέξτε θέματα, χρώματα ή ανεβάστε μια εικόνα</translation>
 <translation id="9153159728062222866">Αποφύγετε την αντιγραφή και επικόλληση</translation>
-<translation id="9159628751968616911">Αποστολή ιστοσελίδας</translation>
 <translation id="9162412286847966593">Τα δεδομένα και οι εγγραφές του οργανισμού σας δεν θα χρησιμοποιούνται για τη βελτίωση των μοντέλων παραγωγικού AI. <ph name="BEGIN_LINK" />Το απόρρητό σας και το Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ενεργοποιήστε την επιλογή Αυτόματη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="9165320910061267720">Για να λαμβάνετε ειδοποιήσεις σχετικά με τις πτώσεις τιμών, θα πρέπει να ενεργοποιήσετε τις ειδοποιήσεις στις ρυθμίσεις iOS.</translation>

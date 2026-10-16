@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">Приказ во PDF:</translation>
 <translation id="2127090458081644412">Лозинката е зачувана на уредов</translation>
 <translation id="2127747486437921899">Курзив</translation>
+<translation id="2129163794581571479">Овозможено од Gemini со „Лична интелигенција“. Вашите барања, наслови на страници и URL-адреси може да се прегледуваат за да се подобри „Подобрено автоматско пополнување“. <ph name="BEGIN_LINK" />Управувајте со поставките<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Долниот лист со „Овозможете автоматско пополнување за плаќања“ е отворен на целосна висина.</translation>
@@ -1575,6 +1576,7 @@
 <translation id="3655670868607891010">Доколку ова го гледате често, обидете се со овие <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3659521826520353662">Веб-сајтови дефинирани од администраторот што се отвораат, заедно со времето на отворање: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Овозможено од Gemini со „Лична интелигенција“. <ph name="BEGIN_LINK" />Управувајте со поставките<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Пребарајте повеќе опции за купување од други продавници што го продаваат овој производ.</translation>
 <translation id="3664782872746246217">Клучни зборови:</translation>
 <translation id="3670030362669914947">Број</translation>
@@ -1595,6 +1597,7 @@
 <translation id="3693516565203081475">Изберете начин на плаќање</translation>
 <translation id="3698353241727597930">Администраторот конфигурирал да се зачуваат <ph name="FILES" /> во просторот на <ph name="CLOUD_STORAGE" /> управуван од претпријатието. Овие датотеки може да се набљудуваат, ревидираат и задржат кога ќе ги избришете.</translation>
 <translation id="3698629142018988477">Копче за создавање сајт, активирајте го за да набрзина создадете нов сајт во Google Sites</translation>
+<translation id="3698708128812719147">Притиснете Ctrl двапати каде било на веб за да најдете и да пополните повеќе податоци</translation>
 <translation id="3700094625653511150">За да ги скриете опциите за „Платете подоцна“, одете во <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Го користите отпечатокот за пополнување лозинки</translation>
 <translation id="3701427423622901115">Ресетирањето е потврдено.</translation>
@@ -1898,6 +1901,7 @@
 <translation id="4185037616931963178">Ажурирајте го бројот за ревизија безбедно</translation>
 <translation id="4186035307311647330">Отследи ја цената</translation>
 <translation id="4191334393248735295">Должина</translation>
+<translation id="4192770747482479191">Притиснете ⌘ двапати каде било на веб за да најдете и да пополните повеќе податоци</translation>
 <translation id="4195459680867822611">Копче за гледање совети за Chrome, активирајте го за да дознаете за функциите на Chrome</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4196861286325780578">&amp;Повтори преместување</translation>
@@ -2215,7 +2219,6 @@
 <translation id="4725766358270333890">Се прикачуваат <ph name="COUNT" /> датотеки во Microsoft OneDrive</translation>
 <translation id="4726672564094551039">Повторно вчитување политики</translation>
 <translation id="4728558894243024398">Платформа</translation>
-<translation id="4730773064303503917">Испраќајте пари на пријателите и бизнисите со Pix во Wallet</translation>
 <translation id="4730977633786878901">Рецензии</translation>
 <translation id="4731638775147756694">Администраторот ја блокирал апликацијата</translation>
 <translation id="4732860731866514038">Се презема јазичен пакет за <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
@@ -2846,6 +2849,7 @@
 <translation id="573974402615125334">За да споделувате, да се придружувате и да соработувате во групи картички, синхронизирајте ги историјата и картичките</translation>
 <translation id="5740911612628596808">Плик C9</translation>
 <translation id="574392208103952083">Медиум</translation>
+<translation id="5744350700955456407">„Подобрено автоматско пополнување“ отсега може да наоѓа и да пополнува податоци, како броеви на нарачки и кодови за потврда на летови, од апликации како Gmail и „Фотографии“</translation>
 <translation id="5745586894920491759">Chrome ги обработува URL-адресите и насловите на страниците во облакот</translation>
 <translation id="5745733273847572235">Може да прашува за вашата локација</translation>
 <translation id="5750869797196646528">Следење раце</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">वस्तु अद्यावधिक गरियो</translation>
 <translation id="1018804590490383958">स्क्यान गर्नुहोस् र स्वतः भर्नुहोस्</translation>
 <translation id="1019990162050689579">Gemini एपसँग गरिएका अन्तर्क्रिया</translation>
+<translation id="102471647093736603">सार्न थिचिराख्नुहोस्</translation>
 <translation id="102645702181682900">कार्य सुरु गरिएको छ</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1030376737535466765">पासवर्ड म्यानेजर खोल्नुहोस्</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">तपाईंको भण्डारण भरिएको छ</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
+<translation id="1191987227666124897">अप्ट-आउट गर्ने अनुरोध</translation>
 <translation id="1196534270480620381">यो पेजको छोटो सारांश बनाउनुहोस्</translation>
 <translation id="1199631150313925648">म्यानुअल रूपमा हाल्नुहोस्</translation>
 <translation id="1199963004393929848">हरियो थिम</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">अपडेटहरू</translation>
 <translation id="4813345808229079766">जडान</translation>
 <translation id="4821595350501541683">ट्याबहरू बन्द गरिए र ब्राउजिङ डेटा मेटाइयो</translation>
+<translation id="4823322556950229674">तपाईं एड्रेस बार र "पछाडि" बटनमा थिचिराखेर तिनलाई पुछारमा सार्न सक्नुहुन्छ</translation>
 <translation id="4824480232751123840">आयतन</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
 <translation id="7412027924265291969">जारी राख्नुहोस्</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
+<translation id="7417055777338419059">कोडिङ गर्नुहोस्, लेख्नुहोस् वा स्लाइडहरू बनाउनुहोस्</translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
 <translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
 <translation id="7425053386765766120">भुक्तानी विधि हाल्नुहोस्…</translation>
@@ -2319,7 +2323,6 @@
 <translation id="8187200657863701733">Chrome को हालको लेभल</translation>
 <translation id="8189484403434216074">ट्याब समूह बनाउनुहोस्</translation>
 <translation id="8189615296021678665">अर्को पटक साइन इन गर्दा यो पासवर्ड सजिलैसँग एक्सेस गर्न "सेभ गर्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड थप्नुहोस्</translation>
 <translation id="8195936400946057039">अनलाइन खतराहरूबाट सुरक्षा</translation>
 <translation id="8205564605687841303">रद्द गर्नुहोस्</translation>
@@ -2644,7 +2647,6 @@
 <translation id="9149866541089851383">सम्पादन गर्नुहोस्...</translation>
 <translation id="9152637745605628097">दिइएका थिम र रङहरू छनौट गर्नुहोस् वा कुनै फोटो अपलोड गर्नुहोस्</translation>
 <translation id="9153159728062222866">कपी र पेस्ट गर्ने कार्य स्किप गर्नुहोस्</translation>
-<translation id="9159628751968616911">वेबपेज पठाउनुहोस्</translation>
 <translation id="9162412286847966593">तपाईंको सङ्गठनका डेटा र रेकर्डिङहरू जेनेरेटिभ AI मोडेलहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि प्रयोग गरिने छैनन्। <ph name="BEGIN_LINK" />तपाईंको गोपनीयता र Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">पासवर्ड अटोफिल गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="9165320910061267720">तपाईं मूल्य घट्दा अलर्टहरू प्राप्त गर्न चाहनुहुन्छ भने तपाईंले iOS का सेटिङमा गई सूचना पठाउने सुविधा अन गर्नु पर्ने हुन्छ।</translation>

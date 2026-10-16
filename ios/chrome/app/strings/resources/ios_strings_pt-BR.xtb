@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1190609913194133056">Central de Notificações</translation>
+<translation id="1191987227666124897">Solicitação de recusa</translation>
 <translation id="1196534270480620381">Faça um pequeno resumo desta página</translation>
 <translation id="1199631150313925648">Informar manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -2322,7 +2323,6 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8187200657863701733">Nível atual do Chrome</translation>
 <translation id="8189484403434216074">Criar um grupo de guias</translation>
 <translation id="8189615296021678665">Toque em "Salvar" para acessar essa senha com facilidade na próxima vez que fizer login.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Adicionar senha</translation>
 <translation id="8195936400946057039">Proteção contra ameaças on-line</translation>
 <translation id="8205564605687841303">Cancelar</translation>
@@ -2647,7 +2647,6 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolha entre temas e cores ou faça upload de uma imagem</translation>
 <translation id="9153159728062222866">Pular a etapa de copiar e colar</translation>
-<translation id="9159628751968616911">Enviar página da Web</translation>
 <translation id="9162412286847966593">Os dados e gravações da sua organização não serão usados para aprimorar os modelos de IA generativa. <ph name="BEGIN_LINK" />Sua privacidade e o Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>

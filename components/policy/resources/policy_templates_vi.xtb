@@ -9632,15 +9632,6 @@ LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới
 <translation id="6833988859168635883">Trang Khởi động, Trang chủ và trang Thẻ mới</translation>
 <translation id="6835254082476223414">Bật dịch vụ sao lưu và khôi phục của máy ảo Linux</translation>
 <translation id="6835883744948188639">Nên hiển thị lời nhắc định kỳ cho người dùng cho biết cần chạy lại</translation>
-<translation id="683688607121170501">Tùy chọn cài đặt này cho phép người dùng chuyển đổi giữa các Tài khoản Google trong vùng nội dung của cửa sổ trình duyệt và trong các ứng dụng Android sau khi họ đăng nhập vào thiết bị <ph name="PRODUCT_OS_NAME" />.
-
-      Nếu bạn đặt chính sách này thành false, thì hệ thống sẽ không cho phép đăng nhập vào một Tài khoản Google khác từ vùng nội dung trình duyệt không ẩn danh và các ứng dụng Android.
-
-      Nếu bạn không đặt hoặc đặt chính sách này thành true, thì hệ thống sẽ áp dụng hành vi mặc định: tức là được phép đăng nhập vào một Tài khoản Google khác từ vùng nội dung trình duyệt và các ứng dụng Android, nhưng riêng tài khoản của trẻ em sẽ bị chặn đối với vùng nội dung không ẩn danh.
-
-      Trong trường hợp không được phép đăng nhập vào một tài khoản khác qua chế độ Ẩn danh, hãy cân nhắc chặn chế độ đó bằng chính sách IncognitoModeAvailability.
-
-      Xin lưu ý rằng người dùng có thể truy cập vào các dịch vụ của Google ở trạng thái chưa xác thực bằng cách chặn cookie của các dịch vụ đó.</translation>
 <translation id="6841254611279513739">Việc đặt chính sách này sẽ đặt tính năng in ở chế độ chỉ in màu, chỉ in đen trắng hoặc không giới hạn chế độ màu sắc. Nếu bạn không đặt chính sách này, sẽ không có giới hạn nào được áp dụng.</translation>
 <translation id="6843008643303282259">Tốc độ tải lên mong muốn (tính bằng kbit/giây).</translation>
 <translation id="6843296367238757293">Chính sách này không còn dùng nữa. Bạn không nên sử dụng chính sách này. Đọc thêm tại https://support.google.com/chrome/a/answer/7643500</translation>

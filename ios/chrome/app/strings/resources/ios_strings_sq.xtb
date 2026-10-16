@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Hapësira ruajtëse është plot</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
+<translation id="1191987227666124897">Kërkesa për tërheqje</translation>
 <translation id="1196534270480620381">Më jep një përmbledhje të shkurtër të kësaj faqeje</translation>
 <translation id="1199631150313925648">Fut manualisht</translation>
 <translation id="1199963004393929848">Tema e gjelbër</translation>
@@ -2057,6 +2058,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Vazhdo</translation>
 <translation id="741204030948306876">Po, jam dakord</translation>
+<translation id="7417055777338419059">Kodo, shkruaj ose krijo diapozitiva</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7425053386765766120">Shto mënyrën e pagesës…</translation>
@@ -2321,7 +2323,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8187200657863701733">Niveli aktual i Chrome</translation>
 <translation id="8189484403434216074">Krijo një grup skedash</translation>
 <translation id="8189615296021678665">Trokit te "Ruaj" për t'u qasur me lehtësi te ky fjalëkalim herën tjetër kur të identifikohesh.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Shto fjalëkalim</translation>
 <translation id="8195936400946057039">Mbrojtje kundër kërcënimeve online</translation>
 <translation id="8205564605687841303">Anulo</translation>
@@ -2646,7 +2647,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="9149866541089851383">Redakto...</translation>
 <translation id="9152637745605628097">Zgjidh nga temat, ngjyrat ose ngarko një imazh</translation>
 <translation id="9153159728062222866">Kapërce "Kopjo dhe ngjit"</translation>
-<translation id="9159628751968616911">Dërgo faqen e uebit</translation>
 <translation id="9162412286847966593">Të dhënat dhe regjistrimet e organizatës sate nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese. <ph name="BEGIN_LINK" />Privatësia jote dhe Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>

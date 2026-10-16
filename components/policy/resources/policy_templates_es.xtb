@@ -9515,15 +9515,6 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="6833988859168635883">Inicio, Página principal y página Nueva pestaña</translation>
 <translation id="6835254082476223414">Habilitar las funciones de copia de seguridad y restauración de las máquinas virtuales de Linux</translation>
 <translation id="6835883744948188639">Mostrar un mensaje periódico al usuario indicando que se recomienda reiniciar el navegador</translation>
-<translation id="683688607121170501">Esta opción permite que los usuarios cambien de una cuenta de Google a otra en el área de contenido de la ventana de su navegador y en las aplicaciones de Android después de haber iniciado sesión en su dispositivo <ph name="PRODUCT_OS_NAME" />.
-
-      Si se le asigna el valor false a esta política, los usuarios no podrán iniciar sesión en otra cuenta de Google desde el área de contenido de un navegador que no esté en modo de navegación de incógnito ni en las aplicaciones de Android.
-
-      Si no se asigna ningún valor a esta política o se le asigna el valor true, se utilizará el comportamiento predeterminado: los usuarios podrán iniciar sesión en otra cuenta de Google desde el área de contenido del navegador y las aplicaciones de Android, excepto en el caso de cuentas de niños, en las que se bloqueará esta política en el área de contenido de los navegadores que no estén en modo de navegación de incógnito.
-
-      En caso de que no deba permitirse iniciar sesión en otra cuenta a través del modo de navegación de incógnito, este se puede bloquear con la política IncognitoModeAvailability.
-
-      Ten en cuenta que los usuarios podrán acceder a los servicios de Google sin tener que identificarse bloqueando las cookies.</translation>
 <translation id="6841254611279513739">Si se define esta política, establece el modo de impresión: solo en color, solo monocromo o sin restricción. Si no se le asigna ningún valor a esta política, no se aplica ninguna restricción.</translation>
 <translation id="6843008643303282259">Velocidad de subida deseada en kilobits por segundo.</translation>
 <translation id="6843296367238757293">Esta política está obsoleta. Te recomendamos que no la utilices. Consulta https://support.google.com/chrome/a/answer/7643500</translation>

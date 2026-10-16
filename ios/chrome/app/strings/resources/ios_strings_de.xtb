@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Element aktualisiert</translation>
 <translation id="1018804590490383958">Scannen und automatisch einfügen</translation>
 <translation id="1019990162050689579">Aktivitäten in Gemini-Apps</translation>
+<translation id="102471647093736603">Zum Verschieben gedrückt halten</translation>
 <translation id="102645702181682900">Aufgabe gestartet</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Passwortmanager öffnen</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Dein Speicher ist voll</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1190609913194133056">Benachrichtigungscenter</translation>
+<translation id="1191987227666124897">Anfrage zur Ablehnung</translation>
 <translation id="1196534270480620381">Gib mir eine kurze Zusammenfassung dieser Seite</translation>
 <translation id="1199631150313925648">Manuell eingeben</translation>
 <translation id="1199963004393929848">Grünes Design</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4813345808229079766">Verbindung</translation>
 <translation id="4821595350501541683">Tabs wurden geschlossen und Browserdaten gelöscht</translation>
+<translation id="4823322556950229674">Wenn du die Adressleiste und den Button „Zurück“ gedrückt hältst, kannst du beide Elemente nach unten verschieben</translation>
 <translation id="4824480232751123840">Lautstärke</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} und ein weiterer}other{{domain} und {count} weitere}}</translation>
 <translation id="4826588772550366629">Kamera und Mikrofon</translation>
@@ -2055,6 +2058,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Weiter</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
+<translation id="7417055777338419059">Code schreiben, Inhalte verfassen oder Präsentationen erstellen</translation>
 <translation id="7419565702166471774">Immer verschlüsselte Verbindungen verwenden</translation>
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7425053386765766120">Zahlungsmethode hinzufügen…</translation>
@@ -2319,7 +2323,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8187200657863701733">Aktuelle Chrome-Version</translation>
 <translation id="8189484403434216074">Tabgruppe erstellen</translation>
 <translation id="8189615296021678665">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Passwort hinzufügen</translation>
 <translation id="8195936400946057039">Schutz vor Gefahren im Internet</translation>
 <translation id="8205564605687841303">Abbrechen</translation>
@@ -2644,7 +2647,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
 <translation id="9153159728062222866">Kein Kopieren und Einfügen mehr</translation>
-<translation id="9159628751968616911">Webseite senden</translation>
 <translation id="9162412286847966593">Die Daten und Aufzeichnungen deiner Organisation werden nicht zur Verbesserung generativer KI-Modelle verwendet. <ph name="BEGIN_LINK" />Datenschutz und Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Einfügen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>

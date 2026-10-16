@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Хранилището ви е пълно</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1190609913194133056">Център за известия</translation>
+<translation id="1191987227666124897">Заявка за отказ</translation>
 <translation id="1196534270480620381">Дай ми кратко обобщение на тази страница</translation>
 <translation id="1199631150313925648">Ръчно въвеждане</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
@@ -2057,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Напред</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
+<translation id="7417055777338419059">Програмирайте, пишете или създавайте слайдове</translation>
 <translation id="7419565702166471774">Винаги да се използват сигурни връзки</translation>
 <translation id="7423098979219808738">Първо ще се извежда запитване</translation>
 <translation id="7425053386765766120">Добавяне на начин на плащане…</translation>
@@ -2175,6 +2177,7 @@
 <translation id="7758789811447313947">Виолетова тема</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7765158879357617694">Преместване</translation>
+<translation id="7767651976342854115">Възникна грешка в настройката за използване на данни.</translation>
 <translation id="7768507955883790804">Сайтовете автоматично следват тази настройка, когато ги посещавате</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
 <translation id="7772948288262733182">Добре дошли отново</translation>
@@ -2321,7 +2324,6 @@
 <translation id="8187200657863701733">Текущо ниво на Chrome</translation>
 <translation id="8189484403434216074">Създаване на група раздели</translation>
 <translation id="8189615296021678665">Докоснете „Запазване“, за да имате лесен достъп до тази парола следващия път, когато влезете в профила си.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавяне на парола</translation>
 <translation id="8195936400946057039">Защита срещу онлайн заплахи</translation>
 <translation id="8205564605687841303">Отказ</translation>
@@ -2646,7 +2648,6 @@
 <translation id="9149866541089851383">Редактиране...</translation>
 <translation id="9152637745605628097">Изберете от теми, цветове или качете изображение</translation>
 <translation id="9153159728062222866">Пропускане на копирането и поставянето</translation>
-<translation id="9159628751968616911">Изпращане на уеб страницата</translation>
 <translation id="9162412286847966593">Данните и записите на организацията ви няма да се използват за подобряване на моделите на генеративен AI. <ph name="BEGIN_LINK" />Вашата поверителност и Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>

@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">空き容量がありません</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1190609913194133056">通知センター</translation>
+<translation id="1191987227666124897">オプトアウト リクエスト</translation>
 <translation id="1196534270480620381">このページを短く要約して</translation>
 <translation id="1199631150313925648">手動で入力</translation>
 <translation id="1199963004393929848">グリーンのテーマ</translation>
@@ -1534,7 +1535,7 @@
 <translation id="5801568494490449797">設定</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5804241973901381774">権限</translation>
-<translation id="58081802114142635">Google AI を改善するため、ユーザーのアクティビティが使用されます</translation>
+<translation id="58081802114142635">ユーザーのアクティビティをもとに Google AI を改善</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5818161931099046557">Google アカウントで編集</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2057,6 +2058,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
 <translation id="7412027924265291969">続行</translation>
 <translation id="741204030948306876">オンにする</translation>
+<translation id="7417055777338419059">コードの記述、文章の作成、スライドの作成</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
@@ -2321,7 +2323,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8187200657863701733">現在の Chrome レベル</translation>
 <translation id="8189484403434216074">タブグループを作成する</translation>
 <translation id="8189615296021678665">[保存] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます。</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">パスワードを追加</translation>
 <translation id="8195936400946057039">オンラインの脅威から保護</translation>
 <translation id="8205564605687841303">キャンセル</translation>
@@ -2646,7 +2647,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9149866541089851383">編集...</translation>
 <translation id="9152637745605628097">テーマや色を選択したり、画像をアップロードしたりできます</translation>
 <translation id="9153159728062222866">コピーと貼り付けを不要に</translation>
-<translation id="9159628751968616911">ウェブページの送信</translation>
 <translation id="9162412286847966593">組織のデータや録音内容が、生成 AI モデルの改善に使用されることはありません。<ph name="BEGIN_LINK" />お客様のプライバシーと Gemini について<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>
 <translation id="9165320910061267720">値下げアラートの通知を受け取るには、iOS の設定で通知をオンにする必要があります。</translation>

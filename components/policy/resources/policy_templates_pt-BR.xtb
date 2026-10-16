@@ -9824,15 +9824,6 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6833988859168635883">Inicialização, página inicial e página "Nova guia"</translation>
 <translation id="6835254082476223414">Ativar backup e restauração para máquinas virtuais Linux</translation>
 <translation id="6835883744948188639">Mostrar um prompt recorrente ao usuário indicando que a reinicialização é necessária</translation>
-<translation id="683688607121170501">Esta configuração permite que os usuários alternem entre Contas do Google na área de conteúdo da janela do navegador e nos aplicativos Android, depois de fazer login no dispositivo <ph name="PRODUCT_OS_NAME" />.
-
-      Se esta política for definida como falsa, não será permitido fazer login em uma Conta do Google diferente na área de conteúdo em modo de navegação não anônima e em aplicativos Android.
-
-      Se esta política não for configurada ou for definida como verdadeira, o comportamento padrão será usado: será permitido fazer login em uma Conta do Google diferente na área de conteúdo do navegador e em aplicativos Android, exceto para contas filhas, em que isso não será permitido na área de conteúdo em modo de navegação não anônima.
-
-      Caso o login em uma conta diferente não seja permitido no modo de navegação anônima, avalie a possibilidade de bloquear esse modo usando a política IncognitoModeAvailability.
-
-      Os usuários poderão acessar serviços do Google em um estado não autenticado bloqueando os cookies.</translation>
 <translation id="6841254611279513739">A definição da política configura a impressão como apenas em cores, apenas monocromática ou sem restrição de modo de cor. Se a política não for definida, não haverá restrições.</translation>
 <translation id="6843008643303282259">Velocidade de upload desejada, em kbits/s.</translation>
 <translation id="6843296367238757293">Essa política está obsoleta. Seu uso não é recomendável. Leia mais em https://support.google.com/chrome/a/answer/7643500</translation>

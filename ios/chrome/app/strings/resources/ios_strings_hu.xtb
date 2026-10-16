@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Elem frissítve</translation>
 <translation id="1018804590490383958">Beolvasás és automatikus kitöltés</translation>
 <translation id="1019990162050689579">Gemini-appokban végzett tevékenységek</translation>
+<translation id="102471647093736603">Tartsa nyomva az áthelyezéshez</translation>
 <translation id="102645702181682900">Feladat elindítva</translation>
 <translation id="102916930470544692">Azonosítókulcs</translation>
 <translation id="1030376737535466765">Jelszókezelő megnyitása</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">A tárhely megtelt</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1190609913194133056">Értesítési központ</translation>
+<translation id="1191987227666124897">Leiratkozási kérelem</translation>
 <translation id="1196534270480620381">Rövid összefoglalót kérek erről az oldalról</translation>
 <translation id="1199631150313925648">Megadás manuálisan</translation>
 <translation id="1199963004393929848">Zöld téma</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Frissítések</translation>
 <translation id="4813345808229079766">Kapcsolat</translation>
 <translation id="4821595350501541683">A lapok bezáródtak, a böngészési adatok pedig törlődtek</translation>
+<translation id="4823322556950229674">A címsávot és a Vissza gombot nyomva tartással helyezheti át a képernyő aljára.</translation>
 <translation id="4824480232751123840">Térfogat</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} és további 1}other{{domain} és további {count}}}</translation>
 <translation id="4826588772550366629">kamera és mikrofon</translation>
@@ -2055,6 +2058,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tovább</translation>
 <translation id="741204030948306876">Igen, folytatom</translation>
+<translation id="7417055777338419059">Kódolás, írás vagy diák készítése</translation>
 <translation id="7419565702166471774">Mindig használjon biztonságos kapcsolatokat</translation>
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7425053386765766120">Fizetési mód hozzáadása…</translation>
@@ -2319,7 +2323,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="8187200657863701733">Jelenlegi Chrome-szint</translation>
 <translation id="8189484403434216074">Lapcsoport létrehozása</translation>
 <translation id="8189615296021678665">Koppintson a „Mentés” gombra, hogy legközelebb bejelentkezéskor könnyen hozzáférhessen ehhez a jelszóhoz</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Saját eszközök<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Jelszó hozzáadása</translation>
 <translation id="8195936400946057039">Védelem az online fenyegetésekkel szemben</translation>
 <translation id="8205564605687841303">Mégse</translation>
@@ -2644,7 +2647,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="9149866541089851383">Szerkesztés...</translation>
 <translation id="9152637745605628097">Választhat témák és színek közül, vagy feltölthet képet</translation>
 <translation id="9153159728062222866">A másolás és beillesztés kihagyása</translation>
-<translation id="9159628751968616911">Weboldal küldése</translation>
 <translation id="9162412286847966593">Szervezete adatait és felvételeit nem használjuk fel generatív AI-modellek továbbfejlesztésére. <ph name="BEGIN_LINK" />Az Ön adatainak védelme és a Gemini.<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Kapcsolja be a Jelszavak automatikus kitöltése beállítást</translation>
 <translation id="9165320910061267720">Ha értesítéseket szeretne kapni az árcsökkenésekről, be kell kapcsolnia az értesítéseket az iOS beállításaiban.</translation>

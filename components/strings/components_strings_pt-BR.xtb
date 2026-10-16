@@ -1082,6 +1082,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2807052079800581569">Posição da imagem Y</translation>
 <translation id="2808278141522721006">Você pode ativar ou desativar o Windows Hello nas <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Verificando...</translation>
+<translation id="282457273878278063">Gerenciar dados de contato</translation>
 <translation id="2824775600643448204">Barra de endereço e de pesquisa</translation>
 <translation id="2826760142808435982">A conexão foi criptografada e autenticada utilizando <ph name="CIPHER" /> e usa <ph name="KX" /> como o mecanismo de troca de chave.</translation>
 <translation id="2828797285817981634">Sensores de movimento permitidos no momento</translation>
@@ -2219,7 +2220,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4725766358270333890">Fazendo upload de <ph name="COUNT" /> arquivos para o Microsoft OneDrive</translation>
 <translation id="4726672564094551039">Atualizar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
-<translation id="4730773064303503917">Faça um Pix para amigos e empresas usando a Carteira</translation>
 <translation id="4730977633786878901">Avaliações</translation>
 <translation id="4731638775147756694">Este aplicativo foi bloqueado pelo seu administrador</translation>
 <translation id="4732860731866514038">Baixando o pacote de idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>

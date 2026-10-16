@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Mae'ch storfa yn llawn</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1190609913194133056">Canolfan Hysbysiadau</translation>
+<translation id="1191987227666124897">Cais optio allan</translation>
 <translation id="1196534270480620381">Rhowch grynodeb byr i mi o'r dudalen hon</translation>
 <translation id="1199631150313925648">Rhoi yn bwrpasol</translation>
 <translation id="1199963004393929848">Thema werdd</translation>
@@ -2322,7 +2323,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8187200657863701733">Lefel Chrome Gyfredol</translation>
 <translation id="8189484403434216074">Creu grŵp tabiau</translation>
 <translation id="8189615296021678665">Tapiwch "Cadw" i gael mynediad hawdd at y cyfrinair hwn y tro nesaf y byddwch yn mewngofnodi.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Eich dyfeisiau<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Ychwanegu cyfrinair</translation>
 <translation id="8195936400946057039">Amddiffyn rhag bygythiadau ar-lein</translation>
 <translation id="8205564605687841303">Canslo</translation>
@@ -2647,7 +2647,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9149866541089851383">Golygu…</translation>
 <translation id="9152637745605628097">Dewis o themâu, lliwiau neu uwchlwytho llun</translation>
 <translation id="9153159728062222866">Hepgor y Copïo a Gludo</translation>
-<translation id="9159628751968616911">Anfon tudalen we</translation>
 <translation id="9162412286847966593">Ni fydd data a recordiadau eich sefydliad yn cael eu defnyddio i wella modelau AI cynhyrchiol. <ph name="BEGIN_LINK" />Eich preifatrwydd a Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Troi Awtolenwi Cyfrineiriau ymlaen</translation>
 <translation id="9165320910061267720">I gael hysbysiadau o rybuddion gostyngiad mewn prisiau, bydd angen i chi droi hysbysiadau ymlaen yn eich gosodiadau iOS.</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
 <translation id="1018804590490383958">اسکین کریں اور آٹو فل کریں</translation>
 <translation id="1019990162050689579">‏‫Gemini ایپس کی سرگرمی</translation>
+<translation id="102471647093736603">منتقل کرنے کے لیے چھوئیں اور دبائے رکھیں</translation>
 <translation id="102645702181682900">ٹاسک شروع ہو گیا</translation>
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1030376737535466765">پاس ورڈ مینیجر کھولیں</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">آپ کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
+<translation id="1191987227666124897">آپٹ آؤٹ کی درخواست</translation>
 <translation id="1196534270480620381">مجھے اس صفحہ کا مختصر خلاصہ دیں</translation>
 <translation id="1199631150313925648">دستی طور پر درج کریں</translation>
 <translation id="1199963004393929848">سبز تھیم</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">اپ ڈیٹس</translation>
 <translation id="4813345808229079766">کنکشن</translation>
 <translation id="4821595350501541683">ٹیبز کو بند کر دیا گیا اور براؤزنگ ڈیٹا کو حذف کر دیا گیا</translation>
+<translation id="4823322556950229674">آپ ایڈریس بار اور واپس جائیں بٹن کو چھو کر اور دبا کر نیچے منتقل کر سکتے ہیں</translation>
 <translation id="4824480232751123840">والیوم</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} اور 1 دیگر}other{{domain} اور {count} دیگر}}</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
@@ -2055,6 +2058,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7411034503745719324"><ph name="EMAIL" />۔ <ph name="MANAGED_STATUS" />۔</translation>
 <translation id="7412027924265291969">جاری رکھیں</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
+<translation id="7417055777338419059">کوڈنگ کریں، لکھیں یا سلائیڈز بنائیں</translation>
 <translation id="7419565702166471774">ہمیشہ محفوظ کنکشنز کا استعمال کریں</translation>
 <translation id="7423098979219808738">پہلے پوچھیں</translation>
 <translation id="7425053386765766120">ادائیگی کا طریقہ شامل کریں…</translation>
@@ -2319,7 +2323,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8187200657863701733">‏موجودہ Chrome لیول</translation>
 <translation id="8189484403434216074">ایک ٹیب گروپ تخلیق کریں</translation>
 <translation id="8189615296021678665">"محفوظ کریں" پر تھپتھپائیں تاکہ اگلی بار سائن ان کرتے وقت آپ کو آسانی سے یہ پاس ورڈ دستیاب ہو۔</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">پاس ورڈ شامل کریں</translation>
 <translation id="8195936400946057039">آن لائن خطرات کے خلاف تحفظ</translation>
 <translation id="8205564605687841303">منسوخ کریں</translation>
@@ -2644,7 +2647,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9149866541089851383">ترمیم کریں…</translation>
 <translation id="9152637745605628097">تھیمز، رنگوں میں سے انتخاب کریں یا تصویر اپ لوڈ کریں</translation>
 <translation id="9153159728062222866">کاپی اور پیسٹ کو نظر انداز کریں</translation>
-<translation id="9159628751968616911">ویب صفحہ بھیجیں</translation>
 <translation id="9162412286847966593">‏آپ کی تنظیم کے ڈیٹا اور ریکارڈنگز کو تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔ <ph name="BEGIN_LINK" />آپ کی رازداری اور Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">آٹو فل پاس ورڈز آن کریں</translation>
 <translation id="9165320910061267720">‏قیمت میں کمی کے الرٹس کی اطلاعات حاصل کرنے کے لیے، آپ کو اپنے iOS کی ترتیبات میں اطلاعات کو آن کرنا ہوگا۔</translation>

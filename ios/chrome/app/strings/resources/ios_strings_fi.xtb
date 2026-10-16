@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Kohde päivitettiin</translation>
 <translation id="1018804590490383958">Skannaa ja täytä automaattisesti</translation>
 <translation id="1019990162050689579">Gemini-sovellustoiminta</translation>
+<translation id="102471647093736603">Siirrä painamalla pitkään</translation>
 <translation id="102645702181682900">Tehtävä aloitettu</translation>
 <translation id="102916930470544692">Avainkoodi</translation>
 <translation id="1030376737535466765">Avaa Salasanat</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Tallennustila on täynnä</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1190609913194133056">Ilmoituskeskus</translation>
+<translation id="1191987227666124897">Pyyntö olla käyttämättä dataa</translation>
 <translation id="1196534270480620381">Tee lyhyt yhteenveto tästä sivusta</translation>
 <translation id="1199631150313925648">Lisää manuaalisesti</translation>
 <translation id="1199963004393929848">Vihreä teema</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Päivitykset</translation>
 <translation id="4813345808229079766">Yhteys</translation>
 <translation id="4821595350501541683">Välilehdet suljettiin ja selausdata poistettiin</translation>
+<translation id="4823322556950229674">Voit siirtää osoitepalkin ja takaisin-painikkeen alareunaan painamalla pitkään</translation>
 <translation id="4824480232751123840">Tilavuus</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja 1 muu}other{{domain} ja {count} muuta}}</translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
@@ -2320,7 +2323,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8187200657863701733">Nykyinen Chrome-taso</translation>
 <translation id="8189484403434216074">Luo välilehtiryhmä</translation>
 <translation id="8189615296021678665">Napauta Tallenna, niin voit käyttää salasanaa helposti seuraavalla kirjautumiskerralla.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lisää salasana</translation>
 <translation id="8195936400946057039">Suojaus verkkouhkia vastaan</translation>
 <translation id="8205564605687841303">Peru</translation>
@@ -2645,7 +2647,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="9149866541089851383">Muokkaa...</translation>
 <translation id="9152637745605628097">Valitse teema tai väri tai lataa kuva</translation>
 <translation id="9153159728062222866">Ohita kopioiminen ja liittäminen</translation>
-<translation id="9159628751968616911">Lähetä verkkosivu</translation>
 <translation id="9162412286847966593">Organisaatiosi dataa ja tallenteita ei käytetä generatiivisten tekoälymallien kehittämiseen. <ph name="BEGIN_LINK" />Yksityisyys ja Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Laita Täytä salasanat automaattisesti päälle.</translation>
 <translation id="9165320910061267720">Jos haluat saada ilmoituksia hinnan laskusta, sinun on laitettava ilmoitukset päälle iOS-asetuksista.</translation>

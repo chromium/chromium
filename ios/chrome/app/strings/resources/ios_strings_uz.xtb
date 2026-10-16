@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Xotirada joy qolmadi</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1190609913194133056">Bildirishnomalar markazi</translation>
+<translation id="1191987227666124897">Ishtirokni bekor qilish soʻrovi</translation>
 <translation id="1196534270480620381">Ushbu sahifani qisqacha xulosalab ber</translation>
 <translation id="1199631150313925648">Qoʻlda kiritish</translation>
 <translation id="1199963004393929848">Yashil rangli mavzu</translation>
@@ -2322,7 +2323,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8187200657863701733">Joriy Chrome darajasi</translation>
 <translation id="8189484403434216074">Varaqlar guruhini yaratish</translation>
 <translation id="8189615296021678665">Keyingi kirishda bu paroldan oson foydalanish uchun “Saqlash” ustiga bosing.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Qurilmalaringiz<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parol qoʻshish</translation>
 <translation id="8195936400946057039">Onlayn tahdidlarga qarshi himoya</translation>
 <translation id="8205564605687841303">Bekor qilish</translation>
@@ -2647,7 +2647,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="9149866541089851383">O‘zgartirish...</translation>
 <translation id="9152637745605628097">Mavzular, ranglar yoki rasm yuklashdan tanlang</translation>
 <translation id="9153159728062222866">Nusxa olish va joylashga hojat qolmasin</translation>
-<translation id="9159628751968616911">Bu sahifani yuborish</translation>
 <translation id="9162412286847966593">Tashkilotingiz maʼlumotlari va yozuvlari generativ AI modellarini yaxshilashda ishlatilmaydi. <ph name="BEGIN_LINK" />Maxfiyligingiz va Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Parollar avtomatik kiritilishini yoqish</translation>
 <translation id="9165320910061267720">Narx tushishiga oid bildirishnomalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqishingiz kerak.</translation>

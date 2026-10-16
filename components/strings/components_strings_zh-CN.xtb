@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">PDF 制作工具：</translation>
 <translation id="2127090458081644412">密码已保存到此设备</translation>
 <translation id="2127747486437921899">斜体</translation>
+<translation id="2129163794581571479">由 Gemini 中的个性化智能服务提供支持。为改进增强型自动填充功能，我们可能会审核您的请求、网页标题和网址。<ph name="BEGIN_LINK" />管理设置<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">“启用支付信息自动填充”底部动作条已以最大高度显示。</translation>
@@ -1571,6 +1572,7 @@
 <translation id="3655670868607891010">如果您频繁遇到此问题，请尝试这些<ph name="HELP_LINK" />。</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">由 Gemini 中的个性化智能服务提供支持。<ph name="BEGIN_LINK" />管理设置<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3670030362669914947">号码</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3693516565203081475">选择支付方式</translation>
 <translation id="3698353241727597930">您的管理员已将<ph name="FILES" />的保存位置配置为由企业管理的 <ph name="CLOUD_STORAGE" /> 存储空间。即使您删除这些文件，企业仍可能会监控、审核和保留这些文件。</translation>
 <translation id="3698629142018988477">“创建网站”按钮，激活它即可在 Google 协作平台中快速创建新网站</translation>
+<translation id="3698708128812719147">在网页上的任意位置按两次 Ctrl 键，即可查找并填写更多信息</translation>
 <translation id="3700094625653511150">如要隐藏先买后付选项，请前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">您正在使用指纹填充密码</translation>
 <translation id="3701427423622901115">已确认要重置。</translation>
@@ -1894,6 +1897,7 @@
 <translation id="4185037616931963178">安全地更新身份纠正识别号</translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
 <translation id="4191334393248735295">长度</translation>
+<translation id="4192770747482479191">在网页上的任意位置按两次 ⌘ 键，即可查找并填写更多信息</translation>
 <translation id="4195459680867822611">“查看 Chrome 提示”按钮，激活它即可了解各项 Chrome 功能</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4196861286325780578">恢复移动(&amp;R)</translation>
@@ -2211,7 +2215,6 @@
 <translation id="4725766358270333890">正在将 <ph name="COUNT" /> 个文件上传到 Microsoft OneDrive</translation>
 <translation id="4726672564094551039">重新加载政策</translation>
 <translation id="4728558894243024398">平台</translation>
-<translation id="4730773064303503917">通过钱包使用 Pix 向好友和商家付款</translation>
 <translation id="4730977633786878901">评价</translation>
 <translation id="4731638775147756694">您的管理员已禁用此应用</translation>
 <translation id="4732860731866514038">正在下载<ph name="LANGUAGE" />语言包…<ph name="PERCENT" />%</translation>
@@ -2842,6 +2845,7 @@
 <translation id="573974402615125334">如需分享、加入标签页分组并在其中协作，请同步历史记录和标签页</translation>
 <translation id="5740911612628596808">C9 信封</translation>
 <translation id="574392208103952083">中等</translation>
+<translation id="5744350700955456407">增强型自动填充功能现在可以从 Gmail 和 Google 相册等应用中查找和填充订单号和航班确认码等信息</translation>
 <translation id="5745586894920491759">Chrome 会在云端处理网页标题和网址</translation>
 <translation id="5745733273847572235">可以询问能否获取您的位置信息</translation>
 <translation id="5750869797196646528">手部追踪</translation>

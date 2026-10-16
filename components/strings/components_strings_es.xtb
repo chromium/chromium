@@ -665,6 +665,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2126374524350484896">Proveedor de PDF:</translation>
 <translation id="2127090458081644412">Contraseña guardada en este dispositivo</translation>
 <translation id="2127747486437921899">Cursiva</translation>
+<translation id="2129163794581571479">Con la tecnología de Gemini e Inteligencia personalizada. Tus solicitudes, títulos de páginas y URLs se pueden revisar para optimizar Autocompletar mejorado. <ph name="BEGIN_LINK" />Gestionar ajustes<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Es posible que las plantillas que has especificado no se apliquen por no haber configurado la política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Habilitar autocompletado de pagos abierto a altura completa.</translation>
@@ -1575,6 +1576,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3655670868607891010">Si este mensaje aparece con frecuencia, prueba a solucionarlo con estas <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Qué sitios web definidos por el administrador se visitan y cuándo: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Con la tecnología de Gemini e Inteligencia personalizada. <ph name="BEGIN_LINK" />Gestionar ajustes<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Busca más opciones de compra en otras tiendas que vendan este producto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1595,6 +1597,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3693516565203081475">Elegir método de pago</translation>
 <translation id="3698353241727597930">Tu administrador ha configurado el almacenamiento de <ph name="CLOUD_STORAGE" /> gestionado por tu empresa para guardar <ph name="FILES" />. Estos archivos pueden ser monitorizados, auditados y conservados cuando los elimines.</translation>
 <translation id="3698629142018988477">Botón Crear sitio: actívalo para crear un nuevo sitio en Google Sites rápidamente</translation>
+<translation id="3698708128812719147">Pulsa Ctrl dos veces en cualquier lugar de la Web para encontrar y rellenar más información</translation>
 <translation id="3700094625653511150">Para ocultar las opciones de pago aplazado, ve a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Estás usando tu huella digital para rellenar contraseñas</translation>
 <translation id="3701427423622901115">Se han restablecido los ajustes.</translation>
@@ -1898,6 +1901,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4185037616931963178">Actualiza el número Redress de forma segura</translation>
 <translation id="4186035307311647330">Dejar de seguir precio</translation>
 <translation id="4191334393248735295">Longitud</translation>
+<translation id="4192770747482479191">Pulsa ⌘ dos veces en cualquier lugar de la Web para buscar y rellenar más información</translation>
 <translation id="4195459680867822611">Botón Ver consejos de Chrome: actívalo para obtener información sobre las funciones de Chrome</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4196861286325780578">&amp;Rehacer movimiento</translation>
@@ -2215,7 +2219,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4725766358270333890">Subiendo <ph name="COUNT" /> archivos a Microsoft OneDrive</translation>
 <translation id="4726672564094551039">Volver a cargar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
-<translation id="4730773064303503917">Usa Pix para pagar a tus amigos y en establecimientos desde Wallet</translation>
 <translation id="4730977633786878901">Reseñas</translation>
 <translation id="4731638775147756694">Tu administrador ha bloqueado esta aplicación</translation>
 <translation id="4732860731866514038">Descargando el paquete de idioma <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
@@ -2846,6 +2849,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="573974402615125334">Para compartir, unirte y colaborar en grupos de pestañas, sincroniza tu historial y tus pestañas</translation>
 <translation id="5740911612628596808">Sobre C9</translation>
 <translation id="574392208103952083">Media</translation>
+<translation id="5744350700955456407">Ahora Autocompletar mejorado puede buscar y rellenar información (como números de pedido y códigos de confirmación de vuelos) de aplicaciones como Gmail y Fotos</translation>
 <translation id="5745586894920491759">Chrome procesa los títulos de las páginas y las URLs en la nube</translation>
 <translation id="5745733273847572235">Puede solicitar permiso para acceder a tu ubicación</translation>
 <translation id="5750869797196646528">Seguimiento de manos</translation>

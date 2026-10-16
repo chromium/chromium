@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">‏האפליקציה שהמירה ל-PDF:</translation>
 <translation id="2127090458081644412">הסיסמה נשמרה במכשיר הזה</translation>
 <translation id="2127747486437921899">נטוי</translation>
+<translation id="2129163794581571479">‏מבוסס על Gemini עם AI מותאם אישית. כדי לייעל את המילוי האוטומטי המשופר, יכול להיות שהבקשות, כותרות הדפים וכתובות ה-URL ייבדקו. <ph name="BEGIN_LINK" />ניהול ההגדרות<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏לא ניתן להחיל את התבניות שבחרת, מפני שמדיניות DnsOverHttpsMode לא הוגדרה.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">האפשרות "הפעלת מילוי אוטומטי של פרטי תשלום" נפתחה בגובה מלא.</translation>
@@ -1575,6 +1576,7 @@
 <translation id="3655670868607891010">אם נתקלת בזה לעתים קרובות, כדאי לנסות את ה<ph name="HELP_LINK" /> האלה.</translation>
 <translation id="3658742229777143148">גרסה קודמת</translation>
 <translation id="3659521826520353662">אתרים בהגדרת האדמין שבהם מבקרים, וזמני הביקורים: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">‏מבוסס על Gemini עם AI מותאם אישית. <ph name="BEGIN_LINK" />ניהול ההגדרות<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">חיפוש של אפשרויות קנייה נוספות בחנויות אחרות שמוכרות את המוצר הזה.</translation>
 <translation id="3664782872746246217">מילות מפתח:</translation>
 <translation id="3670030362669914947">מספר</translation>
@@ -1595,6 +1597,7 @@
 <translation id="3693516565203081475">בחירת אמצעי תשלום</translation>
 <translation id="3698353241727597930">האדמינים הגדירו שהמערכת תשמור <ph name="FILES" /> באחסון שלך ב-<ph name="CLOUD_STORAGE" /> שמנוהל על ידי הארגון. אם הקבצים האלה ימחקו, יכול להיות שיתבצע מעקב אחריהם, בדיקה ושמירה שלהם.</translation>
 <translation id="3698629142018988477">‏הכפתור ליצירת אתר, מפעילים אותו כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
+<translation id="3698708128812719147">‏כדי למצוא ולמלא עוד פרטים, עליך ללחוץ פעמיים על Ctrl בכל מקום באינטרנט</translation>
 <translation id="3700094625653511150">כדי להסתיר את האפשרויות לתשלום אחר כך, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">בחרת להשתמש בטביעת האצבע למילוי סיסמאות</translation>
 <translation id="3701427423622901115">האיפוס אושר.</translation>
@@ -1898,6 +1901,7 @@
 <translation id="4185037616931963178">‏עדכון מספר ה-Redress באופן מאובטח</translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
 <translation id="4191334393248735295">אורך</translation>
+<translation id="4192770747482479191">כדי למצוא ולמלא עוד פרטים, עליך ללחוץ פעמיים על הסמל ⌘ בכל מקום באינטרנט</translation>
 <translation id="4195459680867822611">‏הכפתור להצגת טיפים ל-Chrome, מפעילים אותו כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4196861286325780578">&amp;ביצוע מחדש של העברה</translation>
@@ -2215,7 +2219,6 @@
 <translation id="4725766358270333890">‏מתבצעת העלאה של <ph name="COUNT" /> קבצים ל-Microsoft OneDrive</translation>
 <translation id="4726672564094551039">טעינת המדיניות מחדש</translation>
 <translation id="4728558894243024398">פלטפורמה</translation>
-<translation id="4730773064303503917">‏שימוש ב-Pix מאפשר להעביר כסף לחברים ולשלם לעסקים באמצעות Wallet</translation>
 <translation id="4730977633786878901">ביקורות</translation>
 <translation id="4731638775147756694">האפליקציה נחסמה על ידי מנהל המערכת</translation>
 <translation id="4732860731866514038">חבילת השפה <ph name="LANGUAGE" /> בהורדה… <ph name="PERCENT" />%</translation>
@@ -2851,6 +2854,7 @@ Del</translation>
 <translation id="573974402615125334">כדי לשתף, להצטרף ולשתף פעולה בקבוצות של כרטיסיות, צריך לסנכרן את ההיסטוריה ואת הכרטיסיות</translation>
 <translation id="5740911612628596808">‏מעטפה – C9</translation>
 <translation id="574392208103952083">בינוני</translation>
+<translation id="5744350700955456407">‏המילוי האוטומטי המשופר יכול עכשיו למצוא ולמלא פרטים כמו מספרי הזמנות וקודי אישור לטיסות מתוך אפליקציות כמו Gmail ו-Photos</translation>
 <translation id="5745586894920491759">‏‫Chrome מעבד את כותרות הדפים וכתובות ה-URL בענן</translation>
 <translation id="5745733273847572235">האתר יכול לבקש הרשאת גישה למיקום המכשיר</translation>
 <translation id="5750869797196646528">מעקב אחר תנועות הידיים</translation>

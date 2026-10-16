@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
 <translation id="2127090458081644412">پاس ورڈ اس آلے پر محفوظ ہو گیا</translation>
 <translation id="2127747486437921899">ترچھا</translation>
+<translation id="2129163794581571479">‏ذاتی ذہانت کے ساتھ Gemini کے ذریعے تقویت یافتہ۔ بہتر کردہ آٹو فل کو بہتر بنانے کے لیے آپ کی درخواستوں، صفحہ کے عنوانات اور URLs کا جائزہ لیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />ترتیبات کا نظم کریں<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">'ادائیگیوں کے آٹو فل کو فعال کریں' پوری اسکرین پر کھلا ہے۔</translation>
@@ -1576,6 +1577,7 @@
 <translation id="3655670868607891010">اگر یہ آپ کو اکثر نظر آتا ہے تو یہ <ph name="HELP_LINK" /> آزمائیں۔</translation>
 <translation id="3658742229777143148">نظرثانی</translation>
 <translation id="3659521826520353662">ایڈمنسٹریٹر کی وضاحت کردہ کون سی ویب سائٹ دیکھی گئی ہے اور کب: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">‏ذاتی ذہانت کے ساتھ Gemini کے ذریعے تقویت یافتہ۔ <ph name="BEGIN_LINK" />ترتیبات کا نظم کریں<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">اس پروڈکٹ کو بیچنے والے دوسرے اسٹورز سے خریداری کے مزید اختیارات تلاش کریں۔</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
 <translation id="3670030362669914947">نمبر</translation>
@@ -1596,6 +1598,7 @@
 <translation id="3693516565203081475">ادائیگی کا طریقہ منتخب کریں</translation>
 <translation id="3698353241727597930">آپ کے منتظم نے <ph name="FILES" /> کو آپ کے انٹرپرائز کے زیر انتظام <ph name="CLOUD_STORAGE" /> اسٹوریج میں محفوظ کرنے کیلئے کنفیگر کیا ہے۔ آپ کی جانب سے ان فائلز کو حذف کرنے پر، ان کی نگرانی کی جا سکتی ہے، انہیں آڈٹ کیا جا سکتا اور برقرار رکھا جا سکتا ہے۔</translation>
 <translation id="3698629142018988477">‏سائٹ تخلیق کریں بٹن، Google Sites میں تیزی سے نئی سائٹ تخلیق کرنے کے لیے فعال کریں</translation>
+<translation id="3698708128812719147">‏مزید معلومات تلاش کرنے اور پُر کرنے کے لیے ویب پر کہیں بھی دو بار Ctrl دبائیں</translation>
 <translation id="3700094625653511150">بعد میں ادائیگی کے اختیارات کو چھپانے کے لیے، <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> پر جائیں</translation>
 <translation id="3700966190175650601">آپ پاس ورڈز پُر کرنے کے لیے اپنے فنگر پرنٹ کا استعمال کر رہے ہیں</translation>
 <translation id="3701427423622901115">ری سیٹ کی کاروائی تسلیم کر لی گئی۔</translation>
@@ -1899,6 +1902,7 @@
 <translation id="4185037616931963178">ریڈریس نمبر کو محفوظ طریقے سے اپ ڈیٹ کریں</translation>
 <translation id="4186035307311647330">قیمت کے ٹریک کو کالعدم کریں</translation>
 <translation id="4191334393248735295">لمبائی</translation>
+<translation id="4192770747482479191">مزید معلومات تلاش کرنے اور پُر کرنے کے لیے ویب پر کہیں بھی دو بار ⌘ دبائیں</translation>
 <translation id="4195459680867822611">‏Chrome کی تجاویز دیکھیں بٹن، Chrome کی خصوصیات کے بارے میں فعال کریں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
@@ -2216,7 +2220,6 @@
 <translation id="4725766358270333890">‏‫<ph name="COUNT" /> فائلز کو Microsoft OneDrive میں اپ لوڈ کیا جا رہا ہے</translation>
 <translation id="4726672564094551039">پالیسیاں دوبارہ لوڈ کریں</translation>
 <translation id="4728558894243024398">پلیٹ فارم</translation>
-<translation id="4730773064303503917">‏والٹ کا استعمال کرتے ہوئے دوستوں اور کاروباروں کو Pix بھیجیں</translation>
 <translation id="4730977633786878901">جائزے</translation>
 <translation id="4731638775147756694">اس ایپلیکیشن کو آپ کے منتظم کے ذریعے مسدود کر دیا گیا ہے</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> زبان کا پیک ڈاؤن لوڈ ہو رہا ہے... <ph name="PERCENT" />%</translation>
@@ -2847,6 +2850,7 @@
 <translation id="573974402615125334">ٹیب گروپس میں اشتراک، شمولیت اور تعاون کرنے کے لیے، اپنی سرگزشت اور ٹیبز کو ہم مطابقت پذیر کریں</translation>
 <translation id="5740911612628596808">‏C9 لفافہ</translation>
 <translation id="574392208103952083">متوسط</translation>
+<translation id="5744350700955456407">‏بہتر کردہ آٹو فل اب Gmail اور تصاویر جیسی ایپس سے آرڈر نمبرز اور فلائیٹ کی تصدیق کے کوڈز جیسی معلومات تلاش اور پُر کر سکتا ہے</translation>
 <translation id="5745586894920491759">‏‫Chrome کلاؤڈ میں صفحہ کے عنوانات اور URLs پر کارروائی کرتا ہے</translation>
 <translation id="5745733273847572235">سائٹ آپ کا مقام پوچھ سکتی ہے</translation>
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>

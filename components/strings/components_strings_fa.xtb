@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">‏تولیدکننده PDF:</translation>
 <translation id="2127090458081644412">گذرواژه در این دستگاه ذخیره شد</translation>
 <translation id="2127747486437921899">ایتالیک</translation>
+<translation id="2129163794581571479">‏با پشتیبانی Gemini با «هوش شخصی‌سازی‌شده». درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شوند. <ph name="BEGIN_LINK" />مدیریت تنظیمات<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">«فعال کردن تکمیل خودکار پرداخت‌ها» به‌صورت کامل باز شده است.</translation>
@@ -1576,6 +1577,7 @@
 <translation id="3655670868607891010">اگر مکرراً با این مشکل مواجه می‌شوید، <ph name="HELP_LINK" /> را امتحان کنید.</translation>
 <translation id="3658742229777143148">ویرایش</translation>
 <translation id="3659521826520353662">سایت‌های تعریف‌شده توسط سرپرست که بازدید شده است و زمان بازدید: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">‏با پشتیبانی Gemini با «هوش شخصی‌سازی‌شده». <ph name="BEGIN_LINK" />مدیریت تنظیمات<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">گزینه‌های خرید بیشتری را در سایر فروشگاه‌هایی که این محصول را می‌فروشند جستجو کنید.</translation>
 <translation id="3664782872746246217">کلیدواژه‌ها:</translation>
 <translation id="3670030362669914947">عدد</translation>
@@ -1596,6 +1598,7 @@
 <translation id="3693516565203081475">انتخاب روش پرداخت</translation>
 <translation id="3698353241727597930">سرپرست شما پیکربندی را به‌گونه‌ای انجام داده است که <ph name="FILES" /> در فضای ذخیره‌سازی <ph name="CLOUD_STORAGE" /> تحت‌مدیریت سازمان ذخیره شوند. این فایل‌ها ممکن است پایش و بررسی شوند و وقتی آن‌ها را حذف می‌کنید نگه داشته شوند.</translation>
 <translation id="3698629142018988477">‏دکمه ایجاد سایت؛ برای ایجاد سریع سایت جدید در Google Sites، آن را فعال کنید</translation>
+<translation id="3698708128812719147">‏برای پیدا کردن و تکمیل اطلاعات بیشتر، در هر جایی از وب دوبار Ctrl را فشار دهید</translation>
 <translation id="3700094625653511150">برای پنهان کردن گزینه‌های «پرداخت بعداً»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید</translation>
 <translation id="3700966190175650601">از اثر انگشت برای تکمیل گذرواژه‌ها استفاده می‌کنید</translation>
 <translation id="3701427423622901115">بازنشانی تأیید شد.</translation>
@@ -1899,6 +1902,7 @@
 <translation id="4185037616931963178">به‌روز کردن شناسه جبران خطای تطبیق به‌طور امن</translation>
 <translation id="4186035307311647330">لغو پیگیری قیمت</translation>
 <translation id="4191334393248735295">طول</translation>
+<translation id="4192770747482479191">برای پیدا کردن و پر کردن اطلاعات بیشتر، در هرجایی از وب دوبار کلید ⌘ را فشار دهید</translation>
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
 <translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
@@ -2216,7 +2220,6 @@
 <translation id="4725766358270333890">‏درحال بارگذاری <ph name="COUNT" /> فایل در Microsoft OneDrive</translation>
 <translation id="4726672564094551039">بار کردن مجدد خط مشی‌ها</translation>
 <translation id="4728558894243024398">پلت فورم</translation>
-<translation id="4730773064303503917">‏ارسال Pix برای دوستان و کسب‌وکارها بااستفاده از «کیف پول»</translation>
 <translation id="4730977633786878901">مرورها</translation>
 <translation id="4731638775147756694">سرپرستتان این برنامه را مسدود کرده است</translation>
 <translation id="4732860731866514038">درحال بارگیری بسته زبان <ph name="LANGUAGE" />… ‏<ph name="PERCENT" />٪</translation>
@@ -2847,6 +2850,7 @@
 <translation id="573974402615125334">برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های زبانه، سابقه و زبانه‌هایتان را همگام‌سازی کنید</translation>
 <translation id="5740911612628596808">پاکت سی۹</translation>
 <translation id="574392208103952083">متوسط</translation>
+<translation id="5744350700955456407">‏اکنون تکمیل خودکار بهبودیافته می‌تواند اطلاعاتی مثل شماره سفارش و کدهای تأییدیه پرواز را از برنامه‌هایی مثل Gmail و Photos پیدا و تکمیل کند</translation>
 <translation id="5745586894920491759">‏‫Chrome عنوان‌های صفحه و نشانی‌های وب را در فضای ابری پردازش می‌کند</translation>
 <translation id="5745733273847572235">می‌تواند برای استفاده از مکان درخواست دهد</translation>
 <translation id="5750869797196646528">ردیابی دست</translation>

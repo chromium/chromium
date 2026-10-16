@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Yaddaş doludur</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1190609913194133056">Bildiriş Mərkəzi</translation>
+<translation id="1191987227666124897">İmtina sorğusu</translation>
 <translation id="1196534270480620381">Səhifənin qısa xülasəsini yarat</translation>
 <translation id="1199631150313925648">Manual daxil edin</translation>
 <translation id="1199963004393929848">Yaşıl tema</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Yadda saxlanılan parol və giriş açarları</translation>
 <translation id="3143515551205905069">Sinxronizasiyanı ləğv edin</translation>
 <translation id="3144126448740580210">TAMAMDIR</translation>
+<translation id="3147048678293362228">Kontakt məlumatını idarə edin…</translation>
 <translation id="3147521114983561406">Giriş açarları parol menecerində yadda saxlanılır. Onlar Anonim və adi tablarda əlçatandır.</translation>
 <translation id="3148052723910099040">Normal tab toru</translation>
 <translation id="3148237711805373460">Keçin</translation>
@@ -1869,6 +1871,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6770452996697898492">[REZERV EDİLDİ]</translation>
 <translation id="6775952316617222141">Chrome-da Gemini ilə Canlı funksiyasından istifadə edin</translation>
 <translation id="6779455296366983087">Baxış datası silinəcək</translation>
+<translation id="6782311720357312958">Google-dan soruşun</translation>
 <translation id="6782531425936234573">Datanı eksport edin</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> alətini silin</translation>
 <translation id="6791425686608802741">"Yeni qrupa tab əlavə edin" üzərinə toxunun</translation>
@@ -2057,6 +2060,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Davam edin</translation>
 <translation id="741204030948306876">Bəli, razıyam</translation>
+<translation id="7417055777338419059">Kodlaşdırın, yazın və ya slaydlar yaradın</translation>
 <translation id="7419565702166471774">Həmişə güvənli bağlantılardan istifadə edin</translation>
 <translation id="7423098979219808738">Öncə soruşun</translation>
 <translation id="7425053386765766120">Ödəniş metodu əlavə edin…</translation>
@@ -2321,7 +2325,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8187200657863701733">Cari Chrome səviyyəsi</translation>
 <translation id="8189484403434216074">Tab qrupu yaradın</translation>
 <translation id="8189615296021678665">Növbəti dəfə daxil olanda bu parola asanlıqla daxil olmaq üçün "Yadda saxlayın" seçiminə toxunun.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parol əlavə edin</translation>
 <translation id="8195936400946057039">Onlayn təhlükələrə qarşı qorunma</translation>
 <translation id="8205564605687841303">Ləğv edin</translation>
@@ -2646,7 +2649,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="9149866541089851383">Düzəliş edin...</translation>
 <translation id="9152637745605628097">Temalar və rənglər arasından seçim edin və ya şəkil yükləyin</translation>
 <translation id="9153159728062222866">Kopiyalama və Əlavə etməni ötürün</translation>
-<translation id="9159628751968616911">Veb-səhifəni göndərin</translation>
 <translation id="9162412286847966593">Təşkilatınızın datası və səs yazıları generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilməyəcək. <ph name="BEGIN_LINK" />Məxfiliyiniz və Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Parol Avto Doldurmasını aktiv edin</translation>
 <translation id="9165320910061267720">Qiymətin düşməsi xəbərdarlıqları ilə bağlı bildiriş almaq üçün iOS ayarlarında bildirişləri aktiv etməlisiniz.</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">આઇટમ અપડેટ કરી</translation>
 <translation id="1018804590490383958">સ્કૅન કરો અને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="1019990162050689579">Gemini ઍપ ઍક્ટિવિટી</translation>
+<translation id="102471647093736603">ખસેડવા માટે દબાવી રાખો</translation>
 <translation id="102645702181682900">કાર્ય શરૂ થયું</translation>
 <translation id="102916930470544692">પાસકી</translation>
 <translation id="1030376737535466765">Password Manager ખોલો</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">તમારો સ્ટોરેજ ભરાઈ ગયો છે</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1190609913194133056">સૂચના કેન્દ્ર</translation>
+<translation id="1191987227666124897">નાપસંદ કરવાની વિનંતી</translation>
 <translation id="1196534270480620381">મને આ પેજનો ટૂંકો સારાંશ આપો</translation>
 <translation id="1199631150313925648">મેન્યુઅલી દાખલ કરો</translation>
 <translation id="1199963004393929848">ગ્રીન થીમ</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">અપડેટ</translation>
 <translation id="4813345808229079766">કનેક્શન</translation>
 <translation id="4821595350501541683">ટૅબ બંધ કરવામાં આવી અને બ્રાઉઝિંગ ડેટા ડિલીટ કર્યો</translation>
+<translation id="4823322556950229674">ઍડ્રેસ બાર અને પાછળ બટનને સૌથી નીચે ખસેડવા માટે તમે દબાવી રાખી શકો છો</translation>
 <translation id="4824480232751123840">વૉલ્યૂમ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} અને અન્ય 1}one{{domain} અને અન્ય {count}}other{{domain} અને અન્ય {count}}}</translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">ચાલુ રાખો</translation>
 <translation id="741204030948306876">હા, મને માન્ય છે</translation>
+<translation id="7417055777338419059">કોડ કરો, લખો અથવા સ્લાઇડ બનાવો</translation>
 <translation id="7419565702166471774">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7423098979219808738">પ્રથમ પૂછો</translation>
 <translation id="7425053386765766120">ચુકવણીની પદ્ધતિ ઉમેરો…</translation>
@@ -2319,7 +2323,6 @@
 <translation id="8187200657863701733">Chromeનું વર્તમાન લેવલ</translation>
 <translation id="8189484403434216074">ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="8189615296021678665">આગામી વખતે જ્યારે તમે સાઇન ઇન કરો, ત્યારે સરળતાથી આ પાસવર્ડ ઍક્સેસ કરવા માટે "સાચવો" પર ટૅપ કરો.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">પાસવર્ડ ઉમેરો</translation>
 <translation id="8195936400946057039">ઑનલાઇન જોખમો સામે સંરક્ષણ</translation>
 <translation id="8205564605687841303">રદ કરો</translation>
@@ -2644,7 +2647,6 @@
 <translation id="9149866541089851383">ફેરફાર કરો...</translation>
 <translation id="9152637745605628097">થીમ, રંગોમાંથી પસંદ કરો અથવા કોઈ છબી અપલોડ કરો</translation>
 <translation id="9153159728062222866">કૉપિ અને પેસ્ટ કરવાનું છોડો</translation>
-<translation id="9159628751968616911">વેબપેજ મોકલો</translation>
 <translation id="9162412286847966593">તમારી સંસ્થાના ડેટા અને રેકોર્ડિંગનો ઉપયોગ જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે કરવામાં આવશે નહીં. <ph name="BEGIN_LINK" />તમારી પ્રાઇવસી અને Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">ઑટોમૅટિક રીતે પાસવર્ડ ભરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="9165320910061267720">કિંમતમાં ઘટાડાના અલર્ટના નોટિફિકેશન મેળવવા માટે, તમારે તમારા iOSના સેટિંગમાં નોટિફિકેશન ચાલુ કરવા પડશે.</translation>

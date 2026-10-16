@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">আইটেম আপডেট হয়েছে</translation>
 <translation id="1018804590490383958">স্ক্যান করে অটোফিল করুন</translation>
 <translation id="1019990162050689579">Gemini অ্যাপ অ্যাক্টিভিটি</translation>
+<translation id="102471647093736603">সরানোর জন্য প্রেস করে ধরে রাখুন</translation>
 <translation id="102645702181682900">টাস্ক শুরু করা হয়েছে</translation>
 <translation id="102916930470544692">পাসকী</translation>
 <translation id="1030376737535466765">Password Manager খুলুন</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">আপনার স্টোরেজ ভর্তি হয়ে গেছে</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
+<translation id="1191987227666124897">অপ্ট-আউট করার অনুরোধ</translation>
 <translation id="1196534270480620381">আমাকে এই পৃষ্ঠার একটি সংক্ষিপ্ত বিবরণ দাও</translation>
 <translation id="1199631150313925648">ম্যানুয়ালি লিখুন</translation>
 <translation id="1199963004393929848">গ্রিন থিম</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">আপডেট</translation>
 <translation id="4813345808229079766">কানেকশন</translation>
 <translation id="4821595350501541683">ট্যাব বন্ধ করা এবং ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে</translation>
+<translation id="4823322556950229674">অ্যাড্রেস বার এবং ব্যাক বোতামটি নিচে সরিয়ে নিতে চাইলে প্রেস করে ধরে রাখুন</translation>
 <translation id="4824480232751123840">ভলিউম</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
@@ -2056,6 +2059,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">চালিয়ে যান</translation>
 <translation id="741204030948306876">হ্যাঁ, আমি রাজি</translation>
+<translation id="7417055777338419059">কোড, টেক্সট লিখুন অথবা স্লাইড তৈরি করুন</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
 <translation id="7423098979219808738">প্রথমে জিজ্ঞাসা করুন</translation>
 <translation id="7425053386765766120">পেমেন্ট পদ্ধতি যোগ করুন…</translation>
@@ -2320,7 +2324,6 @@
 <translation id="8187200657863701733">Chrome-এর বর্তমান লেভেল</translation>
 <translation id="8189484403434216074">ট্যাব গ্রুপ তৈরি করুন</translation>
 <translation id="8189615296021678665">পরেরবার সাইন-ইন করার সময় সহজে এই পাসওয়ার্ড অ্যাক্সেস করতে, "সেভ করুন" বিকল্পে ট্যাপ করুন।</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">পাসওয়ার্ড যোগ করুন</translation>
 <translation id="8195936400946057039">অনলাইন হুমকি থেকে সুরক্ষা</translation>
 <translation id="8205564605687841303">বাতিল করুন</translation>
@@ -2645,7 +2648,6 @@
 <translation id="9149866541089851383">সম্পাদনা...</translation>
 <translation id="9152637745605628097">থিম, রঙ থেকে বেছে নিন অথবা ছবি আপলোড করুন</translation>
 <translation id="9153159728062222866">কপি ও পেস্ট করার ঝামেলা এড়ান</translation>
-<translation id="9159628751968616911">ওয়েবপেজ পাঠান</translation>
 <translation id="9162412286847966593">জেনারেটিভ AI মডেল উন্নত করতে আপনার সংস্থার ডেটা ও রেকর্ডিং ব্যবহার করা হবে না। <ph name="BEGIN_LINK" />আপনার গোপনীয়তা ও Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">অটোফিল পাসওয়ার্ড চালু করুন</translation>
 <translation id="9165320910061267720">ভাড়া কমে যাওয়া সংক্রান্ত সতর্কতার বিজ্ঞপ্তি পেতে, আপনার iOS সেটিংসে বিজ্ঞপ্তিগুলি চালু করতে হবে।</translation>

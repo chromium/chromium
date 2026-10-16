@@ -665,6 +665,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2126374524350484896">PDF failo rengėjas:</translation>
 <translation id="2127090458081644412">Slaptažodis išsaugotas šiame įrenginyje</translation>
 <translation id="2127747486437921899">Kursyvas</translation>
+<translation id="2129163794581571479">Teikia „Gemini“ su Asmeniniu intelektu. Užklausos, puslapių pavadinimai ir URL gali būti peržiūrėti siekiant patobulinti išmanųjį automatinį pildymą. <ph name="BEGIN_LINK" />Tvarkyti nustatymus<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Jūsų nurodyti šablonai gali būti netaikomi dėl to, kad nenustatyta „DnsOverHttpsMode“ politika.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Mokėjimų automatinio pildymo įgalinimo lapas atidarytas per visą ekrano aukštį.</translation>
@@ -1576,6 +1577,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3655670868607891010">Jei tai rodoma dažnai, išbandykite <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Peržiūrėtas ir pataisytas leidimas</translation>
 <translation id="3659521826520353662">Kokiose administratoriaus nustatytose svetainėse lankomasi ir kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Teikia „Gemini“ su Asmeniniu intelektu. <ph name="BEGIN_LINK" />Tvarkyti nustatymus<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Ieškokite daugiau pirkimo parinkčių kitose parduotuvėse, kuriose parduodamas šis produktas.</translation>
 <translation id="3664782872746246217">Raktiniai žodžiai:</translation>
 <translation id="3670030362669914947">Numeris</translation>
@@ -1596,6 +1598,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3693516565203081475">Pasirinkite mokėjimo metodą</translation>
 <translation id="3698353241727597930">Administratorius sukonfigūravo išsaugoti <ph name="FILES" /> jūsų įmonės tvarkomoje <ph name="CLOUD_STORAGE" /> saugykloje. Šie failai gali būti stebimi, tikrinami ir saugomi, kai juos ištrinate.</translation>
 <translation id="3698629142018988477">Mygtukas „Sukurti svetainę“; suaktyvinkite, kad galėtumėte sparčiai sukurti naują svetainę „Google“ svetainėse</translation>
+<translation id="3698708128812719147">Bet kurioje žiniatinklio vietoje dukart paspauskite „Ctrl“, kad būtų rasta ir užpildyta daugiau informacijos</translation>
 <translation id="3700094625653511150">Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Naudojate piršto atspaudą slaptažodžiams užpildyti</translation>
 <translation id="3701427423622901115">Nustatymas iš naujo patvirtintas.</translation>
@@ -1899,6 +1902,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4185037616931963178">Patikimai atnaujinkite skundo numerį</translation>
 <translation id="4186035307311647330">Nebestebėti kainų</translation>
 <translation id="4191334393248735295">Ilgis</translation>
+<translation id="4192770747482479191">Bet kurioje žiniatinklio vietoje dukart paspauskite ⌘, kad būtų rasta ir užpildyta daugiau informacijos</translation>
 <translation id="4195459680867822611">Mygtukas „Žr. „Chrome“ patarimus“; suaktyvinkite, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4196861286325780578">&amp;Perkelti dar kartą</translation>
@@ -2216,7 +2220,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4725766358270333890">Įkeliama tiek failų: <ph name="COUNT" /> į „Microsoft OneDrive“</translation>
 <translation id="4726672564094551039">Iš naujo įkelti politiką</translation>
 <translation id="4728558894243024398">Platforma</translation>
-<translation id="4730773064303503917">Siųskite „Pix“ mokėjimus draugams ir įmonėms naudodami „Wallet“</translation>
 <translation id="4730977633786878901">Apžvalgos</translation>
 <translation id="4731638775147756694">Programą užblokavo administratorius</translation>
 <translation id="4732860731866514038">Atsisiunčiamas <ph name="LANGUAGE" /> k. paketas... <ph name="PERCENT" /> proc.</translation>
@@ -2847,6 +2850,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="573974402615125334">Jei norite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse, sinchronizuokite istoriją ir skirtukus</translation>
 <translation id="5740911612628596808">C9 vokas</translation>
 <translation id="574392208103952083">Vidutinis</translation>
+<translation id="5744350700955456407">Išmanusis automatinis pildymas dabar gali rasti ir užpildyti informaciją, pvz., užsakymų numerius ir skrydžių patvirtinimo kodus, iš tokių programų kaip „Gmail“ ir Nuotraukos</translation>
 <translation id="5745586894920491759">„Chrome“ apdoroja puslapių pavadinimus ir URL debesyje</translation>
 <translation id="5745733273847572235">Gali būti prašoma jūsų vietovės informacijos</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>

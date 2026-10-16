@@ -9356,15 +9356,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="6833988859168635883">启动页、主页和新标签页</translation>
 <translation id="6835254082476223414">启用 Linux 虚拟机备份和恢复</translation>
 <translation id="6835883744948188639">显示建议用户重新启动浏览器的周期性提示</translation>
-<translation id="683688607121170501">通过此设置，您可允许用户在登录其 <ph name="PRODUCT_OS_NAME" />设备后从浏览器窗口的内容区域和 Android 应用中切换 Google 账号。
-
-      如果此政策设为 false，系统将不允许用户从处于非无痕模式的浏览器内容区域和 Android 应用中切换 Google 账号。
-
-      如果此政策未设置或设为 true，系统将会遵从默认行为：允许用户从浏览器内容区域和 Android 应用中切换 Google 账号（但未成年人账号除外，因为系统会阻止从处于非无痕模式的内容区域登录这类账号）。
-
-      如果不应允许通过无痕模式切换账号，最好使用 IncognitoModeAvailability 政策屏蔽该模式。
-
-      请注意，用户只需拦截 Google 服务的 Cookie，便能在未验证身份的状态下访问 Google 服务。</translation>
 <translation id="6841254611279513739">通过设置此政策，您可以将打印模式限制为仅限彩色打印、仅限单色打印或无颜色模式。如果您未设置此政策，则打印模式不受限制。</translation>
 <translation id="6843008643303282259">所需的上传速率，以 kb/s 为单位。</translation>
 <translation id="6843296367238757293">此政策已被弃用。建议您改用其他政策。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>

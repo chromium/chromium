@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">თქვენი მეხსიერება სავსეა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1190609913194133056">შეტყობინებათა ცენტრი</translation>
+<translation id="1191987227666124897">უარის თქმის მოთხოვნა</translation>
 <translation id="1196534270480620381">წარმოადგინე ამ გვერდის მოკლე შეჯამება</translation>
 <translation id="1199631150313925648">ხელით შეყვანა</translation>
 <translation id="1199963004393929848">მწვანე თემა</translation>
@@ -2057,6 +2058,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">გაგრძელება</translation>
 <translation id="741204030948306876">დიახ, თანახმა ვარ</translation>
+<translation id="7417055777338419059">დაწერეთ კოდი, ტექსტი ან შექმენით სლაიდები</translation>
 <translation id="7419565702166471774">ყოველთვის დაცული კავშირების გამოყენება</translation>
 <translation id="7423098979219808738">წინასწარ კითხვა</translation>
 <translation id="7425053386765766120">გადახდის მეთოდის დამატება…</translation>
@@ -2321,7 +2323,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8187200657863701733">Chrome-ის მიმდინარე დონე</translation>
 <translation id="8189484403434216074">ჩანართების ჯგუფის შექმნა</translation>
 <translation id="8189615296021678665">შეეხეთ „შენახვას“, რომ მარტივად მიიღოთ ამ პაროლზე წვდომა მომდევნო ჯერზე შესვლისას.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />თქვენი მოწყობილობები<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">პაროლის დამატება</translation>
 <translation id="8195936400946057039">დაცვა ონლაინ საფრთხეების წინააღმდეგ</translation>
 <translation id="8205564605687841303">გაუქმება</translation>
@@ -2646,7 +2647,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9149866541089851383">რედაქტირება…</translation>
 <translation id="9152637745605628097">აირჩიეთ თემებიდან, ფერებიდან ან ატვირთეთ სურათი</translation>
 <translation id="9153159728062222866">კოპირებისა და ჩასმის გამოტოვება</translation>
-<translation id="9159628751968616911">ვებგვერდის გაგზავნა</translation>
 <translation id="9162412286847966593">თქვენი ორგანიზაციის მონაცემები და ჩანაწერები არ გამოიყენება გენერაციული ხელოვნური ინტელექტის მოდელების გასაუმჯობესებლად. <ph name="BEGIN_LINK" />თქვენი კონფიდენციალურობა და Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">ჩართეთ პაროლების ავტომატური შევსება</translation>
 <translation id="9165320910061267720">ფასის კლების შესახებ შეტყობინებები რომ მიიღოთ, თქვენი iOS პარამეტრებიდან შეტყობინებების მიღების ფუნქცია უნდა ჩართოთ.</translation>

@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1190609913194133056">Centro de Notificações</translation>
+<translation id="1191987227666124897">Pedido de desativação</translation>
 <translation id="1196534270480620381">Dá-me um breve resumo desta página</translation>
 <translation id="1199631150313925648">Introduzir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -2322,7 +2323,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8187200657863701733">Nível atual do Chrome</translation>
 <translation id="8189484403434216074">Crie um grupo de separadores</translation>
 <translation id="8189615296021678665">Toque em "Guardar" para aceder facilmente a esta palavra-passe na próxima vez que iniciar sessão.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Adicione uma palavra-passe</translation>
 <translation id="8195936400946057039">Proteção contra ameaças online</translation>
 <translation id="8205564605687841303">Cancelar</translation>
@@ -2647,7 +2647,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolha entre temas, cores ou carregue uma imagem</translation>
 <translation id="9153159728062222866">Evite copiar e colar</translation>
-<translation id="9159628751968616911">Envie a página Web</translation>
 <translation id="9162412286847966593">Os dados e as gravações da sua organização não são usados para melhorar os modelos de IA generativa. <ph name="BEGIN_LINK" />A sua privacidade e o Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ative o Preenchimento automático de palavras-passe</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de descida do preço, tem de ativar as notificações nas definições do iOS.</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1018804590490383958">المسح ضوئيًا وملء البيانات تلقائيًا</translation>
 <translation id="1019990162050689579">‏نشاطك على تطبيقات Gemini</translation>
+<translation id="102471647093736603">طريقة نقل الشريط هي الضغط مع الاستمرار</translation>
 <translation id="102645702181682900">بدأت المَهمة</translation>
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1030376737535466765">فتح "مدير كلمات المرور"</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">مساحة التخزين ممتلئة</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
+<translation id="1191987227666124897">طلب إيقاف استخدام البيانات</translation>
 <translation id="1196534270480620381">أريد ملخّصًا موجزًا لهذه الصفحة</translation>
 <translation id="1199631150313925648">إدخال البيانات يدويًا</translation>
 <translation id="1199963004393929848">مظهر باللون الأخضر</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">التحديثات</translation>
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4821595350501541683">تم إغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
+<translation id="4823322556950229674">يمكنك الضغط مع الاستمرار لنقل شريط العناوين وزر الرجوع إلى أسفل الشاشة</translation>
 <translation id="4824480232751123840">الصوت</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} وعلامة تبويب واحدة إضافية}two{{domain} وعلامتا تبويب ({count}) إضافيتان}few{{domain} و{count} علامات تبويب إضافية}many{{domain} و{count} علامة تبويب إضافية}other{{domain} و{count} علامة تبويب إضافية}}</translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
@@ -1428,7 +1431,7 @@
 <translation id="5477188385487393357">وداعًا لعناء النسخ واللصق</translation>
 <translation id="5478327362747197944">‏يمكنك إنشاء أحداث في "تقويم Google" مباشرةً من خلال النقر على تاريخ في إحدى صفحات الويب.</translation>
 <translation id="5482922178977937393">هل تريد تلقّي إشعارات عن الأخبار والرياضة وغير ذلك استنادًا إلى اهتماماتك؟</translation>
-<translation id="5483838506518938965">اكتملت المهمة</translation>
+<translation id="5483838506518938965">أصبحت جاهزًا الآن</translation>
 <translation id="5487521232677179737">محو البيانات</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="5499648645977734083">إدارة طرق الدفع…</translation>
@@ -2053,6 +2056,7 @@
 <translation id="7411034503745719324">‫<ph name="EMAIL" />. <ph name="MANAGED_STATUS" /></translation>
 <translation id="7412027924265291969">متابعة</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
+<translation id="7417055777338419059">إنشاء رموز برمجية أو نصوص أو شرائح</translation>
 <translation id="7419565702166471774">استخدام الاتصالات الآمنة دائمًا</translation>
 <translation id="7423098979219808738">السؤال أولاً</translation>
 <translation id="7425053386765766120">إضافة طريقة دفع…</translation>
@@ -2317,7 +2321,6 @@
 <translation id="8187200657863701733">‏مستوى Chrome الحالي</translation>
 <translation id="8189484403434216074">إنشاء مجموعة علامات تبويب</translation>
 <translation id="8189615296021678665">انقر على "حفظ" للوصول بسهولة إلى كلمة المرور هذه في المرة القادمة التي تسجّل فيها الدخول.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">إضافة كلمة مرور</translation>
 <translation id="8195936400946057039">توفّر لك هذه الميزة الحماية من التهديدات على الإنترنت</translation>
 <translation id="8205564605687841303">إلغاء</translation>
@@ -2643,7 +2646,6 @@
 <translation id="9149866541089851383">تعديل...</translation>
 <translation id="9152637745605628097">يمكنك الاختيار من بين المظاهر والألوان المتوفّرة أو تحميل صورة</translation>
 <translation id="9153159728062222866">وداعًا لعناء النسخ واللصق</translation>
-<translation id="9159628751968616911">إرسال صفحة الويب</translation>
 <translation id="9162412286847966593">‏لن يتم استخدام بيانات مؤسستك وتسجيلاتها لتحسين نماذج الذكاء الاصطناعي التوليدي. <ph name="BEGIN_LINK" />خصوصيتك وGemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">‏فعِّل AutoFill Passwords (الملء التلقائي لكلمات المرور).</translation>
 <translation id="9165320910061267720">‏لتلقِّي تنبيهات بشأن انخفاض الأسعار، عليك تفعيل الإشعارات من إعدادات iOS.</translation>

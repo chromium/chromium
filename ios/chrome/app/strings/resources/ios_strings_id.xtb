@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Item diperbarui</translation>
 <translation id="1018804590490383958">Pindai dan isi otomatis</translation>
 <translation id="1019990162050689579">Aktivitas Aplikasi Gemini</translation>
+<translation id="102471647093736603">Tekan lama untuk memindahkan</translation>
 <translation id="102645702181682900">Tugas dimulai</translation>
 <translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1030376737535466765">Buka Pengelola Sandi</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Penyimpanan Anda penuh</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1190609913194133056">Pusat Notifikasi</translation>
+<translation id="1191987227666124897">Permintaan tidak bersedia</translation>
 <translation id="1196534270480620381">Berikan ringkasan singkat tentang halaman ini</translation>
 <translation id="1199631150313925648">Masukkan secara manual</translation>
 <translation id="1199963004393929848">Tema hijau</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Update</translation>
 <translation id="4813345808229079766">Koneksi</translation>
 <translation id="4821595350501541683">Tab ditutup dan data penjelajahan dihapus</translation>
+<translation id="4823322556950229674">Anda dapat menekan lama untuk memindahkan kolom URL dan tombol kembali ke bawah</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 lainnya}other{{domain} dan {count} lainnya}}</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
@@ -2055,6 +2058,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Lanjutkan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
+<translation id="7417055777338419059">Buat kode, tulis teks, atau buat slide</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
 <translation id="7423098979219808738">Tanyakan dulu</translation>
 <translation id="7425053386765766120">Tambahkan metode pembayaran…</translation>
@@ -2319,7 +2323,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8187200657863701733">Level Chrome Saat Ini</translation>
 <translation id="8189484403434216074">Buat grup tab</translation>
 <translation id="8189615296021678665">Ketuk "Simpan" untuk mengakses sandi ini dengan mudah saat Anda login lagi.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Tambahkan sandi</translation>
 <translation id="8195936400946057039">Perlindungan dari ancaman online</translation>
 <translation id="8205564605687841303">Batal</translation>
@@ -2644,7 +2647,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="9149866541089851383">Edit...</translation>
 <translation id="9152637745605628097">Pilih dari tema, warna, atau upload gambar</translation>
 <translation id="9153159728062222866">Tak Perlu Lagi Salin &amp; Tempel</translation>
-<translation id="9159628751968616911">Kirim halaman web</translation>
 <translation id="9162412286847966593">Data dan rekaman organisasi Anda tidak akan digunakan untuk meningkatkan kualitas model AI generatif. <ph name="BEGIN_LINK" />Privasi Anda &amp; Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktifkan Isi Otomatis Sandi</translation>
 <translation id="9165320910061267720">Untuk mendapatkan notifikasi diskon, Anda harus mengaktifkan notifikasi di setelan iOS.</translation>

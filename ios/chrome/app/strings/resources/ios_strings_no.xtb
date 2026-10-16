@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Lagringsplassen din er full</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
+<translation id="1191987227666124897">Forespørsel om bortvelging</translation>
 <translation id="1196534270480620381">Gi meg et kort sammendrag av denne siden</translation>
 <translation id="1199631150313925648">Angi manuelt</translation>
 <translation id="1199963004393929848">Grønt tema</translation>
@@ -2057,6 +2058,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Fortsett</translation>
 <translation id="741204030948306876">Ja, jeg er med</translation>
+<translation id="7417055777338419059">Lag kode, skriv eller lag lysbilder</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7425053386765766120">Legg til betalingsmåte…</translation>
@@ -2321,7 +2323,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8187200657863701733">Nåværende Chrome-nivå</translation>
 <translation id="8189484403434216074">Opprett fanegrupper</translation>
 <translation id="8189615296021678665">Trykk på «Lagre» for å få enkel tilgang til dette passordet neste gang du logger på.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Enhetene dine<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Legg til passord</translation>
 <translation id="8195936400946057039">Beskyttelse mot trusler på nettet</translation>
 <translation id="8205564605687841303">Avbryt</translation>
@@ -2646,7 +2647,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="9149866541089851383">Endre</translation>
 <translation id="9152637745605628097">Velg blant temaer og farger, eller last opp et bilde</translation>
 <translation id="9153159728062222866">Hopp over kopiering og innliming</translation>
-<translation id="9159628751968616911">Send nettside</translation>
 <translation id="9162412286847966593">Dataene og opptakene til organisasjonen din brukes ikke til å forbedre generative AI-modeller. <ph name="BEGIN_LINK" />Personvernet ditt og Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9165320910061267720">For å få varsler om avslag må du slå på varsler i iOS-innstillingene.</translation>

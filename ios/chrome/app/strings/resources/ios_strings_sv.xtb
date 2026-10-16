@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Bokmärket har uppdaterats</translation>
 <translation id="1018804590490383958">Skanna och autofyll</translation>
 <translation id="1019990162050689579">Gemini-appaktivitet</translation>
+<translation id="102471647093736603">Håll nedtryckt för att flytta</translation>
 <translation id="102645702181682900">Uppgiften har startats</translation>
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1030376737535466765">Öppna Lösenordshantering</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Lagringsutrymmet är fullt</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1190609913194133056">Meddelandecenter</translation>
+<translation id="1191987227666124897">Begäran om att välja bort</translation>
 <translation id="1196534270480620381">Ge mig en kort sammanfattning av den här sidan</translation>
 <translation id="1199631150313925648">Ange manuellt</translation>
 <translation id="1199963004393929848">Grönt tema</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Uppdateringar</translation>
 <translation id="4813345808229079766">Anslutning</translation>
 <translation id="4821595350501541683">Flikarna stängdes och webbinformationen rensades.</translation>
+<translation id="4823322556950229674">Du kan trycka länge för att flytta adressfältet och bakåtknappen längst ned</translation>
 <translation id="4824480232751123840">Volym</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} och 1 till}other{{domain} och {count} till}}</translation>
 <translation id="4826588772550366629">kamera och mikrofon</translation>
@@ -2055,6 +2058,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Fortsätt</translation>
 <translation id="741204030948306876">Ja</translation>
+<translation id="7417055777338419059">Koda, skriv eller skapa presentationer</translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7425053386765766120">Lägg till betalningsmetod …</translation>
@@ -2319,7 +2323,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8187200657863701733">Nuvarande Chrome-nivå</translation>
 <translation id="8189484403434216074">Skapa en flikgrupp</translation>
 <translation id="8189615296021678665">Tryck på Spara för att enkelt komma åt lösenordet nästa gång du loggar in.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lägg till lösenord</translation>
 <translation id="8195936400946057039">Skydd mot onlinehot</translation>
 <translation id="8205564605687841303">Avbryt</translation>
@@ -2644,7 +2647,6 @@ Du kan starta om när som helst.</translation>
 <translation id="9149866541089851383">Redigera...</translation>
 <translation id="9152637745605628097">Välj bland teman och färger eller ladda upp en bild</translation>
 <translation id="9153159728062222866">Slipp kopiera och klistra in</translation>
-<translation id="9159628751968616911">Skicka webbsida</translation>
 <translation id="9162412286847966593">Din organisations data och inspelningar används inte för att förbättra generativa AI-modeller. <ph name="BEGIN_LINK" />Din integritet och Gemini<ph name="END_LINK" />.</translation>
 <translation id="9162432979321511934">Aktivera Autofyll lösenord</translation>
 <translation id="9165320910061267720">Om du vill få aviseringar om sänkta priser måste du aktivera aviseringar i iOS-inställningarna.</translation>

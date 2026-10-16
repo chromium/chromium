@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
 <translation id="1018804590490383958">Escanear e autocompletar</translation>
 <translation id="1019990162050689579">Actividade na aplicación Gemini</translation>
+<translation id="102471647093736603">Mantén premida a barra para movela</translation>
 <translation id="102645702181682900">Iniciouse a tarefa</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030376737535466765">Abrir xestor de contrasinais</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Tes o espazo de almacenamento cheo</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
+<translation id="1191987227666124897">Solicitude de renuncia</translation>
 <translation id="1196534270480620381">Facer un resumo breve desta páxina</translation>
 <translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Actualizacións</translation>
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4821595350501541683">Pecháronse as pestanas e elimináronse os datos de navegación</translation>
+<translation id="4823322556950229674">Podes manter premidos a barra de enderezos e o botón de volver para movelos á parte inferior</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 máis}other{{domain} e {count} máis}}</translation>
 <translation id="4826588772550366629">cámara e micrófono</translation>
@@ -2055,6 +2058,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Si, acepto</translation>
+<translation id="7417055777338419059">Programa, escribe ou fai presentacións</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7425053386765766120">Engadir método de pago…</translation>
@@ -2319,7 +2323,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8187200657863701733">Nivel actual de Chrome</translation>
 <translation id="8189484403434216074">Crear un grupo de pestanas</translation>
 <translation id="8189615296021678665">Toca Gardar para acceder facilmente a este contrasinal a próxima vez que inicies sesión.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os teus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Engadir un contrasinal</translation>
 <translation id="8195936400946057039">Protéxete contra ameazas en liña</translation>
 <translation id="8205564605687841303">Cancelar</translation>
@@ -2644,7 +2647,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9152637745605628097">Escolle entre temas e cores, ou carga unha imaxe</translation>
 <translation id="9153159728062222866">Non te compliques coa opción de copiar e pegar</translation>
-<translation id="9159628751968616911">Enviar a páxina web</translation>
 <translation id="9162412286847966593">Os datos e as gravacións da túa organización non se usarán para mellorar os modelos de IA xenerativa. <ph name="BEGIN_LINK" />A túa privacidade e Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa a opción Autofill Passwords (Autocompletar contrasinais)</translation>
 <translation id="9165320910061267720">Para recibir notificacións de alertas sobre baixadas de prezos, tes que activalas na configuración de iOS.</translation>

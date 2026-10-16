@@ -665,6 +665,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
 <translation id="2127090458081644412">Fjalëkalimet e ruajtura në këtë pajisje</translation>
 <translation id="2127747486437921899">Kursive</translation>
+<translation id="2129163794581571479">Mundësuar nga Gemini me "Inteligjencën personale". Kërkesat, titujt e faqeve dhe URL-të e tua mund të shqyrtohen për të përmirësuar plotësimin automatik të përmirësuar. <ph name="BEGIN_LINK" />Menaxho cilësimet<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">"Aktivizimi i plotësimit automatik të pagesave" u hap në lartësi të plotë.</translation>
@@ -1575,6 +1576,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3655670868607891010">Nëse e shikon këtë vazhdimisht, provo këto <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Rishikim</translation>
 <translation id="3659521826520353662">Cilat uebsajte të përcaktuara nga administratori vizitohen dhe kur: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Mundësuar nga Gemini me "Inteligjencën personale". <ph name="BEGIN_LINK" />Menaxho cilësimet<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Kërko për më shumë opsione blerjeje nga dyqane të tjera që e shesin këtë produkt.</translation>
 <translation id="3664782872746246217">Fjalët kyçe:</translation>
 <translation id="3670030362669914947">Numri</translation>
@@ -1595,6 +1597,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3693516565203081475">Zgjidh mënyrën e pagesës</translation>
 <translation id="3698353241727597930">Administratori yt ka konfiguruar që të ruajë <ph name="FILES" /> në hapësirën tënde ruajtëse të <ph name="CLOUD_STORAGE" /> që menaxhohet nga ndërmarrja. Këta skedarë mund të monitorohen, auditohen dhe ruhen kur t'i fshish.</translation>
 <translation id="3698629142018988477">Butoni "Krijo sajt". Aktivizoje për të krijuar me shpejtësi një sajt të ri në Google Sites</translation>
+<translation id="3698708128812719147">Shtyp Ctrl dy herë kudo në ueb për të gjetur dhe plotësuar më shumë informacione</translation>
 <translation id="3700094625653511150">Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Po përdor gjurmën e gishtit për të plotësuar fjalëkalimet</translation>
 <translation id="3701427423622901115">Rivendosja u pranua.</translation>
@@ -1898,6 +1901,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4185037616931963178">Përditëso numrin e kompensimit në mënyrë të sigurt</translation>
 <translation id="4186035307311647330">Anulo monitorimin e çmimeve</translation>
 <translation id="4191334393248735295">Gjatësia</translation>
+<translation id="4192770747482479191">Shtyp ⌘ dy herë kudo në ueb për të gjetur dhe plotësuar më shumë informacione</translation>
 <translation id="4195459680867822611">Butoni "Shiko këshilla për Chrome". Aktivizoje për të mësuar për veçoritë e Chrome</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4196861286325780578">&amp;Bëje përsëri zhvendosjen</translation>
@@ -2215,7 +2219,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4725766358270333890"><ph name="COUNT" /> skedarë po ngarkohen te Microsoft OneDrive</translation>
 <translation id="4726672564094551039">Ringarko politikat</translation>
 <translation id="4728558894243024398">Platforma</translation>
-<translation id="4730773064303503917">Përdor Pix për pagesa ndaj shokëve dhe bizneseve duke përdorur "Portofolin"</translation>
 <translation id="4730977633786878901">Komentet</translation>
 <translation id="4731638775147756694">Ky aplikacion është bllokuar nga administratori yt</translation>
 <translation id="4732860731866514038">Po shkarkohet paketa gjuhësore në <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
@@ -2846,6 +2849,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="573974402615125334">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, sinkronizo historikun dhe skedat e tua</translation>
 <translation id="5740911612628596808">Zarf C9</translation>
 <translation id="574392208103952083">Mesatar</translation>
+<translation id="5744350700955456407">Plotësimi automatik i përmirësuar tani mund të gjejë dhe të plotësojë informacionet - si p.sh. numrat e porosive dhe kodet e konfirmimit të fluturimeve - nga aplikacionet si Gmail dhe "Fotografitë"</translation>
 <translation id="5745586894920491759">Chrome i përpunon titujt e faqeve dhe URL-të në renë kompjuterike</translation>
 <translation id="5745733273847572235">Mund të kërkojë vendndodhjen tënde</translation>
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>

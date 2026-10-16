@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Элемент жаңартылды</translation>
 <translation id="1018804590490383958">Сканерлеу және автоматты түрде толтыру</translation>
 <translation id="1019990162050689579">Gemini қолданбаларын пайдалану тарихы</translation>
+<translation id="102471647093736603">Жылжыту үшін басып тұрыңыз</translation>
 <translation id="102645702181682900">Тапсырма басталды</translation>
 <translation id="102916930470544692">Кіру кілті</translation>
 <translation id="1030376737535466765">Password Manager қызметін ашу</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Жад толған</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1190609913194133056">Хабарландыру орталығы</translation>
+<translation id="1191987227666124897">Бас тарту туралы сұрау</translation>
 <translation id="1196534270480620381">Осы бетті қысқаша мазмұнда</translation>
 <translation id="1199631150313925648">Қолмен енгізу</translation>
 <translation id="1199963004393929848">Жасыл тақырып</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Жаңартылған нұсқалар</translation>
 <translation id="4813345808229079766">Байланыс</translation>
 <translation id="4821595350501541683">Қойындылар жабылды және браузерді пайдалану деректері жойылды</translation>
+<translation id="4823322556950229674">Мекенжай жолағы мен "Артқа" түймесін төменге жылжыту үшін басып тұрсаңыз болады.</translation>
 <translation id="4824480232751123840">Көлем</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} және тағы 1}other{{domain} және тағы {count}}}</translation>
 <translation id="4826588772550366629">камера және микрофон</translation>
@@ -2055,6 +2058,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Жалғастыру</translation>
 <translation id="741204030948306876">Жарайды</translation>
+<translation id="7417055777338419059">Код, мәтін жазыңыз немесе слайдтар жасаңыз.</translation>
 <translation id="7419565702166471774">Әрдайым қауіпсіз байланысты пайдалану</translation>
 <translation id="7423098979219808738">Алдымен сұрау</translation>
 <translation id="7425053386765766120">Төлеу әдісін қосу…</translation>
@@ -2319,7 +2323,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8187200657863701733">Қазіргі Chrome деңгейі</translation>
 <translation id="8189484403434216074">Қойындылар тобын жасау</translation>
 <translation id="8189615296021678665">Келесі жолы аккаунтқа кірген кезде осы құпия сөзді оңай алу үшін "Сақтау" түймесін түртіңіз.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Құрылғыларыңыз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Құпия сөз қосу</translation>
 <translation id="8195936400946057039">Онлайн қауіптерге қарсы қорғаныс</translation>
 <translation id="8205564605687841303">Бас тарту</translation>
@@ -2644,7 +2647,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="9149866541089851383">Өзгерту…</translation>
 <translation id="9152637745605628097">Тақырыптар, түстер арасынан таңдаңыз немесе сурет жүктеп салыңыз.</translation>
 <translation id="9153159728062222866">Енді көшіріп қою қажет емес</translation>
-<translation id="9159628751968616911">Веб-бетті жіберу</translation>
 <translation id="9162412286847966593">Ұйымыңыздың деректері мен жазбалары жасампаз жасанды интеллект модельдерін жақсарту үшін пайдаланылмайды. <ph name="BEGIN_LINK" />Сіздің құпиялығыңыз және Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">"Құпия сөздерді автотолтыру" функциясын қосу</translation>
 <translation id="9165320910061267720">Бағаның төмендеуі туралы хабарландырулар алу үшін iOS параметрлерінде хабарландыруларды қосуыңыз керек.</translation>

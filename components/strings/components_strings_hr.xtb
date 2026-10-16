@@ -665,6 +665,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2126374524350484896">Alat za izradu PDF-a:</translation>
 <translation id="2127090458081644412">Zaporka je spremljena na ovaj uređaj</translation>
 <translation id="2127747486437921899">Kurziv</translation>
+<translation id="2129163794581571479">Omogućuje Gemini s osobnom inteligencijom. Vaši zahtjevi, naslovi stranica i URL-ovi mogu se pregledati radi poboljšanja poboljšanog automatskog popunjavanja. <ph name="BEGIN_LINK" />Upravljajte postavkama<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Predlošci koje ste naveli ne mogu se primijeniti jer nije postavljeno pravilo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Omogućivanje automatskog popunjavanja plaćanja otvoreno je u punoj visini.</translation>
@@ -1574,6 +1575,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3655670868607891010">Ako se to često događa, pokušajte <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Izmjena</translation>
 <translation id="3659521826520353662">Koje se web-lokacije koje je definirao administrator posjećuju i kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Omogućuje Gemini s osobnom inteligencijom. <ph name="BEGIN_LINK" />Upravljajte postavkama<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Potražite više opcija za kupnju u drugim trgovinama koje prodaju taj proizvod.</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
 <translation id="3670030362669914947">Broj</translation>
@@ -1594,6 +1596,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3693516565203081475">Odaberite način plaćanja</translation>
 <translation id="3698353241727597930">Vaš je administrator konfigurirao spremanje <ph name="FILES" /> u pohranu na <ph name="CLOUD_STORAGE" /> kojom upravlja tvrtka. Te se datoteke mogu nadzirati, revidirati i zadržati kad ih izbrišete.</translation>
 <translation id="3698629142018988477">Gumb Izradi web-lokaciju, aktivirajte ga da biste brzo izradili novu web-lokaciju u Google web-lokacijama</translation>
+<translation id="3698708128812719147">Dvaput pritisnite Ctrl bilo gdje na webu da biste pronašli i popunili više podataka</translation>
 <translation id="3700094625653511150">Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Upotrebljavate otisak prsta za popunjavanje zaporki</translation>
 <translation id="3701427423622901115">Poništavanje je potvrđeno.</translation>
@@ -1897,6 +1900,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4185037616931963178">Sigurno ažurirajte identifikacijski broj prigovora o zamjeni identiteta</translation>
 <translation id="4186035307311647330">Poništi praćenje cijene</translation>
 <translation id="4191334393248735295">Duljina</translation>
+<translation id="4192770747482479191">Dvaput pritisnite ⌘ bilo gdje na webu da biste pronašli i popunili više informacija</translation>
 <translation id="4195459680867822611">Gumb Prikaz savjeta o Chromeu, aktivirajte ga da biste saznali više o Chromeovim značajkama</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4196861286325780578">&amp;Ponovi premještanje</translation>
@@ -2214,7 +2218,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4725766358270333890">Prijenos ovoliko datoteka na Microsoft OneDrive: <ph name="COUNT" /></translation>
 <translation id="4726672564094551039">Ponovo učitaj pravila</translation>
 <translation id="4728558894243024398">Platforma</translation>
-<translation id="4730773064303503917">Pošaljite Pix prijateljima i tvrtkama putem Walleta</translation>
 <translation id="4730977633786878901">Recenzije</translation>
 <translation id="4731638775147756694">Administrator je blokirao ovu aplikaciju</translation>
 <translation id="4732860731866514038">Preuzimanje jezičnog paketa za <ph name="LANGUAGE" /> jezik... <ph name="PERCENT" />%</translation>
@@ -2845,6 +2848,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="573974402615125334">Da biste dijelili, pridruživali se i surađivali u grupama kartica, sinkronizirajte povijest i kartice</translation>
 <translation id="5740911612628596808">Omotnica C9</translation>
 <translation id="574392208103952083">Srednje</translation>
+<translation id="5744350700955456407">Poboljšano automatsko popunjavanje sada može pronaći i popuniti podatke, kao što su brojevi narudžbi i potvrdni kodovi letova, iz aplikacija kao što su Gmail i Fotografije</translation>
 <translation id="5745586894920491759">Chrome obrađuje naslove stranica i URL-ove u oblaku</translation>
 <translation id="5745733273847572235">Može tražiti dopuštenje za pristup vašoj lokaciji</translation>
 <translation id="5750869797196646528">Praćenje pokreta ruku</translation>

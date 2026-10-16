@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Нерсе жаңырды</translation>
 <translation id="1018804590490383958">Скандоо жана автотолтуруу</translation>
 <translation id="1019990162050689579">Gemini колдонмолорундагы аракеттер</translation>
+<translation id="102471647093736603">Жылдыруу үчүн коё бербей басып туруңуз</translation>
 <translation id="102645702181682900">Тапшырма башталды</translation>
 <translation id="102916930470544692">Киргизүүчү ачкыч</translation>
 <translation id="1030376737535466765">Сырсөз башкаргычын ачыңыз</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Сактагыч толуп калды</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1190609913194133056">Билдирмелер борбору</translation>
+<translation id="1191987227666124897">Баш тартуу өтүнүчү</translation>
 <translation id="1196534270480620381">Бул беттин мазмунун кыскача айтып бер</translation>
 <translation id="1199631150313925648">Кол менен киргизүү</translation>
 <translation id="1199963004393929848">Жашыл тема</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Жаңыртуулар</translation>
 <translation id="4813345808229079766">Туташуу</translation>
 <translation id="4821595350501541683">Өтмөктөр жабылып, серептөө дайындары өчүрүлдү</translation>
+<translation id="4823322556950229674">Дарек тилкесин жана артка баскычын ылдый жылдыруу үчүн коё бербей басып турсаңыз болот</translation>
 <translation id="4824480232751123840">Үндүн катуулугу</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} жана дагы 1}other{{domain} жана дагы {count}}}</translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>
@@ -2319,7 +2322,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8187200657863701733">Chrome'дун учурдагы деңгээли</translation>
 <translation id="8189484403434216074">Өтмөктөр тобун түзүү</translation>
 <translation id="8189615296021678665">Кийинки жолу киргенде сырсөздү оңой колдонуу үчүн "Сактоо" баскычын таптап коюңуз.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Түзмөктөрүңүз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Сырсөз кошуу</translation>
 <translation id="8195936400946057039">Интернеттеги коркунучтарга каршы коргоо</translation>
 <translation id="8205564605687841303">Жокко чыгаруу</translation>
@@ -2644,7 +2646,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="9149866541089851383">Түзөтүү…</translation>
 <translation id="9152637745605628097">Темаларды, түстөрдү тандаңыз же сүрөт жүктөп бериңиз</translation>
 <translation id="9153159728062222866">Көчүрүү жана чаптоону өткөрүп жиберүү</translation>
-<translation id="9159628751968616911">Веб-баракчаны жөнөтүңүз</translation>
 <translation id="9162412286847966593">Уюмуңуздун маалыматтары жана жаздыруулар генеративдик ЖИ үлгүлөрүн жакшыртуу үчүн колдонулбайт. <ph name="BEGIN_LINK" />Gemini'дагы купуялыгыңыз<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Сырсөздөрдү автотолтурууну күйгүзүү</translation>
 <translation id="9165320910061267720">Баалардын түшкөнү жөнүндө билдирмелерди алуу үчүн iOS параметрлеринен билдирмелерди күйгүзүңүз.</translation>

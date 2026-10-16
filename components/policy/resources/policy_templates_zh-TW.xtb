@@ -9201,15 +9201,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6833988859168635883">起始頁面、首頁和新分頁</translation>
 <translation id="6835254082476223414">啟用 Linux 虛擬機器備份與還原功能</translation>
 <translation id="6835883744948188639">顯示週期性提示，建議使用者重新啟動瀏覽器</translation>
-<translation id="683688607121170501">如果啟用這項設定，當使用者登入 <ph name="PRODUCT_OS_NAME" />裝置後，將可在瀏覽器視窗的內容區域和 Android 應用程式中切換 Google 帳戶。
-
-      如果將這項政策設為 False，使用者將無法透過非無痕式瀏覽器內容區域和 Android 應用程式登入其他 Google 帳戶。
-
-      如果將這項政策設為 True 或不予設定，系統就會採用預設行為：使用者可透過瀏覽器內容區域和 Android 應用程式登入其他 Google 帳戶，但無法透過非無痕式內容區域登入兒童帳戶。
-
-      如要禁止透過無痕模式登入其他帳戶，建議你使用 IncognitoModeAvailability 政策封鎖該模式。
-
-      請注意，使用者只要封鎖 Google 服務的 Cookie，即可在未經驗證的狀態下存取 Google 服務。</translation>
 <translation id="6841254611279513739">你可以透過這項政策設定僅限彩色列印、僅限單色列印，或是不限制色彩模式。如果不設定這項政策，則等同於不設限制。</translation>
 <translation id="6843008643303282259">理想的上傳速率 (kbit/秒)。</translation>
 <translation id="6843296367238757293">這項政策已遭到淘汰，因此不建議你使用此政策。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>

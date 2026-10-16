@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Vienums atjaunināts</translation>
 <translation id="1018804590490383958">Skenēt un automātiski aizpildīt</translation>
 <translation id="1019990162050689579">Gemini lietotnes darbības</translation>
+<translation id="102471647093736603">Nospiediet un turiet, lai pārvietotu</translation>
 <translation id="102645702181682900">Uzdevuma izpilde sākta</translation>
 <translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1030376737535466765">Atvērt Paroļu pārvaldnieku</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Krātuve ir pilna</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
+<translation id="1191987227666124897">Atteikšanās pieprasījums</translation>
 <translation id="1196534270480620381">Sniedz īsu šīs lapas apkopojumu</translation>
 <translation id="1199631150313925648">Ievadīt manuāli</translation>
 <translation id="1199963004393929848">Zaļš motīvs</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Atjauninājumi</translation>
 <translation id="4813345808229079766">Savienojums</translation>
 <translation id="4821595350501541683">Cilnes tika aizvērtas, un pārlūkošanas dati tika dzēsti</translation>
+<translation id="4823322556950229674">Varat nospiest un turēt, lai pārvietotu adreses joslu un pogu Atpakaļ uz apakšdaļu.</translation>
 <translation id="4824480232751123840">Tilpums</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} un viena cita cilne}zero{{domain} un {count} citu ciļņu}one{{domain} un {count} cita cilne}other{{domain} un {count} citas cilnes}}</translation>
 <translation id="4826588772550366629">kameru un mikrofonu</translation>
@@ -2055,6 +2058,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Turpināt</translation>
 <translation id="741204030948306876">Jā, piekrītu</translation>
+<translation id="7417055777338419059">Kodējiet, rakstiet vai veidojiet slaidus</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
 <translation id="7423098979219808738">Vispirms jautāt</translation>
 <translation id="7425053386765766120">Maksājuma veida pievienošana…</translation>
@@ -2319,7 +2323,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8187200657863701733">Pašreizējais Chrome līmenis</translation>
 <translation id="8189484403434216074">Ciļņu grupas izveide</translation>
 <translation id="8189615296021678665">Pieskarieties vienumam “Saglabāt”, lai ērti piekļūtu šai parolei nākamreiz, kad pierakstīsieties.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsu ierīces<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Paroles pievienošana</translation>
 <translation id="8195936400946057039">Aizsardzība pret draudiem tiešsaistē</translation>
 <translation id="8205564605687841303">Atcelt</translation>
@@ -2644,7 +2647,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="9149866541089851383">Rediģēt ...</translation>
 <translation id="9152637745605628097">Izvēlieties kādu no motīviem vai krāsām vai augšupielādējiet attēlu.</translation>
 <translation id="9153159728062222866">Izlaidiet kopēšanu un ielīmēšanu</translation>
-<translation id="9159628751968616911">Tīmekļa lapas nosūtīšana</translation>
 <translation id="9162412286847966593">Jūsu organizācijas dati un ieraksti netiks izmantoti ģeneratīvo MI modeļu uzlabošanai. <ph name="BEGIN_LINK" />Jūsu konfidencialitāte un Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Ieslēdziet paroļu automātisko aizpildi</translation>
 <translation id="9165320910061267720">Lai saņemtu paziņojumus par cenu kritumu, jums jāieslēdz paziņojumi iOS iestatījumos.</translation>

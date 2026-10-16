@@ -665,6 +665,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2126374524350484896">Producer ng PDF:</translation>
 <translation id="2127090458081644412">Na-save ang password sa device na ito</translation>
 <translation id="2127747486437921899">Italic</translation>
+<translation id="2129163794581571479">Pinapagana ng Gemini na may Personal Intelligence. Posibleng suriin ang iyong mga request, pamagat ng page, at URL para mapaganda ang pinahusay na autofill. <ph name="BEGIN_LINK" />Pamahalaan ang mga setting<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Posibleng hindi mailapat ang mga template na tinukoy mo dahil hindi naitakda ang patakarang DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Binuksan nang buo ang I-enable ang Autofill ng Mga Pagbabayad.</translation>
@@ -1575,6 +1576,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3655670868607891010">Kung madalas mo itong nakikita, subukan ang mga ito <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Rebisyon</translation>
 <translation id="3659521826520353662">Aling mga website na tinukoy ng administrator ang binisita at kailan: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Pinapagana ng Gemini na may Personal Intelligence. <ph name="BEGIN_LINK" />Pamahalaan ang mga setting<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Maghanap pa ng mga opsyon sa pagbili mula sa iba pang store na nagbebenta ng produktong ito.</translation>
 <translation id="3664782872746246217">Mga Keyword:</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -1595,6 +1597,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3693516565203081475">Pumili ng paraan ng pagbabayad</translation>
 <translation id="3698353241727597930">Nag-configure ang iyong administrator para i-save ang <ph name="FILES" /> sa iyong storage ng <ph name="CLOUD_STORAGE" /> na pinapamahalaan ng enterprise. Posibleng subaybayan, i-audit, at panatilihin ang mga file na ito kapag na-delete mo ang mga ito.</translation>
 <translation id="3698629142018988477">Button na Gumawa ng site, i-activate para mabilis na makagawa ng bagong site sa Google Sites</translation>
+<translation id="3698708128812719147">Pindutin ang Ctrl nang dalawang beses kahit saan sa web para maghanap at mapunan ng higit pang impormasyon</translation>
 <translation id="3700094625653511150">Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Ginagamit mo ang iyong fingerprint para sa paglalagay ng mga password</translation>
 <translation id="3701427423622901115">Tinanggap ang pag-reset.</translation>
@@ -1898,6 +1901,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4185037616931963178">Secure na i-update ang redress number</translation>
 <translation id="4186035307311647330">Huwag subaybayan ang presyo</translation>
 <translation id="4191334393248735295">Haba</translation>
+<translation id="4192770747482479191">Pindutin ang ⌘ nang dalawang beses kahit saan sa web para maghanap at maglagay ng higit pang impormasyon</translation>
 <translation id="4195459680867822611">Button na Tingnan ang mga tip sa Chrome, i-activate para matuto tungkol sa mga feature ng Chrome</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4196861286325780578">&amp;Gawing muli ang paglilipat</translation>
@@ -2215,7 +2219,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4725766358270333890">Nag-a-upload ng <ph name="COUNT" /> (na) file sa Microsoft OneDrive</translation>
 <translation id="4726672564094551039">I-reload ang mga patakaran</translation>
 <translation id="4728558894243024398">Platform</translation>
-<translation id="4730773064303503917">Magpadala ng Pix sa mga kaibigan at negosyo gamit ang Wallet</translation>
 <translation id="4730977633786878901">Mga Review</translation>
 <translation id="4731638775147756694">Na-block ng iyong administrator ang application na ito</translation>
 <translation id="4732860731866514038">Dina-download ang <ph name="LANGUAGE" /> language pack... <ph name="PERCENT" />%</translation>
@@ -2846,6 +2849,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="573974402615125334">Para magawang mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab, i-sync ang iyong history at mga tab</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">Katamtaman</translation>
+<translation id="5744350700955456407">Mahahanap at mapupunan na ngayon ng pinahusay na autofill ang impormasyon — gaya ng mga order number at code sa pagkumpirma ng flight — mula sa mga app tulad ng Gmail at Photos</translation>
 <translation id="5745586894920491759">Pinoproseso ng Chrome ang mga pamagat ng page at URL sa cloud</translation>
 <translation id="5745733273847572235">Puwedeng hingin ang iyong lokasyon</translation>
 <translation id="5750869797196646528">Pag-track sa kamay</translation>

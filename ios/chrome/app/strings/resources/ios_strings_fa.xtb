@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">مورد به‌روز شد</translation>
 <translation id="1018804590490383958">اسکن و تکمیل خودکار</translation>
 <translation id="1019990162050689579">‏فعالیت برنامه Gemini</translation>
+<translation id="102471647093736603">فشار دادن و نگه داشتن برای منتقل کردن</translation>
 <translation id="102645702181682900">شروع شدن تکلیف</translation>
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1030376737535466765">باز کردن «مدیر گذرواژه»</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">فضای ذخیره‌سازی پر است</translation>
 <translation id="1181037720776840403">برداشتن</translation>
 <translation id="1190609913194133056">مرکز اعلان‌ها</translation>
+<translation id="1191987227666124897">درخواست انصراف دادن</translation>
 <translation id="1196534270480620381">خلاصه کوتاهی از این صفحه به من ارائه بده</translation>
 <translation id="1199631150313925648">وارد کردن به‌صورت دستی</translation>
 <translation id="1199963004393929848">زمینه سبز</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">به‌روزرسانی‌ها</translation>
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4821595350501541683">زبانه‌ها بسته شد و داده‌های مرور حذف شد</translation>
+<translation id="4823322556950229674">می‌توانید برای منتقل کردن نوار نشانی و دکمه برگشتن به پایین، آن‌ها را فشار دهید و نگه دارید</translation>
 <translation id="4824480232751123840">حجم</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}، و ۱ مورد دیگر}one{{domain} و {count} مورد دیگر}other{{domain} و {count} مورد دیگر}}</translation>
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
@@ -2055,6 +2058,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7411034503745719324">‫<ph name="EMAIL" />‏. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">ادامه</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
+<translation id="7417055777338419059">کدنویسی کنید، بنویسید، یا اسلاید بسازید</translation>
 <translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>
 <translation id="7423098979219808738">ابتدا سؤال شود</translation>
 <translation id="7425053386765766120">افزودن روش پرداخت…</translation>
@@ -2319,7 +2323,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8187200657863701733">‏سطح فعلی Chrome</translation>
 <translation id="8189484403434216074">ایجاد گروه زبانه‌ها</translation>
 <translation id="8189615296021678665">روی «ذخیره» تک‌ضرب بزنید تا دفعه بعد که به سیستم وارد شدید به‌راحتی به این گذرواژه دسترسی پیدا کنید.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">افزودن گذرواژه</translation>
 <translation id="8195936400946057039">محافظت دربرابر تهدیدهای آنلاین</translation>
 <translation id="8205564605687841303">لغو</translation>
@@ -2644,7 +2647,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9149866541089851383">ویرایش...</translation>
 <translation id="9152637745605628097">از بین زمینه‌ها و رنگ‌ها انتخاب کنید یا تصویری بارگذاری کنید.</translation>
 <translation id="9153159728062222866">رد شدن از کپی و جای‌گذاری</translation>
-<translation id="9159628751968616911">ارسال صفحه وب</translation>
 <translation id="9162412286847966593">‏داده‌ها و صداهای ضبط‌شده سازمان شما برای بهبود مدل‌های هوشواره‌ای زایا استفاده نخواهد شد. <ph name="BEGIN_LINK" />حریم خصوصی شما و Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">روشن کردن تکمیل خودکار گذرواژه‌ها</translation>
 <translation id="9165320910061267720">‏برای دریافت اعلان‌های هشدار کاهش قیمت، باید اعلان‌ها را در تنظیمات iOS روشن کنید.</translation>

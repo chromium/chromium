@@ -9600,15 +9600,6 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
 <translation id="6833988859168635883">시작, 홈페이지, 새 탭 페이지</translation>
 <translation id="6835254082476223414">Linux 가상 머신 백업 및 복원 사용 설정</translation>
 <translation id="6835883744948188639">사용자에게 재실행하는 것이 좋다는 메시지를 반복하여 표시</translation>
-<translation id="683688607121170501">이 설정은 사용자가 <ph name="PRODUCT_OS_NAME" /> 기기에 로그인한 후 브라우저 창의 콘텐츠 영역 및 Android 애플리케이션에서 Google 계정 간에 전환하도록 허용합니다.
-
-      이 정책을 False로 설정하면 시크릿 모드가 아닌 브라우저 콘텐츠 영역 및 Android 애플리케이션에서 다른 Google 계정에 로그인할 수 없습니다.
-
-      이 정책을 설정하지 않거나 True로 설정하면 기본 동작이 사용되어 브라우저 콘텐츠 영역 및 Android 애플리케이션에서 다른 Google 계정에 로그인할 수 있습니다. 단, 어린이 계정은 시크릿 모드가 아닌 콘텐츠 영역에서 차단됩니다.
-
-      시크릿 모드를 통해 다른 계정에 로그인하지 못하도록 하려면 IncognitoModeAvailability 정책을 사용하여 시크릿 모드를 차단해 보세요.
-
-      참고: 사용자가 쿠키를 차단하면 인증되지 않은 상태로 Google 서비스에 액세스할 수 있습니다.</translation>
 <translation id="6841254611279513739">정책을 설정하면 컬러만, 흑백만, 컬러 모드 제한 없음으로 인쇄가 설정됩니다. 정책을 설정하지 않으면 제한이 없습니다.</translation>
 <translation id="6843008643303282259">원하는 업로드 속도(kbit/초)입니다.</translation>
 <translation id="6843296367238757293">지원 중단된 정책입니다. 사용하지 마시기 바랍니다. https://support.google.com/chrome/a/answer/7643500에서 자세히 알아보세요.</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Na-update ang item</translation>
 <translation id="1018804590490383958">I-scan at i-autofill</translation>
 <translation id="1019990162050689579">Aktibidad sa Gemini App</translation>
+<translation id="102471647093736603">Pindutin nang matagal para ilipat</translation>
 <translation id="102645702181682900">Sinimulan ang gawain</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Buksan ang Password Manager</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Puno na ang iyong storage</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1190609913194133056">Notification Center</translation>
+<translation id="1191987227666124897">Request sa pag-opt out</translation>
 <translation id="1196534270480620381">Bigyan ako ng maikling buod ng page na ito</translation>
 <translation id="1199631150313925648">Manual na ilagay</translation>
 <translation id="1199963004393929848">Berdeng tema</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Mga Update</translation>
 <translation id="4813345808229079766">Pagkonekta</translation>
 <translation id="4821595350501541683">Isinara ang mga tab at na-delete ang data mula sa pag-browse</translation>
+<translation id="4823322556950229674">Puwede mong pindutin nang matagal para ilipat ang address bar at button na bumalik sa ibaba</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
@@ -2055,6 +2058,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Magpatuloy</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
+<translation id="7417055777338419059">Mag-code, magsulat, o gumawa ng mga slide</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7425053386765766120">Magdagdag ng paraan ng pagbabayad…</translation>
@@ -2319,7 +2323,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8187200657863701733">Kasalukuyang Level ng Chrome</translation>
 <translation id="8189484403434216074">Gumawa ng grupo ng tab</translation>
 <translation id="8189615296021678665">I-tap ang "I-save" para madaling ma-access ang password na ito sa susunod na mag-sign in ka.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ang iyong mga device<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Magdagdag ng password</translation>
 <translation id="8195936400946057039">Proteksyon laban sa mga banta online</translation>
 <translation id="8205564605687841303">Kanselahin</translation>
@@ -2645,7 +2648,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="9149866541089851383">I-edit...</translation>
 <translation id="9152637745605628097">Pumili mula sa mga tema, kulay, o mag-upload ng larawan</translation>
 <translation id="9153159728062222866">Laktawan ang Pagkopya at Pag-paste</translation>
-<translation id="9159628751968616911">Ipadala ang webpage</translation>
 <translation id="9162412286847966593">Hindi gagamitin ang data at mga recording ng iyong organisasyon para pahusayin ang mga generative AI model. <ph name="BEGIN_LINK" />Ang Iyong Privacy at Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">I-on ang I-autofill ang Mga Password</translation>
 <translation id="9165320910061267720">Para makatanggap ng mga notification tungkol sa mga alerto sa pagbaba ng presyo, kakailanganin mong i-on ang mga notification sa mga setting ng iyong iOS.</translation>

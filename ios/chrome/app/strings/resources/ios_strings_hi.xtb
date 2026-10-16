@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">स्टोरेज भर गया है</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
+<translation id="1191987227666124897">इस्तेमाल बंद या सीमित करने का अनुरोध</translation>
 <translation id="1196534270480620381">मुझे इस पेज की कम शब्दों में खास जानकारी दो</translation>
 <translation id="1199631150313925648">मैन्युअल तरीके से डालें</translation>
 <translation id="1199963004393929848">हरे रंग वाली थीम</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">सेव किए गए पासवर्ड और पासकी</translation>
 <translation id="3143515551205905069">लिंक करना रोक दें</translation>
 <translation id="3144126448740580210">हो गया</translation>
+<translation id="3147048678293362228">संपर्क जानकारी मैनेज करें…</translation>
 <translation id="3147521114983561406">पासकी, आपके Password Manager में सेव हो जाती हैं. इन्हें गुप्त और सामान्य टैब में ऐक्सेस किया जा सकता है.</translation>
 <translation id="3148052723910099040">सामान्य टैब ग्रिड</translation>
 <translation id="3148237711805373460">मुझे वहां ले जाएं</translation>
@@ -1869,6 +1871,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6770452996697898492">[बुक किया गया]</translation>
 <translation id="6775952316617222141">Chrome में Gemini से Live बातचीत करें</translation>
 <translation id="6779455296366983087">आपका ब्राउज़िंग डेटा मिटा दिया जाएगा</translation>
+<translation id="6782311720357312958">Google से पूछें</translation>
 <translation id="6782531425936234573">डेटा एक्सपोर्ट करें</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> को हटाएं</translation>
 <translation id="6791425686608802741">"टैब को नए ग्रुप में जोड़ें" पर टैप करें</translation>
@@ -2322,7 +2325,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8187200657863701733">Chrome पर मौजूदा लेवल</translation>
 <translation id="8189484403434216074">टैब ग्रुप बनाना</translation>
 <translation id="8189615296021678665">अगली बार साइन इन करते समय, इस पासवर्ड को आसानी से ऐक्सेस करने के लिए, "सेव करें" पर टैप करें.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />आपके डिवाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड जोड़ें</translation>
 <translation id="8195936400946057039">इंटरनेट पर बढ़ते खतरों से सुरक्षा</translation>
 <translation id="8205564605687841303">रद्द करें</translation>
@@ -2647,7 +2649,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="9149866541089851383">बदलाव करें...</translation>
 <translation id="9152637745605628097">थीम और रंग चुनें या कोई इमेज अपलोड करें</translation>
 <translation id="9153159728062222866">कॉपी करने और चिपकाने की प्रोसेस को स्किप करें</translation>
-<translation id="9159628751968616911">वेबपेज भेजें</translation>
 <translation id="9162412286847966593">आपके संगठन के डेटा और रिकॉर्डिंग का इस्तेमाल, जनरेटिव एआई मॉडल को बेहतर बनाने के लिए नहीं किया जाएगा. <ph name="BEGIN_LINK" />आपकी निजता और Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">ऑटोमैटिक पासवर्ड भरने की सुविधा को चालू करें</translation>
 <translation id="9165320910061267720">कीमत में कमी की सूचनाएं पाने के लिए, आपको iOS सेटिंग में जाकर सूचनाएं पाने की सुविधा चालू करनी होगी.</translation>

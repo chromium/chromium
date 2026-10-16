@@ -665,6 +665,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2126374524350484896">PDF-Erstellungsprogramm:</translation>
 <translation id="2127090458081644412">Passwort auf diesem Gerät gespeichert</translation>
 <translation id="2127747486437921899">Kursiv</translation>
+<translation id="2129163794581571479">Basierend auf Gemini mit Personal Intelligence. Deine Anfragen, Seitentitel und URLs werden möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern. <ph name="BEGIN_LINK" />Einstellungen verwalten<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Die von dir angegebenen Vorlagen können nicht angewendet werden, weil die Richtlinie "DnsOverHttpsMode" nicht konfiguriert ist.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Funktion zum automatischen Ausfüllen von Zahlungsinformationen ist vollständig geöffnet.</translation>
@@ -1573,6 +1574,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3655670868607891010">Sollte dir diese Meldung häufiger angezeigt werden, sieh dir unsere <ph name="HELP_LINK" /> an.</translation>
 <translation id="3658742229777143148">Überarbeitung</translation>
 <translation id="3659521826520353662">Welche vom Administrator festgelegten Websites zu welchem Zeitpunkt besucht werden: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Basierend auf Gemini mit Personal Intelligence. <ph name="BEGIN_LINK" />Einstellungen verwalten<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Weitere Kaufoptionen in anderen Geschäften suchen, die dieses Produkt verkaufen.</translation>
 <translation id="3664782872746246217">Suchbegriffe:</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -1593,6 +1595,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3693516565203081475">Zahlungsmethode wählen</translation>
 <translation id="3698353241727597930">Dein Administrator hat festgelegt, dass <ph name="FILES" /> im unternehmensverwalteten <ph name="CLOUD_STORAGE" />‑Speicher gespeichert werden. Diese Dateien werden möglicherweise überwacht, geprüft und aufbewahrt, nachdem du sie gelöscht hast.</translation>
 <translation id="3698629142018988477">Button „Website erstellen“ – aktivieren, um schnell eine neue Website in Google Sites zu erstellen</translation>
+<translation id="3698708128812719147">Drücke an einer beliebigen Stelle im Web zweimal die Taste „Strg“, um weitere Informationen abzurufen und einzufügen</translation>
 <translation id="3700094625653511150">Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> auf</translation>
 <translation id="3700966190175650601">Du verwendest deinen Fingerabdruck zum Ausfüllen von Passwörtern</translation>
 <translation id="3701427423622901115">Zurücksetzen bestätigt.</translation>
@@ -1896,6 +1899,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4185037616931963178">Redress Number sicher aktualisieren</translation>
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
 <translation id="4191334393248735295">Länge</translation>
+<translation id="4192770747482479191">Drücke an einer beliebigen Stelle im Web zweimal die Taste „⌘“, um weitere Informationen abzurufen und einzufügen</translation>
 <translation id="4195459680867822611">Button „Chrome-Tipps aufrufen“ – aktivieren, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4196861286325780578">&amp;Verschieben wiederholen</translation>
@@ -2213,7 +2217,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4725766358270333890"><ph name="COUNT" /> Dateien werden in Microsoft OneDrive hochgeladen</translation>
 <translation id="4726672564094551039">Richtlinien neu laden</translation>
 <translation id="4728558894243024398">Plattform</translation>
-<translation id="4730773064303503917">Du kannst mit Pix in Google Wallet Geld an Freunde und Unternehmen senden</translation>
 <translation id="4730977633786878901">Rezensionen</translation>
 <translation id="4731638775147756694">Diese App wurde von deinem Administrator blockiert</translation>
 <translation id="4732860731866514038">Sprachpaket für <ph name="LANGUAGE" /> wird heruntergeladen… <ph name="PERCENT" /> %</translation>
@@ -2844,6 +2847,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5740911612628596808">Umschlag C9</translation>
 <translation id="574392208103952083">Mittel</translation>
+<translation id="5744350700955456407">Mit der Funktion „Erweitertes Autofill“ kannst du jetzt Informationen wie Bestellnummern und Bestätigungscodes für Flüge aus Apps wie Gmail und Google Fotos abrufen und einfügen</translation>
 <translation id="5745586894920491759">Chrome verarbeitet Seitentitel und URLs in der Cloud</translation>
 <translation id="5745733273847572235">Darf nach meinem Standort fragen</translation>
 <translation id="5750869797196646528">Handtracking</translation>

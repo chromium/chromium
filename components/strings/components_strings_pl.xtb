@@ -665,6 +665,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2126374524350484896">Źródło pliku PDF:</translation>
 <translation id="2127090458081644412">Hasło zostało zapisane na tym urządzeniu</translation>
 <translation id="2127747486437921899">Kursywa</translation>
+<translation id="2129163794581571479">Oparte na Gemini ze spersonalizowaną inteligencją. Twoje prośby, tytuły stron i adresy URL mogą być weryfikowane w celu doskonalenia funkcji ulepszonego autouzupełniania. <ph name="BEGIN_LINK" />Zarządzaj ustawieniami<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Włączanie autouzupełniania płatności jest otwarte na całą wysokość.</translation>
@@ -1575,6 +1576,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3655670868607891010">Jeśli często widzisz ten komunikat, przeczytaj <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Wersja</translation>
 <translation id="3659521826520353662">Które witryny zdefiniowane przez administratora są odwiedzane i kiedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Oparte na Gemini ze spersonalizowaną inteligencją. <ph name="BEGIN_LINK" />Zarządzaj ustawieniami<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Wyszukaj więcej opcji zakupu w innych sklepach, które sprzedają ten produkt.</translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
 <translation id="3670030362669914947">Numer</translation>
@@ -1595,6 +1597,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3693516565203081475">Wybierz formę płatności</translation>
 <translation id="3698353241727597930">Administrator skonfigurował zapisywanie <ph name="FILES" /> w pamięci zarządzanej przez firmę <ph name="CLOUD_STORAGE" />. Te pliki mogą być monitorowane, kontrolowane i przechowywane po ich usunięciu.</translation>
 <translation id="3698629142018988477">Przycisk Utwórz witrynę; aktywuj, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
+<translation id="3698708128812719147">Naciśnij dwukrotnie Ctrl w dowolnym miejscu w sieci, aby znaleźć i wypełnić więcej informacji</translation>
 <translation id="3700094625653511150">Aby ukryć opcje płatności odroczonej, otwórz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Używasz odcisku palca do wypełniania haseł</translation>
 <translation id="3701427423622901115">Zresetowanie zostało potwierdzone.</translation>
@@ -1898,6 +1901,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4185037616931963178">Bezpiecznie zaktualizuj numer Redress</translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
 <translation id="4191334393248735295">Długość</translation>
+<translation id="4192770747482479191">Naciśnij dwukrotnie ⌘ w dowolnym miejscu w sieci, aby znaleźć i wypełnić więcej informacji</translation>
 <translation id="4195459680867822611">Przycisk Zobacz wskazówki na temat Chrome; aktywuj, aby dowiedzieć się więcej o funkcjach Chrome</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4196861286325780578">&amp;Ponów przeniesienie</translation>
@@ -2215,12 +2219,11 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4725766358270333890">Przesyłam pliki (<ph name="COUNT" />) do Microsoft OneDrive</translation>
 <translation id="4726672564094551039">Odśwież zasady</translation>
 <translation id="4728558894243024398">Platforma</translation>
-<translation id="4730773064303503917">Wysyłaj środki Pixem do znajomych i firm, korzystając z Portfela</translation>
 <translation id="4730977633786878901">Opinie</translation>
 <translation id="4731638775147756694">Aplikacja została zablokowana przez administratora</translation>
 <translation id="4732860731866514038">Pobieram pakiet językowy dla języka <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> chce używać lokalizacji Twojego urządzenia</translation>
-<translation id="473414950835101501">Korzystać z kamer</translation>
+<translation id="473414950835101501">Korzystanie z kamer</translation>
 <translation id="4736089601076994090">Wygasa: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Uruchom ponownie Chromium</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
@@ -2359,7 +2362,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4936573216809994970">Przesyłanie plików do usługi <ph name="CLOUD_PROVIDER" /> rozpocznie się za godzinę</translation>
 <translation id="4939748144644852809">Przeniesiono w prawo</translation>
 <translation id="4941627891654116707">Rozmiar czcionki</translation>
-<translation id="4943620199112228840">Korzystać z mikrofonów</translation>
+<translation id="4943620199112228840">Korzystanie z mikrofonów</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
 <translation id="494701040141924538">OK, zamknij powiadomienie</translation>
 <translation id="4951038790614970523">Tekst wycięty lub skopiowany do schowka jest wysyłany do analizy w Google Cloud albo usługach zewnętrznych. Na przykład może zostać przeskanowany pod kątem danych wrażliwych, a także być przechowywany zgodnie z zasadami firmy i widoczny dla administratora.</translation>
@@ -2846,6 +2849,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="573974402615125334">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, zsynchronizuj historię i karty</translation>
 <translation id="5740911612628596808">Koperta C9</translation>
 <translation id="574392208103952083">Średni</translation>
+<translation id="5744350700955456407">Ulepszone autouzupełnianie może teraz znajdować i wypełniać informacje – takie jak numery zamówień i kody potwierdzenia lotu – z aplikacji takich jak Gmail i Zdjęcia</translation>
 <translation id="5745586894920491759">Chrome przetwarza tytuły stron i adresy URL w chmurze</translation>
 <translation id="5745733273847572235">Może prosić o dostęp do Twojej lokalizacji</translation>
 <translation id="5750869797196646528">Śledzenie rąk</translation>

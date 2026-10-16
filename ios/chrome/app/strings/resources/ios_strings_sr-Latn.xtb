@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Memorijski prostor je pun</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obaveštenja</translation>
+<translation id="1191987227666124897">Zahtev za onemogućavanje</translation>
 <translation id="1196534270480620381">Daj mi kratak rezime ove stranice</translation>
 <translation id="1199631150313925648">Unesite ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
@@ -2057,6 +2058,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Nastavi</translation>
 <translation id="741204030948306876">Da, omogući</translation>
+<translation id="7417055777338419059">Kodirajte, pišite ili pravite slajdove</translation>
 <translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7425053386765766120">Dodaj način plaćanja…</translation>
@@ -2321,7 +2323,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8187200657863701733">Trenutni nivo u Chrome-u</translation>
 <translation id="8189484403434216074">Napravi grupu kartica</translation>
 <translation id="8189615296021678665">Dodirnite Sačuvaj da biste lako pristupali ovoj lozinci sledeći put kada se prijavite.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Dodajte lozinku</translation>
 <translation id="8195936400946057039">Zaštita od onlajn pretnji</translation>
 <translation id="8205564605687841303">Otkaži</translation>
@@ -2646,7 +2647,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="9149866541089851383">Izmeni...</translation>
 <translation id="9152637745605628097">Odaberite temu, boju ili otpremite sliku</translation>
 <translation id="9153159728062222866">Preskočite kopiranje i lepljenje</translation>
-<translation id="9159628751968616911">Pošaljite veb-stranicu</translation>
 <translation id="9162412286847966593">Podaci i snimci organizacije ne koriste se za poboljšavanje modela generativne veštačke inteligencije. <ph name="BEGIN_LINK" />Vaša privatnost i Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Uključite Automatsko popunjavanje lozinki</translation>
 <translation id="9165320910061267720">Da biste dobijali obaveštenja o sniženjima, treba da uključite obaveštenja u iOS podešavanjima.</translation>

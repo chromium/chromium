@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">Outil de conversion en PDF :</translation>
 <translation id="2127090458081644412">Mot de passe enregistré sur cet appareil</translation>
 <translation id="2127747486437921899">Italique</translation>
+<translation id="2129163794581571479">Fonctionnalité propulsée par Gemini avec l'Intelligence personnalisée. Vos requêtes, les URL et les titres des pages peuvent être examinés afin d'améliorer le remplissage automatique amélioré. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Les modèles que vous avez indiqués pourraient ne pas être appliqués si la politique DnsOverHttpsMode n'est pas définie.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131006834960167560">La zone de contenu Activer le remplissage automatique des paiements est ouverte à pleine hauteur.</translation>
@@ -1575,6 +1576,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Si ce message s'affiche souvent, essayez ces <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3659521826520353662">Quels sites Web définis par l'administrateur sont visités et quand : <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Fonctionnalité propulsée par Gemini avec l'Intelligence personnalisée. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Recherchez plus d'options d'achat dans d'autres magasins qui vendent ce produit.</translation>
 <translation id="3664782872746246217">Mots clés :</translation>
 <translation id="3670030362669914947">Numéro</translation>
@@ -1595,6 +1597,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3693516565203081475">Choisir un mode de paiement</translation>
 <translation id="3698353241727597930">Votre administrateur a configuré <ph name="FILES" /> pour qu'ils soient enregistrés dans votre espace de stockage <ph name="CLOUD_STORAGE" /> géré par l'entreprise. Ces fichiers peuvent être contrôlés, vérifiés et conservés lorsque vous les supprimez.</translation>
 <translation id="3698629142018988477">Bouton Créer un site, activez-le pour créer rapidement un nouveau site dans Google Sites</translation>
+<translation id="3698708128812719147">Appuyez deux fois sur Ctrl n'importe où sur le Web pour trouver et saisir plus d'informations</translation>
 <translation id="3700094625653511150">Pour masquer les options de paiement différé, accédez à <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Vous utilisez votre empreinte digitale pour remplir les mots de passe</translation>
 <translation id="3701427423622901115">Réinitialisation acceptée.</translation>
@@ -1898,6 +1901,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4185037616931963178">Mettre à jour le numéro de recours en toute sécurité</translation>
 <translation id="4186035307311647330">Annuler le suivi de prix</translation>
 <translation id="4191334393248735295">Durée</translation>
+<translation id="4192770747482479191">Appuyez deux fois sur ⌘ n'importe où sur le Web pour trouver et saisir plus d'informations</translation>
 <translation id="4195459680867822611">Bouton Afficher les astuces de Chrome, activez-le pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196861286325780578">&amp;Rétablir le déplacement</translation>
@@ -2215,7 +2219,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4725766358270333890">Téléversement de <ph name="COUNT" /> fichiers vers Microsoft OneDrive en cours…</translation>
 <translation id="4726672564094551039">Actualiser les politiques</translation>
 <translation id="4728558894243024398">Plateforme</translation>
-<translation id="4730773064303503917">Envoyez de l'argent à des amis et à des entreprises avec Pix dans Portefeuille.</translation>
 <translation id="4730977633786878901">Avis</translation>
 <translation id="4731638775147756694">Cette application a été bloquée par votre administrateur</translation>
 <translation id="4732860731866514038">Téléchargement du module linguistique <ph name="LANGUAGE" /> en cours… <ph name="PERCENT" /> %</translation>
@@ -2846,6 +2849,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="573974402615125334">Pour partager et rejoindre des groupes d'onglets ainsi que collaborer dans ces derniers, synchronisez votre historique et vos onglets</translation>
 <translation id="5740911612628596808">Enveloppe C9</translation>
 <translation id="574392208103952083">Moyenne</translation>
+<translation id="5744350700955456407">Le remplissage automatique amélioré peut désormais trouver et saisir des informations, comme les numéros de commande et les codes de confirmation de vol, à partir d'applis comme Gmail et Photos</translation>
 <translation id="5745586894920491759">Chrome traite les titres de pages et les URL dans le nuage</translation>
 <translation id="5745733273847572235">Les sites peuvent demander votre position</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>

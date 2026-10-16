@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1018804590490383958">Balayer et remplir automatiquement</translation>
 <translation id="1019990162050689579">Activité dans les applis Gemini</translation>
+<translation id="102471647093736603">Maintenir le doigt pour déplacer</translation>
 <translation id="102645702181682900">Tâche commencée</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030376737535466765">Ouvrir le gestionnaire de mots de passe</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Votre espace de stockage est plein</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
+<translation id="1191987227666124897">Demande de désinscription</translation>
 <translation id="1196534270480620381">Fais-moi un bref résumé de cette page</translation>
 <translation id="1199631150313925648">Entrer manuellement</translation>
 <translation id="1199963004393929848">Thème vert</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4821595350501541683">Les onglets ont été fermés, et les données de navigation ont été supprimées</translation>
+<translation id="4823322556950229674">Vous pouvez maintenir le doigt sur la barre d'adresse et le bouton Précédent pour les déplacer vers le bas</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
@@ -2055,6 +2058,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuer</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
+<translation id="7417055777338419059">Codez, écrivez ou créez des diapositives</translation>
 <translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
 <translation id="7423098979219808738">Demander d'abord</translation>
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>
@@ -2319,7 +2323,6 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8187200657863701733">Niveau Chrome actuel</translation>
 <translation id="8189484403434216074">Créer un groupe d'onglets</translation>
 <translation id="8189615296021678665">Touchez « Enregistrer » pour accéder facilement à ce mot de passe lors de votre prochaine connexion.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Ajouter un mot de passe</translation>
 <translation id="8195936400946057039">Protection contre les menaces en ligne</translation>
 <translation id="8205564605687841303">Annuler</translation>
@@ -2644,7 +2647,6 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="9149866541089851383">Modifier...</translation>
 <translation id="9152637745605628097">Choisissez parmi des thèmes ou des couleurs, ou téléversez une image</translation>
 <translation id="9153159728062222866">Évitez le copier-coller</translation>
-<translation id="9159628751968616911">Envoyer la page Web</translation>
 <translation id="9162412286847966593">Les données et les enregistrements de votre organisation ne seront pas utilisés pour améliorer les modèles d'IA générative. <ph name="BEGIN_LINK" />Gemini et votre confidentialité<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>

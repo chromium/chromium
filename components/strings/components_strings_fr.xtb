@@ -665,6 +665,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2126374524350484896">Outil de conversion PDF :</translation>
 <translation id="2127090458081644412">Mot de passe enregistré sur cet appareil</translation>
 <translation id="2127747486437921899">Italique</translation>
+<translation id="2129163794581571479">Optimisée par Gemini avec l'Intelligence personnalisée. Vos requêtes, titres de page et URL peuvent être examinés pour perfectionner la saisie automatique améliorée. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Les modèles que vous avez spécifiés risquent de ne pas être appliqués, car la règle DnsOverHttpsMode n'est pas configurée.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">L'activation de la saisie automatique des paiements est ouverte à pleine hauteur.</translation>
@@ -1575,6 +1576,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Si ce message s'affiche régulièrement, essayez ces <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3659521826520353662">Historique de consultation des sites Web définis par l'administrateur : <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Optimisée par Gemini avec l'Intelligence personnalisée. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Rechercher d'autres options d'achat dans d'autres magasins qui vendent ce produit.</translation>
 <translation id="3664782872746246217">Mots-clés :</translation>
 <translation id="3670030362669914947">Numéro</translation>
@@ -1595,6 +1597,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3693516565203081475">Sélectionner un mode de paiement</translation>
 <translation id="3698353241727597930">Votre administrateur a configuré l'enregistrement des <ph name="FILES" /> dans votre espace de stockage <ph name="CLOUD_STORAGE" /> géré par l'entreprise. Ces fichiers peuvent être surveillés, audités et conservés lorsque vous les supprimez.</translation>
 <translation id="3698629142018988477">Bouton "Créer un site" à activer pour créer rapidement un site dans Google Sites</translation>
+<translation id="3698708128812719147">Appuyez deux fois sur Ctrl n'importe où sur le Web pour trouver et saisir plus d'informations</translation>
 <translation id="3700094625653511150">Pour masquer les options de paiement différé, accédez aux <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Vous utilisez votre empreinte digitale pour saisir les mots de passe</translation>
 <translation id="3701427423622901115">Réinitialisation appliquée.</translation>
@@ -1898,6 +1901,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4185037616931963178">Mettez à jour votre numéro de recours de manière sécurisée</translation>
 <translation id="4186035307311647330">Ne plus suivre le prix</translation>
 <translation id="4191334393248735295">Longueur</translation>
+<translation id="4192770747482479191">Appuyez deux fois sur ⌘ n'importe où sur le Web pour trouver et saisir plus d'informations</translation>
 <translation id="4195459680867822611">Bouton "Voir les astuces Chrome" à activer pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196861286325780578">&amp;Rétablir le déplacement</translation>
@@ -2215,7 +2219,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4725766358270333890">Importation de <ph name="COUNT" /> fichiers dans Microsoft OneDrive…</translation>
 <translation id="4726672564094551039">Actualiser les règles</translation>
 <translation id="4728558894243024398">Plate-forme</translation>
-<translation id="4730773064303503917">Envoyez des paiements Pix à vos amis ou à des entreprises avec Wallet</translation>
 <translation id="4730977633786878901">Avis</translation>
 <translation id="4731638775147756694">Cette application a été bloquée par votre administrateur</translation>
 <translation id="4732860731866514038">Téléchargement du module linguistique <ph name="LANGUAGE" /> (<ph name="PERCENT" /> %)...</translation>
@@ -2846,6 +2849,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="573974402615125334">Pour rejoindre des groupes d'onglets, en partager et collaborer dessus, synchronisez votre historique et vos onglets</translation>
 <translation id="5740911612628596808">Enveloppe C9</translation>
 <translation id="574392208103952083">Moyen</translation>
+<translation id="5744350700955456407">La saisie automatique améliorée peut désormais trouver et saisir des informations (numéros de commande, codes de confirmation de vol, etc.) depuis des applis comme Gmail et Photos</translation>
 <translation id="5745586894920491759">Chrome traite les titres des pages et les URL dans le cloud</translation>
 <translation id="5745733273847572235">Peut demander votre position</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>

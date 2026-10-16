@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">අයිතමය යාවත්කාලීන කරන ලදි</translation>
 <translation id="1018804590490383958">ස්කෑන් කර ස්වයං පුරවන්න</translation>
 <translation id="1019990162050689579">Gemini යෙදුම් ක්‍රියාකාරකම</translation>
+<translation id="102471647093736603">ගෙන යාමට ඔබා අල්ලාගෙන සිටින්න</translation>
 <translation id="102645702181682900">කාර්යය ආරම්භ විය</translation>
 <translation id="102916930470544692">මුරයතුර</translation>
 <translation id="1030376737535466765">මුරපද කළමනාකරු විවෘත කරන්න</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">ඔබේ ආචයනය පිරී ඇත</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1190609913194133056">දැනුම්දීම් මධ්‍යස්ථානය</translation>
+<translation id="1191987227666124897">ඉවත් වීමේ ඉල්ලීම</translation>
 <translation id="1196534270480620381">මට මෙම පිටුවේ කෙටි සාරාංශයක් දෙන්න</translation>
 <translation id="1199631150313925648">හස්තීයව ඇතුළු කරන්න</translation>
 <translation id="1199963004393929848">කොළ තේමාව</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">යාවත්කාලීන</translation>
 <translation id="4813345808229079766">සබඳතාව</translation>
 <translation id="4821595350501541683">පටිති වසා ඇති අතර බ්‍රවුස් කිරීමේ දත්ත මකා දමන ලදි</translation>
+<translation id="4823322556950229674">ලිපින තීරුව සහ ආපසු යාමේ බොත්තම පහළට ගෙන යාමට, ඔබා අල්ලාගෙන සිටින්න</translation>
 <translation id="4824480232751123840">හඬ පරිමාව</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} සහ තවත් 1}one{{domain} සහ තවත් {count}}other{{domain} සහ තවත් {count}}}</translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">ඉදිරියට යන්න</translation>
 <translation id="741204030948306876">ඔව්, මම කැමතියි</translation>
+<translation id="7417055777338419059">කේතනය කරන්න, ලියන්න, හෝ ස්ලයිඩ සාදන්න</translation>
 <translation id="7419565702166471774">සෑම විටම ආරක්ෂිත සබැඳුම් භාවිත කරන්න.</translation>
 <translation id="7423098979219808738">පළමුව අසන්න</translation>
 <translation id="7425053386765766120">ගෙවීමේ ක්‍රමය එක් කරන්න…</translation>
@@ -2319,7 +2323,6 @@
 <translation id="8187200657863701733">වත්මන් Chrome මට්ටම</translation>
 <translation id="8189484403434216074">ටැබ් සමූහයක් තනන්න</translation>
 <translation id="8189615296021678665">ඔබ මීළඟ වතාවේ පුරන විට මෙම මුරපදය පහසුවෙන් ප්‍රවේශ කිරීමට "සුරකින්න" තට්ටු කරන්න.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />ඔබගේ උපාංග<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">මුරපදය එක් කරන්න</translation>
 <translation id="8195936400946057039">මාර්ගගත තර්ජන වලින් ආරක්ෂාව</translation>
 <translation id="8205564605687841303">අවලංගු කරන්න</translation>
@@ -2644,7 +2647,6 @@
 <translation id="9149866541089851383">සකසන්න...</translation>
 <translation id="9152637745605628097">තේමා, වර්ණ වලින් තෝරා ගන්න හෝ රූපයක් උඩුගත කරන්න</translation>
 <translation id="9153159728062222866">පිටපත් කිරීම සහ ඇලවීම මඟ හරින්න</translation>
-<translation id="9159628751968616911">වෙබ් පිටුව යවන්න</translation>
 <translation id="9162412286847966593">ඔබේ සංවිධානයේ දත්ත සහ පටිගත කිරීම් ජනන AI ආකෘති වැඩි දියුණු කිරීමට භාවිතා නොකරනු ඇත. <ph name="BEGIN_LINK" />ඔබේ පෞද්ගලිකත්වය සහ Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">මුරපද ස්වයං පිරවුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="9165320910061267720">මිල පහත වැටීමේ ඇඟවීම් පිළිබඳ දැනුම්දීම් ලබා ගැනීම සඳහා, ඔබට ඔබේ iOS සැකසීම් තුළ දැනුම්දීම් ක්‍රියාත්මක කිරීමට අවශ්‍ය වනු ඇත.</translation>

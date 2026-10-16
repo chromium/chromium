@@ -163,6 +163,7 @@
 <translation id="1109482864356262001">움직임 감지 센서 또는 조도 센서가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1110155001042129815">대기</translation>
 <translation id="1110965959145884739">이 기기에 설치할 언어를 선택하세요. 디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">탭 그룹으로 포커스 이동</translation>
 <translation id="1112227834592480032">Google 렌즈 버튼을 선택한 다음 문제를 클릭하고 드래그하세요.</translation>
 <translation id="1112420131909513020">배경 탭에서 블루투스를 사용 중입니다.</translation>
 <translation id="1112998165730922436">전송 일시중지됨</translation>
@@ -2239,6 +2240,7 @@
 <translation id="2701960282717219666">네트워크 MAC 주소</translation>
 <translation id="2702720509009999256">인터넷 연결을 확인하고 '다시 시도'를 선택하거나 '기본 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="2702801445560668637">읽기 목록</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{탭 포커스 해제}other{탭 포커스 해제}}</translation>
 <translation id="270414148003105978">모바일 네트워크</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>
 <translation id="2704606927547763573">복사됨</translation>
@@ -3155,6 +3157,7 @@
 <translation id="3379268272734690">사막</translation>
 <translation id="3382737653173267704">가족 보기</translation>
 <translation id="338323348408199233">VPN 없는 트래픽 차단</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{탭으로 포커스 이동}other{탭으로 포커스 이동}}</translation>
 <translation id="3385053436247851142">Microsoft 계정으로 로그인</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">위치 정확도는 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 사용자의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 전반적으로 개선, 제공, 유지하는 데 사용됩니다.</translation>
@@ -4537,6 +4540,7 @@
 <translation id="4406308048672435032">이 탭을 비활성화하거나 새로고침하여 전체 목록을 다시 볼 수 있습니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406963243402726564">저장되지 않은 데이터</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{탭 포커스 해제}other{탭 포커스 해제}}</translation>
 <translation id="4408599188496843485">도움말(&amp;E)</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{관리자가 <ph name="APP0_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작되면 알림이 전송됩니다.}=2{관리자가 <ph name="APP0_NAME" /> 및 <ph name="APP1_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작되면 알림이 전송됩니다.}=3{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 1개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작되면 알림이 전송됩니다.}other{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 #개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작되면 알림이 전송됩니다.}}</translation>
 <translation id="4409697491990005945">여백</translation>
@@ -7410,6 +7414,7 @@
 <translation id="6651762277693024112">이 사이트를 방문할 때마다 자동으로 실행됩니다.</translation>
 <translation id="6654509035557065241">선호 네트워크 설정</translation>
 <translation id="6655190889273724601">개발자 모드</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{탭으로 포커스 이동}other{탭으로 포커스 이동}}</translation>
 <translation id="6657180931610302174">사용자 이름을 추가하시겠습니까?</translation>
 <translation id="6657240842932274095">시스템 서비스에서 내 위치를 사용하도록 허용하시겠습니까?</translation>
 <translation id="6657585470893396449">비밀번호</translation>
@@ -9620,7 +9625,6 @@
 <translation id="8317965619823678157">비밀번호 복사</translation>
 <translation id="8318266828739827371">화면 분할 뷰를 사용하여 화면의 확대 영역을 볼 수 있습니다. 고정 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + D를 사용하세요.</translation>
 <translation id="8318680582681577962">시크릿 모드 PDF 서브프레임: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8319105959731007612">프로세스 격리를 사용하면 다른 애플리케이션이 <ph name="IDS_SHORT_PRODUCT_NAME" />을(를) 조작할 수 없습니다.</translation>
 <translation id="8320212361750431956">최근 활동</translation>
 <translation id="8321476692217554900">알림</translation>
 <translation id="8322000044173139239">이 기기에 패스키를 가져오려면 본인 인증을 진행하세요</translation>
@@ -10042,6 +10046,7 @@
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
 <translation id="8655295600908251630">채널</translation>
+<translation id="8656101380279383244">탭 그룹으로 포커스 이동</translation>
 <translation id="8656888282555543604">점자 로깅 사용</translation>
 <translation id="8657393004602556571">의견을 삭제하시겠습니까?</translation>
 <translation id="8657542881463614516">스와이프 동작을 사용하여 페이지 간 이동하기</translation>
@@ -10764,7 +10769,6 @@
 <translation id="9185698642371842814">AI 모드에서 질문하기</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{관리자가 <ph name="APP0_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=2{관리자가 <ph name="APP0_NAME" /> 및 <ph name="APP1_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=3{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 1개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}other{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 #개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}}</translation>
 <translation id="9187967020623675250">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
-<translation id="9188142767272053574">프로세스 격리 사용 설정</translation>
 <translation id="9192019773545828776">음성 피드백이 제공되어 화면을 보지 않고도 기기를 사용할 수 있습니다. 연결된 기기로 점자 피드백을 사용할 수 있습니다. ChromeVox를 사용 설정 또는 중지하려면 Ctrl + Alt + Z를 사용하세요. 이동하려면 검색 + 왼쪽 화살표 또는 오른쪽 화살표를 사용하세요. 선택(활성화)하려면 검색 + 스페이스 바를 사용하세요.</translation>
 <translation id="9195969368671142407">조직에서 Google 계정에 저장하는 것을 제한하는 경우 탭 그룹을 공유하거나 탭 그룹에 참여할 수 없습니다.</translation>
 <translation id="9197456336762295195">google.com용 패스키가 있는 기기의 카메라로 이 QR 코드를 스캔하세요.</translation>

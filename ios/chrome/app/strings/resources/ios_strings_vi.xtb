@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Bộ nhớ của bạn đã đầy</translation>
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
+<translation id="1191987227666124897">Yêu cầu không sử dụng</translation>
 <translation id="1196534270480620381">Hãy tóm tắt ngắn gọn trang này</translation>
 <translation id="1199631150313925648">Nhập thủ công</translation>
 <translation id="1199963004393929848">Giao diện màu xanh lục</translation>
@@ -2057,6 +2058,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tiếp tục</translation>
 <translation id="741204030948306876">Có, tôi đồng ý</translation>
+<translation id="7417055777338419059">Lập trình, viết hoặc tạo trang trình bày</translation>
 <translation id="7419565702166471774">Luôn sử dụng kết nối bảo mật</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7425053386765766120">Thêm phương thức thanh toán…</translation>
@@ -2321,7 +2323,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8187200657863701733">Cấp độ hiện tại trong Chrome</translation>
 <translation id="8189484403434216074">Tạo nhóm thẻ</translation>
 <translation id="8189615296021678665">Nhấn vào "Lưu" để dễ dàng truy cập mật khẩu này vào lần đăng nhập tới.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Thiết bị của bạn<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Thêm mật khẩu</translation>
 <translation id="8195936400946057039">Bảo vệ trước các mối đe doạ trên mạng</translation>
 <translation id="8205564605687841303">Huỷ</translation>
@@ -2646,7 +2647,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="9149866541089851383">Chỉnh sửa...</translation>
 <translation id="9152637745605628097">Chọn trong số các giao diện màu sắc hoặc tải một hình ảnh lên</translation>
 <translation id="9153159728062222866">Bỏ qua thao tác sao chép và dán</translation>
-<translation id="9159628751968616911">Gửi trang web</translation>
 <translation id="9162412286847966593">Dữ liệu và bản ghi của tổ chức bạn sẽ không được dùng để cải thiện các mô hình AI tạo sinh. <ph name="BEGIN_LINK" />Quyền riêng tư của bạn và Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Bật tính năng Tự động điền mật khẩu</translation>
 <translation id="9165320910061267720">Để nhận thông báo giảm giá, bạn cần bật thông báo trong phần cài đặt trên iOS.</translation>

@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">आयटम अपडेट केला</translation>
 <translation id="1018804590490383958">स्कॅन करा आणि ऑटोफिल करा</translation>
 <translation id="1019990162050689579">Gemini ॲप ॲक्टिव्हिटी</translation>
+<translation id="102471647093736603">हलवण्यासाठी प्रेस करून धरून ठेवा</translation>
 <translation id="102645702181682900">टास्क सुरू केली आहे</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1030376737535466765">Password Manager उघडा</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">तुमचे स्टोरेज पूर्ण भरले आहे</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
+<translation id="1191987227666124897">निवड रद्द करण्याची विनंती</translation>
 <translation id="1196534270480620381">मला या पेजचा थोडक्यात सारांश दे</translation>
 <translation id="1199631150313925648">मॅन्‍युअली एंटर करा</translation>
 <translation id="1199963004393929848">ग्रीन थीम</translation>
@@ -623,6 +625,7 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">तुमची सुरक्षा धोक्यात असते तेव्हा, तुम्ही भेट दिलेल्या काही पेजचे URL Google ला पाठवते</translation>
 <translation id="2883151425485251736">तुम्ही तुमच्या खात्यामधून लपवलेले विषय पहा आणि ते संपादित करा</translation>
+<translation id="2884437560239137197">लक्ष देणे आवश्यक आहे</translation>
 <translation id="288655811176831528">टॅब बंद करा</translation>
 <translation id="2888631381369839306">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन सुरू केली आहेत</translation>
 <translation id="2893168226686371498">डीफॉल्ट ब्राउझर</translation>
@@ -1208,6 +1211,7 @@
 <translation id="4808744395915275922">अपडेट</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
 <translation id="4821595350501541683">टॅब बंद केले गेले होते आणि ब्राउझिंग डेटा हटवला होता</translation>
+<translation id="4823322556950229674">अ‍ॅड्रेस बार आणि मागे जा बटण तळाशी हलवण्यासाठी तुम्ही प्रेस करून धरून ठेवू शकता</translation>
 <translation id="4824480232751123840">व्हॉल्यूम</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} आणि इतर एक}other{{domain} आणि इतर {count}}}</translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
@@ -1666,6 +1670,7 @@
 <translation id="6227958838185907047"><ph name="NAME" /> <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="6231782223312638214">सूचित</translation>
 <translation id="6232329973559504466">गुप्त शोध</translation>
+<translation id="6233463157595806945">इनपुट आवश्यक आहे</translation>
 <translation id="6234310016144827337">तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="6236952928980352967">चेतावणी रिस्टोअर करा</translation>
 <translation id="623755660902014047">वाचन मोड</translation>
@@ -1697,6 +1702,7 @@
 <translation id="6307792728709337290">या खरेदीसाठी आणि Chrome वर केलेल्या भविष्यातील खरेदीसाठी तुमचे कार्ड ऑटोफिल करण्याकरिता ते तुमच्या Google खाते मध्ये सेव्ह करा.</translation>
 <translation id="6316141353357700666">दिसणाऱ्या सूचीमधून तुम्हाला वापरायचा असलेला पासवर्ड निवडा.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
+<translation id="6322064144568952786">टास्क पूर्ण करता आली नाही</translation>
 <translation id="6324054713176642683">थीम, रंग यांमधून निवडा किंवा तुमचा स्वतःचा फोटो अपलोड करा.</translation>
 <translation id="6327249202318869726">तुमच्या खात्यासाठी Gemini बंद केले आहे. अधिक माहितीसाठी तुमच्या ॲडमिनशी संपर्क साधा.</translation>
 <translation id="6331836477476466332">तुमच्यासाठी सुरक्षित, आणखी प्रभावी ब्राउझर</translation>
@@ -2014,6 +2020,7 @@
 <translation id="7241135764990439166">गुप्त मोड उपलब्ध नाही</translation>
 <translation id="7245288034498365666">संगतवार लावा आणि वेळेची बचत करा</translation>
 <translation id="7253951228444156601">पासवर्ड तपासत आहे…</translation>
+<translation id="725583671816239562">टास्क पूर्ण झाली आहे</translation>
 <translation id="7261217796641151584">गट शेअर करा</translation>
 <translation id="7266578100016339897">यामुळे तुम्हाला टापटीप राहण्यात मदत होते. तुम्ही हे सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google अटी<ph name="END_LINK" /> आणि <ph name="BEGIN_LINK" />Gemini ॲप्स गोपनीयता नोटिस<ph name="END_LINK" /> या गोष्टी लागू होतात. Gemini हे AI आहे आणि ते लोकांच्या बाबतीतदेखील चुका करू शकते.</translation>
@@ -2056,6 +2063,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">पुढे सुरू ठेवा</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
+<translation id="7417055777338419059">कोड करा, लिहा किंवा स्लाइड तयार करा</translation>
 <translation id="7419565702166471774">नेहमी सुरक्षित कनेक्शन वापरा</translation>
 <translation id="7423098979219808738">प्रथम विचारा</translation>
 <translation id="7425053386765766120">पेमेंट पद्धत जोडा…</translation>
@@ -2320,7 +2328,6 @@
 <translation id="8187200657863701733">सद्य Chrome पातळी</translation>
 <translation id="8189484403434216074">टॅब गट तयार करा</translation>
 <translation id="8189615296021678665">तुम्ही पुढच्या वेळी साइन इन कराल, तेव्हा हा पासवर्ड सहजपणे अ‍ॅक्सेस करण्यासाठी "सेव्ह करा" वर टॅप करा.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड जोडा</translation>
 <translation id="8195936400946057039">ऑनलाइन धोक्यांपासून संरक्षण</translation>
 <translation id="8205564605687841303">रद्द करा</translation>
@@ -2645,7 +2652,6 @@
 <translation id="9149866541089851383">संपादन...</translation>
 <translation id="9152637745605628097">थीम, रंग यांमधून निवडा किंवा इमेज अपलोड करा</translation>
 <translation id="9153159728062222866">कॉपी आणि पेस्ट करणे वगळा</translation>
-<translation id="9159628751968616911">वेबपेज पाठवा</translation>
 <translation id="9162412286847966593">जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी तुमच्या संस्थेचा डेटा आणि रेकॉर्डिंग वापरली जाणार नाहीत. <ph name="BEGIN_LINK" />तुमची गोपनीयता आणि Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">ऑटोफिल पासवर्ड सुरू करा</translation>
 <translation id="9165320910061267720">किमती कमी होण्यासंबंधित इशाऱ्यांच्या सूचना मिळवण्यासाठी, तुम्ही तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करणे आवश्यक आहे.</translation>

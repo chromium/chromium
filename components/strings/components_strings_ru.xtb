@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">Производитель PDF:</translation>
 <translation id="2127090458081644412">Пароль сохранен на этом устройстве</translation>
 <translation id="2127747486437921899">Курсив</translation>
+<translation id="2129163794581571479">Для этого используется Gemini с персональным ИИ. Мы можем проверять ваши запросы, заголовки страниц и URL, чтобы совершенствовать улучшенное автозаполнение. <ph name="BEGIN_LINK" />Управление настройками<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Указанные вами шаблоны нельзя применить, поскольку правило DnsOverHttpsMode не настроено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Окно "Включить автозаполнение платежных данных" развернуто.</translation>
@@ -1574,6 +1575,7 @@
 <translation id="3655670868607891010">Если эта проблема возникает часто, изучите <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Версия</translation>
 <translation id="3659521826520353662">Какие сайты, заданные администратором, посещают пользователи и в какое время: <ph name="ALLOWLISTED_WEBSITES" />.</translation>
+<translation id="3663760610864720538">Для этого используется Gemini с персональным ИИ. <ph name="BEGIN_LINK" />Управление настройками<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Узнайте, в каких ещё магазинах продается этот товар.</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
 <translation id="3670030362669914947">Номер</translation>
@@ -1594,6 +1596,7 @@
 <translation id="3693516565203081475">Выберите способ оплаты</translation>
 <translation id="3698353241727597930">Администратор настроил сохранение <ph name="FILES" /> в хранилище (<ph name="CLOUD_STORAGE" />), управляемое организацией. Эти файлы могут просматриваться, проверяться и оставаться в хранилище после удаления.</translation>
 <translation id="3698629142018988477">Кнопка "Создать сайт". Нажмите ее, чтобы быстро создать сайт на платформе Google.</translation>
+<translation id="3698708128812719147">Для поиска и подстановки данных дважды нажмите Ctrl на любой веб-странице</translation>
 <translation id="3700094625653511150">Чтобы скрыть варианты оплаты в рассрочку, перейдите в <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="3700966190175650601">Вы используете отпечаток пальца для подстановки паролей</translation>
 <translation id="3701427423622901115">Сброс подтвержден.</translation>
@@ -1897,6 +1900,7 @@
 <translation id="4185037616931963178">Безопасно обновляйте Redress Number</translation>
 <translation id="4186035307311647330">Перестать отслеживать цену</translation>
 <translation id="4191334393248735295">Длина</translation>
+<translation id="4192770747482479191">Для поиска и подстановки данных дважды нажмите ⌘ на любой веб-странице</translation>
 <translation id="4195459680867822611">Кнопка "Посмотреть советы по работе с Chrome". Нажмите ее, чтобы узнать больше о функциях Chrome.</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4196861286325780578">&amp;Повторить перемещение</translation>
@@ -2214,7 +2218,6 @@
 <translation id="4725766358270333890">Загрузка файлов (<ph name="COUNT" />) в Microsoft OneDrive…</translation>
 <translation id="4726672564094551039">Повторно загрузить правила</translation>
 <translation id="4728558894243024398">Платформа</translation>
-<translation id="4730773064303503917">Отправляйте деньги через Pix друзьям и компаниям с помощью Кошелька</translation>
 <translation id="4730977633786878901">Отзывы</translation>
 <translation id="4731638775147756694">Приложение заблокировано администратором.</translation>
 <translation id="4732860731866514038">Скачивание языкового пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
@@ -2845,6 +2848,7 @@
 <translation id="573974402615125334">Вы сможете делиться группами вкладок, присоединяться к ним и работать вместе с другими пользователями.</translation>
 <translation id="5740911612628596808">Конверт C9</translation>
 <translation id="574392208103952083">Средний</translation>
+<translation id="5744350700955456407">Улучшенное автозаполнение теперь позволяет находить и подставлять данные, например номера заказов и коды бронирования, из таких приложений, как Gmail и Фото.</translation>
 <translation id="5745586894920491759">Chrome обрабатывает заголовки и URL страниц в облаке.</translation>
 <translation id="5745733273847572235">Разрешено отправлять запрос на доступ к информации о местоположении</translation>
 <translation id="5750869797196646528">Отслеживание рук</translation>

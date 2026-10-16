@@ -163,6 +163,7 @@
 <translation id="1109482864356262001">モーション センサーまたは光センサーを必要とする機能は動作しなくなります</translation>
 <translation id="1110155001042129815">待機</translation>
 <translation id="1110965959145884739">このデバイスにインストールする言語を選択してください。ディスク領域を節約するため、言語ファイルはユーザー間で共有されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">タブグループにフォーカス</translation>
 <translation id="1112227834592480032">Google レンズボタンをクリックして問題の上にドラッグします</translation>
 <translation id="1112420131909513020">バックグラウンドのタブで Bluetooth が使用されています</translation>
 <translation id="1112998165730922436">キャストを一時停止しました</translation>
@@ -2224,6 +2225,7 @@
 <translation id="2701960282717219666">ネットワークの MAC アドレス</translation>
 <translation id="2702720509009999256">インターネット接続を確認して、[再試行] または [基本エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{タブへのフォーカスを解除}other{タブへのフォーカスを解除}}</translation>
 <translation id="270414148003105978">モバイル ネットワーク</translation>
 <translation id="2704184184447774363">Microsoft ドキュメントの署名</translation>
 <translation id="2704606927547763573">コピーしました</translation>
@@ -3138,6 +3140,7 @@
 <translation id="3379268272734690">砂漠</translation>
 <translation id="3382737653173267704">ファミリーを表示</translation>
 <translation id="338323348408199233">VPN 以外のトラフィックをブロック</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{タブにフォーカス}other{タブにフォーカス}}</translation>
 <translation id="3385053436247851142">Microsoft でログイン</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">[位置情報の精度] 設定では、アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを全般的に改善、提供、維持する目的でも使用されます。</translation>
@@ -4522,6 +4525,7 @@
 <translation id="4406308048672435032">このタブを無効にできます。または更新すると完全なリストが再び表示されます</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4406963243402726564">保存されていないデータ</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{タブへのフォーカスを解除}other{タブへのフォーカスを解除}}</translation>
 <translation id="4408599188496843485">ヘルプ(&amp;H)</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{管理者は <ph name="APP0_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されます。}=2{管理者は <ph name="APP0_NAME" /> と <ph name="APP1_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されます。}=3{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 1 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されます。}other{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 # 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されます。}}</translation>
 <translation id="4409697491990005945">余白</translation>
@@ -7391,6 +7395,7 @@
 <translation id="6651762277693024112">このサイトにアクセスするたび自動的に実行します</translation>
 <translation id="6654509035557065241">優先するネットワーク</translation>
 <translation id="6655190889273724601">デベロッパー モード</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{タブにフォーカス}other{タブにフォーカス}}</translation>
 <translation id="6657180931610302174">ユーザー名を追加しますか？</translation>
 <translation id="6657240842932274095">システム サービスによる位置情報の使用を許可しますか？</translation>
 <translation id="6657585470893396449">パスワード</translation>
@@ -9601,7 +9606,6 @@
 <translation id="8317965619823678157">パスワードをコピー</translation>
 <translation id="8318266828739827371">分割画面ビューを使用して、画面の拡大領域を表示できます。ドッキング拡大鏡をオンまたはオフにするには、検索+Ctrl+D キーを使用します。</translation>
 <translation id="8318680582681577962">シークレット モードの PDF サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8319105959731007612">プロセスを分離すると、他のアプリケーションによる <ph name="IDS_SHORT_PRODUCT_NAME" /> の改ざんを防ぐことができます。</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8322000044173139239">このデバイスでパスキーを設定するには、本人確認を行ってください</translation>
@@ -10023,6 +10027,7 @@
 <translation id="8652400352452647993">拡張機能のパッケージ化のエラー</translation>
 <translation id="8654151524613148204">ファイル サイズが大きすぎるため、お使いのパソコンでは処理できません。</translation>
 <translation id="8655295600908251630">チャンネル</translation>
+<translation id="8656101380279383244">タブグループにフォーカス</translation>
 <translation id="8656888282555543604">点字のログを有効にする</translation>
 <translation id="8657393004602556571">フィードバックを破棄してもよろしいですか？</translation>
 <translation id="8657542881463614516">スワイプ操作でページ間を移動する</translation>
@@ -10745,7 +10750,6 @@
 <translation id="9185698642371842814">AI モードで質問</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理者は <ph name="APP0_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=2{管理者は <ph name="APP0_NAME" /> と <ph name="APP1_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=3{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 1 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}other{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 # 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}}</translation>
 <translation id="9187967020623675250">キーが一致しません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
-<translation id="9188142767272053574">プロセスの分離を有効にする</translation>
 <translation id="9192019773545828776">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。ChromeVox のオンとオフを切り替えるには Ctrl+Alt+Z キーを使用します。移動するには検索+左矢印または右矢印キーを使用します。選択（有効化）するには検索+Space キーを使用します。</translation>
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="9197456336762295195">google.com のパスキーを保存したデバイスのカメラでこの QR コードをスキャンしてください</translation>

@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">PDF yaradıcısı:</translation>
 <translation id="2127090458081644412">Parol bu cihazda yadda saxlanıldı</translation>
 <translation id="2127747486437921899">Kursiv</translation>
+<translation id="2129163794581571479">Gemini və Şəxsi Zəka tərəfindən dəstəklənir. Qabaqcıl avtodoldurmanı təkmilləşdirmək üçün sorğularınız, səhifə başlıqlarınız və URL-ləriniz nəzərdən keçirilə bilər. <ph name="BEGIN_LINK" />Ayarları idarə edin<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode siyasətinin ayarlanmamasına görə qeyd etdiyiniz şablonlar tətbiq edilməyə bilər.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">"Ödənişlərin avtomatik doldurulmasını aktivləşdirin" bölməsi tam hündürlükdə açıldı.</translation>
@@ -1571,6 +1572,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3655670868607891010">Əgər bunu tez-tez görürsünüzsə, <ph name="HELP_LINK" /> linkini sınayın.</translation>
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3659521826520353662">Administratorun müəyyən etdiyi hansı veb-saytlara nə zaman daxil olunur: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Gemini və Şəxsi Zəka tərəfindən dəstəklənir. <ph name="BEGIN_LINK" />Ayarları idarə edin<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Bu məhsulu satan digər mağazalarda digər alış seçimlərini axtarın.</translation>
 <translation id="3664782872746246217">Açar sözlər:</translation>
 <translation id="3670030362669914947">Nömrə</translation>
@@ -1591,6 +1593,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3693516565203081475">Ödəniş metodu seçin</translation>
 <translation id="3698353241727597930">Administrator <ph name="FILES" /> müəssisə tərəfindən idarə edilən <ph name="CLOUD_STORAGE" /> yaddaşında saxlamağı konfiqurasiya edib. Bu fayllar izlənilə, yoxlanıla və onları sildiyiniz zaman saxlanıla bilər.</translation>
 <translation id="3698629142018988477">"Sayt yaradın" düyməsi, aktivləşdirərək Google Saytda cəld yeni sayt yaradın</translation>
+<translation id="3698708128812719147">Daha çox məlumat tapmaq və doldurmaq üçün vebdə istənilən yerdə Ctrl düyməsinə iki dəfə basın</translation>
 <translation id="3700094625653511150">Sonra ödəmə seçimlərini gizlətmək üçün bura keçin: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Parolları doldurmaq üçün barmaq izindən istifadə edirsiniz</translation>
 <translation id="3701427423622901115">Sıfırlanma doğrulandı.</translation>
@@ -1894,6 +1897,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4185037616931963178">Kompensasiya nömrəsini təhlükəsiz şəkildə güncəlləyin</translation>
 <translation id="4186035307311647330">Qiyməti izləməyin</translation>
 <translation id="4191334393248735295">Məsafə</translation>
+<translation id="4192770747482479191">Daha çox məlumat tapmaq və doldurmaq üçün vebdə istənilən yerə iki dəfə ⌘ yazın</translation>
 <translation id="4195459680867822611">"Chrome ipucularına baxın" düyməsi, aktivləşdirərək Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4196861286325780578">Hərəkəti təkrarlayın</translation>
@@ -2211,7 +2215,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4725766358270333890"><ph name="COUNT" /> fayl Microsoft OneDrive-a yüklənir</translation>
 <translation id="4726672564094551039">Qaydaları yenidən yükləyin</translation>
 <translation id="4728558894243024398">Platforma</translation>
-<translation id="4730773064303503917">Pulqabıdan istifadə edərək Pix-i dostlarınıza və bizneslərə göndərin</translation>
 <translation id="4730977633786878901">Rəylər</translation>
 <translation id="4731638775147756694">Bu tətbiq admin tərəfindən bloklanıb</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi endirilir... <ph name="PERCENT" />%</translation>
@@ -2842,6 +2845,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="573974402615125334">Tab qruplarında paylaşmaq, qoşulmaq və əməkdaşlıq etmək üçün tarixçənizi və tabları sinxronlaşdırın</translation>
 <translation id="5740911612628596808">Zərf C9</translation>
 <translation id="574392208103952083">Orta</translation>
+<translation id="5744350700955456407">Qabaqcıl avtodoldurma artıq Gmail və Foto kimi tətbiqlərdən sifariş nömrələri, eləcə də uçuş təsdiqi kodları kimi məlumatları tapa və doldura bilər</translation>
 <translation id="5745586894920491759">Chrome səhifə başlıqlarını və URL-ləri buludda emal edir</translation>
 <translation id="5745733273847572235">Saytlar məkanınıza daxil olmaq üçün icazə istəyə bilər</translation>
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>

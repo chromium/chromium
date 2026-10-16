@@ -163,6 +163,7 @@
 <translation id="1109482864356262001">需要動作或光線感應器的功能將無法運作</translation>
 <translation id="1110155001042129815">等一下</translation>
 <translation id="1110965959145884739">選取要在此裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">聚焦分頁群組</translation>
 <translation id="1112227834592480032">選取 Google 智能鏡頭按鈕，然後按住並拖曳框住問題所在處</translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
 <translation id="1112998165730922436">已暫停投放</translation>
@@ -2237,6 +2238,7 @@
 <translation id="2701960282717219666">網絡 MAC 位址</translation>
 <translation id="2702720509009999256">請檢查互聯網連線並選擇「再試一次」。你亦能選擇「在基本編輯器中開啟」以使用有限的查看和編輯選項。</translation>
 <translation id="2702801445560668637">閱讀清單</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{取消聚焦分頁}other{取消聚焦分頁}}</translation>
 <translation id="270414148003105978">流動網絡</translation>
 <translation id="2704184184447774363">Microsoft 文件簽署</translation>
 <translation id="2704606927547763573">已複製</translation>
@@ -3151,6 +3153,7 @@
 <translation id="3379268272734690">沙漠</translation>
 <translation id="3382737653173267704">查看家庭群組</translation>
 <translation id="338323348408199233">封鎖沒有使用 VPN 連線的流量</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{聚焦分頁}other{聚焦分頁}}</translation>
 <translation id="3385053436247851142">使用 Microsoft 帳戶登入</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">「定位精確度」為應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，以群眾外判的方式提供無線訊號位置。這些資料不會識別你的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 整體的服務，以滿足使用者的需要。</translation>
@@ -4535,6 +4538,7 @@
 <translation id="4406308048672435032">你可以將分頁設定為閒置，或重新整理以再次查看完整清單</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406963243402726564">未儲存的資料</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{取消聚焦分頁}other{取消聚焦分頁}}</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{管理員可使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面。開始錄製時，你會收到通知。}=2{管理員可使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面。開始錄製時，你會收到通知。}=3{管理員可使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你會收到通知。}other{管理員可使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面。開始錄製時，你會收到通知。}}</translation>
 <translation id="4409697491990005945">邊界</translation>
@@ -7403,6 +7407,7 @@
 <translation id="6651762277693024112">在您每次瀏覽此網站時自動執行</translation>
 <translation id="6654509035557065241">偏好網絡</translation>
 <translation id="6655190889273724601">開發人員模式</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{聚焦分頁}other{聚焦分頁}}</translation>
 <translation id="6657180931610302174">要新增使用者名稱嗎？</translation>
 <translation id="6657240842932274095">要允許系統服務使用你的位置嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -9611,7 +9616,6 @@
 <translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割螢幕檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉固定放大鏡。</translation>
 <translation id="8318680582681577962">無痕 PDF 子頁框：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="8319105959731007612">「程序隔離」可防止其他應用程式干擾 <ph name="IDS_SHORT_PRODUCT_NAME" />。</translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8322000044173139239">驗證你的身分，以在此裝置上獲取密鑰</translation>
@@ -10033,6 +10037,7 @@
 <translation id="8652400352452647993">封裝擴充程式錯誤</translation>
 <translation id="8654151524613148204">抱歉，檔案過大，您的裝置無法處理。</translation>
 <translation id="8655295600908251630">版本</translation>
+<translation id="8656101380279383244">聚焦分頁群組</translation>
 <translation id="8656888282555543604">啟用點字記錄</translation>
 <translation id="8657393004602556571">您要捨棄這則意見嗎？</translation>
 <translation id="8657542881463614516">使用滑動手勢瀏覽不同頁面</translation>
@@ -10753,7 +10758,6 @@
 <translation id="9185698642371842814">喺「AI 模式」度發問</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理員可使用「<ph name="APP0_NAME" />」錄製你的螢幕畫面。開始錄製時，你不會收到通知。}=2{管理員可使用「<ph name="APP0_NAME" />」和「<ph name="APP1_NAME" />」錄製你的螢幕畫面。開始錄製時，你不會收到通知。}=3{管理員可使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 1 個應用程式錄製你的螢幕畫面。開始錄製時，你不會收到通知。}other{管理員可使用「<ph name="APP0_NAME" />」、「<ph name="APP1_NAME" />」和另外 # 個應用程式錄製你的螢幕畫面。開始錄製時，你不會收到通知。}}</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
-<translation id="9188142767272053574">啟用「程序隔離」</translation>
 <translation id="9192019773545828776">使用朗讀功能，讓您無需查看螢幕亦可使用裝置。您可透過已連接裝置使用點字功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左箭咀或向右箭咀即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="9195969368671142407">如果機構限制你儲存內容至 Google 帳戶，你便無法分享或加入分頁群組</translation>
 <translation id="9197456336762295195">在擁有 google.com 密鑰的裝置上，用鏡頭掃瞄此二維碼</translation>

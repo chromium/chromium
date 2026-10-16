@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">అంశం అప్‌డేట్ చేయబడింది</translation>
 <translation id="1018804590490383958">స్కాన్ చేసి, ఆటోఫిల్ చేయండి</translation>
 <translation id="1019990162050689579">Gemini యాప్ యాక్టివిటీ</translation>
+<translation id="102471647093736603">తరలించడానికి నొక్కి, పట్టుకోండి</translation>
 <translation id="102645702181682900">టాస్క్ మొదలైంది</translation>
 <translation id="102916930470544692">పాస్-కీ</translation>
 <translation id="1030376737535466765">పాస్‌వర్డ్ మేనేజర్‌ను తెరవండి</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">మీ స్టోరేజ్ నిండింది</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
+<translation id="1191987227666124897">సమ్మతి నిలిపివేత రిక్వెస్ట్</translation>
 <translation id="1196534270480620381">నాకు ఈ పేజీ తాలూకు షార్ట్ సమ్మరీని ఇవ్వు</translation>
 <translation id="1199631150313925648">మాన్యువల్‌గా ఎంటర్ చేయండి</translation>
 <translation id="1199963004393929848">ఆకుపచ్చ రంగు థీమ్</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">అప్‌డేట్‌లు</translation>
 <translation id="4813345808229079766">కనెక్షన్</translation>
 <translation id="4821595350501541683">ట్యాబ్‌లు మూసివేయబడ్డాయి, ఆపై బ్రౌజింగ్ డేటా తొలగించబడింది</translation>
+<translation id="4823322556950229674">అడ్రస్ బార్‌ను, వెనుకకు బటన్‌ను కిందికి తరలించడానికి మీరు నొక్కి, పట్టుకోవచ్చు</translation>
 <translation id="4824480232751123840">వాల్యూమ్</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, ఇంకా మరో 1}other{{domain}, ఇంకా మరో {count}}}</translation>
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">కొనసాగించండి</translation>
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
+<translation id="7417055777338419059">కోడింగ్ చేయండి, రాయండి లేదా స్లయిడ్‌లను రూపొందించండి</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7423098979219808738">ముందుగా అడుగుతుంది</translation>
 <translation id="7425053386765766120">పేమెంట్ ఆప్షన్‌ను జోడించండి…</translation>
@@ -2319,7 +2323,6 @@
 <translation id="8187200657863701733">ప్రస్తుత Chrome స్థాయి</translation>
 <translation id="8189484403434216074">ట్యాబ్ గ్రూప్‌ను క్రియేట్ చేయండి</translation>
 <translation id="8189615296021678665">మీరు తదుపరిసారి సైన్ ఇన్ చేసినప్పుడు ఈ పాస్‌వర్డ్‌ను సులభంగా యాక్సెస్ చేయడానికి "సేవ్ చేయండి" ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">పాస్‌వర్డ్‌ను జోడించండి</translation>
 <translation id="8195936400946057039">ఆన్‌లైన్ బెదిరింపుల నుండి రక్షణ</translation>
 <translation id="8205564605687841303">రద్దు చేయండి</translation>
@@ -2644,7 +2647,6 @@
 <translation id="9149866541089851383">ఎడిట్ చేయండి...</translation>
 <translation id="9152637745605628097">థీమ్‌లు, రంగుల నుండి ఎంచుకోండి లేదా ఇమేజ్‌ను అప్‌లోడ్ చేయండి</translation>
 <translation id="9153159728062222866">కాపీ &amp; పేస్ట్‌ను స్కిప్ చేయండి</translation>
-<translation id="9159628751968616911">వెబ్‌పేజీని పంపండి</translation>
 <translation id="9162412286847966593">మీ సంస్థ డేటా, రికార్డింగ్‌లు జెనరేటివ్ AI మోడల్స్‌ను మెరుగుపరచడానికి ఉపయోగపడవు. <ph name="BEGIN_LINK" />Gemini విషయంలో మీ గోప్యత<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">పాస్‌వర్డ్‌లను ఆటోఫిల్ చేసే ఆప్షన్‌ను ఆన్ చేయండి</translation>
 <translation id="9165320910061267720">ధర తగ్గుదల అలర్ట్‌ల నోటిఫికేషన్‌లను పొందడానికి, మీరు మీ iOS సెట్టింగ్‌లలో నోటిఫికేషన్‌లను ఆన్ చేయాలి.</translation>

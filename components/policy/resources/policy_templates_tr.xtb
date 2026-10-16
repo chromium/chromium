@@ -9607,15 +9607,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6833988859168635883">Başlangıç, Ana sayfa ve Yeni Sekme sayfası</translation>
 <translation id="6835254082476223414">Linux sanal makine yedekleme ve geri yükleme özelliğini etkinleştir</translation>
 <translation id="6835883744948188639">Kullanıcıya yeniden başlatmanın önerildiğini belirten yinelenen bir istem gösterme</translation>
-<translation id="683688607121170501">Bu ayar, kullanıcıların <ph name="PRODUCT_OS_NAME" /> cihazlarında oturum açtıktan sonra tarayıcı pencerelerinin içerik alanındaki Google Hesapları arasında geçiş yapmalarına olanak tanır.
-
-      Bu politika yanlış (false) değerine ayarlanırsa gizli modda olmayan tarayıcı içerik alanından ve Android uygulamalarından farklı bir Google Hesabı'nda oturum açılmasına izin verilmez.
-
-      Bu politika ayarlanmazsa veya doğru (true) değerine ayarlanırsa varsayılan davranış kullanılır: Tarayıcı içerik alanından ve Android uygulamalarından farklı bir Google Hesabında oturum açılmasına izin verilir ancak çocukların hesaplarında gizli modda olmayan içerik alanından farklı bir hesapta oturum açılamaz.
-
-      Gizli mod kullanılarak farklı bir hesapta oturum açılmasına izin verilmemesi halinde IncognitoModeAvailability politikasını kullanarak ilgili modu engelleme seçeneğini değerlendirebilirsiniz.
-
-       Kullanıcıların, çerezleri engelleyerek kimlik doğrulaması yapmadan Google hizmetlerine erişebileceğini unutmayın.</translation>
 <translation id="6841254611279513739">Politika ayarlanırsa yazdırma yalnızca renkli, yalnızca tek renk veya renk modu kısıtlaması yok değerine ayarlanır. Politika ayarlanmadan bırakılırsa hiçbir kısıtlama uygulanmaz.</translation>
 <translation id="6843008643303282259">İstenen yükleme hızı (kbit/sn. olarak).</translation>
 <translation id="6843296367238757293">Bu politika kullanımdan kaldırılmıştır. Kullanılması önerilmez. Daha fazla bilgiyi https://support.google.com/chrome/a/answer/7643500 adresinde bulabilirsiniz</translation>

@@ -665,6 +665,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2126374524350484896">PDF üreticisi:</translation>
 <translation id="2127090458081644412">Şifre bu cihaza kaydedildi</translation>
 <translation id="2127747486437921899">İtalik</translation>
+<translation id="2129163794581571479">Kişisel Zeka özellikli Gemini tarafından desteklenir. İstekleriniz, sayfa başlıklarınız ve URL'leriniz gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir. <ph name="BEGIN_LINK" />Ayarları yönet<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Ödemeler için Otomatik Doldurmayı Etkinleştirme tam ekranda açıldı.</translation>
@@ -1575,6 +1576,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3655670868607891010">Bunu çok sık görüyorsanız, şunları deneyin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Düzeltme</translation>
 <translation id="3659521826520353662">Yönetici tarafından tanımlanan hangi web sitelerinin ne zaman ziyaret edildiği: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Kişisel Zeka özellikli Gemini tarafından desteklenir. <ph name="BEGIN_LINK" />Ayarları yönet<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Bu ürünü satan diğer mağazalarda daha fazla satın alma seçeneği arayın.</translation>
 <translation id="3664782872746246217">Anahtar kelimeler:</translation>
 <translation id="3670030362669914947">Numara</translation>
@@ -1595,6 +1597,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3693516565203081475">Ödeme yöntemi seçin</translation>
 <translation id="3698353241727597930">Yöneticiniz, <ph name="FILES" /> kuruluş tarafından yönetilen <ph name="CLOUD_STORAGE" /> depolama alanınıza kaydedilecek şekilde yapılandırmış. Bu dosyalar silindikten sonra izlenebilir, denetlenebilir ve saklanabilir.</translation>
 <translation id="3698629142018988477">Site oluştur düğmesi, Google Sites'ta hızlıca yeni bir site oluşturmak için etkinleştirin</translation>
+<translation id="3698708128812719147">Web'de herhangi bir sayfada daha fazla bilgi bulmak ve girmek için Ctrl tuşuna iki kez basın.</translation>
 <translation id="3700094625653511150">Sonra ödeme seçeneklerini gizlemek için <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> bölümüne gidin</translation>
 <translation id="3700966190175650601">Şifreleri doldurmak için parmak izinizi kullanıyorsunuz</translation>
 <translation id="3701427423622901115">Sıfırlama işlemi onaylandı.</translation>
@@ -1898,6 +1901,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4185037616931963178">Redress no'yu güvenli bir şekilde güncelleyin</translation>
 <translation id="4186035307311647330">Fiyat takibini bırak</translation>
 <translation id="4191334393248735295">Uzunluk</translation>
+<translation id="4192770747482479191">Web'de herhangi bir sayfadayken daha fazla bilgi bulup doldurmak için ⌘ tuşuna iki kez basın.</translation>
 <translation id="4195459680867822611">Chrome ipuçlarını göster düğmesi, Chrome özellikleri hakkında bilgi edinmek için etkinleştirin</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
 <translation id="4196861286325780578">Taşımayı &amp;yeniden yap</translation>
@@ -2215,7 +2219,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4725766358270333890"><ph name="COUNT" /> dosya Microsoft OneDrive'a yükleniyor</translation>
 <translation id="4726672564094551039">Politikaları yeniden yükle</translation>
 <translation id="4728558894243024398">Platform</translation>
-<translation id="4730773064303503917">Arkadaşlarınıza ve işletmelere Cüzdan üzerinden Pix ile para gönderebilirsiniz</translation>
 <translation id="4730977633786878901">Yorumlar</translation>
 <translation id="4731638775147756694">Bu uygulama, yöneticiniz tarafından engellendi</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi indiriliyor... %<ph name="PERCENT" /></translation>
@@ -2846,6 +2849,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="573974402615125334">Sekme gruplarını paylaşmak, bunlara katılmak ve gruplarda ortak çalışma yapmak için geçmişinizi ve sekmelerinizi senkronize edin</translation>
 <translation id="5740911612628596808">Zarf C9</translation>
 <translation id="574392208103952083">Orta</translation>
+<translation id="5744350700955456407">Gelişmiş otomatik doldurma özelliği, artık Gmail ve Fotoğraflar gibi uygulamalarda bulunan sipariş numaraları ve uçuş onay kodları gibi bilgileri bulup otomatik olarak doldurabiliyor.</translation>
 <translation id="5745586894920491759">Chrome, sayfa başlıklarını ve URL'leri bulutta işler</translation>
 <translation id="5745733273847572235">Konumunuzu bilmek isteyebilir</translation>
 <translation id="5750869797196646528">El takibi</translation>

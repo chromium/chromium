@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
 <translation id="1018804590490383958">Naskenovat a vyplnit automaticky</translation>
 <translation id="1019990162050689579">Aktivita v aplikacích s Gemini</translation>
+<translation id="102471647093736603">Podržením přesunete</translation>
 <translation id="102645702181682900">Úkol byl zahájen</translation>
 <translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1030376737535466765">Otevřít Správce hesel</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Vaše úložiště je plné</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1190609913194133056">Centrum oznámení</translation>
+<translation id="1191987227666124897">Žádost o odhlášení</translation>
 <translation id="1196534270480620381">Vygeneruj krátké shrnutí téhle stránky</translation>
 <translation id="1199631150313925648">Zadat ručně</translation>
 <translation id="1199963004393929848">Zelený motiv</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Aktualizace</translation>
 <translation id="4813345808229079766">Spojení</translation>
 <translation id="4821595350501541683">Karty byly zavřeny a údaje o prohlížení byly vymazány</translation>
+<translation id="4823322556950229674">Podržením můžete přesunout adresní řádek a tlačítko Zpět dolů</translation>
 <translation id="4824480232751123840">Objem</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 další}few{{domain} a {count} další}many{{domain} a {count} dalšího}other{{domain} a {count} dalších}}</translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
@@ -2055,6 +2058,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Pokračovat</translation>
 <translation id="741204030948306876">Ano</translation>
+<translation id="7417055777338419059">Programování, psaní nebo vytváření prezentací</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7425053386765766120">Přidat platební metodu…</translation>
@@ -2319,7 +2323,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8187200657863701733">Aktuální úroveň Chromu</translation>
 <translation id="8189484403434216074">Vytvoření skupiny karet</translation>
 <translation id="8189615296021678665">Když kliknete na Uložit, budete mít heslo při příštím přihlášení snadno k dispozici.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Přidat heslo</translation>
 <translation id="8195936400946057039">Ochrana proti online hrozbám</translation>
 <translation id="8205564605687841303">Zrušit</translation>
@@ -2644,7 +2647,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="9149866541089851383">Upravit...</translation>
 <translation id="9152637745605628097">Vyberte si z motivů a barev nebo nahrajte obrázek</translation>
 <translation id="9153159728062222866">Přeskočte kopírování a vkládání</translation>
-<translation id="9159628751968616911">Odeslat webovou stránku</translation>
 <translation id="9162412286847966593">Data a nahrávky vaší organizace se nebudou používat k vylepšování modelů generativní umělé inteligence. <ph name="BEGIN_LINK" />Vaše soukromí a Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Zapněte Automatické vyplnění hesel</translation>
 <translation id="9165320910061267720">Pokud chcete dostávat upozornění na pokles ceny, v nastavení systému iOS zapněte oznámení.</translation>

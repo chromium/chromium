@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">PDF निर्माता:</translation>
 <translation id="2127090458081644412">पासवर्ड यो डिभाइसमा सेभ गरियो</translation>
 <translation id="2127747486437921899">इटालिक</translation>
+<translation id="2129163794581571479">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। अटोफिल गर्ने परिष्कृत सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंका अनुरोध, पेजका शीर्षक र URL हरूको समीक्षा गरिन सक्छ। <ph name="BEGIN_LINK" />सेटिङ मिलाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode नीति निर्धारण नगरिएकाले तपाईंले तोक्नुभएका टेम्प्लेटहरू लागू नहुन सक्छन्।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">"भुक्तानीसम्बन्धी जानकारी स्वतः भर्ने सुविधा अन गर्नुहोस्" पूरै स्क्रिनमा खोलिएको छ।</translation>
@@ -1572,6 +1573,7 @@
 <translation id="3655670868607891010">यदि तपाईं यो बारम्बार रूपमा देखिरहनुभएको छ भने, यिनीहरू गर्ने प्रयास गर्नुहोस् <ph name="HELP_LINK" />।</translation>
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3659521826520353662">एड्मिनले तोकेका कुन-कुन वेबसाइटहरू हेरिएका छन् र कहिले हेरिएका छन्: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। <ph name="BEGIN_LINK" />सेटिङ मिलाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">यो उत्पादन बिक्री गर्ने अन्य स्टोरमा खरिद गर्ने थप विकल्पहरू खोज्नुहोस्।</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3670030362669914947">अङ्क</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3693516565203081475">भुक्तानी विधि छनौट गर्नुहोस्</translation>
 <translation id="3698353241727597930">तपाईंका एड्मिनले <ph name="FILES" /> इन्टरप्राइजले व्यवस्थापन गर्ने <ph name="CLOUD_STORAGE" /> भण्डारणमा सेभ गर्ने सेटिङ लागू गर्नुभएको छ। यी फाइलहरूको निरीक्षण तथा जाँच गरिन सक्छ र तपाईंले यी फाइलहरू मेटाएपछि पनि यिनलाई सेभ गरेर राखिन सक्छ।</translation>
 <translation id="3698629142018988477">साइट बनाउने बटन, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन यो बटन थिच्नुहोस्</translation>
+<translation id="3698708128812719147">थप जानकारी भेट्टाउन र भर्न वेबमा कतै दुई पटक Ctrl थिच्नुहोस्</translation>
 <translation id="3700094625653511150">पछि भुक्तानी गर्ने विकल्पहरू लुकाउन <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> मा जानुहोस्</translation>
 <translation id="3700966190175650601">तपाईं पासवर्डहरू हाल्न आफ्नो फिंगरप्रिन्ट प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="3701427423622901115">रिसेट स्वीकार गरियो।</translation>
@@ -1896,6 +1899,7 @@
 <translation id="4185037616931963178">सुरक्षित रूपमा रिड्रेस नम्बर अपडेट गर्नुहोस्</translation>
 <translation id="4186035307311647330">मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="4191334393248735295">लम्बाइ</translation>
+<translation id="4192770747482479191">थप जानकारी भेट्टाउन र भर्न वेबमा जुनसुकै ठाउँमा दुई पटक ⌘ थिच्नुहोस्</translation>
 <translation id="4195459680867822611">Chrome सम्बन्धी सुझावहरू हेर्ने बटन, Chrome का सुविधाहरूका बारेमा जान्न यो बटन थिच्नुहोस्</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -2213,7 +2217,6 @@
 <translation id="4725766358270333890"><ph name="COUNT" /> वटा फाइल Microsoft OneDrive मा अपलोड गरिँदै छन्</translation>
 <translation id="4726672564094551039">नीतिहरू पुन: लोड गर्नुहोस्</translation>
 <translation id="4728558894243024398">प्लेटफर्म</translation>
-<translation id="4730773064303503917">Wallet प्रयोग गरी साथी र व्यावसायिक प्रतिष्ठानहरूलाई Pix मार्फत पैसा पठाउनुहोस्</translation>
 <translation id="4730977633786878901">समीक्षाहरू</translation>
 <translation id="4731638775147756694">तपाईंका एड्मिनले यो एपलाई रोक लगाउनुभएको छ</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ.. .<ph name="PERCENT" />%</translation>
@@ -2844,6 +2847,7 @@
 <translation id="573974402615125334">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न आफ्ना हिस्ट्री र ट्याबहरू सिंक गर्नुहोस्</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">मध्यम</translation>
+<translation id="5744350700955456407">अटोफिल गर्ने परिष्कृत सुविधाले अब Gmail र Photos जस्ता एपहरूमा भएका अर्डर नम्बर र उडान पुष्टि कोड जस्ता जानकारी भेट्टाउन र भर्न सक्छ</translation>
 <translation id="5745586894920491759">Chrome ले पेजका शीर्षक र URL हरू क्लाउडमा प्रोसेस गर्छ</translation>
 <translation id="5745733273847572235">तपाईंको लोकेसन सोध्न सक्छ</translation>
 <translation id="5750869797196646528">हात ट्र्याक गर्ने सुविधा</translation>

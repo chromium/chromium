@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Закладку оновлено</translation>
 <translation id="1018804590490383958">Відсканувати й заповнити автоматично</translation>
 <translation id="1019990162050689579">Історія дій у додатках Gemini</translation>
+<translation id="102471647093736603">Утримуйте, щоб перемістити</translation>
 <translation id="102645702181682900">Завдання розпочато</translation>
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030376737535466765">Відкрити Менеджер паролів</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Пам’ять заповнена</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1190609913194133056">Центр сповіщень</translation>
+<translation id="1191987227666124897">Запит на відмову</translation>
 <translation id="1196534270480620381">Створи короткий підсумок цієї сторінки</translation>
 <translation id="1199631150313925648">Ввести вручну</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Оновлення</translation>
 <translation id="4813345808229079766">З’єднання</translation>
 <translation id="4821595350501541683">Вкладки було закрито, а дані веб-перегляду – видалено</translation>
+<translation id="4823322556950229674">Щоб перемістити адресний рядок і кнопку "Назад" у нижню частину екрана, натисніть і утримуйте їх</translation>
 <translation id="4824480232751123840">Об’єм</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і ще 1}one{{domain} і ще {count}}few{{domain} і ще {count}}many{{domain} і ще {count}}other{{domain} і ще {count}}}</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Продовжити</translation>
 <translation id="741204030948306876">Увімкнути</translation>
+<translation id="7417055777338419059">Створюйте код, тексти й презентації</translation>
 <translation id="7419565702166471774">Завжди використовувати надійні з’єднання</translation>
 <translation id="7423098979219808738">Спершу запитувати</translation>
 <translation id="7425053386765766120">Додати спосіб оплати…</translation>
@@ -2319,7 +2323,6 @@
 <translation id="8187200657863701733">Поточний рівень Chrome</translation>
 <translation id="8189484403434216074">Створіть групу вкладок</translation>
 <translation id="8189615296021678665">Натисніть "Зберегти", щоб легко отримати доступ до цього пароля під час наступного входу.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додати пароль</translation>
 <translation id="8195936400946057039">Захистіть себе від загроз в Інтернеті</translation>
 <translation id="8205564605687841303">Скасувати</translation>
@@ -2644,7 +2647,6 @@
 <translation id="9149866541089851383">Редагувати...</translation>
 <translation id="9152637745605628097">Виберіть тему, колір або завантажте зображення</translation>
 <translation id="9153159728062222866">Більше не потрібно копіювати й вставляти</translation>
-<translation id="9159628751968616911">Надіслати вебсторінку</translation>
 <translation id="9162412286847966593">Дані й записи вашої організації не використовуватимуться для покращення моделей генеративного ШІ. <ph name="BEGIN_LINK" />Про вашу конфіденційність і Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Увімкніть автозаповнення паролів</translation>
 <translation id="9165320910061267720">Щоб отримувати сповіщення про зниження цін, увімкніть їх у налаштуваннях iOS.</translation>

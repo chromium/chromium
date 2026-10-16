@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Je opslag is vol</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1190609913194133056">Meldingscentrum</translation>
+<translation id="1191987227666124897">Afmeldingsverzoek</translation>
 <translation id="1196534270480620381">Geef me een korte samenvatting van deze pagina</translation>
 <translation id="1199631150313925648">Handmatig invoeren</translation>
 <translation id="1199963004393929848">Groen thema</translation>
@@ -624,6 +625,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Verzendt URL's van bepaalde pagina's die je bezoekt naar Google wanneer je beveiliging risico loopt</translation>
 <translation id="2883151425485251736">Onderwerpen bekijken en bewerken die je hebt verborgen in je account</translation>
+<translation id="2884437560239137197">Aandacht vereist</translation>
 <translation id="288655811176831528">Tabblad sluiten</translation>
 <translation id="2888631381369839306">Meldingen voor prijzen volgen aangezet</translation>
 <translation id="2893168226686371498">Standaardbrowser</translation>
@@ -1668,6 +1670,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6227958838185907047">Inloggen als <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Voorgesteld</translation>
 <translation id="6232329973559504466">Incognito zoeken</translation>
+<translation id="6233463157595806945">Invoer vereist</translation>
 <translation id="6234310016144827337">Check de verbinding en probeer het opnieuw</translation>
 <translation id="6236952928980352967">Waarschuwing herstellen</translation>
 <translation id="623755660902014047">Leesmodus</translation>
@@ -1698,6 +1701,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6307792728709337290">Sla je kaart op in je Google-account om deze automatisch in te vullen voor deze aankoop en toekomstige aankopen die je in Chrome doet.</translation>
 <translation id="6316141353357700666">Kies het wachtwoord dat je wilt gebruiken in de lijst die verschijnt.</translation>
 <translation id="6321526113093607004">Toevoegen aan bookmarks</translation>
+<translation id="6322064144568952786">Taak mislukt</translation>
 <translation id="6324054713176642683">Kies uit thema's en kleuren of upload je eigen foto.</translation>
 <translation id="6327249202318869726">Gemini staat uit voor je account. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="6331836477476466332">Een veiligere en krachtigere browser voor jou</translation>
@@ -2015,6 +2019,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7241135764990439166">Incognitomodus is niet beschikbaar</translation>
 <translation id="7245288034498365666">Houd overzicht en bespaar tijd</translation>
 <translation id="7253951228444156601">Wachtwoorden checken…</translation>
+<translation id="725583671816239562">Taak afgerond</translation>
 <translation id="7261217796641151584">Groep delen</translation>
 <translation id="7266578100016339897">Zo blijft alles overzichtelijk. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="7270491814777319521">De <ph name="BEGIN_LINK" />Servicevoorwaarden van Google<ph name="END_LINK" /> en de <ph name="BEGIN_LINK" />Privacyverklaring van Gemini Apps<ph name="END_LINK" /> zijn van toepassing. Gemini is AI en kan fouten maken, ook over mensen.</translation>
@@ -2057,6 +2062,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Doorgaan</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
+<translation id="7417055777338419059">Programmeer, schrijf of maak dia's</translation>
 <translation id="7419565702166471774">Altijd beveiligde verbindingen gebruiken</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7425053386765766120">Betaalmethode toevoegen…</translation>
@@ -2321,7 +2327,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8187200657863701733">Huidig Chrome-niveau</translation>
 <translation id="8189484403434216074">Een tabbladgroep maken</translation>
 <translation id="8189615296021678665">Tik op Opslaan om dit wachtwoord makkelijk te vinden als je de volgende keer inlogt.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Je apparaten<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Wachtwoord toevoegen</translation>
 <translation id="8195936400946057039">Bescherming tegen online dreigingen</translation>
 <translation id="8205564605687841303">Annuleren</translation>
@@ -2646,7 +2651,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
 <translation id="9152637745605628097">Kies uit thema's en kleuren of upload een afbeelding</translation>
 <translation id="9153159728062222866">Sla kopiëren en plakken over</translation>
-<translation id="9159628751968616911">Webpagina verzenden</translation>
 <translation id="9162412286847966593">De gegevens en opnamen van je organisatie worden niet gebruikt om generatieve AI-modellen te verbeteren. <ph name="BEGIN_LINK" />Je privacy en Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>
 <translation id="9165320910061267720">Als je meldingen wilt krijgen over prijsdalingen, moet je meldingen aanzetten in de iOS-instellingen.</translation>

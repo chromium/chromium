@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Elementas atnaujintas</translation>
 <translation id="1018804590490383958">Nuskaityti ir automatiškai užpildyti</translation>
 <translation id="1019990162050689579">„Gemini Apps“ veikla</translation>
+<translation id="102471647093736603">Paspauskite ir palaikykite, kad perkeltumėte</translation>
 <translation id="102645702181682900">Užduotis pradėta</translation>
 <translation id="102916930470544692">Prieigos raktas</translation>
 <translation id="1030376737535466765">Atidaryti slaptažodžių tvarkyklę</translation>
@@ -66,6 +67,7 @@
 <translation id="1179890706672152411">Saugykla pilna</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1190609913194133056">Pranešimų centras</translation>
+<translation id="1191987227666124897">Atsisakymo užklausa</translation>
 <translation id="1196534270480620381">Pateik trumpą šio puslapio apibendrinimą</translation>
 <translation id="1199631150313925648">Įvesti neautomatiškai</translation>
 <translation id="1199963004393929848">Žalia tema</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4808744395915275922">Naujiniai</translation>
 <translation id="4813345808229079766">Ryšys</translation>
 <translation id="4821595350501541683">Skirtukai uždaryti ir naršymo duomenys ištrinti</translation>
+<translation id="4823322556950229674">Galite paspausti ir palaikyti, kad perkeltumėte adreso juostą ir mygtuką „Atgal“ į apačią</translation>
 <translation id="4824480232751123840">Garsumas</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ir dar 1}one{{domain} ir dar {count}}few{{domain} ir dar {count}}many{{domain} ir dar {count}}other{{domain} ir dar {count}}}</translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
@@ -2055,6 +2058,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tęsti</translation>
 <translation id="741204030948306876">Taip, sutinku</translation>
+<translation id="7417055777338419059">Kurti kodą, rašyti arba kurti skaidres</translation>
 <translation id="7419565702166471774">Visada naudoti saugų ryšį</translation>
 <translation id="7423098979219808738">Pirmiausia paklausti</translation>
 <translation id="7425053386765766120">Pridėti mokėjimo metodą…</translation>
@@ -2319,7 +2323,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8187200657863701733">Dabartinis „Chrome“ lygis</translation>
 <translation id="8189484403434216074">Skirtukų grupės kūrimas</translation>
 <translation id="8189615296021678665">Palieskite „Išsaugoti“, kad galėtumėte lengvai pasiekti šį slaptažodį, kai kitą kartą prisijungsite.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsų įrenginiai<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Slaptažodžio pridėjimas</translation>
 <translation id="8195936400946057039">Apsauga nuo grėsmių internete</translation>
 <translation id="8205564605687841303">Atšaukti</translation>
@@ -2644,7 +2647,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="9149866541089851383">Redaguoti...</translation>
 <translation id="9152637745605628097">Pasirinkite iš temų, spalvų arba įkelkite vaizdą</translation>
 <translation id="9153159728062222866">Praleisti kopijavimą ir įklijavimą</translation>
-<translation id="9159628751968616911">Siųsti tinklalapį</translation>
 <translation id="9162412286847966593">Jūsų organizacijos duomenys ir įrašai nebus naudojami generatyviniams DI modeliams tobulinti. <ph name="BEGIN_LINK" />Jūsų privatumas ir „Gemini“<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Įjunkite parinktį „Automatinis slaptažodžių pildymas“</translation>
 <translation id="9165320910061267720">Jei norite gauti įspėjimų apie sumažintas kainas pranešimus, turite įjungti pranešimus „iOS“ nustatymuose.</translation>

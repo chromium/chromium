@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Таны хадгалах сан дүүрсэн байна</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1190609913194133056">Мэдэгдлийн төв</translation>
+<translation id="1191987227666124897">Татгалзах хүсэлт</translation>
 <translation id="1196534270480620381">Надад энэ хуудасны товч хураангуйг өгнө үү</translation>
 <translation id="1199631150313925648">Гараар оруулах</translation>
 <translation id="1199963004393929848">Ногоон загвар</translation>
@@ -2057,6 +2058,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Үргэлжлүүлэх</translation>
 <translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
+<translation id="7417055777338419059">Код бичих, шивэх, слайд үүсгэх</translation>
 <translation id="7419565702166471774">Үргэлж аюулгүй холболт ашиглана</translation>
 <translation id="7423098979219808738">Эхлээд асуу</translation>
 <translation id="7425053386765766120">Төлбөрийн хэрэгсэл нэмэх…</translation>
@@ -2321,7 +2323,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8187200657863701733">Chrome-н одоогийн түвшин</translation>
 <translation id="8189484403434216074">Табын бүлэг үүсгэх</translation>
 <translation id="8189615296021678665">Та дараагийн удаа нэвтрэхдээ энэ нууц үгэнд хялбархан хандахын тулд "Хадгалах" дээр товшино уу.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Нууц үг нэмэх</translation>
 <translation id="8195936400946057039">Онлайн заналхийллийн эсрэг хамгаалалт</translation>
 <translation id="8205564605687841303">Цуцлах</translation>
@@ -2646,7 +2647,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9149866541089851383">Засварлах...</translation>
 <translation id="9152637745605628097">Загвар, өнгөнөөс сонгох эсвэл зураг байршуулаарай</translation>
 <translation id="9153159728062222866">Хуулаад, буулгахыг алгасаарай</translation>
-<translation id="9159628751968616911">Веб хуудас илгээх</translation>
 <translation id="9162412286847966593">Танай байгууллагын өгөгдөл, бичлэгийг үүсгэгч ХОУ-ы загваруудыг сайжруулахад ашиглахгүй. <ph name="BEGIN_LINK" />Таны Нууцлал, Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Автоматаар бөглөх хэсгийн нууц үгнүүдийг асаах</translation>
 <translation id="9165320910061267720">Үнэ буурсан талаарх дохионы мэдэгдэл авахын тулд та iOS-н тохиргоондоо мэдэгдлийг асаах шаардлагатай болно.</translation>

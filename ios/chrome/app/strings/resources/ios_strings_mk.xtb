@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Просторот е полн</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
+<translation id="1191987227666124897">Барање за откажување</translation>
 <translation id="1196534270480620381">Дај ми кратко резиме на страницава</translation>
 <translation id="1199631150313925648">Внесете рачно</translation>
 <translation id="1199963004393929848">Тема во зелена боја</translation>
@@ -2057,6 +2058,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Продолжи</translation>
 <translation id="741204030948306876">Да, може</translation>
+<translation id="7417055777338419059">Кодирајте, пишувајте или создавајте слајдови</translation>
 <translation id="7419565702166471774">Секогаш користи безбедни врски</translation>
 <translation id="7423098979219808738">Прво прашај</translation>
 <translation id="7425053386765766120">Додајте начин на плаќање…</translation>
@@ -2321,7 +2323,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8187200657863701733">Тековно ниво на Chrome</translation>
 <translation id="8189484403434216074">Создајте група картички</translation>
 <translation id="8189615296021678665">Допрете „Зачувај“ за да пристапите до лозинкава лесно следниот пат кога ќе се најавите.</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинка</translation>
 <translation id="8195936400946057039">Заштита од онлајн закани</translation>
 <translation id="8205564605687841303">Откажи</translation>
@@ -2646,7 +2647,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9149866541089851383">Изменете...</translation>
 <translation id="9152637745605628097">Изберете некоја од темите, боите или прикачете слика</translation>
 <translation id="9153159728062222866">Прескокнете го копирањето и лепењето</translation>
-<translation id="9159628751968616911">Испратете веб-страница</translation>
 <translation id="9162412286847966593">Податоците и снимките на вашата организација нема да се користат за подобрување на моделите на генеративната AI. <ph name="BEGIN_LINK" />Вашата приватност и Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Вклучете автоматско пополнување лозинки</translation>
 <translation id="9165320910061267720">За да добивате известувања за намалувања на цените, ќе треба да ги вклучите известувањата во вашите поставки за iOS.</translation>
