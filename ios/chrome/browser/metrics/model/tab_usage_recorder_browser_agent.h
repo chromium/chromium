@@ -112,7 +112,8 @@ class TabUsageRecorderBrowserAgent
 
   // Records startup timing metrics for `base_histogram_name` (always, and with
   // `.WithWebExtensions` or `.WithoutWebExtensions` suffix).
-  void RecordFirstStartupMetric(const std::string& base_histogram_name);
+  void RecordFirstStartupMetric(const std::string& base_histogram_name,
+                                std::optional<base::TimeDelta> duration);
 
   // Clear out all state regarding a current evicted tab.
   void ResetEvictedTab();

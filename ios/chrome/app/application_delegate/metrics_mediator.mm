@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
+#import "ios/chrome/browser/metrics/model/startup_metrics.h"
 #import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -85,33 +86,6 @@ NSString* const kAppStartupCounterKey = @"LoadTimePreferenceKey";
 
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
-
-// The timeout delay before marking the launch reason as suspicious if no
-// launch reason has been determined. At the time of writing this code,
-// 99.9% of launches finish in less than 30s.
-constexpr base::TimeDelta kLaunchReasonTimeout = base::Seconds(30);
-
-// LINT.IfChange(ColdStartType)
-// Enum values for Startup.IOSColdStartType histogram.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class ColdStartType : int {
-  // Regular cold start.
-  kRegular = 0,
-  // Cold start with FRE.
-  kFirstRun = 1,
-  // Cold start after a device restore.
-  kAfterDeviceRestore = 2,
-  // Cold start after a Chrome upgrade.
-  kAfterChromeUpgrade = 3,
-  // Cold start after a device restore and Chrome upgrade.
-  kAfterDeviceRestoreAndChromeUpgrade = 4,
-  // Unknown device restore.
-  kUnknownDeviceRestore = 5,
-  // Unknown device restore and Chrome upgrade.
-  kUnknownDeviceRestoreAndChromeUpgrade = 6,
-  kMaxValue = kUnknownDeviceRestoreAndChromeUpgrade,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:IOSColdStartType)
 
 // Enum representing the existing set of all open tabs age scenarios. Current
 // values should not be renumbered. Please keep in sync with
@@ -235,119 +209,6 @@ const char kHistogramPrefix[] = "IOS.";
 std::string WarmStartHistogramPrefix(bool version_mismatch) {
   return version_mismatch ? kHistogramPrefixIncludingMismatch
                           : kHistogramPrefix;
-}
-
-// LINT.IfChange(IOSStartupTemperature)
-// Startup temperature variants corresponding to the IOSStartupTemperature
-// token.
-enum class IOSStartupTemperature {
-  kNotPrewarmed,
-  kActivePrewarm,
-  kSuspicious,
-  kLaunchedInBackground,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:IOSStartupTemperature)
-
-// Converts the startup temperature to a string suffix corresponding to the
-// IOSStartupTemperature histogram token variant.
-std::string_view IOSStartupTemperatureToString(
-    IOSStartupTemperature temperature) {
-  switch (temperature) {
-    case IOSStartupTemperature::kNotPrewarmed:
-      return ".NotPrewarmed";
-    case IOSStartupTemperature::kActivePrewarm:
-      return ".ActivePrewarm";
-    case IOSStartupTemperature::kSuspicious:
-      NOTREACHED();
-    case IOSStartupTemperature::kLaunchedInBackground:
-      return ".LaunchedInBackground";
-  }
-}
-
-// Returns the startup temperature classification for the current cold start.
-IOSStartupTemperature GetStartupTemperature(
-    id<StartupInformation> startup_information) {
-  switch (*startup_information.launchReason) {
-    case IOSLaunchReason::kForeground:
-      return IOSStartupTemperature::kNotPrewarmed;
-    case IOSLaunchReason::kPreWarming:
-      return IOSStartupTemperature::kActivePrewarm;
-    case IOSLaunchReason::kSuspicious:
-      return IOSStartupTemperature::kSuspicious;
-    case IOSLaunchReason::kBackgroundRefresh:
-    case IOSLaunchReason::kBackgroundURLSession:
-    case IOSLaunchReason::kBackgroundSilentNotification:
-      return IOSStartupTemperature::kLaunchedInBackground;
-    case IOSLaunchReason::kForegroundWithSystemSuspension:
-      // Metrics that depend on startup temperature are not logged for this
-      // reason.
-      NOTREACHED();
-  }
-}
-
-// Converts the cold start type to a string suffix corresponding to the
-// IOSColdStartType histogram token variant.
-std::string_view IOSColdStartTypeToString(ColdStartType type) {
-  switch (type) {
-    case ColdStartType::kRegular:
-      return ".Regular";
-    case ColdStartType::kFirstRun:
-      return ".FirstRun";
-    case ColdStartType::kAfterDeviceRestore:
-      return ".AfterDeviceRestore";
-    case ColdStartType::kAfterChromeUpgrade:
-      return ".AfterChromeUpgrade";
-    case ColdStartType::kAfterDeviceRestoreAndChromeUpgrade:
-      return ".AfterDeviceRestoreAndChromeUpgrade";
-    case ColdStartType::kUnknownDeviceRestore:
-      return ".UnknownDeviceRestore";
-    case ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade:
-      return ".UnknownDeviceRestoreAndChromeUpgrade";
-  }
-}
-
-// Returns the cold start type for the current session.
-ColdStartType GetColdStartType(id<StartupInformation> startup_information) {
-  if (startup_information.isFirstRun) {
-    return ColdStartType::kFirstRun;
-  }
-  const bool after_upgrade =
-      [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade;
-  const signin::Tribool device_restore = IsFirstSessionAfterDeviceRestore();
-  switch (device_restore) {
-    case signin::Tribool::kUnknown:
-      return after_upgrade
-                 ? ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade
-                 : ColdStartType::kUnknownDeviceRestore;
-    case signin::Tribool::kTrue:
-      return after_upgrade ? ColdStartType::kAfterDeviceRestoreAndChromeUpgrade
-                           : ColdStartType::kAfterDeviceRestore;
-    case signin::Tribool::kFalse:
-      return after_upgrade ? ColdStartType::kAfterChromeUpgrade
-                           : ColdStartType::kRegular;
-  }
-}
-
-// Logs the base, temperature variant (if specified), and temperature + cold
-// start type (or just cold start type if temperature is not specified)
-// sub-variant histograms for a startup duration metric.
-void LogStartupDurationWithTemperatureAndType(
-    std::string_view histogram_name,
-    base::TimeDelta duration,
-    std::optional<IOSStartupTemperature> temperature,
-    ColdStartType cold_start_type) {
-  const std::string_view temp_str =
-      temperature ? IOSStartupTemperatureToString(*temperature)
-                  : std::string_view();
-  const std::string_view type_str = IOSColdStartTypeToString(cold_start_type);
-  base::UmaHistogramTimes(histogram_name, duration);
-  if (temperature.has_value()) {
-    base::UmaHistogramTimes(base::StrCat({histogram_name, temp_str}), duration);
-    base::UmaHistogramTimes(base::StrCat({histogram_name, temp_str, type_str}),
-                            duration);
-  } else {
-    base::UmaHistogramTimes(base::StrCat({histogram_name, type_str}), duration);
-  }
 }
 
 }  // namespace
@@ -649,7 +510,7 @@ BOOL _credentialExtensionWasUsed = NO;
     }
 
     const ColdStartType coldStartType = GetColdStartType(startupInformation);
-    if (firstPaintLatency.has_value() && firstPaintLatency->is_positive()) {
+    if (firstPaintLatency.has_value()) {
       LogStartupDurationWithTemperatureAndType("Startup.FirstPaintLatency",
                                                *firstPaintLatency, temperature,
                                                coldStartType);

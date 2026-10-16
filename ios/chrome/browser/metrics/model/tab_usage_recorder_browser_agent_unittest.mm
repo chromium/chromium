@@ -12,10 +12,13 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_samples.h"
 #import "base/run_loop.h"
+#import "base/scoped_environment_variable_override.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "components/previous_session_info/previous_session_info_private.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -24,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -82,8 +86,16 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     tab_usage_recorder_->ResetAll();
   }
 
+  void SetUp() override {
+    PlatformTest::SetUp();
+    [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade = NO;
+    SetFirstSessionAfterDeviceRestoreForTesting(signin::Tribool::kFalse);
+  }
+
   void TearDown() override {
     tab_usage_recorder_->ResetAll();
+    ResetDeviceRestoreDataForTesting();
+    [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade = NO;
     PlatformTest::TearDown();
   }
 
@@ -707,4 +719,151 @@ TEST_F(TabUsageRecorderBrowserAgentTest,
       "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
   histogram_tester_.ExpectTotalCount(
       "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 0);
+}
+
+// Tests that Startup.FirstNavigationLatency is recorded on cold start.
+TEST_F(TabUsageRecorderBrowserAgentTest, FirstNavigationLatencyColdStart) {
+  fake_startup_information_.isColdStart = YES;
+  fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  fake_startup_information_.firstSceneConnectionTime =
+      task_environment_.NowLiveTicks() - base::Seconds(1);
+  fake_startup_information_.preMainDuration = base::Milliseconds(200);
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_FIRST);
+
+  mock_tab->OnNavigationStarted(&context);
+
+  const base::TimeDelta expected_latency =
+      base::Seconds(1) + base::Milliseconds(200);
+  histogram_tester_.ExpectUniqueTimeSample("Startup.FirstNavigationLatency",
+                                           expected_latency, 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Startup.FirstNavigationLatency.NotPrewarmed", expected_latency, 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Startup.FirstNavigationLatency.NotPrewarmed.Regular", expected_latency,
+      1);
+
+  // Subsequent navigation does not record again.
+  mock_tab->OnNavigationStarted(&context);
+  histogram_tester_.ExpectTotalCount("Startup.FirstNavigationLatency", 1);
+}
+
+// Tests that Startup.FirstNavigationLatency is omitted during first run.
+TEST_F(TabUsageRecorderBrowserAgentTest, FirstNavigationLatencyFirstRun) {
+  fake_startup_information_.isColdStart = YES;
+  fake_startup_information_.isFirstRun = YES;
+  fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  fake_startup_information_.firstSceneConnectionTime =
+      task_environment_.NowLiveTicks() - base::Seconds(1);
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_FIRST);
+
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     0);
+  histogram_tester_.ExpectTotalCount("Startup.FirstNavigationLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.FirstNavigationLatency.NotPrewarmed", 0);
+}
+
+// Tests that Startup.FirstNavigationLatency is discarded when system suspension
+// occurs during startup.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       FirstNavigationLatencyDiscardedOnSuspension) {
+  fake_startup_information_.isColdStart = YES;
+  fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.SuspendedAdvanceClock(base::Seconds(5));
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_FIRST);
+
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.FirstNavigationLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.FirstNavigationLatency.NotPrewarmed", 0);
+}
+
+// Tests that Startup.FirstNavigationLatency is not recorded if not a cold
+// start.
+TEST_F(TabUsageRecorderBrowserAgentTest, FirstNavigationLatencyNotColdStart) {
+  fake_startup_information_.isColdStart = NO;
+  fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_FIRST);
+
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.FirstNavigationLatency", 0);
+}
+
+// Tests that Startup.FirstNavigationLatency is recorded with .ActivePrewarm
+// when application was prewarmed.
+TEST_F(TabUsageRecorderBrowserAgentTest, FirstNavigationLatencyActivePrewarm) {
+  base::ScopedEnvironmentVariableOverride scoped_pre_warmed("ActivePrewarm",
+                                                            "1");
+  fake_startup_information_.isColdStart = YES;
+  fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  fake_startup_information_.firstSceneConnectionTime =
+      task_environment_.NowLiveTicks() - base::Seconds(1);
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_FIRST);
+
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.FirstNavigationLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.FirstNavigationLatency.ActivePrewarm", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.FirstNavigationLatency.ActivePrewarm.Regular", 1);
+}
+
+// Tests that Startup.FirstNavigationLatency is recorded with
+// .LaunchedInBackground when launched into the background.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       FirstNavigationLatencyLaunchedInBackground) {
+  fake_startup_information_.isColdStart = YES;
+  fake_startup_information_.launchReason = IOSLaunchReason::kBackgroundRefresh;
+  fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  fake_startup_information_.firstSceneConnectionTime =
+      task_environment_.NowLiveTicks() - base::Seconds(1);
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_FIRST);
+
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.FirstNavigationLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.FirstNavigationLatency.LaunchedInBackground", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.FirstNavigationLatency.LaunchedInBackground.Regular", 1);
 }

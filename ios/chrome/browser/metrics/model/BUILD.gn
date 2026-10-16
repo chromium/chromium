@@ -316,6 +316,21 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("startup_metrics") {
+  sources = [
+    "startup_metrics.h",
+    "startup_metrics.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/previous_session_info",
+    "//components/signin/public/identity_manager:tribool",
+    "//ios/chrome/app/application_delegate:startup_information",
+    "//ios/chrome/browser/signin/model:signin_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("tab_usage_recorder_browser_agent") {
   sources = [
     "tab_usage_recorder_browser_agent.h",
@@ -324,6 +339,7 @@ source_set("tab_usage_recorder_browser_agent") {
   deps = [
     ":metrics_internal",
     ":model",
+    ":startup_metrics",
     ":tab_usage_recorder_metrics",
     "//base",
     "//components/google/core/common",
@@ -434,11 +450,13 @@ source_set("unit_tests_internal") {
   deps = [
     ":metrics_internal",
     ":model",
+    ":startup_metrics",
     ":tab_usage_recorder_browser_agent",
     "//base",
     "//base/test:test_support",
     "//components/metrics/private_metrics",
     "//components/previous_session_info",
+    "//components/signin/public/identity_manager:tribool",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/application_delegate:test_support",
@@ -447,6 +465,7 @@ source_set("unit_tests_internal") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/web_extension/model",
     "//ios/chrome/browser/web_extension/model:test_support",
     "//ios/testing:block_swizzler",

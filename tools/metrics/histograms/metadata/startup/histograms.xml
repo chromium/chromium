@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
       summary="cold start with unknown device restore and Chrome upgrade"/>
 </variants>
 
-<!-- LINT.ThenChange(//ios/chrome/app/application_delegate/metrics_mediator.mm:ColdStartType) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/metrics/model/startup_metrics.h:ColdStartType) -->
 
 <!-- IOSStartupTemperature captures the startup temperature of the application
      process: whether it was launched via iOS ActivePrewarm, launched in the
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".NotPrewarmed" summary="app was not pre-warmed"/>
 </variants>
 
-<!-- LINT.ThenChange(//ios/chrome/app/application_delegate/metrics_mediator.mm:IOSStartupTemperature) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/metrics/model/startup_metrics.h:IOSStartupTemperature) -->
 
 <variants name="StartActivityType">
   <variant name="Tabbed"
@@ -1127,6 +1127,62 @@ chromium-metrics-reviews@google.com.
     <variant name="TimedWaitSucceeded"/>
     <variant name="TimedWaitSucceededAtStartup"/>
   </token>
+</histogram>
+
+<histogram name="Startup.FirstNavigationLatency" units="ms"
+    expires_after="2027-10-01">
+  <owner>junov@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration from the estimated time of the user's intent to open the app
+    (e.g. icon tap in SpringBoard) to the first navigation start. iOS specific.
+
+    Only recorded for cold starts.
+
+    For direct foreground cold starts (.NotPrewarmed), user intent is estimated
+    from kernel process creation time (base::Process::Current().CreationTime()).
+    For pre-warmed launches (.ActivePrewarm), user intent is estimated from
+    process resumption entering main(). For background-launched sessions
+    (.LaunchedInBackground), user intent is estimated from scene connection time
+    when UIKit initiates foregrounding. Omitted during first run, for suspicious
+    launches where user intent timing cannot be reliably determined, and also
+    when the system was suspended during the measured interval.
+
+    Note on metric accuracy: The methodology used for estimating user intent
+    time is likely biased toward the future (reported latency &lt;= real
+    latency).
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.FirstNavigationLatency{IOSStartupTemperature}{IOSColdStartType}"
+    units="ms" expires_after="2027-10-01">
+  <owner>junov@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration from the estimated time of the user's intent to open the app
+    (e.g. icon tap in SpringBoard) to the first navigation start. iOS specific,
+    {IOSStartupTemperature}, {IOSColdStartType}.
+
+    Only recorded for cold starts.
+
+    For direct foreground cold starts (.NotPrewarmed), user intent is estimated
+    from kernel process creation time (base::Process::Current().CreationTime()).
+    For pre-warmed launches (.ActivePrewarm), user intent is estimated from
+    process resumption entering main(). For background-launched sessions
+    (.LaunchedInBackground), user intent is estimated from scene connection time
+    when UIKit initiates foregrounding. Omitted during first run, for suspicious
+    launches where user intent timing cannot be reliably determined, and also
+    when the system was suspended during the measured interval.
+
+    Note on metric accuracy: The methodology used for estimating user intent
+    time is likely biased toward the future (reported latency &lt;= real
+    latency).
+  </summary>
+  <token key="IOSStartupTemperature" variants="IOSStartupTemperature"/>
+  <token key="IOSColdStartType" variants="IOSColdStartType"/>
 </histogram>
 
 <histogram name="Startup.FirstPaintLatency" units="ms"

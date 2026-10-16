@@ -15,6 +15,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/metrics/model/startup_metrics.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -312,15 +313,14 @@ void TabUsageRecorderBrowserAgent::ResetAll() {
 }
 
 void TabUsageRecorderBrowserAgent::RecordFirstStartupMetric(
-    const std::string& base_histogram_name) {
+    const std::string& base_histogram_name,
+    std::optional<base::TimeDelta> duration) {
   id<StartupInformation> startup_information =
       browser_->GetSceneState().profileState.startupInformation;
   if (!startup_information || startup_information.isFirstRun ||
       startup_information.isLaunchedInBackground) {
     return;
   }
-  std::optional<base::TimeDelta> duration =
-      [startup_information appLaunchTimer].Elapsed();
   if (!duration.has_value()) {
     // System was suspended during launch, discard the metric
     return;
@@ -346,12 +346,34 @@ void TabUsageRecorderBrowserAgent::RecordFirstStartupMetric(
 
 void TabUsageRecorderBrowserAgent::RecordFirstPageLoad() {
   g_first_page_loaded_recorded = true;
-  RecordFirstStartupMetric("Startup.TimeFromMainToFirstPageLoaded");
+  id<StartupInformation> startup_information =
+      browser_->GetSceneState().profileState.startupInformation;
+  if (!startup_information) {
+    return;
+  }
+  RecordFirstStartupMetric("Startup.TimeFromMainToFirstPageLoaded",
+                           [startup_information appLaunchTimer].Elapsed());
 }
 
 void TabUsageRecorderBrowserAgent::RecordFirstNavigationStart() {
   g_first_navigation_started_recorded = true;
-  RecordFirstStartupMetric("Startup.TimeFromMainToFirstNavigation");
+  id<StartupInformation> startup_information =
+      browser_->GetSceneState().profileState.startupInformation;
+  if (!startup_information || startup_information.isFirstRun) {
+    return;
+  }
+
+  base::LiveTicks now;
+  const std::optional<base::TimeDelta> main_to_now_time =
+      [startup_information appLaunchTimer].Elapsed(&now);
+  const base::TimeDelta scene_connection_to_now_time =
+      now - [startup_information firstSceneConnectionTime];
+
+  RecordFirstStartupMetric("Startup.TimeFromMainToFirstNavigation",
+                           main_to_now_time);
+  RecordStartupLatencyMetric("Startup.FirstNavigationLatency",
+                             startup_information, main_to_now_time,
+                             scene_connection_to_now_time);
 }
 
 void TabUsageRecorderBrowserAgent::ResetEvictedTab() {
