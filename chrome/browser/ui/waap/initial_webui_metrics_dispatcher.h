@@ -1,0 +1,112 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_METRICS_DISPATCHER_H_
+#define CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_METRICS_DISPATCHER_H_
+
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "content/public/browser/web_contents_user_data.h"
+
+class InitialWebUIWindowMetricsManager;
+class Profile;
+class WaapUIMetricsService;
+
+namespace content {
+class WebContents;
+}
+
+class InitialWebUIWebContentsMetricsDispatcher;
+
+// Base class for dispatching InitialWebUI latency metrics for either a
+// WebContents or a native window element (e.g. ReloadButton).
+//
+// Receives milestones (creation, commit, first paint, first contentful paint)
+// and handles the common metrics logic:
+// - Directs startup metrics to `WaapUIMetricsService` immediately.
+// - Buffers and flushes new-window metrics to the
+//   `InitialWebUIWindowMetricsManager` once available.
+class InitialWebUIMetricsDispatcher {
+ public:
+  // Convenience forwarders for WebContents-based dispatchers.
+  static InitialWebUIWebContentsMetricsDispatcher* GetOrCreateForWebContents(
+      content::WebContents* web_contents);
+
+  virtual ~InitialWebUIMetricsDispatcher();
+
+  InitialWebUIMetricsDispatcher(const InitialWebUIMetricsDispatcher&) = delete;
+  InitialWebUIMetricsDispatcher& operator=(
+      const InitialWebUIMetricsDispatcher&) = delete;
+
+  // Called when the initial WebUI element is created.
+  virtual void OnCreated();
+
+  // Called when the navigation is committed with renderer process timestamps.
+  virtual void OnCommit(base::TimeTicks init_time,
+                        base::TimeTicks launched_time);
+
+  // Called when the initial WebUI element paints its first frame.
+  virtual void OnFirstPaint(base::TimeTicks paint_time);
+
+  // Called when the initial WebUI element paints its first contentful frame.
+  virtual void OnFirstContentfulPaint(base::TimeTicks fcp_time);
+
+ protected:
+  InitialWebUIMetricsDispatcher();
+
+  virtual WaapUIMetricsService* GetService() = 0;
+  virtual InitialWebUIWindowMetricsManager* GetWindowMetricsManager() = 0;
+
+  virtual void OnManagerUnavailable() {}
+
+  void FlushMetricsToManager();
+};
+
+// Dispatcher attached to a WebContents (used by WebUI surfaces).
+// Bridges the lifecycle mismatch where a WebContents may be pre-warmed or
+// created before being attached to a BrowserWindowInterface.
+class InitialWebUIWebContentsMetricsDispatcher
+    : public InitialWebUIMetricsDispatcher,
+      public content::WebContentsUserData<
+          InitialWebUIWebContentsMetricsDispatcher> {
+ public:
+  using content::WebContentsUserData<
+      InitialWebUIWebContentsMetricsDispatcher>::FromWebContents;
+  using content::WebContentsUserData<
+      InitialWebUIWebContentsMetricsDispatcher>::CreateForWebContents;
+
+  ~InitialWebUIWebContentsMetricsDispatcher() override;
+
+ protected:
+  WaapUIMetricsService* GetService() override;
+  InitialWebUIWindowMetricsManager* GetWindowMetricsManager() override;
+
+ private:
+  explicit InitialWebUIWebContentsMetricsDispatcher(
+      content::WebContents* web_contents);
+  friend class content::WebContentsUserData<
+      InitialWebUIWebContentsMetricsDispatcher>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+// Dispatcher for native Views (e.g. Views ReloadButton).
+// Directly associated with a Profile and InitialWebUIWindowMetricsManager.
+class InitialWebUINativeMetricsDispatcher
+    : public InitialWebUIMetricsDispatcher {
+ public:
+  InitialWebUINativeMetricsDispatcher(
+      Profile* profile,
+      InitialWebUIWindowMetricsManager* window_metrics_manager);
+  ~InitialWebUINativeMetricsDispatcher() override;
+
+ protected:
+  WaapUIMetricsService* GetService() override;
+  InitialWebUIWindowMetricsManager* GetWindowMetricsManager() override;
+
+ private:
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<InitialWebUIWindowMetricsManager> window_metrics_manager_;
+};
+
+#endif  // CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_METRICS_DISPATCHER_H_

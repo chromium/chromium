@@ -59,6 +59,8 @@ source_set("manager") {
 
 source_set("window_metrics_manager") {
   sources = [
+    "initial_webui_metrics_dispatcher.cc",
+    "initial_webui_metrics_dispatcher.h",
     "initial_webui_window_metrics_manager.cc",
     "initial_webui_window_metrics_manager.h",
   ]
@@ -69,6 +71,8 @@ source_set("window_metrics_manager") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
+    "//content/public/browser",
     "//third_party/blink/public/common",
   ]
 }
@@ -150,6 +154,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "initial_web_ui_manager_unittest.cc",
+    "initial_webui_metrics_dispatcher_unittest.cc",
     "initial_webui_window_metrics_manager_unittest.cc",
     "waap_ui_metrics_recorder_unittest.cc",
     "waap_ui_metrics_service_unittest.cc",
