@@ -946,7 +946,7 @@ ci.thin_tester(
                     "--debug",
                 ],
                 swarming = targets.swarming(
-                    shards = 4,
+                    shards = 12,
                 ),
             ),
         },
