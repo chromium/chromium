@@ -34,9 +34,7 @@ export function createAutocompleteMatch(
     fuseboxAction: null,
     suggestTemplate: {
       primaryText: {text: '', fragments: [], a11yText: null},
-      primaryTextClass: [{offset: 0, style: 0}],
       secondaryText: {text: '', fragments: [], a11yText: null},
-      secondaryTextClass: [{offset: 0, style: 0}],
       secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
       image: null,
       style: SuggestStyle.kUnspecified,

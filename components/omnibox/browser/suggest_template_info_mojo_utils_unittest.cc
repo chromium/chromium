@@ -139,13 +139,12 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
     mojom::SuggestTemplateInfoPtr suggest_template =
         CreateSuggestTemplateInfo(match);
     EXPECT_EQ(suggest_template->primary_text->text, u"example.com");
-    ASSERT_EQ(suggest_template->primary_text_class.size(), 1u);
-    EXPECT_EQ(suggest_template->primary_text_class[0]->style,
-              ACMatchClassification::URL);
+    ASSERT_EQ(suggest_template->primary_text->fragments.size(), 1u);
+    EXPECT_EQ(suggest_template->primary_text->fragments[0]->color,
+              mojom::ColorType::kPrimary);
     EXPECT_EQ(suggest_template->secondary_text->text, u"Example Title");
-    ASSERT_EQ(suggest_template->secondary_text_class.size(), 1u);
-    EXPECT_EQ(suggest_template->secondary_text_class[0]->style,
-              ACMatchClassification::MATCH);
+    ASSERT_EQ(suggest_template->secondary_text->fragments.size(), 1u);
+    EXPECT_TRUE(suggest_template->secondary_text->fragments[0]->is_bolded);
   }
   // `swap_contents_and_description` is resolved here, and the styling travels
   // with its text.
@@ -154,15 +153,9 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
     mojom::SuggestTemplateInfoPtr suggest_template =
         CreateSuggestTemplateInfo(match);
     EXPECT_EQ(suggest_template->primary_text->text, u"Example Title");
-    ASSERT_EQ(suggest_template->primary_text_class.size(), 1u);
-    EXPECT_EQ(suggest_template->primary_text_class[0]->style,
-              ACMatchClassification::MATCH);
     ASSERT_EQ(suggest_template->primary_text->fragments.size(), 1u);
     EXPECT_TRUE(suggest_template->primary_text->fragments[0]->is_bolded);
     EXPECT_EQ(suggest_template->secondary_text->text, u"example.com");
-    ASSERT_EQ(suggest_template->secondary_text_class.size(), 1u);
-    EXPECT_EQ(suggest_template->secondary_text_class[0]->style,
-              ACMatchClassification::URL);
     ASSERT_EQ(suggest_template->secondary_text->fragments.size(), 1u);
     EXPECT_EQ(suggest_template->secondary_text->fragments[0]->color,
               mojom::ColorType::kPrimary);

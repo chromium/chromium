@@ -7,12 +7,6 @@ module suggest_template_info.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
-// See components/omnibox/browser/autocomplete_match.h.
-struct ACMatchClassification {
-  uint32 offset;
-  int32 style;
-};
-
 // The color of a FormattedString fragment. Maps to FormattedString.ColorType in
 // //third_party/omnibox_proto/formatted_string.proto. The values must match, so
 // that the proto values can be cast directly.
@@ -105,14 +99,8 @@ struct Image {
 struct SuggestTemplateInfo {
   // The primary text of the suggestion and its styling.
   FormattedString primary_text;
-  // TODO(crbug.com/571949791): Remove once the WebUI renders the styling from
-  // `primary_text.fragments`.
-  array<ACMatchClassification> primary_text_class;
   // The secondary text of the suggestion (e.g. a subtitle) and its styling.
   FormattedString secondary_text;
-  // TODO(crbug.com/571949791): Remove once the WebUI renders the styling from
-  // `secondary_text.fragments`.
-  array<ACMatchClassification> secondary_text_class;
   // Where to display the secondary text relative to the primary text.
   SecondaryTextPlacement secondary_text_placement =
       SecondaryTextPlacement.kUnspecified;
