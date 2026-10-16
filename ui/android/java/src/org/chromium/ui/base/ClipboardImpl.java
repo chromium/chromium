@@ -49,7 +49,6 @@ import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -406,7 +405,7 @@ public class ClipboardImpl extends Clipboard
                 if (baos.size() > MAX_ALLOWED_PNG_SIZE_BYTES) return null;
 
                 return baos.toByteArray();
-            } catch (IOException | OutOfMemoryError e) {
+            } catch (Exception | OutOfMemoryError e) {
                 return null;
             }
         }
@@ -423,7 +422,7 @@ public class ClipboardImpl extends Clipboard
             fileStream = new FileInputStream(afd.getFileDescriptor());
             fileStream.read(data);
             return data;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return null;
         } finally {
             StreamUtil.closeQuietly(fileStream);
