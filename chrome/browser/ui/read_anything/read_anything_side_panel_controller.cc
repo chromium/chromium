@@ -28,8 +28,8 @@
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
-    : tab_(tab), side_panel_registry_(side_panel_registry) {
-  CHECK(!side_panel_registry_->GetEntryForKey(
+    : tab_(tab) {
+  CHECK(!side_panel_registry->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
@@ -40,7 +40,7 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
           &ReadAnythingSidePanelController::GetPreferredDefaultWidth,
           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
-  side_panel_registry_->Register(std::move(side_panel_entry));
+  side_panel_registry->Register(std::move(side_panel_entry));
 
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(
       base::BindRepeating(&ReadAnythingSidePanelController::TabWillDetach,
@@ -170,7 +170,6 @@ int ReadAnythingSidePanelController::GetPreferredDefaultWidth() {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-
   if (!tab_->IsActivated()) {
     return;
   }
@@ -193,9 +192,6 @@ void ReadAnythingSidePanelController::TabWillDetach(
 
   SidePanelEntry::Key read_anything_key(SidePanelEntry::Id::kReadAnything);
   if (side_panel_ui->IsSidePanelEntryShowing(read_anything_key)) {
-    SidePanelEntry* const entry =
-        side_panel_registry_->GetEntryForKey(read_anything_key);
-    CHECK(entry);
     side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
                          /*suppress_animations=*/true);
   }

@@ -56,7 +56,6 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
                      tabs::TabInterface::DetachReason reason);
 
   const raw_ptr<tabs::TabInterface> tab_;
-  raw_ptr<SidePanelRegistry> side_panel_registry_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
