@@ -5,9 +5,12 @@
 #ifndef UI_DECORATION_DECORATION_DETAILS_H_
 #define UI_DECORATION_DECORATION_DETAILS_H_
 
+#include <algorithm>
 #include <concepts>
 #include <cstddef>
 #include <memory>
+#include <optional>
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -217,6 +220,129 @@ struct DecorationDetails {
   gfx::Insets aperture_insets;
   // Margins for positioning the decoration around content bounds.
   gfx::Insets margins;
+};
+
+// Returns the per-side minimum of `a` and `b`. Margins are negative when they
+// extend outwards, so the smallest value is the one reaching furthest out.
+inline gfx::Insets MinInsets(const gfx::Insets& a, const gfx::Insets& b) {
+  return gfx::Insets::TLBR(
+      std::min(a.top(), b.top()), std::min(a.left(), b.left()),
+      std::min(a.bottom(), b.bottom()), std::min(a.right(), b.right()));
+}
+
+// Returns the per-side maximum of `a` and `b`. Insets that reach inwards
+// combine this way, since the largest one subsumes the others.
+inline gfx::Insets MaxInsets(const gfx::Insets& a, const gfx::Insets& b) {
+  return gfx::Insets::TLBR(
+      std::max(a.top(), b.top()), std::max(a.left(), b.left()),
+      std::max(a.bottom(), b.bottom()), std::max(a.right(), b.right()));
+}
+
+// Visual specification for several decorations rasterized into a single
+// ninebox image. Each specification is optional so a composite can omit any
+// subset of its parts while still sharing a single cache type.
+template <DecorationSpec... Specs>
+class CompositeValue {
+ public:
+  static_assert(sizeof...(Specs) >= 2, "A composite needs at least two specs.");
+
+  CompositeValue() = default;
+
+  explicit CompositeValue(std::optional<Specs>... specs)
+      : specs_(std::move(specs)...) {}
+
+  CompositeValue(const CompositeValue&) = default;
+  CompositeValue& operator=(const CompositeValue&) = default;
+  CompositeValue(CompositeValue&&) = default;
+  CompositeValue& operator=(CompositeValue&&) = default;
+
+  ~CompositeValue() = default;
+
+  // Returns true when no part has a specification to draw.
+  bool IsEmpty() const { return (!Get<Specs>().has_value() && ...); }
+
+  // Returns the optional specification for `Spec`.
+  template <DecorationSpec Spec>
+  const std::optional<Spec>& Get() const {
+    return std::get<std::optional<Spec>>(specs_);
+  }
+
+  friend bool operator==(const CompositeValue&,
+                         const CompositeValue&) = default;
+
+  friend bool operator<(const CompositeValue& lhs, const CompositeValue& rhs) {
+    return lhs.specs_ < rhs.specs_;
+  }
+
+ private:
+  std::tuple<std::optional<Specs>...> specs_;
+};
+
+template <typename... Details>
+struct CompositeGenerator;
+
+// Measures and rasterizes several decorations into a single ninebox image
+// around a shared content rect.
+template <typename... Specs, typename... Generators>
+  requires(DecorationGenerator<Generators, Specs> && ...)
+struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
+  using Value = CompositeValue<Specs...>;
+
+  static gfx::Insets GetMargins(const Value& value) {
+    DCHECK(!value.IsEmpty());
+    gfx::Insets margins;
+    (AccumulateMargins<Specs, Generators>(value, margins), ...);
+    return margins;
+  }
+
+  static gfx::Insets GetNineboxApertureInsets(
+      const Value& value,
+      const gfx::RoundedCornersF& rounded_corners) {
+    DCHECK(!value.IsEmpty());
+    gfx::Insets aperture;
+    (AccumulateAperture<Specs, Generators>(value, rounded_corners, aperture),
+     ...);
+    return aperture;
+  }
+
+  static void Draw(gfx::Canvas* canvas,
+                   const Value& value,
+                   const gfx::RoundedCornersF& rounded_corners,
+                   const gfx::Rect& content_rect) {
+    DCHECK(!value.IsEmpty());
+    // Painter's order: parts are drawn in the order they are listed, so a part
+    // listed later sits on top of one listed earlier.
+    (DrawPart<Specs, Generators>(canvas, value, rounded_corners, content_rect),
+     ...);
+  }
+
+ private:
+  template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
+  static void AccumulateMargins(const Value& value, gfx::Insets& margins) {
+    if (const auto& spec = value.template Get<Spec>()) {
+      margins = MinInsets(margins, Generator::GetMargins(*spec));
+    }
+  }
+
+  template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
+  static void AccumulateAperture(const Value& value,
+                                 const gfx::RoundedCornersF& rounded_corners,
+                                 gfx::Insets& aperture) {
+    if (const auto& spec = value.template Get<Spec>()) {
+      aperture = MaxInsets(aperture, Generator::GetNineboxApertureInsets(
+                                         *spec, rounded_corners));
+    }
+  }
+
+  template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
+  static void DrawPart(gfx::Canvas* canvas,
+                       const Value& value,
+                       const gfx::RoundedCornersF& rounded_corners,
+                       const gfx::Rect& content_rect) {
+    if (const auto& spec = value.template Get<Spec>()) {
+      Generator::Draw(canvas, *spec, rounded_corners, content_rect);
+    }
+  }
 };
 
 }  // namespace ui::decoration
