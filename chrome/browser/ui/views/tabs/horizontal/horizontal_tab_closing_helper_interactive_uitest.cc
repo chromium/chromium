@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
@@ -44,13 +45,24 @@ class HorizontalTabClosingHelperInteractiveUiTest
   }
   ~HorizontalTabClosingHelperInteractiveUiTest() override = default;
 
+  void LayoutAndFinishAnimations() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (browser_view && browser_view->GetWidget()) {
+      browser_view->GetWidget()->LayoutRootViewIfNecessary();
+      if (auto* controller = GetController()) {
+        controller->animation_coordinator().AnimationEnded(nullptr);
+      }
+      browser_view->GetWidget()->LayoutRootViewIfNecessary();
+    }
+  }
+
   void SetWindowWidth(int width) {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     if (browser_view && browser_view->GetWidget()) {
       gfx::Rect bounds = browser_view->GetWidget()->GetWindowBoundsInScreen();
       bounds.set_width(width);
       browser_view->GetWidget()->SetBounds(bounds);
-      browser_view->GetWidget()->LayoutRootViewIfNecessary();
+      LayoutAndFinishAnimations();
     }
   }
 
@@ -105,10 +117,7 @@ class HorizontalTabClosingHelperInteractiveUiTest
     while (model->count() < min_tabs) {
       AddTabs(1);
     }
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    if (browser_view && browser_view->GetWidget()) {
-      browser_view->GetWidget()->LayoutRootViewIfNecessary();
-    }
+    LayoutAndFinishAnimations();
   }
 
   bool IsUnpinnedContainerOverflowing() {
@@ -124,12 +133,9 @@ class HorizontalTabClosingHelperInteractiveUiTest
   void CreateOverflowingTabs() {
     SetWindowWidth(500);
     TabStripModel* model = browser()->tab_strip_model();
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     while (!IsUnpinnedContainerOverflowing() && model->count() < 100) {
       AddTabs(10);
-      if (browser_view && browser_view->GetWidget()) {
-        browser_view->GetWidget()->LayoutRootViewIfNecessary();
-      }
+      LayoutAndFinishAnimations();
     }
   }
 
@@ -745,5 +751,81 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
 
         EXPECT_TRUE(helper->in_tab_close());
         EXPECT_TRUE(helper->override_available_width_for_tabs().has_value());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabClosingHelperInteractiveUiTest,
+    ClosingInOverflowedUnpinnedContainerDoesNotReduceContainerWidth) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      Do([this]() {
+        TabStripModel* model = browser()->tab_strip_model();
+        auto* pinned_scroll_view = views::ScrollView::GetScrollViewForContents(
+            GetBaseTabStripRegionView()->GetPinnedTabsContainer());
+        auto* unpinned_container =
+            GetBaseTabStripRegionView()->GetUnpinnedTabsContainer();
+        auto* unpinned_scroll_view =
+            views::ScrollView::GetScrollViewForContents(unpinned_container);
+
+        auto close_until_unpinned_not_overflowing = [&]() {
+          CreateOverflowingTabs();
+          ASSERT_TRUE(IsUnpinnedContainerOverflowing());
+
+          const int initial_pinned_width = pinned_scroll_view->width();
+          const int initial_unpinned_width = unpinned_scroll_view->width();
+          const int first_unpinned = model->IndexOfFirstNonPinnedTab();
+          EXPECT_EQ(unpinned_scroll_view->x(),
+                    pinned_scroll_view->bounds().right());
+
+          // Close unpinned tabs until the container exits overflow.
+          while (model->count() > first_unpinned + 1 &&
+                 IsUnpinnedContainerOverflowing()) {
+            GetController()->CloseTab(model->GetTabAtIndex(first_unpinned),
+                                      CloseTabSource::kFromMouse);
+            LayoutAndFinishAnimations();
+
+            // Pinned container width stays locked, containers stay
+            // non-overlapping, and unpinned container stays full while
+            // overflowing.
+            EXPECT_EQ(pinned_scroll_view->width(), initial_pinned_width);
+            EXPECT_EQ(unpinned_scroll_view->x(),
+                      pinned_scroll_view->bounds().right());
+            if (IsUnpinnedContainerOverflowing()) {
+              EXPECT_EQ(unpinned_scroll_view->width(), initial_unpinned_width);
+            }
+          }
+
+          // Once no longer overflowing, the unpinned container shrinks to the
+          // remaining tabs' override width, and the containers remain
+          // non-overlapping while in tab closing mode.
+          EXPECT_FALSE(IsUnpinnedContainerOverflowing());
+          EXPECT_EQ(unpinned_container->width(),
+                    GetClosingHelper()->override_available_width_for_tabs());
+          EXPECT_EQ(unpinned_scroll_view->x(),
+                    pinned_scroll_view->bounds().right());
+        };
+
+        // With 2 pinned tabs (pinned container not overflowing), exiting
+        // unpinned overflow in closing mode keeps the containers
+        // non-overlapping until exiting tab closing mode.
+        AddTabs(2);
+        for (int i = 0; i < 2; ++i) {
+          model->SetTabPinned(i, true);
+        }
+        close_until_unpinned_not_overflowing();
+        GetClosingHelper()->ExitTabClosingMode();
+        LayoutAndFinishAnimations();
+        EXPECT_EQ(unpinned_scroll_view->x(),
+                  pinned_scroll_view->bounds().right() -
+                      TabStyle::Get()->GetTabOverlap());
+
+        // With 6 pinned tabs (pinned container capped at 50% and overflowing),
+        // closing unpinned tabs out of overflow keeps the pinned container
+        // locked at its capped width.
+        for (int i = 2; i < 6; ++i) {
+          model->SetTabPinned(i, true);
+        }
+        close_until_unpinned_not_overflowing();
       }));
 }
