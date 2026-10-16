@@ -71,24 +71,17 @@ final class SideUiObserverNotifier {
         return transitions;
     }
 
-    /** Invokes {@link SideUiObserver#onTransitionBegun}. */
-    void notifyTransitionBegun(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
+    /** Invokes {@link SideUiObserver#onSideUiSpecsChangeStarted}. */
+    void notifySideUiSpecsChangeStarted(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
         for (var observer : mObservers) {
-            observer.onTransitionBegun(newSideUiSpecs, request);
+            observer.onSideUiSpecsChangeStarted(newSideUiSpecs, request);
         }
     }
 
-    /** Invokes {@link SideUiObserver#onTransitionEnded}. */
-    void notifyTransitionEnded(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
+    /** Invokes {@link SideUiObserver#onSideUiSpecsChangeCompleted}. */
+    void notifySideUiSpecsChangeCompleted(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
         for (var observer : mObservers) {
-            observer.onTransitionEnded(newSideUiSpecs, request);
-        }
-    }
-
-    /** Invokes {@link SideUiObserver#onSideUiSpecsChanged}. */
-    void notifySideUiSpecsChanged(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
-        for (var observer : mObservers) {
-            observer.onSideUiSpecsChanged(newSideUiSpecs, request);
+            observer.onSideUiSpecsChangeCompleted(newSideUiSpecs, request);
         }
     }
 }

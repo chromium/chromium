@@ -1513,7 +1513,7 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-    public void testOnSideUiSpecsChanged_updateWebContentsSize() {
+    public void testOnSideUiSpecsChangeCompleted_updateWebContentsSize() {
         // Setup.
         reset(mWebContents);
 
@@ -1529,8 +1529,8 @@ public class CompositorViewHolderUnitTest {
 
         // Act: Make SideUiStateProvider available.
         //
-        // Note that onSideUiSpecsChanged() is expected to be called as soon as SideUiStateProvider
-        // is available, so we don't need to explicitly call onSideUiSpecsChanged() here.
+        // Note that updateForSideUiSpecs() is expected to be called as soon as SideUiStateProvider
+        // is available, so we don't need to explicitly call onSideUiSpecsChangeCompleted() here.
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
@@ -1545,7 +1545,7 @@ public class CompositorViewHolderUnitTest {
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     @Config(qualifiers = "sw600dp")
-    public void testOnSideUiSpecsChanged_updateWebContentsSize_verticalTabs() {
+    public void testOnSideUiSpecsChangeCompleted_updateWebContentsSize_verticalTabs() {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         mCompositorViewHolder.onNativeLibraryReady(
                 mWindowAndroid, /* tabContentManager= */ null, mPrefService);
@@ -1573,17 +1573,17 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-    public void testOnSideUiSpecsChanged_updateContentOffsetX() {
-        doTestOnSideUiSpecsChanged_updateContentOffsetX(/* shouldBeRtl= */ false);
+    public void testOnSideUiSpecsChangeCompleted_updateContentOffsetX() {
+        doTestOnSideUiSpecsChangeCompleted_updateContentOffsetX(/* shouldBeRtl= */ false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-    public void testOnSideUiSpecsChanged_updateContentOffsetX_rtl() {
-        doTestOnSideUiSpecsChanged_updateContentOffsetX(/* shouldBeRtl= */ true);
+    public void testOnSideUiSpecsChangeCompleted_updateContentOffsetX_rtl() {
+        doTestOnSideUiSpecsChangeCompleted_updateContentOffsetX(/* shouldBeRtl= */ true);
     }
 
-    private void doTestOnSideUiSpecsChanged_updateContentOffsetX(boolean shouldBeRtl) {
+    private void doTestOnSideUiSpecsChangeCompleted_updateContentOffsetX(boolean shouldBeRtl) {
         // Setup.
         LocalizationUtils.setRtlForTesting(shouldBeRtl);
         reset(mWebContents);
@@ -1600,8 +1600,8 @@ public class CompositorViewHolderUnitTest {
 
         // Act: Make SideUiStateProvider available.
         //
-        // Note that onSideUiSpecsChanged() is expected to be called as soon as SideUiStateProvider
-        // is available, so we don't need to explicitly call onSideUiSpecsChanged() here.
+        // Note that updateForSideUiSpecs() is expected to be called as soon as SideUiStateProvider
+        // is available, so we don't need to explicitly call onSideUiSpecsChangeCompleted() here.
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
@@ -1612,7 +1612,7 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_manualResize() {
+    public void testOnSideUiSpecsChangeCompleted_manualResize() {
         mCompositorViewHolder.setWidthForTesting(VIEWPORT_WIDTH);
         mCompositorViewHolder.setHeightForTesting(VIEWPORT_HEIGHT);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
@@ -1623,7 +1623,7 @@ public class CompositorViewHolderUnitTest {
 
         SideUiSpecs specs = new SideUiSpecs(SIDE_UI_START_WIDTH, /* rightContainerWidth= */ 0);
         when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab)).thenReturn(specs);
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 specs,
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
@@ -1633,7 +1633,7 @@ public class CompositorViewHolderUnitTest {
         assertEquals(SIDE_UI_START_WIDTH, mContentView.getContentOffsetXPix());
         verify(mWebContents, never()).setSize(anyInt(), anyInt());
 
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 specs,
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_COMMITTED));
@@ -1643,25 +1643,25 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_contentViewMarginsNotUpdated() {
+    public void testOnSideUiSpecsChangeCompleted_contentViewMarginsNotUpdated() {
         // Setup content view.
         mContentView.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
 
-        doTestSideUiSpecsChanged_updateMargins(
+        doTestSideUiSpecsChangeCompleted_updateMargins(
                 /* expectedStartMargin= */ 0, /* expectedEndMargin= */ 0);
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_customViewMarginsUpdated() {
+    public void testOnSideUiSpecsChangeCompleted_customViewMarginsUpdated() {
         // Setup custom view.
         View customView = new View(mContext);
         when(mTab.isShowingCustomView()).thenReturn(true);
         when(mTab.getView()).thenReturn(customView);
 
-        doTestSideUiSpecsChanged_updateMargins(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
+        doTestSideUiSpecsChangeCompleted_updateMargins(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
     }
 
-    private void doTestSideUiSpecsChanged_updateMargins(
+    private void doTestSideUiSpecsChangeCompleted_updateMargins(
             int expectedStartMargin, int expectedEndMargin) {
         // Notify content changed.
         reset(mWebContents);
@@ -1677,7 +1677,7 @@ public class CompositorViewHolderUnitTest {
                 .thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 currentSideUiSpecs,
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
@@ -1689,11 +1689,12 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_liveResize_customViewTranslatedWithoutMarginUpdate() {
+    public void
+            testOnSideUiSpecsChangeCompleted_liveResize_customViewTranslatedWithoutMarginUpdate() {
         View customView = setUpCustomViewWithCommittedSideUiSpecs();
 
         int liveStartWidth = SIDE_UI_START_WIDTH + 50;
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 new SideUiSpecs(liveStartWidth, SIDE_UI_END_WIDTH),
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
@@ -1710,16 +1711,16 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_resizeCommitted_customViewTranslationReset() {
+    public void testOnSideUiSpecsChangeCompleted_resizeCommitted_customViewTranslationReset() {
         View customView = setUpCustomViewWithCommittedSideUiSpecs();
 
         int newStartWidth = SIDE_UI_START_WIDTH + 50;
         SideUiSpecs newSpecs = new SideUiSpecs(newStartWidth, SIDE_UI_END_WIDTH);
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 newSpecs,
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 newSpecs,
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_COMMITTED));
@@ -2110,7 +2111,7 @@ public class CompositorViewHolderUnitTest {
         when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab)).thenReturn(committedSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
-        mCompositorViewHolder.onSideUiSpecsChanged(
+        mCompositorViewHolder.onSideUiSpecsChangeCompleted(
                 committedSpecs,
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 

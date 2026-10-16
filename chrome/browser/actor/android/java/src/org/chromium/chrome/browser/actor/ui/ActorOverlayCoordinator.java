@@ -203,7 +203,7 @@ public class ActorOverlayCoordinator {
         }
 
         @Override
-        public void onSideUiSpecsChanged(
+        public void onSideUiSpecsChangeStarted(
                 SideUiCoordinator.SideUiSpecs sideUiSpecs,
                 SideUiCoordinator.UiUpdateRequest request) {
             mModel.set(
@@ -213,6 +213,11 @@ public class ActorOverlayCoordinator {
                     ActorOverlayProperties.RIGHT_MARGIN,
                     sideUiSpecs.getReservedWidth(AnchorSide.RIGHT));
         }
+
+        @Override
+        public void onSideUiSpecsChangeCompleted(
+                SideUiCoordinator.SideUiSpecs sideUiSpecs,
+                SideUiCoordinator.UiUpdateRequest request) {}
     }
 
     private void onProfileAdded(Profile profile) {

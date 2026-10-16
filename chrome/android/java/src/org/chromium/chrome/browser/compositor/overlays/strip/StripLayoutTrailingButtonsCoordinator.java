@@ -126,7 +126,11 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final SideUiObserver mSideUiObserver =
             new SideUiObserver() {
                 @Override
-                public void onSideUiSpecsChanged(
+                public void onSideUiSpecsChangeStarted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
+
+                @Override
+                public void onSideUiSpecsChangeCompleted(
                         SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
 
                 @Override

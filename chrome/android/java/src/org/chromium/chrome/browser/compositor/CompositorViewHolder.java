@@ -1607,9 +1607,10 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void onTransitionBegun(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+    public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        if (request.mSuppressAnimations) return;
         // Trigger changes to Java Views, but delay any direct changes to composited views until
-        // #onSideUiSpecsChanged().
+        // #onSideUiSpecsChangeCompleted().
         repositionTabViewForSideUi(sideUiSpecs);
         // Padding will not be animated by the Transition as doing so would request a layout on
         // every frame. Instead, padding is allowed to remain at its final state during a
@@ -1621,15 +1622,12 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void onTransitionEnded(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        onSideUiSpecsChanged(sideUiSpecs, request);
-        resetClipToPadding();
-    }
-
-    @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+    public void onSideUiSpecsChangeCompleted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         updateForSideUiSpecs(
                 sideUiSpecs, /* isLiveResize= */ request.mUpdateReason == UpdateReason.RESIZE_LIVE);
+        if (!request.mSuppressAnimations) {
+            resetClipToPadding();
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

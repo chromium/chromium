@@ -1974,9 +1974,12 @@ class AutocompleteMediator
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+    public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         updateLeftSideBarMarginPx(sideUiSpecs);
     }
+
+    @Override
+    public void onSideUiSpecsChangeCompleted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
 
     /**
      * Updates the suggestions list's left margin to account for the given {@link SideUiSpecs}.

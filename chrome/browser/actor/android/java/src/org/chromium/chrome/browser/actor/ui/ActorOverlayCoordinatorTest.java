@@ -1124,8 +1124,8 @@ public class ActorOverlayCoordinatorTest {
                 SideUiCoordinator.UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true);
 
-        // Test onSideUiSpecsChanged updates margins in model
-        observer.onSideUiSpecsChanged(specs, request);
+        // Test onSideUiSpecsChangeStarted updates margins in model
+        observer.onSideUiSpecsChangeStarted(specs, request);
 
         PropertyModel model = mCoordinator.getModelForTesting();
         Assert.assertEquals(120, model.get(ActorOverlayProperties.LEFT_MARGIN));

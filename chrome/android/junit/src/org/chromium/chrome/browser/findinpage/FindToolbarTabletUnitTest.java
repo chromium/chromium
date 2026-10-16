@@ -107,10 +107,10 @@ public class FindToolbarTabletUnitTest {
     // Horizontal Margin (Margin End) Tests
 
     @Test
-    public void testOnSideUiSpecsChanged_rightAnchorWebContentsHeightType_ltr() {
+    public void testOnSideUiSpecsChangeStarted_rightAnchorWebContentsHeightType_ltr() {
         SideUiSpecs specs = createSideUiSpecs(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
@@ -118,13 +118,13 @@ public class FindToolbarTabletUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_leftAnchorWebContentsHeightType_rtl() {
+    public void testOnSideUiSpecsChangeStarted_leftAnchorWebContentsHeightType_rtl() {
         LocalizationUtils.setRtlForTesting(true);
         Map<@AnchorSide Integer, SideUiSize> map = new ArrayMap<>();
         map.put(AnchorSide.LEFT, new SideUiSize(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS));
         SideUiSpecs specs = new SideUiSpecs(map);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
@@ -132,13 +132,13 @@ public class FindToolbarTabletUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_bothSidesWebContentsHeightType_ltr() {
+    public void testOnSideUiSpecsChangeStarted_bothSidesWebContentsHeightType_ltr() {
         Map<@AnchorSide Integer, SideUiSize> map = new ArrayMap<>();
         map.put(AnchorSide.LEFT, new SideUiSize(200, HeightType.WEB_CONTENTS));
         map.put(AnchorSide.RIGHT, new SideUiSize(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS));
         SideUiSpecs specs = new SideUiSpecs(map);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
@@ -147,11 +147,11 @@ public class FindToolbarTabletUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_rightAnchorWebContentsHeightType_rtl() {
+    public void testOnSideUiSpecsChangeStarted_rightAnchorWebContentsHeightType_rtl() {
         LocalizationUtils.setRtlForTesting(true);
         SideUiSpecs specs = createSideUiSpecs(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
@@ -160,10 +160,10 @@ public class FindToolbarTabletUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_toolbarHeightType() {
+    public void testOnSideUiSpecsChangeStarted_toolbarHeightType() {
         SideUiSpecs specs = createSideUiSpecs(SIDE_UI_WIDTH_PX, HeightType.TOOLBAR);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         // Toolbar height type should NOT add margin to FindToolbarTablet because
@@ -173,10 +173,10 @@ public class FindToolbarTabletUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_closed() {
+    public void testOnSideUiSpecsChangeStarted_closed() {
         SideUiSpecs specs = createSideUiSpecs(0, HeightType.NOT_APPLICABLE);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
@@ -217,7 +217,7 @@ public class FindToolbarTabletUnitTest {
         map.put(AnchorSide.LEFT, new SideUiSize(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS));
         SideUiSpecs vtSpecs = new SideUiSpecs(map);
 
-        mFindToolbarTablet.onSideUiSpecsChanged(
+        mFindToolbarTablet.onSideUiSpecsChangeStarted(
                 vtSpecs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         mFindToolbarTablet.setVisibility(View.GONE);
         mFindToolbarTablet.handleActivate();

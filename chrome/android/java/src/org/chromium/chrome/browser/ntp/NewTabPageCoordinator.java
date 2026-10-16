@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
@@ -359,12 +360,20 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // TODO(crbug.com/517393491): Refactor to a reusable component to apply to other UiConfigs.
         mSideUiObserver =
-                (sideUiSpecs, request) -> {
-                    // During a live resize drag, the NTP view is only translated and keeps its
-                    // width (see CompositorViewHolder), so keep the inset until the resize is
-                    // committed. Updating it would relayout the NTP on every drag frame.
-                    if (request.mUpdateReason == UpdateReason.RESIZE_LIVE) return;
-                    updateUiConfigInsetForSideUi(sideUiSpecs);
+                new SideUiObserver() {
+                    @Override
+                    public void onSideUiSpecsChangeStarted(
+                            SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+                        // During a live resize drag, the NTP view is only translated and keeps its
+                        // width (see CompositorViewHolder), so keep the inset until the resize is
+                        // committed. Updating it would relayout the NTP on every drag frame.
+                        if (request.mUpdateReason == UpdateReason.RESIZE_LIVE) return;
+                        updateUiConfigInsetForSideUi(sideUiSpecs);
+                    }
+
+                    @Override
+                    public void onSideUiSpecsChangeCompleted(
+                            SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
                 };
         sideUiStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(

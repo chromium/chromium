@@ -38,11 +38,11 @@ public class ViewMarginAdjusterForSideUiTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_noBaseMargin() {
+    public void testOnSideUiSpecsChangeStarted_noBaseMargin() {
         SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
         // End margin
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(0, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
@@ -50,7 +50,7 @@ public class ViewMarginAdjusterForSideUiTest {
         assertEquals(200, params.getMarginEnd());
 
         // Start margin
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(200, 0),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         params = (MarginLayoutParams) mView.getLayoutParams();
@@ -58,7 +58,7 @@ public class ViewMarginAdjusterForSideUiTest {
         assertEquals(0, params.getMarginEnd());
 
         // Both margins
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(100, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         params = (MarginLayoutParams) mView.getLayoutParams();
@@ -67,14 +67,14 @@ public class ViewMarginAdjusterForSideUiTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_hasBaseMargin() {
+    public void testOnSideUiSpecsChangeStarted_hasBaseMargin() {
         mMarginLayoutParams.leftMargin = 20;
         mMarginLayoutParams.rightMargin = 35;
 
         SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
         // Right margin
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(0, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
@@ -82,7 +82,7 @@ public class ViewMarginAdjusterForSideUiTest {
         assertEquals(235, params.rightMargin);
 
         // Start margin
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(200, 0),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         params = (MarginLayoutParams) mView.getLayoutParams();
@@ -90,7 +90,7 @@ public class ViewMarginAdjusterForSideUiTest {
         assertEquals(35, params.rightMargin);
 
         // Both margins
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(100, 200),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         params = (MarginLayoutParams) mView.getLayoutParams();
@@ -99,14 +99,14 @@ public class ViewMarginAdjusterForSideUiTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged_toolbarElementIgnoresWebContentsHeightType() {
+    public void testOnSideUiSpecsChangeStarted_toolbarElementIgnoresWebContentsHeightType() {
         SideUiObserver marginContainerObserver =
                 new ViewMarginAdjusterForSideUi(mView, /* forToolbarElement= */ true);
 
         Map<@AnchorSide Integer, SideUiSize> sideUiSpecs = new ArrayMap<>();
         sideUiSpecs.put(AnchorSide.LEFT, new SideUiSize(100, HeightType.WEB_CONTENTS));
         sideUiSpecs.put(AnchorSide.RIGHT, new SideUiSize(200, HeightType.TOOLBAR));
-        marginContainerObserver.onSideUiSpecsChanged(
+        marginContainerObserver.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(sideUiSpecs),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();

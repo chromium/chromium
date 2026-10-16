@@ -1850,7 +1850,7 @@ public class NewTabPageCoordinatorUnitTest {
     public void testSideUiObserver_liveResize_doesNotUpdateUiConfigInset() {
         SideUiObserver observer = captureSideUiObserver();
 
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(/* leftContainerWidth= */ 300, /* rightContainerWidth= */ 0),
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
@@ -1863,7 +1863,7 @@ public class NewTabPageCoordinatorUnitTest {
         SideUiObserver observer = captureSideUiObserver();
 
         int leftWidthPx = 300;
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(leftWidthPx, /* rightContainerWidth= */ 0),
                 UiUpdateRequest.getRequestForTesting(
                         /* suppressAnimations= */ true, UpdateReason.RESIZE_COMMITTED));

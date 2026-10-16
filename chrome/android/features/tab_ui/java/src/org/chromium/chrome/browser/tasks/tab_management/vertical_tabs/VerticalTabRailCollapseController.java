@@ -313,9 +313,9 @@ class VerticalTabRailCollapseController implements WindowAndroid.ActivityStateOb
      *
      * <p>Only updates the rail itself, not its Side UI container. Called when Side UI sizes the
      * container for the current inputs (from {@link
-     * VerticalTabsSideUiCoordinator#onSideUiSpecsChanged} or {@link #setWindowWidthBoundary}), or
-     * by {@link #requestEffectiveStateChangeByUser()} when no {@link RailStateChangeDelegate} is
-     * registered.
+     * VerticalTabsSideUiCoordinator#onSideUiSpecsChangeStarted} or {@link
+     * #setWindowWidthBoundary}), or by {@link #requestEffectiveStateChangeByUser()} when no {@link
+     * RailStateChangeDelegate} is registered.
      *
      * <p>While applying is deferred (see {@link #setApplyDeferred(boolean)}), this only records the
      * request, and the latest state is applied once deferral ends.

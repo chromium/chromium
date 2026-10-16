@@ -518,7 +518,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         @Override
-        public void onSideUiSpecsChanged(
+        public void onSideUiSpecsChangeStarted(
                 SideUiCoordinator.SideUiSpecs sideUiSpecs,
                 SideUiCoordinator.UiUpdateRequest request) {
             if (mIsInHub) {

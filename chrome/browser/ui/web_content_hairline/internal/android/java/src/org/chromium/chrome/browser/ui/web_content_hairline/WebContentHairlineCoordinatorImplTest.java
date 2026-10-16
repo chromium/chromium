@@ -159,12 +159,12 @@ public class WebContentHairlineCoordinatorImplTest {
     }
 
     @Test
-    public void testSideUiSpecsChangedUpdatesTopHairline() {
+    public void testSideUiSpecsChangeStartedUpdatesTopHairline() {
         SideUiObserver observer = captureSideUiObserver();
 
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR))),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
@@ -173,7 +173,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
         // Once no side UI is showing, the top hairline should be hidden.
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(false);
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 new SideUiSpecs(Collections.emptyMap()),
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
@@ -194,7 +194,7 @@ public class WebContentHairlineCoordinatorImplTest {
         // 2. Show left SideUI.
         SideUiSpecs showLeftSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 showLeftSpecs,
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertEquals(View.VISIBLE, mLeftHairline.getVisibility());
@@ -206,7 +206,7 @@ public class WebContentHairlineCoordinatorImplTest {
         // 3. Hide left SideUI and show right SideUI.
         SideUiSpecs showRightSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.RIGHT, new SideUiSize(50, HeightType.TOOLBAR)));
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 showRightSpecs,
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
@@ -217,7 +217,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
         // 4. Hide right SideUI.
         SideUiSpecs hideAllSpecs = new SideUiSpecs(Collections.emptyMap());
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 hideAllSpecs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
@@ -235,7 +235,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
         SideUiSpecs showLeftSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 showLeftSpecs,
                 UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 

@@ -885,6 +885,10 @@ final class SideUiCoordinatorImpl
      */
     private void commitNewSideUiSpecs(
             SideUiUpdateSpecs uiUpdateSpecs, @Nullable TransitionSet transitionSet) {
+        // TODO(crbug.com/573737596): Move this next to the
+        //  SideUiObserverNotifier#notifySideUiSpecsChangeStarted calls, so SideUiContainers and
+        //  SideUiObservers are notified at the same time and in the same order when a UI update
+        //  starts, like they already are when it completes.
         notifyContainersOnUiUpdateStarting(uiUpdateSpecs.mCurrentSpecs, uiUpdateSpecs.mNewSpecs);
 
         // Whether both the width and height gets updated. The animation will be suppressed if true.
@@ -985,7 +989,7 @@ final class SideUiCoordinatorImpl
 
                         notifyContainersOnUiUpdateCompleted(
                                 uiUpdateSpecs.mCurrentSpecs, uiUpdateSpecs.mNewSpecs);
-                        mSideUiObserverNotifier.notifyTransitionEnded(
+                        mSideUiObserverNotifier.notifySideUiSpecsChangeCompleted(
                                 uiUpdateSpecs.mNewSpecs, uiUpdateSpecs.mRequest);
                     }
                 });
@@ -1015,7 +1019,8 @@ final class SideUiCoordinatorImpl
                     newRenderedWidth);
         }
 
-        mSideUiObserverNotifier.notifyTransitionBegun(newSideUiSpecs, uiUpdateSpecs.mRequest);
+        mSideUiObserverNotifier.notifySideUiSpecsChangeStarted(
+                newSideUiSpecs, uiUpdateSpecs.mRequest);
     }
 
     private void commitNewSpecsForStaticResize(SideUiUpdateSpecs uiUpdateSpecs) {
@@ -1066,10 +1071,14 @@ final class SideUiCoordinatorImpl
         // Android framework will skip this subtree.
         ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
 
+        mSideUiObserverNotifier.notifySideUiSpecsChangeStarted(
+                newSideUiSpecs, uiUpdateSpecs.mRequest);
+
         mCurrentSideUiSpecs = newSideUiSpecs;
 
         notifyContainersOnUiUpdateCompleted(currentSideUiSpecs, newSideUiSpecs);
-        mSideUiObserverNotifier.notifySideUiSpecsChanged(newSideUiSpecs, uiUpdateSpecs.mRequest);
+        mSideUiObserverNotifier.notifySideUiSpecsChangeCompleted(
+                newSideUiSpecs, uiUpdateSpecs.mRequest);
     }
 
     /**

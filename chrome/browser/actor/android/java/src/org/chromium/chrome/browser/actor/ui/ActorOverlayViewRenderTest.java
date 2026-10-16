@@ -163,7 +163,7 @@ public class ActorOverlayViewRenderTest {
                 () -> {
                     sideUiObserverCaptor
                             .getValue()
-                            .onSideUiSpecsChanged(
+                            .onSideUiSpecsChangeStarted(
                                     sideUiSpecs,
                                     UiUpdateRequest.getRequestForTesting(
                                             /* suppressAnimations= */ true));

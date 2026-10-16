@@ -375,7 +375,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+    public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         int leftWidth = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
         int rightWidth = sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         int startMargin = LocalizationUtils.isLayoutRtl() ? rightWidth : leftWidth;
@@ -386,6 +386,9 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
                 /* layoutMarginEnd= */ endMargin * mPxToDp);
         resizePanelContentView();
     }
+
+    @Override
+    public void onSideUiSpecsChangeCompleted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
 
     // ============================================================================================
     // Generic Event Handling

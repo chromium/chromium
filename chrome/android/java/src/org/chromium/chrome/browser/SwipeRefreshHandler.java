@@ -118,11 +118,16 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     private final SideUiObserver mSideUiObserver =
             new SideUiObserver() {
                 @Override
-                public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+                public void onSideUiSpecsChangeStarted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
                     updateSideUiWidths(
                             sideUiSpecs.getReservedWidth(AnchorSide.LEFT),
                             sideUiSpecs.getReservedWidth(AnchorSide.RIGHT));
                 }
+
+                @Override
+                public void onSideUiSpecsChangeCompleted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
             };
 
     /**

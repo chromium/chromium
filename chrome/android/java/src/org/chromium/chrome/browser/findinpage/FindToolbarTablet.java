@@ -216,9 +216,12 @@ public class FindToolbarTablet extends FindToolbar implements SideUiObserver {
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+    public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         updateEndMarginForSideUi(sideUiSpecs);
     }
+
+    @Override
+    public void onSideUiSpecsChangeCompleted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
 
     /**
      * Adjusts the end margin of the toolbar when a Side UI container is active on the anchor side

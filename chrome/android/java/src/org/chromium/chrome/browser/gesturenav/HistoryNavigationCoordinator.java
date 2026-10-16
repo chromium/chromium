@@ -48,10 +48,19 @@ public class HistoryNavigationCoordinator
         implements InsetObserver.WindowInsetObserver, PauseResumeWithNativeObserver {
     private final Runnable mUpdateNavigationStateRunnable = this::onNavigationStateChanged;
     private final SideUiObserver mSideUiObserver =
-            (SideUiSpecs sideUiSpecs, UiUpdateRequest request) ->
+            new SideUiObserver() {
+                @Override
+                public void onSideUiSpecsChangeStarted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
                     updateSideUiWidths(
                             sideUiSpecs.getReservedWidth(AnchorSide.LEFT),
                             sideUiSpecs.getReservedWidth(AnchorSide.RIGHT));
+                }
+
+                @Override
+                public void onSideUiSpecsChangeCompleted(
+                        SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
+            };
 
     private WindowAndroid mWindow;
     private ViewGroup mParentView;

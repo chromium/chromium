@@ -1962,8 +1962,6 @@ public class ToolbarManager
         // This method may be called after a SideUiContainer is already shown, in which case the
         // SideUiObservers will miss the SideUiSpecs change. So we use the current SideUiSpecs to
         // initialize Views that observe SideUiSpecs.
-        // TODO(https://crbug.com/536963036): Remove the explicit calls to onSideUiSpecsChanged
-        // after fixing the initialization order.
         var currentSideUiSpecs = sideUiStateProvider.getCurrentSideUiSpecs();
 
         mControlContainerSideUiObserver =
@@ -2004,7 +2002,7 @@ public class ToolbarManager
         }
 
         @Override
-        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
             updateMarginsAndOffsetForSideUi(sideUiSpecs);
         }
 

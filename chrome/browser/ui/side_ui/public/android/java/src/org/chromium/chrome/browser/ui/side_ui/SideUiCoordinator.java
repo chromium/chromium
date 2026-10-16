@@ -192,7 +192,12 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         final @Nullable @SideUiId Integer mSideUiId;
 
         /** Whether animations should be suppressed during the UI update. */
-        final boolean mSuppressAnimations;
+        // TODO(crbug.com/573737596): SideUiCoordinatorImpl should update this to reflect whether
+        //  the update is actually animated. Currently, an update can still be static when this is
+        //  false, e.g. when animations are disabled via
+        //  ChromeFeatureList.sEnableAndroidSidePanelDisableAnimations, or when both the width and
+        //  height of a side UI change.
+        public final boolean mSuppressAnimations;
 
         /** What triggered this request. */
         public final @UpdateReason int mUpdateReason;

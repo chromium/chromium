@@ -277,11 +277,11 @@ public class VerticalTabsSideUiCoordinator
         @WindowWidthBoundary
         int boundary = VerticalTabUtils.getWindowWidthBoundary(windowWidthDp, availableWidthDp);
 
-        // SideUiCoordinator only dispatches onSideUiSpecsChanged() when there is a non-empty
+        // SideUiCoordinator only dispatches onSideUiSpecsChangeStarted() when there is a non-empty
         // SideUiSpecs diff. If the window is resized while rail width remains unchanged (e.g.
-        // staying at collapsed 76dp across the narrow-window threshold), onSideUiSpecsChanged()
-        // will be skipped. Feeding the input here makes the controller re-apply the effective
-        // state on forced-collapsed transitions.
+        // staying at collapsed 76dp across the narrow-window threshold),
+        // onSideUiSpecsChangeStarted() will be skipped. Feeding the input here makes the
+        // controller re-apply the effective state on forced-collapsed transitions.
         // If any future internal state changes while rail width (specs) remains unchanged,
         // synchronize it here or handle the state transition explicitly.
         mCollapseController.setWindowWidthBoundary(boundary);
@@ -444,13 +444,13 @@ public class VerticalTabsSideUiCoordinator
     }
 
     @Override
-    public void onTransitionEnded(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        mTabListCoordinator.setInTransition(false);
+    public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        mCollapseController.applyEffectiveState();
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        mCollapseController.applyEffectiveState();
+    public void onSideUiSpecsChangeCompleted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        mTabListCoordinator.setInTransition(false);
     }
 
     private @Px int calculateRenderedWidthPx(

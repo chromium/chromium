@@ -202,7 +202,7 @@ import java.util.Set;
         }
 
         @Override
-        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
             // TODO(crbug.com/525353575): Determine the innermost side UI to figure out which
             //  corner to show when supporting VT and SP on the same side.
             boolean isLeftShowing = sideUiSpecs.getReservedWidth(AnchorSide.LEFT) != 0;
@@ -230,7 +230,7 @@ import java.util.Set;
                     .getTopRightRoundedCorner()
                     .setVisibility(rightHairlineVisibility);
 
-            super.onSideUiSpecsChanged(sideUiSpecs, request);
+            super.onSideUiSpecsChangeStarted(sideUiSpecs, request);
 
             // The top hairline's visibility depends on whether any side UI is showing, so it needs
             // to be refreshed whenever the side UI specs change.

@@ -685,7 +685,7 @@ public class BookmarkBarCoordinatorTest {
         SideUiObserver observer = observerCaptor.getValue();
 
         SideUiSpecs specs = new SideUiSpecs(100, 200);
-        observer.onSideUiSpecsChanged(
+        observer.onSideUiSpecsChangeStarted(
                 specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         params = (MarginLayoutParams) mView.getLayoutParams();

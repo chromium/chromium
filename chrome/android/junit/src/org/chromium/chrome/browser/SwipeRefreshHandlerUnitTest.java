@@ -111,7 +111,7 @@ public class SwipeRefreshHandlerUnitTest {
     }
 
     @Test
-    public void testOnSideUiSpecsChanged() {
+    public void testOnSideUiSpecsChangeStarted() {
         SwipeRefreshHandler handler =
                 SwipeRefreshHandler.from(mTab, context -> mSwipeRefreshLayout);
         handler.setSideUiStateProvider(mSideUiStateProvider);
@@ -129,7 +129,7 @@ public class SwipeRefreshHandlerUnitTest {
                                 new SideUiSize(250, HeightType.WEB_CONTENTS)));
         mSideUiObserverCaptor
                 .getValue()
-                .onSideUiSpecsChanged(
+                .onSideUiSpecsChangeStarted(
                         newSpecs,
                         UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
