@@ -68,6 +68,15 @@ class ScrollToolRequest : public PageToolRequest {
 class ScrollPageToolRequest : public PageToolRequest {
  public:
   static constexpr char kName[] = "ScrollPage";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "scroll_page";
+  // JSON argument key for the scroll granularity parameter.
+  static constexpr std::string_view kGranularityParam = "granularity";
+  // JSON argument key for the scroll direction parameter.
+  static constexpr std::string_view kDirectionParam = "direction";
+  // JSON argument key for the target element DOM node ID parameter.
+  static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
 
   using Direction = ScrollToolRequest::Direction;
 
@@ -86,6 +95,9 @@ class ScrollPageToolRequest : public PageToolRequest {
                         Direction direction);
   ScrollPageToolRequest(const ScrollPageToolRequest& other);
   ~ScrollPageToolRequest() override;
+
+  // Returns the `ToolId::kScrollPage` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 

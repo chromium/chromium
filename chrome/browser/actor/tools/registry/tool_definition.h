@@ -69,7 +69,9 @@ enum class ToolId {
   kAddBookmark = 24,
   // Removes bookmarks matching the specified URL.
   kRemoveBookmark = 25,
-  kMaxValue = kRemoveBookmark,
+  // Scrolls an element or the main viewport by a page or to its start/end.
+  kScrollPage = 26,
+  kMaxValue = kScrollPage,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

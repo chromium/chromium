@@ -40,6 +40,19 @@ constexpr std::string_view kDomNodeIdParamDescription =
     "The DOM node ID of the scrollable element, or 0 to scroll the main "
     "viewport.";
 
+// Default description for the `scroll_page` tool.
+constexpr std::string_view kScrollPageToolDescription =
+    "Scrolls the page or a specific scrollable element in the given direction "
+    "by one page, or all the way to its start or end.";
+
+// Description for the `granularity` parameter of the `scroll_page` tool.
+constexpr std::string_view kGranularityParamDescription =
+    "The units to scroll by. \"page\" scrolls by one page of the scroller. "
+    "\"document\" scrolls to the start or end of the scroller.";
+
+// Allowed values for the `granularity` parameter of the `scroll_page` tool.
+constexpr std::string_view kGranularityParamValues[] = {"page", "document"};
+
 blink::mojom::ScrollDirectionPhysical ToMojoDirection(
     ScrollToolRequest::Direction direction) {
   switch (direction) {
@@ -116,6 +129,22 @@ ScrollPageToolRequest::ScrollPageToolRequest(
     const ScrollPageToolRequest& other) = default;
 
 ScrollPageToolRequest::~ScrollPageToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> ScrollPageToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kScrollPage, kModelFacingName,
+                               kScrollPageToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddStringEnumProperty(kGranularityParam,
+                                     kGranularityParamDescription,
+                                     kGranularityParamValues)
+              .AddStringEnumProperty(kDirectionParam,
+                                     kDirectionParamDescription,
+                                     kDirectionParamValues)
+              .AddIntegerProperty(kDomNodeIdParam, kDomNodeIdParamDescription))
+      .Build();
+}
 
 void ScrollPageToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);

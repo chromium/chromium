@@ -361,6 +361,28 @@ TEST(ToolRegistryTest, RemoveBookmarkToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(RemoveBookmarkToolRequest::kUrlParam));
 }
 
+TEST(ToolRegistryTest, ScrollPageToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ScrollPageToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kScrollPage);
+  EXPECT_EQ(definition->name, ScrollPageToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(ScrollPageToolRequest::kGranularityParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(ScrollPageToolRequest::kGranularityParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(ScrollPageToolRequest::kDirectionParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(ScrollPageToolRequest::kDirectionParam));
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(ScrollPageToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(ScrollPageToolRequest::kDomNodeIdParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -669,6 +691,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsRemoveBookmarkTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kRemoveBookmark,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsScrollPageTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kScrollPage, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
