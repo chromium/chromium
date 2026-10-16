@@ -8173,12 +8173,12 @@
   {
     "name": "pdf-brotli-decode",
     "owners": [ "aryankrishnan4b@gmail.com", "//pdf/OWNERS" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "pdf-ink2",
     "owners": [ "andyphan@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 170
+    "expiry_milestone": 180
   },
   {
     "name": "pdf-launcher-activity",
@@ -8192,7 +8192,7 @@
   {
     "name": "pdf-oopif",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 162
+    "expiry_milestone": 180
   },
   {
     "name": "pdf-portfolio",
@@ -8210,12 +8210,12 @@
   {
     "name": "pdf-use-skia-renderer",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "pdf-xfa-forms",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 180
   },
   {
     "name": "permission-promise-lifetime-modulation-android",
