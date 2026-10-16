@@ -138,7 +138,7 @@ class LocalSyncRunner : public SyncProcessRunner,
 
   // LocalFileSyncService::Observer overrides.
   void OnLocalChangeAvailable(int64_t pending_changes) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
     OnChangesUpdated(pending_changes);
 
@@ -189,7 +189,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
 
   // RemoteFileSyncService::Observer overrides.
   void OnRemoteChangeQueueUpdated(int64_t pending_changes) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
     OnChangesUpdated(pending_changes);
 
@@ -230,7 +230,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
 // SyncFileSystemService
 
 void SyncFileSystemService::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   local_sync_runners_.clear();
   remote_sync_runners_.clear();
@@ -251,17 +251,18 @@ void SyncFileSystemService::Shutdown() {
 }
 
 SyncFileSystemService::~SyncFileSystemService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!profile_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!profile_, base::NotFatalUntil::M162);
 }
 
 void SyncFileSystemService::InitializeForApp(
     storage::FileSystemContext* file_system_context,
     const GURL& app_origin,
     SyncStatusCallback callback) {
-  DCHECK(local_service_);
-  DCHECK(remote_service_);
-  DCHECK(app_origin == app_origin.DeprecatedGetOriginAsURL());
+  CHECK(local_service_, base::NotFatalUntil::M162);
+  CHECK(remote_service_, base::NotFatalUntil::M162);
+  CHECK(app_origin == app_origin.DeprecatedGetOriginAsURL(),
+        base::NotFatalUntil::M162);
 
   util::Log(logging::LOGGING_VERBOSE, FROM_HERE, "Initializing for App: %s",
             app_origin.spec().c_str());
@@ -275,8 +276,8 @@ void SyncFileSystemService::InitializeForApp(
 
 void SyncFileSystemService::GetFileSyncStatus(const FileSystemURL& url,
                                               SyncFileStatusCallback callback) {
-  DCHECK(local_service_);
-  DCHECK(remote_service_);
+  CHECK(local_service_, base::NotFatalUntil::M162);
+  CHECK(remote_service_, base::NotFatalUntil::M162);
 
   // It's possible to get an invalid FileEntry.
   if (!url.is_valid()) {
@@ -371,7 +372,7 @@ SyncFileSystemService* SyncFileSystemService::GetSyncService() {
 }
 
 void SyncFileSystemService::CallOnIdleForTesting(base::OnceClosure callback) {
-  DCHECK(idle_callback_.is_null());
+  CHECK(idle_callback_.is_null(), base::NotFatalUntil::M162);
   idle_callback_ = std::move(callback);
   CheckIfIdle();
 }
@@ -384,10 +385,10 @@ SyncFileSystemService::SyncFileSystemService(Profile* profile)
 void SyncFileSystemService::Initialize(
     std::unique_ptr<LocalFileSyncService> local_service,
     std::unique_ptr<RemoteFileSyncService> remote_service) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(local_service);
-  DCHECK(remote_service);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(local_service, base::NotFatalUntil::M162);
+  CHECK(remote_service, base::NotFatalUntil::M162);
+  CHECK(profile_, base::NotFatalUntil::M162);
 
   local_service_ = std::move(local_service);
   remote_service_ = std::move(remote_service);
@@ -491,7 +492,7 @@ void SyncFileSystemService::DidGetLocalChangeStatus(
 void SyncFileSystemService::OnRemoteServiceStateUpdated(
     RemoteServiceState state,
     const std::string& description) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "OnRemoteServiceStateChanged: %d %s", state, description.c_str());
   // TODO(crbug.com/396460818): Cleanup, file syncing is deprecated.

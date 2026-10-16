@@ -28,7 +28,7 @@ bool SyncableFileOperationRunner::Task::IsRunnable(
 
 void SyncableFileOperationRunner::Task::Start(LocalFileSyncStatus* status) {
   for (size_t i = 0; i < target_paths().size(); ++i) {
-    DCHECK(status->IsWritable(target_paths()[i]));
+    CHECK(status->IsWritable(target_paths()[i]), base::NotFatalUntil::M162);
     status->StartWriting(target_paths()[i]);
   }
   Run();
@@ -40,12 +40,12 @@ SyncableFileOperationRunner::SyncableFileOperationRunner(
     int64_t max_inflight_tasks,
     LocalFileSyncStatus* sync_status)
     : sync_status_(sync_status), max_inflight_tasks_(max_inflight_tasks) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   sync_status_->AddObserver(this);
 }
 
 SyncableFileOperationRunner::~SyncableFileOperationRunner() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
 
   for (auto& task : pending_tasks_)
     task->Cancel();
@@ -56,24 +56,24 @@ void SyncableFileOperationRunner::OnSyncEnabled(const FileSystemURL& url) {
 }
 
 void SyncableFileOperationRunner::OnWriteEnabled(const FileSystemURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   RunNextRunnableTask();
 }
 
 void SyncableFileOperationRunner::PostOperationTask(
     std::unique_ptr<Task> task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   pending_tasks_.push_back(std::move(task));
   RunNextRunnableTask();
 }
 
 void SyncableFileOperationRunner::RunNextRunnableTask() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   for (auto iter = pending_tasks_.begin();
        iter != pending_tasks_.end() && ShouldStartMoreTasks();) {
     if ((*iter)->IsRunnable(sync_status())) {
       ++num_inflight_tasks_;
-      DCHECK_GE(num_inflight_tasks_, 1);
+      CHECK_GE(num_inflight_tasks_, 1, base::NotFatalUntil::M162);
       std::unique_ptr<Task> task = std::move(*iter);
       pending_tasks_.erase(iter++);
       task->Start(sync_status());
@@ -86,9 +86,9 @@ void SyncableFileOperationRunner::RunNextRunnableTask() {
 void SyncableFileOperationRunner::OnOperationCompleted(
     const std::vector<FileSystemURL>& target_paths) {
   --num_inflight_tasks_;
-  DCHECK_GE(num_inflight_tasks_, 0);
+  CHECK_GE(num_inflight_tasks_, 0, base::NotFatalUntil::M162);
   for (size_t i = 0; i < target_paths.size(); ++i) {
-    DCHECK(sync_status()->IsWriting(target_paths[i]));
+    CHECK(sync_status()->IsWriting(target_paths[i]), base::NotFatalUntil::M162);
     sync_status()->EndWriting(target_paths[i]);
   }
   RunNextRunnableTask();

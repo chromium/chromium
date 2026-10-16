@@ -60,7 +60,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
   TrackerIDSet trackers;
   if (metadata_database()->GetMultiParentFileTrackers(&target_file_id_,
                                                       &trackers)) {
-    DCHECK_LT(1u, trackers.size());
+    CHECK_LT(1u, trackers.size(), base::NotFatalUntil::M162);
     if (!trackers.has_active()) {
       NOTREACHED();
     }
@@ -69,7 +69,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
         "Detected multi-parent trackers (active tracker_id=%" PRId64 ")",
         trackers.active_tracker()));
 
-    DCHECK(trackers.has_active());
+    CHECK(trackers.has_active(), base::NotFatalUntil::M162);
     for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
       FileTracker tracker;
       if (!metadata_database()->FindTrackerByTrackerID(*itr, &tracker)) {
@@ -93,7 +93,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
 
   if (metadata_database()->GetConflictingTrackers(&trackers)) {
     target_file_id_ = PickPrimaryFile(trackers);
-    DCHECK(!target_file_id_.empty());
+    CHECK(!target_file_id_.empty(), base::NotFatalUntil::M162);
     int64_t primary_tracker_id = -1;
     for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
       FileTracker tracker;
@@ -122,7 +122,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
 
 void ConflictResolver::DetachFromNonPrimaryParents(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(!parents_to_remove_.empty());
+  CHECK(!parents_to_remove_.empty(), base::NotFatalUntil::M162);
 
   // TODO(tzik): Check if ETag match is available for
   // RemoteResourceFromDirectory.
@@ -173,10 +173,12 @@ std::string ConflictResolver::PickPrimaryFile(const TrackerIDSet& trackers) {
       continue;
     }
 
-    DCHECK(primary->details().file_kind() == FILE_KIND_FILE ||
-           primary->details().file_kind() == FILE_KIND_FOLDER);
-    DCHECK(file_metadata->details().file_kind() == FILE_KIND_FILE ||
-           file_metadata->details().file_kind() == FILE_KIND_FOLDER);
+    CHECK(primary->details().file_kind() == FILE_KIND_FILE ||
+              primary->details().file_kind() == FILE_KIND_FOLDER,
+          base::NotFatalUntil::M162);
+    CHECK(file_metadata->details().file_kind() == FILE_KIND_FILE ||
+              file_metadata->details().file_kind() == FILE_KIND_FOLDER,
+          base::NotFatalUntil::M162);
 
     if (primary->details().file_kind() == FILE_KIND_FILE) {
       if (file_metadata->details().file_kind() == FILE_KIND_FOLDER) {
@@ -185,7 +187,8 @@ std::string ConflictResolver::PickPrimaryFile(const TrackerIDSet& trackers) {
         continue;
       }
 
-      DCHECK(file_metadata->details().file_kind() == FILE_KIND_FILE);
+      CHECK(file_metadata->details().file_kind() == FILE_KIND_FILE,
+            base::NotFatalUntil::M162);
       if (primary->details().modification_time() <
           file_metadata->details().modification_time()) {
         // Prioritize last write for regular files.

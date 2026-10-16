@@ -91,7 +91,7 @@ CancelCallbackOnce FakeDriveUploader::UploadNewFile(
     const drive::UploadNewFileOptions& options,
     UploadCompletionCallback callback,
     ProgressCallback progress_callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M162);
   const std::string kFileContent = "test content";
 
   if (make_file_conflict_) {
@@ -117,7 +117,7 @@ CancelCallbackOnce FakeDriveUploader::UploadExistingFile(
     const drive::UploadExistingFileOptions& options,
     UploadCompletionCallback callback,
     ProgressCallback progress_callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M162);
   fake_drive_service_->GetFileResource(
       resource_id, base::BindOnce(&DidGetFileResourceForUploadExisting,
                                   std::move(callback)));

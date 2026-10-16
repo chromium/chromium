@@ -59,14 +59,14 @@ LocalFileSyncService::OriginChangeMap::OriginChangeMap()
 LocalFileSyncService::OriginChangeMap::~OriginChangeMap() = default;
 
 bool LocalFileSyncService::OriginChangeMap::NextOriginToProcess(GURL* origin) {
-  DCHECK(origin);
+  CHECK(origin, base::NotFatalUntil::M162);
   if (change_count_map_.empty())
     return false;
   auto begin = next_;
   do {
     if (next_ == change_count_map_.end())
       next_ = change_count_map_.begin();
-    DCHECK_NE(0, next_->second);
+    CHECK_NE(0, next_->second, base::NotFatalUntil::M162);
     *origin = next_++->first;
     if (!disabled_origins_.contains(*origin)) {
       return true;
@@ -126,7 +126,7 @@ std::unique_ptr<LocalFileSyncService> LocalFileSyncService::CreateForTesting(
 }
 
 LocalFileSyncService::~LocalFileSyncService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void LocalFileSyncService::Shutdown() {
@@ -165,8 +165,8 @@ void LocalFileSyncService::ProcessLocalChange(SyncFileCallback callback) {
     std::move(callback).Run(SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL());
     return;
   }
-  DCHECK(!origin.is_empty());
-  DCHECK(origin_to_contexts_.contains(origin));
+  CHECK(!origin.is_empty(), base::NotFatalUntil::M162);
+  CHECK(origin_to_contexts_.contains(origin), base::NotFatalUntil::M162);
 
   DVLOG(1) << "Starting ProcessLocalChange";
 
@@ -220,7 +220,8 @@ void LocalFileSyncService::PromoteDemotedChanges(
 void LocalFileSyncService::GetLocalFileMetadata(
     const FileSystemURL& url,
     SyncFileMetadataCallback callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  CHECK(origin_to_contexts_.contains(url.origin().GetURL()),
+        base::NotFatalUntil::M162);
   sync_context_->GetFileMetadata(origin_to_contexts_[url.origin().GetURL()],
                                  url, std::move(callback));
 }
@@ -233,7 +234,7 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
   if (!origin_to_contexts_.contains(url.origin().GetURL())) {
     // This could happen if a remote sync is triggered for the app that hasn't
     // been initialized in this service.
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M162);
     // The given url.origin() must be for valid installed app.
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)
@@ -264,7 +265,8 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
     return;
   }
 
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  CHECK(origin_to_contexts_.contains(url.origin().GetURL()),
+        base::NotFatalUntil::M162);
   sync_context_->PrepareForSync(
       origin_to_contexts_[url.origin().GetURL()], url,
       LocalFileSyncContext::SYNC_EXCLUSIVE,
@@ -276,7 +278,8 @@ void LocalFileSyncService::ApplyRemoteChange(const FileChange& change,
                                              const base::FilePath& local_path,
                                              const FileSystemURL& url,
                                              SyncStatusCallback callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  CHECK(origin_to_contexts_.contains(url.origin().GetURL()),
+        base::NotFatalUntil::M162);
   util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "[Remote -> Local] ApplyRemoteChange: %s on %s",
             change.DebugString().c_str(), url.DebugString().c_str());
@@ -291,7 +294,8 @@ void LocalFileSyncService::FinalizeRemoteSync(
     const FileSystemURL& url,
     bool clear_local_changes,
     base::OnceClosure completion_callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  CHECK(origin_to_contexts_.contains(url.origin().GetURL()),
+        base::NotFatalUntil::M162);
   sync_context_->FinalizeExclusiveSync(
       origin_to_contexts_[url.origin().GetURL()], url, clear_local_changes,
       std::move(completion_callback));
@@ -300,7 +304,8 @@ void LocalFileSyncService::FinalizeRemoteSync(
 void LocalFileSyncService::RecordFakeLocalChange(const FileSystemURL& url,
                                                  const FileChange& change,
                                                  SyncStatusCallback callback) {
-  DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+  CHECK(origin_to_contexts_.contains(url.origin().GetURL()),
+        base::NotFatalUntil::M162);
   sync_context_->RecordFakeLocalChange(
       origin_to_contexts_[url.origin().GetURL()], url, change,
       std::move(callback));
@@ -323,8 +328,8 @@ void LocalFileSyncService::OnChangesAvailableInOrigins(
     need_notification = true;
     SyncFileSystemBackend* backend =
         SyncFileSystemBackend::GetBackend(origin_to_contexts_[origin]);
-    DCHECK(backend);
-    DCHECK(backend->change_tracker());
+    CHECK(backend, base::NotFatalUntil::M162);
+    CHECK(backend->change_tracker(), base::NotFatalUntil::M162);
     origin_change_map_.SetOriginChangeCount(
         origin, backend->change_tracker()->num_changes());
   }
@@ -351,7 +356,7 @@ LocalFileSyncService::LocalFileSyncService(Profile* profile,
                                    content::GetUIThreadTaskRunner({}).get(),
                                    content::GetIOThreadTaskRunner({}).get())),
       local_change_processor_(nullptr) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   sync_context_->AddOriginChangeObserver(this);
 }
 
@@ -364,7 +369,7 @@ void LocalFileSyncService::DidInitializeFileSystemContext(
     std::move(callback).Run(status);
     return;
   }
-  DCHECK(file_system_context);
+  CHECK(file_system_context, base::NotFatalUntil::M162);
   origin_to_contexts_[app_origin] = file_system_context;
 
   if (pending_origins_with_changes_.find(app_origin) !=
@@ -373,8 +378,8 @@ void LocalFileSyncService::DidInitializeFileSystemContext(
     pending_origins_with_changes_.erase(app_origin);
     SyncFileSystemBackend* backend =
         SyncFileSystemBackend::GetBackend(file_system_context);
-    DCHECK(backend);
-    DCHECK(backend->change_tracker());
+    CHECK(backend, base::NotFatalUntil::M162);
+    CHECK(backend->change_tracker(), base::NotFatalUntil::M162);
     origin_change_map_.SetOriginChangeCount(
         app_origin, backend->change_tracker()->num_changes());
     int64_t num_changes = origin_change_map_.GetTotalChangeCount();
@@ -469,7 +474,8 @@ void LocalFileSyncService::ProcessNextChangeForURL(
 
   const FileSystemURL& url = sync_file_info.url;
   if (status != SYNC_STATUS_OK || changes.empty()) {
-    DCHECK(origin_to_contexts_.contains(url.origin().GetURL()));
+    CHECK(origin_to_contexts_.contains(url.origin().GetURL()),
+          base::NotFatalUntil::M162);
     sync_context_->FinalizeSnapshotSync(
         origin_to_contexts_[url.origin().GetURL()], url, status,
         base::BindOnce(std::move(callback), status, url));
@@ -490,7 +496,7 @@ LocalChangeProcessor* LocalFileSyncService::GetLocalChangeProcessor(
     const FileSystemURL& url) {
   if (!get_local_change_processor_.is_null())
     return get_local_change_processor_.Run(url.origin().GetURL());
-  DCHECK(local_change_processor_);
+  CHECK(local_change_processor_, base::NotFatalUntil::M162);
   return local_change_processor_;
 }
 

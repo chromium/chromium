@@ -71,7 +71,7 @@ SyncProcessRunner::SyncProcessRunner(const std::string& name,
       timer_helper_(std::move(timer_helper)),
       service_state_(SYNC_SERVICE_RUNNING),
       pending_changes_(0) {
-  DCHECK_LE(1u, max_parallel_task_);
+  CHECK_LE(1u, max_parallel_task_, base::NotFatalUntil::M162);
   if (!timer_helper_)
     timer_helper_ = std::make_unique<BaseTimerHelper>();
 }
@@ -116,7 +116,7 @@ void SyncProcessRunner::Schedule() {
 void SyncProcessRunner::ThrottleSync(int64_t base_delay) {
   base::TimeTicks now = timer_helper_->Now();
   base::TimeDelta elapsed = std::min(now, throttle_until_) - throttle_from_;
-  DCHECK(base::TimeDelta() <= elapsed);
+  CHECK(base::TimeDelta() <= elapsed, base::NotFatalUntil::M162);
 
   throttle_from_ = now;
   // Extend throttling duration by twice the elapsed time.
@@ -147,7 +147,7 @@ SyncServiceState SyncProcessRunner::GetServiceState() {
 }
 
 void SyncProcessRunner::OnChangesUpdated(int64_t pending_changes) {
-  DCHECK_GE(pending_changes, 0);
+  CHECK_GE(pending_changes, 0, base::NotFatalUntil::M162);
   int64_t old_pending_changes = pending_changes_;
   pending_changes_ = pending_changes;
   if (old_pending_changes != pending_changes) {
@@ -165,8 +165,8 @@ SyncFileSystemService* SyncProcessRunner::GetSyncService() {
 
 void SyncProcessRunner::Finished(const base::TimeTicks& start_time,
                                  SyncStatusCode status) {
-  DCHECK_LT(0u, running_tasks_);
-  DCHECK_LE(running_tasks_, max_parallel_task_);
+  CHECK_LT(0u, running_tasks_, base::NotFatalUntil::M162);
+  CHECK_LE(running_tasks_, max_parallel_task_, base::NotFatalUntil::M162);
   --running_tasks_;
   CheckIfIdle();
   util::Log(logging::LOGGING_VERBOSE, FROM_HERE,

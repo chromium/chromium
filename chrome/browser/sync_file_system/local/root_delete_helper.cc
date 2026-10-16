@@ -23,12 +23,13 @@ namespace {
 // This runs on FileSystemContext's default_file_task_runner.
 void ResetFileChangeTracker(storage::FileSystemContext* file_system_context,
                             const storage::FileSystemURL& url) {
-  DCHECK(file_system_context->default_file_task_runner()->
-             RunsTasksInCurrentSequence());
+  CHECK(file_system_context->default_file_task_runner()
+            ->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   SyncFileSystemBackend* backend =
       SyncFileSystemBackend::GetBackend(file_system_context);
-  DCHECK(backend);
-  DCHECK(backend->change_tracker());
+  CHECK(backend, base::NotFatalUntil::M162);
+  CHECK(backend->change_tracker(), base::NotFatalUntil::M162);
   backend->change_tracker()->ResetForFileSystem(url.origin().GetURL(),
                                                 url.type());
 }
@@ -44,12 +45,13 @@ RootDeleteHelper::RootDeleteHelper(
       url_(url),
       callback_(std::move(callback)),
       sync_status_(sync_status) {
-  DCHECK(file_system_context_.get());
-  DCHECK(url_.is_valid());
-  DCHECK(!callback_.is_null());
-  DCHECK(sync_status_);
+  CHECK(file_system_context_.get(), base::NotFatalUntil::M162);
+  CHECK(url_.is_valid(), base::NotFatalUntil::M162);
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M162);
+  CHECK(sync_status_, base::NotFatalUntil::M162);
   // This is expected to run on the filesystem root.
-  DCHECK(storage::VirtualPath::IsRootPath(url.path()));
+  CHECK(storage::VirtualPath::IsRootPath(url.path()),
+        base::NotFatalUntil::M162);
 }
 
 RootDeleteHelper::~RootDeleteHelper() = default;
@@ -69,8 +71,8 @@ void RootDeleteHelper::Run() {
 void RootDeleteHelper::DidDeleteFileSystem(base::File::Error error) {
   // Ignore errors, no idea how to deal with it.
 
-  DCHECK(!sync_status_->IsWritable(url_));
-  DCHECK(!sync_status_->IsWriting(url_));
+  CHECK(!sync_status_->IsWritable(url_), base::NotFatalUntil::M162);
+  CHECK(!sync_status_->IsWriting(url_), base::NotFatalUntil::M162);
 
   // All writes to the entire file system must be now blocked, so we have
   // to be able to safely reset the local changes and sync statuses for it.
@@ -85,8 +87,8 @@ void RootDeleteHelper::DidDeleteFileSystem(base::File::Error error) {
 }
 
 void RootDeleteHelper::DidResetFileChangeTracker() {
-  DCHECK(!sync_status_->IsWritable(url_));
-  DCHECK(!sync_status_->IsWriting(url_));
+  CHECK(!sync_status_->IsWritable(url_), base::NotFatalUntil::M162);
+  CHECK(!sync_status_->IsWriting(url_), base::NotFatalUntil::M162);
 
   // Reopening the filesystem.
   file_system_context_->sandbox_delegate()->OpenFileSystem(

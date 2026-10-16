@@ -52,7 +52,7 @@ bool CalledOnUIThread() {
 
 SyncFileSystemBackend::SyncFileSystemBackend(Profile* profile)
     : profile_(profile) {
-  DCHECK(CalledOnUIThread());
+  CHECK(CalledOnUIThread(), base::NotFatalUntil::M162);
   // Register the service name here to enable to crack an URL on SyncFileSystem
   // even if SyncFileSystemService has not started yet.
   RegisterSyncableFileSystem();
@@ -67,7 +67,7 @@ SyncFileSystemBackend::~SyncFileSystemBackend() {
 // static
 std::unique_ptr<SyncFileSystemBackend>
 SyncFileSystemBackend::CreateForTesting() {
-  DCHECK(CalledOnUIThread());
+  CHECK(CalledOnUIThread(), base::NotFatalUntil::M162);
   auto backend = std::make_unique<SyncFileSystemBackend>(nullptr);
   backend->skip_initialize_syncfs_service_for_testing_ = true;
   return backend;
@@ -79,8 +79,8 @@ bool SyncFileSystemBackend::CanHandleType(storage::FileSystemType type) const {
 }
 
 void SyncFileSystemBackend::Initialize(storage::FileSystemContext* context) {
-  DCHECK(context);
-  DCHECK(!context_);
+  CHECK(context, base::NotFatalUntil::M162);
+  CHECK(!context_, base::NotFatalUntil::M162);
   context_ = context;
 
   storage::SandboxFileSystemBackendDelegate* delegate = GetDelegate();
@@ -92,7 +92,7 @@ void SyncFileSystemBackend::Initialize(storage::FileSystemContext* context) {
 void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                        storage::OpenFileSystemMode mode,
                                        ResolveURLCallback callback) {
-  DCHECK(CanHandleType(url.type()));
+  CHECK(CanHandleType(url.type()), base::NotFatalUntil::M162);
 
   if (!IsSyncFSAllowedOrigin(url.origin())) {
     std::move(callback).Run(GURL(), std::string(),
@@ -130,7 +130,7 @@ storage::CopyOrMoveFileValidatorFactory*
 SyncFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
     storage::FileSystemType type,
     base::File::Error* error_code) {
-  DCHECK(error_code);
+  CHECK(error_code, base::NotFatalUntil::M162);
   *error_code = base::File::FILE_OK;
   return nullptr;
 }
@@ -141,9 +141,9 @@ SyncFileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
-  DCHECK(CanHandleType(url.type()));
-  DCHECK(context);
-  DCHECK(error_code);
+  CHECK(CanHandleType(url.type()), base::NotFatalUntil::M162);
+  CHECK(context, base::NotFatalUntil::M162);
+  CHECK(error_code, base::NotFatalUntil::M162);
 
   if (!IsSyncFSAllowedOrigin(url.origin())) {
     *error_code = base::File::FILE_ERROR_SECURITY;
@@ -184,7 +184,7 @@ SyncFileSystemBackend::CreateFileStreamReader(
     storage::FileSystemContext* context,
     file_access::ScopedFileAccessDelegate::
         RequestFilesAccessIOCallback /*file_access*/) const {
-  DCHECK(CanHandleType(url.type()));
+  CHECK(CanHandleType(url.type()), base::NotFatalUntil::M162);
   return GetDelegate()->CreateFileStreamReader(
       url, offset, expected_modification_time, context);
 }
@@ -194,7 +194,7 @@ SyncFileSystemBackend::CreateFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset,
     storage::FileSystemContext* context) const {
-  DCHECK(CanHandleType(url.type()));
+  CHECK(CanHandleType(url.type()), base::NotFatalUntil::M162);
   return GetDelegate()->CreateFileStreamWriter(
       url, offset, context, storage::kFileSystemTypeSyncableForInternalSync);
 }
@@ -221,7 +221,7 @@ const storage::AccessObserverList* SyncFileSystemBackend::GetAccessObservers(
 // static
 SyncFileSystemBackend* SyncFileSystemBackend::GetBackend(
     const storage::FileSystemContext* file_system_context) {
-  DCHECK(file_system_context);
+  CHECK(file_system_context, base::NotFatalUntil::M162);
   return static_cast<SyncFileSystemBackend*>(
       file_system_context->GetFileSystemBackend(
           storage::kFileSystemTypeSyncable));
@@ -229,8 +229,8 @@ SyncFileSystemBackend* SyncFileSystemBackend::GetBackend(
 
 void SyncFileSystemBackend::SetLocalFileChangeTracker(
     scoped_refptr<LocalFileChangeTracker> tracker) {
-  DCHECK(!change_tracker_);
-  DCHECK(tracker);
+  CHECK(!change_tracker_, base::NotFatalUntil::M162);
+  CHECK(tracker, base::NotFatalUntil::M162);
   change_tracker_ = std::move(tracker);
 
   storage::SandboxFileSystemBackendDelegate* delegate = GetDelegate();
@@ -244,14 +244,14 @@ void SyncFileSystemBackend::SetLocalFileChangeTracker(
 
 void SyncFileSystemBackend::set_sync_context(
     LocalFileSyncContext* sync_context) {
-  DCHECK(!sync_context_.get());
+  CHECK(!sync_context_.get(), base::NotFatalUntil::M162);
   sync_context_ = sync_context;
 }
 
 storage::SandboxFileSystemBackendDelegate* SyncFileSystemBackend::GetDelegate()
     const {
-  DCHECK(context_);
-  DCHECK(context_->sandbox_delegate());
+  CHECK(context_, base::NotFatalUntil::M162);
+  CHECK(context_->sandbox_delegate(), base::NotFatalUntil::M162);
   return context_->sandbox_delegate();
 }
 
@@ -260,7 +260,7 @@ void SyncFileSystemBackend::InitializeSyncFileSystemService(
     SyncStatusCallback callback) {
   // Repost to switch from IO thread to UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M162);
     // It is safe to pass Unretained(this) (see comments in OpenFileSystem()).
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -278,7 +278,7 @@ void SyncFileSystemBackend::InitializeSyncFileSystemService(
 
   SyncFileSystemService* service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M162);
   service->InitializeForApp(context_, origin_url, std::move(callback));
 }
 
@@ -291,7 +291,7 @@ void SyncFileSystemBackend::DidInitializeSyncFileSystemService(
     SyncStatusCode status) {
   // Repost to switch from UI thread to IO thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     // It is safe to pass Unretained(this) since |context| owns it.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
