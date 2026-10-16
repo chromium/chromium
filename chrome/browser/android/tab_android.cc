@@ -740,7 +740,12 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(const std::string& url,
 
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
-  if (entry && url == entry->GetVirtualURL().spec()) {
+  // Some native pages are shown for an entry whose virtual URL differs from the
+  // native page URL, e.g. a PdfPage for a web PDF has the internal
+  // chrome-native://pdf URL, while the virtual URL is the PDF URL. Accept a
+  // match against either URL.
+  if (entry &&
+      (url == entry->GetVirtualURL().spec() || url == entry->GetURL().spec())) {
     entry->SetTitle(std::move(title));
   }
 }

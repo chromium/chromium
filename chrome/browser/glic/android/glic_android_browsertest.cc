@@ -19,8 +19,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,6 +114,63 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
   histogram_tester.ExpectUniqueSample(
       page_content_annotations::kPdfContentsRequestedHistogram,
       page_content_annotations::PdfRequestStates::kPdfMainDoc_PdfFound, 1);
+}
+
+// Tests that page context fetching for a PDF downloaded from the web reports
+// the title of the native PDF page, rather than the URL.
+IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
+                       testPageContextFetchingWithWebPdf) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_V) {
+    GTEST_SKIP() << "Android inline PDF requires Android V+.";
+  }
+
+  static constexpr char kPdfContent[] =
+      "%PDF-1.4\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n";
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath pdf_path = temp_dir.GetPath().AppendASCII("test.pdf");
+  ASSERT_TRUE(base::WriteFile(pdf_path, kPdfContent));
+
+  // Mimic `DownloadController#onPdfDownloadStarted()`, which loads the native
+  // PDF page URL with the downloaded PDF URL as the virtual URL.
+  GURL download_url("https://example.com/test.pdf");
+  GURL pdf_url(
+      "chrome-native://pdf/link?url=" +
+      base::EscapeQueryParamValue(download_url.spec(), /*use_plus=*/false));
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  // Start from a committed page, like a real PDF download does. On slow
+  // devices, the startup about:blank navigation of the initial tab may still be
+  // committing when the test body starts. That commit discards the pending
+  // navigation entry of the PDF navigation below, so the PDF navigation then
+  // commits a new entry without the virtual URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GetTestUrl("page.html")));
+
+  TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
+  ASSERT_TRUE(tab_android);
+  tab_android->SetPdfNativePageForTesting(pdf_url.spec(), pdf_path.value());
+  content::NavigationController::LoadURLParams params(pdf_url);
+  params.load_type = content::NavigationController::LOAD_TYPE_PDF_ANDROID;
+  params.virtual_url_for_special_cases = download_url;
+  params.is_pdf = true;
+  content::TestNavigationObserver observer(web_contents);
+  web_contents->GetController().LoadURLWithParams(params);
+  observer.Wait();
+  ASSERT_EQ(download_url, web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(tab_android->IsPdf());
+  // The native PDF page title is pushed to the navigation entry, even though
+  // the native page URL differs from the virtual URL.
+  EXPECT_EQ(u"test.pdf", web_contents->GetTitle());
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(instance).has_value());
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
+                                       true);
+
+  ExecuteJsTest({.params = base::Value(kPdfContent)});
+  tab_android->SetPdfNativePageForTesting("", "");
 }
 
 // Tests that Mojo pipe stays resilient when device screen orientation changes.

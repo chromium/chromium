@@ -23,6 +23,15 @@ class GlicAndroidBrowserTests extends ApiTestFixtureBase {
   }
 
   async testPageContextFetchingWithPdf() {
+    await this.checkPdfPageContext();
+  }
+
+  async testPageContextFetchingWithWebPdf() {
+    await this.checkPdfPageContext();
+  }
+
+  // Fetches the context of the focused PDF tab and verifies it.
+  private async checkPdfPageContext() {
     const result = await this.host.getContextFromFocusedTab?.({
       pdfData: true,
       viewportScreenshot: false,
@@ -39,6 +48,11 @@ class GlicAndroidBrowserTests extends ApiTestFixtureBase {
     const expectedPdfContent = this.testParams as string;
     assertEquals(expectedPdfContent, new TextDecoder().decode(pdfData));
     assertFalse(result.pdfDocumentData.pdfSizeLimitExceeded);
+    // The title must be the one of the native PDF page set by the C++ side of
+    // the test, rather than the one of the placeholder document.
+    assertEquals(
+        'test.pdf', result.tabData.title,
+        `Tab data has unexpected title ${result.tabData.title}`);
   }
 
   async testDeviceRotationMojoResiliency() {

@@ -2417,6 +2417,17 @@ class TabImpl implements Tab, TabInternal {
             title = mUrl.getSpec();
         } else if (isNativePage()) {
             title = mNativePage.getTitle();
+            // Keep the navigation entry title, which is used as the WebContents title, in sync
+            // with the native page title. The native page title may change after the page is
+            // shown, e.g. a PdfPage gets the file name once the PDF download completes. The
+            // renderer may also reset the entry title, e.g. once the empty placeholder document
+            // of a PdfPage finishes parsing.
+            WebContents webContents = getWebContents();
+            if (mNativeTabAndroid != 0
+                    && webContents != null
+                    && !TextUtils.equals(webContents.getTitle(), title)) {
+                pushNativePageStateToNavigationEntry();
+            }
         } else if (getWebContents() != null) {
             title = getWebContents().getTitle();
         }
