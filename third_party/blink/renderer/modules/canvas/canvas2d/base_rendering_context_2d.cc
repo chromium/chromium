@@ -245,15 +245,16 @@ bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
 }
 
 base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
+  base::ByteSize result;
   if (shared_image_provider_) {
-    return shared_image_provider_->EstimatedSizeInBytes();
+    result += shared_image_provider_->EstimatedSizeInBytes();
   }
   if (surface_) {
-    return base::ByteSize(
+    result += base::ByteSize(
         color_params_.GetSharedImageFormat().EstimatedSizeInBytes(
             Host()->Size()));
   }
-  return base::ByteSize();
+  return result;
 }
 
 void BaseRenderingContext2D::CreateSharedImageProvider(
