@@ -969,7 +969,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidKeyboardShortcutOpenFile =
-            newCachedFlag(ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE, false);
+            newCachedFlag(ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE, true);
     public static final CachedFlag sAndroidMultiprofile =
             newCachedFlag(ANDROID_MULTIPROFILE, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =

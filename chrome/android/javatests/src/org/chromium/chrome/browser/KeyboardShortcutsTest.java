@@ -205,10 +205,14 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testOpenBookmarks_withoutMetaShiftOn() {
-        testOpenBookmarks(
-                /* expectHandled= */ false,
-                /* isCurrentTabVisible= */ true,
-                /* metaState= */ KeyEvent.META_CTRL_ON);
+        // Ctrl+O (no Shift) is handled as "open file", not "open bookmarks".
+        assertTrue(
+                keyDown(
+                        KeyEvent.KEYCODE_O,
+                        KeyEvent.META_CTRL_ON,
+                        /* isCurrentTabVisible= */ true));
+        verify(mMenuOrKeyboardActionController, never())
+                .onMenuOrKeyboardAction(eq(R.id.all_bookmarks_menu_id), anyBoolean());
     }
 
     @Test
