@@ -1253,3 +1253,11 @@ bool IsFiveButtonAppBarLayoutEnabled() {
   }
   return base::FeatureList::IsEnabled(kFiveButtonAppBarLayout);
 }
+
+BASE_FEATURE(kClearRootViewControllerAfterSceneDisconnect,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsClearRootViewControllerAfterSceneDisconnectEnabled() {
+  return base::FeatureList::IsEnabled(
+      kClearRootViewControllerAfterSceneDisconnect);
+}
