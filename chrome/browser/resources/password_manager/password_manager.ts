@@ -47,6 +47,7 @@ export {ExportPasswordsResult, ExportProgressStatus, ImportEntryStatus, ImportRe
 export {PasswordsExporterElement} from './passwords_exporter.js';
 export {PasswordsImporterElement} from './passwords_importer.js';
 export {PasswordsSectionElement} from './passwords_section.js';
+export {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export type {RouteObserverMixinInterface} from './router.js';
 export {CheckupSubpage, Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';

@@ -30,6 +30,7 @@ import type {NotificationCard} from './notification_cards/notification_cards_bro
 import {NotificationCardsProxyImpl} from './notification_cards/notification_cards_browser_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
+import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
@@ -113,11 +114,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: null,
       },
 
-      passwordManagerDisabled_: {
+      passwordSavingBlockedByPolicy_: {
         type: Boolean,
-        computed: 'computePasswordManagerDisabled_(' +
-            'prefs.credentials_enable_service.enforcement, ' +
-            'prefs.credentials_enable_service.value)',
+        computed: 'computePasswordSavingBlockedByPolicy_(' +
+            'prefs.credentials_enable_service.*)',
       },
 
       shouldShowNotificationCard_: {
@@ -151,7 +151,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   declare private showPasswordsDescription_: boolean;
   declare private movePasswordsText_: string;
   declare private notificationCard_: NotificationCard|null;
-  declare private passwordManagerDisabled_: boolean;
+  declare private passwordSavingBlockedByPolicy_: boolean;
   declare private shouldShowNotificationCard_: boolean;
   declare private activeListItem_: HTMLElement|null;
 
@@ -290,7 +290,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showImportPasswordsOption_(): boolean {
     if (this.groups_ === null || this.actionableError === null ||
-        this.passwordManagerDisabled_) {
+        this.passwordSavingBlockedByPolicy_) {
       return false;
     }
     return this.groups_.length === 0 && !this.isTrustedVaultKeyNeeded();
@@ -298,7 +298,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showTrustedVaultUnlockOption_(): boolean {
     if (this.groups_ === null || this.actionableError === null ||
-        this.passwordManagerDisabled_) {
+        this.passwordSavingBlockedByPolicy_) {
       return false;
     }
     return this.groups_.length === 0 && this.isTrustedVaultKeyNeeded();
@@ -341,20 +341,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.notificationCard_ = null;
   }
 
-  private computePasswordManagerDisabled_(): boolean {
-    const pref = this.getPref('credentials_enable_service');
-
-    const isPolicyEnforced =
-        pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-
-    const isPolicyControlledByExtension =
-        pref.controlledBy === chrome.settingsPrivate.ControlledBy.EXTENSION;
-
-    if (isPolicyControlledByExtension) {
-      return false;
-    }
-
-    return !pref.value && isPolicyEnforced;
+  private computePasswordSavingBlockedByPolicy_(): boolean {
+    return isSavingNewPasswordsBlockedByMandatoryPolicy(
+        this.getPref<boolean>('credentials_enable_service'));
   }
 
   private computeShowPasswordsDescription_(): boolean {

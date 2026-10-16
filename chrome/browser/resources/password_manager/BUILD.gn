@@ -99,10 +99,11 @@ build_webui("build") {
   ts_files = [
     "find_shortcut_mixin.ts",
     "focus_config.ts",
+    "notification_cards/notification_cards_browser_proxy.ts",
     "passkeys_browser_proxy.ts",
     "password_manager.ts",
     "password_manager_proxy.ts",
-    "notification_cards/notification_cards_browser_proxy.ts",
+    "prefs/policy_utils.ts",
     "router.ts",
     "searchable_label.ts",
     "sharing/metrics_utils.ts",

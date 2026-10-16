@@ -299,24 +299,21 @@ suite('SettingsSectionTest', function() {
     assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
-  test(
-      'import visible when policy disabled and controlled by extension',
-      async function() {
-        const settings = document.createElement('settings-section');
-        settings.prefs = makePasswordManagerPrefs();
-        const prefObject =
-            settings.getPref<boolean>('credentials_enable_service');
-        prefObject.value = false;
-        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-        prefObject.controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
-        document.body.appendChild(settings);
-        await flushTasks();
+  test('import visible when extension turns saving off', async function() {
+    const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    const prefObject = settings.getPref<boolean>('credentials_enable_service');
+    prefObject.value = false;
+    prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+    prefObject.controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
+    document.body.appendChild(settings);
+    await flushTasks();
 
-        assertTrue(!!settings.shadowRoot!.querySelector('passwords-importer'));
-      });
+    assertTrue(!!settings.shadowRoot!.querySelector('passwords-importer'));
+  });
 
   test(
-      'import hidden when policy disabled and not controlled by extension',
+      'import hidden when mandatory policy blocks password saving',
       async function() {
         const settings = document.createElement('settings-section');
         settings.prefs = makePasswordManagerPrefs();
@@ -332,7 +329,28 @@ suite('SettingsSectionTest', function() {
         assertFalse(!!settings.shadowRoot!.querySelector('passwords-importer'));
       });
 
-  test('import visible when policy enabled', async function() {
+  test(
+      'import hidden when mandatory policy arrives after load',
+      async function() {
+        const settings = document.createElement('settings-section');
+        settings.prefs = makePasswordManagerPrefs();
+        document.body.appendChild(settings);
+        await flushTasks();
+        assertTrue(!!settings.shadowRoot!.querySelector('passwords-importer'));
+
+        settings.set(
+            'prefs.credentials_enable_service.controlledBy',
+            chrome.settingsPrivate.ControlledBy.USER_POLICY);
+        settings.set(
+            'prefs.credentials_enable_service.enforcement',
+            chrome.settingsPrivate.Enforcement.ENFORCED);
+        settings.set('prefs.credentials_enable_service.value', false);
+        await flushTasks();
+
+        assertFalse(!!settings.shadowRoot!.querySelector('passwords-importer'));
+      });
+
+  test('import visible when no policy is set', async function() {
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
     const prefObject = settings.getPref<boolean>('credentials_enable_service');

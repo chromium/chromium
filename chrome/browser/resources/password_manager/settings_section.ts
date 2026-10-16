@@ -37,6 +37,7 @@ import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerActionableError, PasswordManagerImpl} from './password_manager_proxy.js';
+import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
@@ -134,11 +135,10 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
-      passwordManagerDisabled_: {
+      passwordSavingBlockedByPolicy_: {
         type: Boolean,
-        computed: 'computePasswordManagerDisabled_(' +
-            'prefs.credentials_enable_service.enforcement, ' +
-            'prefs.credentials_enable_service.value)',
+        computed: 'computePasswordSavingBlockedByPolicy_(' +
+            'prefs.credentials_enable_service.*)',
       },
 
       /** The visibility state of the trusted vault banner. */
@@ -214,7 +214,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   declare private isBiometricAuthenticationForFillingToggleVisible_: boolean;
   // </if>
   declare private hasPasskeys_: boolean;
-  declare private passwordManagerDisabled_: boolean;
+  declare private passwordSavingBlockedByPolicy_: boolean;
   declare private hasPasswordsToExport_: boolean;
   declare private isAutomatedPasswordChangeVisible_: boolean;
   declare private canAddShortcut_: boolean;
@@ -463,20 +463,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
   // </if>
 
-  private computePasswordManagerDisabled_(): boolean {
-    const pref = this.getPref('credentials_enable_service');
-
-    const isPolicyEnforced =
-        pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-
-    const isPolicyControlledByExtension =
-        pref.controlledBy === chrome.settingsPrivate.ControlledBy.EXTENSION;
-
-    if (isPolicyControlledByExtension) {
-      return false;
-    }
-
-    return !pref.value && isPolicyEnforced;
+  private computePasswordSavingBlockedByPolicy_(): boolean {
+    return isSavingNewPasswordsBlockedByMandatoryPolicy(
+        this.getPref<boolean>('credentials_enable_service'));
   }
 
   private computeShouldShowActorLoginPermissions_(

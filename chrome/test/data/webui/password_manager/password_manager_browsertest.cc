@@ -113,6 +113,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordsSection) {
   RunTest("password_manager/passwords_section_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PolicyUtils) {
+  RunTest("password_manager/policy_utils_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest,
                        RemoveActorLoginPermissionDialog) {
   RunTest("password_manager/remove_actor_login_permission_dialog_test.js",
