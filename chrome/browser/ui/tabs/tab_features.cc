@@ -56,6 +56,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/lens/lens_suggestion_tool.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
@@ -696,6 +697,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       if (base::FeatureList::IsEnabled(features::kGlicSelectionSuggestions)) {
         glic_selection_suggestion_tool_ =
             std::make_unique<glic::SelectionSuggestionTool>(tab);
+      }
+      if (base::FeatureList::IsEnabled(lens::kLensSelectionSuggestions)) {
+        lens_suggestion_tool_ = std::make_unique<lens::LensSuggestionTool>(tab);
       }
       glic_selection_overlay_controller_ =
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(

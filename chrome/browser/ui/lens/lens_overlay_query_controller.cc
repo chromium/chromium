@@ -269,6 +269,7 @@ LenOverlayEntryPointFromInvocationSource(
     case lens::LensOverlayInvocationSource::kNtpActionChips:
     case lens::LensOverlayInvocationSource::kAppBarAimButton:
     case lens::LensOverlayInvocationSource::kOmniboxEverywhereComposebox:
+    case lens::LensOverlayInvocationSource::kSelectionSuggestion:
   }
   return lens::LensOverlayClientLogs::UNKNOWN_ENTRY_POINT;
 }

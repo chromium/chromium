@@ -102,7 +102,10 @@ enum class LensOverlayInvocationSource {
   // The contextual cue in top chrome.
   kContextualCue = 25,
 
-  kMaxValue = kContextualCue
+  // The selection suggestion chip.
+  kSelectionSuggestion = 26,
+
+  kMaxValue = kSelectionSuggestion
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

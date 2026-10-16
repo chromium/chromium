@@ -138,6 +138,28 @@ if (is_android) {
   }
 }
 
+if (!is_android) {
+  source_set("lens_suggestion_tool") {
+    sources = [
+      "lens_suggestion_tool.cc",
+      "lens_suggestion_tool.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/selection",
+    ]
+    deps = [
+      "//chrome/browser/ui/lens",
+      "//components/lens",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//skia",
+      "//ui/gfx/geometry",
+    ]
+  }
+}
+
 source_set("lens_sapisid_generator") {
   sources = [
     "lens_sapisid_generator.cc",
@@ -161,4 +183,23 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [ "lens_suggestion_tool_unittest.cc" ]
+    deps += [
+      ":lens_suggestion_tool",
+      "//chrome/browser/lens/core/mojom:mojo_bindings",
+      "//chrome/browser/selection",
+      "//chrome/browser/ui/lens",
+      "//components/lens",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/tabs:test_support",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//skia",
+      "//testing/gmock",
+      "//ui/base/unowned_user_data",
+      "//ui/gfx/geometry",
+    ]
+  }
 }

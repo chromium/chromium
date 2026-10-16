@@ -64,6 +64,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OmniboxContextualSuggestion"/>
   <variant name="OmniboxPageAction"/>
   <variant name="OmniboxPopupButton"/>
+  <variant name="SelectionSuggestion"/>
   <variant name="Toolbar"/>
   <variant name="Unknown"/>
 </variants>

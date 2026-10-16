@@ -73,6 +73,8 @@ std::string InvocationSourceToString(
       return "OmniboxPopupButton";
     case LensOverlayInvocationSource::kContextualCue:
       return "ContextualCue";
+    case LensOverlayInvocationSource::kSelectionSuggestion:
+      return "SelectionSuggestion";
   }
 }
 
@@ -505,9 +507,11 @@ void RecordTimeToFirstInteraction(
           time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
-      // Not recorded since the video context menu entry point results in a
-      // search without the user having to interact with the overlay. Time to
-      // first interaction in this case is essentially zero.
+    case lens::LensOverlayInvocationSource::kSelectionSuggestion:
+      // Not recorded since the video context menu and selection suggestion
+      // entry points result in a search without the user having to interact
+      // with the overlay. Time to first interaction in this case is essentially
+      // zero.
       break;
     case lens::LensOverlayInvocationSource::kNtpContextualQuery:
     case lens::LensOverlayInvocationSource::kNtpActionChips:
