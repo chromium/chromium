@@ -355,17 +355,10 @@ bool Canvas2DResourceProvider::IsValid() const {
   if (IsSoftware()) {
     // Software compositing (which always uses software raster).
     return shared_image_interface_provider_ &&
-           shared_image_interface_provider_->SharedImageInterface() &&
-           GetSkSurface();
+           shared_image_interface_provider_->SharedImageInterface();
   }
 
-  if (is_accelerated_) {
-    // GPU compositing and GPU raster.
-    return !IsGpuContextLost();
-  }
-
-  // GPU compositing and software raster.
-  return !IsGpuContextLost() && GetSkSurface();
+  return !IsGpuContextLost();
 }
 
 gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
@@ -713,6 +706,9 @@ Canvas2DResourceProvider::CreateWithClear(
   if (!provider->IsValid()) {
     return nullptr;
   }
+  if (!is_accelerated && !provider->GetSkSurface()) {
+    return nullptr;
+  }
 
   provider->ClearAtCreation();
 
@@ -753,7 +749,7 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
   auto provider = base::WrapUnique(new Canvas2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, std::move(context_lost_callback)));
-  if (provider->IsValid()) {
+  if (provider->IsValid() && provider->GetSkSurface()) {
     provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
     CHECK(provider->IsValid());
