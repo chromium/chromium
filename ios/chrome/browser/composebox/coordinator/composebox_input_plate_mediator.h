@@ -35,6 +35,7 @@ class CobrowseBrowserAgent;
 @protocol SceneCommands;
 enum class FuseboxAttachmentButtonType;
 class AimEligibilityService;
+struct ComposeboxTabSelection;
 class FaviconLoader;
 class PersistTabContextBrowserAgent;
 class PrefService;
@@ -167,11 +168,8 @@ class ContextualSearchSessionHandle;
 // Returns the maximum number of tab attachments allowed.
 - (NSUInteger)maxTabAttachmentCount;
 
-// Attaches the selected tabs.
-- (void)attachSelectedTabsWithWebStateIDs:
-            (std::set<web::WebStateID>)selectedWebStateIDs
-                        cachedWebStateIDs:
-                            (std::set<web::WebStateID>)cachedWebStateIDs;
+// Attaches the tabs from the given `selection`.
+- (void)attachTabSelection:(const ComposeboxTabSelection&)selection;
 
 // Processes a webpage context from a context library signal. Called on the
 // cobrowse context only.

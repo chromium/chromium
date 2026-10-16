@@ -925,21 +925,17 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
-    handleSelectedTabsWithWebStateIDs:
-        (std::set<web::WebStateID>)selectedWebStateIDs
-                    cachedWebStateIDs:
-                        (std::set<web::WebStateID>)cachedWebStateIDs {
+                      didPickTabs:(const ComposeboxTabSelection&)selection {
   std::set<web::WebStateID> alreadyProcessedIDs =
       [_mediator allAttachedWebStateIDs];
   composebox::TabDiff diff =
-      composebox::ComputeTabDiff(alreadyProcessedIDs, selectedWebStateIDs);
+      composebox::ComputeTabDiff(alreadyProcessedIDs, selection.selected_ids);
 
   if (diff.added.size() > 0) {
     [_metricsRecorder recordTabPickerTabsAttached:diff.added.size()];
   }
 
-  [_mediator attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
-                             cachedWebStateIDs:cachedWebStateIDs];
+  [_mediator attachTabSelection:selection];
 }
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter

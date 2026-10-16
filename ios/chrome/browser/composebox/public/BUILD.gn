@@ -91,10 +91,7 @@ source_set("attachment_selection") {
     "composebox_attachment_selection.h",
     "composebox_attachment_selection.mm",
   ]
-  public_deps = [
-    "//ios/chrome/browser/composebox/shared/coordinator",
-    "//ios/web/public",
-  ]
+  public_deps = [ "//ios/web/public" ]
   deps = [ "//base" ]
 }
 

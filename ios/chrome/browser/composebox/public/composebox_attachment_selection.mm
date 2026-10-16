@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 
+#import <utility>
+
 @implementation ComposeboxAttachmentSelection
 
-- (instancetype)initWithTabIDs:(std::set<web::WebStateID>)tabIDs
-             cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs
-                        images:(NSArray<ComposeboxPickerImageResult*>*)images
-                         files:(NSArray<NSURL*>*)files
-                    driveItems:
-                        (NSArray<ComposeboxPickerDriveResult*>*)driveItems {
+- (instancetype)
+    initWithTabSelection:(ComposeboxTabSelection)tabSelection
+                  images:(NSArray<ComposeboxPickerImageResult*>*)images
+                   files:(NSArray<NSURL*>*)files
+              driveItems:(NSArray<ComposeboxPickerDriveResult*>*)driveItems {
   self = [super init];
   if (self) {
-    _tabIDs = tabIDs;
-    _cachedWebStateIDs = cachedWebStateIDs;
+    _tabSelection = std::move(tabSelection);
     _images = [images copy];
     _files = [files copy];
     _driveItems = [driveItems copy];
@@ -25,7 +25,7 @@
 
 - (BOOL)hasAttachments {
   return self.images.count > 0 || self.files.count > 0 ||
-         !self.tabIDs.empty() || self.driveItems.count > 0;
+         !_tabSelection.selected_ids.empty() || self.driveItems.count > 0;
 }
 
 @end

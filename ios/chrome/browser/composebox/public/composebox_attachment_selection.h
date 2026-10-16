@@ -14,14 +14,19 @@
 @class ComposeboxPickerImageResult;
 @class ComposeboxPickerDriveResult;
 
+// Represents a selection of tabs to attach in Composebox.
+struct ComposeboxTabSelection {
+  // All tabs selected for attachment.
+  std::set<web::WebStateID> selected_ids;
+  // Subset of `selected_ids` whose page context was pre-cached by the picker.
+  std::set<web::WebStateID> cached_ids;
+};
+
 // Representation of currently selected/attached items.
 @interface ComposeboxAttachmentSelection : NSObject
 
-// Initial tab identifiers to attach.
-@property(nonatomic, readonly) std::set<web::WebStateID> tabIDs;
-
-// Tab identifiers that have their content cached.
-@property(nonatomic, readonly) std::set<web::WebStateID> cachedWebStateIDs;
+// The tab selection state (selected and cached tab identifiers).
+@property(nonatomic, readonly) ComposeboxTabSelection tabSelection;
 
 // Initial images to attach.
 @property(nonatomic, readonly) NSArray<ComposeboxPickerImageResult*>* images;
@@ -36,12 +41,11 @@
 // Whether there are any attachments in this selection.
 @property(nonatomic, readonly) BOOL hasAttachments;
 
-- (instancetype)initWithTabIDs:(std::set<web::WebStateID>)tabIDs
-             cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs
-                        images:(NSArray<ComposeboxPickerImageResult*>*)images
-                         files:(NSArray<NSURL*>*)files
-                    driveItems:
-                        (NSArray<ComposeboxPickerDriveResult*>*)driveItems
+- (instancetype)
+    initWithTabSelection:(ComposeboxTabSelection)tabSelection
+                  images:(NSArray<ComposeboxPickerImageResult*>*)images
+                   files:(NSArray<NSURL*>*)files
+              driveItems:(NSArray<ComposeboxPickerDriveResult*>*)driveItems
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -16,6 +16,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
+struct ComposeboxTabSelection;
 @class ComposeboxMetricsRecorder;
 @class ComposeboxPickerPresenter;
 
@@ -38,10 +39,7 @@
 
 // Called when the tab picker finishes picking tabs.
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
-    handleSelectedTabsWithWebStateIDs:
-        (std::set<web::WebStateID>)selectedWebStateIDs
-                    cachedWebStateIDs:
-                        (std::set<web::WebStateID>)cachedWebStateIDs;
+                      didPickTabs:(const ComposeboxTabSelection&)selection;
 
 // Called when the Drive picker finishes picking Drive items.
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter

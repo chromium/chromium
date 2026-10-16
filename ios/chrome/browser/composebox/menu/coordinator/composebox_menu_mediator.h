@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/web/public/web_state_id.h"
 
+struct ComposeboxTabSelection;
 class WebStateList;
 @class ComposeboxAttachmentSelection;
 @class ComposeboxMenuMediator;
@@ -98,9 +99,8 @@ class WebStateList;
 /// Processes the given `driveItems`.
 - (void)processDriveItems:(NSArray<ComposeboxPickerDriveResult*>*)driveItems;
 
-/// Processes the given web state IDs.
-- (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
-         cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs;
+/// Processes the given `tabSelection`.
+- (void)processTabSelection:(const ComposeboxTabSelection&)tabSelection;
 
 /// Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;

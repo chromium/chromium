@@ -592,11 +592,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
   }
 
-  return [[ComposeboxAttachmentSelection alloc] initWithTabIDs:tabIDs
-                                             cachedWebStateIDs:{}
-                                                        images:images
-                                                         files:files
-                                                    driveItems:driveItems];
+  return [[ComposeboxAttachmentSelection alloc]
+      initWithTabSelection:ComposeboxTabSelection{.selected_ids =
+                                                      std::move(tabIDs)}
+                    images:images
+                     files:files
+                driveItems:driveItems];
 }
 
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments {
@@ -655,8 +656,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   // TODO(crbug.com/512774045): update attachment is called in both embedded an
   // focus flow. Verify metrics recording in both flows.
-  [self attachSelectedTabsWithWebStateIDs:attachments.tabIDs
-                        cachedWebStateIDs:attachments.cachedWebStateIDs];
+  [self attachTabSelection:attachments.tabSelection];
 }
 
 - (void)removeSharedTabWithInputItemIdentifier:
@@ -740,12 +740,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   return [_stateManager maxTabAttachmentCount];
 }
 
-- (void)attachSelectedTabsWithWebStateIDs:
-            (std::set<web::WebStateID>)selectedWebStateIDs
-                        cachedWebStateIDs:
-                            (std::set<web::WebStateID>)cachedWebStateIDs {
-  [self attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
-                        cachedWebStateIDs:cachedWebStateIDs
+- (void)attachTabSelection:(const ComposeboxTabSelection&)selection {
+  [self attachSelectedTabsWithWebStateIDs:selection.selected_ids
+                        cachedWebStateIDs:selection.cached_ids
                      fromExternalWebState:nullptr
                                    source:ComposeboxInputItemSource::kTabPicker
                                 autoAdded:NO];
@@ -1810,13 +1807,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
-// Helper for `-attachSelectedTabsWithWebStateIDs:cachedWebStateIDs:`. Attaches
-// the selected tabs. `cachedWebStateIDs` contains the IDs of the tabs that have
-// their content cached. When a tab attachment is initiated for tabs with a
-// different web state than the current window (such as a UI drag-and-drop
-// action across windows), an `externalWebState` is provided to make tabs from
-// another eligible browser window visible. Otherwise, `externalWebState` should
-// be `nullptr`.
+// Helper for `-attachTabSelection:`. Attaches the selected tabs.
+// `cachedWebStateIDs` contains the IDs of the tabs that have their content
+// cached. When a tab attachment is initiated for tabs with a different web
+// state than the current window (such as a UI drag-and-drop action across
+// windows), an `externalWebState` is provided to make tabs from another
+// eligible browser window visible. Otherwise, `externalWebState` should be
+// `nullptr`.
 - (void)attachSelectedTabsWithWebStateIDs:
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:

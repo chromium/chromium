@@ -913,11 +913,10 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsSetOnFocus) {
 
   NSURL* url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
-          cachedWebStateIDs:{}
-          images:@[]
-          files:@[ url ]
-          driveItems:@[]];
+      [[ComposeboxAttachmentSelection alloc] initWithTabSelection:{}
+                                                           images:@[]
+                                                            files:@[ url ]
+                                                       driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -941,11 +940,10 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemRemoval) {
 
   NSURL* url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
-          cachedWebStateIDs:{}
-          images:@[]
-          files:@[ url ]
-          driveItems:@[]];
+      [[ComposeboxAttachmentSelection alloc] initWithTabSelection:{}
+                                                           images:@[]
+                                                            files:@[ url ]
+                                                       driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -979,11 +977,10 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemError) {
 
   NSURL* url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
-          cachedWebStateIDs:{}
-          images:@[]
-          files:@[ url ]
-          driveItems:@[]];
+      [[ComposeboxAttachmentSelection alloc] initWithTabSelection:{}
+                                                           images:@[]
+                                                            files:@[ url ]
+                                                       driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -1018,11 +1015,10 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   NSURL* url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
-          cachedWebStateIDs:{}
-          images:@[]
-          files:@[ url ]
-          driveItems:@[]];
+      [[ComposeboxAttachmentSelection alloc] initWithTabSelection:{}
+                                                           images:@[]
+                                                            files:@[ url ]
+                                                       driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -1430,8 +1426,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
 
   // Explicitly attaching the tab clears its removed status.
-  [mediator attachSelectedTabsWithWebStateIDs:{web_state_id}
-                            cachedWebStateIDs:{}];
+  [mediator attachTabSelection:ComposeboxTabSelection{
+                                   .selected_ids = {web_state_id}}];
   EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
 }
 
@@ -1834,21 +1830,22 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   // 1. Selecting a second tab in the tab picker while keeping the preselected
   // auto-added tab checked must preserve `isAutoAdded == YES` on the first tab.
-  [mediator attachSelectedTabsWithWebStateIDs:{active_id, second_id}
-                            cachedWebStateIDs:{}];
+  [mediator attachTabSelection:ComposeboxTabSelection{
+                                   .selected_ids = {active_id, second_id}}];
   ASSERT_EQ(consumer.items.count, 2U);
   EXPECT_TRUE([consumer.items containsObject:auto_added_item]);
   EXPECT_TRUE(auto_added_item.isAutoAdded);
 
   // 2. Deselecting the auto-added tab in the tab picker removes its item.
-  [mediator attachSelectedTabsWithWebStateIDs:{second_id} cachedWebStateIDs:{}];
+  [mediator
+      attachTabSelection:ComposeboxTabSelection{.selected_ids = {second_id}}];
   ASSERT_EQ(consumer.items.count, 1U);
   EXPECT_FALSE([consumer.items containsObject:auto_added_item]);
 
   // 3. Reselecting the tab attaches it as a manual attachment
   // (`isAutoAdded == NO`).
-  [mediator attachSelectedTabsWithWebStateIDs:{active_id, second_id}
-                            cachedWebStateIDs:{}];
+  [mediator attachTabSelection:ComposeboxTabSelection{
+                                   .selected_ids = {active_id, second_id}}];
   ASSERT_EQ(consumer.items.count, 2U);
   for (NSUInteger i = 0; i < consumer.items.count; ++i) {
     EXPECT_FALSE(consumer.items[i].isAutoAdded) << "Item at index " << i;
@@ -2018,7 +2015,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   StubPageContextExtraction();
   web::WebStateID tab_id =
       web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
-  [mediator_ attachSelectedTabsWithWebStateIDs:{tab_id} cachedWebStateIDs:{}];
+  [mediator_
+      attachTabSelection:ComposeboxTabSelection{.selected_ids = {tab_id}}];
   ASSERT_EQ(consumer_.items.count, 1U);
   ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
 
@@ -2043,13 +2041,14 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
   web::WebStateID second_tab_id =
       InsertBackgroundWebState()->GetUniqueIdentifier();
-  [mediator_ attachSelectedTabsWithWebStateIDs:{first_tab_id}
-                             cachedWebStateIDs:{}];
+  [mediator_ attachTabSelection:ComposeboxTabSelection{
+                                    .selected_ids = {first_tab_id}}];
   ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
 
   @autoreleasepool {
-    [mediator_ attachSelectedTabsWithWebStateIDs:{first_tab_id, second_tab_id}
-                               cachedWebStateIDs:{}];
+    [mediator_
+        attachTabSelection:ComposeboxTabSelection{
+                               .selected_ids = {first_tab_id, second_tab_id}}];
   }
 
   ASSERT_EQ(started_page_context_wrappers_.size(), 2U);
@@ -2107,8 +2106,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   // Attaches a background tab from the tab picker, where the auto-attached
   // active tab is preselected.
-  [mediator attachSelectedTabsWithWebStateIDs:{active_id, background_id}
-                            cachedWebStateIDs:{}];
+  [mediator attachTabSelection:ComposeboxTabSelection{
+                                   .selected_ids = {active_id, background_id}}];
   ASSERT_EQ(consumer.items.count, 2U);
   ComposeboxInputItem* background_item = consumer.items[1];
   ASSERT_FALSE(background_item.isAutoAdded);
@@ -2134,7 +2133,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   StubPageContextExtraction();
   web::WebStateID tab_id =
       web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
-  [mediator_ attachSelectedTabsWithWebStateIDs:{tab_id} cachedWebStateIDs:{}];
+  [mediator_
+      attachTabSelection:ComposeboxTabSelection{.selected_ids = {tab_id}}];
   ASSERT_EQ(consumer_.items.count, 1U);
   ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
   ASSERT_TRUE(IsPageContextWrapperAlive(0));
@@ -2156,7 +2156,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   StubPageContextExtraction();
   web::WebStateID tab_id =
       web_state_list_->GetActiveWebState()->GetUniqueIdentifier();
-  [mediator_ attachSelectedTabsWithWebStateIDs:{tab_id} cachedWebStateIDs:{}];
+  [mediator_
+      attachTabSelection:ComposeboxTabSelection{.selected_ids = {tab_id}}];
   ASSERT_EQ(consumer_.items.count, 1U);
   ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
   ASSERT_TRUE(IsPageContextWrapperAlive(0));
@@ -2178,9 +2179,9 @@ TEST_F(ComposeboxInputPlateMediatorTest,
        FailedPageContextResponseReleasesInFlightTabExtraction) {
   StubPageContextExtraction();
   web::WebState* web_state = web_state_list_->GetActiveWebState();
-  [mediator_
-      attachSelectedTabsWithWebStateIDs:{web_state->GetUniqueIdentifier()}
-                      cachedWebStateIDs:{}];
+  [mediator_ attachTabSelection:ComposeboxTabSelection{
+                                    .selected_ids = {
+                                        web_state->GetUniqueIdentifier()}}];
   ASSERT_EQ(consumer_.items.count, 1U);
   ASSERT_EQ(started_page_context_wrappers_.size(), 1U);
   ASSERT_TRUE(IsPageContextWrapperAlive(0));
@@ -2225,8 +2226,9 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   web::WebState* web_state = web_state_list_->GetActiveWebState();
   ASSERT_TRUE(web_state);
-  [mediator attachSelectedTabsWithWebStateIDs:{web_state->GetUniqueIdentifier()}
-                            cachedWebStateIDs:{}];
+  [mediator attachTabSelection:ComposeboxTabSelection{
+                                   .selected_ids = {
+                                       web_state->GetUniqueIdentifier()}}];
   ASSERT_EQ(consumer.items.count, 1U);
   ComposeboxInputItem* tab_item = consumer.items.firstObject;
   base::UnguessableToken tab_item_identifier = tab_item.identifier;

@@ -20,6 +20,7 @@
 #import "components/lens/lens_features.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
@@ -485,12 +486,13 @@ constexpr int kChromeIOSProductId = 71720513;
           forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
   }
   if ([self.delegate
-          respondsToSelector:@selector(composeboxPickerPresenter:
-                                       handleSelectedTabsWithWebStateIDs:
-                                       cachedWebStateIDs:)]) {
-    [self.delegate composeboxPickerPresenter:self
-           handleSelectedTabsWithWebStateIDs:selection->selected_ids
-                           cachedWebStateIDs:selection->cached_ids];
+          respondsToSelector:@selector(
+                                 composeboxPickerPresenter:didPickTabs:)]) {
+    ComposeboxTabSelection tabSelection{
+        .selected_ids = std::move(selection->selected_ids),
+        .cached_ids = std::move(selection->cached_ids),
+    };
+    [self.delegate composeboxPickerPresenter:self didPickTabs:tabSelection];
   }
 }
 

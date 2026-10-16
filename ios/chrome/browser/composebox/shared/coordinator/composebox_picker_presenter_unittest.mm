@@ -15,6 +15,7 @@
 #import "components/contextual_search/pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -180,13 +181,10 @@
 @implementation FakePresenterDelegate
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
-    handleSelectedTabsWithWebStateIDs:
-        (std::set<web::WebStateID>)selectedWebStateIDs
-                    cachedWebStateIDs:
-                        (std::set<web::WebStateID>)cachedWebStateIDs {
+                      didPickTabs:(const ComposeboxTabSelection&)selection {
   self.didPickTabsCalled = YES;
-  self.selectedWebStateIDs = selectedWebStateIDs;
-  self.cachedWebStateIDs = cachedWebStateIDs;
+  self.selectedWebStateIDs = selection.selected_ids;
+  self.cachedWebStateIDs = selection.cached_ids;
 }
 
 - (void)composeboxPickerPresenterDidCancelTabPicker:

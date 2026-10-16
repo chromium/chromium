@@ -2484,11 +2484,10 @@ using ntp_tiles::AimButtonRefactorArm;
   [self dismissComposeboxPicker];
 
   ComposeboxAttachmentSelection* attachments =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
-                                          cachedWebStateIDs:{}
-                                                     images:images
-                                                      files:nil
-                                                 driveItems:nil];
+      [[ComposeboxAttachmentSelection alloc] initWithTabSelection:{}
+                                                           images:images
+                                                            files:nil
+                                                       driveItems:nil];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kNTPAttachImageButton

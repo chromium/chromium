@@ -87,11 +87,10 @@
 
   ComposeboxAttachmentSelection* selection =
       [[ComposeboxAttachmentSelection alloc]
-             initWithTabIDs:_preselection.tabIDs
-          cachedWebStateIDs:_preselection.cachedWebStateIDs
-                     images:updatedImages
-                      files:_preselection.files
-                 driveItems:_preselection.driveItems];
+          initWithTabSelection:_preselection.tabSelection
+                        images:updatedImages
+                         files:_preselection.files
+                    driveItems:_preselection.driveItems];
 
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
@@ -112,11 +111,10 @@
 
   ComposeboxAttachmentSelection* selection =
       [[ComposeboxAttachmentSelection alloc]
-             initWithTabIDs:_preselection.tabIDs
-          cachedWebStateIDs:_preselection.cachedWebStateIDs
-                     images:_preselection.images
-                      files:[updatedURLs allObjects]
-                 driveItems:_preselection.driveItems];
+          initWithTabSelection:_preselection.tabSelection
+                        images:_preselection.images
+                         files:[updatedURLs allObjects]
+                    driveItems:_preselection.driveItems];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
@@ -132,26 +130,23 @@
 
   ComposeboxAttachmentSelection* selection =
       [[ComposeboxAttachmentSelection alloc]
-             initWithTabIDs:_preselection.tabIDs
-          cachedWebStateIDs:_preselection.cachedWebStateIDs
-                     images:_preselection.images
-                      files:_preselection.files
-                 driveItems:updatedDriveItems];
+          initWithTabSelection:_preselection.tabSelection
+                        images:_preselection.images
+                         files:_preselection.files
+                    driveItems:updatedDriveItems];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
-- (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
-         cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs {
+- (void)processTabSelection:(const ComposeboxTabSelection&)tabSelection {
   // As the tab picker is prepopulated, there's no need to handle the set
   // difference, as the web state IDs already take into account the
   // preselection.
   ComposeboxAttachmentSelection* selection =
       [[ComposeboxAttachmentSelection alloc]
-             initWithTabIDs:selectedWebStateIDs
-          cachedWebStateIDs:cachedWebStateIDs
-                     images:_preselection.images
-                      files:_preselection.files
-                 driveItems:_preselection.driveItems];
+          initWithTabSelection:tabSelection
+                        images:_preselection.images
+                         files:_preselection.files
+                    driveItems:_preselection.driveItems];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
@@ -253,7 +248,7 @@
   if (!_preselection) {
     return std::set<web::WebStateID>();
   }
-  return _preselection.tabIDs;
+  return _preselection.tabSelection.selected_ids;
 }
 
 - (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContext {
@@ -262,7 +257,7 @@
     return webStateIDs;
   }
 
-  for (web::WebStateID webStateID : _preselection.tabIDs) {
+  for (web::WebStateID webStateID : _preselection.tabSelection.selected_ids) {
     if (!webStateID.valid()) {
       continue;
     }
@@ -298,11 +293,10 @@
 
   web::WebStateID activeWebStateID = activeWebState->GetUniqueIdentifier();
 
-  std::set<web::WebStateID> webStateIDs = _preselection.tabIDs;
-  webStateIDs.insert(activeWebStateID);
+  ComposeboxTabSelection tabSelection = _preselection.tabSelection;
+  tabSelection.selected_ids.insert(activeWebStateID);
 
-  [self processWebStateIDs:webStateIDs
-         cachedWebStateIDs:_preselection.cachedWebStateIDs];
+  [self processTabSelection:tabSelection];
 }
 
 @end
