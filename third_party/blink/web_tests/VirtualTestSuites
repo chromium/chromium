@@ -2090,6 +2090,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "http/tests/inspector-protocol/browser/add-mock-camera-device-list.js",
+      "http/tests/inspector-protocol/browser/add-mock-camera-multiple-sessions.js",
       "http/tests/inspector-protocol/browser/add-mock-camera-open.js"
     ],
     "exclusive_tests": "ALL",

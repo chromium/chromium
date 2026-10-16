@@ -144,6 +144,9 @@ class BrowserHandler : public DevToolsDomainHandler,
   std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       histograms_snapshots_;
 
+  // Keep the mock camera IDs for this session separate from other sessions.
+  // A new controller gets a fresh prefix, including after Disable().
+  std::string mock_camera_device_id_prefix_;
   std::unique_ptr<MockCaptureDeviceController> mock_capture_device_controller_;
 
   base::WeakPtrFactory<BrowserHandler> weak_ptr_factory_{this};

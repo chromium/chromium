@@ -1,0 +1,14 @@
+Tests mock camera IDs and cleanup across CDP sessions.
+Different logical IDs:
+Both sessions have distinct cameras: true
+The other session's camera remains unchanged: true
+Both cameras are removed after disconnect: true
+Same logical ID, session A disconnects first:
+Both sessions have distinct cameras: true
+The other session's camera remains unchanged: true
+Both cameras are removed after disconnect: true
+Same logical ID, session B disconnects first:
+Both sessions have distinct cameras: true
+The other session's camera remains unchanged: true
+Both cameras are removed after disconnect: true
+
