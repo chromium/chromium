@@ -45,5 +45,45 @@
   await dp.Emulation.setGeolocationOverride({});
   await logGeolocationData();
 
+  testRunner.log('\nSet geolocation override and check the position timestamp');
+  await dp.Emulation.setGeolocationOverride({
+    latitude: 50,
+    longitude: 100,
+    accuracy: 95,
+  });
+  await logGeolocationData();
+  const timestampIsRecent = await session.evaluateAsync(`
+    new Promise(
+      resolve => window.navigator.geolocation.getCurrentPosition(
+        position => resolve(Math.abs(Date.now() - position.timestamp) < 60000),
+        () => resolve(false),
+        {timeout: 200}
+    ))`);
+  testRunner.log('Position timestamp is recent: ' + timestampIsRecent);
+
+  testRunner.log('\nSet geolocation override with invalid parameter type, ' +
+                 'previous override is kept');
+  const invalidParamResponse = await dp.Emulation.setGeolocationOverride({
+    latitude: true,
+    longitude: 100,
+    accuracy: 95,
+  });
+  testRunner.log(invalidParamResponse.error, 'Error: ');
+  await logGeolocationData();
+
+  testRunner.log(
+      '\nSet out of range geolocation override, previous override is kept');
+  const invalidGeolocationResponse = await dp.Emulation.setGeolocationOverride({
+    latitude: 200,
+    longitude: 300,
+    accuracy: 95,
+  });
+  testRunner.log(invalidGeolocationResponse.error, 'Error: ');
+  await logGeolocationData();
+
+  testRunner.log('\nClear geolocation override');
+  await dp.Emulation.clearGeolocationOverride();
+  await logGeolocationData();
+
   testRunner.completeTest();
 });

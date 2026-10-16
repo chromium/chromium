@@ -7,100 +7,92 @@ v8.compileModule Properties:
         columnNumber : 1
         lineNumber : 1
         streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : v8.compileModule
 }
-Text details for v8.compileModule: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "already used streamed data"
+        notStreamedReason : Backgound streaming will be used
         streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : v8.compileModule
 }
-Text details for v8.compileModule: v8-cache-script.cgi
 v8.produceModuleCache Properties:
 {
     data : {
         columnNumber : 1
         lineNumber : 1
         producedCacheSize : <number>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.produceModuleCache"
+    type : v8.produceModuleCache
 }
-Text details for v8.produceModuleCache: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
+        cacheKind : normal
         cacheRejected : false
         columnNumber : 1
         consumedCacheSize : <number>
         lineNumber : 1
-        notStreamedReason : "already used streamed data"
+        notStreamedReason : Backgound streaming will be used
         streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : v8.compileModule
 }
-Text details for v8.compileModule: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
         columnNumber : 1
         lineNumber : 1
         streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://localhost:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : v8.compileModule
 }
-Text details for v8.compileModule: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
+        cacheKind : normal
         cacheRejected : false
         columnNumber : 1
         consumedCacheSize : <number>
         lineNumber : 1
-        notStreamedReason : "already used streamed data"
+        notStreamedReason : Backgound streaming will be used
         streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : v8.compileModule
 }
-Text details for v8.compileModule: v8-cache-script.cgi
 v8.compileModule Properties:
 {
     data : {
-        cacheRejected : false
         columnNumber : 1
-        consumedCacheSize : <number>
         lineNumber : 1
-        notStreamedReason : "script has code-cache available"
         streamed : <boolean>
-        url : .../devtools/resources/v8-cache-script.cgi
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }
     endTime : <number>
     startTime : <number>
-    type : "v8.compileModule"
+    type : v8.compileModule
 }
-Text details for v8.compileModule: v8-cache-script.cgi
 -----------------------------------------------
 

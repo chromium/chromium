@@ -1,0 +1,73 @@
+Tests V8 code cache for javascript resources
+
+---First navigation - produce and consume code cache ------
+
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        streamed : <boolean>
+        url : http://localhost:8000/devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        notStreamedReason : Backgound streaming will be used
+        streamed : <boolean>
+        url : http://localhost:8000/devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+v8.produceCache Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        producedCacheSize : <number>
+        url : http://localhost:8000/devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.produceCache
+}
+v8.compile Properties:
+{
+    data : {
+        cacheKind : normal
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : Backgound streaming will be used
+        streamed : <boolean>
+        url : http://localhost:8000/devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+
+--- Second navigation - from a different origin ------
+
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        streamed : <boolean>
+        url : http://localhost:8000/devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+

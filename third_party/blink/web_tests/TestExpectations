@@ -5418,10 +5418,6 @@ crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure
 # Sheriff 2021-11-19
 crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure Pass ]
 
-# Sheriff 2021-11-22
-crbug.com/40806190 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Failure Pass Timeout ]
-crbug.com/40806190 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Timeout ]
-
 # Flaky on Mac and Windows
 crbug.com/1272199 external/wpt/websockets/stream/tentative/backpressure-receive.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/1272203 [ Win ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
@@ -5466,9 +5462,6 @@ crbug.com/373478544 wpt_internal/css/css-overflow/column-scroll-marker-009.html 
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
 
-# Sheriff 2022-01-05
-crbug.com/40814447 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Crash Failure Pass Timeout ]
-
 # Temporarily disabled to land https://crrev.com/c/8498574
 crbug.com/535451658 http/tests/devtools/console/shadow-element.js [ Failure Pass ]
 
@@ -5511,9 +5504,6 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 # Sheriff 2022-02-22
 crbug.com/393405144 [ Mac14 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Crash Pass ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
-
-# Sheriff 2022-03-03
-crbug.com/40217024 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Crash Failure Pass Timeout ]
 
 crbug.com/1298836 external/wpt/fetch/api/basic/response-null-body.any.* [ Failure Pass ]
 

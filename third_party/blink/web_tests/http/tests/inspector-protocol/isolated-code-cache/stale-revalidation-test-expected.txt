@@ -1,0 +1,79 @@
+Tests V8 code cache for resources revalidated with 304.
+
+--- Begin trace events related to code cache. ------
+1st load. Produce timestamp. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        streamed : <boolean>
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+2nd load. Produce code cache. -->
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        notStreamedReason : Backgound streaming will be used
+        streamed : <boolean>
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+v8.produceCache Properties:
+{
+    data : {
+        columnNumber : 1
+        lineNumber : 1
+        producedCacheSize : <number>
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.produceCache
+}
+3rd load. Consume code cache. -->
+v8.compile Properties:
+{
+    data : {
+        cacheKind : normal
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : Backgound streaming will be used
+        streamed : <boolean>
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+Clear the resource from the MemoryCache. -->
+Load the resource with revalidation. The code cache is consumed because the 304 response does not change the original response time. -->
+v8.compile Properties:
+{
+    data : {
+        cacheKind : normal
+        cacheRejected : false
+        columnNumber : 1
+        consumedCacheSize : <number>
+        lineNumber : 1
+        notStreamedReason : script has code-cache available (background)
+        streamed : <boolean>
+        url : http://127.0.0.1:8000/devtools/resources/v8-cache-revalidated-script.cgi
+    }
+    endTime : <number>
+    startTime : <number>
+    type : v8.compile
+}
+----- End trace events related to code cache. ------
+

@@ -34,3 +34,52 @@ Geolocation data: {
     message :
 }
 
+Set geolocation override and check the position timestamp
+Geolocation data: {
+    accuracy : 95
+    altitude : null
+    altitudeAccuracy : null
+    heading : null
+    latitude : 50
+    longitude : 100
+    speed : null
+}
+Position timestamp is recent: true
+
+Set geolocation override with invalid parameter type, previous override is kept
+Error: {
+    code : -32602
+    data : Failed to deserialize params.latitude - BINDINGS: double value expected at position 17
+    message : Invalid parameters
+}
+Geolocation data: {
+    accuracy : 95
+    altitude : null
+    altitudeAccuracy : null
+    heading : null
+    latitude : 50
+    longitude : 100
+    speed : null
+}
+
+Set out of range geolocation override, previous override is kept
+Error: {
+    code : -32000
+    message : Invalid geolocation
+}
+Geolocation data: {
+    accuracy : 95
+    altitude : null
+    altitudeAccuracy : null
+    heading : null
+    latitude : 50
+    longitude : 100
+    speed : null
+}
+
+Clear geolocation override
+Geolocation data: {
+    code : 3
+    message : Timeout expired
+}
+

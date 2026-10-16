@@ -18,7 +18,7 @@ Tests under `virtual/not-site-per-process` (defined in
 isolation.  This is needed to preserve test coverage provided by around
 60 tests that fail when run with site isolation.
 
-Instead of including `http/tests/devtools/isolated-code-cache` tests here, we
+Instead of including `http/tests/inspector-protocol/isolated-code-cache` tests here, we
 split into two virtual test suites
 `virtual/not-split-http-cache-not-site-per-process` and
 `virtual/split-http-cache-not-site-per-process`, which disable and enable HTTP
