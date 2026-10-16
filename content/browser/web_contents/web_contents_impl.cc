@@ -3293,6 +3293,13 @@ void WebContentsImpl::SetPrimaryPageImportance(
          "IsNotPerceptibleImportanceSupported() is false";
   CHECK(main_frame_importance >= subframe_importance);
 
+  RenderWidgetHostImpl* main_frame_rwh =
+      GetPrimaryMainFrame()->GetRenderWidgetHost();
+  if (subframe_importance == primary_subframe_importance_ &&
+      main_frame_rwh->importance() == main_frame_importance) {
+    return;
+  }
+
   // Batch service binding updates for the renderer processes of the main frame
   // and the subframes.
   base::android::ScopedServiceBindingBatch scoped_service_binding_batch;
@@ -3302,8 +3309,7 @@ void WebContentsImpl::SetPrimaryPageImportance(
     ApplyPrimaryPageSubframeImportance();
   }
 
-  GetPrimaryMainFrame()->GetRenderWidgetHost()->SetImportance(
-      main_frame_importance);
+  main_frame_rwh->SetImportance(main_frame_importance);
 }
 
 void WebContentsImpl::ApplyPrimaryPageSubframeImportance() {
