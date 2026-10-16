@@ -11667,8 +11667,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "animation-colormapping": "{\"light\":{\"575B5F\":\"#575B5F\"},\"dark\":{\"575B5F\":\"#A2A9B0\"}}",
-                        "animation-url": "",
+                        "animation-colormapping": "{\"light\":{\"6F5D00\":\"#6F5D00\",\"FCD591\":\"#FCD591\"},\"dark\":{\"6F5D00\":\"#B19D93\",\"FCD591\":\"#7A571B\"}}",
+                        "animation-url": "https://www.gstatic.com/chrome/ntp/ios/ephemeral_themes/halloween.json",
                         "seed-color": "#FF8000",
                         "version": "1"
                     },

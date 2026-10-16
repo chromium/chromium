@@ -1475,6 +1475,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                  grey_accessibilityID(
                      kHomeCustomizationMainViewAccessibilityIdentifier)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Check for a toggle cell for Shortcuts and Magic Stack, and ensure that
   // they're all on.
@@ -1573,6 +1577,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                  grey_accessibilityID(
                      kHomeCustomizationMainViewAccessibilityIdentifier)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Tap the Most Visited cell which shouldn't prompt a navigation.
   [[EarlGrey selectElementWithMatcher:
