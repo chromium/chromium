@@ -1525,6 +1525,9 @@ bool IsFullscreenNextIAEnabled() {
 - (void)addConstraintsToToolbar {
   [self addConstraintsToPrimaryToolbar];
   [self addConstraintsToSecondaryToolbar];
+  if (!IsFullscreenNextIAEnabled()) {
+    [self.view layoutIfNeeded];
+  }
 }
 
 // Sets the correct frame and hierarchy for subviews and helper views.  Only
