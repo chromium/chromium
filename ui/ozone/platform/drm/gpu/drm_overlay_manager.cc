@@ -175,11 +175,8 @@ void DrmOverlayManager::CheckOverlaySupport(
     return;
   }
 
-  auto widget_cache_map_it = widget_cache_map_.find(widget);
-  if (widget_cache_map_it == widget_cache_map_.end()) {
-    widget_cache_map_it =
-        widget_cache_map_.emplace(widget, kMaxCacheSize).first;
-  }
+  auto widget_cache_map_it =
+      widget_cache_map_.try_emplace(widget, kMaxCacheSize).first;
   OverlayCandidatesListCache& cache = widget_cache_map_it->second;
   std::vector<OverlaySurfaceCandidate> cache_key =
       ToCacheKey(result_candidates);
