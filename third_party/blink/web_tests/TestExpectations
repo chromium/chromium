@@ -8767,6 +8767,10 @@ crbug.com/573053648 [ Android ] external/wpt/webdriver/tests/bidi/web_extension/
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
 
+# Gardener 2026-09-15: BiDi tests timing out on Linux Tests (dbg)(1)
+crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
+
+
 # Gardener 2026-09-17
 crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm.html [ Crash Failure ]
 
