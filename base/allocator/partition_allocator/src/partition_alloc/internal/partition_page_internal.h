@@ -231,8 +231,6 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
   uintptr_t super_page = address & kSuperPageBaseMask;
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  PA_DCHECK(
-      ReservationOffsetTable::Get(super_page).IsReservationStart(super_page));
   PA_DCHECK(IsWithinSuperPagePayload(address));
 #endif
 
@@ -371,9 +369,19 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     [[maybe_unused]] std::ptrdiff_t offset) {
   auto* slot_span = FromAddr(slot_start.value(), offset);
 
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks that the pointer is a multiple of slot size.
-  PA_DCHECK(!(ToSlotSpanStart(slot_span, offset).offset(slot_start) %
-              static_cast<ptrdiff_t>(slot_span->bucket->slot_size)));
+  size_t offset_in_slot_span = static_cast<size_t>(
+      ToSlotSpanStart(slot_span, offset).offset(slot_start));
+  auto* bucket = slot_span->bucket;
+  if (offset_in_slot_span <= BucketIndexLookup::kMaxBucketSize &&
+      bucket->slot_size <= BucketIndexLookup::kMaxBucketSize) [[likely]] {
+    PA_DCHECK(bucket->GetSlotNumber(offset_in_slot_span) * bucket->slot_size ==
+              offset_in_slot_span);
+  } else {
+    PA_DCHECK(!(offset_in_slot_span % bucket->slot_size));
+  }
+#endif
   return slot_span;
 }
 

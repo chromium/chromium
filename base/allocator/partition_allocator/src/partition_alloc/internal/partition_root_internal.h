@@ -585,10 +585,8 @@ PartitionRoot::GetSlotStartAndSlotSpanFromAddress(void* object) {
 
   SlotStart slot_start = SlotStart::Checked(object, this);
   SlotSpanMetadata* slot_span =
-      SlotSpanMetadata::FromSlotStart(slot_start.Untag(), this);
+      SlotSpanMetadata::FromAddr(slot_start.Untag().value(), this);
   PA_DCHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == this);
-  PA_DCHECK(slot_span ==
-            SlotSpanMetadata::FromSlotStart(slot_start.Untag(), this));
 
   return {slot_start, slot_span};
 }

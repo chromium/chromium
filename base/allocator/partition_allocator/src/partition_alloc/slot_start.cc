@@ -22,8 +22,15 @@ void CheckIsSlotStart([[maybe_unused]] uintptr_t untagged_slot_start,
   uintptr_t slot_span =
       internal::SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata, root)
           .value();
-  PA_CHECK(!((untagged_slot_start - slot_span) %
-             slot_span_metadata->bucket->slot_size));
+  size_t offset_in_slot_span = untagged_slot_start - slot_span;
+  auto* bucket = slot_span_metadata->bucket;
+  if (offset_in_slot_span <= BucketIndexLookup::kMaxBucketSize &&
+      bucket->slot_size <= BucketIndexLookup::kMaxBucketSize) [[likely]] {
+    PA_CHECK(bucket->GetSlotNumber(offset_in_slot_span) * bucket->slot_size ==
+             offset_in_slot_span);
+  } else {
+    PA_CHECK(!(offset_in_slot_span % bucket->slot_size));
+  }
 }
 }  // namespace
 
