@@ -48,28 +48,12 @@ class RegionalCapabilitiesServiceClient
 
 }  // namespace
 
-RegionalCapabilitiesServiceFactory::RegionalCapabilitiesServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("RegionalCapabilitiesService",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-RegionalCapabilitiesServiceFactory::~RegionalCapabilitiesServiceFactory() =
-    default;
-
-// static
-RegionalCapabilitiesServiceFactory*
-RegionalCapabilitiesServiceFactory::GetInstance() {
-  static base::NoDestructor<RegionalCapabilitiesServiceFactory> factory;
-  return factory.get();
-}
-
-// static
-regional_capabilities::RegionalCapabilitiesService*
-RegionalCapabilitiesServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<
-          regional_capabilities::RegionalCapabilitiesService>(profile,
-                                                              /*create=*/true);
-}
+RegionalCapabilitiesServiceFactory::RegionalCapabilitiesServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "RegionalCapabilitiesService",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceFor(

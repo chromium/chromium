@@ -5,30 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_REGIONAL_CAPABILITIES_MODEL_REGIONAL_CAPABILITIES_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_REGIONAL_CAPABILITIES_MODEL_REGIONAL_CAPABILITIES_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace regional_capabilities {
-class RegionalCapabilitiesService;
-}
+#import "components/regional_capabilities/regional_capabilities_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 class RegionalCapabilitiesServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          RegionalCapabilitiesServiceFactory,
+          regional_capabilities::RegionalCapabilitiesService> {
  public:
-  static regional_capabilities::RegionalCapabilitiesService* GetForProfile(
-      ProfileIOS* profile);
-  static RegionalCapabilitiesServiceFactory* GetInstance();
+  explicit RegionalCapabilitiesServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<RegionalCapabilitiesServiceFactory>;
-
-  RegionalCapabilitiesServiceFactory();
-  ~RegionalCapabilitiesServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
