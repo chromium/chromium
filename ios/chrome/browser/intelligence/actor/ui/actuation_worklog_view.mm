@@ -23,6 +23,20 @@ const NSTimeInterval kAnimationDuration = 0.25;
 const NSTimeInterval kSpringAnimationDuration = 0.4;
 const CGFloat kSpringDamping = 1.0;
 
+// Returns the connector visibility matching the `top` and `bottom` segments.
+ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
+  if (top && bottom) {
+    return ActuationWorklogConnectorVisibility::kBoth;
+  }
+  if (top) {
+    return ActuationWorklogConnectorVisibility::kTop;
+  }
+  if (bottom) {
+    return ActuationWorklogConnectorVisibility::kBottom;
+  }
+  return ActuationWorklogConnectorVisibility::kNone;
+}
+
 }  // namespace
 
 @interface ActuationWorklogView () <ActuationWorklogItemViewDelegate>
@@ -336,20 +350,12 @@ const CGFloat kSpringDamping = 1.0;
 - (ActuationWorklogConnectorVisibility)connectorsAtIndex:(NSInteger)index {
   NSInteger count = (NSInteger)_itemViews.count;
   BOOL hasChip = !_chipContainer.hidden;
-  BOOL isFirst = (index == 0);
   BOOL isLast = (index == count - 1);
-  if (isFirst && isLast) {
-    return hasChip ? ActuationWorklogConnectorVisibility::kBottom
-                   : ActuationWorklogConnectorVisibility::kNone;
-  }
-  if (isFirst) {
-    return ActuationWorklogConnectorVisibility::kBottom;
-  }
-  if (isLast) {
-    return hasChip ? ActuationWorklogConnectorVisibility::kBoth
-                   : ActuationWorklogConnectorVisibility::kTop;
-  }
-  return ActuationWorklogConnectorVisibility::kBoth;
+  // Freeform items break the timeline, so segments only link adjacent timeline
+  // items to avoid dangling dashes next to a freeform item.
+  BOOL hasTop = [self isTimelineItemAtIndex:index - 1];
+  BOOL hasBottom = isLast ? hasChip : [self isTimelineItemAtIndex:index + 1];
+  return ConnectorVisibility(hasTop, hasBottom);
 }
 
 // Returns the connector line segments for an item at `index` when the worklog
@@ -359,18 +365,28 @@ const CGFloat kSpringDamping = 1.0;
     collapsedConnectorsAtIndex:(NSInteger)index
                       showLast:(BOOL)showLast {
   NSInteger count = (NSInteger)_itemViews.count;
+  NSInteger lastIndex = count - 1;
   BOOL hasChip = !_chipContainer.hidden;
-  BOOL isFirst = (index == 0);
-  BOOL isLast = (index == count - 1);
-  if (isFirst) {
-    return (showLast || hasChip) ? ActuationWorklogConnectorVisibility::kBottom
-                                 : ActuationWorklogConnectorVisibility::kNone;
+  // When collapsed, only the first and (optionally) last items are visible, so
+  // they are linked directly to each other.
+  if (index == 0) {
+    BOOL hasBottom =
+        showLast ? [self isTimelineItemAtIndex:lastIndex] : hasChip;
+    return ConnectorVisibility(NO, hasBottom);
   }
-  if (showLast && isLast) {
-    return hasChip ? ActuationWorklogConnectorVisibility::kBoth
-                   : ActuationWorklogConnectorVisibility::kTop;
+  if (showLast && index == lastIndex) {
+    return ConnectorVisibility([self isTimelineItemAtIndex:0], hasChip);
   }
   return ActuationWorklogConnectorVisibility::kNone;
+}
+
+// Returns whether `index` is in bounds and refers to an item that is part of
+// the timeline (i.e. not a freeform item).
+- (BOOL)isTimelineItemAtIndex:(NSInteger)index {
+  if (index < 0 || index >= (NSInteger)_itemViews.count) {
+    return NO;
+  }
+  return _itemViews[index].item.style != ActuationWorklogItemStyle::kFreeform;
 }
 
 @end

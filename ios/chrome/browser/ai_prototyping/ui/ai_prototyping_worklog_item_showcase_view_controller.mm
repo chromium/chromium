@@ -46,6 +46,9 @@ ActuationWorklogItemView* CreateWorklogItemView(
                                                 icon:icon
                                               active:config.active];
       break;
+    case ActuationWorklogItemStyle::kFreeform:
+      item = [ActuationWorklogItem freeformItemWithText:config.title];
+      break;
   }
 
   ActuationWorklogItemView* view = [[ActuationWorklogItemView alloc] init];
@@ -130,6 +133,9 @@ ActuationWorklogItemView* CreateWorklogItemView(
        .active = NO,
        .style = ActuationWorklogItemStyle::kCard,
        .visibility = ActuationWorklogConnectorVisibility::kTop},
+      {.title = @"Freeform: which shipping address should I use?",
+       .style = ActuationWorklogItemStyle::kFreeform,
+       .visibility = ActuationWorklogConnectorVisibility::kNone},
   };
 
   for (const ShowcaseItemConfig& config : timelineConfigs) {

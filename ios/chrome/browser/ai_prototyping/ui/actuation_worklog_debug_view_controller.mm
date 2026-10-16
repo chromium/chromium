@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/actuation_worklog_debug_view_controller.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -95,7 +96,8 @@ const CGFloat kIconSize = 16.0;
   _subtitleField = [self textField:@"Step Subtitle (optional)"];
   [stepInputsStack addArrangedSubview:_subtitleField];
 
-  _stepStyleSelector = [self segmentedControl:@[ @"Dot", @"Label", @"Card" ]];
+  _stepStyleSelector =
+      [self segmentedControl:@[ @"Dot", @"Label", @"Card", @"Text" ]];
   [stepInputsStack addArrangedSubview:_stepStyleSelector];
 
   UIStackView* stepButtonsStack =
@@ -310,6 +312,9 @@ const CGFloat kIconSize = 16.0;
   NSString* subtitle = _subtitleField.text;
   UIImage* icon = SymbolTemplateWithPointSize(SymbolPlayFill, kIconSize);
   ActuationWorklogItemStyle style = [self currentItemStyle];
+  if (style == ActuationWorklogItemStyle::kFreeform) {
+    return [ActuationWorklogItem freeformItemWithText:title];
+  }
 
   return [[ActuationWorklogItem alloc] initWithTitle:title
                                             subtitle:subtitle
@@ -400,21 +405,31 @@ const CGFloat kIconSize = 16.0;
 }
 
 - (UIImage*)currentChipIcon {
-  if (_chipIconSelector.selectedSegmentIndex == 1) {
-    return SymbolTemplateWithPointSize(SymbolMagnifyingglass, kIconSize);
-  } else if (_chipIconSelector.selectedSegmentIndex == 2) {
-    return SymbolTemplateWithPointSize(SymbolGlobe, kIconSize);
+  switch (_chipIconSelector.selectedSegmentIndex) {
+    case 0:
+      return nil;
+    case 1:
+      return SymbolTemplateWithPointSize(SymbolMagnifyingglass, kIconSize);
+    case 2:
+      return SymbolTemplateWithPointSize(SymbolGlobe, kIconSize);
+    default:
+      NOTREACHED();
   }
-  return nil;
 }
 
 - (ActuationWorklogItemStyle)currentItemStyle {
-  if (_stepStyleSelector.selectedSegmentIndex == 0) {
-    return ActuationWorklogItemStyle::kSimple;
-  } else if (_stepStyleSelector.selectedSegmentIndex == 1) {
-    return ActuationWorklogItemStyle::kLabeled;
+  switch (_stepStyleSelector.selectedSegmentIndex) {
+    case 0:
+      return ActuationWorklogItemStyle::kSimple;
+    case 1:
+      return ActuationWorklogItemStyle::kLabeled;
+    case 2:
+      return ActuationWorklogItemStyle::kCard;
+    case 3:
+      return ActuationWorklogItemStyle::kFreeform;
+    default:
+      NOTREACHED();
   }
-  return ActuationWorklogItemStyle::kCard;
 }
 
 #pragma mark - UITextFieldDelegate

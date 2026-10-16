@@ -127,6 +127,16 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
       accessoryItem:accessoryItem];
 }
 
++ (instancetype)freeformItemWithText:(NSString*)text {
+  return [[ActuationWorklogItem alloc]
+      initWithTitle:text
+           subtitle:nil
+               icon:nil
+              style:ActuationWorklogItemStyle::kFreeform
+             active:NO
+      accessoryItem:nil];
+}
+
 - (instancetype)withActive:(BOOL)active {
   return [[ActuationWorklogItem alloc] initWithTitle:self.title
                                             subtitle:self.subtitle

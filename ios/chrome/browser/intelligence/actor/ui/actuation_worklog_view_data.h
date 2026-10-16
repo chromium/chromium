@@ -16,6 +16,9 @@ enum class ActuationWorklogItemStyle {
   // Card style with an icon in a circle, and the title/subtitle inside a card
   // container. Optionally contains an `ActuationWorklogAccessoryItem`.
   kCard,
+  // Freeform text-only style (e.g. a question or clarification) spanning the
+  // full width, without any timeline decoration (no dot, icon or connector).
+  kFreeform,
 };
 
 // View data object describing a nested accessory card inside an actuation
@@ -111,6 +114,10 @@ enum class ActuationWorklogItemStyle {
                              icon:(UIImage*)icon
                            active:(BOOL)active
                     accessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem;
+
+// Creates a freeform text-only item without timeline decoration. `text` is
+// exposed through `title`.
++ (instancetype)freeformItemWithText:(NSString*)text;
 
 #pragma mark - Helpers
 

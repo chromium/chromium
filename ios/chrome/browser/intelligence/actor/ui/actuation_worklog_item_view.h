@@ -34,15 +34,27 @@ enum class ActuationWorklogConnectorVisibility {
     didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem;
 @end
 
-// Unified view representing a step in the timeline. When no icon is provided,
-// we display a smaller dot view. The subtitle is hidden when nil. Optionally
-// links a connector above and below the icon.
+// Unified view representing an item in the worklog. Timeline styles
+// (`kSimple`, `kLabeled`, `kCard`) display an indicator in the leading gutter
+// (a small dot for `kSimple`, a large circle with an optional icon otherwise)
+// and can link connectors above and below it. The subtitle is hidden when nil.
 //
 // +------+  +--------------------+
 // | Icon |  | Title              |
 // +------+  |--------------------|
 //           | Subtitle           |
 //           +--------------------+
+// +------------------------------+
+// |     Overlay buffer area      |
+// +------------------------------+
+//
+// `kFreeform` items display text only, aligned with the leading edge of the
+// large circle, without any indicator or connectors. The overlay buffer area
+// is still reserved when `bottomBufferHeight` is non-zero.
+//
+// +------------------------------+
+// | Text                         |
+// +------------------------------+
 // +------------------------------+
 // |     Overlay buffer area      |
 // +------------------------------+
@@ -53,13 +65,14 @@ enum class ActuationWorklogConnectorVisibility {
 
 // Defines the visibility of the connector lines. Updating this property will
 // trigger a layout. Defaults to `ActuationWorklogConnectorVisibility::kNone`.
+// Ignored for `kFreeform` items, which never draw connectors.
 @property(nonatomic, assign)
     ActuationWorklogConnectorVisibility connectorVisibility;
 
 // Extra vertical space reserved at the bottom of the cell to accommodate
 // overlays (such as floating tool chips). Setting a non-zero height extends the
 // vertical dashed connector line on the left through the buffer area to ensure
-// visual continuity. Defaults to 0.0.
+// visual continuity (except for `kFreeform` items). Defaults to 0.0.
 @property(nonatomic, assign) CGFloat bottomBufferHeight;
 
 // Controls whether the item is collapsible and displays a caret indicator.

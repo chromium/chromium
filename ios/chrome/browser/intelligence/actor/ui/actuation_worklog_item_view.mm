@@ -48,6 +48,7 @@ const NSTimeInterval kAnimationDuration = 0.25;
 
   NSLayoutConstraint* _dotSizeConstraint;
   NSLayoutConstraint* _bottomBufferHeightConstraint;
+  NSLayoutConstraint* _mainRowLeadingConstraint;
 
   ActuationWorklogItem* _item;
   CAShapeLayer* _connectorLayer;
@@ -73,6 +74,7 @@ const NSTimeInterval kAnimationDuration = 0.25;
   [self updateCardStyleAndLayout];
   [self updateFontsAndColors];
   [self updateDotAppearance];
+  [self setNeedsLayout];
 }
 
 - (void)setConnectorVisibility:
@@ -140,7 +142,9 @@ const NSTimeInterval kAnimationDuration = 0.25;
 
 // Updates the connector line's shape path and dash phase alignment.
 - (void)updateConnectorPath {
-  if (_connectorVisibility == ActuationWorklogConnectorVisibility::kNone) {
+  // Freeform items are not part of the timeline and never draw a connector.
+  if (_connectorVisibility == ActuationWorklogConnectorVisibility::kNone ||
+      _item.style == ActuationWorklogItemStyle::kFreeform) {
     _connectorLayer.path = nil;
     return;
   }
@@ -266,11 +270,13 @@ const NSTimeInterval kAnimationDuration = 0.25;
 
   NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
       kSpacingTiny, kTimelineGutterWidth, kSpacingTiny, kSpacingLarge);
+  _mainRowLeadingConstraint =
+      [_mainRowStack.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                  constant:insets.leading];
   [NSLayoutConstraint activateConstraints:@[
     [_mainRowStack.topAnchor constraintEqualToAnchor:self.topAnchor
                                             constant:insets.top],
-    [_mainRowStack.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                                constant:insets.leading],
+    _mainRowLeadingConstraint,
     [_mainRowStack.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
                                                  constant:-insets.trailing],
 
@@ -300,13 +306,14 @@ const NSTimeInterval kAnimationDuration = 0.25;
 - (void)updateContent {
   _titleLabel.text = _item.title;
 
-  BOOL showSubtitle = _item.style != ActuationWorklogItemStyle::kSimple &&
-                      _item.subtitle.length > 0;
+  // Only labeled and card styles display a subtitle and an icon.
+  BOOL showsDetails = _item.style == ActuationWorklogItemStyle::kLabeled ||
+                      _item.style == ActuationWorklogItemStyle::kCard;
+  BOOL showSubtitle = showsDetails && _item.subtitle.length > 0;
   _subtitleLabel.hidden = !showSubtitle;
   _subtitleLabel.text = showSubtitle ? _item.subtitle : nil;
 
-  BOOL hasIcon =
-      (_item.style != ActuationWorklogItemStyle::kSimple) && _item.icon;
+  BOOL hasIcon = showsDetails && _item.icon;
   _iconView.image =
       hasIcon ? [_item.icon
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
@@ -327,6 +334,13 @@ const NSTimeInterval kAnimationDuration = 0.25;
 
   BOOL isCard = (_item.style == ActuationWorklogItemStyle::kCard);
 
+  // Freeform items have no timeline decoration; align their text with the
+  // leading edge of the large circle shown by labeled and card items.
+  BOOL isFreeform = (_item.style == ActuationWorklogItemStyle::kFreeform);
+  CGFloat freeformLeadingInset = (kTimelineGutterWidth - kDotSizeLabeled) / 2.0;
+  _mainRowLeadingConstraint.constant =
+      isFreeform ? freeformLeadingInset : kTimelineGutterWidth;
+
   _mainRowStack.backgroundColor =
       isCard ? [UIColor colorNamed:kSecondaryBackgroundColor]
              : [UIColor clearColor];
@@ -346,6 +360,12 @@ const NSTimeInterval kAnimationDuration = 0.25;
 
 // Updates the font and color based on the view style.
 - (void)updateFontsAndColors {
+  if (_item.style == ActuationWorklogItemStyle::kFreeform) {
+    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    return;
+  }
+
   BOOL simpleStyle = (_item.style == ActuationWorklogItemStyle::kSimple);
   _titleLabel.font =
       simpleStyle ? [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
@@ -356,6 +376,11 @@ const NSTimeInterval kAnimationDuration = 0.25;
 }
 
 - (void)updateDotAppearance {
+  _dotView.hidden = (_item.style == ActuationWorklogItemStyle::kFreeform);
+  if (_dotView.hidden) {
+    return;
+  }
+
   CGFloat dotSize;
   BOOL showLargeDot = (_item.style != ActuationWorklogItemStyle::kSimple);
   BOOL active = _item.isActive;
