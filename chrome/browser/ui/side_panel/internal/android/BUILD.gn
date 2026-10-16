@@ -100,6 +100,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContainerCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidBridge.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelNativeBridgeSelector.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelResizeManager.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridge.java",
   ]
 
@@ -216,7 +217,10 @@ source_set("browser_tests") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContainerCoordinatorImplUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContainerCoordinatorImplUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelResizeManagerUnitTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_junit_test_support",
