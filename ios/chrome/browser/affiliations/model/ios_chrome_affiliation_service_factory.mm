@@ -16,29 +16,12 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-IOSChromeAffiliationServiceFactory*
-IOSChromeAffiliationServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeAffiliationServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-affiliations::AffiliationService*
-IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
-  CHECK(profile);
-
-  return GetInstance()
-      ->GetServiceForProfileAs<affiliations::AffiliationService>(
-          profile, /*create=*/true);
-}
-
-IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AffiliationService",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
-    default;
+IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AffiliationService",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(

@@ -5,26 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace affiliations {
-class AffiliationService;
-}
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 class IOSChromeAffiliationServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeAffiliationServiceFactory,
+          affiliations::AffiliationService> {
  public:
-  static IOSChromeAffiliationServiceFactory* GetInstance();
-  static affiliations::AffiliationService* GetForProfile(ProfileIOS* profile);
+  explicit IOSChromeAffiliationServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSChromeAffiliationServiceFactory>;
-
-  IOSChromeAffiliationServiceFactory();
-  ~IOSChromeAffiliationServiceFactory() override;
-
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };
