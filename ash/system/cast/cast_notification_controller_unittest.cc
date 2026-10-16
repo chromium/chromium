@@ -73,8 +73,6 @@ class CastNotificationControllerTest
     notification_controller_ = std::make_unique<CastNotificationController>();
     cast_config_.set_has_sinks_and_routes(true);
     cast_config_.set_has_active_route(true);
-    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
-                                              AreOngoingProcessesEnabled());
   }
 
   message_center::Notification* GetNotification() {
@@ -91,11 +89,8 @@ class CastNotificationControllerTest
     message_center::MessageCenter::Get()->ClickOnNotification("chrome://cast");
   }
 
-  bool AreOngoingProcessesEnabled() { return GetParam(); }
-
   std::unique_ptr<CastNotificationController> notification_controller_;
   TestCastConfigController cast_config_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

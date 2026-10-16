@@ -48,12 +48,7 @@ views::View* GetNotificationListView() {
 
 class NotificationCenterControllerTest : public AshTestBase {
  public:
-  NotificationCenterControllerTest() : AshTestBase() {
-    // `NotificationCenterController` is only used whenever Ongoing Processes
-    // are enabled.
-    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
-                                              true);
-  }
+  NotificationCenterControllerTest() = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -63,7 +58,6 @@ class NotificationCenterControllerTest : public AshTestBase {
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 

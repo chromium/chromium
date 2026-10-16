@@ -96,38 +96,26 @@ void CastNotificationController::OnDevicesUpdated(
     if (route.freeze_info.can_freeze) {
       displayed_route_is_frozen_ = route.freeze_info.is_frozen;
 
-      // The new pinned notification UI uses icon instead of label buttons.
-      if (features::AreOngoingProcessesEnabled()) {
-        data.buttons.emplace_back(
-            displayed_route_is_frozen_
-                ? message_center::ButtonInfo(
-                      /*vector_icon=*/&kNotificationPlayIcon,
-                      /*accessible_name=*/l10n_util::GetStringUTF16(
-                          IDS_ASH_STATUS_TRAY_CAST_RESUME))
-                : message_center::ButtonInfo(
-                      /*vector_icon=*/&kNotificationPauseIcon,
-                      /*accessible_name=*/l10n_util::GetStringUTF16(
-                          IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
-      } else {
-        data.buttons.emplace_back(message_center::ButtonInfo(
-            displayed_route_is_frozen_
-                ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_RESUME)
-                : l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
-      }
+      // The pinned notification UI uses icon instead of label buttons.
+      data.buttons.emplace_back(
+          displayed_route_is_frozen_
+              ? message_center::ButtonInfo(
+                    /*vector_icon=*/&kNotificationPlayIcon,
+                    /*accessible_name=*/l10n_util::GetStringUTF16(
+                        IDS_ASH_STATUS_TRAY_CAST_RESUME))
+              : message_center::ButtonInfo(
+                    /*vector_icon=*/&kNotificationPauseIcon,
+                    /*accessible_name=*/l10n_util::GetStringUTF16(
+                        IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
 
       freeze_button_index_ = data.buttons.size() - 1;
     }
 
-    // The new pinned notification UI uses icon instead of label buttons.
-    if (features::AreOngoingProcessesEnabled()) {
-      data.buttons.emplace_back(message_center::ButtonInfo(
-          /*vector_icon=*/&kNotificationStopIcon,
-          /*accessible_name=*/l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_TRAY_CAST_STOP)));
-    } else {
-      data.buttons.emplace_back(message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP)));
-    }
+    // The pinned notification UI uses icon instead of label buttons.
+    data.buttons.emplace_back(message_center::ButtonInfo(
+        /*vector_icon=*/&kNotificationStopIcon,
+        /*accessible_name=*/l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_STOP)));
 
     std::unique_ptr<Notification> notification =
         ash::SystemNotificationBuilder()

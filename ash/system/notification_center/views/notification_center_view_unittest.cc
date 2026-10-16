@@ -47,10 +47,7 @@ class NotificationCenterViewTest : public AshTestBase,
                                    public testing::WithParamInterface<
                                        /*enable_ongoing_processes=*/bool> {
  public:
-  NotificationCenterViewTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
-                                              AreOngoingProcessesEnabled());
-  }
+  NotificationCenterViewTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -74,8 +71,6 @@ class NotificationCenterViewTest : public AshTestBase,
     views::test::RunScheduledLayout(view);
     ++size_changed_count_;
   }
-
-  bool AreOngoingProcessesEnabled() const { return GetParam(); }
 
  protected:
   // Adds more than enough notifications to make the message center scrollable.
@@ -216,7 +211,6 @@ class NotificationCenterViewTest : public AshTestBase,
   int size_changed_count_ = 0;
 
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

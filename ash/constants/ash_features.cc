@@ -1190,6 +1190,8 @@ BASE_FEATURE(kOneDriveUploadImmediateReauth, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the new UI for pinned notifications will be enabled.
 // go/ongoing-ui
+// TODO(crbug.com/563193206): Remove once c/b/device_notifications is cleaned
+// up.
 BASE_FEATURE(kOngoingProcesses, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, enrollment screen will allow for automatically adding the
@@ -2522,10 +2524,7 @@ bool IsOAuthIppEnabled() {
 }
 
 bool IsNotificationCenterControllerEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationCenterController) ||
-         // Ongoing processes must launch together with the new
-         // `NotificationCenterController`.
-         base::FeatureList::IsEnabled(kOngoingProcesses);
+  return true;
 }
 
 bool IsNotificationExpansionAnimationEnabled() {
@@ -2540,6 +2539,8 @@ bool IsNssDbClientCertsRollbackEnabled() {
   return base::FeatureList::IsEnabled(kEnableNssDbClientCertsRollback);
 }
 
+// TODO(crbug.com/563193206): Remove once c/b/device_notifications is cleaned
+// up.
 bool AreOngoingProcessesEnabled() {
   return base::FeatureList::IsEnabled(kOngoingProcesses);
 }

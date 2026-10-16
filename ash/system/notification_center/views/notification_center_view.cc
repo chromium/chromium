@@ -74,17 +74,8 @@ void NotificationCenterView::Init() {
 }
 
 void NotificationCenterView::Init(
-    const std::vector<message_center::Notification*>& notifications) {
-  CHECK(features::IsNotificationCenterControllerEnabled() &&
-        !features::AreOngoingProcessesEnabled());
-  notification_list_view_->Init(notifications);
-  AddChildViews();
-}
-
-void NotificationCenterView::Init(
     const std::vector<message_center::Notification*>& unpinned_notifications,
     std::unique_ptr<views::View> pinned_notification_list_view) {
-  CHECK(features::AreOngoingProcessesEnabled());
   notification_list_view_->Init(unpinned_notifications);
 
   AddChildViews(std::move(pinned_notification_list_view));
@@ -99,10 +90,8 @@ void NotificationCenterView::AddChildViews(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(kMessageCenterPadding)
           .Build();
-  if (features::AreOngoingProcessesEnabled()) {
-    scroller_contents_view->AddChildView(
-        std::move(pinned_notification_list_view));
-  }
+  scroller_contents_view->AddChildView(
+      std::move(pinned_notification_list_view));
   scroller_contents_view->AddChildView(notification_list_view_);
   scroller_->SetContents(std::move(scroller_contents_view));
   // Need to set the transparent background explicitly, since ScrollView has

@@ -148,10 +148,7 @@ class NotificationListViewTest : public AshTestBase,
                                  public testing::WithParamInterface<
                                      /*are_ongoing_processes_enabled=*/bool> {
  public:
-  NotificationListViewTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
-                                              AreOngoingProcessesEnabled());
-  }
+  NotificationListViewTest() = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -174,8 +171,6 @@ class NotificationListViewTest : public AshTestBase,
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
-
-  bool AreOngoingProcessesEnabled() const { return GetParam(); }
 
  protected:
   std::string AddNotification(bool pinned = false, bool expandable = false) {
@@ -205,7 +200,7 @@ class NotificationListViewTest : public AshTestBase,
     MessageCenter::Get()->AddNotification(std::move(notification));
     // Manually trigger observer functions since `NotificationCenterController`,
     // which is used to create ongoing processes is not created in this test.
-    if (AreOngoingProcessesEnabled() && notification_list_view_) {
+    if (notification_list_view_) {
       notification_list_view_->OnNotificationAdded(id);
     }
     return id;
@@ -215,7 +210,7 @@ class NotificationListViewTest : public AshTestBase,
     MessageCenter::Get()->RemoveNotification(id, by_user);
     // Manually trigger observer functions since `NotificationCenterController`,
     // which is used to create ongoing processes is not created in this test.
-    if (AreOngoingProcessesEnabled() && notification_list_view_) {
+    if (notification_list_view_) {
       notification_list_view_->OnNotificationRemoved(id, by_user);
     }
   }
@@ -228,12 +223,8 @@ class NotificationListViewTest : public AshTestBase,
 
   void CreateMessageListView() {
     notification_list_view_ = std::make_unique<TestNotificationListView>();
-    if (AreOngoingProcessesEnabled()) {
-      notification_list_view_->Init(
-          message_center_utils::GetSortedNotificationsWithOwnView());
-    } else {
-      notification_list_view_->Init();
-    }
+    notification_list_view_->Init(
+        message_center_utils::GetSortedNotificationsWithOwnView());
     notification_list_view_->AddObserver(this);
     OnViewPreferredSizeChanged(notification_list_view_.get());
     size_changed_count_ = 0;
@@ -293,7 +284,6 @@ class NotificationListViewTest : public AshTestBase,
   int id_ = 0;
   int size_changed_count_ = 0;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestNotificationListView> notification_list_view_;
@@ -797,45 +787,6 @@ TEST_P(NotificationListViewTest, OnChildNotificationViewUpdated) {
   EXPECT_TRUE(child_view);
   EXPECT_EQ(new_title,
             child_view->GetTitleRowLabelForTest()->GetDisplayTextForTesting());
-}
-
-// Tests that the view animates when notification contents are updated.
-TEST_P(NotificationListViewTest, AnimatesOnNotificationUpdated) {
-  // Skip the test when `OngoingProcesses` are enabled since
-  // `NotificationCenterController` is not created in this test.
-  if (AreOngoingProcessesEnabled()) {
-    GTEST_SKIP();
-  }
-
-  const std::string id = "id";
-  // Create and add a notification without a `message` to the `MessageCenter`.
-  auto notification =
-      ash::SystemNotificationBuilder()
-          .SetId(id)
-          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
-          .SetTitle(u"Title")
-          .BuildPtr(
-              /*keep_timestamp=*/false);
-  MessageCenter::Get()->AddNotification(std::move(notification));
-
-  // Ensure the notification list does not animate when being created.
-  CreateMessageListView();
-  EXPECT_FALSE(IsAnimating());
-
-  // Update the notification by attempting to create a new notification with the
-  // same id, but it now has a non-empty `message`.
-  auto updated_notification =
-      ash::SystemNotificationBuilder()
-          .SetId(id)
-          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
-          .SetTitle(u"Title")
-          .SetMessage(u"Message")
-          .BuildPtr(
-              /*keep_timestamp=*/false);
-  MessageCenter::Get()->AddNotification(std::move(updated_notification));
-
-  // Ensure the notification list animated to fit the new contents.
-  EXPECT_TRUE(IsAnimating());
 }
 
 // Tests that preferred size changes upon toggle of expand/collapse.

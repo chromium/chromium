@@ -91,10 +91,8 @@ NotificationCenterBubble::GetOngoingProcessMessageViewContainerById(
   // access other notifications use `NotificationListView`.
   // TODO(b/322835713): Have the controller create other notification views
   // and deprecate `NotificationListView`.
-  return features::AreOngoingProcessesEnabled()
-             ? notification_center_controller_
-                   ->GetOngoingProcessMessageViewContainerById(id)
-             : nullptr;
+  return notification_center_controller_
+      ->GetOngoingProcessMessageViewContainerById(id);
 }
 
 void NotificationCenterBubble::UpdateBubbleBounds() {

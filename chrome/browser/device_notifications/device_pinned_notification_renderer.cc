@@ -95,6 +95,8 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
   message_center::RichNotificationData data;
 #if BUILDFLAG(IS_CHROMEOS)
   // The new pinned notification view uses a settings icon button.
+  // TODO(crbug.com/563193206): Remove AreOngoingProcessesEnabled() check once
+  // crrev.com/c/8572983 lands.
   if (ash::features::AreOngoingProcessesEnabled()) {
     data.buttons.emplace_back(message_center::ButtonInfo(
         /*vector_icon=*/&(features::IsRoundedIconsEnabled()

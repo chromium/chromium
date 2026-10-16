@@ -25,9 +25,8 @@ class MessageViewContainer;
 class NotificationCenterView;
 
 // Manages and updates `NotificationCenterView`. Currently only manages pinned
-// system notifications when the feature `OngoingProcesses` is enabled. All
-// other types of notifications will be forwarded to `NotificationListView` so
-// they're processed there.
+// system notifications. All other types of notifications will be forwarded to
+// `NotificationListView` so they're processed there.
 // TODO(b/322835713): Also create and manage other notification views from this
 // controller instead of from `NotificationListView`.
 class ASH_EXPORT NotificationCenterController
@@ -44,10 +43,8 @@ class ASH_EXPORT NotificationCenterController
   std::unique_ptr<views::View> CreateNotificationCenterView();
 
   // Inits the `NotificationCenterView` so it can be populated with views for
-  // the existing notifications.
-  // When `OngoingProcesses` are disabled, notification views are created inside
-  // of the `NotificationListView` class. When `OngoingProcesses` are enabled,
-  // pinned system notification views are created in this controller.
+  // the existing notifications. Pinned system notification views are created in
+  // this controller.
   // TODO(b/322835713): Also create and manage other notification views from
   // this controller instead of from `NotificationListView`.
   void InitNotificationCenterView();

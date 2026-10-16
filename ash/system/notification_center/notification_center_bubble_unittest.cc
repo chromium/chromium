@@ -32,12 +32,8 @@ namespace ash {
 
 class NotificationCenterBubbleTestBase : public AshTestBase {
  public:
-  NotificationCenterBubbleTestBase(bool enable_ongoing_processes)
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        enable_ongoing_processes_(enable_ongoing_processes) {
-    scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
-                                              AreOngoingProcessesEnabled());
-  }
+  NotificationCenterBubbleTestBase()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -46,21 +42,15 @@ class NotificationCenterBubbleTestBase : public AshTestBase {
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
-  bool AreOngoingProcessesEnabled() const { return enable_ongoing_processes_; }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  bool enable_ongoing_processes_ = false;
 };
 
 class NotificationCenterBubbleTest : public NotificationCenterBubbleTestBase,
                                      public testing::WithParamInterface<
                                          /*enable_ongoing_processes=*/bool> {
  public:
-  NotificationCenterBubbleTest()
-      : NotificationCenterBubbleTestBase(
-            /*enable_ongoing_processes=*/GetParam()) {}
+  NotificationCenterBubbleTest() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -370,12 +360,9 @@ class NotificationCenterBubbleMultiDisplayTest
     : public NotificationCenterBubbleTestBase,
       public testing::WithParamInterface<
           std::tuple</* Primary display height */ int,
-                     /* Secondary display height */ int,
-                     /* enable_ongoing_processes */ bool>> {
+                     /* Secondary display height */ int>> {
  public:
-  NotificationCenterBubbleMultiDisplayTest()
-      : NotificationCenterBubbleTestBase(
-            /*enable_ongoing_processes=*/std::get<2>(GetParam())) {}
+  NotificationCenterBubbleMultiDisplayTest() = default;
 
  protected:
   int GetPrimaryDisplayHeight() { return std::get<0>(GetParam()); }
@@ -386,14 +373,11 @@ INSTANTIATE_TEST_SUITE_P(DisplayHeight,
                          NotificationCenterBubbleMultiDisplayTest,
                          testing::Values(
                              // Short primary display, tall secondary display
-                             std::make_tuple(600, 1600, false),
-                             std::make_tuple(600, 1600, true),
+                             std::make_tuple(600, 1600),
                              // Tall primary display, short secondary display
-                             std::make_tuple(1600, 600, false),
-                             std::make_tuple(1600, 600, true),
+                             std::make_tuple(1600, 600),
                              // Same primary and secondary display heights
-                             std::make_tuple(600, 600, false),
-                             std::make_tuple(600, 600, true)));
+                             std::make_tuple(600, 600)));
 
 // Tests that the height of the bubble is constrained according to the
 // parameters of the display it is being shown on.

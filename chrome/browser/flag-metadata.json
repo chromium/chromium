@@ -4387,11 +4387,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-ongoing-processes",
-    "owners": ["kradtke@chromium.org"],
-    "expiry_milestone": 131
-  },
-  {
     "name": "enable-oop-print-drivers",
     "owners": [ "thestig@chromium.org" ],
     "expiry_milestone": 170

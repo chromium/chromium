@@ -87,15 +87,12 @@ class OngoingProcessViewPixelTest
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kOngoingProcesses);
-
     AshTestBase::SetUp();
 
     test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
