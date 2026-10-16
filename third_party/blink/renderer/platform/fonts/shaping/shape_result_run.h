@@ -115,6 +115,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
                       const bool is_ltr,
                       const hb_glyph_info_t* glyph_infos);
 
+  bool TryComputeCompactGlyphPositions(
+      base::span<const hb_glyph_info_t> glyph_infos,
+      base::span<const hb_glyph_position_t> glyph_positions);
+
   wtf_size_t StartIndex() const { return start_index_; }
   wtf_size_t GlyphToCharacterIndex(wtf_size_t i) const {
     if (glyph_data_.IsCompact()) [[unlikely]] {

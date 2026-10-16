@@ -1470,41 +1470,95 @@ inline TextRunLayoutUnit HarfBuzzPositionToTextLayoutUnit(hb_position_t value) {
   return TextRunLayoutUnit::FromFixed<16>(value);
 }
 
+template <typename T>
+base::span<const T> HbBufferSpan(T* (*get_array)(hb_buffer_t*, unsigned*),
+                                 hb_buffer_t* buffer) {
+  unsigned length = 0;
+  T* data = get_array(buffer, &length);
+  // Positions may be null during a shaping callback.
+  if (!data) [[unlikely]] {
+    return {};
+  }
+  // SAFETY: The HarfBuzz C API exposes this array only as a pointer and
+  // element count. It guarantees that `data` points to `length` elements owned
+  // by `buffer`.
+  return UNSAFE_BUFFERS(base::span(base::unchecked, data, length));
+}
+
 // Checks whether it's safe to break without reshaping before the given glyph.
-SafeToBreak SafeToBreakBefore(const hb_glyph_info_t* glyph_infos,
+SafeToBreak SafeToBreakBefore(base::span<const hb_glyph_info_t> glyph_infos,
                               wtf_size_t i,
-                              wtf_size_t num_glyph,
                               TextDirection direction) {
-  if (direction == TextDirection::kLtr) {
-    // Before the first glyph is safe to break.
-    if (!i)
-      return SafeToBreak::kSafe;
+  CHECK(!glyph_infos.empty());
+  // Compare with the preceding glyph in reading order.
+  const size_t pair_start =
+      direction == TextDirection::kLtr ? size_t{i} - 1u : size_t{i};
+  if (pair_start >= glyph_infos.size() - 1u) {
+    return SafeToBreak::kSafe;
+  }
+  const base::span<const hb_glyph_info_t, 2u> pair =
+      glyph_infos.subspan(pair_start).first<2u>();
 
-    // Not at a cluster boundary.
-    if (UNSAFE_TODO(glyph_infos[i].cluster == glyph_infos[i - 1].cluster)) {
-      return SafeToBreak::kUnsafe;
-    }
-  } else {
-    DCHECK_EQ(direction, TextDirection::kRtl);
-    // Before the first glyph is safe to break.
-    if (i == num_glyph - 1)
-      return SafeToBreak::kSafe;
-
-    // Not at a cluster boundary.
-    if (UNSAFE_TODO(glyph_infos[i].cluster == glyph_infos[i + 1].cluster)) {
-      return SafeToBreak::kUnsafe;
-    }
+  if (pair[0].cluster == pair[1].cluster) {
+    return SafeToBreak::kUnsafe;
   }
 
   // The HB_GLYPH_FLAG_UNSAFE_TO_BREAK flag is set for all glyphs in a
   // given cluster so we only need to check the last one.
-  hb_glyph_flags_t flags =
-      hb_glyph_info_get_glyph_flags(UNSAFE_TODO(glyph_infos + i));
+  const hb_glyph_info_t& glyph =
+      direction == TextDirection::kLtr ? pair[1] : pair[0];
+  hb_glyph_flags_t flags = hb_glyph_info_get_glyph_flags(&glyph);
   return (flags & HB_GLYPH_FLAG_UNSAFE_TO_BREAK) ? SafeToBreak::kUnsafe
                                                  : SafeToBreak::kSafe;
 }
 
 }  // anonymous namespace
+
+bool ShapeResultRun::TryComputeCompactGlyphPositions(
+    base::span<const hb_glyph_info_t> glyph_infos,
+    base::span<const hb_glyph_position_t> glyph_positions) {
+  if (!CanUseMonospaceGlyphCompaction(
+          base::checked_cast<unsigned>(glyph_infos.size()))) {
+    return false;
+  }
+
+  const auto GetCompactableGlyph = [glyph_infos, glyph_positions,
+                                    start_index =
+                                        start_index_](unsigned glyph_index) {
+    const hb_glyph_info_t& glyph = glyph_infos[glyph_index];
+    const hb_glyph_position_t& position = glyph_positions[glyph_index];
+    CHECK_GE(glyph.cluster, start_index);
+    const unsigned character_index = glyph.cluster - start_index;
+    const bool has_offset = position.x_offset != 0 || position.y_offset != 0;
+
+    // Identity clusters make every glyph a boundary; only HarfBuzz's flag
+    // remains. Compact runs are LTR, so glyph 0 is first in reading order.
+    const bool is_safe_to_break_before =
+        glyph_index == 0 || !(hb_glyph_info_get_glyph_flags(&glyph) &
+                              HB_GLYPH_FLAG_UNSAFE_TO_BREAK);
+    return GlyphDataCollection::CompactableGlyph{
+        .glyph = static_cast<uint16_t>(glyph.codepoint),
+        .advance = HarfBuzzPositionToTextLayoutUnit(position.x_advance),
+        .character_index = character_index,
+        .has_offset = has_offset,
+        .is_safe_to_break_before = is_safe_to_break_before};
+  };
+  if (!glyph_data_.TryMakeCompactFrom(
+          base::checked_cast<unsigned>(glyph_infos.size()),
+          GetCompactableGlyph)) {
+    return false;
+  }
+
+  // Compute the total advance in fixed point, as in the full storage path.
+  const InlineLayoutUnit total_advance = InlineLayoutUnit::FromRawValue(
+      int64_t{glyph_data_.CompactAdvance().RawValue()} *
+      base::checked_cast<unsigned>(glyph_infos.size()));
+  width_ = total_advance.ClampNegativeToZero().ToFloat();
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  CheckConsistency();
+#endif
+  return true;
+}
 
 // This function computes the number of glyphs and characters that can fit into
 // this ShapeResultRun.
@@ -1640,12 +1694,22 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
                                         hb_buffer_t* harfbuzz_buffer) {
   DCHECK_EQ(kIsHorizontalRun, run->IsHorizontal());
   const wtf_size_t start_cluster = run->StartIndex();
-  const hb_glyph_info_t* glyph_infos =
-      hb_buffer_get_glyph_infos(harfbuzz_buffer, nullptr);
-  const hb_glyph_position_t* glyph_positions =
-      hb_buffer_get_glyph_positions(harfbuzz_buffer, nullptr);
-
   DCHECK_LE(num_glyphs, HarfBuzzRunGlyphData::kMaxGlyphs);
+
+  const base::span<const hb_glyph_info_t> glyph_infos =
+      HbBufferSpan(hb_buffer_get_glyph_infos, harfbuzz_buffer)
+          .subspan(start_glyph, num_glyphs);
+  const base::span<const hb_glyph_position_t> glyph_positions =
+      HbBufferSpan(hb_buffer_get_glyph_positions, harfbuzz_buffer)
+          .subspan(start_glyph, num_glyphs);
+
+  if constexpr (kIsHorizontalRun) {
+    if (RuntimeEnabledFeatures::MonospaceGlyphCompactionEnabled() &&
+        run->TryComputeCompactGlyphPositions(glyph_infos, glyph_positions))
+        [[unlikely]] {
+      return;
+    }
+  }
 
   // Compute glyph_origin in physical, since offsets of glyphs are in physical.
   // It's the caller's responsibility to convert to logical.
@@ -1655,9 +1719,8 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
 
   // HarfBuzz returns result in visual order, no need to flip for RTL.
   for (wtf_size_t i = 0; i < num_glyphs; ++i) {
-    const hb_glyph_info_t glyph = UNSAFE_TODO(glyph_infos[start_glyph + i]);
-    const hb_glyph_position_t& pos =
-        UNSAFE_TODO(glyph_positions[start_glyph + i]);
+    const hb_glyph_info_t glyph = glyph_infos[i];
+    const hb_glyph_position_t& pos = glyph_positions[i];
 
     // One out of x_advance and y_advance is zero, depending on
     // whether the buffer direction is horizontal or vertical.
@@ -1671,9 +1734,7 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
     DCHECK_LE(character_index, HarfBuzzRunGlyphData::kMaxCharacterIndex);
     DCHECK_LT(character_index, run->num_characters_);
     glyph_data[i] = {glyph.codepoint, character_index,
-                     SafeToBreakBefore(UNSAFE_TODO(glyph_infos + start_glyph),
-                                       i, num_glyphs, Direction()),
-                     advance};
+                     SafeToBreakBefore(glyph_infos, i, Direction()), advance};
 
     // Offset is primarily used when painting glyphs. Keep it in physical.
     if (pos.x_offset || pos.y_offset) [[unlikely]] {
@@ -1688,10 +1749,6 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
 
   run->width_ = total_advance.ClampNegativeToZero().ToFloat();
   has_vertical_offsets_ |= has_vertical_offsets;
-  if (RuntimeEnabledFeatures::MonospaceGlyphCompactionEnabled() &&
-      run->CanUseMonospaceGlyphCompaction(num_glyphs)) {
-    run->glyph_data_.TryMakeCompact();
-  }
 #if EXPENSIVE_DCHECKS_ARE_ON()
   run->CheckConsistency();
 #endif

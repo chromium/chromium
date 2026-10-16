@@ -6,6 +6,7 @@
 
 #include <hb.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -13,6 +14,7 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -301,6 +303,34 @@ TEST_F(ShapeResultRunTest, FixedPitchDoesNotGuaranteeConstantAdvances) {
     EXPECT_EQ(TextRunLayoutUnit(20),
               run->glyph_data_.GlyphAt(variable_index).advance);
   }
+}
+
+TEST_F(ShapeResultRunTest, CompactGlyphPositionsCheckStartCluster) {
+  constexpr unsigned kStart = 13;
+  constexpr unsigned kNumGlyphs = 8;
+  ShapeResultRun* run = MakeGarbageCollected<ShapeResultRun>(
+      CreateTestFontData(/*is_fixed_pitch=*/true), HB_DIRECTION_LTR,
+      CanvasRotationInVertical::kRegular, HB_SCRIPT_LATIN, kStart, kNumGlyphs,
+      kNumGlyphs);
+  std::array<hb_glyph_info_t, kNumGlyphs> glyph_infos = {};
+  std::array<hb_glyph_position_t, kNumGlyphs> glyph_positions = {};
+  for (unsigned i = 0; i < kNumGlyphs; ++i) {
+    glyph_infos[i].codepoint = 42 + i;
+    glyph_infos[i].cluster = kStart + i;
+    glyph_positions[i].x_advance = 10 << 16;
+  }
+
+  ASSERT_TRUE(
+      run->TryComputeCompactGlyphPositions(glyph_infos, glyph_positions));
+  EXPECT_TRUE(run->GetGlyphDataRange().IsCompactSource());
+  EXPECT_EQ(80, run->Width());
+  for (unsigned i = 0; i < kNumGlyphs; ++i) {
+    EXPECT_EQ(kStart + i, run->GlyphToCharacterIndex(i));
+  }
+
+  glyph_infos[0].cluster = kStart - 1;
+  EXPECT_CHECK_DEATH(
+      run->TryComputeCompactGlyphPositions(glyph_infos, glyph_positions));
 }
 
 TEST_F(ShapeResultRunTest, GlyphDataCopyFromRange) {
