@@ -3351,7 +3351,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // Otherwise this is a cell, return the row headers for this cell.
     for (int32_t nodeId : delegate->GetRowHeaderNodeIds()) {
       ui::AXPlatformNode* cellNode = delegate->GetFromNodeID(nodeId);
-      if (cellNode) {
+      if (cellNode && cellNode != _node) {
         [rowHeaders addObject:cellNode->GetNativeViewAccessible().Get()];
       }
     }

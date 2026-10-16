@@ -679,11 +679,9 @@ TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
   id second_row_header_cell = row_headers[1];
   EXPECT_EQ(second_row_header_cell, second_row_children[0]);
 
-  // If we ask a row header cell for its rowHeaders, we should get that
-  // cell back.
+  // A row header should not expose itself as its own row header.
   row_headers = [first_row_header_cell rowHeaders];
-  EXPECT_EQ(1U, [row_headers count]);
-  EXPECT_EQ(first_row_header_cell, row_headers[0]);
+  EXPECT_EQ(nil, row_headers);
 
   // A non-row-header cell should return the header for its row.
   id last_cell_second_row = second_row_children[1];

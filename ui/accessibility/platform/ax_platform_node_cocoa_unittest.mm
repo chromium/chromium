@@ -1021,6 +1021,20 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowHeaderUIElementsOnCell) {
   TestUIElements([cell accessibilityRowHeaderUIElements], { 3 });
 }
 
+// A row header should not expose itself as its own row header.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowHeaderUIElementsOnRowHeader) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kRowHeader
+    ++++++4 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* row_header = GetCocoaNode(3);
+  EXPECT_EQ([row_header accessibilityRowHeaderUIElements], nil);
+}
+
 // accessibilityRowHeaderUIElements on a table with two header rows in a row.
 TEST_P(AXPlatformNodeCocoaTest,
        AccessibilityRowHeaderUIElementsOnMultipleHeaderRowsTable) {

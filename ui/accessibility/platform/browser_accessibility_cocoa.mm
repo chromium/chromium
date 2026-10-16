@@ -1511,7 +1511,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     // Otherwise this is a cell, return the row headers for this cell.
     for (int32_t nodeId : _owner->node()->GetTableCellRowHeaderNodeIds()) {
       BrowserAccessibility* cell = _owner->manager()->GetFromID(nodeId);
-      if (cell) {
+      if (cell && cell != _owner) {
         [rowHeaders addObject:cell->GetNativeViewAccessible().Get()];
       }
     }
