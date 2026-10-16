@@ -216,7 +216,7 @@ std::unique_ptr<views::View> CreateInfoBoxRow(
           ui::kColorSysNeutralContainer, corners))
       .AddChildren(views::Builder<views::ImageView>()
                        .SetImage(ui::ImageModel::FromVectorIcon(
-                           icon, ui::kColorIconSecondary, kIconSize))
+                           icon, ui::kColorSysOnSurfaceSubtle, kIconSize))
                        .SetProperty(views::kMarginsKey, kIconMargin),
                    views::Builder<views::View>(std::move(label))
                        .SetProperty(views::kBoxLayoutFlexKey,
