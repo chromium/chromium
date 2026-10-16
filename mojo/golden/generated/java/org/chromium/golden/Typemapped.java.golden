@@ -23,8 +23,7 @@ import org.chromium.build.annotations.Nullable;
 public final class Typemapped extends org.chromium.mojo.bindings.Struct {
 
     private static final int STRUCT_SIZE = 24;
-    private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(24, 0)};
-    private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+    private static final int STRUCT_VERSION = 0;
     public byte field;
     public @Nullable Integer optional;
     public @Nullable Boolean[] optionalContainer;
@@ -34,7 +33,7 @@ public final class Typemapped extends org.chromium.mojo.bindings.Struct {
     }
 
     public Typemapped() {
-        this(0);
+        this(STRUCT_VERSION);
     }
 
     public static Typemapped deserialize(org.chromium.mojo.bindings.Message message) {
@@ -59,8 +58,7 @@ public final class Typemapped extends org.chromium.mojo.bindings.Struct {
         decoder0.increaseStackDepth();
         Typemapped result;
         try {
-            org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-            final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             result = new Typemapped(elementsOrVersion);
                 {
                     
@@ -88,7 +86,7 @@ public final class Typemapped extends org.chromium.mojo.bindings.Struct {
     @SuppressWarnings("unchecked")
     @Override
     protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
         
         encoder0.encode(this.field, 8);
         final boolean optional$flag = this.optional != null;

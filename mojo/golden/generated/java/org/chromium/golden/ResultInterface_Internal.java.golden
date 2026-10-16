@@ -254,8 +254,7 @@ SyncMethod_Response callback) {
     static final class ResultInterfaceMethodParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 16;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(16, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
         public boolean a;
 
         private ResultInterfaceMethodParams(int version) {
@@ -263,7 +262,7 @@ SyncMethod_Response callback) {
         }
 
         public ResultInterfaceMethodParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static ResultInterfaceMethodParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -288,8 +287,7 @@ SyncMethod_Response callback) {
             decoder0.increaseStackDepth();
             ResultInterfaceMethodParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new ResultInterfaceMethodParams(elementsOrVersion);
                     {
                         
@@ -305,7 +303,7 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
             
             encoder0.encode(this.a, 8, 0);
         }
@@ -317,8 +315,7 @@ SyncMethod_Response callback) {
     static final class ResultInterfaceMethodResponseParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 24;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(24, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
         public ResultInterfaceMethodResponseParamResult result;
 
         private ResultInterfaceMethodResponseParams(int version) {
@@ -326,7 +323,7 @@ SyncMethod_Response callback) {
         }
 
         public ResultInterfaceMethodResponseParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static ResultInterfaceMethodResponseParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -351,8 +348,7 @@ SyncMethod_Response callback) {
             decoder0.increaseStackDepth();
             ResultInterfaceMethodResponseParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new ResultInterfaceMethodResponseParams(elementsOrVersion);
                     {
                         
@@ -368,7 +364,7 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
             
             encoder0.encode(this.result, 8, false);
         }
@@ -468,8 +464,7 @@ SyncMethod_Response callback) {
     static final class ResultInterfaceSyncMethodParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 16;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(16, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
         public boolean a;
 
         private ResultInterfaceSyncMethodParams(int version) {
@@ -477,7 +472,7 @@ SyncMethod_Response callback) {
         }
 
         public ResultInterfaceSyncMethodParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static ResultInterfaceSyncMethodParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -502,8 +497,7 @@ SyncMethod_Response callback) {
             decoder0.increaseStackDepth();
             ResultInterfaceSyncMethodParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new ResultInterfaceSyncMethodParams(elementsOrVersion);
                     {
                         
@@ -519,7 +513,7 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
             
             encoder0.encode(this.a, 8, 0);
         }
@@ -531,8 +525,7 @@ SyncMethod_Response callback) {
     static final class ResultInterfaceSyncMethodResponseParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 24;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(24, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
         public ResultInterfaceSyncMethodResponseParamResult result;
 
         private ResultInterfaceSyncMethodResponseParams(int version) {
@@ -540,7 +533,7 @@ SyncMethod_Response callback) {
         }
 
         public ResultInterfaceSyncMethodResponseParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static ResultInterfaceSyncMethodResponseParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -565,8 +558,7 @@ SyncMethod_Response callback) {
             decoder0.increaseStackDepth();
             ResultInterfaceSyncMethodResponseParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new ResultInterfaceSyncMethodResponseParams(elementsOrVersion);
                     {
                         
@@ -582,7 +574,7 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
             
             encoder0.encode(this.result, 8, false);
         }

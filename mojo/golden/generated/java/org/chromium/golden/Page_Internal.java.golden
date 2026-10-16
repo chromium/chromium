@@ -179,15 +179,14 @@ class Page_Internal {
     static final class PageOnSomethingHappenedParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 8;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(8, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
 
         private PageOnSomethingHappenedParams(int version) {
             super(STRUCT_SIZE, version);
         }
 
         public PageOnSomethingHappenedParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static PageOnSomethingHappenedParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -212,8 +211,7 @@ class Page_Internal {
             decoder0.increaseStackDepth();
             PageOnSomethingHappenedParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new PageOnSomethingHappenedParams(elementsOrVersion);
 
             } finally {
@@ -225,7 +223,7 @@ class Page_Internal {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
         }
     }
 

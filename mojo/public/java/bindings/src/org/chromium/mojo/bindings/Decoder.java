@@ -91,6 +91,12 @@ public class Decoder {
         }
     }
 
+    private static final String UNKNOWN_VERSION_MESSAGE =
+            "Header doesn't correspond to any known version.";
+    private static final String NEWER_VERSION_TOO_SHORT_MESSAGE =
+            "Message newer than the last known version"
+                    + " cannot be shorter than required by the last known version.";
+
     /** The message to deserialize from. */
     private final Message mMessage;
 
@@ -168,31 +174,48 @@ public class Decoder {
         return new DataHeader(size, elementsOrVersion);
     }
 
-    public DataHeader readAndValidateDataHeader(DataHeader[] versionArray)
-            throws DeserializationException {
+    /**
+     * Deserializes and validates the header of a struct that has only a single version (version 0).
+     *
+     * @param size the size of the struct, in bytes.
+     * @return the version of the received struct.
+     */
+    public int readAndValidateStructHeader(int size) throws DeserializationException {
         DataHeader header = readDataHeader();
-        int maxVersionIndex = versionArray.length - 1;
-        if (header.elementsOrVersion <= versionArray[maxVersionIndex].elementsOrVersion) {
-            DataHeader referenceHeader = null;
-            for (int index = maxVersionIndex; index >= 0; index--) {
-                DataHeader dataHeader = versionArray[index];
-                if (header.elementsOrVersion >= dataHeader.elementsOrVersion) {
-                    referenceHeader = dataHeader;
-                    break;
-                }
+        int version = header.elementsOrVersion;
+        if (version == 0) {
+            if (header.size != size) {
+                throw new DeserializationException(UNKNOWN_VERSION_MESSAGE);
             }
-            if (referenceHeader == null || referenceHeader.size != header.size) {
-                throw new DeserializationException(
-                        "Header doesn't correspond to any known version.");
-            }
-        } else {
-            if (header.size < versionArray[maxVersionIndex].size) {
-                throw new DeserializationException(
-                        "Message newer than the last known version"
-                                + " cannot be shorter than required by the last known version.");
-            }
+        } else if (header.size < size) {
+            throw new DeserializationException(NEWER_VERSION_TOO_SHORT_MESSAGE);
         }
-        return header;
+        return version;
+    }
+
+    /**
+     * Deserializes and validates the header of a struct that has multiple versions.
+     *
+     * @param versionArray flattened (size, version) pairs for each known version of the struct,
+     *     ordered by increasing version.
+     * @return the version of the received struct.
+     */
+    public int readAndValidateStructHeader(int[] versionArray) throws DeserializationException {
+        DataHeader header = readDataHeader();
+        int version = header.elementsOrVersion;
+        int maxVersionIndex = versionArray.length - 2;
+        if (version <= versionArray[maxVersionIndex + 1]) {
+            int index = maxVersionIndex;
+            while (index >= 0 && version < versionArray[index + 1]) {
+                index -= 2;
+            }
+            if (index < 0 || versionArray[index] != header.size) {
+                throw new DeserializationException(UNKNOWN_VERSION_MESSAGE);
+            }
+        } else if (header.size < versionArray[maxVersionIndex]) {
+            throw new DeserializationException(NEWER_VERSION_TOO_SHORT_MESSAGE);
+        }
+        return version;
     }
 
     /**

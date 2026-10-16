@@ -23,8 +23,7 @@ import org.chromium.build.annotations.Nullable;
 public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
 
     private static final int STRUCT_SIZE = 24;
-    private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(24, 0)};
-    private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+    private static final int STRUCT_VERSION = 0;
     public boolean flag;
     public String value;
 
@@ -33,7 +32,7 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
     }
 
     public StructInUnion() {
-        this(0);
+        this(STRUCT_VERSION);
     }
 
     public static StructInUnion deserialize(org.chromium.mojo.bindings.Message message) {
@@ -58,8 +57,7 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
         decoder0.increaseStackDepth();
         StructInUnion result;
         try {
-            org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-            final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             result = new StructInUnion(elementsOrVersion);
                 {
                     
@@ -79,7 +77,7 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
     @SuppressWarnings("unchecked")
     @Override
     protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
         
         encoder0.encode(this.flag, 8, 0);
         

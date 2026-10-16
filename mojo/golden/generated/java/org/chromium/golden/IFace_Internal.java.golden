@@ -188,8 +188,7 @@ Method_Response callback) {
     static final class IFaceMethodParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 16;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(16, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
         public boolean param;
 
         private IFaceMethodParams(int version) {
@@ -197,7 +196,7 @@ Method_Response callback) {
         }
 
         public IFaceMethodParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static IFaceMethodParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -222,8 +221,7 @@ Method_Response callback) {
             decoder0.increaseStackDepth();
             IFaceMethodParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new IFaceMethodParams(elementsOrVersion);
                     {
                         
@@ -239,7 +237,7 @@ Method_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
             
             encoder0.encode(this.param, 8, 0);
         }
@@ -251,8 +249,7 @@ Method_Response callback) {
     static final class IFaceMethodResponseParams extends org.chromium.mojo.bindings.Struct {
 
         private static final int STRUCT_SIZE = 16;
-        private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(16, 0)};
-        private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
+        private static final int STRUCT_VERSION = 0;
         public String result;
 
         private IFaceMethodResponseParams(int version) {
@@ -260,7 +257,7 @@ Method_Response callback) {
         }
 
         public IFaceMethodResponseParams() {
-            this(0);
+            this(STRUCT_VERSION);
         }
 
         public static IFaceMethodResponseParams deserialize(org.chromium.mojo.bindings.Message message) {
@@ -285,8 +282,7 @@ Method_Response callback) {
             decoder0.increaseStackDepth();
             IFaceMethodResponseParams result;
             try {
-                org.chromium.mojo.bindings.DataHeader mainDataHeader = decoder0.readAndValidateDataHeader(VERSION_ARRAY);
-                final int elementsOrVersion = mainDataHeader.elementsOrVersion;
+                final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
                 result = new IFaceMethodResponseParams(elementsOrVersion);
                     {
                         
@@ -302,7 +298,7 @@ Method_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(DEFAULT_STRUCT_INFO);
+            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
             
             encoder0.encode(this.result, 8, false);
         }
