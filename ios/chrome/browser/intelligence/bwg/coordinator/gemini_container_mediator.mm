@@ -525,6 +525,10 @@ class GeminiContainerMediatorTabHelperObserver
                     dormantReason:(GeminiDormantReason)dormantReason
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
+  if (_stateManager.processingStatus == processingStatus) {
+    return;
+  }
+
   if (_eventHandler) {
     _eventHandler->OnProcessingStatusChanged(processingStatus, dormantReason);
   }
