@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
@@ -35,11 +35,10 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
-@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class TabsSettingsTest {
     @Rule
-    public final SettingsActivityTestRule<TabsSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(TabsSettings.class);
+    public final SettingsTestRule<TabsSettings> mSettingsTestRule =
+            new SettingsTestRule<>(TabsSettings.class);
 
     @Before
     @After
@@ -50,8 +49,8 @@ public class TabsSettingsTest {
 
     @After
     public void tearDown() {
-        if (mSettingsActivityTestRule.getActivity() != null) {
-            mSettingsActivityTestRule.getActivity().finish();
+        if (mSettingsTestRule.getActivity() != null) {
+            mSettingsTestRule.getActivity().finish();
         }
     }
 
@@ -60,8 +59,8 @@ public class TabsSettingsTest {
     @Feature({"Settings"})
     @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
     public void testCctAlwaysOpenInBrowserPreference_VisibleWhenFeatureEnabled() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        TabsSettings tabsSettings = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        TabsSettings tabsSettings = mSettingsTestRule.getFragment();
 
         Preference preference =
                 tabsSettings.findPreference(TabsSettings.PREF_CCT_ALWAYS_OPEN_IN_BROWSER);
@@ -79,8 +78,8 @@ public class TabsSettingsTest {
     @Feature({"Settings"})
     @DisableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
     public void testCctAlwaysOpenInBrowserPreference_HiddenWhenFeatureDisabled() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        TabsSettings tabsSettings = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        TabsSettings tabsSettings = mSettingsTestRule.getFragment();
 
         Preference preference =
                 tabsSettings.findPreference(TabsSettings.PREF_CCT_ALWAYS_OPEN_IN_BROWSER);
@@ -96,8 +95,8 @@ public class TabsSettingsTest {
     @Feature({"Settings"})
     @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
     public void testCctAlwaysOpenInBrowserPreference_TogglingUpdatesSharedPreferences() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        TabsSettings tabsSettings = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        TabsSettings tabsSettings = mSettingsTestRule.getFragment();
 
         ChromeSwitchPreference pref =
                 (ChromeSwitchPreference)

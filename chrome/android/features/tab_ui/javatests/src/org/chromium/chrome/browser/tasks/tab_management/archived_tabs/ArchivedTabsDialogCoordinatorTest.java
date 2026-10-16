@@ -37,7 +37,6 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -71,7 +70,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -112,12 +110,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/348068134): Batch this test suite.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    "IPH_AndroidTabDeclutter",
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-    ChromeFeatureList.SETTINGS_IN_TAB,
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
-})
+@DisableFeatures({"IPH_AndroidTabDeclutter", ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287024
 public class ArchivedTabsDialogCoordinatorTest {
     private static final String SYNC_GROUP_ID1 = "test_sync_group_id1";
@@ -272,22 +265,16 @@ public class ArchivedTabsDialogCoordinatorTest {
         mTabArchiveSettings.setShouldShowDialogIphForTesting(true);
 
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
-        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+        ArchivedTabsDialogStation archivedTabsDialogStation =
+                tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
         onView(withText("2 inactive items")).check(matches(isDisplayed()));
 
-        SettingsActivity activity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mRobot.actionRobot.clickItemAtAdapterPosition(0);
-                            }
-                        });
+        archivedTabsDialogStation.openSettings(
+                () -> {
+                    mRobot.actionRobot.clickItemAtAdapterPosition(0);
+                });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
-        ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogIphClicked"));
     }
 
@@ -408,22 +395,14 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 2");
 
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
-        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+        ArchivedTabsDialogStation archivedTabsDialogStation =
+                tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
-        SettingsActivity activity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mRobot.actionRobot
-                                        .clickToolbarMenuButton()
-                                        .clickToolbarMenuItem("Settings");
-                            }
-                        });
+        archivedTabsDialogStation.openSettings(
+                () -> {
+                    mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Settings");
+                });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
-        ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.OpenArchivedTabsSettingsMenuItem"));
     }
 
@@ -449,11 +428,13 @@ public class ArchivedTabsDialogCoordinatorTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.ArchiveSettings.TimeDeltaPreference", 0);
 
+        int expectedRegularTabCount = getTabCountOnUiThread(mRegularTabModel) + 2;
         mArchivedTabModelOrchestrator.resetRescueArchivedTabsForTesting();
         onView(withText("Never")).perform(click());
         histogramExpectation.assertExpected();
 
-        CriteriaHelper.pollUiThread(() -> getTabCountOnUiThread(mRegularTabModel) == 3);
+        CriteriaHelper.pollUiThread(
+                () -> getTabCountOnUiThread(mRegularTabModel) == expectedRegularTabCount);
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
     }
 
