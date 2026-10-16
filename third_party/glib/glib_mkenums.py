@@ -6,8 +6,9 @@
 import sys
 import os
 
-# Set version
-VERSION = "2.85.4"
+import glib_version
+
+VERSION = glib_version.get_version()
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(script_dir, "src/gobject/glib-mkenums.in")

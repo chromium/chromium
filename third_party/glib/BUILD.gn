@@ -1,7 +1,284 @@
 import("//build/config/linux/pkg_config.gni")
+import("//third_party/glib/codegen.gni")
 import("//third_party/glib/visibility.gni")
 
 assert(is_linux)
+
+# Code generated at build time from the in-tree glib, mirroring the layout of
+# the checked-in include/ directory.
+_gen_include_dir = "$target_gen_dir/include"
+
+_visibility_macros_inputs = [
+  "glib_version.py",
+  "src/meson.build",
+  "src/tools/gen-visibility-macros.py",
+]
+
+action("gversionmacros") {
+  script = "gen_visibility_macros.py"
+  inputs = _visibility_macros_inputs + [ "src/glib/gversionmacros.h.in" ]
+  outputs = [ "$_gen_include_dir/glib/gversionmacros.h" ]
+  args = [
+    "versions-macros",
+    rebase_path("src/glib/gversionmacros.h.in", root_build_dir),
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
+_visibility_namespaces = [
+  [
+    "glib",
+    "GLIB",
+  ],
+  [
+    "gobject",
+    "GOBJECT",
+  ],
+  [
+    "gmodule",
+    "GMODULE",
+  ],
+  [
+    "gio",
+    "GIO",
+  ],
+]
+foreach(ns, _visibility_namespaces) {
+  action("${ns[0]}_visibility") {
+    script = "gen_visibility_macros.py"
+    inputs = _visibility_macros_inputs
+    outputs = [ "$_gen_include_dir/${ns[0]}/${ns[0]}-visibility.h" ]
+    args = [
+      "visibility-macros",
+      ns[1],
+      rebase_path(outputs[0], root_build_dir),
+    ]
+  }
+}
+
+glib_mkenums("glib_enumtypes_h") {
+  input_headers = [ "src/glib/gunicode.h" ]
+  template = "src/gobject/glib-enumtypes.h.template"
+  output = "$_gen_include_dir/gobject/glib-enumtypes.h"
+}
+
+glib_mkenums("glib_enumtypes_c") {
+  input_headers = [ "src/glib/gunicode.h" ]
+  template = "src/gobject/glib-enumtypes.c.template"
+  output = "$target_gen_dir/gobject/glib-enumtypes.c"
+}
+
+# The headers that upstream's meson.build passes to glib-mkenums for
+# gioenumtypes.{c,h} (gio_headers, then gnetworking.h), in the same order.
+# These are deliberately not sorted, since glib-mkenums generates code in the
+# order of its inputs, and the generated files should match upstream's.
+# NOSORT
+_gio_mkenums_headers = [
+  "src/gio/gappinfo.h",
+  "src/gio/gasyncinitable.h",
+  "src/gio/gasyncresult.h",
+  "src/gio/gbufferedinputstream.h",
+  "src/gio/gbufferedoutputstream.h",
+  "src/gio/gbytesicon.h",
+  "src/gio/gcancellable.h",
+  "src/gio/gcontenttype.h",
+  "src/gio/gcharsetconverter.h",
+  "src/gio/gconverter.h",
+  "src/gio/gconverterinputstream.h",
+  "src/gio/gconverteroutputstream.h",
+  "src/gio/gdatagrambased.h",
+  "src/gio/gdatainputstream.h",
+  "src/gio/gdataoutputstream.h",
+  "src/gio/gdebugcontroller.h",
+  "src/gio/gdebugcontrollerdbus.h",
+  "src/gio/gdrive.h",
+  "src/gio/gemblem.h",
+  "src/gio/gemblemedicon.h",
+  "src/gio/gfile.h",
+  "src/gio/gfileattribute.h",
+  "src/gio/gfileenumerator.h",
+  "src/gio/gfileicon.h",
+  "src/gio/gfileinfo.h",
+  "src/gio/gfileinputstream.h",
+  "src/gio/gfilemonitor.h",
+  "src/gio/gfilenamecompleter.h",
+  "src/gio/gfileoutputstream.h",
+  "src/gio/gfileiostream.h",
+  "src/gio/gfilterinputstream.h",
+  "src/gio/gfilteroutputstream.h",
+  "src/gio/gicon.h",
+  "src/gio/ginetaddress.h",
+  "src/gio/ginetaddressmask.h",
+  "src/gio/ginetsocketaddress.h",
+  "src/gio/ginitable.h",
+  "src/gio/ginputstream.h",
+  "src/gio/gio.h",
+  "src/gio/gio-autocleanups.h",
+  "src/gio/gioenums.h",
+  "src/gio/gioerror.h",
+  "src/gio/giomodule.h",
+  "src/gio/gioscheduler.h",
+  "src/gio/giostream.h",
+  "src/gio/giotypes.h",
+  "src/gio/giptosmessage.h",
+  "src/gio/gipv6tclassmessage.h",
+  "src/gio/gloadableicon.h",
+  "src/gio/gmount.h",
+  "src/gio/gmemoryinputstream.h",
+  "src/gio/gmemorymonitor.h",
+  "src/gio/gmemoryoutputstream.h",
+  "src/gio/gmountoperation.h",
+  "src/gio/gnativesocketaddress.h",
+  "src/gio/gnativevolumemonitor.h",
+  "src/gio/gnetworkaddress.h",
+  "src/gio/gnetworkmonitor.h",
+  "src/gio/gnetworkservice.h",
+  "src/gio/goutputstream.h",
+  "src/gio/gpermission.h",
+  "src/gio/gpollableinputstream.h",
+  "src/gio/gpollableoutputstream.h",
+  "src/gio/gpollableutils.h",
+  "src/gio/gpowerprofilemonitor.h",
+  "src/gio/gproxy.h",
+  "src/gio/gproxyaddress.h",
+  "src/gio/gproxyaddressenumerator.h",
+  "src/gio/gproxyresolver.h",
+  "src/gio/gresolver.h",
+  "src/gio/gresource.h",
+  "src/gio/gseekable.h",
+  "src/gio/gsimpleasyncresult.h",
+  "src/gio/gsimpleiostream.h",
+  "src/gio/gsimplepermission.h",
+  "src/gio/gsimpleproxyresolver.h",
+  "src/gio/gsocket.h",
+  "src/gio/gsocketaddress.h",
+  "src/gio/gsocketaddressenumerator.h",
+  "src/gio/gsocketclient.h",
+  "src/gio/gsocketconnectable.h",
+  "src/gio/gsocketconnection.h",
+  "src/gio/gsocketcontrolmessage.h",
+  "src/gio/gsocketlistener.h",
+  "src/gio/gsocketservice.h",
+  "src/gio/gsrvtarget.h",
+  "src/gio/gsubprocess.h",
+  "src/gio/gsubprocesslauncher.h",
+  "src/gio/gtask.h",
+  "src/gio/gtcpconnection.h",
+  "src/gio/gtcpwrapperconnection.h",
+  "src/gio/gthemedicon.h",
+  "src/gio/gthreadedsocketservice.h",
+  "src/gio/gtlsbackend.h",
+  "src/gio/gtlscertificate.h",
+  "src/gio/gtlsclientconnection.h",
+  "src/gio/gtlsconnection.h",
+  "src/gio/gtlsdatabase.h",
+  "src/gio/gtlsfiledatabase.h",
+  "src/gio/gtlsinteraction.h",
+  "src/gio/gtlspassword.h",
+  "src/gio/gtlsserverconnection.h",
+  "src/gio/gdtlsconnection.h",
+  "src/gio/gdtlsclientconnection.h",
+  "src/gio/gdtlsserverconnection.h",
+  "src/gio/gunixconnection.h",
+  "src/gio/gunixcredentialsmessage.h",
+  "src/gio/gunixfdlist.h",
+  "src/gio/gunixsocketaddress.h",
+  "src/gio/gvfs.h",
+  "src/gio/gvolume.h",
+  "src/gio/gvolumemonitor.h",
+  "src/gio/gzlibcompressor.h",
+  "src/gio/gzlibdecompressor.h",
+  "src/gio/glistmodel.h",
+  "src/gio/gliststore.h",
+  "src/gio/gapplication.h",
+  "src/gio/gapplicationcommandline.h",
+  "src/gio/gactiongroup.h",
+  "src/gio/gactionmap.h",
+  "src/gio/gsimpleactiongroup.h",
+  "src/gio/gremoteactiongroup.h",
+  "src/gio/gactiongroupexporter.h",
+  "src/gio/gdbusactiongroup.h",
+  "src/gio/gaction.h",
+  "src/gio/gpropertyaction.h",
+  "src/gio/gsimpleaction.h",
+  "src/gio/gmenumodel.h",
+  "src/gio/gmenu.h",
+  "src/gio/gmenuexporter.h",
+  "src/gio/gdbusmenumodel.h",
+  "src/gio/gnotification.h",
+  "src/gio/gsettingsbackend.h",
+  "src/gio/gsettingsschema.h",
+  "src/gio/gsettings.h",
+  "src/gio/gdbusauthobserver.h",
+  "src/gio/gcredentials.h",
+  "src/gio/gdbusutils.h",
+  "src/gio/gdbuserror.h",
+  "src/gio/gdbusaddress.h",
+  "src/gio/gdbusconnection.h",
+  "src/gio/gdbusmessage.h",
+  "src/gio/gdbusnameowning.h",
+  "src/gio/gdbusnamewatching.h",
+  "src/gio/gdbusproxy.h",
+  "src/gio/gdbusintrospection.h",
+  "src/gio/gdbusmethodinvocation.h",
+  "src/gio/gdbusserver.h",
+  "src/gio/gdbusinterface.h",
+  "src/gio/gdbusinterfaceskeleton.h",
+  "src/gio/gdbusobject.h",
+  "src/gio/gdbusobjectskeleton.h",
+  "src/gio/gdbusobjectproxy.h",
+  "src/gio/gdbusobjectmanager.h",
+  "src/gio/gdbusobjectmanagerclient.h",
+  "src/gio/gdbusobjectmanagerserver.h",
+  "src/gio/gtestdbus.h",
+  "include/gio/gnetworking.h",
+]
+
+glib_mkenums("gioenumtypes_h") {
+  input_headers = _gio_mkenums_headers
+  template = "src/gio/gioenumtypes.h.template"
+  output = "$_gen_include_dir/gio/gioenumtypes.h"
+}
+
+glib_mkenums("gioenumtypes_c") {
+  input_headers = _gio_mkenums_headers
+  template = "src/gio/gioenumtypes.c.template"
+  output = "$target_gen_dir/gio/gioenumtypes.c"
+}
+
+gdbus_codegen("xdp_dbus") {
+  sources = [
+    "src/gio/org.freedesktop.portal.Documents.xml",
+    "src/gio/org.freedesktop.portal.OpenURI.xml",
+    "src/gio/org.freedesktop.portal.ProxyResolver.xml",
+    "src/gio/org.freedesktop.portal.Trash.xml",
+  ]
+  output_name = "xdp-dbus"
+  output_dir = "$target_gen_dir/gio"
+  interface_prefix = "org.freedesktop.portal."
+  c_namespace = "GXdp"
+}
+
+gdbus_codegen("gdbus_daemon_generated") {
+  sources = [ "src/gio/dbus-daemon.xml" ]
+  output_name = "gdbus-daemon-generated"
+  output_dir = "$target_gen_dir/gio"
+  interface_prefix = "org."
+  c_namespace = "_G"
+}
+
+# Generated headers that are included by glib's public headers, so every
+# target that uses glib needs them to be generated first.
+group("generated_headers") {
+  public_deps = [
+    ":gioenumtypes_h",
+    ":glib_enumtypes_h",
+    ":gversionmacros",
+  ]
+  foreach(ns, _visibility_namespaces) {
+    public_deps += [ ":${ns[0]}_visibility" ]
+  }
+}
 
 pkg_config("pcre2") {
   packages = [ "libpcre2-8" ]
@@ -41,13 +318,18 @@ config("glib_common_config") {
   # crbug.com/443913107#comment1.
   cflags_c += [ "-Wno-alloc-size" ]
 
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    _gen_include_dir,
+  ]
 }
 
 config("glib_public_config") {
   include_dirs = [
     "include",
     "include/glib",
+    _gen_include_dir,
+    "$_gen_include_dir/glib",
     "src",
     "src/glib",
   ]
@@ -185,11 +467,13 @@ shared_library("glib") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":glib_public_config" ]
+
+  public_deps = [ ":generated_headers" ]
 }
 
 config("gobject_public_config") {
   include_dirs = [
-    "include/gobject",
+    "$_gen_include_dir/gobject",
     "src/gobject",
   ]
 }
@@ -227,10 +511,8 @@ shared_library("gobject") {
     "src/gobject/gvaluearray.c",
     "src/gobject/gvaluetransform.c",
     "src/gobject/gvaluetypes.c",
-
-    # generated sources
-    "gobject/glib-enumtypes.c",
   ]
+  sources += get_target_outputs(":glib_enumtypes_c")
 
   configs += [
     ":glib_common_config",
@@ -242,12 +524,16 @@ shared_library("gobject") {
 
   public_configs = [ ":gobject_public_config" ]
 
-  deps = [ ":glib" ]
+  deps = [
+    ":glib",
+    ":glib_enumtypes_c",
+  ]
 }
 
 config("gmodule_public_config") {
   include_dirs = [
     "include/gmodule",
+    "$_gen_include_dir/gmodule",
     "src/gmodule",
   ]
 }
@@ -302,6 +588,8 @@ shared_library("gio") {
 
   include_dirs = [
     "include/gio",
+    "$_gen_include_dir/gio",
+    "$target_gen_dir/gio",
     "src/gio",
     "src/gio/inotify",
     "src/gio/xdgmime",
@@ -541,11 +829,6 @@ shared_library("gio") {
     "src/gio/gzlibdecompressor.c",
     "src/gio/thumbnail-verify.c",
 
-    # generated sources
-    "gio/gdbus-daemon-generated.c",
-    "gio/gioenumtypes.c",
-    "gio/xdp-dbus.c",
-
     # inotify sources
     "src/gio/inotify/ginotifyfilemonitor.c",
     "src/gio/inotify/inotify-helper.c",
@@ -565,6 +848,11 @@ shared_library("gio") {
     "src/gio/xdgmime/xdgmimeparent.c",
   ]
 
+  # Generated sources.
+  sources += get_target_outputs(":gdbus_daemon_generated")
+  sources += get_target_outputs(":gioenumtypes_c")
+  sources += get_target_outputs(":xdp_dbus")
+
   configs += [
     ":glib_common_config",
     "//build/config/linux:libresolv",
@@ -574,9 +862,12 @@ shared_library("gio") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   deps = [
+    ":gdbus_daemon_generated",
+    ":gioenumtypes_c",
     ":glib",
     ":gmodule",
     ":gobject",
+    ":xdp_dbus",
     "//third_party/gvdb:gvdb_reader",
     "//third_party/zlib",
   ]
@@ -592,6 +883,7 @@ if (current_toolchain == host_toolchain) {
 
     include_dirs = [
       "include/gio",
+      "$_gen_include_dir/gio",
       "src/gio",
     ]
 

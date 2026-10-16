@@ -12,18 +12,15 @@ pushd "$SCRIPT_DIR/src"
 TMP_DIR=$(mktemp -d)
 
 meson setup -Dsysprof=disabled -Dtests=false -Dlibmount=disabled --prefix=/usr "$TMP_DIR"
-meson compile -C "$TMP_DIR" glib-2.0 gobject-2.0 gio-2.0 gmodule-2.0
 
-find "$TMP_DIR" -name '*.h' -printf '%P\n' | while read -r file; do
+# Only the headers from meson's host configuration checks are checked in. The
+# rest of the generated code (enum types, D-Bus code, visibility and version
+# macros) is generated at build time from the in-tree glib (see BUILD.gn).
+for file in config.h glib/glibconfig.h gmodule/gmoduleconf.h \
+    gio/gnetworking.h; do
   sed -i 's|"[^"]*third_party/glib/src/|"|' "$TMP_DIR/$file"
-  echo $file
+  echo "$file"
 done | rsync -R --files-from=- "$TMP_DIR/" ../include/
-
-find "$TMP_DIR" -path "$TMP_DIR/meson-private" -prune -o -name '*.c' \
- -printf '%P\n' | while read -r file; do
-  sed -i 's|"[^"]*third_party/glib/src/|"|' "$TMP_DIR/$file"
-  echo $file
-done | rsync -R --files-from=- "$TMP_DIR/" ../
 
 # Disable code paths that require dependencies not available in the sysroot by
 # modifying the config.h directly as these don't have corresponding meson

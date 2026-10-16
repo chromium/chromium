@@ -16,7 +16,14 @@ This is only used in tests.
 Local Modifications:
 None.
 
+Generated code (enum types, D-Bus code, and visibility and version macros) is
+generated at build time from the in-tree glib using the codegen wrappers and
+templates in this directory (see codegen.gni). Only the headers produced by
+meson's host configuration checks are checked in, under include/.
+
 When updating to a new version, update the Revision above with the new commit hash,
 and perform the following steps:
-1. Run on_update.sh
-2. Check in the generated files along with the changes for the update.
+1. Add any new sources and generated-code inputs from the upstream meson.build
+   files to BUILD.gn.
+2. If upstream changed its configuration checks, run on_update.sh and check in
+   the regenerated headers under include/.
