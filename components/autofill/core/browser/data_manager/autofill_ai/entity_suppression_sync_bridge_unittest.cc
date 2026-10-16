@@ -13,10 +13,12 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -38,11 +40,16 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::ElementsAre;
+using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+
+// The maximum number of suppressions that the bridge keeps.
+constexpr size_t kMaxSuppressions = 1000;
 
 AttributeValueHash CreateTestHash(uint8_t fill_value) {
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
@@ -127,6 +134,31 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
                                     .SerializeAsString());
   }
 
+  // Writes `count` distinct suppressions with random GUIDs and the given
+  // `creation_time` to the store.
+  void WriteSuppressionsWithRandomGuidToStore(size_t count,
+                                              base::Time creation_time) {
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+        store_->CreateWriteBatch();
+    for (size_t i = 0; i < count; ++i) {
+      const std::string guid =
+          base::Uuid::GenerateRandomV4().AsLowercaseString();
+      const EntitySuppressionEntry entry{
+          .type = EntityType(EntityTypeName::kPassport),
+          .attribute_hashes =
+              {{AttributeType(AttributeTypeName::kPassportNumber),
+                AttributeValueHash(crypto::hash::Sha256(guid))}},
+      };
+      std::string encrypted_blob;
+      ASSERT_TRUE(encryptor().EncryptString(
+          CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time)
+              .SerializeAsString(),
+          &encrypted_blob));
+      batch->WriteData(guid, encrypted_blob);
+    }
+    CommitToStore(std::move(batch));
+  }
+
   // Encrypts `plaintext` and writes it to the store under `guid`.
   void WriteEncryptedToStore(const std::string& guid,
                              const std::string& plaintext) {
@@ -140,6 +172,10 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
     std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     batch->WriteData(guid, value);
+    CommitToStore(std::move(batch));
+  }
+
+  void CommitToStore(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
     base::test::TestFuture<const std::optional<syncer::ModelError>&> future;
     store_->CommitWriteBatch(std::move(batch), future.GetCallback());
     EXPECT_FALSE(future.Get().has_value());
@@ -163,12 +199,12 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
   }
   std::unique_ptr<syncer::DataTypeStore>& store() { return store_; }
 
-  base::test::SingleThreadTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // Writing many records makes leveldb schedule compactions on the thread pool,
+  // so a `SingleThreadTaskEnvironment` isn't sufficient.
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   scoped_refptr<os_crypt_async::Encryptor> encryptor_;
   std::unique_ptr<syncer::DataTypeStore> store_;
@@ -648,6 +684,121 @@ TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween_Empty) {
   EXPECT_EQ(
       bridge().CountSuppressionsCreatedBetween(base::Time(), base::Time::Max()),
       0u);
+}
+
+// Tests that suppressions above the limit, e.g. stored by builds without the
+// limit, are deleted on load.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       Load_DeletesOldestSuppressionsAboveLimit) {
+  EntitySuppressionEntry oldest_entry = CreatePassportEntry();
+  EntitySuppressionEntry second_oldest_entry = CreateDriversLicenseEntry();
+  WriteToStore("oldest_guid", oldest_entry,
+               /*creation_time=*/base::Time::UnixEpoch());
+  WriteToStore("second_oldest_guid", second_oldest_entry,
+               /*creation_time=*/test::kJanuary2017);
+  WriteSuppressionsWithRandomGuidToStore(
+      /*count=*/kMaxSuppressions,
+      /*creation_time=*/test::kJune2017);
+
+  EXPECT_CALL(mock_processor(), Delete("oldest_guid", _, _));
+  EXPECT_CALL(mock_processor(), Delete("second_oldest_guid", _, _));
+  CreateBridge();
+
+  EXPECT_EQ(bridge().GetSuppressions().size(), kMaxSuppressions);
+  EXPECT_FALSE(bridge().IsSuppressed(oldest_entry));
+  EXPECT_FALSE(bridge().IsSuppressed(second_oldest_entry));
+  EXPECT_EQ(ReadAllRecordsFromStore().size(), kMaxSuppressions);
+}
+
+// Tests that suppressing an entry at the limit deletes the oldest suppression
+// from local storage and Sync.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       Suppress_DeletesOldestSuppressionAtLimit) {
+  EntitySuppressionEntry oldest_entry = CreatePassportEntry();
+  WriteToStore("oldest_guid", oldest_entry,
+               /*creation_time=*/base::Time::UnixEpoch());
+  WriteSuppressionsWithRandomGuidToStore(
+      /*count=*/kMaxSuppressions - 1,
+      /*creation_time=*/test::kJune2017);
+  CreateBridge();
+
+  EntitySuppressionEntry new_entry = CreateDriversLicenseEntry();
+  EXPECT_CALL(mock_processor(), Delete("oldest_guid", _, _));
+  EXPECT_TRUE(bridge().Suppress(new_entry));
+
+  EXPECT_EQ(bridge().GetSuppressions().size(), kMaxSuppressions);
+  EXPECT_FALSE(bridge().IsSuppressed(oldest_entry));
+  EXPECT_TRUE(bridge().IsSuppressed(new_entry));
+}
+
+// Tests that `MergeFullSyncData` deletes the oldest suppressions above the
+// limit and doesn't upload deleted local-only suppressions.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       MergeFullSyncData_DeletesOldestSuppressionsAboveLimit) {
+  EntitySuppressionEntry oldest_entry = CreatePassportEntry();
+  WriteToStore("oldest_guid", oldest_entry,
+               /*creation_time=*/base::Time::UnixEpoch());
+  WriteSuppressionsWithRandomGuidToStore(
+      /*count=*/kMaxSuppressions - 1,
+      /*creation_time=*/test::kJune2017);
+  CreateBridge();
+  EntitySuppressionEntry remote_entry = CreateDriversLicenseEntry();
+  syncer::EntityChangeList remote_changes;
+  remote_changes.push_back(CreateAddChange("remote_guid", remote_entry));
+
+  EXPECT_CALL(mock_processor(), Put("oldest_guid", _, _)).Times(0);
+  // The remaining local-only suppressions are uploaded.
+  EXPECT_CALL(mock_processor(), Put(Ne("oldest_guid"), _, _))
+      .Times(AnyNumber());
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(remote_changes));
+
+  EXPECT_EQ(bridge().GetSuppressions().size(), kMaxSuppressions);
+  EXPECT_FALSE(bridge().IsSuppressed(oldest_entry));
+  EXPECT_TRUE(bridge().IsSuppressed(remote_entry));
+}
+
+// Tests that remote additions above the limit, e.g. from clients without the
+// limit, delete the oldest suppressions from local storage and Sync.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       ApplyIncrementalSyncChanges_DeletesOldestSuppressionsAboveLimit) {
+  EntitySuppressionEntry oldest_entry = CreatePassportEntry();
+  WriteToStore("oldest_guid", oldest_entry,
+               /*creation_time=*/base::Time::UnixEpoch());
+  WriteSuppressionsWithRandomGuidToStore(
+      /*count=*/kMaxSuppressions - 1,
+      /*creation_time=*/test::kJune2017);
+  CreateBridge();
+  EntitySuppressionEntry remote_entry = CreateDriversLicenseEntry();
+  syncer::EntityChangeList remote_changes;
+  remote_changes.push_back(CreateAddChange("remote_guid", remote_entry));
+
+  EXPECT_CALL(mock_processor(), Delete("oldest_guid", _, _));
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(remote_changes));
+
+  EXPECT_EQ(bridge().GetSuppressions().size(), kMaxSuppressions);
+  EXPECT_FALSE(bridge().IsSuppressed(oldest_entry));
+  EXPECT_TRUE(bridge().IsSuppressed(remote_entry));
+}
+
+// Tests that of suppressions with equal creation times, the one with the larger
+// GUID is deleted, so that all clients delete the same suppressions.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       DeletesLargerGuidFirstForEqualCreationTimes) {
+  EntitySuppressionEntry entry_a = CreatePassportEntry();
+  EntitySuppressionEntry entry_b = CreateDriversLicenseEntry();
+  WriteToStore("guid_a", entry_a, /*creation_time=*/base::Time::UnixEpoch());
+  WriteToStore("guid_b", entry_b, /*creation_time=*/base::Time::UnixEpoch());
+  WriteSuppressionsWithRandomGuidToStore(
+      /*count=*/kMaxSuppressions - 1,
+      /*creation_time=*/test::kJune2017);
+
+  EXPECT_CALL(mock_processor(), Delete("guid_b", _, _));
+  CreateBridge();
+
+  EXPECT_TRUE(bridge().IsSuppressed(entry_a));
+  EXPECT_FALSE(bridge().IsSuppressed(entry_b));
 }
 
 // Tests that a load without corrupt records logs zero dropped records.
