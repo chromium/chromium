@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 
 #import "base/feature_list.h"
-#import "base/no_destructor.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/language/core/browser/language_model.h"
 #import "components/language/core/browser/language_model_manager.h"
@@ -31,25 +30,12 @@ void PrepareLanguageModels(ProfileIOS* const profile,
 
 }  // namespace
 
-// static
-LanguageModelManagerFactory* LanguageModelManagerFactory::GetInstance() {
-  static base::NoDestructor<LanguageModelManagerFactory> instance;
-  return instance.get();
-}
-
-// static
-language::LanguageModelManager* LanguageModelManagerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<language::LanguageModelManager>(
-      profile, /*create=*/true);
-}
-
 // Use the original profile's language model even in Incognito mode.
-LanguageModelManagerFactory::LanguageModelManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("LanguageModelManager",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-LanguageModelManagerFactory::~LanguageModelManagerFactory() {}
+LanguageModelManagerFactory::LanguageModelManagerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "LanguageModelManager",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 LanguageModelManagerFactory::BuildServiceInstanceFor(

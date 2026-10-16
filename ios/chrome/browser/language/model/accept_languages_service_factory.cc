@@ -10,25 +10,11 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
-  static base::NoDestructor<AcceptLanguagesServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-language::AcceptLanguagesService* AcceptLanguagesServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<language::AcceptLanguagesService>(
-          profile, /*create=*/true);
-}
-
-AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AcceptLanguagesServiceForProfile",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() = default;
+AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AcceptLanguagesServiceForProfile",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 AcceptLanguagesServiceFactory::BuildServiceInstanceFor(

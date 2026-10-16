@@ -5,28 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_LANGUAGE_MODEL_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_LANGUAGE_MODEL_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace language {
-class AcceptLanguagesService;
-}
+#import "components/language/core/browser/accept_languages_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // AcceptLanguagesServiceFactory is a way to associate an
 // AcceptLanguagesService instance to a Profile.
-class AcceptLanguagesServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class AcceptLanguagesServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                          AcceptLanguagesServiceFactory,
+                                          language::AcceptLanguagesService> {
  public:
-  static language::AcceptLanguagesService* GetForProfile(ProfileIOS* profile);
-  static AcceptLanguagesServiceFactory* GetInstance();
+  explicit AcceptLanguagesServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AcceptLanguagesServiceFactory>;
-
-  AcceptLanguagesServiceFactory();
-  ~AcceptLanguagesServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

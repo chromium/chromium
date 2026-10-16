@@ -7,26 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace language {
-class LanguageModelManager;
-}
+#import "components/language/core/browser/language_model_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Manages the language model for each profile. The particular language model
 // provided depends on feature flags.
-class LanguageModelManagerFactory : public ProfileKeyedServiceFactoryIOS {
+class LanguageModelManagerFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                        LanguageModelManagerFactory,
+                                        language::LanguageModelManager> {
  public:
-  static language::LanguageModelManager* GetForProfile(ProfileIOS* profile);
-  static LanguageModelManagerFactory* GetInstance();
+  explicit LanguageModelManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<LanguageModelManagerFactory>;
-
-  LanguageModelManagerFactory();
-  ~LanguageModelManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
