@@ -6,7 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/optimization_guide/core/hints/fake_hints_fetcher.h"
 #import "components/optimization_guide/core/hints/hints_manager.h"
-#import "components/optimization_guide/core/optimization_guide_enums.h"
+#import "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"

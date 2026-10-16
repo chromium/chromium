@@ -51,7 +51,6 @@ class HintsFetcherFactory;
 class OptimizationFilter;
 class OptimizationGuideStore;
 class OptimizationMetadata;
-enum class OptimizationTypeDecision;
 class StoreUpdateData;
 class TabUrlProvider;
 class TopHostProvider;

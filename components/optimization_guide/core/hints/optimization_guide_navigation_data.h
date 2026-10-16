@@ -10,14 +10,45 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "url/gurl.h"
+
+namespace optimization_guide {
+
+// The statuses for racing a hints fetch with the current navigation based
+// on the availability of hints for both the current host and URL.
+//
+// Keep in sync with OptimizationGuideRaceNavigationFetchAttemptStatus in
+// enums.xml.
+enum class RaceNavigationFetchAttemptStatus {
+  kUnknown,
+  // The race was not attempted because hint information for the host and URL
+  // of the current navigation was already available.
+  kRaceNavigationFetchNotAttempted,
+  // The race was attempted for the host of the current navigation but not the
+  // URL.
+  kRaceNavigationFetchHost,
+  // The race was attempted for the URL of the current navigation but not the
+  // host.
+  kRaceNavigationFetchURL,
+  // The race was attempted for the host and URL of the current navigation.
+  kRaceNavigationFetchHostAndURL,
+  // A race for the current navigation's URL is already in progress.
+  kRaceNavigationFetchAlreadyInProgress,
+  // DEPRECATED: A race for the current navigation's URL was not attempted
+  // because there were too many concurrent page navigation fetches in flight.
+  kDeprecatedRaceNavigationFetchNotAttemptedTooManyConcurrentFetches,
+
+  // Add new values above this line.
+  kMaxValue =
+      kDeprecatedRaceNavigationFetchNotAttemptedTooManyConcurrentFetches,
+};
+
+}  // namespace optimization_guide
 
 // A representation of optimization guide information related to a navigation.
 // Metrics will be recorded upon this object's destruction.
@@ -106,11 +137,6 @@ class OptimizationGuideNavigationData {
   // The optimization types that were registered at the start of the navigation.
   base::flat_set<optimization_guide::proto::OptimizationType>
       registered_optimization_types_;
-
-  // The map from optimization type to the last decision made for that type.
-  base::flat_map<optimization_guide::proto::OptimizationType,
-                 optimization_guide::OptimizationTypeDecision>
-      optimization_type_decisions_;
 
   // The time that the hints fetch for this navigation started. Is only present
   // if a fetch was initiated for this navigation.

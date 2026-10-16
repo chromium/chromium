@@ -11,7 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
-#import "components/optimization_guide/core/optimization_guide_enums.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/consent_level.h"

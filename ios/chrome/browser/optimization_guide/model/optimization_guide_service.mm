@@ -19,6 +19,7 @@
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
 #import "components/optimization_guide/core/hints/command_line_top_host_provider.h"
 #import "components/optimization_guide/core/hints/hints_processing_util.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/hints/optimization_guide_store.h"
 #import "components/optimization_guide/core/hints/top_host_provider.h"

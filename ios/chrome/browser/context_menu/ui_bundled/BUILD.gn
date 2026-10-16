@@ -119,7 +119,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/enterprise/connectors/core",
-    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:hints",
     "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
