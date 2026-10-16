@@ -26,6 +26,10 @@ class ReauthenticatorBridge {
   ReauthenticatorBridge(const ReauthenticatorBridge&) = delete;
   ReauthenticatorBridge& operator=(const ReauthenticatorBridge&) = delete;
 
+  // Deprecated: Use `DeviceAuthAvailabilityChecker::GetBiometricAvailabilityStatus`
+  // instead. This refactor is currently guarded by the killswitch
+  // `password_manager::features::kDeviceReauthRefactor`.
+  //
   // Called by Java to check biometric availability status.
   int32_t GetBiometricAvailabilityStatus(JNIEnv* env);
 

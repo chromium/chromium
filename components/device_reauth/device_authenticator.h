@@ -57,9 +57,18 @@ class DeviceAuthenticator {
 
   DeviceAuthenticator& operator=(const DeviceAuthenticator&) = delete;
 
+  // Deprecated: Use `DeviceAuthAvailabilityChecker::CanAuthenticateWithBiometrics`
+  // instead. This refactor is currently guarded by the killswitch
+  // `password_manager::features::kDeviceReauthRefactor`.
+  //
   // Returns whether biometrics are available for a given device.
   virtual bool CanAuthenticateWithBiometrics() = 0;
 
+  // Deprecated: Use
+  // `DeviceAuthAvailabilityChecker::CanAuthenticateWithBiometricOrScreenLock`
+  // instead. This refactor is currently guarded by the killswitch
+  // `password_manager::features::kDeviceReauthRefactor`.
+  //
   // Returns whether biometrics or screenlock are available for a given device.
   virtual bool CanAuthenticateWithBiometricOrScreenLock() = 0;
 
@@ -72,6 +81,10 @@ class DeviceAuthenticator {
                                        AuthenticateCallback callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Deprecated: Use
+  // `DeviceAuthAvailabilityChecker::GetBiometricAvailabilityStatus` instead.
+  // This refactor is currently guarded by the killswitch
+  // `password_manager::features::kDeviceReauthRefactor`.
   virtual BiometricStatus GetBiometricAvailabilityStatus() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 

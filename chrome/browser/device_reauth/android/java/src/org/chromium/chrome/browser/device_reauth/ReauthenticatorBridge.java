@@ -40,6 +40,9 @@ public class ReauthenticatorBridge {
      * <li>BIOMETRICS_AVAILABLE - biometric auth is available but not mandatory,
      * <li>ONLY_LSKF_AVAILABLE - auth with pin or patter is available,
      * <li>UNAVAILABLE - no authentication method is available.
+     *
+     * <p>Deprecated: Use `DeviceAuthAvailabilityChecker` instead. This refactor is currently
+     * guarded by the killswitch `password_manager::features::kDeviceReauthRefactor`.
      */
     public @BiometricStatus int getBiometricAvailabilityStatus() {
         if (mNativeReauthenticatorBridge == 0) return BiometricStatus.UNAVAILABLE;
