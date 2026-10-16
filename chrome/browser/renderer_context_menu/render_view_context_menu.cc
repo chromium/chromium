@@ -2454,10 +2454,6 @@ void RenderViewContextMenu::AppendIndigoItem() {
       ui::ImageModel::FromVectorIcon(
           indigo::IndigoPageActionController::GetEntryPointVectorIcon(),
           ui::kColorMenuIcon, kTabMenuIconSize));
-  menu_model_.SetIsNewFeatureAt(
-      menu_model_.GetItemCount() - 1,
-      UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
-                                              features::kIndigoContextMenu));
   controller->OnContextMenuShown();
 }
 
@@ -5358,8 +5354,6 @@ void RenderViewContextMenu::ExecIndigo() {
   // product image.
   if (auto* controller = indigo::IndigoPageActionController::From(
           tabs::TabInterface::MaybeGetFromContents(source_web_contents_))) {
-    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        GetBrowserContext(), features::kIndigoContextMenu);
     controller->InvokeAction(indigo::EntryPoint::kContextMenu);
   }
 }
