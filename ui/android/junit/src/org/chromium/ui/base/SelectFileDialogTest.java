@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
@@ -61,6 +62,7 @@ import org.chromium.ui.permissions.PermissionCallback;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +78,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @EnableFeatures({UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE})
 public class SelectFileDialogTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TemporaryFolder mTempFolder = new TemporaryFolder();
 
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
     public final CallbackHelper mOnActionCallback = new CallbackHelper();
@@ -85,6 +88,22 @@ public class SelectFileDialogTest {
     @Before
     public void setUp() {
         SelectFileDialog.clearActiveDialogsForTesting();
+        // Emulate realpath(): canonicalize existing paths, return "" for nonexistent ones.
+        FileUtilsJni.setInstanceForTesting(mFileUtilsMocks);
+        Mockito.lenient()
+                .doAnswer(invocation -> realpath(invocation.getArgument(0)))
+                .when(mFileUtilsMocks)
+                .getAbsoluteFilePath(any());
+    }
+
+    private static String realpath(String path) {
+        File file = new File(path);
+        if (!file.exists()) return "";
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return "";
+        }
     }
 
     private void runAllAsyncTasks() {
@@ -1006,42 +1025,48 @@ public class SelectFileDialogTest {
     }
 
     @Test
-    public void testMultipleFileSelectorWithFileUris() {
+    public void testMultipleFileSelectorWithFileUris() throws IOException {
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        File file0 = mTempFolder.newFile("IMG_0.jpg");
+        File file1 = mTempFolder.newFile("IMG_1.jpg");
         Uri[] filePathArray =
                 new Uri[] {
-                    Uri.parse("file:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"),
-                    Uri.parse("file:///storage/emulated/0/DCIM/Camera/IMG_1.jpg")
+                    Uri.parse("file://" + file0.getAbsolutePath()),
+                    Uri.parse("file://" + file1.getAbsolutePath())
                 };
         SelectFileDialog.GetDisplayNameTask task =
                 selectFileDialog
                 .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
         task.doInBackground();
-        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_0.jpg", task.mFilePaths[0].toString());
-        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
+        assertEquals(file0.getCanonicalPath(), task.mFilePaths[0]);
+        assertEquals(file1.getCanonicalPath(), task.mFilePaths[1]);
     }
 
     @Test
-    public void testMultipleFileSelectorWithCaseVariantFileUris() {
+    public void testMultipleFileSelectorWithCaseVariantFileUris() throws IOException {
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        File file0 = mTempFolder.newFile("IMG_0.jpg");
+        File file1 = mTempFolder.newFile("IMG_1.jpg");
         Uri[] filePathArray =
                 new Uri[] {
-                    Uri.parse("FILE:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"),
-                    Uri.parse("File:///storage/emulated/0/DCIM/Camera/IMG_1.jpg")
+                    Uri.parse("FILE://" + file0.getAbsolutePath()),
+                    Uri.parse("File://" + file1.getAbsolutePath())
                 };
         SelectFileDialog.GetDisplayNameTask task =
                 selectFileDialog
                 .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
         task.doInBackground();
-        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_0.jpg", task.mFilePaths[0].toString());
-        assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
+        assertEquals(file0.getCanonicalPath(), task.mFilePaths[0]);
+        assertEquals(file1.getCanonicalPath(), task.mFilePaths[1]);
     }
 
     @Test
-    public void testMultipleFileSelectorWithCaseVariantAppDirUris() {
+    public void testMultipleFileSelectorWithCaseVariantAppDirUris() throws IOException {
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
         File dataDir = ContextCompat.getDataDir(ContextUtils.getApplicationContext());
         File appFile = new File(dataDir, "app_data.txt");
+        dataDir.mkdirs();
+        assertTrue(appFile.createNewFile());
         Uri[] filePathArray = new Uri[] {Uri.parse("FILE://" + appFile.getAbsolutePath())};
         SelectFileDialog.GetDisplayNameTask task =
                 selectFileDialog
@@ -1051,13 +1076,14 @@ public class SelectFileDialogTest {
 
     @Test
     @DisableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
-    public void testIntentCompletedWithCaseVariantClipDataUri() {
+    public void testIntentCompletedWithCaseVariantClipDataUri() throws IOException {
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        File file = mTempFolder.newFile("IMG_0.jpg");
         ClipData clipData =
                 ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(),
                         "label",
-                        Uri.parse("FILE:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"));
+                        Uri.parse("FILE://" + file.getAbsolutePath()));
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setClipData(clipData);
         selectFileDialog.onIntentCompleted(Activity.RESULT_OK, intent);
@@ -1100,14 +1126,6 @@ public class SelectFileDialogTest {
 
     private void testFilePath(
             String path, SelectFileDialog selectFileDialog, boolean expectedPass) {
-        testFilePath(path, selectFileDialog, expectedPass, expectedPass);
-    }
-
-    private void testFilePath(
-            String path,
-            SelectFileDialog selectFileDialog,
-            boolean expectedFileSelectionResult,
-            boolean expectedGetDisplayNameResult) {
         Uri[] uris = new Uri[1];
         uris[0] = Uri.fromFile(new File(path));
 
@@ -1118,15 +1136,12 @@ public class SelectFileDialogTest {
                 selectFileDialog
                 .new GetDisplayNameTask(
                         ContextUtils.getApplicationContext(), /* isMultiple= */ false, uris);
-        assertEquals(expectedFileSelectionResult, task.doInBackground());
-        assertEquals(expectedGetDisplayNameResult, null != task2.doInBackground());
+        assertEquals(expectedPass, task.doInBackground());
+        assertEquals(expectedPass, null != task2.doInBackground());
     }
 
     @Test
     public void testFilePathTasks() throws IOException {
-        FileUtilsJni.setInstanceForTesting(mFileUtilsMocks);
-        doReturn("/tmp/xyz.jpn").when(mFileUtilsMocks).getAbsoluteFilePath(any());
-
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
 
         // Obtain the data directory for RoboElectric. It should look something like:
@@ -1134,6 +1149,10 @@ public class SelectFileDialogTest {
         // ... where [testName] is the name of this test function and [number] is a unique id.
         String dataDir =
                 ContextCompat.getDataDir(ContextUtils.getApplicationContext()).getCanonicalPath();
+        assertTrue(new File(dataDir, "tmp").mkdirs());
+        assertTrue(new File(dataDir, "tmp/xyz.jpg").createNewFile());
+        assertTrue(new File(dataDir, "xyz.jpg").createNewFile());
+        assertTrue(new File(dataDir, "../xyz.jpg").createNewFile());
 
         // Passing in the data directory itself should fail.
         testFilePath(dataDir, selectFileDialog, /* expectedPass= */ false);
@@ -1144,7 +1163,10 @@ public class SelectFileDialogTest {
         // Another way of specifying the data directory (should fail).
         testFilePath(dataDir + "/tmp/../xyz.jpg", selectFileDialog, /* expectedPass= */ false);
         // The directory outside the data directory should succeed.
-        testFilePath("/data/local/tmp.jpg", selectFileDialog, /* expectedPass= */ true);
+        testFilePath(
+                mTempFolder.newFile("tmp.jpg").getPath(),
+                selectFileDialog,
+                /* expectedPass= */ true);
 
         Path path = new File(dataDir).toPath();
         String parent = path.getParent().toString();
@@ -1161,13 +1183,39 @@ public class SelectFileDialogTest {
                 selectFileDialog,
                 /* expectedPass= */ false);
 
-        // Tests invalid file path should fail file selection.
-        doReturn(new String()).when(mFileUtilsMocks).getAbsoluteFilePath(any());
+        // Invalid or nonexistent file paths should fail.
+        testFilePath("\\/tmp/xyz.jpg", selectFileDialog, /* expectedPass= */ false);
         testFilePath(
-                "\\/tmp/xyz.jpg",
+                mTempFolder.getRoot() + "/nonexistent.jpg",
                 selectFileDialog,
-                /* expectedFileSelectionResult= */ false,
-                /* expectedGetDisplayNameResult= */ true);
+                /* expectedPass= */ false);
+    }
+
+    @Test
+    public void testFilePathTasksRejectProcAndNonRegularFiles() {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+
+        // Paths resolving into procfs (here /proc/<pid>/maps) are rejected.
+        testFilePath("/proc/self/maps", selectFileDialog, /* expectedPass= */ false);
+        // Directories are not regular files.
+        testFilePath(mTempFolder.getRoot().getPath(), selectFileDialog, /* expectedPass= */ false);
+    }
+
+    @Test
+    public void testFilePathTasksForwardResolvedPath() throws IOException {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        File target = mTempFolder.newFile("target.jpg");
+        File link = new File(mTempFolder.getRoot(), "link.jpg");
+        Files.createSymbolicLink(link.toPath(), target.toPath());
+
+        SelectFileDialog.GetDisplayNameTask task =
+                selectFileDialog
+                .new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(),
+                        /* isMultiple= */ false,
+                        new Uri[] {Uri.fromFile(link)});
+        task.doInBackground();
+        assertEquals(target.getCanonicalPath(), task.mFilePaths[0]);
     }
 
     @Test
