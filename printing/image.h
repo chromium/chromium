@@ -26,7 +26,7 @@ class Image {
 
   ~Image();
 
-  bool operator==(const Image& other) const;
+  friend bool operator==(const Image&, const Image&) = default;
 
   const gfx::Size& size() const { return size_; }
 

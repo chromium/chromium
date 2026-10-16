@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace printing {
 
@@ -18,21 +18,15 @@ Image::Image(const Image& image) = default;
 
 Image::~Image() = default;
 
-bool Image::operator==(const Image& other) const {
-  return size_ == other.size_ && row_length_ == other.row_length_ &&
-         data_ == other.data_;
-}
-
 uint32_t Image::pixel_at(int x, int y) const {
   CHECK_GE(x, 0);
   CHECK_LT(x, size_.width());
   CHECK_GE(y, 0);
   CHECK_LT(y, size_.height());
-  const uint32_t* data = reinterpret_cast<const uint32_t*>(&*data_.begin());
-  UNSAFE_TODO({
-    const uint32_t* data_row = data + y * row_length_ / sizeof(uint32_t);
-    return Color(data_row[x]);
-  });
+  const auto row_bytes = base::span(data_).subspan(
+      static_cast<size_t>(y) * row_length_, static_cast<size_t>(row_length_));
+  const auto row = base::subtle::reinterpret_span<const uint32_t>(row_bytes);
+  return Color(row[static_cast<size_t>(x)]);
 }
 
 }  // namespace printing
