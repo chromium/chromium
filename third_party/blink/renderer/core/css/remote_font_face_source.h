@@ -66,6 +66,12 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
 
   ExecutionContext* GetExecutionContext() const;
 
+  // Replaces the font data with `custom_font_data` and invalidates the font
+  // face. Used by IFT fonts after patches have been applied.
+  void UpdateCustomFontData(const FontCustomPlatformData* custom_font_data);
+  // Invalidates the font face so that text using it is re-laid out.
+  void InvalidateFontFace();
+
   void Trace(Visitor*) const override;
 
  protected:

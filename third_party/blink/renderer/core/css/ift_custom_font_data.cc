@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
+#include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/ift/ift_patcher.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -118,6 +119,31 @@ base::span<const uint8_t> IftCustomFontData::GetFontDataForTesting() const {
   return patcher_->GetFontData();
 }
 
+void IftCustomFontData::BeginIdle() const {
+  if (state_ == State::kFailed) {
+    return;
+  }
+  state_ = State::kIdle;
+  if (rendered_font_version_ == patched_font_version_) {
+    // TODO(wmedrano): We still need to force an invalidation IftRequireSubset
+    // will return false the first time it encounters a novel subset, even if it
+    // supported.
+    font_face_source_->InvalidateFontFace();
+    return;
+  }
+  scoped_refptr<SharedBuffer> buffer =
+      SharedBuffer::Create(patcher_->GetFontData());
+  String ots_parse_message;
+  FontCustomPlatformData* custom_font_data =
+      FontCustomPlatformData::Create(buffer.get(), ots_parse_message);
+  if (!custom_font_data) {
+    BeginFailed();
+    return;
+  }
+  rendered_font_version_ = patched_font_version_;
+  font_face_source_->UpdateCustomFontData(custom_font_data);
+}
+
 void IftCustomFontData::BeginCollecting() const {
   if (state_ != State::kIdle) {
     return;
@@ -151,7 +177,7 @@ void IftCustomFontData::BeginFetching() const {
   fetched_subset_->Union(*requested_subset_);
   Vector<String> patch_urls = patcher_->RequestPatches(*fetched_subset_);
   if (patch_urls.empty()) {
-    state_ = State::kIdle;
+    BeginIdle();
     return;
   }
 
@@ -177,10 +203,12 @@ void IftCustomFontData::ApplyPatches() const {
   if (state_ != State::kFetching) {
     return;
   }
-  // TODO(wmedrano): Perform font invalidation on successful patching.
+  // TODO(wmedrano): Consider limiting the max number of patch applications. At
+  // some point, we may want to just request the entire subset.
   switch (patcher_->ApplyPatches(*fetched_subset_)) {
     case IftPatcher::ApplyStatus::kSuccess:
     case IftPatcher::ApplyStatus::kMissingPatches:
+      ++patched_font_version_;
       // Attempt to refetch in case applying an invalidating patch revealed
       // additional patches needed for `fetched_subset_`, or in case
       // `requested_subset_` was extended while fetching.

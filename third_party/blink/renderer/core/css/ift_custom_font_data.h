@@ -69,6 +69,7 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
   // Fetches a single patch and notifies its owner when done.
   class PatchLoader;
 
+  void BeginIdle() const;
   void BeginCollecting() const;
   void BeginFetching() const;
   void BeginFailed() const;
@@ -82,6 +83,10 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
   // The URL of the font. Patch URLs are resolved relative to this.
   const KURL font_url_;
   std::unique_ptr<IftPatcher> patcher_;
+  // Incremented each time patches are applied to `patcher_`.
+  mutable uint32_t patched_font_version_ = 0;
+  // The `patched_font_version_` that is currently being rendered.
+  mutable uint32_t rendered_font_version_ = 0;
   // The codepoints requested through `IftRequireSubset()`. Heap allocated so
   // this header does not need the complete type, which would pull
   // Crubit-generated bindings into every includer.

@@ -62,14 +62,15 @@ std::optional<SkFontParameters::Variation::Axis>
 RetrieveVariationDesignParametersByTag(sk_sp<SkTypeface> base_typeface,
                                        SkFourByteTag tag) {
   int axes_count = base_typeface->getVariationDesignParameters({});
-  if (axes_count <= 0)
+  if (axes_count <= 0) {
     return std::nullopt;
+  }
   blink::Vector<SkFontParameters::Variation::Axis> axes;
   axes.resize(axes_count);
-  int axes_read =
-      base_typeface->getVariationDesignParameters(axes);
-  if (axes_read <= 0)
+  int axes_read = base_typeface->getVariationDesignParameters(axes);
+  if (axes_read <= 0) {
     return std::nullopt;
+  }
   for (auto& axis : axes) {
     if (axis.tag == tag) {
       return axis;
@@ -228,10 +229,11 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     if (variation_settings && variation_settings->size() < UINT16_MAX) {
       variation.reserve(variation_settings->size() + variation.size());
       for (const auto& setting : *variation_settings) {
-        if (setting.Tag() == kOpszTag)
+        if (setting.Tag() == kOpszTag) {
           explicit_opsz_configured = true;
-        SkFontArguments::VariationPosition::Coordinate setting_coordinate =
-            {setting.Tag(), SkFloatToScalar(setting.Value())};
+        }
+        SkFontArguments::VariationPosition::Coordinate setting_coordinate = {
+            setting.Tag(), SkFloatToScalar(setting.Value())};
         variation.push_back(setting_coordinate);
       }
     }
@@ -356,6 +358,7 @@ FontCustomPlatformData* FontCustomPlatformData::Create(
     SharedBuffer* buffer,
     String& ots_parse_message) {
   DCHECK(buffer);
+  // TODO(wmedrano): Avoid creating unused `IftPatcher` within `DecodedWebFont`.
   base::expected<DecodedWebFont, String> decode_result = DecodeWebFont(buffer);
   if (!decode_result.has_value()) {
     ots_parse_message = std::move(decode_result).error();

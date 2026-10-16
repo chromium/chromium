@@ -317,6 +317,23 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   return changed;
 }
 
+void RemoteFontFaceSource::UpdateCustomFontData(
+    const FontCustomPlatformData* custom_font_data) {
+  CHECK(custom_font_data);
+  custom_font_data_ = custom_font_data;
+  ClearTable();
+  InvalidateFontFace();
+}
+
+void RemoteFontFaceSource::InvalidateFontFace() {
+  if (face_->FallbackVisibilityChanged(this)) {
+    // TODO(wmedrano): Only invalidate `FontFallbackList`s that use this font
+    // instead of all `FontFallbackList`s.
+    font_selector_->FontFaceInvalidated(
+        FontInvalidationReason::kGeneralInvalidation);
+  }
+}
+
 bool RemoteFontFaceSource::ShouldTriggerWebFontsIntervention() {
   if (!IsA<LocalDOMWindow>(font_selector_->GetExecutionContext())) {
     return false;
