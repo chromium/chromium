@@ -411,9 +411,9 @@ BASE_FEATURE(kAutofillAiWalletPrivatePassesCapability,
 BASE_FEATURE(kAutofillAiWalletPrivatePassesDeepLink,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, Wallet management URLs (`pass_view_url`) received via sync are
-// stored on `EntityInstance::WalletRecordTypePayload` and used for deep
-// linking to Google Wallet.
+// If enabled, Wallet management URLs (`pass_view_url`) are used for deep
+// linking to Google Wallet. Note that the processing of `pass_view_url`
+// in Chrome sync happens unconditionally even if the feature is off.
 BASE_FEATURE(kAutofillAiWalletServerProvidedDeepLink,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
