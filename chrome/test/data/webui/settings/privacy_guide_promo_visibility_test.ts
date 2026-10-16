@@ -112,6 +112,10 @@ suite('PrivacyGuidePromoVisibility', () => {
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
     assertFalse(prefService.getPref<boolean>('privacy_guide.viewed').value);
 
+    // Reset PrefService to simulate the case where it has not been initialized
+    // yet when the button is clicked.
+    PrefService.resetInstanceForTesting();
+
     // Click the no thanks button.
     const privacyGuidePromo = page.shadowRoot!.querySelector<HTMLElement>(
         '#privacyGuidePromo settings-privacy-guide-promo');
@@ -125,6 +129,8 @@ suite('PrivacyGuidePromoVisibility', () => {
 
     // The privacy guide should be marked as seen and the promo no longer
     // visible.
+    prefService = PrefService.getInstance();
+    assertTrue(prefService.getPref<boolean>('privacy_guide.viewed').value);
     assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });
 
