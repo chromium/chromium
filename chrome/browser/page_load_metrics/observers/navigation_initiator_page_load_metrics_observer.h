@@ -6,6 +6,13 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_NAVIGATION_INITIATOR_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
+
+class GURL;
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 // Observer that records page load metrics based on the navigation's initiator.
 class NavigationInitiatorPageLoadMetricsObserver

@@ -4,11 +4,13 @@
 
 #include "chrome/browser/page_load_metrics/observers/navigation_initiator_page_load_metrics_observer.h"
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace {
 
