@@ -12,6 +12,10 @@
 class GURL;
 class HostContentSettingsMap;
 
+namespace web {
+class WebState;
+}  // namespace web
+
 // Returns whether `url` is an external file reference.
 bool UrlIsExternalFileReference(const GURL& url);
 
@@ -24,6 +28,9 @@ bool UrlHasChromeScheme(NSURL* url);
 
 // Returns YES if `url` matches chrome://newtab.
 bool IsUrlNtp(const GURL& url);
+
+// Returns true if the last committed URL of `web_state` can be shared.
+bool IsUrlShareable(web::WebState* web_state);
 
 // Returns true if `scheme` is handled in Chrome, or by default handlers in
 // net::URLRequest.

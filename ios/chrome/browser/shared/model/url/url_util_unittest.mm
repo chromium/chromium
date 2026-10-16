@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -35,6 +36,33 @@ TEST_F(ChromeURLUtilTest, TestUrlIsDownloadedFile) {
   EXPECT_TRUE(UrlIsDownloadedFile(downloaded_file_url));
   EXPECT_FALSE(UrlIsDownloadedFile(external_file_url));
   EXPECT_FALSE(UrlIsDownloadedFile(not_downloaded_file_url));
+}
+
+// Tests that `IsUrlShareable` returns true only for valid non-Chrome URLs,
+// downloaded files, and external file references.
+TEST_F(ChromeURLUtilTest, TestIsUrlShareable) {
+  EXPECT_FALSE(IsUrlShareable(nullptr));
+
+  web::FakeWebState web_state;
+  EXPECT_FALSE(IsUrlShareable(&web_state));
+
+  web_state.SetCurrentURL(GURL(kChromeUINewTabURL));
+  EXPECT_FALSE(IsUrlShareable(&web_state));
+
+  web_state.SetCurrentURL(GURL(kChromeUIAboutNewTabURL));
+  EXPECT_FALSE(IsUrlShareable(&web_state));
+
+  web_state.SetCurrentURL(GURL("chrome://version"));
+  EXPECT_FALSE(IsUrlShareable(&web_state));
+
+  web_state.SetCurrentURL(GURL("https://www.example.com"));
+  EXPECT_TRUE(IsUrlShareable(&web_state));
+
+  web_state.SetCurrentURL(GURL("chrome://downloads/fileName"));
+  EXPECT_TRUE(IsUrlShareable(&web_state));
+
+  web_state.SetCurrentURL(GURL("chrome://external-file/fileName"));
+  EXPECT_TRUE(IsUrlShareable(&web_state));
 }
 
 constexpr auto kSchemeTestData = std::to_array<std::string_view>({
