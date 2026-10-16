@@ -24,14 +24,12 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -254,17 +252,18 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
   // Returns whether the popup native view exists.
   bool HasPopupNativeView() {
-    ToolbarActionViewModel* popup_owner =
-        extensions_container()->popup_owner_for_testing();
-    return popup_owner ? !!popup_owner->GetPopupNativeViewForTesting() : false;
+    return ExtensionActionTestHelper::Create(browser())->HasPopup();
+  }
+
+  // Hides the active popup, if any, and verifies it's gone.
+  void HideActivePopup() {
+    extensions_container()->HideActivePopup();
+    EXPECT_FALSE(HasPopupNativeView());
   }
 
   // Trigger a focus loss to close the popup.
   void ClosePopupViaFocusLoss() {
-    ToolbarActionViewModel* popup_owner =
-        extensions_container()->popup_owner_for_testing();
-    EXPECT_TRUE(popup_owner);
-    EXPECT_TRUE(popup_owner->GetPopupNativeViewForTesting());
+    EXPECT_TRUE(HasPopupNativeView());
     ExtensionHostTestHelper host_helper(profile());
 
 #if BUILDFLAG(IS_MAC)
@@ -286,14 +285,17 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     host_helper.WaitForHostDestroyed();
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_FALSE(extensions_container()->popup_owner_for_testing());
     EXPECT_FALSE(HasPopupNativeView());
   }
 
-  ExtensionsToolbarDesktop* extensions_container() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->extensions_container_for_testing();
+  // Returns the platform-abstract extensions container for the browser. This
+  // is either the Views-based ExtensionsToolbarDesktop or, when
+  // features::IsWebUIExtensionsContainerEnabled(), the
+  // WebUIToolbarExtensionsContainer.
+  ExtensionsContainer* extensions_container() {
+    ExtensionsContainer* container = ExtensionsContainer::From(*browser());
+    CHECK(container);
+    return container;
   }
 
  private:
@@ -381,8 +383,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // there's an active popup.
   listener.Reply("show another");
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
-  extensions_container()->HideActivePopup();
-  EXPECT_FALSE(HasPopupNativeView());
+  HideActivePopup();
 }
 
 // Test that the extension popup is closed when the browser window is focused.
@@ -514,8 +515,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   EXPECT_TRUE(blink::ZoomValuesEqual(popup_zoom_level, default_zoom_level))
       << popup_zoom_level << " vs " << default_zoom_level;
 
-  extensions_container()->HideActivePopup();
-  EXPECT_FALSE(HasPopupNativeView());
+  HideActivePopup();
 }
 
 class BrowserActionInteractiveViewsTest : public BrowserActionInteractiveTest {
@@ -556,11 +556,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveViewsTest,
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   OpenPopupViaAPI(false);
 
-  ToolbarActionViewModel* popup_owner =
-      extensions_container()->popup_owner_for_testing();
-  ASSERT_TRUE(popup_owner);
   const gfx::NativeView popup_view =
-      popup_owner->GetPopupNativeViewForTesting();
+      ExtensionActionTestHelper::Create(browser())->GetPopupNativeView();
   EXPECT_NE(gfx::NativeView(), popup_view);
 
   const HWND popup_hwnd = views::HWNDForNativeView(popup_view);
@@ -723,8 +720,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   EXPECT_EQ(1u, downloads_observer.NumDownloadsSeenInState(
                     download::DownloadItem::COMPLETE));
 
-  extensions_container()->HideActivePopup();
-  EXPECT_FALSE(HasPopupNativeView());
+  HideActivePopup();
 }
 
 // Watches a frame is swapped with a new frame by e.g., navigation.
@@ -797,8 +793,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
   EXPECT_EQ("\"DONE\"", json);
 
-  extensions_container()->HideActivePopup();
-  EXPECT_FALSE(HasPopupNativeView());
+  HideActivePopup();
 }
 
 
@@ -862,8 +857,7 @@ class NavigatingExtensionPopupInteractiveTest
 
     // Verify extension's action exists.
     ToolbarActionViewModel* model =
-        extensions_container()->GetToolbarViewModel()->GetActionForId(
-            popup_extension().id());
+        extensions_container()->GetActionForId(popup_extension().id());
     ASSERT_TRUE(model);
 
     // Trigger the extension's popup by executing its action.
@@ -914,9 +908,7 @@ class NavigatingExtensionPopupInteractiveTest
                              ::testing::Eq(GURL("about:blank"))));
       }
 
-      extensions_container()->HideActivePopup();
-      ASSERT_FALSE(extensions_container()->popup_owner_for_testing());
-      ASSERT_FALSE(model->GetPopupNativeViewForTesting());
+      HideActivePopup();
     }
 
     // Make sure that the web navigation did not succeed somewhere outside of

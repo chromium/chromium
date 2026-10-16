@@ -39,6 +39,7 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/common/extension_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/base/base_window.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -273,7 +274,16 @@ void WebUIToolbarExtensionsContainer::CloseExtensionsMenuIfOpen() {
 bool WebUIToolbarExtensionsContainer::ShowToolbarActionPopupForAPICall(
     const std::string& action_id,
     ShowPopupCallback callback) {
-  NOTIMPLEMENTED();
+  // Mirrors ExtensionsToolbarDesktop::CanShowToolbarActionPopupForAPICall():
+  // don't interrupt an action that's already popped out, and only show popups
+  // in the active window.
+  if (popped_out_action_ || !browser_->GetWindow()->IsActive()) {
+    return false;
+  }
+
+  ToolbarActionViewModel* action = GetActionForId(action_id);
+  CHECK(action);
+  action->TriggerPopupForAPI(std::move(callback));
   return true;
 }
 
@@ -543,8 +553,17 @@ void WebUIToolbarExtensionsContainer::OnToolbarActionRemoved(
   if (context_menu_ && context_menu_->action_id() == id) {
     context_menu_.reset();
   }
-  actions_[id]->model()->UnregisterCommand();
-  actions_.erase(id);
+  // The action may be removed (e.g. the extension uninstalled) while its popup
+  // is showing. ToolbarActionView does this in its destructor for the Views
+  // container; there's no per-action view here, so hide the popup explicitly
+  // before destroying the model, which expects not to be showing a popup.
+  // `popped_out_action_` was cleared above, so this doesn't re-enter
+  // UndoPopOut().
+  auto it = actions_.find(id);
+  CHECK(it != actions_.end());
+  it->second->model()->HidePopup();
+  it->second->model()->UnregisterCommand();
+  actions_.erase(it);
   if (pinned_by_default_iph_extension_id_ == id) {
     ClearPinnedByDefaultIphAnchor();
   }
