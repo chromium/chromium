@@ -32,7 +32,15 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     }
     AXPlatformNodeAuraLinux::SetApplication(wrapper->ax_platform_node());
 
+    // Depending on its version and on whether the accessibility bus is
+    // available, the ATK bridge may keep (or leak) a reference to the root
+    // object. Record how many references were added so that TearDown() can
+    // release exactly those.
+    GObject* root_object =
+        G_OBJECT(wrapper->ax_platform_node()->GetNativeViewAccessible());
+    const guint ref_count_before = root_object->ref_count;
     AtkUtilAuraLinux::GetInstance()->InitializeForTesting();
+    root_refs_added_by_bridge_ = root_object->ref_count - ref_count_before;
   }
 
   ~AtkUtilAuraLinuxTest() override = default;
@@ -46,7 +54,9 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     if (!wrapper) {
       NOTREACHED();
     }
-    g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
+    for (guint i = 0; i < root_refs_added_by_bridge_; ++i) {
+      g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
+    }
 
     AXPlatformNodeTest::TearDown();
     // These tests set AtSpiReady to true. Reset to initial state.
@@ -55,6 +65,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
 
  private:
   ScopedAXModeSetter ax_mode_setter_;
+  guint root_refs_added_by_bridge_ = 0;
 };
 
 TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {
