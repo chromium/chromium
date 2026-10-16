@@ -552,6 +552,35 @@ source_set("impl") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  public = [ "mock_media_engagement_service.h" ]
+  sources = [ "mock_media_engagement_service.cc" ]
+  public_deps = [
+    ":media",
+    "//testing/gmock",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+  if (enable_library_cdms || is_win) {
+    public += [ "clear_key_cdm_test_helper.h" ]
+    sources += [ "clear_key_cdm_test_helper.cc" ]
+    public_deps += [
+      "//base/test:test_support",
+      "//media:media_buildflags",
+    ]
+    deps += [
+      "//base",
+      "//media",
+      "//media/cdm:cdm_paths",
+      "//media/cdm:clear_key_cdm_common",
+    ]
+  }
+}
+
 mojom("mojo_bindings") {
   sources = [ "media_engagement_score_details.mojom" ]
 
