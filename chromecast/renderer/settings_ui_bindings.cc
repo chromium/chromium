@@ -31,7 +31,7 @@ const char kRequestVisible[] = "requestVisible";
 }  // namespace
 
 SettingsUiBindings::SettingsUiBindings(content::RenderFrame* frame)
-    : CastBinding(frame), binding_(this), weak_factory_(this) {
+    : CastBinding(frame), binding_(this) {
   ReconnectMojo();
 }
 
@@ -106,12 +106,13 @@ void SettingsUiBindings::Install(v8::Local<v8::Object> cast_platform,
 
   InstallBinding(isolate, settings_ui, kSetSideSwipeHandler,
                  &SettingsUiBindings::SetSideSwipeHandler,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, settings_ui, kSetPlatformInfoHandler,
                  &SettingsUiBindings::SetPlatformInfoHandler,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, settings_ui, kRequestVisible,
-                 &SettingsUiBindings::RequestVisible, base::Unretained(this));
+                 &SettingsUiBindings::RequestVisible,
+                 weak_factory_.GetWeakPtr());
 }
 
 void SettingsUiBindings::SetSideSwipeHandler(

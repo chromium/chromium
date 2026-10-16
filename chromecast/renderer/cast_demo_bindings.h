@@ -14,6 +14,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "v8/include/v8.h"
 
+namespace gin {
+class Arguments;
+}
+
 namespace chromecast {
 namespace shell {
 
@@ -39,14 +43,14 @@ class CastDemoBindings : public CastBinding,
   void RecordEvent(const std::string& event_name, v8::Local<v8::Value> data);
   void SetRetailerName(const std::string& retailer_name);
   void SetStoreId(const std::string& store_id);
-  v8::Local<v8::Value> GetRetailerName();
-  v8::Local<v8::Value> GetStoreId();
+  void GetRetailerName(gin::Arguments* args);
+  void GetStoreId(gin::Arguments* args);
   void SetDefaultVolumeLevel(float level);
-  v8::Local<v8::Value> GetDefaultVolumeLevel();
+  void GetDefaultVolumeLevel(gin::Arguments* args);
   void ApplyDefaultVolume();
   void SetWifiCredentials(const std::string& ssid, const std::string& psk);
-  v8::Local<v8::Value> GetAvailableWifiNetworks();
-  v8::Local<v8::Value> GetConnectionStatus();
+  void GetAvailableWifiNetworks(gin::Arguments* args);
+  void GetConnectionStatus(gin::Arguments* args);
   void SetVolumeChangeHandler(v8::Local<v8::Function> volume_change_handler);
   void PersistLocalStorage();
 
@@ -88,7 +92,7 @@ class CastDemoBindings : public CastBinding,
 
   v8::UniquePersistent<v8::Function> volume_change_handler_;
 
-  base::WeakPtrFactory<CastDemoBindings> weak_factory_;
+  base::WeakPtrFactory<CastDemoBindings> weak_factory_{this};
 };
 
 }  // namespace shell

@@ -54,9 +54,8 @@ class CastWindowManagerBindings : public CastBinding,
   using PersistedContext = v8::Global<v8::Context>;
   using PersistedResolver = v8::Global<v8::Promise::Resolver>;
 
-  v8::Local<v8::Value> SetV8Callback(
-      v8::UniquePersistent<v8::Function>* callback_function,
-      v8::Local<v8::Function> callback);
+  void SetV8Callback(v8::UniquePersistent<v8::Function>* callback_function,
+                     v8::Local<v8::Function> callback);
   void InvokeV8Callback(v8::UniquePersistent<v8::Function>* callback_function);
   void InvokeV8Callback(v8::UniquePersistent<v8::Function>* callback_function,
                         const gfx::Point& touch_location);
@@ -100,6 +99,8 @@ class CastWindowManagerBindings : public CastBinding,
   v8::UniquePersistent<v8::Function> on_tap_gesture_callback_;
 
   v8::UniquePersistent<v8::Function> on_tap_down_gesture_callback_;
+
+  base::WeakPtrFactory<CastWindowManagerBindings> weak_factory_{this};
 };
 
 }  // namespace shell

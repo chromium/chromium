@@ -60,7 +60,7 @@ class SettingsUiBindings : public CastBinding,
   mojo::Receiver<chromecast::mojom::SettingsClient> binding_;
   base::RepeatingTimer mojo_reconnect_timer_;
 
-  base::WeakPtrFactory<SettingsUiBindings> weak_factory_;
+  base::WeakPtrFactory<SettingsUiBindings> weak_factory_{this};
 };
 
 }  // namespace shell

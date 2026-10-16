@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "gin/arguments.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -41,7 +42,7 @@ const char kSetVolumeName[] = "setVolume";
 }  // namespace
 
 CastDemoBindings::CastDemoBindings(content::RenderFrame* render_frame)
-    : CastBinding(render_frame), binding_(this), weak_factory_(this) {}
+    : CastBinding(render_frame), binding_(this) {}
 
 CastDemoBindings::~CastDemoBindings() {}
 
@@ -51,40 +52,44 @@ void CastDemoBindings::Install(v8::Local<v8::Object> cast_platform,
       EnsureObjectExists(isolate, cast_platform, kDemoObjectName);
 
   InstallBinding(isolate, demo_object, kRecordEventName,
-                 &CastDemoBindings::RecordEvent, base::Unretained(this));
+                 &CastDemoBindings::RecordEvent, weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kSetRetailerName,
-                 &CastDemoBindings::SetRetailerName, base::Unretained(this));
+                 &CastDemoBindings::SetRetailerName,
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kSetStoreIdName,
-                 &CastDemoBindings::SetStoreId, base::Unretained(this));
+                 &CastDemoBindings::SetStoreId, weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kGetRetailerName,
-                 &CastDemoBindings::GetRetailerName, base::Unretained(this));
+                 &CastDemoBindings::GetRetailerName,
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kGetStoreIdName,
-                 &CastDemoBindings::GetStoreId, base::Unretained(this));
+                 &CastDemoBindings::GetStoreId, weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kSetDefaultVolumeName,
                  &CastDemoBindings::SetDefaultVolumeLevel,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kGetDefaultVolumeName,
                  &CastDemoBindings::GetDefaultVolumeLevel,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kApplyDefaultVolumeName,
-                 &CastDemoBindings::ApplyDefaultVolume, base::Unretained(this));
+                 &CastDemoBindings::ApplyDefaultVolume,
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kSetWifiConnectionName,
-                 &CastDemoBindings::SetWifiCredentials, base::Unretained(this));
+                 &CastDemoBindings::SetWifiCredentials,
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kGetAvailableWifiNetworksName,
                  &CastDemoBindings::GetAvailableWifiNetworks,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kGetWifiConnectionStateName,
                  &CastDemoBindings::GetConnectionStatus,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kRegisterVolumeChangeHandlerName,
                  &CastDemoBindings::SetVolumeChangeHandler,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
   InstallBinding(isolate, demo_object, kPersistLocalStorageName,
                  &CastDemoBindings::PersistLocalStorage,
-                 base::Unretained(this));
+                 weak_factory_.GetWeakPtr());
 
   InstallBinding(isolate, demo_object, kSetVolumeName,
-                 &CastDemoBindings::SetVolume, base::Unretained(this));
+                 &CastDemoBindings::SetVolume, weak_factory_.GetWeakPtr());
 }
 
 void CastDemoBindings::RecordEvent(const std::string& event_name,
@@ -117,7 +122,7 @@ void CastDemoBindings::SetStoreId(const std::string& store_id) {
   GetCastDemo()->SetStoreId(store_id);
 }
 
-v8::Local<v8::Value> CastDemoBindings::GetRetailerName() {
+void CastDemoBindings::GetRetailerName(gin::Arguments* args) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
@@ -129,9 +134,9 @@ v8::Local<v8::Value> CastDemoBindings::GetRetailerName() {
       v8::Global<v8::Context>(isolate, context);
 
   GetCastDemo()->GetRetailerName(base::BindOnce(
-      &CastDemoBindings::OnGetRetailerName, base::Unretained(this),
+      &CastDemoBindings::OnGetRetailerName, weak_factory_.GetWeakPtr(),
       std::move(unique_resolver), std::move(persisted_context)));
-  return resolver->GetPromise();
+  args->Return(resolver->GetPromise());
 }
 
 void CastDemoBindings::OnGetRetailerName(
@@ -151,7 +156,7 @@ void CastDemoBindings::OnGetRetailerName(
       .ToChecked();
 }
 
-v8::Local<v8::Value> CastDemoBindings::GetStoreId() {
+void CastDemoBindings::GetStoreId(gin::Arguments* args) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
@@ -162,10 +167,10 @@ v8::Local<v8::Value> CastDemoBindings::GetStoreId() {
   v8::Global<v8::Context> persisted_context =
       v8::Global<v8::Context>(isolate, context);
 
-  GetCastDemo()->GetStoreId(
-      base::BindOnce(&CastDemoBindings::OnGetStoreId, base::Unretained(this),
-                     std::move(unique_resolver), std::move(persisted_context)));
-  return resolver->GetPromise();
+  GetCastDemo()->GetStoreId(base::BindOnce(
+      &CastDemoBindings::OnGetStoreId, weak_factory_.GetWeakPtr(),
+      std::move(unique_resolver), std::move(persisted_context)));
+  args->Return(resolver->GetPromise());
 }
 
 void CastDemoBindings::OnGetStoreId(v8::Global<v8::Promise::Resolver> resolver,
@@ -195,7 +200,7 @@ void CastDemoBindings::SetDefaultVolumeLevel(float level) {
   GetCastDemo()->SetDefaultVolumeLevel(level);
 }
 
-v8::Local<v8::Value> CastDemoBindings::GetDefaultVolumeLevel() {
+void CastDemoBindings::GetDefaultVolumeLevel(gin::Arguments* args) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
@@ -207,9 +212,9 @@ v8::Local<v8::Value> CastDemoBindings::GetDefaultVolumeLevel() {
       v8::Global<v8::Context>(isolate, context);
 
   GetCastDemo()->GetDefaultVolumeLevel(base::BindOnce(
-      &CastDemoBindings::OnGetDefaultVolumeLevel, base::Unretained(this),
+      &CastDemoBindings::OnGetDefaultVolumeLevel, weak_factory_.GetWeakPtr(),
       std::move(unique_resolver), std::move(persisted_context)));
-  return resolver->GetPromise();
+  args->Return(resolver->GetPromise());
 }
 
 void CastDemoBindings::OnGetDefaultVolumeLevel(
@@ -238,7 +243,7 @@ void CastDemoBindings::SetWifiCredentials(const std::string& ssid,
   GetCastDemo()->SetWifiCredentials(ssid, psk);
 }
 
-v8::Local<v8::Value> CastDemoBindings::GetAvailableWifiNetworks() {
+void CastDemoBindings::GetAvailableWifiNetworks(gin::Arguments* args) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
@@ -250,9 +255,9 @@ v8::Local<v8::Value> CastDemoBindings::GetAvailableWifiNetworks() {
       v8::Global<v8::Context>(isolate, context);
 
   GetCastDemo()->GetAvailableWifiNetworks(base::BindOnce(
-      &CastDemoBindings::OnGetAvailableWifiNetworks, base::Unretained(this),
+      &CastDemoBindings::OnGetAvailableWifiNetworks, weak_factory_.GetWeakPtr(),
       std::move(unique_resolver), std::move(persisted_context)));
-  return resolver->GetPromise();
+  args->Return(resolver->GetPromise());
 }
 
 void CastDemoBindings::OnGetAvailableWifiNetworks(
@@ -277,7 +282,7 @@ void CastDemoBindings::OnGetAvailableWifiNetworks(
       .ToChecked();
 }
 
-v8::Local<v8::Value> CastDemoBindings::GetConnectionStatus() {
+void CastDemoBindings::GetConnectionStatus(gin::Arguments* args) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   auto context = isolate->GetCurrentContext();
@@ -289,9 +294,9 @@ v8::Local<v8::Value> CastDemoBindings::GetConnectionStatus() {
       v8::Global<v8::Context>(isolate, context);
 
   GetCastDemo()->GetConnectionStatus(base::BindOnce(
-      &CastDemoBindings::OnGetConnectionStatus, base::Unretained(this),
+      &CastDemoBindings::OnGetConnectionStatus, weak_factory_.GetWeakPtr(),
       std::move(unique_resolver), std::move(persisted_context)));
-  return resolver->GetPromise();
+  args->Return(resolver->GetPromise());
 }
 
 void CastDemoBindings::OnGetConnectionStatus(
@@ -355,7 +360,7 @@ void CastDemoBindings::ReconnectMojo() {
       cast_demo_.BindNewPipeAndPassReceiver());
   DCHECK(cast_demo_.is_bound());
   cast_demo_.set_disconnect_handler(base::BindOnce(
-      &CastDemoBindings::OnMojoConnectionError, base::Unretained(this)));
+      &CastDemoBindings::OnMojoConnectionError, weak_factory_.GetWeakPtr()));
 
   if (binding_.is_bound()) {
     binding_.reset();
