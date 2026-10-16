@@ -14,12 +14,12 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/callback_list.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -50,14 +50,6 @@ class AudioControllerImpl : public AudioController,
                             public media::AudioCapturerSource::CaptureCallback,
                             public media::AudioRendererSink::RenderCallback {
  public:
-  // `pcm_data` holds signed 16-bit interleaved PCM samples.
-  using AudioCaptureCallback =
-      base::RepeatingCallback<void(base::span<const int16_t> pcm_data,
-                                   const media::AudioParameters& params)>;
-  using AudioEnergyCallback = base::RepeatingCallback<void(float energy)>;
-  using PlaybackCompletionCallback =
-      base::RepeatingCallback<void(int64_t sequence_number)>;
-  using ErrorCallback = base::RepeatingCallback<void(ErrorCode error_code)>;
   using AudioStreamFactoryBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<media::mojom::AudioStreamFactory>)>;
   using AudioSystemFactory =
@@ -75,14 +67,8 @@ class AudioControllerImpl : public AudioController,
   void StartCapture(std::string_view device_id) override;
   void StopCapture() override;
   bool is_capturing() const override;
-  base::CallbackListSubscription AddAudioCaptureListener(
-      AudioCaptureCallback callback) override;
-  base::CallbackListSubscription AddAudioEnergyListener(
-      AudioEnergyCallback callback) override;
-  base::CallbackListSubscription AddPlaybackCompletionListener(
-      PlaybackCompletionCallback callback) override;
-  base::CallbackListSubscription AddErrorListener(
-      ErrorCallback callback) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void PlayAudio(base::span<const int16_t> pcm_data,
                  const media::AudioParameters& params,
                  int64_t sequence_number) override;
@@ -111,8 +97,8 @@ class AudioControllerImpl : public AudioController,
 
   static media::AudioParameters GetDefaultPlaybackAudioParameters();
 
-  // Format captured audio is converted to before being delivered to capture
-  // listeners: 16kHz mono PCM16, in chunks of kCaptureChunkDuration.
+  // Format captured audio is converted to before being delivered to observers:
+  // 16kHz mono PCM16, in chunks of kCaptureChunkDuration.
   static media::AudioParameters GetBackendInputAudioParameters();
 
   static AudioStreamFactoryBinder GetDefaultAudioStreamFactoryBinder();
@@ -148,12 +134,7 @@ class AudioControllerImpl : public AudioController,
   AudioSystemFactory audio_system_factory_;
   std::unique_ptr<media::AudioSystem> audio_system_;
 
-  base::RepeatingCallbackList<void(base::span<const int16_t>,
-                                   const media::AudioParameters&)>
-      capture_callbacks_;
-  base::RepeatingCallbackList<void(float)> energy_callbacks_;
-  base::RepeatingCallbackList<void(int64_t)> completion_callbacks_;
-  base::RepeatingCallbackList<void(ErrorCode)> error_callbacks_;
+  base::ObserverList<Observer> observers_;
 
   base::RepeatingCallback<
       void(std::vector<int16_t>, media::AudioParameters, float)>
@@ -171,7 +152,7 @@ class AudioControllerImpl : public AudioController,
   // `capture_converter_` is only needed when the audio service doesn't already
   // deliver audio in GetBackendInputAudioParameters() format.
   std::unique_ptr<CaptureConverter> capture_converter_;
-  // Re-buffers converted audio into the chunk size delivered to listeners.
+  // Re-buffers converted audio into the chunk size delivered to observers.
   std::unique_ptr<media::AudioPushFifo> capture_fifo_;
 
   std::unique_ptr<audio::OutputDevice> output_device_;

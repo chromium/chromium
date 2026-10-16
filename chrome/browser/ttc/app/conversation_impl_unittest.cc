@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/app/conversation_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -68,7 +69,9 @@ class FakeSessionController : public SessionController {
     }
     return tools;
   }
-  void UserAudioLevelUpdate(float audio_level) override {}
+  void UserAudioLevelUpdate(float audio_level) override {
+    last_audio_level_ = audio_level;
+  }
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
   void SendTextInput(const std::string& text) override {}
@@ -89,6 +92,7 @@ class FakeSessionController : public SessionController {
   void EndSessionAsync() override { ++end_session_count_; }
 
   const ToolRequest& last_request() const { return last_request_; }
+  std::optional<float> last_audio_level() const { return last_audio_level_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
   int error_count() const { return error_count_; }
   int end_session_count() const { return end_session_count_; }
@@ -111,6 +115,7 @@ class FakeSessionController : public SessionController {
  private:
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
+  std::optional<float> last_audio_level_;
   std::optional<ErrorCode> last_error_;
   int error_count_ = 0;
   int end_session_count_ = 0;
@@ -307,6 +312,25 @@ TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {
   }
   audio_controller().Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
   run_loop.Run();
+}
+
+TEST_F(ConversationImplTest, CapturedAudioLevelReportedToSession) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(backend(), SendAudioChunk(testing::_)).WillOnce([&run_loop] {
+    run_loop.Quit();
+  });
+
+  auto bus = media::AudioBus::Create(1, 1600);
+  constexpr float kAmplitude = 0.25f;
+  std::ranges::fill(bus->channel(0), kAmplitude);
+  audio_controller().Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  run_loop.Run();
+
+  ASSERT_TRUE(session_controller_.last_audio_level().has_value());
+  EXPECT_FLOAT_EQ(*session_controller_.last_audio_level(), kAmplitude);
 }
 
 TEST_F(ConversationImplTest, OnPlaybackCompletedReportsStatus) {

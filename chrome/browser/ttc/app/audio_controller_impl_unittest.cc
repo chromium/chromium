@@ -37,6 +37,22 @@
 
 namespace ttc {
 
+namespace {
+
+class MockAudioControllerObserver : public AudioController::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnCapturedAudio,
+              (base::span<const int16_t> pcm_data,
+               const media::AudioParameters& params,
+               float energy),
+              (override));
+  MOCK_METHOD(void, OnPlaybackCompleted, (int64_t sequence_number), (override));
+  MOCK_METHOD(void, OnAudioError, (ErrorCode error), (override));
+};
+
+}  // namespace
+
 class AudioControllerImplTest : public testing::Test {
  public:
   AudioControllerImplTest() {
@@ -63,29 +79,32 @@ class AudioControllerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   media::MockAudioManager audio_manager_{
       std::make_unique<media::TestAudioThread>()};
+  // Outlives the AudioControllerImpl created by each test.
+  testing::NiceMock<MockAudioControllerObserver> observer_;
 };
 
 TEST_F(AudioControllerImplTest, LoopbackCaptureToPlayback) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   std::vector<int16_t> captured_pcm;
   base::RunLoop capture_loop;
-  auto capture_sub = controller.AddAudioCaptureListener(
-      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
-                                     const media::AudioParameters& params) {
+  EXPECT_CALL(observer_, OnCapturedAudio)
+      .WillOnce([&](base::span<const int16_t> pcm_data,
+                    const media::AudioParameters& params, float energy) {
         captured_pcm.assign(pcm_data.begin(), pcm_data.end());
         // Feed mic input directly into playback (loopback)
         controller.PlayAudio(pcm_data, params, /*sequence_number=*/101);
         capture_loop.Quit();
-      }));
+      });
 
   int64_t completed_seq = -1;
   base::RunLoop completion_loop;
-  auto completion_sub = controller.AddPlaybackCompletionListener(
-      base::BindLambdaForTesting([&](int64_t sequence_number) {
+  EXPECT_CALL(observer_, OnPlaybackCompleted)
+      .WillOnce([&](int64_t sequence_number) {
         completed_seq = sequence_number;
         completion_loop.Quit();
-      }));
+      });
 
   const int frames = 1600;
   auto input_bus = media::AudioBus::Create(1, frames);
@@ -121,11 +140,12 @@ TEST_F(AudioControllerImplTest, LoopbackCaptureToPlayback) {
 
 TEST_F(AudioControllerImplTest, LoopbackWithDelay) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   base::RunLoop capture_loop;
-  auto capture_sub = controller.AddAudioCaptureListener(
-      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
-                                     const media::AudioParameters& params) {
+  EXPECT_CALL(observer_, OnCapturedAudio)
+      .WillOnce([&](base::span<const int16_t> pcm_data,
+                    const media::AudioParameters& params, float energy) {
         std::vector<int16_t> pcm_copy(pcm_data.begin(), pcm_data.end());
         // Delayed loopback after 50ms
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -137,7 +157,7 @@ TEST_F(AudioControllerImplTest, LoopbackWithDelay) {
                 }),
             base::Milliseconds(50));
         capture_loop.Quit();
-      }));
+      });
 
   const int frames = 1600;
   auto input_bus = media::AudioBus::Create(1, frames);
@@ -166,16 +186,16 @@ TEST_F(AudioControllerImplTest, LoopbackWithDelay) {
 
 TEST_F(AudioControllerImplTest, AudioEnergyCalculation) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   float last_energy = -1.0f;
   base::RunLoop energy_loop;
-  auto energy_sub = controller.AddAudioEnergyListener(
-      base::BindLambdaForTesting([&](float energy) {
+  EXPECT_CALL(observer_, OnCapturedAudio)
+      .WillOnce([&](base::span<const int16_t> pcm_data,
+                    const media::AudioParameters& params, float energy) {
         last_energy = energy;
-        if (energy > 0.0f) {
-          energy_loop.Quit();
-        }
-      }));
+        energy_loop.Quit();
+      });
 
   const int frames = 1600;
   auto input_bus = media::AudioBus::Create(1, frames);
@@ -187,10 +207,6 @@ TEST_F(AudioControllerImplTest, AudioEnergyCalculation) {
   energy_loop.Run();
 
   EXPECT_NEAR(last_energy, 0.5f, 0.01f);
-
-  // Clear playback queue should reset energy to 0.0
-  controller.ClearPlaybackQueue();
-  EXPECT_EQ(last_energy, 0.0f);
 }
 
 TEST_F(AudioControllerImplTest, PlaybackQueueClearing) {
@@ -216,17 +232,17 @@ TEST_F(AudioControllerImplTest, PlaybackQueueClearing) {
 
 TEST_F(AudioControllerImplTest, PartialFrameRendering) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   // 1000 frames of PCM16 mono (2000 bytes)
   std::vector<int16_t> samples(1000, 10000);
 
   int64_t completed_seq = -1;
   base::RunLoop completion_loop;
-  auto completion_sub = controller.AddPlaybackCompletionListener(
-      base::BindLambdaForTesting([&](int64_t seq) {
-        completed_seq = seq;
-        completion_loop.Quit();
-      }));
+  EXPECT_CALL(observer_, OnPlaybackCompleted).WillOnce([&](int64_t seq) {
+    completed_seq = seq;
+    completion_loop.Quit();
+  });
 
   controller.PlayAudio(samples, /*sequence_number=*/456);
 
@@ -334,14 +350,14 @@ TEST_F(AudioControllerImplTest,
         binder_called = true;
       });
   AudioControllerImpl controller(fake_binder, GetAudioSystemFactory());
+  controller.AddObserver(&observer_);
 
   std::vector<ErrorCode> errors;
   base::RunLoop error_loop;
-  auto error_sub = controller.AddErrorListener(
-      base::BindLambdaForTesting([&](ErrorCode error) {
-        errors.push_back(error);
-        error_loop.Quit();
-      }));
+  EXPECT_CALL(observer_, OnAudioError).WillOnce([&](ErrorCode error) {
+    errors.push_back(error);
+    error_loop.Quit();
+  });
 
   controller.StartCapture(/*device_id=*/"");
   error_loop.Run();
@@ -352,13 +368,14 @@ TEST_F(AudioControllerImplTest,
   EXPECT_FALSE(binder_called);
 }
 
-TEST_F(AudioControllerImplTest,
-       CaptureErrorsAreConvertedAndPostedToListeners) {
+TEST_F(AudioControllerImplTest, CaptureErrorsAreConvertedAndPostedToObservers) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   std::vector<ErrorCode> errors;
-  auto error_sub = controller.AddErrorListener(base::BindLambdaForTesting(
-      [&](ErrorCode error) { errors.push_back(error); }));
+  EXPECT_CALL(observer_, OnAudioError).WillRepeatedly([&](ErrorCode error) {
+    errors.push_back(error);
+  });
 
   const struct {
     media::AudioCapturerSource::ErrorCode capture_error;
@@ -391,10 +408,9 @@ TEST_F(AudioControllerImplTest,
 TEST_F(AudioControllerImplTest,
        CaptureErrorIsDroppedIfControllerIsDestroyed) {
   auto controller = std::make_unique<AudioControllerImpl>();
+  controller->AddObserver(&observer_);
 
-  bool error_reported = false;
-  auto error_sub = controller->AddErrorListener(
-      base::BindLambdaForTesting([&](ErrorCode) { error_reported = true; }));
+  EXPECT_CALL(observer_, OnAudioError).Times(0);
 
   controller->OnCaptureError(media::AudioCapturerSource::ErrorCode::kUnknown,
                              "error");
@@ -404,8 +420,6 @@ TEST_F(AudioControllerImplTest,
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
-
-  EXPECT_FALSE(error_reported);
 }
 
 class FakeStreamFactoryForAec : public media::mojom::AudioStreamFactory {
@@ -614,19 +628,20 @@ TEST_F(AudioControllerImplTest, HardwareLackingAecEngagesSoftwareAec) {
 TEST_F(AudioControllerImplTest,
        FifoAggregatesTen10msChunksIntoOne100msChunk) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   int callback_count = 0;
   std::vector<int16_t> delivered_pcm;
   base::RunLoop capture_loop;
-  auto capture_sub = controller.AddAudioCaptureListener(
-      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
-                                     const media::AudioParameters& params) {
+  EXPECT_CALL(observer_, OnCapturedAudio)
+      .WillRepeatedly([&](base::span<const int16_t> pcm_data,
+                          const media::AudioParameters& params, float energy) {
         callback_count++;
         delivered_pcm.assign(pcm_data.begin(), pcm_data.end());
         EXPECT_EQ(params.sample_rate(), 16000);
         EXPECT_EQ(params.frames_per_buffer(), 1600);
         capture_loop.Quit();
-      }));
+      });
 
   // Deliver nine 10ms chunks (160 frames each at 16kHz) -> total 1440 frames.
   // Should NOT trigger delivery yet (1600 required).
@@ -648,12 +663,13 @@ TEST_F(AudioControllerImplTest,
 
 TEST_F(AudioControllerImplTest, StopCaptureFlushesFifo) {
   AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
 
   int callback_count = 0;
-  auto capture_sub =
-      controller.AddAudioCaptureListener(base::BindLambdaForTesting(
-          [&](base::span<const int16_t> pcm_data,
-              const media::AudioParameters& params) { callback_count++; }));
+  EXPECT_CALL(observer_, OnCapturedAudio)
+      .WillRepeatedly([&](base::span<const int16_t> pcm_data,
+                          const media::AudioParameters& params,
+                          float energy) { callback_count++; });
 
   // Push partial audio into FIFO (5 chunks of 160 frames = 800 frames).
   auto chunk_bus = media::AudioBus::Create(1, 160);

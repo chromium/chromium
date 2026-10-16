@@ -9,9 +9,8 @@
 
 #include <string_view>
 
-#include "base/callback_list.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "media/base/audio_parameters.h"
 
@@ -24,16 +23,27 @@ namespace ttc {
 // Conversation to allow e.g. iOS to provide their own AudioController.
 class AudioController {
  public:
-  // `pcm_data` holds signed 16-bit interleaved PCM samples.
-  using AudioCaptureCallback =
-      base::RepeatingCallback<void(base::span<const int16_t> pcm_data,
-                                   const media::AudioParameters& params)>;
-  using AudioEnergyCallback = base::RepeatingCallback<void(float energy)>;
-  using PlaybackCompletionCallback =
-      base::RepeatingCallback<void(int64_t sequence_number)>;
-  using ErrorCallback = base::RepeatingCallback<void(ErrorCode error_code)>;
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called with each chunk of captured microphone audio. Audio is always
+    // delivered in AudioControllerImpl::GetBackendInputAudioParameters()
+    // format (16kHz mono PCM16), and energy is its RMS energy (0.0 to 1.0)
+    // for visualizer UI.
+    virtual void OnCapturedAudio(base::span<const int16_t> pcm_data,
+                                 const media::AudioParameters& params,
+                                 float energy) {}
+
+    // Called when an audio chunk sequence finishes playback.
+    virtual void OnPlaybackCompleted(int64_t sequence_number) {}
+
+    // Called when an audio capture error occurs.
+    virtual void OnAudioError(ErrorCode error) {}
+  };
 
   virtual ~AudioController() = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // --- Audio Capture (Microphone Input) ---
 
@@ -43,25 +53,6 @@ class AudioController {
   virtual void StartCapture(std::string_view device_id) = 0;
   virtual void StopCapture() = 0;
   virtual bool is_capturing() const = 0;
-
-  // Subscribes to incoming captured audio frames. Audio is always delivered in
-  // AudioControllerImpl::GetBackendInputAudioParameters() format (16kHz mono
-  // PCM16).
-  virtual base::CallbackListSubscription AddAudioCaptureListener(
-      AudioCaptureCallback callback) = 0;
-
-  // Subscribes to calculated RMS audio energy (0.0 to 1.0) of captured
-  // microphone audio for visualizer UI.
-  virtual base::CallbackListSubscription AddAudioEnergyListener(
-      AudioEnergyCallback callback) = 0;
-
-  // Subscribes to notifications when an audio chunk sequence finishes playback.
-  virtual base::CallbackListSubscription AddPlaybackCompletionListener(
-      PlaybackCompletionCallback callback) = 0;
-
-  // Subscribes to notifications when an audio capture error occurs.
-  virtual base::CallbackListSubscription AddErrorListener(
-      ErrorCallback callback) = 0;
 
   // --- Audio Playback (Speaker Output) ---
 

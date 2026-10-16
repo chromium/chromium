@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "components/ttc/app/ttc_backend.h"
@@ -35,7 +35,9 @@ class SessionController;
 // Manages a voice/multimodal conversation session with the TTC model.
 // Wires AudioController to TtcBackend for bidirectional streaming, handling
 // speech capture, audio playback, interruptions, transcripts, and tools.
-class ConversationImpl : public Conversation, public TtcBackend::Observer {
+class ConversationImpl : public Conversation,
+                         public AudioController::Observer,
+                         public TtcBackend::Observer {
  public:
   // `backend` and `audio_controller` are required and provided to enable
   // dependency injection in tests. Use MakeConversationImpl() to create a
@@ -58,6 +60,13 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void OnPageContextInvalidated() override;
 
+  // AudioController::Observer implementation:
+  void OnCapturedAudio(base::span<const int16_t> pcm_data,
+                       const media::AudioParameters& params,
+                       float energy) override;
+  void OnPlaybackCompleted(int64_t sequence_number) override;
+  void OnAudioError(ErrorCode error) override;
+
   // TtcBackend::Observer implementation:
   void OnBackendInitialized() override;
   void OnBackendClosed() override;
@@ -77,21 +86,14 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   TtcBackend* backend() { return backend_.get(); }
 
  private:
-  void OnCapturedAudio(base::span<const int16_t> pcm_data,
-                       const media::AudioParameters& params);
-  void OnAudioEnergy(float energy);
-  void OnPlaybackCompleted(int64_t sequence_number);
-
   std::unique_ptr<TtcBackend> backend_;
   std::unique_ptr<AudioController> audio_controller_;
 
   // Safe because the SessionController owns this object.
   const raw_ref<SessionController> session_controller_;
 
-  base::CallbackListSubscription audio_capture_subscription_;
-  base::CallbackListSubscription audio_energy_subscription_;
-  base::CallbackListSubscription playback_completion_subscription_;
-  base::CallbackListSubscription audio_capture_error_subscription_;
+  base::ScopedObservation<AudioController, AudioController::Observer>
+      audio_controller_observation_{this};
 };
 
 }  // namespace ttc

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/session_controller.h"
@@ -34,18 +33,7 @@ ConversationImpl::~ConversationImpl() {
 }
 
 void ConversationImpl::Start() {
-  audio_capture_subscription_ =
-      audio_controller_->AddAudioCaptureListener(base::BindRepeating(
-          &ConversationImpl::OnCapturedAudio, base::Unretained(this)));
-  audio_energy_subscription_ =
-      audio_controller_->AddAudioEnergyListener(base::BindRepeating(
-          &ConversationImpl::OnAudioEnergy, base::Unretained(this)));
-  playback_completion_subscription_ =
-      audio_controller_->AddPlaybackCompletionListener(base::BindRepeating(
-          &ConversationImpl::OnPlaybackCompleted, base::Unretained(this)));
-  audio_capture_error_subscription_ =
-      audio_controller_->AddErrorListener(base::BindRepeating(
-          &ConversationImpl::OnBackendError, base::Unretained(this)));
+  audio_controller_observation_.Observe(audio_controller_.get());
   audio_controller_->StartCapture(/*device_id=*/"");
 
   backend_->Connect(this);
@@ -57,10 +45,7 @@ void ConversationImpl::Start() {
 }
 
 void ConversationImpl::Stop() {
-  audio_capture_subscription_ = {};
-  audio_energy_subscription_ = {};
-  playback_completion_subscription_ = {};
-  audio_capture_error_subscription_ = {};
+  audio_controller_observation_.Reset();
 
   audio_controller_->StopCapture();
   audio_controller_->StopPlayback();
@@ -86,16 +71,18 @@ void ConversationImpl::OnPageContextInvalidated() {
 }
 
 void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
-                                       const media::AudioParameters& params) {
+                                       const media::AudioParameters& params,
+                                       float energy) {
   backend_->SendAudioChunk(pcm_data);
-}
-
-void ConversationImpl::OnAudioEnergy(float energy) {
   session_controller_->UserAudioLevelUpdate(energy);
 }
 
 void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
   backend_->ReportPlaybackStatus(sequence_number);
+}
+
+void ConversationImpl::OnAudioError(ErrorCode error) {
+  session_controller_->OnError(error);
 }
 
 void ConversationImpl::OnBackendInitialized() {

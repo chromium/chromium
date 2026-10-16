@@ -10,16 +10,16 @@
 #include <string_view>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "media/base/audio_parameters.h"
 
 namespace ttc {
 
 // An in-memory AudioController for testing and evaluation harnesses.
-// Injects canned audio input into capture listeners and records downstream
+// Injects canned audio input into observers and records downstream
 // playback audio into an in-memory buffer.
 class EvalAudioController : public AudioController {
  public:
@@ -31,14 +31,8 @@ class EvalAudioController : public AudioController {
   void StopCapture() override;
   bool is_capturing() const override;
 
-  base::CallbackListSubscription AddAudioCaptureListener(
-      AudioCaptureCallback callback) override;
-  base::CallbackListSubscription AddAudioEnergyListener(
-      AudioEnergyCallback callback) override;
-  base::CallbackListSubscription AddPlaybackCompletionListener(
-      PlaybackCompletionCallback callback) override;
-  base::CallbackListSubscription AddErrorListener(
-      ErrorCallback callback) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
   void PlayAudio(base::span<const int16_t> pcm_data,
                  const media::AudioParameters& params,
@@ -50,7 +44,7 @@ class EvalAudioController : public AudioController {
   void StopPlayback() override;
   bool is_playing() const override;
 
-  // Injects PCM16 mono 16 kHz audio samples into capture listeners.
+  // Injects PCM16 mono 16 kHz audio samples into observers.
   void InjectCapturedAudio(base::span<const int16_t> pcm_data);
 
   const std::vector<int16_t>& recorded_audio() const { return recorded_audio_; }
@@ -66,12 +60,7 @@ class EvalAudioController : public AudioController {
 
   std::vector<int16_t> recorded_audio_;
 
-  base::RepeatingCallbackList<void(base::span<const int16_t>,
-                                   const media::AudioParameters&)>
-      capture_callbacks_;
-  base::RepeatingCallbackList<void(float)> energy_callbacks_;
-  base::RepeatingCallbackList<void(int64_t)> completion_callbacks_;
-  base::RepeatingCallbackList<void(ErrorCode)> error_callbacks_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<EvalAudioController> weak_factory_{this};
 };

@@ -279,7 +279,8 @@ void AudioControllerImpl::OnInputDeviceParametersReceived(
     VLOG(1) << "AudioController: no parameters for capture device "
             << device_id;
     capture_requested_ = false;
-    error_callbacks_.Notify(ErrorCode::kAudioNoMicrophoneDetected);
+    observers_.Notify(&Observer::OnAudioError,
+                      ErrorCode::kAudioNoMicrophoneDetected);
     return;
   }
 
@@ -339,25 +340,12 @@ bool AudioControllerImpl::is_capturing() const {
   return capture_requested_;
 }
 
-base::CallbackListSubscription AudioControllerImpl::AddAudioCaptureListener(
-    AudioCaptureCallback callback) {
-  return capture_callbacks_.Add(std::move(callback));
+void AudioControllerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
 }
 
-base::CallbackListSubscription AudioControllerImpl::AddAudioEnergyListener(
-    AudioEnergyCallback callback) {
-  return energy_callbacks_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription
-AudioControllerImpl::AddPlaybackCompletionListener(
-    PlaybackCompletionCallback callback) {
-  return completion_callbacks_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription AudioControllerImpl::AddErrorListener(
-    ErrorCallback callback) {
-  return error_callbacks_.Add(std::move(callback));
+void AudioControllerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
@@ -385,7 +373,6 @@ void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
 void AudioControllerImpl::ClearPlaybackQueue() {
   base::AutoLock auto_lock(playback_lock_);
   playback_queue_.clear();
-  energy_callbacks_.Notify(0.0f);
 }
 
 void AudioControllerImpl::StopPlayback() {
@@ -478,8 +465,7 @@ void AudioControllerImpl::OnCapturedAudioOnMainThread(
     std::vector<int16_t> pcm_data,
     media::AudioParameters params,
     float energy) {
-  capture_callbacks_.Notify(pcm_data, params);
-  energy_callbacks_.Notify(energy);
+  observers_.Notify(&Observer::OnCapturedAudio, pcm_data, params, energy);
 }
 
 int AudioControllerImpl::Render(base::TimeDelta delay,
@@ -547,12 +533,12 @@ void AudioControllerImpl::OnRenderError() {
 void AudioControllerImpl::OnAudioRenderedOnMainThread(
     int64_t completed_sequence) {
   if (completed_sequence >= 0) {
-    completion_callbacks_.Notify(completed_sequence);
+    observers_.Notify(&Observer::OnPlaybackCompleted, completed_sequence);
   }
 }
 
 void AudioControllerImpl::OnAudioErrorOnMainThread(ErrorCode error_code) {
-  error_callbacks_.Notify(error_code);
+  observers_.Notify(&Observer::OnAudioError, error_code);
 }
 
 }  // namespace ttc
