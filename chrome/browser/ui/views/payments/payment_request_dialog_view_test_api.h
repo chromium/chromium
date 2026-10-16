@@ -11,6 +11,10 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace payments {
 
 class PaymentRequestDialogViewTestApi {
@@ -37,6 +41,10 @@ class PaymentRequestDialogViewTestApi {
   PaymentAppLoadingView* loading_view_overlay() {
     return view_->loading_view_overlay_;
   }
+
+  // Returns the WebContents of the payment handler window, which must be the
+  // top view on the stack.
+  content::WebContents* GetPaymentHandlerWebContents();
 
   void RemoveLoadingView() { view_->RemoveLoadingView(); }
 

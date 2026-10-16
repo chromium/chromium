@@ -1310,6 +1310,7 @@ SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate() {
 bool ContentBrowserClient::ShowPaymentHandlerWindow(
     content::BrowserContext* browser_context,
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     base::OnceCallback<void(bool, int, int)> callback) {
   DCHECK(browser_context);
   return false;

@@ -60,6 +60,7 @@ class ServiceWorkerHostInterceptor
   blink::mojom::ServiceWorkerHost* GetForwardingInterface() override;
   void OpenPaymentHandlerWindow(
       const GURL& url,
+      blink::mojom::PaymentHandlerOpenWindowOptionsPtr options,
       OpenPaymentHandlerWindowCallback callback) override;
 
   void FindRegistration(scoped_refptr<ServiceWorkerContextWrapper> context,

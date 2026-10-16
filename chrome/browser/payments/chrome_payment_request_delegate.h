@@ -21,6 +21,10 @@ namespace autofill {
 class RegionDataLoader;
 }  // namespace autofill
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace payments {
 
 class PaymentRequestDialog;
@@ -62,6 +66,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   PaymentRequestDisplayManager* GetDisplayManager() override;
   void EmbedPaymentHandlerWindow(
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       PaymentHandlerOpenWindowCallback callback) override;
   bool IsInteractive() const override;
   std::string GetInvalidSslCertificateErrorMessage() override;

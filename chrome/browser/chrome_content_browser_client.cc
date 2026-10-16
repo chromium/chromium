@@ -7748,13 +7748,15 @@ content::SmartCardDelegate* ChromeContentBrowserClient::GetSmartCardDelegate() {
 bool ChromeContentBrowserClient::ShowPaymentHandlerWindow(
     content::BrowserContext* browser_context,
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     base::OnceCallback<void(bool, int, int)> callback) {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   payments::PaymentRequestDisplayManagerFactory::GetInstance()
       ->GetForBrowserContext(browser_context)
-      ->ShowPaymentHandlerWindow(url, std::move(callback));
+      ->ShowPaymentHandlerWindow(url, preferred_web_contents_size,
+                                 std::move(callback));
   return true;
 #endif
 }

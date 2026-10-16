@@ -21,6 +21,7 @@
 namespace blink {
 
 class ExceptionState;
+class PaymentHandlerOpenWindowOptions;
 class PaymentHandlerResponse;
 class PaymentRequestDetailsUpdate;
 class PaymentRequestRespondWithObserver;
@@ -68,7 +69,8 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
 
   ScriptPromise<IDLNullable<ServiceWorkerWindowClient>> openWindow(
       ScriptState*,
-      const String& url);
+      const String& url,
+      const PaymentHandlerOpenWindowOptions* options);
   ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>> changePaymentMethod(
       ScriptState*,
       const String& method_name,

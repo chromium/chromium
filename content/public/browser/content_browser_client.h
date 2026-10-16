@@ -154,6 +154,7 @@ class LocationProvider;
 
 namespace gfx {
 class ImageSkia;
+class Size;
 }  // namespace gfx
 
 namespace media {
@@ -2338,6 +2339,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShowPaymentHandlerWindow(
       content::BrowserContext* browser_context,
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       base::OnceCallback<void(bool /* success */,
                               int /* render_process_id */,
                               int /* render_frame_id */)> callback);

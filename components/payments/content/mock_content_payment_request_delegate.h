@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_MOCK_CONTENT_PAYMENT_REQUEST_DELEGATE_H_
 #define COMPONENTS_PAYMENTS_CONTENT_MOCK_CONTENT_PAYMENT_REQUEST_DELEGATE_H_
 
+#include <optional>
+
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/core/web_payments_web_data_service.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace payments {
 
@@ -42,7 +45,9 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   MOCK_METHOD(PaymentRequestDisplayManager*, GetDisplayManager, (), (override));
   MOCK_METHOD(void,
               EmbedPaymentHandlerWindow,
-              (const GURL& url, PaymentHandlerOpenWindowCallback callback),
+              (const GURL& url,
+               const std::optional<gfx::Size>& preferred_web_contents_size,
+               PaymentHandlerOpenWindowCallback callback),
               (override));
   MOCK_METHOD(bool, IsInteractive, (), (override, const));
   MOCK_METHOD(std::string,

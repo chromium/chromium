@@ -4965,6 +4965,11 @@
       base_feature: "none",
     },
     {
+      // Lets a payment app set the size of its Payment Handler window through
+      // the `preferredSize` option of PaymentRequestEvent.openWindow().
+      name: "PaymentHandlerStaticCustomSize",
+    },
+    {
       // https://chromestatus.com/feature/5198846820352000
       name: "PaymentLinkDetection",
       status: "stable",

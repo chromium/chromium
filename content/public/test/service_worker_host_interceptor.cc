@@ -49,11 +49,12 @@ ServiceWorkerHostInterceptor::GetForwardingInterface() {
 
 void ServiceWorkerHostInterceptor::OpenPaymentHandlerWindow(
     const GURL& url,
+    blink::mojom::PaymentHandlerOpenWindowOptionsPtr options,
     OpenPaymentHandlerWindowCallback callback) {
   GURL url_copy = url;
   if (WillOpenPaymentHandlerWindow(&url_copy)) {
-    GetForwardingInterface()->OpenPaymentHandlerWindow(url_copy,
-                                                       std::move(callback));
+    GetForwardingInterface()->OpenPaymentHandlerWindow(
+        url_copy, std::move(options), std::move(callback));
   }
 }
 

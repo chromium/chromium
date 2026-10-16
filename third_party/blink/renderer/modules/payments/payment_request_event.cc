@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -14,6 +15,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_open_window_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_preferred_size.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_response.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_data.h"
@@ -32,6 +35,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -211,7 +215,10 @@ PaymentRequestEvent::shippingOptions() const {
 }
 
 ScriptPromise<IDLNullable<ServiceWorkerWindowClient>>
-PaymentRequestEvent::openWindow(ScriptState* script_state, const String& url) {
+PaymentRequestEvent::openWindow(
+    ScriptState* script_state,
+    const String& url,
+    const PaymentHandlerOpenWindowOptions* options) {
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLNullable<ServiceWorkerWindowClient>>>(
       script_state);
@@ -233,6 +240,26 @@ PaymentRequestEvent::openWindow(ScriptState* script_state, const String& url) {
     return promise;
   }
 
+  // `preferredSize` is the size that the payment app would like for its
+  // WebContents and the browser does not guarantee this size. The bindings
+  // reject a `preferredSize` that is missing `width` or `height`, and never set
+  // `preferredSize` when the PaymentHandlerStaticCustomSize feature is
+  // disabled. Both width and height need to be positive integer, otherwise a
+  // type error will be thrown.
+  auto mojo_options = mojom::blink::PaymentHandlerOpenWindowOptions::New();
+  if (options->hasPreferredSize()) {
+    const PaymentHandlerPreferredSize* preferred_size =
+        options->preferredSize();
+    if (preferred_size->width() <= 0 || preferred_size->height() <= 0) {
+      resolver->Reject(V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(),
+          "preferredSize width and height must be greater than 0."));
+      return promise;
+    }
+    mojo_options->preferred_inner_size =
+        gfx::Size(preferred_size->width(), preferred_size->height());
+  }
+
   if (!context->GetSecurityOrigin()->IsSameOriginWith(
           SecurityOrigin::Create(parsed_url_to_open).get())) {
     resolver->Resolve(nullptr);
@@ -250,7 +277,7 @@ PaymentRequestEvent::openWindow(ScriptState* script_state, const String& url) {
   To<ServiceWorkerGlobalScope>(context)
       ->GetServiceWorkerHost()
       ->OpenPaymentHandlerWindow(
-          parsed_url_to_open,
+          parsed_url_to_open, std::move(mojo_options),
           ServiceWorkerWindowClient::CreateResolveWindowClientCallback(
               resolver));
   return promise;

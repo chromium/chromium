@@ -29,6 +29,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_object.mojo
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -43,6 +44,17 @@ enum FocusError {
 union FocusResult {
   ServiceWorkerClientInfo client;
   FocusError error_code;
+};
+
+// Options for ServiceWorkerHost.OpenPaymentHandlerWindow(). Corresponds to the
+// PaymentHandlerOpenWindowOptions dictionary of
+// PaymentRequestEvent#openWindow(url, options).
+// This is experimental and not spec'd (or enabled) yet.
+struct PaymentHandlerOpenWindowOptions {
+  // The payment app's preferred inner size (i.e. the size of the window's
+  // content area, excluding browser UI) for the window, or null if it did not
+  // set one. It is a hint; the browser may use a different size.
+  gfx.mojom.Size? preferred_inner_size;
 };
 
 // Host for a running service worker execution context. Implemented in the
@@ -78,16 +90,18 @@ interface ServiceWorkerHost {
   OpenNewTab(url.mojom.Url url)
     => (bool success, ServiceWorkerClientInfo? client, string? error_msg);
 
-  // Corresponds to PaymentRequestEvent#openWindow(url).
+  // Corresponds to PaymentRequestEvent#openWindow(url, options).
   // Spec: https://w3c.github.io/payment-handler/#openwindow-method
-  // Requests the browser to open a payment handler window with |url|.
+  // Requests the browser to open a payment handler window with |url| and
+  // |options|.
   // If the window was successfully opened, |success| is true. |client| contains
   // information about the newly opened window, but may be null if that
   // information could not be obtained (this can happen for a cross-origin
   // window, or if the browser process could not get the information in time
   // before the window was closed).
   // If |success| is false, |error_msg| describes the failure.
-  OpenPaymentHandlerWindow(url.mojom.Url url)
+  OpenPaymentHandlerWindow(url.mojom.Url url,
+                           PaymentHandlerOpenWindowOptions options)
     => (bool success, ServiceWorkerClientInfo? client, string? error_msg);
 
   // Corresponds to Client#postMessage(). Requests the browser to post |message|

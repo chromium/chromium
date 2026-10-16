@@ -10,6 +10,10 @@
 
 class GURL;
 
+namespace gfx {
+class Size;
+}
+
 namespace content {
 
 class ServiceWorkerContextCore;
@@ -34,6 +38,7 @@ class PaymentHandlerSupport {
   // a normal window.
   static void ShowPaymentHandlerWindow(
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       ServiceWorkerContextCore* context,
       ShowPaymentHandlerWindowCallback callback,
       OpenWindowFallback fallback,

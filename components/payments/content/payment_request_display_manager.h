@@ -14,6 +14,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace gfx {
+class Size;
+}
+
 namespace payments {
 
 class ContentPaymentRequestDelegate;
@@ -62,8 +66,10 @@ class PaymentRequestDisplayManager : public KeyedService {
     // Attempt to display |url| inside the Payment Request dialog and run
     // |callback| after navigation is completed, passing true/false to indicate
     // success/failure.
-    void DisplayPaymentHandlerWindow(const GURL& url,
-                                     PaymentHandlerOpenWindowCallback callback);
+    void DisplayPaymentHandlerWindow(
+        const GURL& url,
+        const std::optional<gfx::Size>& preferred_web_contents_size,
+        PaymentHandlerOpenWindowCallback callback);
 
     // Set the expected origin of the payment handler.
     void SetPaymentHandlerOrigin(std::optional<url::Origin> origin);
@@ -101,8 +107,10 @@ class PaymentRequestDisplayManager : public KeyedService {
   // opening it failed.
   std::unique_ptr<DisplayHandle> TryShow(
       base::WeakPtr<ContentPaymentRequestDelegate> delegate);
-  void ShowPaymentHandlerWindow(const GURL& url,
-                                PaymentHandlerOpenWindowCallback callback);
+  void ShowPaymentHandlerWindow(
+      const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
+      PaymentHandlerOpenWindowCallback callback);
 
   base::WeakPtr<PaymentRequestDisplayManager> GetWeakPtr();
 

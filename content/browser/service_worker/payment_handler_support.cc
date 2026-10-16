@@ -4,6 +4,8 @@
 
 #include "content/browser/service_worker/payment_handler_support.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -79,6 +81,7 @@ class ShowPaymentHandlerWindowReplier {
 // static
 void PaymentHandlerSupport::ShowPaymentHandlerWindow(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     ServiceWorkerContextCore* context,
     ShowPaymentHandlerWindowCallback callback,
     OpenWindowFallback fallback,
@@ -88,6 +91,7 @@ void PaymentHandlerSupport::ShowPaymentHandlerWindow(
   CHECK(context, base::NotFatalUntil::M159);
   GetContentClient()->browser()->ShowPaymentHandlerWindow(
       context->wrapper()->storage_partition()->browser_context(), url,
+      preferred_web_contents_size,
       base::BindOnce(&ShowPaymentHandlerWindowReplier::Run,
                      std::make_unique<ShowPaymentHandlerWindowReplier>(
                          std::move(callback), std::move(fallback),

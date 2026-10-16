@@ -1036,6 +1036,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void OpenNewTab(const GURL& url, OpenNewTabCallback callback) override;
   void OpenPaymentHandlerWindow(
       const GURL& url,
+      blink::mojom::PaymentHandlerOpenWindowOptionsPtr options,
       OpenPaymentHandlerWindowCallback callback) override;
   void PostMessageToClient(const std::string& client_uuid,
                            blink::TransferableMessage message) override;

@@ -227,6 +227,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common",
     "//ui/base:test_support",
     "//ui/views:test_support",
   ]

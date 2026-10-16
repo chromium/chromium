@@ -7,12 +7,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_open_window_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_preferred_size.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_response.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_respond_with_observer.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -85,6 +91,28 @@ TEST(PaymentRequestEventTest, RespondWithOtherError) {
             CreateAndRespondToPaymentRequestEvent(
                 scope, MakeGarbageCollected<DOMException>(
                            DOMExceptionCode::kAbortError, "test error")));
+}
+
+TEST(PaymentRequestEventTest, OpenWindowRejectsNonPositivePreferredSize) {
+  test::TaskEnvironment task_environment;
+  // Like a real payment app, open a window at the app's own origin.
+  V8TestingScope scope(KURL("https://payment-app.example/"));
+  auto* event = PaymentRequestEvent::Create(event_type_names::kPaymentrequest,
+                                            PaymentRequestEventInit::Create());
+  event->SetTrusted(true);
+  auto* preferred_size = PaymentHandlerPreferredSize::Create();
+  preferred_size->setWidth(-400);
+  preferred_size->setHeight(-400);
+  auto* options = PaymentHandlerOpenWindowOptions::Create();
+  options->setPreferredSize(preferred_size);
+
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      event->openWindow(scope.GetScriptState(),
+                        "https://payment-app.example/window", options));
+  tester.WaitUntilSettled();
+  EXPECT_EQ("TypeError: preferredSize width and height must be greater than 0.",
+            tester.ValueAsString());
 }
 
 }  // namespace

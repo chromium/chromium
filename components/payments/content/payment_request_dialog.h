@@ -9,6 +9,10 @@
 
 class GURL;
 
+namespace gfx {
+class Size;
+}
+
 namespace payments {
 
 // Used to interact with a cross-platform Payment Request dialog.
@@ -37,6 +41,7 @@ class PaymentRequestDialog {
   // completed, passing true/false to indicate success/failure.
   virtual void ShowPaymentHandlerScreen(
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       PaymentHandlerOpenWindowCallback callback) = 0;
 
   // Confirms payment. Used only in tests.

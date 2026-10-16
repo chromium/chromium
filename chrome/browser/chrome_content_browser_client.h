@@ -97,6 +97,10 @@ enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace net {
 class IsolationInfo;
 class SiteForCookies;
@@ -812,6 +816,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShowPaymentHandlerWindow(
       content::BrowserContext* browser_context,
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       base::OnceCallback<void(bool, int, int)> callback) override;
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore(
       content::BrowserContext* browser_context) override;

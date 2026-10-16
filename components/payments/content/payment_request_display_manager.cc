@@ -93,6 +93,7 @@ void PaymentRequestDisplayManager::DisplayHandle::SetPaymentHandlerOrigin(
 
 void PaymentRequestDisplayManager::DisplayHandle::DisplayPaymentHandlerWindow(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     PaymentHandlerOpenWindowCallback callback) {
   if (!delegate_ || !payment_handler_origin_ ||
       !payment_handler_origin_->IsSameOriginWith(url::Origin::Create(url))) {
@@ -101,7 +102,8 @@ void PaymentRequestDisplayManager::DisplayHandle::DisplayPaymentHandlerWindow(
     return;
   }
 
-  delegate_->EmbedPaymentHandlerWindow(url, std::move(callback));
+  delegate_->EmbedPaymentHandlerWindow(url, preferred_web_contents_size,
+                                       std::move(callback));
 }
 
 base::WeakPtr<PaymentRequestDisplayManager::DisplayHandle>
@@ -134,9 +136,11 @@ PaymentRequestDisplayManager::TryShow(
 
 void PaymentRequestDisplayManager::ShowPaymentHandlerWindow(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     PaymentHandlerOpenWindowCallback callback) {
   if (current_handle_) {
-    current_handle_->DisplayPaymentHandlerWindow(url, std::move(callback));
+    current_handle_->DisplayPaymentHandlerWindow(
+        url, preferred_web_contents_size, std::move(callback));
   } else {
     std::move(callback).Run(false, 0, 0);
   }

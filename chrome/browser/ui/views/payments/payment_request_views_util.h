@@ -45,6 +45,16 @@ inline constexpr int kDialogHeight = 450;
 // Preferred dimensions of the payment handler dialog in pixels.
 inline constexpr int kPreferredPaymentHandlerDialogWidth = 608;
 inline constexpr int kPreferredPaymentHandlerDialogHeight = 600;
+
+// Min/max dimensions of the payment handler dialog in pixels, used when the
+// payment app requests a size through PaymentRequestEvent.openWindow(). The
+// min width is wide enough to show the origin of common payment apps in the
+// header, and the min height fits a select and a pay button.
+inline constexpr int kPaymentHandlerMinDialogWidth = 512;
+inline constexpr int kPaymentHandlerMinDialogHeight = 196;
+inline constexpr int kPaymentHandlerMaxDialogWidth = 800;
+inline constexpr int kPaymentHandlerMaxDialogHeight = 800;
+
 inline constexpr int kPaymentHandlerHeaderHeight = 48;
 inline constexpr int kPaymentHandlerProgressBarHeight = 2;
 

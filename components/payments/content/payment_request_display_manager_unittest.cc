@@ -4,6 +4,8 @@
 
 #include "components/payments/content/payment_request_display_manager.h"
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -13,6 +15,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -132,8 +135,9 @@ TEST_F(PaymentRequestDisplayManagerTest,
   EXPECT_CALL(callback, Run(/*success=*/false, /*render_process_id=*/0,
                             /*render_frame_id=*/0));
 
-  handle->DisplayPaymentHandlerWindow(GURL("https://example.com"),
-                                      callback.Get());
+  handle->DisplayPaymentHandlerWindow(
+      GURL("https://example.com"), /*preferred_web_contents_size=*/std::nullopt,
+      callback.Get());
 }
 
 TEST_F(PaymentRequestDisplayManagerTest,
@@ -148,9 +152,43 @@ TEST_F(PaymentRequestDisplayManagerTest,
   handle->SetPaymentHandlerOrigin(origin);
 
   base::MockCallback<PaymentHandlerOpenWindowCallback> callback;
-  EXPECT_CALL(mock_delegate, EmbedPaymentHandlerWindow(
-                                 GURL("https://example.com/pay"), testing::_))
-      .WillOnce([](const GURL& url, PaymentHandlerOpenWindowCallback cb) {
+  EXPECT_CALL(mock_delegate,
+              EmbedPaymentHandlerWindow(GURL("https://example.com/pay"),
+                                        testing::Eq(std::nullopt), testing::_))
+      .WillOnce([](const GURL& url,
+                   const std::optional<gfx::Size>& preferred_web_contents_size,
+                   PaymentHandlerOpenWindowCallback cb) {
+        std::move(cb).Run(/*success=*/true, /*render_process_id=*/1,
+                          /*render_frame_id=*/2);
+      });
+  EXPECT_CALL(callback, Run(/*success=*/true, /*render_process_id=*/1,
+                            /*render_frame_id=*/2));
+
+  handle->DisplayPaymentHandlerWindow(
+      GURL("https://example.com/pay"),
+      /*preferred_web_contents_size=*/std::nullopt, callback.Get());
+}
+
+TEST_F(PaymentRequestDisplayManagerTest,
+       ShowPaymentHandlerWindow_ForwardsWindowSize) {
+  PaymentRequestDisplayManager display_manager;
+  MockContentPaymentRequestDelegate mock_delegate;
+  std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle> handle =
+      display_manager.TryShow(mock_delegate.GetContentWeakPtr());
+  ASSERT_TRUE(handle);
+
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  handle->SetPaymentHandlerOrigin(origin);
+
+  base::MockCallback<PaymentHandlerOpenWindowCallback> callback;
+  EXPECT_CALL(
+      mock_delegate,
+      EmbedPaymentHandlerWindow(
+          GURL("https://example.com/pay"),
+          testing::Eq(std::make_optional(gfx::Size(640, 650))), testing::_))
+      .WillOnce([](const GURL& url,
+                   const std::optional<gfx::Size>& preferred_web_contents_size,
+                   PaymentHandlerOpenWindowCallback cb) {
         std::move(cb).Run(/*success=*/true, /*render_process_id=*/1,
                           /*render_frame_id=*/2);
       });
@@ -158,7 +196,7 @@ TEST_F(PaymentRequestDisplayManagerTest,
                             /*render_frame_id=*/2));
 
   handle->DisplayPaymentHandlerWindow(GURL("https://example.com/pay"),
-                                      callback.Get());
+                                      gfx::Size(640, 650), callback.Get());
 }
 
 TEST_F(PaymentRequestDisplayManagerTest,
@@ -176,8 +214,9 @@ TEST_F(PaymentRequestDisplayManagerTest,
   EXPECT_CALL(callback, Run(/*success=*/false, /*render_process_id=*/0,
                             /*render_frame_id=*/0));
 
-  handle->DisplayPaymentHandlerWindow(GURL("https://not-example.com/pay"),
-                                      callback.Get());
+  handle->DisplayPaymentHandlerWindow(
+      GURL("https://not-example.com/pay"),
+      /*preferred_web_contents_size=*/std::nullopt, callback.Get());
 }
 
 }  // namespace payments

@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Options for PaymentRequestEvent.openWindow(). `preferredSize` is the size
+// that the payment app would like for its viewport (the WebContents of the
+// payment handler window), not including Chrome's header. Chrome does not
+// guarantee this size; for example, it may use a smaller size when the browser
+// window is too small.
+// This is experimental and not spec'd (or enabled) yet.
+
+dictionary PaymentHandlerOpenWindowOptions {
+    [RuntimeEnabled=PaymentHandlerStaticCustomSize] PaymentHandlerPreferredSize preferredSize;
+};
+
+// A size in pixels, used for `preferredSize` above. Both `width` and `height`
+// must be greater than 0.
+dictionary PaymentHandlerPreferredSize {
+    required [EnforceRange] long width;
+    required [EnforceRange] long height;
+};

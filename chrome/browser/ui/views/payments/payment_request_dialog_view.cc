@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -11,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/numerics/clamped_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -36,6 +38,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -57,6 +60,13 @@ namespace {
 // considered "large enough". We add a small buffer because even if the dialog
 // can technically fit, it's a bad experience if it consumes the entire window.
 constexpr float kMinimumWindowToDialogRatio = 1.05f;
+
+// The ratio of browser content area to payment handler dialog used when
+// shrinking a dialog with a preferred size to fit the browser. It is larger
+// than kMinimumWindowToDialogRatio because the dialog also needs room for its
+// frame and its offset within the browser window, so that the shrunk dialog
+// still passes DialogFitsInBrowserWindow().
+constexpr float kShrinkToBrowserRatio = 1.15f;
 
 // The amount of time to wait before re-checking if the dialog fits in the
 // browser window during a resize.
@@ -288,12 +298,19 @@ bool PaymentRequestDialogView::IsInteractive() const {
 
 void PaymentRequestDialogView::ShowPaymentHandlerScreen(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     PaymentHandlerOpenWindowCallback callback) {
   if (!request_->spec()) {
     return;
   }
 
-  ResizeToPaymentHandlerSize();
+  if (preferred_web_contents_size.has_value() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kPaymentHandlerStaticCustomSize)) {
+    ResizeToFitPaymentHandlerWebContents(*preferred_web_contents_size);
+  } else {
+    ResizeToPaymentHandlerSize();
+  }
 
   // Once we have resized the dialog, re-check that it still fits in the
   // available window space.
@@ -812,6 +829,40 @@ void PaymentRequestDialogView::ResizeToPaymentHandlerSize() {
       gfx::Size(views::LayoutProvider::Get()->GetSnappedDialogWidth(
                     kPreferredPaymentHandlerDialogWidth),
                 height));
+}
+
+void PaymentRequestDialogView::ResizeToFitPaymentHandlerWebContents(
+    const gfx::Size& preferred_web_contents_size) {
+  // 1. Clamp the requested size to the static [min, max] dialog bounds. The
+  // dialog height includes Chrome's header and progress bar, which are above
+  // the payment handler WebContents.
+  int width =
+      std::clamp(preferred_web_contents_size.width(),
+                 kPaymentHandlerMinDialogWidth, kPaymentHandlerMaxDialogWidth);
+  // Use `base::ClampAdd` to avoid integer overflow if height is near `INT_MAX`.
+  int height = std::clamp<int>(
+      base::ClampAdd(preferred_web_contents_size.height(),
+                     kPaymentHandlerHeaderHeight,
+                     kPaymentHandlerProgressBarHeight),
+      kPaymentHandlerMinDialogHeight, kPaymentHandlerMaxDialogHeight);
+
+  // 2. Snap the clamped width. This is done before fitting to the browser
+  // window so that snapping cannot make the dialog wider than the browser.
+  width = views::LayoutProvider::Get()->GetSnappedDialogWidth(width);
+
+  // 3. Shrink to fit the browser if needed, leaving room for the too-small
+  // window check (see kShrinkToBrowserRatio), but never below min bounds.
+  if (request_->web_contents()) {
+    gfx::Size max_size = gfx::ScaleToFlooredSize(
+        request_->web_contents()->GetContainerBounds().size(),
+        1.0f / kShrinkToBrowserRatio);
+    width = std::max(kPaymentHandlerMinDialogWidth,
+                     std::min(width, max_size.width()));
+    height = std::max(kPaymentHandlerMinDialogHeight,
+                      std::min(height, max_size.height()));
+  }
+
+  ResizeDialogWindow(gfx::Size(width, height));
 }
 
 void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {

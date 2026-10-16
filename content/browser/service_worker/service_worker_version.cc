@@ -72,6 +72,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1901,6 +1902,7 @@ void ServiceWorkerVersion::OpenNewTab(const GURL& url,
 
 void ServiceWorkerVersion::OpenPaymentHandlerWindow(
     const GURL& url,
+    blink::mojom::PaymentHandlerOpenWindowOptionsPtr options,
     OpenPaymentHandlerWindowCallback callback) {
   // Just respond failure if we are shutting down.
   if (!context_) {
@@ -1932,6 +1934,28 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
         "PaymentRequestEvent.");
     receiver_.reset();
     return;
+  }
+
+  // The renderer sends a preferred size only when the
+  // PaymentHandlerStaticCustomSize feature is enabled, and only if both
+  // dimensions are greater than 0.
+  if (options->preferred_inner_size.has_value()) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kPaymentHandlerStaticCustomSize)) {
+      associated_interface_receiver_.ReportBadMessage(
+          "Received PaymentRequestEvent#openWindow() request with a preferred "
+          "size while PaymentHandlerStaticCustomSize is disabled.");
+      receiver_.reset();
+      return;
+    }
+    if (options->preferred_inner_size->width() <= 0 ||
+        options->preferred_inner_size->height() <= 0) {
+      associated_interface_receiver_.ReportBadMessage(
+          "Received PaymentRequestEvent#openWindow() request with a "
+          "non-positive preferred size.");
+      receiver_.reset();
+      return;
+    }
   }
 
   // `PaymentHandlerSupport::ShowPaymentHandlerWindow` implements API
@@ -1967,7 +1991,7 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
   }
 
   PaymentHandlerSupport::ShowPaymentHandlerWindow(
-      url, context_.get(),
+      url, options->preferred_inner_size, context_.get(),
       base::BindOnce(&ServiceWorkerVersion::DidShowPaymentHandlerWindow,
                      weak_factory_.GetWeakPtr(), url, key_, context_),
       base::BindOnce(

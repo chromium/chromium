@@ -228,9 +228,11 @@ ChromePaymentRequestDelegate::GetDisplayManager() {
 
 void ChromePaymentRequestDelegate::EmbedPaymentHandlerWindow(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     PaymentHandlerOpenWindowCallback callback) {
   if (shown_dialog_) {
-    shown_dialog_->ShowPaymentHandlerScreen(url, std::move(callback));
+    shown_dialog_->ShowPaymentHandlerScreen(url, preferred_web_contents_size,
+                                            std::move(callback));
   } else {
     std::move(callback).Run(/*success=*/false,
                             /*render_process_id=*/0,

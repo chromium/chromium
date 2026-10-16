@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -134,6 +135,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   bool IsInteractive() const override;
   void ShowPaymentHandlerScreen(
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       PaymentHandlerOpenWindowCallback callback) override;
   void RetryDialog() override;
 
@@ -218,6 +220,12 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void OnDialogClosed();
   void ResizeDialogWindow(const gfx::Size& size);
   void ResizeToPaymentHandlerSize();
+  // Resizes the payment handler dialog so that its WebContents is, as closely
+  // as possible, `preferred_web_contents_size`. The preferred size is clamped
+  // by a minimum/maximum allowed dialog size, as well as the overall available
+  // size of the containing browser window.
+  void ResizeToFitPaymentHandlerWebContents(
+      const gfx::Size& preferred_web_contents_size);
   void CheckIfDialogFitsInBrowserWindow();
   bool DialogFitsInBrowserWindow() const;
 

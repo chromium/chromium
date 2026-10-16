@@ -20,6 +20,10 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace webauthn {
 class InternalAuthenticator;
 }  // namespace webauthn
@@ -62,6 +66,7 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   // true/false to indicate success/failure.
   virtual void EmbedPaymentHandlerWindow(
       const GURL& url,
+      const std::optional<gfx::Size>& preferred_web_contents_size,
       PaymentHandlerOpenWindowCallback callback) = 0;
 
   // Returns whether user interaction is enabled. (False when showing a

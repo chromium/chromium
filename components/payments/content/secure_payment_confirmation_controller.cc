@@ -102,6 +102,7 @@ bool SecurePaymentConfirmationController::IsInteractive() const {
 
 void SecurePaymentConfirmationController::ShowPaymentHandlerScreen(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     PaymentHandlerOpenWindowCallback callback) {
   // Payment handler screen is not supported.
   NOTREACHED();

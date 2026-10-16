@@ -66,6 +66,13 @@ self.addEventListener('paymentrequest', (evt) => {
             evt.methodData[0]['data']['windowPage'] !== undefined ?
         evt.methodData[0]['data']['windowPage'] :
         'payment_handler_window.html';
-    evt.openWindow(paymentHandlerWindow);
+    const openWindowOptions = evt.methodData[0]['data'] !== undefined ?
+        evt.methodData[0]['data']['openWindowOptions'] :
+        undefined;
+    if (openWindowOptions !== undefined) {
+      evt.openWindow(paymentHandlerWindow, openWindowOptions);
+    } else {
+      evt.openWindow(paymentHandlerWindow);
+    }
   }));
 });

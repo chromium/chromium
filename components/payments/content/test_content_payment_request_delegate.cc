@@ -112,6 +112,7 @@ PrefService* TestContentPaymentRequestDelegate::GetPrefService() {
 
 void TestContentPaymentRequestDelegate::EmbedPaymentHandlerWindow(
     const GURL& url,
+    const std::optional<gfx::Size>& preferred_web_contents_size,
     PaymentHandlerOpenWindowCallback callback) {}
 
 bool TestContentPaymentRequestDelegate::IsInteractive() const {
