@@ -24,7 +24,7 @@ std::optional<std::u16string> GetDeviceTypeString(
     case sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET:
       return l10n_util::GetStringUTF16(IDS_SIGNIN_DEVICE_TYPE_TABLET);
     case sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP:
-      return l10n_util::GetStringUTF16(IDS_SIGNIN_DEVICE_TYPE_LAPTOP);
+      return l10n_util::GetStringUTF16(IDS_SIGNIN_DEVICE_TYPE_COMPUTER);
     default:
       return std::nullopt;
   }

@@ -84,7 +84,7 @@ TEST_F(AccountPreviewPreferenceStringUtilsTest,
       },
       {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
-          IDS_SIGNIN_DEVICE_TYPE_LAPTOP,
+          IDS_SIGNIN_DEVICE_TYPE_COMPUTER,
       },
   };
 
