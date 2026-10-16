@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_view_util.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/event_router.h"
@@ -28,6 +33,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -341,4 +347,59 @@ TEST_F(ExtensionsInternalsUnitTest, DisableReasons) {
   EXPECT_EQ(1U, disable_reasons->size());
   EXPECT_EQ("DISABLE_BY_ANOTHER_EXTENSION",
             disable_reasons->front().GetString());
+}
+
+// Test that the HTML page escapes extension data so that it can't inject
+// markup into chrome://extensions-internals. JSONWriter already escapes '<',
+// so '&' and '>' verify that the HTML escaping itself is applied.
+TEST_F(ExtensionsInternalsUnitTest, HtmlEscapesExtensionData) {
+  InitializeEmptyExtensionService();
+  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("</pre><b>&</b>").Build();
+  registrar()->AddExtension(extension.get());
+
+  ExtensionsInternalsSource source(profile());
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+  source.StartDataRequest(GURL("chrome://extensions-internals/"),
+                          content::WebContents::Getter(), future.GetCallback());
+  std::string_view html = base::as_string_view(base::span(*future.Get()));
+
+  EXPECT_THAT(html, testing::Not(testing::HasSubstr("<b>")));
+  EXPECT_THAT(html, testing::HasSubstr("pre&gt;"));
+  EXPECT_THAT(html, testing::HasSubstr("b&gt;&amp;"));
+}
+
+// Test that unknown paths fail instead of falling back to the HTML page.
+TEST_F(ExtensionsInternalsUnitTest, UnknownPathFails) {
+  InitializeEmptyExtensionService();
+
+  ExtensionsInternalsSource source(profile());
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+  source.StartDataRequest(GURL("chrome://extensions-internals/unknown"),
+                          content::WebContents::Getter(), future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+// Test that the JSON endpoint ignores query params when matching the path.
+TEST_F(ExtensionsInternalsUnitTest, JsonPathIgnoresQuery) {
+  InitializeEmptyExtensionService();
+  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
+
+  ExtensionsInternalsSource source(profile());
+  GURL url("chrome://extensions-internals/extensions.json?foo=bar");
+  EXPECT_EQ("application/json", source.GetMimeType(url));
+
+  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
+  source.StartDataRequest(url, content::WebContents::Getter(),
+                          future.GetCallback());
+  ASSERT_TRUE(future.Get());
+  std::optional<base::Value> json =
+      base::JSONReader::Read(base::as_string_view(base::span(*future.Get())),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(json);
+  EXPECT_TRUE(json->is_list());
 }

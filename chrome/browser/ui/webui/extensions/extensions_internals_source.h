@@ -35,6 +35,8 @@ class ExtensionsInternalsSource : public content::URLDataSource {
   std::string WriteToString() const;
 
  private:
+  std::string GetHtml() const;
+
   const raw_ptr<Profile> profile_;
 };
 

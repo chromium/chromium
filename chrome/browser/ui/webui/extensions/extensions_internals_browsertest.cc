@@ -48,3 +48,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionsInternalsTest,
                                          "'\"id\": \"%s\"') >= 0;",
                                          extension->id().c_str())));
 }
+
+// Test that the default page is HTML and embeds the JSON in a <pre> element.
+IN_PROC_BROWSER_TEST_F(ExtensionsInternalsTest, TestExtensionsInternalsHtml) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  GURL navigation_url(
+      content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost));
+  ASSERT_TRUE(NavigateToURL(web_contents, navigation_url));
+  EXPECT_EQ("text/html", web_contents->GetContentsMimeType());
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "Array.isArray(JSON.parse("
+                            "document.getElementById('json').textContent));"));
+}
+
+// Test that navigating directly to /extensions.json returns raw JSON.
+IN_PROC_BROWSER_TEST_F(ExtensionsInternalsTest,
+                       TestExtensionsInternalsJsonEndpoint) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  GURL json_url = content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost)
+                      .Resolve("extensions.json");
+  ASSERT_TRUE(NavigateToURL(web_contents, json_url));
+  EXPECT_EQ("application/json", web_contents->GetContentsMimeType());
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  "Array.isArray(JSON.parse("
+                                  "document.body.textContent));"));
+}
