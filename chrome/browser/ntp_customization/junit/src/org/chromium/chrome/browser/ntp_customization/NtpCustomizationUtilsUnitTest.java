@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
@@ -933,74 +932,6 @@ public class NtpCustomizationUtilsUnitTest {
                 (int)
                         NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
                                 mContext, /* checkDailyRefresh= */ false));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testLoadColorInfoFromSharedPreference_flagDisabled() {
-        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testLoadColorInfoFromSharedPreference_wrongImageType() {
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(NtpBackgroundType.DEFAULT);
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
-        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testLoadColorInfoFromSharedPreference_chromeColor() {
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
-                NtpBackgroundType.CHROME_COLOR);
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
-
-        // Verifies that null is returned when color id isn't set.
-        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
-
-        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
-        NtpThemeColorInfo colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
-        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
-
-        assertEquals(colorInfo, NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testLoadColorInfoFromSharedPreference_colorFromHex() {
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(COLOR_FROM_HEX);
-        @ColorInt int primaryColor = Color.RED;
-        @ColorInt int backgroundColor = Color.BLUE;
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
-        NtpCustomizationUtils.setBackgroundColorToSharedPreference(backgroundColor);
-
-        // Verifies that both the primary color and background color from the loaded results match.
-        NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
-        assertTrue(info instanceof NtpThemeColorFromHexInfo);
-        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColorLight);
-        assertEquals(backgroundColor, ((NtpThemeColorFromHexInfo) info).backgroundColorLight);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testLoadColorInfoFromSharedPreference_colorSetWithImage() {
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(IMAGE_FROM_DISK);
-        // Verifies that null is returned if no primary color is set.
-        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
-
-        @ColorInt int primaryColor = Color.RED;
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(COLOR_FROM_HEX);
-
-        // Verifies that the primary color from the loaded results matches.
-        NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
-        assertTrue(info instanceof NtpThemeColorFromHexInfo);
-        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColorLight);
-        assertEquals(
-                NtpThemeColorUtils.getDefaultBackgroundColor(mContext),
-                ((NtpThemeColorFromHexInfo) info).backgroundColorLight);
     }
 
     @Test

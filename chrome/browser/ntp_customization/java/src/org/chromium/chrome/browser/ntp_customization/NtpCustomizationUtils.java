@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
@@ -412,37 +411,6 @@ public class NtpCustomizationUtils {
         builder.setContentBasedSource(primaryColor);
         DynamicColorsOptions dynamicColorsOptions = builder.build();
         DynamicColors.applyToActivityIfAvailable(activity, dynamicColorsOptions);
-    }
-
-    /** Loads the NtpThemeColorInfo from the SharedPreference, null otherwise. */
-    public @Nullable static NtpThemeColorInfo loadColorInfoFromSharedPreference(Context context) {
-        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return null;
-
-        @NtpBackgroundType int imageType = getNtpBackgroundTypeFromSharedPreference();
-        if (imageType != NtpBackgroundType.CHROME_COLOR
-                && imageType != NtpBackgroundType.COLOR_FROM_HEX) {
-            return null;
-        }
-
-        if (imageType == NtpBackgroundType.CHROME_COLOR) {
-            // For CHROME_COLOR, a color resource id is saved in the SharedPreference.
-            @NtpThemeColorId int colorId = getNtpThemeColorIdFromSharedPreference();
-            if (colorId == NtpThemeColorId.DEFAULT) return null;
-
-            return NtpThemeColorUtils.createNtpThemeColorInfo(context, colorId);
-        }
-
-        // For other types, a color value is saved in the SharedPreference.
-        @Nullable
-        @ColorInt
-        Integer primaryColor = getCustomizedPrimaryColorFromSharedPreference();
-        if (primaryColor == null) return null;
-
-        @ColorInt int backgroundColor = NtpThemeColorUtils.getDefaultBackgroundColor(context);
-        if (imageType == NtpBackgroundType.COLOR_FROM_HEX) {
-            backgroundColor = getBackgroundColorFromSharedPreference(backgroundColor);
-        }
-        return new NtpThemeColorFromHexInfo(context, backgroundColor, primaryColor);
     }
 
     // Gets the content based primary color for a bitmap.
