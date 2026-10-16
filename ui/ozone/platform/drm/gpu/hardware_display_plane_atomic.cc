@@ -8,6 +8,7 @@
 
 #include "base/files/platform_file.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -145,9 +146,12 @@ bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
   if (drm && assigned_props_.plane_fb_damage_clips.id) {
     ScopedDrmModeRectPtr dmg_clip_blob_data = CreateDCBlob(damage_rect);
     // dmg_clip_blob needs to live long enough to be committed.
-    static ScopedDrmPropertyBlob dmg_clip_blob = drm->CreatePropertyBlob(
-        dmg_clip_blob_data.get(), sizeof(drm_mode_rect));
-    assigned_props_.plane_fb_damage_clips.value = dmg_clip_blob->id();
+    // TODO(crbug.com/572557701): This is created once, from the first frame's
+    // damage rect and DRM device, and never updated.
+    static base::NoDestructor<ScopedDrmPropertyBlob> dmg_clip_blob(
+        drm->CreatePropertyBlob(dmg_clip_blob_data.get(),
+                                sizeof(drm_mode_rect)));
+    assigned_props_.plane_fb_damage_clips.value = (*dmg_clip_blob)->id();
   }
 
   if (assigned_props_.plane_color_encoding.id) {
