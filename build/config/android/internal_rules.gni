@@ -1192,6 +1192,13 @@ if (enable_java_templates) {
       if (treat_warnings_as_errors) {
         args += [ "--warnings-as-errors" ]
       }
+      if (defined(invoker.disallowed_library_classes)) {
+        inputs +=
+            [ "//third_party/android_build_tools/bazel_tools/cipd/singlejar" ]
+        args += [
+          "--disallowed-library-classes=${invoker.disallowed_library_classes}",
+        ]
+      }
     }
   }
 
@@ -1459,9 +1466,12 @@ if (enable_java_templates) {
       _main_target_name = target_name
 
       trace_references(_tracerefs_target_name) {
+        forward_variables_from(invoker, [ "disallowed_library_classes" ])
         tracerefs_json = _tracerefs_json
         deps = [ ":$_main_target_name" ]
       }
+    } else {
+      not_needed(invoker, [ "disallowed_library_classes" ])
     }
 
     action_with_pydeps(target_name) {
@@ -1597,6 +1607,8 @@ if (enable_java_templates) {
 
     assert(!(defined(invoker.apply_mapping) && !_proguard_enabled),
            "apply_mapping can only be specified if proguard is enabled.")
+    assert(!(defined(invoker.disallowed_library_classes) && !_proguard_enabled),
+           "disallowed_library_classes requires proguard to be enabled.")
     if (defined(invoker.custom_assertion_handler)) {
       assert(_proguard_enabled,
              "Proguard is required to support the custom assertion handler.")
@@ -1615,6 +1627,7 @@ if (enable_java_templates) {
                                      "data",
                                      "data_deps",
                                      "deps",
+                                     "disallowed_library_classes",
                                      "enable_proguard_checks",
                                      "expected_proguard_config",
                                      "expected_proguard_config_base",

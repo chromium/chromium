@@ -339,6 +339,11 @@ template("chrome_common_apk_or_module_tmpl") {
       if (!_is_bundle && optimize_android_resources) {
         resources_config_paths = [ "//chrome/android/aapt2.config" ]
       }
+
+      # Bundles set this in chrome_bundle(), since that is where R8 runs.
+      if (!_is_bundle && !_is_test) {
+        disallowed_library_classes = chrome_disallowed_library_classes
+      }
     }
 
     # Java and native targets form two independent compile graphs. Deps from

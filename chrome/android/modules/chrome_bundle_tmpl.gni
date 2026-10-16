@@ -9,6 +9,10 @@ import("//chrome/version.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//components/module_installer/android/module_desc_java.gni")
 
+# Android SDK classes that Chrome's optimized dex must not reference.
+# Chrome should not depend on WebView.
+chrome_disallowed_library_classes = [ "android.webkit.WebView" ]
+
 # Instantiates a Chrome-specific app bundle.
 #
 # Supports most variables of chrome_feature_module and android_app_bundle, plus:
@@ -194,6 +198,9 @@ template("chrome_bundle") {
     min_sdk_version = _min_sdk_version
     command_line_flags_file = "chrome-command-line"
     proguard_enabled = !is_java_debug
+    if (proguard_enabled) {
+      disallowed_library_classes = chrome_disallowed_library_classes
+    }
     enable_language_splits = true
     extra_modules = _extra_modules
     system_image_locale_allowlist = platform_pak_locales - extended_locales
