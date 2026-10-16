@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -143,8 +145,11 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
-                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                .mergeListOfTabsToExistingGroup(
+                        eq(mTabs),
+                        eq(mToken),
+                        isNull(),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -158,9 +163,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
-        verify(mTabModel, never())
-                .mergeListOfTabsToGroup(
-                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -188,9 +191,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
-        verify(mTabModel, never())
-                .mergeListOfTabsToGroup(
-                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -226,8 +227,11 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
         verify(mTabGroupUiActionHandler).openTabGroup(eq(TEST_SYNC_ID));
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
-                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                .mergeListOfTabsToExistingGroup(
+                        eq(mTabs),
+                        eq(mToken),
+                        isNull(),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -241,9 +245,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
-        verify(mTabModel, never())
-                .mergeListOfTabsToGroup(
-                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }

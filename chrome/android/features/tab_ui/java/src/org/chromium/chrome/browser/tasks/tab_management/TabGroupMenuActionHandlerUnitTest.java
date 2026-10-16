@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -229,17 +230,16 @@ public class TabGroupMenuActionHandlerUnitTest {
         UserActionTester actionTester = new UserActionTester();
         Token groupId = Token.createRandom();
         Tab destTab = mock(Tab.class);
-        when(destTab.getId()).thenReturn(123);
-        when(mTabModel.getTabById(123)).thenReturn(destTab);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
         when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
 
         assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId, /* syncGroupId= */ null));
 
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
-                        eq(destTab),
+                        eq(groupId),
+                        /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
     }

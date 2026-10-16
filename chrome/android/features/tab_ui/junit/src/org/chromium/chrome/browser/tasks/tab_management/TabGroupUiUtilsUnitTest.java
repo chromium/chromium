@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -241,12 +242,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
 
-        Tab destTab = mock(Tab.class);
-        when(destTab.getId()).thenReturn(100);
-
         when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
-        when(mTabModel.getTabById(100)).thenReturn(destTab);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
         TabGroupUiUtils.addTabsToGroup(
@@ -259,9 +255,10 @@ public class TabGroupUiUtilsUnitTest {
                 false);
 
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(List.of(tab)),
-                        eq(destTab),
+                        eq(groupId),
+                        /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
     }
@@ -606,7 +603,7 @@ public class TabGroupUiUtilsUnitTest {
                 false);
 
         verify(mUiActionHandler, never()).openTabGroup(any());
-        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(callback, never()).onTabMoved();
     }
 
@@ -627,9 +624,6 @@ public class TabGroupUiUtilsUnitTest {
 
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
         when(mTabModel.containsTabGroup(restoredGroupId)).thenReturn(true);
-        when(mDestTab.getId()).thenReturn(100);
-        when(mTabModel.getTabsInGroup(restoredGroupId)).thenReturn(List.of(mDestTab));
-        when(mTabModel.getTabById(100)).thenReturn(mDestTab);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
         TabGroupUiUtils.addTabsToGroup(
@@ -643,9 +637,10 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mUiActionHandler).openTabGroup(syncId);
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
-                        eq(mDestTab),
+                        eq(restoredGroupId),
+                        /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
     }
@@ -667,9 +662,6 @@ public class TabGroupUiUtilsUnitTest {
 
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
         when(mTabModel.containsTabGroup(restoredGroupId)).thenReturn(true);
-        when(mDestTab.getId()).thenReturn(100);
-        when(mTabModel.getTabsInGroup(restoredGroupId)).thenReturn(List.of(mDestTab));
-        when(mTabModel.getTabById(100)).thenReturn(mDestTab);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
         TabGroupUiUtils.addTabsToGroup(
@@ -683,9 +675,10 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mUiActionHandler).openTabGroup(syncId);
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
-                        eq(mDestTab),
+                        eq(restoredGroupId),
+                        /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
     }
@@ -703,7 +696,7 @@ public class TabGroupUiUtilsUnitTest {
                 mUiActionHandler,
                 callback,
                 false);
-        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(callback, never()).onTabMoved();
     }
 
@@ -1238,9 +1231,6 @@ public class TabGroupUiUtilsUnitTest {
         reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
         when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(false, true);
-        when(mDestTab.getId()).thenReturn(105);
-        when(mTabModel.getTabsInGroup(reopenedGroupId)).thenReturn(List.of(mDestTab));
-        when(mTabModel.getTabById(105)).thenReturn(mDestTab);
 
         when(mTabToAdd.getTabGroupId()).thenReturn(null);
 
@@ -1259,9 +1249,10 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mUiActionHandler).openTabGroup(syncId);
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
-                        eq(mDestTab),
+                        eq(reopenedGroupId),
+                        /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
     }
@@ -1296,9 +1287,6 @@ public class TabGroupUiUtilsUnitTest {
         reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
         when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(false, true);
-        when(mDestTab.getId()).thenReturn(105);
-        when(mTabModel.getTabsInGroup(reopenedGroupId)).thenReturn(List.of(mDestTab));
-        when(mTabModel.getTabById(105)).thenReturn(mDestTab);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         TabList emptyTabList = mock(TabList.class);
@@ -1323,9 +1311,10 @@ public class TabGroupUiUtilsUnitTest {
         verify(mOtherModel).commitTabClosure(55);
         verify(mUiActionHandler).openTabGroup(syncId);
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
-                        eq(mDestTab),
+                        eq(reopenedGroupId),
+                        /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
     }
@@ -1348,7 +1337,7 @@ public class TabGroupUiUtilsUnitTest {
                 false);
 
         verify(mUiActionHandler, never()).openTabGroup(any());
-        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(callback, never()).onTabMoved();
     }
 

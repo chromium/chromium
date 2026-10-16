@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -644,9 +645,14 @@ public class TabGroupUiUtils {
             List<Tab> tabs,
             Token destinationGroupId,
             @Nullable TabMovedCallback tabMovedCallback) {
-        @TabId
-        int destTabId = TabGroupUtils.getFirstTabIdInGroup(sourceTabModel, destinationGroupId);
-        TabGroupUtils.mergeTabsToDest(tabs, destTabId, sourceTabModel, tabMovedCallback);
+        sourceTabModel.mergeListOfTabsToExistingGroup(
+                tabs,
+                destinationGroupId,
+                /* indexInGroup= */ null,
+                TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        if (tabMovedCallback != null) {
+            tabMovedCallback.onTabMoved();
+        }
     }
 
     /**
