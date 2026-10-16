@@ -7,8 +7,9 @@
 import 'chrome-untrusted://ai-overlay-dialog/internal/persona.js';
 
 import type {ConversationConfig} from 'chrome-untrusted://ai-overlay-dialog/internal/conversation.js';
+import {DEFAULT_API_CONFIG, DEFAULT_PERSONA, DEFAULT_SYSTEM_INSTRUCTION} from 'chrome-untrusted://ai-overlay-dialog/internal/conversation.js';
 import {buildSystemInstruction, processConditionals, processNumbering, processTemplate} from 'chrome-untrusted://ai-overlay-dialog/internal/persona.js';
-import {assertEquals, assertThrows} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('PersonaTest', () => {
   test('ProcessConditionalsBasic', () => {
@@ -155,5 +156,18 @@ suite('PersonaTest', () => {
     };
     const expected = 'Assistant persona details: . Call us: Chrome.';
     assertEquals(expected, buildSystemInstruction(config));
+  });
+
+  test('BuildSystemInstructionWithBuiltInDefaults', () => {
+    const config: ConversationConfig = {
+      system_instruction: DEFAULT_SYSTEM_INSTRUCTION,
+      persona: DEFAULT_PERSONA,
+      api_config: {...DEFAULT_API_CONFIG},
+    };
+    const instruction = buildSystemInstruction(config);
+    assertTrue(instruction.length > 0);
+    assertFalse(instruction.includes('${persona}'));
+    assertFalse(instruction.includes('${nameList}'));
+    assertTrue(instruction.includes('Chrome'));
   });
 });

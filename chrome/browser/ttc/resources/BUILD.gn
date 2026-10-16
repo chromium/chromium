@@ -39,6 +39,7 @@ build_webui("build") {
   ]
 
   if (is_chrome_branded) {
+    preprocessor_defines = [ "enable_ttc_built_in_key=true" ]
     ts_files += [
       "internal/api_session.ts",
       "internal/conversation.ts",

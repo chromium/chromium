@@ -18,11 +18,11 @@ import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {CaptionBlockManager, formatCaptions} from './caption_block_manager.js';
 // <if expr="_google_chrome">
-import {Conversation, DEFAULT_TTC_BUNDLE_URL, State} from './internal/conversation.js';
+import {Conversation, DEFAULT_API_CONFIG, DEFAULT_PERSONA, DEFAULT_SYSTEM_INSTRUCTION, DEFAULT_TTC_BUNDLE_URL, State} from './internal/conversation.js';
 import type {ApiConfig, ConversationConfig, Persona} from './internal/conversation.js';
 // </if>
 import {LocalSpeechRecognition} from './local_speech_recognition.js';
-import {errorLog, log} from './logging.js';
+import {errorLog, log, warnLog} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 import {AiOverlayToolsRemote} from './tools.mojom-webui.js';
 
@@ -79,6 +79,19 @@ type ConversationConfig = {
 type ConversationMessage = any;
 type Persona = any;
 const DEFAULT_TTC_BUNDLE_URL = '';
+const DEFAULT_API_CONFIG: ApiConfig = {
+  endpointUrl: '',
+  model: '',
+  apiKey: '',
+};
+const DEFAULT_PERSONA: Persona = {
+  id: 'generic',
+  name: 'Chrome',
+  nicknames: [],
+  persona: '',
+  voice: 'Achernar',
+};
+const DEFAULT_SYSTEM_INSTRUCTION = '';
 // </if>
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -113,8 +126,8 @@ interface PersonaConfig {
 interface ResourceBundle {
   persona: Persona;
   apiConfig: ApiConfig;
-  speakingBlob: Blob;
-  listeningBlob: Blob;
+  speakingBlob: Blob|null;
+  listeningBlob: Blob|null;
   instruction: string;
 }
 
@@ -185,7 +198,7 @@ export class AppElement extends CrLitElement {
   protected accessor activeType: 'input'|'output' = 'output';
   protected accessor speakingBlobUrl: string = '';
   protected accessor listeningBlobUrl: string = '';
-  protected accessor usePersona: boolean = true;
+  protected accessor usePersona: boolean = false;
 
   private isLocalTranscription: boolean = false;
   private uiStateListeningTimeout: number = 0;
@@ -770,6 +783,16 @@ export class AppElement extends CrLitElement {
     }
   }
 
+  private getBuiltInResourceBundle(): ResourceBundle {
+    return {
+      persona: DEFAULT_PERSONA,
+      apiConfig: {...DEFAULT_API_CONFIG},
+      speakingBlob: null,
+      listeningBlob: null,
+      instruction: DEFAULT_SYSTEM_INSTRUCTION,
+    };
+  }
+
   private async startConversation() {
     if (this.initializationState === InitializationState.CONNECTING ||
         this.initializationState === InitializationState.INITIALIZED) {
@@ -779,19 +802,54 @@ export class AppElement extends CrLitElement {
     this.initializationState = InitializationState.CONNECTING;
 
     try {
-      const ttcBundleUrl = (loadTimeData.valueExists('ttcBundleUrl') ?
-                                loadTimeData.getString('ttcBundleUrl') :
-                                '') ||
-          DEFAULT_TTC_BUNDLE_URL;
-      const bundle = await this.initializeResourceBundle(ttcBundleUrl);
+      const customBundleUrl = loadTimeData.valueExists('ttcBundleUrl') ?
+          loadTimeData.getString('ttcBundleUrl') :
+          '';
+      const localApiKey = loadTimeData.valueExists('apiKey') ?
+          loadTimeData.getString('apiKey') :
+          '';
+      const allowBuiltInDefaults =
+          !loadTimeData.valueExists('allowBuiltInDefaults') ||
+          loadTimeData.getBoolean('allowBuiltInDefaults');
+      const hasLocalAuth = allowBuiltInDefaults &&
+          (Boolean(localApiKey || DEFAULT_API_CONFIG.apiKey) ||
+           this.isMesEnabled());
 
-      log(FILE, 'Bundle initialized');
-      this.speakingBlobUrl = URL.createObjectURL(bundle.speakingBlob);
-      this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
+      let bundle: ResourceBundle;
+      if (!this.usePersona && !customBundleUrl && hasLocalAuth) {
+        log(FILE, 'Using built-in resource bundle (local auth / MES mode)');
+        bundle = this.getBuiltInResourceBundle();
+      } else {
+        const ttcBundleUrl = customBundleUrl || DEFAULT_TTC_BUNDLE_URL;
+        try {
+          bundle = await this.initializeResourceBundle(ttcBundleUrl);
+          log(FILE, 'Remote resource bundle initialized');
+        } catch (e) {
+          if (hasLocalAuth) {
+            warnLog(
+                FILE,
+                'Failed to load remote resource bundle, falling back to built-in defaults:',
+                e);
+            bundle = this.getBuiltInResourceBundle();
+          } else {
+            throw e;
+          }
+        }
+      }
+
+      if (this.speakingBlobUrl) {
+        URL.revokeObjectURL(this.speakingBlobUrl);
+      }
+      if (this.listeningBlobUrl) {
+        URL.revokeObjectURL(this.listeningBlobUrl);
+      }
+      this.speakingBlobUrl =
+          bundle.speakingBlob ? URL.createObjectURL(bundle.speakingBlob) : '';
+      this.listeningBlobUrl =
+          bundle.listeningBlob ? URL.createObjectURL(bundle.listeningBlob) : '';
 
       // Locally specified key overrides the fetched one.
-      const apiKey =
-          loadTimeData.getString('apiKey') || bundle.apiConfig.apiKey;
+      const apiKey = localApiKey || bundle.apiConfig.apiKey;
       const genericPersona: Persona = {
         id: 'generic',
         name: 'Chrome',
