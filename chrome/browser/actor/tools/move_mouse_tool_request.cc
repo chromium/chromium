@@ -4,10 +4,29 @@
 
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 
+#include <optional>
+#include <string_view>
+#include <utility>
+
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `move_mouse` tool.
+constexpr std::string_view kMoveMouseToolDescription =
+    "Move the mouse pointer over a specific element on the active webpage.";
+
+// Description for the `dom_node_id` parameter of the `move_mouse` tool.
+constexpr std::string_view kDomNodeIdParamDescription =
+    "The numeric DOM node ID of the target element to move over.";
+
+}  // namespace
 
 using ::tabs::TabHandle;
 
@@ -17,6 +36,15 @@ MoveMouseToolRequest::MoveMouseToolRequest(
     : PageToolRequest(actor_surface_handle, target) {}
 
 MoveMouseToolRequest::~MoveMouseToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> MoveMouseToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kMoveMouse, kModelFacingName,
+                               kMoveMouseToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddIntegerProperty(
+          kDomNodeIdParam, kDomNodeIdParamDescription))
+      .Build();
+}
 
 void MoveMouseToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);

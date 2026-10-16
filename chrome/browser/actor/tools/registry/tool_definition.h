@@ -77,7 +77,9 @@ enum class ToolId {
   kActivateWindow = 28,
   // Closes the specified window.
   kCloseWindow = 29,
-  kMaxValue = kCloseWindow,
+  // Moves the mouse pointer over an element on the page.
+  kMoveMouse = 30,
+  kMaxValue = kMoveMouse,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

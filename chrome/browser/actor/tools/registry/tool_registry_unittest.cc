@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
+#include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
@@ -421,6 +422,17 @@ TEST(ToolRegistryTest, ScrollPageToolDefinition) {
               RequiresParam(ScrollPageToolRequest::kDomNodeIdParam));
 }
 
+TEST(ToolRegistryTest, MoveMouseToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      MoveMouseToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kMoveMouse);
+  EXPECT_EQ(definition->name, MoveMouseToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(MoveMouseToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(MoveMouseToolRequest::kDomNodeIdParam));
+}
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -778,6 +790,16 @@ TEST(ToolRegistryTest, GetAllToolsContainsScrollPageTool) {
                                     ToolId::kScrollPage, &ToolDefinition::id));
 }
 
+TEST(ToolRegistryTest, GetAllToolsContainsMoveMouseTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kMoveMouse, &ToolDefinition::id));
+}
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());
 }
