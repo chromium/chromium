@@ -29,6 +29,7 @@ export {OrganizerListSectionItemDescriptionElement} from './organizer_list_secti
 export {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
 export type {BrowserProxy as OrganizerPanelBrowserProxy, PageRemote as OrganizerPanelPageRemote, SectionState} from './organizer_panel.mojom-webui.js';
 export {browserProxyFactory as organizerPanelBrowserProxyFactory, PageCallbackRouter as OrganizerPanelPageCallbackRouter, PageHandlerRemote as OrganizerPanelPageHandlerRemote} from './organizer_panel.mojom-webui.js';
+export {OrganizerZeroStateElement} from './organizer_zero_state.js';
 export type {OptionKeyObject, SearchOptions} from './search_utils.js';
 export {renderHighlightedText, search, sliceRangesForParts} from './search_utils.js';
 export {StackedFaviconsElement} from './stacked_favicons.js';

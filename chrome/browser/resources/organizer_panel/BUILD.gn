@@ -38,6 +38,8 @@ build_webui("build") {
     "organizer_list_section_item_title.html.ts",
     "organizer_list_section_item_title.ts",
     "organizer_panel.ts",
+    "organizer_zero_state.html.ts",
+    "organizer_zero_state.ts",
     "search_utils.ts",
     "stacked_favicons.html.ts",
     "stacked_favicons.ts",
@@ -50,6 +52,7 @@ build_webui("build") {
     "organizer_list_section_item.css",
     "organizer_list_section_item_description.css",
     "organizer_list_section_item_title.css",
+    "organizer_zero_state.css",
     "stacked_favicons.css",
   ]
 

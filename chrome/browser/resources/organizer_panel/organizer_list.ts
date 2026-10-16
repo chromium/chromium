@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './organizer_list_section.js';
+import './organizer_zero_state.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../organizer_zero_state.js';
+
 import {assert} from '//resources/js/assert.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
@@ -66,9 +68,9 @@ export class RecentTabsDelegate implements
   }
 
   getZeroState(): TemplateResult {
-    return html`<div class="zero-state-text">
+    return html`<organizer-zero-state>
       ${loadTimeData.getString('noRecentlyClosedTabs')}
-    </div>`;
+    </organizer-zero-state>`;
   }
 
   onItemClick(item: OrganizerListSectionItem<RecentlyClosedItem>) {

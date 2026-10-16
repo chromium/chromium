@@ -21,7 +21,7 @@ export function getHtml(this: OrganizerListElement) {
   `)}
 </div>
 ${this.allSectionsHidden_ ? html`
-  <div id="noResults">$i18n{noResults}</div>
+  <organizer-zero-state>$i18n{noResults}</organizer-zero-state>
 ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on

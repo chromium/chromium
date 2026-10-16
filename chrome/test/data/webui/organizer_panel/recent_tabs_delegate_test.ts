@@ -475,9 +475,10 @@ suite('RecentTabsDelegateTest', () => {
     document.body.appendChild(container);
     render(zeroState, container);
 
-    const zeroStateText = container.querySelector('.zero-state-text');
-    assertTrue(!!zeroStateText);
-    assertEquals('No recently closed tabs', zeroStateText.textContent.trim());
+    const zeroStateElement = container.querySelector('organizer-zero-state');
+    assertTrue(!!zeroStateElement);
+    assertEquals(
+        'No recently closed tabs', zeroStateElement.textContent.trim());
   });
 
   test(

@@ -76,7 +76,8 @@ suite('OrganizerListTest', () => {
             list.shadowRoot.querySelectorAll('organizer-list-section');
         assertEquals(3, sections.length);
         assertFalse(list.$.sections.hidden);
-        assertEquals(null, list.shadowRoot.querySelector('#noResults'));
+        assertEquals(
+            null, list.shadowRoot.querySelector('organizer-zero-state'));
         const dividers = list.shadowRoot.querySelectorAll('.divider');
         assertEquals(2, dividers.length);
         assertTrue(isVisible(dividers[0]!));
@@ -90,7 +91,8 @@ suite('OrganizerListTest', () => {
         assertTrue(sections[1]!.hidden);
         assertFalse(sections[2]!.hidden);
         assertFalse(list.$.sections.hidden);
-        assertEquals(null, list.shadowRoot.querySelector('#noResults'));
+        assertEquals(
+            null, list.shadowRoot.querySelector('organizer-zero-state'));
         assertFalse(isVisible(dividers[0]!));
         assertTrue(isVisible(dividers[1]!));
 
@@ -102,7 +104,8 @@ suite('OrganizerListTest', () => {
         assertFalse(sections[1]!.hidden);
         assertFalse(sections[2]!.hidden);
         assertFalse(list.$.sections.hidden);
-        assertEquals(null, list.shadowRoot.querySelector('#noResults'));
+        assertEquals(
+            null, list.shadowRoot.querySelector('organizer-zero-state'));
         assertFalse(isVisible(dividers[0]!));
         assertTrue(isVisible(dividers[1]!));
 
@@ -116,7 +119,7 @@ suite('OrganizerListTest', () => {
         assertTrue(list.$.sections.hidden);
         assertFalse(isVisible(dividers[0]!));
         assertFalse(isVisible(dividers[1]!));
-        const noResults = list.shadowRoot.querySelector('#noResults');
+        const noResults = list.shadowRoot.querySelector('organizer-zero-state');
         assertTrue(!!noResults);
         assertEquals('No results', noResults.textContent.trim());
 
@@ -128,7 +131,8 @@ suite('OrganizerListTest', () => {
         assertFalse(sections[1]!.hidden);
         assertFalse(sections[2]!.hidden);
         assertFalse(list.$.sections.hidden);
-        assertEquals(null, list.shadowRoot.querySelector('#noResults'));
+        assertEquals(
+            null, list.shadowRoot.querySelector('organizer-zero-state'));
         assertTrue(isVisible(dividers[0]!));
         assertTrue(isVisible(dividers[1]!));
       });
