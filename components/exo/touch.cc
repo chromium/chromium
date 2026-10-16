@@ -101,10 +101,9 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       touch_points_surface_map_.emplace(touch_pointer_id, target);
 
       // Update the count of pointers on the target surface.
-      auto it = surface_touch_count_map_.find(target);
-      if (it == surface_touch_count_map_.end()) {
+      auto [it, inserted] = surface_touch_count_map_.try_emplace(target, 1);
+      if (inserted) {
         target->AddSurfaceObserver(this);
-        surface_touch_count_map_.emplace(target, 1);
       } else {
         it->second++;
       }
