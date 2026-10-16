@@ -74,8 +74,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnUserInputSubmitted(mojom::WebClientMode mode,
                             mojom::PromptType prompt_type) override;
   void OnResponseStarted() override;
-  void OnResponseStopped(mojom::ResponseStopCause cause) override;
 
+  void OnResponseStopped(mojom::ResponseStopCause cause);
   void DidRequestContextFromFocusedTab();
   void DidRequestContextFromTab();
   void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);

@@ -475,7 +475,6 @@ void GlicMetrics::OnContextUploadCompleted() {
 }
 
 void GlicMetrics::OnResponseStarted() {
-  turn_.response_started_ = true;
   base::UmaHistogramEnumeration(
       "Glic.Session.ResponseStart.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());
@@ -528,43 +527,6 @@ void GlicMetrics::OnResponseStarted() {
       .SetInvocationSource(static_cast<int64_t>(invocation_source_))
       .SetWebClientMode(static_cast<int64_t>(input_mode_))
       .Record(ukm::UkmRecorder::Get());
-}
-
-void GlicMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
-  // The client may call "stopped" without "started" for very short responses.
-  // We synthetically call it ourselves in this case.
-  if (!turn_.input_submitted_time_.is_null() && !turn_.response_started_) {
-    OnResponseStarted();
-  }
-
-  base::RecordAction(base::UserMetricsAction("GlicResponseStop"));
-  std::string_view cause_suffix;
-  switch (cause) {
-    case mojom::ResponseStopCause::kUser:
-      cause_suffix = ".ByUser";
-      base::RecordAction(base::UserMetricsAction("GlicResponseStopByUser"));
-      break;
-    case mojom::ResponseStopCause::kOther:
-      cause_suffix = ".Other";
-      base::RecordAction(base::UserMetricsAction("GlicResponseStopOther"));
-      break;
-    case mojom::ResponseStopCause::kUnknown:
-      cause_suffix = ".UnknownCause";
-      base::RecordAction(
-          base::UserMetricsAction("GlicResponseStopUnknownCause"));
-      break;
-  }
-
-  if (turn_.input_submitted_time_.is_null()) {
-    base::UmaHistogramEnumeration("Glic.Metrics.Error",
-                                  Error::kResponseStopWithoutInput);
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Glic.Metrics.Error", cause_suffix}),
-        Error::kResponseStopWithoutInput);
-  }
-
-  // Reset the turn.
-  turn_ = {};
 }
 
 void GlicMetrics::OnSessionTerminated() {

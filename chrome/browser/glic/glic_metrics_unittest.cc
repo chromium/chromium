@@ -417,7 +417,6 @@ TEST_F(GlicMetricsTest, Basic) {
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
                                   mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
-  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics()->OnResponseRated(/*positive=*/true);
   metrics()->OnSessionTerminated();
 
@@ -431,9 +430,6 @@ TEST_F(GlicMetricsTest, Basic) {
 
   EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseInputSubmit"), 1);
   EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStart"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStop"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStopUnknownCause"),
-            1);
   EXPECT_EQ(user_action_tester().GetActionCount("GlicResponse"), 0);
 }
 
@@ -446,7 +442,6 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
                                   mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
-  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics()->OnResponseRated(/*positive=*/true);
   metrics()->OnSessionTerminated();
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
@@ -463,7 +458,6 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   EXPECT_EQ(user_action_tester().GetActionCount("GlicSessionBegin"), 1);
   EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseInputSubmit"), 1);
   EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStart"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStop"), 1);
   EXPECT_EQ(user_action_tester().GetActionCount("GlicResponse"), 1);
 }
 
@@ -539,7 +533,6 @@ TEST_F(GlicMetricsTest, BasicUkm) {
     metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
                                     mojom::PromptType::kUnspecified);
     metrics()->OnResponseStarted();
-    metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   }
 
   {
@@ -586,7 +579,6 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
                                   mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
-  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
 
   ukm::SourceId ukm_id =
       test_web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -605,39 +597,6 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
     auto entry = entries[0];
     EXPECT_EQ(entry->source_id, ukm_id);
   }
-}
-
-TEST_F(GlicMetricsTest, BasicStopReasonOther) {
-  delegate()->showing = true;
-  delegate()->attached = true;
-
-  metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
-                                        mojom::InvocationSource::kOsButton);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
-                                  mojom::PromptType::kUnspecified);
-  metrics()->OnResponseStarted();
-  metrics()->OnResponseStopped(mojom::ResponseStopCause::kOther);
-  metrics()->OnSessionTerminated();
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
-
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStopOther"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStop"), 1);
-}
-TEST_F(GlicMetricsTest, BasicStopReasonByUser) {
-  delegate()->showing = true;
-  delegate()->attached = true;
-
-  metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
-                                        mojom::InvocationSource::kOsButton);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
-                                  mojom::PromptType::kUnspecified);
-  metrics()->OnResponseStarted();
-  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUser);
-  metrics()->OnSessionTerminated();
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
-
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponseStopByUser"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("GlicResponse"), 1);
 }
 
 TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {

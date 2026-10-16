@@ -725,11 +725,11 @@ class MAYBE_GlicAnnotationManagerUiTest
 
   void OnResponseStarted() { FORWARD_METRICS_CALL(OnResponseStarted); }
 
-  void OnResponseStopped(mojom::ResponseStopCause cause) {
-    FORWARD_METRICS_CALL(OnResponseStopped, cause);
-  }
-
 #undef FORWARD_METRICS_CALL
+
+  void OnResponseStopped(mojom::ResponseStopCause cause) {
+    GetGlicInstanceImpl()->instance_metrics().OnResponseStopped(cause);
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;

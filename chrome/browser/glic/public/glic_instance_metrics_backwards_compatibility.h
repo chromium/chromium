@@ -10,10 +10,10 @@
 
 namespace glic {
 
-// Interface that's compatible for both `GlicInstanceMetrics` and
-// `GlicMetrics`. This interface will be removed when the single-instance
-// codepath is deprecated. Only intended for APIs that are either used in
-// MultiInstance or in single-instance.
+// Per-instance metrics APIs that `Host` forwards to the instance's metrics
+// recorder. Originally shared with the single-instance `GlicMetrics`; now
+// only implemented by `GlicInstanceMetrics`.
+// TODO(b/468097191): Fold this interface into `GlicInstanceMetrics`.
 class GlicInstanceMetricsBackwardsCompatibility {
  public:
   virtual ~GlicInstanceMetricsBackwardsCompatibility() = default;
@@ -21,7 +21,6 @@ class GlicInstanceMetricsBackwardsCompatibility {
   virtual void OnUserInputSubmitted(mojom::WebClientMode mode,
                                     mojom::PromptType prompt_type) = 0;
   virtual void OnResponseStarted() = 0;
-  virtual void OnResponseStopped(mojom::ResponseStopCause cause) = 0;
 };
 
 }  // namespace glic

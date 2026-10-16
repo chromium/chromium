@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/display/display.h"
@@ -178,7 +177,7 @@ class BrowserActivityObserver;
 // Responsible for all glic web-client metrics, and all stateful glic metrics.
 // Some stateless glic metrics are logged inline in the relevant code for
 // convenience.
-class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
+class GlicMetrics {
  public:
   class Delegate {
    public:
@@ -195,13 +194,12 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   GlicMetrics(Profile* profile, GlicEnabling* enabling);
   GlicMetrics(const GlicMetrics&) = delete;
   GlicMetrics& operator=(const GlicMetrics&) = delete;
-  ~GlicMetrics() override;
+  ~GlicMetrics();
 
-  // `GlicInstanceMetricsBackwardsCompatibility`:
+  // Turn events from the web client.
   void OnUserInputSubmitted(mojom::WebClientMode mode,
-                            mojom::PromptType prompt_type) override;
-  void OnResponseStarted() override;
-  void OnResponseStopped(mojom::ResponseStopCause cause) override;
+                            mojom::PromptType prompt_type);
+  void OnResponseStarted();
 
   void DidRequestContextFromTab(tabs::TabInterface& tab);
 
@@ -343,20 +341,15 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   base::TimeTicks fre_accepted_time_;
 
-  // These members are cleared in OnResponseStopped.
   struct TurnInfo {
     base::TimeTicks input_submitted_time_;
-    // Set to true in OnResponseStarted() and set to false in
-    // OnResponseStopped(). This is a workaround and should be removed, see
-    // crbug.com/399151164.
-    bool response_started_ = false;
     // A chosen source id from which context was requested.
     ukm::SourceId chosen_source_id_ = ukm::NoURLSourceId();
   };
 
   // Tracks information related to individual request/response turns.
   // It is reset when new user input is submitted and populated as the turn
-  // progresses. It is also reset at when the response stops.
+  // progresses.
   TurnInfo turn_;
 
   // The last web client input mode used by the user.
