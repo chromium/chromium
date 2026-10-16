@@ -10,7 +10,7 @@ from benchmarks import press
 
 
 @benchmark.Info(
-  emails=['video-cmi-apis@google.com', 'herre@google.com'],
+  emails=['rtc-meet-in-chrome@google.com', 'herre@google.com'],
   component='Blink>WebRTC',
   documentation_url='http://bit.ly/webrtc-benchmark',
 )

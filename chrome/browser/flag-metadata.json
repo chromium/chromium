@@ -4316,7 +4316,7 @@
   },
   {
     "name": "enable-media-foundation-video-capture",
-    "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
+    "owners": [ "agpalak@chromium.org", "herre@chromium.org", "rtc-meet-in-chrome@google.com" ],
     "expiry_milestone": 160
   },
   {
@@ -8790,7 +8790,7 @@
   },
   {
     "name": "run-video-capture-service-in-browser",
-    "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
+    "owners": [ "agpalak@chromium.org", "herre@chromium.org", "rtc-meet-in-chrome@google.com" ],
     "expiry_milestone": 160
   },
   {
