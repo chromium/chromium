@@ -76,7 +76,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -576,8 +575,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 Log.i(
                         TAG,
                         "version=%s (%s) minSdkVersion=%s multiprocess=%s packageId=%s splits=%s",
-                        packageInfo.versionName,
-                        PackageUtils.packageVersionCode(packageInfo),
+                        ApkInfo.getPackageVersionName(),
+                        ApkInfo.getPackageVersionCode(),
                         BuildConfig.MIN_SDK_VERSION,
                         mIsMultiProcessEnabled,
                         packageId,
