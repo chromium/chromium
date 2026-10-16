@@ -169,13 +169,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, CrComposeboxAutocompleteContextTest) {
           "runMochaSuite('CrComposeboxAutocompleteContextTest')");
 }
 
-// TODO(crbug.com/565815899): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ComposeboxContextMenu DISABLED_ComposeboxContextMenu
-#else
-#define MAYBE_ComposeboxContextMenu ComposeboxContextMenu
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxContextMenu) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
   RunTest("new_tab_page/composebox/composebox_context_menu_test.js",
           "runMochaSuite('NewTabPageComposeboxContextMenuTest')");
 }
