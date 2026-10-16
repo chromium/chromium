@@ -21,11 +21,8 @@ def setup_job_object():
 
   Assigns the current process to a Job Object configured with
   JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE. Child and grandchild processes spawned
-  by test executables automatically inherit this Job Object and will be cleanly
-  terminated when test_env.py exits or closes the handle.
-
-  Also includes JOB_OBJECT_LIMIT_BREAKAWAY_OK to allow child processes to
-  break away if explicitly requested via CREATE_BREAKAWAY_FROM_JOB.
+  by test executables automatically inherit this Job Object and will be
+  terminated when test_env.py exits.
 
   References:
     https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects
@@ -36,7 +33,6 @@ def setup_job_object():
 
   try:
     import win32api
-    import win32con
     import win32job
   except ImportError:
     print('Warning: Failed to import win32 libraries', file=sys.stderr)
@@ -48,14 +44,13 @@ def setup_job_object():
       hjob, win32job.JobObjectExtendedLimitInformation
     )
     info['BasicLimitInformation']['LimitFlags'] |= (
-      win32con.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-      | win32con.JOB_OBJECT_LIMIT_BREAKAWAY_OK
+      win32job.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
     )
     win32job.SetInformationJobObject(
       hjob, win32job.JobObjectExtendedLimitInformation, info
     )
     # Assign the current process (test_env.py). Child processes will
-    # automatically inherit this Job Object when spawned
+    # automatically inherit this Job Object when spawned.
     try:
       win32job.AssignProcessToJobObject(hjob, win32api.GetCurrentProcess())
     except Exception as e:
@@ -65,10 +60,112 @@ def setup_job_object():
       )
       return None
 
-    return hjob
+    # Detach the handle so Python's GC does not close it before sys.exit() sets
+    # the process exit code; the OS will close it when test_env.py exits.
+    return hjob.Detach()
   except Exception as e:
     print('Warning: Failed to set up JobObject: %s' % e, file=sys.stderr)
     return None
+
+
+def cleanup_child_processes(hjob):
+  """Resumes and terminates any lingering test processes in a job object.
+
+  A child process can have termination initiated while one of its threads is
+  suspended. Such a process is dropped from JobObjectBasicProcessIdList and
+  refuses subsequent TerminateProcess calls, remaining stuck in the OS process
+  table holding file locks until its suspended threads are resumed.
+  IsProcessInJob() still reports True for these processes until kernel rundown
+  completes.
+  """
+  if sys.platform != 'win32' or not hjob:
+    return
+
+  try:
+    import psutil
+    import win32api
+    import win32con
+    import win32job
+    import win32process
+  except ImportError:
+    print('Warning: Failed to import win32 libraries', file=sys.stderr)
+    return
+
+  test_env_pid = os.getpid()
+  lingering = []
+  for proc in psutil.process_iter(['pid', 'exe']):
+    if proc.pid == test_env_pid:
+      continue
+
+    # IsProcessInJob requires a Win32 process HANDLE, as psutil only exposes
+    # PIDs.
+    hproc = None
+    try:
+      hproc = win32api.OpenProcess(
+        win32con.PROCESS_QUERY_LIMITED_INFORMATION, False, proc.pid
+      )
+      in_job = win32job.IsProcessInJob(hproc, hjob)
+    except win32api.error:
+      continue
+    finally:
+      if hproc:
+        win32api.CloseHandle(hproc)
+
+    if not in_job:
+      continue
+
+    print(
+      'Warning: Found lingering process PID=%d (%s); resuming and killing.'
+      % (proc.pid, proc.info.get('exe')),
+      file=sys.stderr,
+    )
+    lingering.append(proc)
+    try:
+      threads = proc.threads()
+    except psutil.Error as e:
+      print(
+        'Warning: Failed to enumerate threads for PID=%d: %s' % (proc.pid, e),
+        file=sys.stderr,
+      )
+      threads = []
+
+    # Resume any suspended threads so the process can finish exiting. Each
+    # ResumeThread() call decrements the thread's suspend count by 1, so loop
+    # until the previous count is <= 1 (meaning the thread is now running).
+    for t in threads:
+      hthread = None
+      try:
+        hthread = win32api.OpenThread(
+          win32con.THREAD_SUSPEND_RESUME, False, t.id
+        )
+        while win32process.ResumeThread(hthread) > 1:
+          pass
+      except win32api.error as e:
+        print(
+          'Warning: Failed to resume TID=%d for PID=%d: %s'
+          % (t.id, proc.pid, e),
+          file=sys.stderr,
+        )
+      finally:
+        if hthread:
+          win32api.CloseHandle(hthread)
+
+    try:
+      proc.kill()
+    except psutil.Error as e:
+      print(
+        'Warning: Failed to kill lingering PID=%d: %s' % (proc.pid, e),
+        file=sys.stderr,
+      )
+
+  if lingering:
+    _, alive = psutil.wait_procs(lingering, timeout=5)
+    if alive:
+      print(
+        'Warning: Processes still alive after cleanup wait: %r'
+        % [p.pid for p in alive],
+        file=sys.stderr,
+      )
 
 
 def trim_cmd(cmd):
@@ -548,16 +645,18 @@ def _popen(*args, **kwargs):
   assert 'creationflags' not in kwargs
   if sys.platform == 'win32':
     # Necessary for signal handling (CTRL_BREAK_EVENT). See crbug.com/733612#c6.
-    # Job Objects handle process tree cleanup on exit.
+    # Job Objects and cleanup_child_processes() handle process tree cleanup on
+    # exit.
     kwargs['creationflags'] = subprocess.CREATE_NEW_PROCESS_GROUP
   return subprocess.Popen(*args, **kwargs)
 
 
 def main():
-  if sys.platform == 'win32':
-    _job = setup_job_object()
-
-  return run_executable(sys.argv[1:], os.environ.copy())
+  hjob = setup_job_object()
+  try:
+    return run_executable(sys.argv[1:], os.environ.copy())
+  finally:
+    cleanup_child_processes(hjob)
 
 
 if __name__ == '__main__':

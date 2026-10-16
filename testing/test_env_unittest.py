@@ -21,6 +21,7 @@ if sys.platform == 'win32':
   try:
     import win32api
     import win32con
+    import win32event
     import win32process
   except ImportError:
     win32api = None
@@ -91,26 +92,34 @@ class SignalingWindowsTest(unittest.TestCase):
   def test_job_object_kills_leaked_child_process(self):
     proc = launch_process_windows(['--spawn-leaked-child'])
     leaked_pid_str = read_subprocess_message(proc, 'Leaked PID:')
-    proc.wait()
+    self.assertEqual(proc.wait(), 42)
     self.assertIsNotNone(leaked_pid_str)
     leaked_pid = int(leaked_pid_str)
     time.sleep(0.2)
 
-    if not win32api:
-      return
+    self.assertIsNotNone(win32api)
 
+    hproc = None
     try:
       hproc = win32api.OpenProcess(
-        win32con.PROCESS_QUERY_LIMITED_INFORMATION, False, leaked_pid
+        win32con.PROCESS_QUERY_LIMITED_INFORMATION | win32con.SYNCHRONIZE,
+        False,
+        leaked_pid,
       )
-      if hproc:
-        exit_code = win32process.GetExitCodeProcess(hproc)
-        win32api.CloseHandle(hproc)
-        # 259 is STILL_ACTIVE; process should be terminated.
-        self.assertNotEqual(exit_code, 259)
     except Exception:
       # OpenProcess failing indicates the PID is no longer valid (process dead).
       pass
+
+    if hproc:
+      try:
+        exit_code = win32process.GetExitCodeProcess(hproc)
+        wait_state = win32event.WaitForSingleObject(hproc, 0)
+      finally:
+        win32api.CloseHandle(hproc)
+      # 259 is STILL_ACTIVE; process should be terminated and fully signaled
+      # (not stuck in kernel rundown with a suspended thread).
+      self.assertNotEqual(exit_code, 259)
+      self.assertEqual(wait_state, win32event.WAIT_OBJECT_0)
 
 
 class GeneratedWrapperTest(unittest.TestCase):

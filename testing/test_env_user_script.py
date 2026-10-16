@@ -13,5 +13,14 @@ import test_env
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEST_SCRIPT = os.path.join(HERE, 'test_env_test_script.py')
 
+
+def main():
+  hjob = test_env.setup_job_object()
+  try:
+    return test_env.run_command([sys.executable, TEST_SCRIPT] + sys.argv[1:])
+  finally:
+    test_env.cleanup_child_processes(hjob)
+
+
 if __name__ == '__main__':
-  test_env.run_command([sys.executable, TEST_SCRIPT] + sys.argv[1:])
+  sys.exit(main())
