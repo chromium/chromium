@@ -10,13 +10,15 @@
 #import "components/origin_gating/core/decision.h"
 #import "components/origin_gating/core/gateable_event.h"
 #import "components/origin_gating/core/gating_decision.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
 namespace actor {
 
-ActorOriginGatingCheckerDelegateIOS::ActorOriginGatingCheckerDelegateIOS() =
-    default;
+ActorOriginGatingCheckerDelegateIOS::ActorOriginGatingCheckerDelegateIOS(
+    const ActorEnterprisePolicyCheckerIOS* policy_checker)
+    : policy_checker_(policy_checker) {}
 
 ActorOriginGatingCheckerDelegateIOS::~ActorOriginGatingCheckerDelegateIOS() =
     default;
@@ -54,9 +56,27 @@ void ActorOriginGatingCheckerDelegateIOS::EvaluateEnterprisePolicy(
     EvaluateEnterprisePolicyCallback callback) const {
   // Parity with Desktop when unmanaged: return kNoDecision.
   // (https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/actor/execution_engine.cc;l=1000;drc=5302cb43248b6963cf081a371207f808e73c3d77)
-  // TODO(crbug.com/556689100): Implement enterprise policy evaluation for iOS.
-  std::move(callback).Run(DecisionWithMetadata{
-      .decision = origin_gating::Decision::kNoDecision, .bypass_cache = true});
+  if (!policy_checker_) {
+    std::move(callback).Run(
+        DecisionWithMetadata{.decision = origin_gating::Decision::kNoDecision,
+                             .bypass_cache = true});
+    return;
+  }
+  origin_gating::Decision decision = origin_gating::Decision::kNoDecision;
+  switch (policy_checker_->Evaluate(destination)) {
+    case EnterprisePolicyUrlBlockReason::kNotBlocked:
+      decision = origin_gating::Decision::kNoDecision;
+      break;
+    case EnterprisePolicyUrlBlockReason::kExplicitlyAllowed:
+      decision = origin_gating::Decision::kAllowed;
+      break;
+    case EnterprisePolicyUrlBlockReason::kExplicitlyBlocked:
+      decision = origin_gating::Decision::kBlocked;
+      break;
+  }
+
+  std::move(callback).Run(
+      DecisionWithMetadata{.decision = decision, .bypass_cache = true});
 }
 
 void ActorOriginGatingCheckerDelegateIOS::OnNoVerdict(

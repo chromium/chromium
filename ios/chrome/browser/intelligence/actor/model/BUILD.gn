@@ -8,6 +8,8 @@ source_set("model") {
     "actor_browser_agent.mm",
     "actor_engine.h",
     "actor_engine.mm",
+    "actor_enterprise_policy_checker_ios.h",
+    "actor_enterprise_policy_checker_ios.mm",
     "actor_origin_gating_checker_delegate_ios.h",
     "actor_origin_gating_checker_delegate_ios.mm",
     "actor_service.h",
@@ -36,6 +38,8 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
+    "//components/policy/core/browser",
+    "//components/prefs",
 
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
     "//ios/chrome/app/background_task",
@@ -54,6 +58,7 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/origin_gating/model",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -88,6 +93,7 @@ source_set("unit_tests") {
   sources = [
     "actor_browser_agent_unittest.mm",
     "actor_engine_unittest.mm",
+    "actor_enterprise_policy_checker_ios_unittest.mm",
     "actor_origin_gating_checker_delegate_ios_unittest.mm",
     "actor_service_unittest.mm",
     "actor_tab_helper_unittest.mm",
@@ -105,6 +111,8 @@ source_set("unit_tests") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
+    "//components/prefs",
+    "//components/prefs:test_support",
 
     # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
     "//ios/chrome/app/background_task",
@@ -126,6 +134,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/origin_gating/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

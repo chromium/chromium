@@ -6,15 +6,23 @@
 
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/values.h"
 #import "components/origin_gating/core/decision.h"
 #import "components/origin_gating/core/gateable_event.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
 namespace actor {
 namespace {
+
+constexpr int kPolicyEnabled = 0;
+
 using DecisionWithMetadata =
     origin_gating::OriginGatingChecker::Delegate::DecisionWithMetadata;
 using NoVerdictResult =
@@ -101,6 +109,58 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
   const DecisionWithMetadata result = future.Get();
   EXPECT_EQ(result.decision, origin_gating::Decision::kNoDecision);
   EXPECT_TRUE(result.bypass_cache);
+}
+
+// Test that evaluating enterprise policy with an active policy checker maps
+// `kNotBlocked`, `kExplicitlyAllowed`, and `kExplicitlyBlocked` to the
+// corresponding `origin_gating::Decision` values and bypasses cache.
+TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
+       EvaluateEnterprisePolicy_WithPolicyChecker_MapsDecisions) {
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterIntegerPref(prefs::kGeminiActOnWebSettings,
+                                               kPolicyEnabled);
+  pref_service.registry()->RegisterListPref(
+      prefs::kGeminiActOnWebAllowedForURLs);
+  pref_service.registry()->RegisterListPref(
+      prefs::kGeminiActOnWebBlockedForURLs);
+
+  pref_service.SetList(prefs::kGeminiActOnWebBlockedForURLs,
+                       base::ListValue().Append("blocked.example.com"));
+  pref_service.SetList(prefs::kGeminiActOnWebAllowedForURLs,
+                       base::ListValue().Append("allowed.example.com"));
+
+  ActorEnterprisePolicyCheckerIOS policy_checker(&pref_service);
+  ActorOriginGatingCheckerDelegateIOS delegate_with_policy(&policy_checker);
+
+  // 1. Unlisted URL -> kNoDecision.
+  {
+    base::test::TestFuture<DecisionWithMetadata> future;
+    delegate_with_policy.EvaluateEnterprisePolicy(
+        GURL("https://unlisted.example.com"), future.GetCallback());
+    const DecisionWithMetadata result = future.Get();
+    EXPECT_EQ(result.decision, origin_gating::Decision::kNoDecision);
+    EXPECT_TRUE(result.bypass_cache);
+  }
+
+  // 2. Allowlisted URL -> kAllowed.
+  {
+    base::test::TestFuture<DecisionWithMetadata> future;
+    delegate_with_policy.EvaluateEnterprisePolicy(
+        GURL("https://allowed.example.com"), future.GetCallback());
+    const DecisionWithMetadata result = future.Get();
+    EXPECT_EQ(result.decision, origin_gating::Decision::kAllowed);
+    EXPECT_TRUE(result.bypass_cache);
+  }
+
+  // 3. Blocklisted URL -> KBlocked.
+  {
+    base::test::TestFuture<DecisionWithMetadata> future;
+    delegate_with_policy.EvaluateEnterprisePolicy(
+        GURL("https://blocked.example.com"), future.GetCallback());
+    const DecisionWithMetadata result = future.Get();
+    EXPECT_EQ(result.decision, origin_gating::Decision::kBlocked);
+    EXPECT_TRUE(result.bypass_cache);
+  }
 }
 
 // Test that OnNoVerdict for navigation requests fails open and bypasses the
