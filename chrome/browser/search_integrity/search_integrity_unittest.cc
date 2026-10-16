@@ -6,17 +6,24 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/search_integrity/search_integrity_allowlist.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -121,6 +128,31 @@ class SearchIntegrityTest : public testing::Test {
 
   void SetDefaultSearchProvider(TemplateURL* template_url) {
     test_util_->model()->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  void TestDefaultSetByPolicyInLowTrustImpl(
+      policy::EnterpriseManagementAuthority platform_authority,
+      policy::EnterpriseManagementAuthority profile_authority,
+      bool expected_in_low_trust,
+      std::string_view expected_histogram_name) {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForPlatform(), platform_authority);
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(test_util_->profile()),
+        profile_authority);
+
+    base::HistogramTester histogram_tester;
+    TemplateURL* turl = AddSearchEngine(u"Policy Default", "http://policy.com",
+                                        /*created_by_policy=*/true);
+    SetDefaultSearchProvider(turl);
+
+    TriggerAllowlistInitialized();
+
+    SearchIntegrityReport report = CheckSearchEnginesReport();
+    EXPECT_EQ(report.is_default_set_by_policy_in_low_trust,
+              expected_in_low_trust);
+    histogram_tester.ExpectUniqueSample(expected_histogram_name,
+                                        expected_in_low_trust, 1);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -362,6 +394,199 @@ TEST_F(SearchIntegrityTest, CheckDefaultEnforcedWithoutPolicy_Managed) {
 
   SearchIntegrityReport report = CheckSearchEnginesReport();
   EXPECT_FALSE(report.is_default_enforced_without_policy);
+}
+
+TEST_F(SearchIntegrityTest, CheckDefaultSetByPolicyInLowTrust_NoneAuthority) {
+  TestDefaultSetByPolicyInLowTrustImpl(
+      policy::EnterpriseManagementAuthority::NONE,
+      policy::EnterpriseManagementAuthority::NONE,
+      /*expected_in_low_trust=*/true,
+      "Search.Integrity.IsDefaultSetByPolicyInLowTrust");
+}
+
+TEST_F(SearchIntegrityTest, CheckDefaultSetByPolicyInLowTrust_LowAuthority) {
+  TestDefaultSetByPolicyInLowTrustImpl(
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+      /*expected_in_low_trust=*/true,
+      "Search.Integrity.Enterprise.IsDefaultSetByPolicyInLowTrust");
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyInLowTrust_TrustedPlatformAuthority) {
+  TestDefaultSetByPolicyInLowTrustImpl(
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL,
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+      /*expected_in_low_trust=*/false,
+      "Search.Integrity.Enterprise.IsDefaultSetByPolicyInLowTrust");
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyInLowTrust_TrustedProfileAuthority) {
+  TestDefaultSetByPolicyInLowTrustImpl(
+      policy::EnterpriseManagementAuthority::NONE,
+      policy::EnterpriseManagementAuthority::CLOUD,
+      /*expected_in_low_trust=*/false,
+      "Search.Integrity.Enterprise.IsDefaultSetByPolicyInLowTrust");
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyInLowTrust_NotCreatedByPolicy) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(test_util_->profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl = AddSearchEngine(u"User Default", "http://custom.com",
+                                      /*created_by_policy=*/false);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_FALSE(report.is_default_set_by_policy);
+  EXPECT_FALSE(report.is_default_set_by_policy_in_low_trust);
+  histogram_tester.ExpectTotalCount(
+      "Search.Integrity.IsDefaultSetByPolicyInLowTrust", 0);
+  histogram_tester.ExpectTotalCount(
+      "Search.Integrity.IsDefaultSetByPolicyWithoutMatchingPolicy", 0);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyWithoutMatchingPolicy_NoPolicy) {
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl = AddSearchEngine(u"Policy Default", "http://policy.com",
+                                      /*created_by_policy=*/true);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy_without_matching_policy);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.IsDefaultSetByPolicyWithoutMatchingPolicy", true, 1);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyWithoutMatchingPolicy_MatchingMandatoryPolicy) {
+  TemplateURL* turl =
+      AddSearchEngine(u"Policy Default", "http://policy.com/?q={searchTerms}",
+                      /*created_by_policy=*/true);
+  SetDefaultSearchProvider(turl);
+
+  base::DictValue policy_dict = TemplateURLDataToDictionary(turl->data());
+  test_util_->profile()->GetTestingPrefService()->SetManagedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(policy_dict));
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy);
+  EXPECT_FALSE(report.is_default_set_by_policy_without_matching_policy);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyWithoutMatchingPolicy_MatchingRecommendedPolicy) {
+  TemplateURLData policy_data;
+  policy_data.SetShortName(u"Policy Default");
+  policy_data.SetKeyword(u"Policy Default");
+  policy_data.SetURL("http://policy.com/?q={searchTerms}");
+  policy_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+
+  base::DictValue policy_dict = TemplateURLDataToDictionary(policy_data);
+  test_util_->profile()->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(policy_dict));
+
+  // Verify when the recommended policy is active directly
+  // (`source == DefaultSearchManager::FROM_POLICY_RECOMMENDED`).
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy);
+  EXPECT_FALSE(report.is_default_set_by_policy_without_matching_policy);
+
+  // Verify when the user explicitly selects the recommended policy engine
+  // (`source == DefaultSearchManager::FROM_USER`, falling back to
+  // `GetRecommendedDefaultSearchEngine()`).
+  TemplateURL* turl =
+      const_cast<TemplateURL*>(test_util_->model()->GetDefaultSearchProvider());
+  ASSERT_NE(turl, nullptr);
+  SetDefaultSearchProvider(turl);
+  report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy);
+  EXPECT_FALSE(report.is_default_set_by_policy_without_matching_policy);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyWithoutMatchingPolicy_MismatchedPolicyUrl) {
+  TemplateURL* turl = AddSearchEngine(u"Fake Policy Default",
+                                      "http://fake-policy.com/?q={searchTerms}",
+                                      /*created_by_policy=*/true);
+  SetDefaultSearchProvider(turl);
+
+  TemplateURLData real_policy_data = turl->data();
+  real_policy_data.id = kInvalidTemplateURLID;
+  real_policy_data.SetURL("http://real-policy.com/?q={searchTerms}");
+  base::DictValue policy_dict = TemplateURLDataToDictionary(real_policy_data);
+  test_util_->profile()->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(policy_dict));
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy);
+  EXPECT_TRUE(report.is_default_set_by_policy_without_matching_policy);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDefaultSetByPolicyWithoutMatchingPolicy_DisabledByPolicy) {
+  TemplateURL* turl =
+      AddSearchEngine(u"Policy Default", "http://policy.com/?q={searchTerms}",
+                      /*created_by_policy=*/true);
+  SetDefaultSearchProvider(turl);
+
+  base::DictValue policy_dict = TemplateURLDataToDictionary(turl->data());
+  policy_dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
+  test_util_->profile()->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(policy_dict));
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy);
+  EXPECT_TRUE(report.is_default_set_by_policy_without_matching_policy);
+}
+
+TEST_F(
+    SearchIntegrityTest,
+    CheckDefaultSetByPolicyWithoutMatchingPolicy_MandatoryOverridesRecommended) {
+  TemplateURLData data;
+  data.SetShortName(u"Policy Default");
+  data.SetKeyword(u"Policy Default");
+  data.SetURL("http://recommended.com/?q={searchTerms}");
+  data.policy_origin = TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+
+  // Recommended policy matches `data`, but mandatory policy disables DSE.
+  base::DictValue recommended_dict = TemplateURLDataToDictionary(data);
+  test_util_->profile()->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(recommended_dict));
+
+  base::DictValue mandatory_dict;
+  mandatory_dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
+  test_util_->profile()->GetTestingPrefService()->SetManagedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(mandatory_dict));
+
+  // Simulate `TemplateURLService` still holding a policy-attributed default
+  // search engine in memory while `DefaultSearchManager` has `FROM_POLICY`
+  // with `kDisabledByPolicy = true`.
+  test_util_->model()->ApplyDefaultSearchChangeForTesting(
+      &data, DefaultSearchManager::FROM_USER);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.is_default_set_by_policy);
+  EXPECT_TRUE(report.is_default_set_by_policy_without_matching_policy);
 }
 
 TEST_F(SearchIntegrityTest, CheckDuplicateKeywords_None) {

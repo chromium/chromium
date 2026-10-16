@@ -1512,6 +1512,43 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
 </histogram>
 
+<histogram name="Search.Integrity{Enterprise}.IsDefaultSetByPolicyInLowTrust"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the default search engine has policy_origin set to
+    kDefaultSearchProvider (CreatedByDefaultSearchProviderPolicy) while the
+    browser and profile are in a low-trust management environment (management
+    authority trustworthiness below TRUSTED) {Enterprise}.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked, if the default search engine
+    has policy_origin set to kDefaultSearchProvider.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.IsDefaultSetByPolicyWithoutMatchingPolicy"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the default search engine has policy_origin set to
+    kDefaultSearchProvider (CreatedByDefaultSearchProviderPolicy), but there is
+    no active mandatory or recommended DefaultSearchProvider enterprise policy
+    with a matching URL {Enterprise}.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked, if the default search engine
+    has policy_origin set to kDefaultSearchProvider.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="2026-11-29">
   <owner>gambard@chromium.org</owner>

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_integrity/search_integrity.h"
@@ -31,6 +32,7 @@ SearchIntegrityFactory::SearchIntegrityFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
+  DependsOn(policy::ManagementServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 

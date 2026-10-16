@@ -22,9 +22,11 @@ source_set("search_integrity") {
     "//base",
     "//base:i18n",
     "//chrome/browser:resources",
+    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//components/keyed_service/core",
+    "//components/policy/core/common",
     "//components/search_engines",
     "//content/public/browser",
   ]
@@ -37,7 +39,10 @@ source_set("unit_tests") {
   deps = [
     ":search_integrity",
     "//base",
+    "//chrome/browser/enterprise",
     "//chrome/test:test_support",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/search_engines",
     "//components/search_engines:test_support",
   ]

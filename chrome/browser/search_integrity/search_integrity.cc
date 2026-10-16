@@ -4,7 +4,9 @@
 
 #include "chrome/browser/search_integrity/search_integrity.h"
 
+#include <algorithm>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -22,13 +24,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"  // nogncheck
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_integrity/search_integrity_allowlist.h"
 #include "chrome/browser/search_integrity/search_integrity_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -131,6 +138,59 @@ std::string GetExtensionId(const TemplateURL* turl) {
   return "";
 }
 
+// Returns true if there is an active mandatory or recommended
+// DefaultSearchProvider enterprise policy whose URL matches
+// `default_search_provider`.
+bool HasMatchingDefaultSearchProviderPolicy(
+    TemplateURLService* template_url_service,
+    const TemplateURL* default_search_provider) {
+  if (!template_url_service || !default_search_provider) {
+    return false;
+  }
+
+  const DefaultSearchManager* default_search_manager =
+      template_url_service->GetDefaultSearchManager();
+  if (!default_search_manager) {
+    return false;
+  }
+
+  DefaultSearchManager::Source source;
+  const TemplateURLData* policy_data =
+      default_search_manager->GetDefaultSearchEngine(&source);
+  if (source == DefaultSearchManager::FROM_POLICY ||
+      source == DefaultSearchManager::FROM_POLICY_RECOMMENDED) {
+    return policy_data && policy_data->url() == default_search_provider->url();
+  }
+
+  // If the user explicitly selected the recommended policy engine (or has a
+  // user override while a recommended policy is active), `source` is
+  // `FROM_USER`; check the underlying recommended policy engine.
+  std::unique_ptr<TemplateURLData> recommended_data =
+      default_search_manager->GetRecommendedDefaultSearchEngine();
+  return recommended_data &&
+         recommended_data->url() == default_search_provider->url();
+}
+
+// Returns true if the environment does not have a trusted management authority
+// for enforcing sensitive enterprise policies (such as DefaultSearchProvider).
+bool IsLowTrustEnvironment(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
+      policy::ManagementServiceFactory::GetForPlatform()
+          ->GetManagementAuthorityTrustworthinessForPolicyLoading();
+  policy::ManagementAuthorityTrustworthiness browser_trustworthiness =
+      policy::ManagementAuthorityTrustworthiness::NONE;
+  if (policy::ManagementService* browser_management =
+          policy::ManagementServiceFactory::GetForProfile(profile)) {
+    browser_trustworthiness =
+        browser_management->GetManagementAuthorityTrustworthiness();
+  }
+  return std::max(platform_trustworthiness, browser_trustworthiness) <
+         policy::ManagementAuthorityTrustworthiness::TRUSTED;
+}
+
 }  // namespace
 
 SearchIntegrity::SearchIntegrity(TemplateURLService* template_url_service,
@@ -200,6 +260,14 @@ void SearchIntegrity::OnTemplateURLServiceLoaded() {
         report.is_default_custom_with_matching_policy_engine);
     base::UmaHistogramBoolean("Search.Integrity.IsDefaultEnforcedWithoutPolicy",
                               report.is_default_enforced_without_policy);
+    if (report.is_default_set_by_policy) {
+      base::UmaHistogramBoolean(
+          "Search.Integrity.IsDefaultSetByPolicyInLowTrust",
+          report.is_default_set_by_policy_in_low_trust);
+      base::UmaHistogramBoolean(
+          "Search.Integrity.IsDefaultSetByPolicyWithoutMatchingPolicy",
+          report.is_default_set_by_policy_without_matching_policy);
+    }
     base::UmaHistogramEnumeration("Search.Integrity.DuplicateKeyword",
                                   report.duplicate_keyword_status);
     base::UmaHistogramBoolean("Search.Integrity.CustomPopulatedDefault",
@@ -235,6 +303,14 @@ void SearchIntegrity::LogEnterpriseMetrics(
   base::UmaHistogramBoolean(
       "Search.Integrity.Enterprise.IsDefaultEnforcedWithoutPolicy",
       report.is_default_enforced_without_policy);
+  if (report.is_default_set_by_policy) {
+    base::UmaHistogramBoolean(
+        "Search.Integrity.Enterprise.IsDefaultSetByPolicyInLowTrust",
+        report.is_default_set_by_policy_in_low_trust);
+    base::UmaHistogramBoolean(
+        "Search.Integrity.Enterprise.IsDefaultSetByPolicyWithoutMatchingPolicy",
+        report.is_default_set_by_policy_without_matching_policy);
+  }
   base::UmaHistogramEnumeration("Search.Integrity.Enterprise.DuplicateKeyword",
                                 report.duplicate_keyword_status);
 
@@ -365,6 +441,15 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
       !profile_->GetPrefs()->IsManagedPreference(
           prefs::kDefaultSearchProviderEnabled)) {
     report.is_default_enforced_without_policy = true;
+  }
+
+  if (default_search_provider->CreatedByDefaultSearchProviderPolicy()) {
+    report.is_default_set_by_policy = true;
+    report.is_default_set_by_policy_in_low_trust =
+        IsLowTrustEnvironment(profile_);
+    report.is_default_set_by_policy_without_matching_policy =
+        !HasMatchingDefaultSearchProviderPolicy(template_url_service_,
+                                                default_search_provider);
   }
 
   if (IsDisallowedCustomSearchEngine(default_search_provider)) {
