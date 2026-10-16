@@ -112,6 +112,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
   }
 
   OrganizerPanelView* organizer_panel_view() { return view_; }
+  views::Widget* widget() { return widget_.get(); }
 
   tabs::test::MockVerticalTabStripStateController*
   vertical_tab_strip_controller() {
@@ -215,4 +216,60 @@ TEST_F(OrganizerPanelViewTest, DraggableRegionsInWindowCaption) {
                                     &outside_point);
   EXPECT_FALSE(
       organizer_panel_view()->IsPositionInWindowCaption(outside_point));
+}
+
+TEST_F(OrganizerPanelViewTest, VisibilityChangedRestoresFocusWhenWidgetActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  CreateView();
+  views::View* web_view = GetWebView();
+  ASSERT_NE(web_view, nullptr);
+
+  views::View* initial_view =
+      widget()->GetRootView()->AddChildView(std::make_unique<views::View>());
+  initial_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  web_view->SetVisible(false);
+  initial_view->RequestFocus();
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), initial_view);
+
+  web_view->SetVisible(true);
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), web_view);
+
+  EXPECT_TRUE(widget()->IsActive());
+  web_view->SetVisible(false);
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), initial_view);
+}
+
+TEST_F(OrganizerPanelViewTest,
+       VisibilityChangedDoesNotStealFocusWhenWidgetInactive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  CreateView();
+  views::View* web_view = GetWebView();
+  ASSERT_NE(web_view, nullptr);
+
+  views::View* initial_view =
+      widget()->GetRootView()->AddChildView(std::make_unique<views::View>());
+  initial_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  web_view->SetVisible(false);
+  initial_view->RequestFocus();
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), initial_view);
+
+  web_view->SetVisible(true);
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), web_view);
+
+  auto other_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  other_widget->Show();
+  EXPECT_FALSE(widget()->IsActive());
+
+  web_view->SetVisible(false);
+  EXPECT_NE(widget()->GetFocusManager()->GetFocusedView(), initial_view);
+  EXPECT_EQ(widget()->GetFocusManager()->GetStoredFocusView(), initial_view);
 }

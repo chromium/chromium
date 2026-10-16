@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Color, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {Color, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, OrganizerListSectionItemElement, TabGroup, TabGroupsOrganizerPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -23,6 +23,8 @@ suite('TabGroupsDelegateTest', () => {
   let delegate: TabGroupsDelegate;
   let mockHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
+  let mockOrganizerPanelHandler: TestMock<OrganizerPanelPageHandlerRemote>&
+      OrganizerPanelPageHandlerRemote;
   let remotePage: TabGroupsOrganizerPageRemote;
 
   const sampleGroups: TabGroup[] = [
@@ -61,6 +63,14 @@ suite('TabGroupsDelegateTest', () => {
         tabGroupsBrowserProxyFactory.createForTest(mockHandler);
     tabGroupsBrowserProxyFactory.setInstance(instance);
     remotePage = remote;
+
+    mockOrganizerPanelHandler =
+        TestMock.fromClass(OrganizerPanelPageHandlerRemote);
+    const {instance: organizerPanelInstance} =
+        organizerPanelBrowserProxyFactory.createForTest(
+            mockOrganizerPanelHandler);
+    organizerPanelBrowserProxyFactory.setInstance(organizerPanelInstance);
+
     delegate = new TabGroupsDelegate();
   });
 
@@ -207,31 +217,34 @@ suite('TabGroupsDelegateTest', () => {
     assertDeepEquals({x: 15, y: 25, width: 0, height: 0}, args[1]);
   });
 
-  test('returns zero state and triggers createNewTabGroup on click', () => {
-    assertTrue(delegate.shouldAlwaysShowZeroState());
-    const zeroState = delegate.getZeroState();
-    assertTrue(!!zeroState);
+  test(
+      'returns zero state and triggers createNewTabGroup and closePanel on click',
+      () => {
+        assertTrue(delegate.shouldAlwaysShowZeroState());
+        const zeroState = delegate.getZeroState();
+        assertTrue(!!zeroState);
 
-    const container = document.createElement('div');
-    document.body.appendChild(container);
-    render(zeroState, container);
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        render(zeroState, container);
 
-    const item = container.querySelector<OrganizerListSectionItemElement>(
-        'organizer-list-section-item');
-    assertTrue(!!item);
-    assertDeepEquals(['Create tab group'], item.item.title);
+        const item = container.querySelector<OrganizerListSectionItemElement>(
+            'organizer-list-section-item');
+        assertTrue(!!item);
+        assertDeepEquals(['Create tab group'], item.item.title);
 
-    const icon = item.item.prefixIcon?.element;
-    assertTrue(!!icon);
+        const icon = item.item.prefixIcon?.element;
+        assertTrue(!!icon);
 
-    const iconContainer = document.createElement('div');
-    document.body.appendChild(iconContainer);
-    render(icon, iconContainer);
-    const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
-    assertTrue(!!crIcon);
-    assertEquals('cr:add', crIcon.icon);
+        const iconContainer = document.createElement('div');
+        document.body.appendChild(iconContainer);
+        render(icon, iconContainer);
+        const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
+        assertTrue(!!crIcon);
+        assertEquals('cr:add', crIcon.icon);
 
-    item.click();
-    assertEquals(1, mockHandler.getCallCount('createNewTabGroup'));
-  });
+        item.click();
+        assertEquals(1, mockHandler.getCallCount('createNewTabGroup'));
+        assertEquals(1, mockOrganizerPanelHandler.getCallCount('closePanel'));
+      });
 });

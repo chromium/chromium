@@ -15,12 +15,16 @@ import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
+import type {BrowserProxy as OrganizerPanelBrowserProxy} from '../organizer_panel.mojom-webui.js';
+import {browserProxyFactory as organizerPanelBrowserProxyFactory} from '../organizer_panel.mojom-webui.js';
 import type {BrowserProxy, TabGroup} from '../tab_groups.mojom-webui.js';
 import {browserProxyFactory} from '../tab_groups.mojom-webui.js';
 
 export class TabGroupsDelegate implements
     OrganizerListSectionDelegate<TabGroup> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private organizerPanelBrowserProxy_: OrganizerPanelBrowserProxy =
+      organizerPanelBrowserProxyFactory.getInstance();
   private client_?: OrganizerListSectionClient;
   private listenerIds_: number[] = [];
   private tabGroups_: TabGroup[] = [];
@@ -74,6 +78,7 @@ export class TabGroupsDelegate implements
   }
 
   private onCreateTabGroupClick_() {
+    this.organizerPanelBrowserProxy_.handler.closePanel();
     this.browserProxy_.handler.createNewTabGroup();
   }
 

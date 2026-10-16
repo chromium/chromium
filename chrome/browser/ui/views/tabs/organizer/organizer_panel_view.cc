@@ -127,15 +127,21 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
       }
     } else if (previously_focused_view_) {
       if (!currently_focused || Contains(currently_focused)) {
-        focus_manager->SetFocusedView(previously_focused_view_.view());
+        if (GetWidget() && !GetWidget()->IsActive()) {
+          focus_manager->SetStoredFocusView(previously_focused_view_.view());
+        } else {
+          focus_manager->SetFocusedView(previously_focused_view_.view());
+        }
       }
       previously_focused_view_.SetView(nullptr);
     } else if (!currently_focused || Contains(currently_focused)) {
       // Losing visibility and there's no view to set as currently focused.
-      // Focus the location bar.
-      if (auto* browser_view =
-              BrowserView::GetBrowserViewForBrowser(&*browser_)) {
-        browser_view->SetFocusToLocationBar(false);
+      // Focus the location bar only if the browser window is active.
+      if (GetWidget() && GetWidget()->IsActive()) {
+        if (auto* browser_view =
+                BrowserView::GetBrowserViewForBrowser(&*browser_)) {
+          browser_view->SetFocusToLocationBar(false);
+        }
       }
     }
   }
