@@ -7747,10 +7747,6 @@ crbug.com/352481804 [ Linux ] external/wpt/html/semantics/embedded-content/the-o
 
 # Gardener 2024-07-17
 
-# Flaky 2024-07-18
-crbug.com/352093460 external/wpt/webtransport/stats.https.any.worker.html [ Failure Pass ]
-crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html [ Failure Pass ]
-
 # Gardener 2024-07-19
 crbug.com/354060896 [ Release Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-window-color.html [ Failure Pass Timeout ]
 crbug.com/354061998 [ Release Win11-arm64 ] http/tests/cookies/partitioned-cookies/ancestor-chain-same-site-subresource-to-cross-site.https.html [ Failure Pass Timeout ]
@@ -8046,9 +8042,6 @@ crbug.com/400726001 [ Mac14 ] external/wpt/css/css-ruby/ruby-text-combine-uprigh
 # Gardener 2025-03-07
 crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Pass Timeout ]
 crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Failure Pass ]
-
-# Gardener 2025-03-11
-crbug.com/402377886 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.sharedworker.html [ Failure ]
 
 # Gardener 2025-03-12
 crbug.com/402546166 [ Linux ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
@@ -8649,9 +8642,6 @@ crbug.com/552043107 [ Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/med
 
 # Gardener 2026-08-26
 crbug.com/552768634 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Failure Pass ]
-
-# Gardener 2026-09-03
-crbug.com/554722975 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.html [ Failure Pass ]
 
 # Gardener 2026-09-04
 crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-position-multicol-nested-001.html [ Crash Pass ]
