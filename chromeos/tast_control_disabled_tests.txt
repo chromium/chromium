@@ -118,4 +118,12 @@ tast.shimlessrma.CancelFlow.select_components_none_next_cancel_critical
 tast.camera.CCAUISmoke.fake_hal
 tast.camera.CCAUISmoke.vivid
 
+# b/574345073: GAIA rejects the connectivity_fwdump_policytest*@managedchrome.com
+# test accounts due to the domain's 2-Step Verification policy.
+# TODO(b/574345073): Re-enable once the test accounts are fixed.
+tast.crash.ValidateFirmwareDumpGeneration.multi_session_policy_all
+tast.crash.ValidateFirmwareDumpGeneration.policy_all
+tast.crash.ValidateFirmwareDumpGeneration.policy_none
+tast.crash.ValidateFirmwareDumpGeneration.policy_wifi
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
