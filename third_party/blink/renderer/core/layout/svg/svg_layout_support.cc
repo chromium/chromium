@@ -48,23 +48,6 @@
 
 namespace blink {
 
-namespace {
-
-AffineTransform DeprecatedCalculateTransformToLayer(
-    const LayoutObject* layout_object) {
-  AffineTransform transform;
-  while (layout_object) {
-    transform = layout_object->LocalToSVGParentTransform() * transform;
-    if (layout_object->IsSVGRoot())
-      break;
-    layout_object = layout_object->Parent();
-  }
-
-  return transform;
-}
-
-}  // namespace
-
 struct SearchCandidate {
   DISALLOW_NEW();
 
@@ -373,8 +356,12 @@ float SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(
   // FIXME: trying to compute a device space transform at record time is wrong.
   // All clients should be updated to avoid relying on this information, and the
   // method should be removed.
+  gfx::Transform local_to_svg_root;
+  if (layout_object->Parent()) {
+    ComputeTransformToSVGRoot(*layout_object, local_to_svg_root, nullptr);
+  }
   AffineTransform ctm =
-      DeprecatedCalculateTransformToLayer(layout_object) *
+      AffineTransform::FromTransform(local_to_svg_root) *
       SubtreeContentTransformScope::CurrentContentTransformation();
 
   return ClampTo<float>(sqrt((ctm.XScaleSquared() + ctm.YScaleSquared()) / 2));
