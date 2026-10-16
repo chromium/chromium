@@ -81,6 +81,11 @@ class CORE_EXPORT PageScaleConstraintsSet
   }
   void SetUserAgentConstraints(const PageScaleConstraints&);
 
+  const PageScaleConstraints& AutoResizeConstraints() const {
+    return auto_resize_constraints_;
+  }
+  void SetAutoResizeConstraints(const PageScaleConstraints&);
+
   const PageScaleConstraints& FullscreenConstraints() const {
     return fullscreen_constraints_;
   }
@@ -116,6 +121,7 @@ class CORE_EXPORT PageScaleConstraintsSet
   PageScaleConstraints default_constraints_;
   PageScaleConstraints page_defined_constraints_;
   PageScaleConstraints user_agent_constraints_;
+  PageScaleConstraints auto_resize_constraints_;
   PageScaleConstraints fullscreen_constraints_;
   PageScaleConstraints final_constraints_;
 

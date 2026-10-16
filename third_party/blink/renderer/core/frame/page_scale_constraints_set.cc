@@ -82,6 +82,12 @@ void PageScaleConstraintsSet::SetUserAgentConstraints(
   constraints_dirty_ = true;
 }
 
+void PageScaleConstraintsSet::SetAutoResizeConstraints(
+    const PageScaleConstraints& auto_resize_constraints) {
+  auto_resize_constraints_ = auto_resize_constraints;
+  constraints_dirty_ = true;
+}
+
 void PageScaleConstraintsSet::SetFullscreenConstraints(
     const PageScaleConstraints& fullscreen_constraints) {
   fullscreen_constraints_ = fullscreen_constraints;
@@ -92,6 +98,7 @@ PageScaleConstraints PageScaleConstraintsSet::ComputeConstraintsStack() const {
   PageScaleConstraints constraints = DefaultConstraints();
   constraints.OverrideWith(page_defined_constraints_);
   constraints.OverrideWith(user_agent_constraints_);
+  constraints.OverrideWith(auto_resize_constraints_);
   constraints.OverrideWith(fullscreen_constraints_);
   return constraints;
 }
