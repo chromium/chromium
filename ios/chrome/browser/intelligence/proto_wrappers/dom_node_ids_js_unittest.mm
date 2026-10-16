@@ -160,23 +160,26 @@ TEST_F(DomNodeIdsJavascriptTest, GetNodeById_ElementDeleted) {
 
 // Tests that getOrCreateNodeId reuses an element's existing Autofill
 // `__gCrUniqueID` symbol ID and advances the shared document counter so
-// subsequent nodes do not collide, including for elements inside a same-origin
-// iframe.
+// subsequent nodes do not collide, including for elements and non-element nodes
+// inside a same-origin iframe.
 TEST_F(DomNodeIdsJavascriptTest, GetOrCreateNodeId_SharesAutofillUniqueIdPool) {
   NSString* script = base::SysUTF8ToNSString(base::StringPrintf(R"(
       (() => {
         const uniqueIdSymbol = Symbol.for('__gCrUniqueID');
+        const nextIdSymbol = Symbol.for('__gCrNextUniqueID');
         const div = document.getElementById('%s');
         div[uniqueIdSymbol] = 7;
-        document[uniqueIdSymbol] = 8;
+        document[nextIdSymbol] = 8;
 
         const iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
         const childDoc = iframe.contentDocument;
         const childDiv = childDoc.createElement('div');
+        const childText = childDoc.createTextNode('hello');
+        childDiv.appendChild(childText);
         childDoc.body.appendChild(childDiv);
         childDiv[uniqueIdSymbol] = 11;
-        childDoc[uniqueIdSymbol] = 12;
+        childDoc[nextIdSymbol] = 12;
 
         const api = __gCrWeb.getRegisteredApi('dom_node_ids_test');
         const getOrCreate = api.getFunction('getOrCreateNodeId');
@@ -185,10 +188,17 @@ TEST_F(DomNodeIdsJavascriptTest, GetOrCreateNodeId_SharesAutofillUniqueIdPool) {
         const childDivId = getOrCreate(childDiv);
         const childBodyId = getOrCreate(childDoc.body);
         const childDocId = getOrCreate(childDoc);
+        const childDocIdAgain = getOrCreate(childDoc);
+        const childTextId = getOrCreate(childText);
+        const childTextIdAgain = getOrCreate(childText);
         iframe.remove();
-        return divId === 7 && bodyId === 8 && document[uniqueIdSymbol] === 9 &&
-               childDivId === 11 && childBodyId === 12 && childDocId === 13 &&
-               childDoc[uniqueIdSymbol] === 14;
+        return divId === 7 && bodyId === 8 && document[nextIdSymbol] === 9 &&
+               childDivId === 11 && childBodyId === 12 &&
+               childDocId === 13 && childDocIdAgain === 13 &&
+               childDoc[uniqueIdSymbol] === 13 &&
+               childTextId === 14 && childTextIdAgain === 14 &&
+               childText[uniqueIdSymbol] === 14 &&
+               childDoc[nextIdSymbol] === 15;
       })();
   )",
                                                                 kTestDivId));

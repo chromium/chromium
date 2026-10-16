@@ -4,6 +4,8 @@
 
 import {formSubmitted} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getElementByUniqueID, setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources/renderer_id.js';
+import {getOrCreateUniqueNodeId} from '//components/autofill/ios/form_util/resources/unique_node_id.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -15,7 +17,14 @@ const formApi = new CrWebApi('form_test_api');
 
 // go/keep-sorted start block=yes
 formApi.addFunction('formSubmitted', formSubmitted);
+formApi.addFunction('getElementByUniqueID', getElementByUniqueID);
 formApi.addFunction('getIframeElements', getIframeElements);
+formApi.addFunction('getOrCreateUniqueNodeId', getOrCreateUniqueNodeId);
+formApi.addFunction('setUniqueIDIfNeeded', setUniqueIDIfNeeded);
 // go/keep-sorted end
 
 gCrWeb.registerApi(formApi);
+
+if (!gCrWeb.hasRegisteredApi('autofill')) {
+  gCrWeb.registerApi(new CrWebApi('autofill'));
+}

@@ -69,7 +69,6 @@ constexpr char kTitleKey[] = "title";
 constexpr char kContainsPaidContentKey[] = "containsPaidContent";
 constexpr char kChildrenNodesKey[] = "childrenNodes";
 constexpr char kDomNodeIdKey[] = "domNodeId";
-constexpr char kAutofillNodeIdKey[] = "autofillNodeId";
 constexpr char kLabelForDomNodeIdKey[] = "labelForDomNodeId";
 constexpr char kFrameInteractionInfoKey[] = "frameInteractionInfo";
 constexpr char kSelectionKey[] = "selection";
@@ -467,23 +466,18 @@ void PopulateTableRowData(
   }
 }
 
-// Populates the Autofill data associated with the `form_control_data`.
+// Populates the Autofill data associated with `dom_node_id` into
+// `proto_form_control_data`.
 void PopulateAutofillData(
-    const base::DictValue& form_control_data,
+    int32_t dom_node_id,
     AutofillExtractionContext* autofill_context,
     optimization_guide::proto::FormControlData* proto_form_control_data) {
-  if (!autofill_context) {
-    return;
-  }
-
-  std::optional<int> autofill_node_id =
-      ReadJsNumber(form_control_data, kAutofillNodeIdKey);
-  if (!autofill_node_id) {
+  if (!autofill_context || !proto_form_control_data) {
     return;
   }
 
   std::optional<AutofillFieldMetadata> autofill_metadata =
-      GetAutofillFieldData(*autofill_node_id, *autofill_context);
+      GetAutofillFieldData(dom_node_id, *autofill_context);
   if (!autofill_metadata) {
     return;
   }
@@ -615,8 +609,12 @@ void PopulateFormControlData(
     }
   }
 
-  PopulateAutofillData(form_control_data, autofill_context,
-                       proto_form_control_data);
+  if (destination_node->content_attributes()
+          .has_common_ancestor_dom_node_id()) {
+    PopulateAutofillData(
+        destination_node->content_attributes().common_ancestor_dom_node_id(),
+        autofill_context, proto_form_control_data);
+  }
 }
 
 // Populates the form data of the `destination_node` from the `form_data`

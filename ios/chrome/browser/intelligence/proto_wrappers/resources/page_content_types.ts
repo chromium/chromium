@@ -389,8 +389,6 @@ export interface PageContentFormControlData {
   isRequired: boolean;
   isReadonly?: boolean;
   redactionDecision: PageContentRedactionDecision;
-  // Node ID assigned by Autofill if the node is handled by Autofill.
-  autofillNodeId?: number;
 }
 
 export interface PageContentAttributes {

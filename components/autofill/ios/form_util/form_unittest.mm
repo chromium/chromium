@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UIKit/UIKit.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -52,6 +54,8 @@ class FormJsTest : public web::JavascriptTest {
   void SetUp() override {
     web::JavascriptTest::SetUp();
 
+    AddWebViewToKeyWindow();
+
     // Inject default feature flag placeholders before loading scripts.
     WKUserScript* script = [[WKUserScript alloc]
           initWithSource:autofill::test::GetAutofillTestPlaceholders()
@@ -64,15 +68,53 @@ class FormJsTest : public web::JavascriptTest {
     AddUserScript(@"form_util_tests");
   }
 
+  void TearDown() override {
+    [web_view() removeFromSuperview];
+    web::JavascriptTest::TearDown();
+  }
+
+  void AddWebViewToKeyWindow() {
+    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+      UIWindowScene* window_scene = base::apple::ObjCCast<UIWindowScene>(scene);
+      if (!window_scene) {
+        continue;
+      }
+      for (UIWindow* window in window_scene.windows) {
+        if (window.isKeyWindow) {
+          [window.rootViewController.view addSubview:web_view()];
+          return;
+        }
+      }
+    }
+  }
+
+  bool LoadHtml(NSString* html) {
+    WKWebView* web_view_instance = web_view();
+    for (int attempt = 0; attempt < 3; ++attempt) {
+      if (web::JavascriptTest::LoadHtml(html) &&
+          base::test::ios::WaitUntilConditionOrTimeout(
+              base::test::ios::kWaitForPageLoadTimeout, ^{
+                return !web_view_instance.loading &&
+                       [ExecuteJavaScript(web_view_instance,
+                                          @"typeof __gCrWeb !== 'undefined' && "
+                                          @"document.readyState === 'complete'")
+                           isEqual:@YES];
+              })) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   FakeScriptMessageHandlerForFormTesting* handler_;
 };
 
 TEST_F(FormJsTest, GetIframeElements) {
-  LoadHtml(@"<iframe id='frame1' srcdoc='foo'></iframe>"
-           @"<p id='not-an-iframe'>"
-           @"<iframe id='frame2' srcdoc='bar'></iframe>"
-           @"<marquee id='definitely-not-an-iframe'>baz</marquee>"
-           @"</p>");
+  ASSERT_TRUE(LoadHtml(@"<iframe id='frame1' srcdoc='foo'></iframe>"
+                       @"<p id='not-an-iframe'>"
+                       @"<iframe id='frame2' srcdoc='bar'></iframe>"
+                       @"<marquee id='definitely-not-an-iframe'>baz</marquee>"
+                       @"</p>"));
 
   EXPECT_NSEQ(
       @"frame1,frame2",
@@ -92,7 +134,8 @@ TEST_F(FormJsTest, GetIframeElements) {
 // Tests that the `formSubmitted` handler does deduping.
 TEST_F(FormJsTest, FormSubmitted_Deduping) {
   // Create arbitrary form elements to use as the submitted forms.
-  LoadHtml(@"<form name='form1'></form><form name='form2'></form>");
+  ASSERT_TRUE(
+      LoadHtml(@"<form name='form1'></form><form name='form2'></form>"));
 
   // Swizzle the webkit messaging posting method to count the number of messages
   // sent over. It should only concern submission messages for this test.
@@ -182,6 +225,68 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
                                @", 'TestHandler', false, false)");
   }
   EXPECT_TRUE(ExecuteJavaScript(web_view(), @"gMsgCount == 2"));
+}
+
+// Tests that calling `setUniqueIDIfNeeded` on an element that was already
+// assigned a node ID via `getOrCreateUniqueNodeId` (e.g. during APC extraction)
+// still populates the `__gCrUniqueID` DOM attribute, registers the element in
+// `getElementByUniqueID`, and tracks password fields.
+TEST_F(FormJsTest, SetUniqueIDIfNeeded_AfterGetOrCreateUniqueNodeId) {
+  ASSERT_TRUE(LoadHtml(@"<form id='form'>"
+                       @"<input id='password_input' type='password'>"
+                       @"</form>"));
+
+  // Simulate APC assigning a node ID before Autofill runs setUniqueIDIfNeeded.
+  EXPECT_NSEQ(@1,
+              ExecuteJavaScript(
+                  web_view(),
+                  @"const input = document.getElementById('password_input');"
+                  @"const api = __gCrWeb.getRegisteredApi('form_test_api');"
+                  @"api.getFunction('getOrCreateUniqueNodeId')(input);"));
+
+  // Before setUniqueIDIfNeeded runs, Autofill registration has not happened.
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript(
+          web_view(), @"input.getAttribute('__gCrUniqueID') === null && "
+                      @"api.getFunction('getElementByUniqueID')(1) === null && "
+                      @"!input[Symbol.for('__gCrHasBeenPassword')];"));
+
+  // Now run Autofill's setUniqueIDIfNeeded on the same input.
+  ExecuteJavaScriptInWebView(web_view(),
+                             @"api.getFunction('setUniqueIDIfNeeded')(input);");
+
+  EXPECT_NSEQ(@"1", ExecuteJavaScript(web_view(),
+                                      @"input.getAttribute('__gCrUniqueID');"));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript(
+                  web_view(),
+                  @"api.getFunction('getElementByUniqueID')(1) === input;"));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript(
+          web_view(), @"input[Symbol.for('__gCrHasBeenPassword')] === true;"));
+}
+
+// Tests that `setUniqueIDIfNeeded` succeeds on an HTMLFormElement even when a
+// child input named "setAttribute" shadows `form.setAttribute`.
+TEST_F(FormJsTest, SetUniqueIDIfNeeded_ClobberedSetAttribute) {
+  ASSERT_TRUE(LoadHtml(@"<form id='form'>"
+                       @"<input name='setAttribute'>"
+                       @"</form>"));
+
+  ExecuteJavaScriptInWebView(
+      web_view(), @"const form = document.getElementById('form');"
+                  @"const api = __gCrWeb.getRegisteredApi('form_test_api');"
+                  @"api.getFunction('setUniqueIDIfNeeded')(form);");
+
+  EXPECT_NSEQ(@"1", ExecuteJavaScript(web_view(),
+                                      @"Element.prototype.getAttribute.call("
+                                      @"form, '__gCrUniqueID');"));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript(
+          web_view(), @"api.getFunction('getElementByUniqueID')(1) === form;"));
 }
 
 }  // namespace autofill

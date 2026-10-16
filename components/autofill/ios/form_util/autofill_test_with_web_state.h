@@ -25,6 +25,7 @@ struct AutofillPlaceholderConfig {
   bool autofill_email_verification = false;
   bool autofill_report_form_submission_errors = false;
   bool autofill_count_form_submission_in_renderer = true;
+  bool autofill_track_password_fields_ios = true;
   bool autofill_ignore_tab_index_for_focusability = false;
 };
 

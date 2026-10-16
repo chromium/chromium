@@ -16,6 +16,7 @@ compile_ts("common_ts") {
 
 compile_ts("dom_node_ids_ts") {
   sources = [ "resources/dom_node_ids.ts" ]
+  deps = [ "//components/autofill/ios/form_util:unique_node_id_ts" ]
 }
 
 optimize_ts("dom_node_ids_test_ts") {
@@ -38,6 +39,7 @@ compile_ts("annotated_page_content_extraction_ts") {
     ":dom_node_ids_ts",
     ":page_content_types_ts",
     "//components/autofill/ios/form_util:fill_js_constants",
+    "//components/autofill/ios/form_util:unique_node_id_ts",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }
