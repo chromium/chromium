@@ -49,17 +49,15 @@ TransformCompositingBoundaryType InSameTransformCompositingBoundary(
               *composited_ancestor2)) {
         return kThroughMergeableComposited;
       }
-      if (RuntimeEnabledFeatures::MergeStickyLayersEnabled()) {
-        switch (composited_ancestor1->CanMergeForStickyPosition(
-            *composited_ancestor2)) {
-          case cc::StickyPositionConstraint::CanMergeResult::kCannotMerge:
-            break;
-          case cc::StickyPositionConstraint::CanMergeResult::kCanAlwaysMerge:
-            return kThroughMergeableComposited;
-          case cc::StickyPositionConstraint::CanMergeResult::
-              kCanMergeWithinScrollRange:
-            return kThroughMergeableCompositedScrollRangeDependent;
-        }
+      switch (composited_ancestor1->CanMergeForStickyPosition(
+          *composited_ancestor2)) {
+        case cc::StickyPositionConstraint::CanMergeResult::kCannotMerge:
+          break;
+        case cc::StickyPositionConstraint::CanMergeResult::kCanAlwaysMerge:
+          return kThroughMergeableComposited;
+        case cc::StickyPositionConstraint::CanMergeResult::
+            kCanMergeWithinScrollRange:
+          return kThroughMergeableCompositedScrollRangeDependent;
       }
     }
     return kNotSameBoundary;

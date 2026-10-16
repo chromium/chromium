@@ -925,8 +925,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
                                            .NearestDirectlyCompositedAncestor();
     if (composited_transform &&
         !composited_transform->RequiresCompositingForFixedPositionOnly() &&
-        (!RuntimeEnabledFeatures::MergeStickyLayersEnabled() ||
-         !composited_transform->RequiresCompositingForStickyPositionOnly()) &&
+        !composited_transform->RequiresCompositingForStickyPositionOnly() &&
         directly_composited_transforms_.insert(composited_transform)
             .is_new_entry) {
       continue;
