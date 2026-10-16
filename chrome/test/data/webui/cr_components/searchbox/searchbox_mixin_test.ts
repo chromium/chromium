@@ -3550,8 +3550,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('test default', mockInput.inputElement.value);
         assertEquals(' default', mockInput.lastInput()?.inline);
 
-        // Advancing focus to AIM button clears inline autocompletion and
-        // restores the typed input text.
+        // Advancing focus to AIM button clears inline autocompletion highlight
+        // while keeping the autocompleted text.
         element.setSelection({
           line: 0,
           state: SelectionLineState.kFocusedButtonAim,
@@ -3566,6 +3566,47 @@ suite('SearchboxMixinVirtualFocusTest', () => {
             },
             'Tab');
         await microtasksFinished();
+        assertEquals('test default', mockInput.inputElement.value);
+        assertEquals('', mockInput.lastInput()?.inline);
+      });
+
+  test(
+      'Tab to context entrypoint button restores typed input text',
+      async () => {
+        element.showContextEntrypointOverride = true;
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'test');
+
+        const matches = [
+          createSearchMatchForTesting({
+            fillIntoEdit: 'test default',
+            inlineAutocompletion: ' default',
+            allowedToBeDefaultMatch: true,
+          }),
+        ];
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'test',
+          matches: matches,
+        }));
+        await microtasksFinished();
+
+        assertEquals('test default', mockInput.inputElement.value);
+        assertEquals(' default', mockInput.lastInput()?.inline);
+
+        // Pressing Tab moves virtual focus to the context entrypoint (+)
+        // button (line -1) and restores the typed input text.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Tab'));
+        await microtasksFinished();
+
+        assertDeepEquals(
+            {
+              line: -1,
+              state: SelectionLineState.kFocusedButtonContextEntrypoint,
+              actionIndex: 0,
+            },
+            element.selection);
         assertEquals('test', mockInput.inputElement.value);
         assertEquals('', mockInput.lastInput()?.inline);
       });

@@ -783,8 +783,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     updateInputForSelection(nextSelection: OmniboxPopupSelection, key: string) {
-      if (nextSelection.state === SelectionLineState.kFocusedButtonAim ||
-          nextSelection.line === -1) {
+      if (nextSelection.line === -1) {
         // The input itself, or a button outside the matches: show the typed
         // text again, without any inline autocompletion.
         this.getInputElement().setInput({
