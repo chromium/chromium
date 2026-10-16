@@ -3452,6 +3452,7 @@ targets.bundle(
                 ],
             ),
             "skia_gold_test",
+            "skia_gold_bypass",
         ],
     },
 )
@@ -3473,6 +3474,7 @@ targets.bundle(
         ),
         "gl_unittests": [
             "skia_gold_test",
+            "skia_gold_bypass",
         ],
     },
 )
@@ -3510,6 +3512,7 @@ targets.bundle(
                 ],
             ),
             "skia_gold_test",
+            "skia_gold_bypass",
         ],
     },
 )
@@ -6056,6 +6059,7 @@ targets.bundle(
     per_test_modifications = {
         "views_examples_unittests": [
             "skia_gold_test",
+            "skia_gold_bypass",
         ],
     },
 )

@@ -183,7 +183,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,

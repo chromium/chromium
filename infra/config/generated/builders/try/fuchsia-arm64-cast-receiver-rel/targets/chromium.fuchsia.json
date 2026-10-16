@@ -183,7 +183,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--device-spec=arm64-emu-large"
         ],
         "merge": {
@@ -1376,7 +1375,6 @@
           "--enable-features=TreesInViz",
           "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--device-spec=arm64-emu-large"
         ],
         "merge": {

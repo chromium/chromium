@@ -7,8 +7,7 @@
         "args": [
           "--target-platform=android",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "ci_only": true,
         "description": "Run with android_30_google_apis_x86",
@@ -56,8 +55,7 @@
         "args": [
           "--target-platform=webview",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "ci_only": true,
         "description": "Run with android_30_google_apis_x86",
@@ -107,8 +105,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "ci_only": true,
         "experiment_percentage": 100,
@@ -143,8 +140,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "ci_only": true,
         "experiment_percentage": 100,
@@ -180,8 +176,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality"
+          "--git-revision=${got_revision}"
         ],
         "ci_only": true,
         "experiment_percentage": 100,
