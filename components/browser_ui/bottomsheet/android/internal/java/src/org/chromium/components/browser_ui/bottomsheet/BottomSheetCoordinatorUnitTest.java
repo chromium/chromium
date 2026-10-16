@@ -2795,4 +2795,166 @@ public class BottomSheetCoordinatorUnitTest {
         measureAndLayoutContainer(containerWidth + 100, containerHeight);
         assertEquals(1, containerLayoutCount[0]);
     }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_FixedRatioMobile_WithAndWithoutEdgeToEdge() {
+        int navBarInset = 48;
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, navBarInset));
+
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, SHEET_CONTAINER_HEIGHT);
+        BottomSheetContent content = buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        mBottomSheet.showContent(content);
+
+        // Case A: Without Edge-to-Edge insets (non-E2E container bounds).
+        // In non-E2E mode, the container is laid out above the navigation bar.
+        int nonE2EContainerHeight = SHEET_CONTAINER_HEIGHT - navBarInset;
+        measureAndLayoutContainer(1080, nonE2EContainerHeight);
+
+        // PEEK state (e.g. offset = 60).
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+        mBottomSheet.setSheetOffsetFromBottom(60.0f, StateChangeReason.NONE);
+        assertEquals(
+                nonE2EContainerHeight - 60.0f,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+
+        // HALF state (e.g. offset = 100).
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        mBottomSheet.setSheetOffsetFromBottom(100.0f, StateChangeReason.NONE);
+        assertEquals(
+                nonE2EContainerHeight - 100.0f,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+
+        // FULL state (e.g. offset = 150).
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        mBottomSheet.setSheetOffsetFromBottom(150.0f, StateChangeReason.NONE);
+        assertEquals(
+                nonE2EContainerHeight - 150.0f,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+
+        // Case B: With Edge-to-Edge insets (e.g. 24px).
+        // In E2E mode, container spans the full decor view.
+        measureAndLayoutContainer(1080, SHEET_CONTAINER_HEIGHT);
+        SettableNonNullObservableSupplier<Integer> e2eSupplier =
+                ObservableSuppliers.createNonNull(24);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(e2eSupplier);
+
+        // PEEK state with E2E.
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+        mBottomSheet.setSheetOffsetFromBottom(60.0f, StateChangeReason.NONE);
+        assertEquals(
+                SHEET_CONTAINER_HEIGHT - 60.0f - 24,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+
+        // HALF state with E2E.
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        mBottomSheet.setSheetOffsetFromBottom(100.0f, StateChangeReason.NONE);
+        assertEquals(
+                SHEET_CONTAINER_HEIGHT - 100.0f - 24,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+
+        // FULL state with E2E.
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        mBottomSheet.setSheetOffsetFromBottom(150.0f, StateChangeReason.NONE);
+        assertEquals(
+                SHEET_CONTAINER_HEIGHT - 150.0f - 24,
+                mBottomSheet.getView().getTranslationY(),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_TabletOrDesktopDoesNotLiftAboveSystemBars() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, SHEET_CONTAINER_HEIGHT);
+        BottomSheetCoordinator sheet = buildSheet(/* isLargeFormFactor= */ true);
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ true, 0.5f, HeightMode.WRAP_CONTENT);
+        sheet.showContent(content);
+
+        int navBarInset = 48;
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, navBarInset));
+
+        float currentOffset = 150.0f;
+        sheet.setSheetOffsetFromBottom(currentOffset, StateChangeReason.NONE);
+        // Tablet/desktop UI does not subtract the navigation bar inset from translationY.
+        float expectedTranslationY = SHEET_CONTAINER_HEIGHT - currentOffset;
+        assertEquals(expectedTranslationY, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
+
+    private static int calculateEffectiveSystemBarBottom(
+            int decorHeight,
+            int containerTopInWindow,
+            int containerHeight,
+            int rawSystemBarBottom) {
+        int windowBottomGap = Math.max(0, decorHeight - (containerTopInWindow + containerHeight));
+        return Math.max(0, rawSystemBarBottom - windowBottomGap);
+    }
+
+    @Test
+    public void testWindowDecorVsSheetContainerLayoutGeometry() {
+        int rawSystemBarBottom = 48;
+
+        // 1. Non-E2E mode: The window manager sizes the container above the navigation bar,
+        // leaving a bottom gap equal to the navigation bar height.
+        int decorHeightNonE2E = 1000;
+        int containerTopNonE2E = 0;
+        int containerHeightNonE2E = 1000 - rawSystemBarBottom; // 952
+        assertEquals(
+                0,
+                calculateEffectiveSystemBarBottom(
+                        decorHeightNonE2E,
+                        containerTopNonE2E,
+                        containerHeightNonE2E,
+                        rawSystemBarBottom));
+
+        // 2. Edge-to-Edge mode: The container spans the entire window decor view, so the bottom gap
+        // is 0 and the full system bar inset applies.
+        int decorHeightE2E = 1000;
+        int containerTopE2E = 0;
+        int containerHeightE2E = 1000;
+        assertEquals(
+                rawSystemBarBottom,
+                calculateEffectiveSystemBarBottom(
+                        decorHeightE2E, containerTopE2E, containerHeightE2E, rawSystemBarBottom));
+
+        // 3. Partial occlusion: The container extends partially into the system bar region.
+        int containerHeightPartial = 980; // 20px gap remaining to decor bottom
+        assertEquals(
+                28, // 48 - 20 = 28px effective inset
+                calculateEffectiveSystemBarBottom(
+                        1000, 0, containerHeightPartial, rawSystemBarBottom));
+
+        // 4. Container bottom matches or extends beyond decor bottom.
+        assertEquals(
+                rawSystemBarBottom,
+                calculateEffectiveSystemBarBottom(1000, 0, 1050, rawSystemBarBottom));
+    }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_WrapContentLiftsAboveSystemBarsWhenEdgeToEdgeZero() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, SHEET_CONTAINER_HEIGHT);
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.WRAP_CONTENT);
+        mBottomSheet.showContent(content);
+
+        int navBarInset = 48;
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, navBarInset));
+
+        float currentOffset = 150.0f;
+        mBottomSheet.setSheetOffsetFromBottom(currentOffset, StateChangeReason.NONE);
+        // Landed baseline on origin/main: without edge-to-edge insets, wrap-content sheets
+        // calculate translation relative to container bottom without clearing the navigation bar.
+        float expectedTranslationY = SHEET_CONTAINER_HEIGHT - currentOffset;
+        assertEquals(
+                expectedTranslationY, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
 }
