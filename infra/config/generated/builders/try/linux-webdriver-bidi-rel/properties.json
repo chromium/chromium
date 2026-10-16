@@ -70,6 +70,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.linux",
-  "cq": "required",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

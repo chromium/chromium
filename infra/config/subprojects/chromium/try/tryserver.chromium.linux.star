@@ -525,7 +525,9 @@ try_.builder(
     ssd = True,
     contact_team_email = "chrome-devtools@google.com",
     cq_settings = try_.cq_settings(
-        includable_only = True,
+        location_filters = [
+            "third_party/chromium-bidi/.+",
+        ],
     ),
     main_list_view = "try",
 )
