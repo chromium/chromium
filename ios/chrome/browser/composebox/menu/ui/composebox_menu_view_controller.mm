@@ -126,6 +126,8 @@ ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
       return ComposeboxMenuItemType::kModelThinkingNoGenUI;
     case ComposeboxModelOption::kFlash:
       return ComposeboxMenuItemType::kModelFlash;
+    case ComposeboxModelOption::kProLatest:
+      return ComposeboxMenuItemType::kModelProLatest;
     case ComposeboxModelOption::kNone:
       return ComposeboxMenuItemType::kUnknown;
   }

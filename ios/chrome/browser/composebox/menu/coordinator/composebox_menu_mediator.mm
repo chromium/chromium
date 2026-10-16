@@ -220,6 +220,10 @@
       [self.delegate composeboxMenuMediator:self
                                 didTapModel:ComposeboxModelOption::kFlash];
       break;
+    case ComposeboxMenuItemType::kModelProLatest:
+      [self.delegate composeboxMenuMediator:self
+                                didTapModel:ComposeboxModelOption::kProLatest];
+      break;
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
       [self.delegate composeboxMenuMediatorDidRequestSharedTabs:self];
       break;
