@@ -316,15 +316,27 @@ void KeyboardBrightnessController::KeyboardBrightnessChanged(
   }
 
   // Save keyboard brightness change to Local State if it was caused by a user
-  // request.
-  if (change.cause() ==
-          power_manager::BacklightBrightnessChange_Cause_USER_REQUEST ||
-      change.cause() ==
-          power_manager::
-              BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP) {
-    user_manager::KnownUser known_user(local_state_);
-    known_user.SetPath(*active_account_id_, prefs::kKeyboardBrightnessPercent,
-                       std::make_optional<base::Value>(change.percent()));
+  // request, including the keyboard backlight toggle key.
+  user_manager::KnownUser known_user(local_state_);
+  switch (change.cause()) {
+    case power_manager::BacklightBrightnessChange_Cause_USER_REQUEST:
+    case power_manager::
+        BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP:
+    case power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_OFF:
+      known_user.SetPath(*active_account_id_, prefs::kKeyboardBrightnessPercent,
+                         std::make_optional<base::Value>(change.percent()));
+      break;
+    case power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_ON:
+      // The percent is 0 if the backlight is forced off (e.g. battery saver).
+      // Keep the saved brightness in that case.
+      if (change.percent() > 0) {
+        known_user.SetPath(*active_account_id_,
+                           prefs::kKeyboardBrightnessPercent,
+                           std::make_optional<base::Value>(change.percent()));
+      }
+      break;
+    default:
+      break;
   }
 }
 

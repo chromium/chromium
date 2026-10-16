@@ -223,6 +223,66 @@ class KeyboardBrightnessControllerTest : public AshTestBase {
     run_loop_.RunUntilIdle();
   }
 
+  // Simulates powerd reporting a keyboard brightness change, e.g. after the
+  // backlight toggle key is pressed. Unlike SetKeyboardBrightness(), no
+  // brightness request is sent.
+  void SimulateKeyboardBrightnessChanged(
+      double keyboard_brightness,
+      power_manager::BacklightBrightnessChange_Cause cause) {
+    power_manager::BacklightBrightnessChange brightness_change;
+    brightness_change.set_percent(keyboard_brightness);
+    brightness_change.set_cause(cause);
+    power_manager_client()->set_keyboard_brightness_percent(
+        keyboard_brightness);
+    power_manager_client()->SendKeyboardBrightnessChanged(brightness_change);
+  }
+
+  // Simulates powerd reporting a keyboard ambient light sensor change. Unlike
+  // SetKeyboardAmbientLightSensorEnabled(), no request is sent.
+  void SimulateKeyboardAmbientLightSensorEnabledChanged(
+      bool enabled,
+      power_manager::AmbientLightSensorChange_Cause cause) {
+    power_manager::AmbientLightSensorChange sensor_change;
+    sensor_change.set_sensor_enabled(enabled);
+    sensor_change.set_cause(cause);
+    power_manager_client()->SendKeyboardAmbientLightSensorEnabledChanged(
+        sensor_change);
+  }
+
+  // Signs in kUserEmail with kInitialKeyboardBrightness as the brightness at
+  // sign-in, and returns the account.
+  AccountId LoginUser() {
+    power_manager_client()->set_keyboard_brightness_percent(
+        kInitialKeyboardBrightness);
+    ClearLogin();
+    const AccountId account_id = SimulateUserLogin({kUserEmail});
+    run_loop_.RunUntilIdle();
+    return account_id;
+  }
+
+  // Sets the keyboard brightness from the Settings app, then turns the
+  // backlight off with the toggle key.
+  void SetBrightnessFromSettingsAndToggleOff(double keyboard_brightness) {
+    SetKeyboardBrightness(
+        keyboard_brightness,
+        power_manager::
+            BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+    // Deliver the changes that the fake reports for the brightness request
+    // now, so that they don't arrive after the toggle.
+    run_loop_.RunUntilIdle();
+    SimulateKeyboardBrightnessChanged(
+        0.0, power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_OFF);
+  }
+
+  // Simulates a reboot to the login screen, where powerd starts at its default
+  // keyboard brightness. The controller isn't recreated, but restoring the
+  // brightness only uses the saved prefs.
+  void SimulateReboot() {
+    ClearLogin();
+    power_manager_client()->set_keyboard_brightness_percent(
+        kInitialKeyboardBrightness);
+  }
+
   // Check if keyboard ambient light sensor status is equal to expected value.
   void ExpectKeyboardAmbientLightSensorEnabled(bool expected_value) {
     keyboard_brightness_control_delegate()
@@ -1352,6 +1412,114 @@ TEST_F(KeyboardBrightnessControllerTest,
       "ChromeOS.Keyboard.TimeUntilFirstBrightnessChange.AfterLogin."
       "SetBrightness.BatteryPower",
       base::Seconds(seconds_to_wait), 1);
+}
+
+TEST_F(KeyboardBrightnessControllerTest, ToggleOff_SavesZeroBrightness) {
+  user_manager::KnownUser known_user(local_state());
+  const AccountId account_id = LoginUser();
+
+  SetBrightnessFromSettingsAndToggleOff(25.0);
+
+  // Turning the backlight off with the toggle key is saved as 0%.
+  EXPECT_EQ(0.0, GetKeyboardBrightnessPrefValue(known_user, account_id));
+}
+
+TEST_F(KeyboardBrightnessControllerTest, ToggleOn_SavesBrightness) {
+  user_manager::KnownUser known_user(local_state());
+  const AccountId account_id = LoginUser();
+  SetBrightnessFromSettingsAndToggleOff(25.0);
+  ASSERT_EQ(0.0, GetKeyboardBrightnessPrefValue(known_user, account_id));
+
+  // Turn the backlight back on with the toggle key. The brightness that powerd
+  // turns it on at is saved.
+  SimulateKeyboardBrightnessChanged(
+      25.0, power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_ON);
+  EXPECT_EQ(25.0, GetKeyboardBrightnessPrefValue(known_user, account_id));
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       ToggleOnWhileForcedOff_KeepsSavedBrightness) {
+  user_manager::KnownUser known_user(local_state());
+  const AccountId account_id = LoginUser();
+  SetKeyboardBrightness(
+      25.0, power_manager::
+                BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+  run_loop_.RunUntilIdle();
+
+  // Battery saver forces the backlight off. This isn't saved.
+  SimulateKeyboardBrightnessChanged(
+      0.0, power_manager::
+               BacklightBrightnessChange_Cause_BATTERY_SAVER_STATE_CHANGED);
+  ASSERT_EQ(25.0, GetKeyboardBrightnessPrefValue(known_user, account_id));
+
+  // Turn the backlight on with the toggle key. It's still forced off, so
+  // powerd reports 0%, and the saved brightness is kept.
+  SimulateKeyboardBrightnessChanged(
+      0.0, power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_ON);
+  EXPECT_EQ(25.0, GetKeyboardBrightnessPrefValue(known_user, account_id));
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       RestoreToggledOff_SensorDisabledFromSettings) {
+  const AccountId account_id = LoginUser();
+
+  // Turn off the ambient light sensor from the Settings app, set the
+  // brightness there too, then turn the backlight off with the toggle key.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  SetBrightnessFromSettingsAndToggleOff(25.0);
+
+  SimulateReboot();
+  LoginScreenFocusAccount(account_id);
+
+  // The sensor was turned off from the Settings app, so it stays off and the
+  // saved brightness of 0% is restored. The backlight stays off.
+  EXPECT_EQ(0.0, power_manager_client()->keyboard_brightness_percent());
+  EXPECT_EQ(
+      power_manager::
+          SetBacklightBrightnessRequest_Cause_RESTORED_FROM_USER_PREFERENCE,
+      power_manager_client()->requested_keyboard_brightness_cause());
+}
+
+// Tests a device without a keyboard ambient light sensor.
+class KeyboardBrightnessControllerNoSensorTest
+    : public KeyboardBrightnessControllerTest {
+ public:
+  void SetUp() override {
+    // Set up the fake before Shell creates the KeyboardBrightnessController,
+    // which asks it on construction whether there is a sensor.
+    chromeos::PowerManagerClient::InitializeFake();
+    power_manager_client()->set_has_ambient_light_sensor(false);
+    KeyboardBrightnessControllerTest::SetUp();
+  }
+};
+
+TEST_F(KeyboardBrightnessControllerNoSensorTest, RestoreToggledOff) {
+  const AccountId account_id = LoginUser();
+
+  // Set the brightness with the brightness keys, then turn the backlight off
+  // with the toggle key. powerd reports that the keys turned off the ambient
+  // light sensor, which a device with a sensor would turn back on after a
+  // reboot.
+  SimulateKeyboardAmbientLightSensorEnabledChanged(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  SimulateKeyboardBrightnessChanged(
+      25.0, power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+  SimulateKeyboardBrightnessChanged(
+      0.0, power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_OFF);
+
+  SimulateReboot();
+  LoginScreenFocusAccount(account_id);
+
+  // There's no sensor to turn back on, so the saved brightness of 0% is
+  // restored. The backlight stays off.
+  EXPECT_EQ(0.0, power_manager_client()->keyboard_brightness_percent());
+  EXPECT_EQ(
+      power_manager::
+          SetBacklightBrightnessRequest_Cause_RESTORED_FROM_USER_PREFERENCE,
+      power_manager_client()->requested_keyboard_brightness_cause());
 }
 
 }  // namespace ash
