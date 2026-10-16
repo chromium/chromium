@@ -184,6 +184,9 @@ class ToolbarView : public views::AccessiblePaneView,
     return contextual_tasks_button_;
   }
   ToolbarButton* forward_button() const { return forward_; }
+  // Returns the Views extensions (puzzle piece) button, or null if the toolbar
+  // doesn't host the Views extensions container (e.g. when
+  // features::IsWebUIExtensionsContainerEnabled()).
   ExtensionsToolbarButton* GetExtensionsButton() const;
   ReloadButton* reload_button() const { return reload_; }
   LocationBarView* location_bar_view() const { return location_bar_view_; }

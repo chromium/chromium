@@ -56,6 +56,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
@@ -280,31 +281,21 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     return action_item;
   }
 
-  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->extensions_container_for_testing();
+  // Returns the platform-abstract extensions container for `browser()`. This
+  // works regardless of whether the toolbar hosts the Views-based
+  // ExtensionsToolbarDesktop or the WebUI extensions container.
+  ExtensionsContainer* GetExtensionsContainer() {
+    ExtensionsContainer* container = ExtensionsContainer::From(*browser());
+    CHECK(container);
+    return container;
   }
 
-  void WaitForSidePanelToolbarCloseButtonVisibility(bool visible) {
-    auto* container = GetExtensionsToolbarDesktop();
-    auto* button = container->GetCloseSidePanelButtonForTesting();
-    if (visible == false && !container->GetVisible()) {
-      return;
-    }
-
-    if (button->GetVisible() == visible) {
-      return;
-    }
-
-    base::RunLoop run_loop;
-    auto button_subscription =
-        button->AddVisibleChangedCallback(run_loop.QuitClosure());
-    auto container_subscription =
-        container->AddVisibleChangedCallback(run_loop.QuitClosure());
-    run_loop.Run();
-    bool is_visible = button->GetVisible() && container->GetVisible();
-    EXPECT_EQ(visible, is_visible);
+  // Returns the view model for the action of `extension_id`.
+  ToolbarActionViewModel* GetActionViewModel(const ExtensionId& extension_id) {
+    ToolbarActionViewModel* view_model =
+        GetExtensionsContainer()->GetActionForId(extension_id);
+    CHECK(view_model) << "No toolbar action for extension " << extension_id;
+    return view_model;
   }
 
   void WaitForSidePanelClose() {
@@ -318,9 +309,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   extensions::ExtensionContextMenuModel* GetContextMenuForExtension(
       const ExtensionId& extension_id) {
     return static_cast<extensions::ExtensionContextMenuModel*>(
-        GetExtensionsToolbarDesktop()
-            ->GetToolbarViewModel()
-            ->GetActionForId(extension_id)
+        GetActionViewModel(extension_id)
             ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                  ContextMenuSource::kMenuItem));
   }
@@ -1768,7 +1757,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+// Fixture for tests that exercise the Views-based ExtensionsToolbarDesktop
+// (e.g. its close side panel button). ToolbarView only creates that container
+// when features::IsWebUIExtensionsContainerEnabled() is false, so the feature
+// is explicitly disabled here.
+class ExtensionSidePanelViewsToolbarBrowserTest
+    : public ExtensionSidePanelBrowserTest {
+ public:
+  ExtensionSidePanelViewsToolbarBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWebUIExtensionsContainer);
+  }
+  ~ExtensionSidePanelViewsToolbarBrowserTest() override = default;
+
+ protected:
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
+    ExtensionsToolbarDesktop* container =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->extensions_container_for_testing();
+    CHECK(container);
+    return container;
+  }
+
+  void WaitForSidePanelToolbarCloseButtonVisibility(bool visible) {
+    auto* container = GetExtensionsToolbarDesktop();
+    auto* button = container->GetCloseSidePanelButtonForTesting();
+    if (!visible && !container->GetVisible()) {
+      return;
+    }
+
+    if (button->GetVisible() == visible) {
+      return;
+    }
+
+    base::RunLoop run_loop;
+    auto button_subscription =
+        button->AddVisibleChangedCallback(run_loop.QuitClosure());
+    auto container_subscription =
+        container->AddVisibleChangedCallback(run_loop.QuitClosure());
+    run_loop.Run();
+    bool is_visible = button->GetVisible() && container->GetVisible();
+    EXPECT_EQ(visible, is_visible);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelViewsToolbarBrowserTest,
                        CloseSidePanelButtonVisibleWhenExtensionsSidePanelOpen) {
   ExtensionTestMessageListener default_path_listener("default_path");
 
@@ -2544,7 +2581,23 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+// Fixture for tests that press the Views-based ExtensionsToolbarButton, which
+// ToolbarView only creates when features::IsWebUIExtensionsContainerEnabled()
+// is false.
+class ExtensionOpenSidePanelViewsToolbarBrowserTest
+    : public ExtensionOpenSidePanelBrowserTest {
+ public:
+  ExtensionOpenSidePanelViewsToolbarBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWebUIExtensionsContainer);
+  }
+  ~ExtensionOpenSidePanelViewsToolbarBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelViewsToolbarBrowserTest,
                        PinExtensionViaSidePanelJourneyCompletion) {
   // Intentionally navigate and commit a new tab. The first tab in the browser
   // does not do this, this causes a failure in the origin_ CHECK since a tuple
@@ -2571,6 +2624,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
 
   ExtensionsToolbarButton* const extensions_button =
       browser_view->toolbar()->GetExtensionsButton();
+  ASSERT_TRUE(extensions_button);
 
   // Start the pin extension journey by clicking the extensions toolbar button.
   views::test::InteractionTestUtilSimulatorViews::PressButton(
