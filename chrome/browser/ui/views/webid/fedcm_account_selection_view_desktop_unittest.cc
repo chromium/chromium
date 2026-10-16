@@ -42,6 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -2988,7 +2989,11 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   EXPECT_EQ(credential.account_name, u"John Doe");
   EXPECT_EQ(credential.email, u"user@example.com");
   EXPECT_EQ(credential.idp_name, u"idp.example");
-  EXPECT_FALSE(credential.icon.IsEmpty());
+  // The picture is cropped at the size shown in the bubble, so it isn't
+  // scaled.
+  EXPECT_EQ(credential.icon.Size(),
+            gfx::Size(ambient_signin::kAccountPictureSize,
+                      ambient_signin::kAccountPictureSize));
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,

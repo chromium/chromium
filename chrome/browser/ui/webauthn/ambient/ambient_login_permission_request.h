@@ -34,6 +34,10 @@ struct PasskeyOrPasswordCredential {
   std::u16string display_name;
 };
 
+// The size of account pictures in the prompt, in DIPs. Callers should crop
+// pictures to this size so that they aren't scaled.
+inline constexpr int kAccountPictureSize = 40;
+
 // Represents a federated sign-in credential option (e.g. from FedCM).
 struct FederatedCredential {
   // The identity provider's domain formatted for display, e.g. "idp.example".
@@ -49,8 +53,9 @@ struct FederatedCredential {
   // browser (as FedCM does with the picture URL from the IdP's accounts
   // endpoint), never from the requesting site.
   //
-  // The caller crops the picture so that it is square, e.g. FedCM crops it
-  // into a circle like in its own UI. The prompt scales it to its icon size.
+  // The caller crops the picture so that it is square and
+  // `kAccountPictureSize` wide, e.g. FedCM crops it into a circle like in its
+  // own UI.
   ui::ImageModel icon;
 };
 

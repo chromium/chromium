@@ -67,9 +67,6 @@
 
 namespace {
 
-// Size of the account picture shown in the ambient bubble.
-constexpr int kAmbientBubbleAvatarSize = 20;
-
 // We could have a situation where the WebContents with an actor task opens a
 // popup which then triggers the dialog, so we need to check the opener.
 tabs::TabInterface* InitiatingTaskTab(tabs::TabInterface* source_tab) {
@@ -1729,7 +1726,8 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
             .GetURL();
     federated_credential.icon =
         ui::ImageModel::FromImageSkia(webid::ComputeAccountCircleCroppedPicture(
-            *account, kAmbientBubbleAvatarSize, /*idp_image=*/std::nullopt,
+            *account, ambient_signin::kAccountPictureSize,
+            /*idp_image=*/std::nullopt,
             /*device_scale_factor=*/1.0f));
   }
 
