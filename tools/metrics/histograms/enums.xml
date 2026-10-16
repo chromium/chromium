@@ -4889,6 +4889,7 @@ shown properly on the user-facing crash UI.
   <int value="16" label="kInvalidLoadedRanges"/>
   <int value="17" label="kCouldNotAppendData"/>
   <int value="18" label="kNoDataEverAppended"/>
+  <int value="19" label="kInvalidContentScheme"/>
 </enum>
 
 <enum name="HpsTurnOnResult">
