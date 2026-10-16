@@ -5,7 +5,10 @@
 #ifndef MEDIA_FILTERS_FFMPEG_AAC_BITSTREAM_CONVERTER_H_
 #define MEDIA_FILTERS_FFMPEG_AAC_BITSTREAM_CONVERTER_H_
 
+#include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
@@ -21,7 +24,7 @@ namespace media {
 class MEDIA_EXPORT FFmpegAACBitstreamConverter
     : public FFmpegBitstreamConverter {
  public:
-  enum { kAdtsHeaderSize = 7 };
+  static constexpr size_t kAdtsHeaderSize = 7;
 
   // The |stream_codec_parameters| will be used during conversion and should be
   // the AVCodecParameters for the stream sourcing these packets. A reference to
@@ -45,13 +48,13 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
   // data from the FFmpeg file format's global headers.
   raw_ptr<AVCodecParameters> stream_codec_parameters_;
 
-  bool header_generated_;
-  uint8_t hdr_[kAdtsHeaderSize];
-  int codec_;
-  int audio_profile_;
-  int sample_rate_index_;
-  int channel_configuration_;
-  int frame_length_;
+  bool header_generated_ = false;
+  std::array<uint8_t, kAdtsHeaderSize> hdr_{};
+  int codec_ = 0;
+  int audio_profile_ = 0;
+  int sample_rate_index_ = 0;
+  int channel_configuration_ = 0;
+  int frame_length_ = 0;
 };
 
 }  // namespace media
