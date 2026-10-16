@@ -18,7 +18,9 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -50,19 +52,20 @@ std::string EncryptSuppressionSpecifics(
 }
 
 // Decrypts an encrypted value from disk into
-// `AutofillEntitySuppressionSpecifics`. Returns `std::nullopt` if decryption
-// fails or the plaintext cannot be parsed.
-std::optional<sync_pb::AutofillEntitySuppressionSpecifics>
+// `AutofillEntitySuppressionSpecifics`. Returns the reason for failure if
+// decryption fails or the plaintext cannot be parsed.
+base::expected<sync_pb::AutofillEntitySuppressionSpecifics,
+               EntitySuppressionLoadDropReason>
 DecryptSuppressionSpecifics(const std::string& encrypted_value,
                             const os_crypt_async::Encryptor& encryptor) {
   std::string plaintext;
   if (!encryptor.DecryptString(encrypted_value, &plaintext)) {
-    return std::nullopt;
+    return base::unexpected(EntitySuppressionLoadDropReason::kDecryptionFailed);
   }
 
   sync_pb::AutofillEntitySuppressionSpecifics specifics;
   if (!specifics.ParseFromString(plaintext)) {
-    return std::nullopt;
+    return base::unexpected(EntitySuppressionLoadDropReason::kParseFailed);
   }
 
   return specifics;
@@ -532,23 +535,33 @@ void EntitySuppressionSyncBridge::OnReadAllDataAndMetadata(
     return;
   }
 
+  size_t dropped_record_count = 0;
   for (const syncer::DataTypeStore::Record& record : *data_records) {
-    std::optional<sync_pb::AutofillEntitySuppressionSpecifics> specifics =
-        DecryptSuppressionSpecifics(record.value, *encryptor_);
-    if (!specifics) {
+    base::expected<sync_pb::AutofillEntitySuppressionSpecifics,
+                   EntitySuppressionLoadDropReason>
+        specifics = DecryptSuppressionSpecifics(record.value, *encryptor_);
+    if (!specifics.has_value()) {
+      LogEntitySuppressionLoadDropReason(specifics.error());
+      ++dropped_record_count;
       continue;
     }
-    if (std::optional<EntitySuppressionEntry> entry =
-            CreateEntitySuppressionEntryFromSpecifics(*specifics)) {
-      metadata_by_entry_.insert_or_assign(
-          std::move(*entry),
-          EntryMetadata{
-              .guid = record.id,
-              .creation_time =
-                  base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-                      specifics->creation_time_windows_epoch_micros()))});
+    std::optional<EntitySuppressionEntry> entry =
+        CreateEntitySuppressionEntryFromSpecifics(*specifics);
+    if (!entry) {
+      LogEntitySuppressionLoadDropReason(
+          EntitySuppressionLoadDropReason::kInvalidEntry);
+      ++dropped_record_count;
+      continue;
     }
+    metadata_by_entry_.insert_or_assign(
+        std::move(*entry),
+        EntryMetadata{
+            .guid = record.id,
+            .creation_time =
+                base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+                    specifics->creation_time_windows_epoch_micros()))});
   }
+  LogEntitySuppressionLoadDroppedRecordCount(dropped_record_count);
 
   is_loaded_ = true;
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
