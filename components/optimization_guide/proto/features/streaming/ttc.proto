@@ -9,8 +9,8 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 import "components/optimization_guide/proto/common_types.proto";
 
-option java_package = "org.chromium.components.optimization_guide.features.proto";
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
 option objc_class_prefix = "TTC";
 
 // Audio codec format specification.
@@ -328,4 +328,17 @@ message JournalEvent {
   // server clock received timestamp and is used to estimate the delta between
   // clocks on client and server. Set only for `JOURNAL_EVENT_TYPE_CLOCK_SYNC`.
   Timestamp sync_timestamp = 6;
+
+  enum Track {
+    TRACK_UNSPECIFIED = 0;
+
+    // MES main event track
+    TRACK_MAIN = 1;
+
+    // Tracks model/user turn state in a dedicated track.
+    TRACK_TURN = 2;
+  }
+
+  // The tracing track on which this event is recorded.
+  Track track = 7;
 }
