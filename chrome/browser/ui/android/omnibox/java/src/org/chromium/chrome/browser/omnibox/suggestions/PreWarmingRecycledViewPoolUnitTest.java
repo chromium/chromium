@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -96,39 +95,7 @@ public class PreWarmingRecycledViewPoolUnitTest {
     }
 
     @Test
-    public void testCreateViewsSync() {
-        ensureNoViewsCreated();
-
-        // Run first, then cancel.
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        mPool.stopCreatingViews();
-        ensureAllViewsCreated();
-    }
-
-    @Test
-    public void stopCreatingViews_noViewsCreatedWhenCanceled() {
-        ensureNoViewsCreated();
-
-        // Cancel, then run.
-        mPool.stopCreatingViews();
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        ensureNoViewsCreated();
-    }
-
-    @Test
-    public void destroy_cancelsViewCreation() {
-        ensureNoViewsCreated();
-
-        // Destroy, then run.
-        mPool.destroy();
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-        ensureNoViewsCreated();
-    }
-
-    @Test
-    public void testCreateViewsAsync() {
-        mPool.destroy();
-        mPool = new PreWarmingRecycledViewPool(mFactory, mContext, /* handler= */ null);
+    public void testCreateViews() {
         ensureAllViewsCreated();
     }
 
@@ -154,10 +121,6 @@ public class PreWarmingRecycledViewPoolUnitTest {
 
     @Test
     public void createViews_recordViewReused() {
-        mPool.destroy();
-        mPool = new PreWarmingRecycledViewPool(mFactory, mContext, /* handler= */ null);
-        ensureAllViewsCreated();
-
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Omnibox.SuggestionView.ReusedType",

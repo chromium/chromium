@@ -238,8 +238,8 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record the total cumulative thread time spent creating all views in the PrewarmingRecycled
-     * View Pool when async view inflation is disabled.
+     * Record the total cumulative thread time spent creating all views in the
+     * PreWarmingRecycledViewPool.
      */
     public static void recordPreWarmingViewsThreadTime(long totalThreadTimeMs) {
         RecordHistogram.recordMediumTimesHistogram(
@@ -247,21 +247,12 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record the total cumulative wall time spent creating all views in the PrewarmingRecycled View
-     * Pool when async view inflation is disabled.
+     * Record the total cumulative wall time spent creating all views in the
+     * PreWarmingRecycledViewPool.
      */
     public static void recordPreWarmingViewsWallTime(long totalWallTimeMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 "Android.Omnibox.SuggestionsDropdown.PreWarmingViewsWallTime", totalWallTimeMs);
-    }
-
-    /**
-     * Record the number of views successfully pre-created in the PrewarmingRecycledViewPool when
-     * async view inflation is disabled.
-     */
-    public static void recordPreWarmedViewsCount(int count) {
-        RecordHistogram.recordExactLinearHistogram(
-                "Android.Omnibox.SuggestionsDropdown.PreWarmedViewsCount", count, 30);
     }
 
     /**

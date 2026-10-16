@@ -384,7 +384,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Clean up resources and remove observers installed by this class. */
     public void destroy() {
-        mRecycledViewPool.destroy();
+        mRecycledViewPool.clear();
         mGestureObserver = null;
     }
 

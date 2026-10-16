@@ -44,7 +44,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
@@ -405,8 +404,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new OmniboxSuggestionsDropdown(mContext, null, listener);
         // Setting model list initializes the real adapter and view pool.
         dropdown.setModelList(listItems);
-
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         PreWarmingRecycledViewPool pool =
                 (PreWarmingRecycledViewPool) dropdown.getRecycledViewPool();

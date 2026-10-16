@@ -4627,18 +4627,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmedViewsCount"
-    units="count" expires_after="2027-03-07">
-  <owner>peterkang@google.com</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Records the number of ViewHolders successfully created during pre-warming of
-    the OmniboxSuggestionsDropdown RecycledViewPool.
-
-    Recorded once per activity start when pre-warming finishes.
-  </summary>
-</histogram>
-
 <histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmingThreadMatches"
     enum="Boolean" expires_after="2027-03-07">
   <owner>peterkang@google.com</owner>
