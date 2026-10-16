@@ -506,9 +506,18 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
   EXPECT_EQ("error", EvalJs(rfh_1.get(), "image_load_status"));
 }
 
+// Flaky on Mac.
+// https://ci.chromium.org/ui/inv/build-8667819425430646593
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction \
+  DISABLED_ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction
+#else
+#define MAYBE_ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction \
+  ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction
+#endif
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
-    ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
+    MAYBE_ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
   ASSERT_TRUE(embedded_test_server()->Start());
