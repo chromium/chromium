@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -182,45 +184,88 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
 constexpr int kHeaderAndProgressBarHeight =
     kPaymentHandlerHeaderHeight + kPaymentHandlerProgressBarHeight;
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, DefaultWindowSize) {
+// Base class for tests of custom Payment Handler window sizes, which open the
+// payment handler window directly and check its size.
+class PaymentHandlerCustomSizeTest : public PaymentHandlerWindowSizeTest {
+ protected:
+  // Installs a payment app and opens its payment handler window, with
+  // openWindow({preferredSize}) if `preferred_web_contents_size` is set.
+  // Returns the payment handler WebContents, or nullptr on failure.
+  content::WebContents* OpenPaymentHandlerWindow(
+      const std::optional<gfx::Size>& preferred_web_contents_size =
+          std::nullopt) {
+    std::string payment_method;
+    InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
+
+    ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                                 DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                                 DialogEvent::DIALOG_OPENED,
+                                 DialogEvent::LOADING_VIEW_SHOWN,
+                                 DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                                 DialogEvent::LOADING_VIEW_HIDDEN,
+                                 DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+    const std::string script =
+        preferred_web_contents_size.has_value()
+            ? content::JsReplace(
+                  "launchWithoutWaitForResponseWithMethods([{"
+                  "  supportedMethods: $1,"
+                  "  data: {openWindowOptions: {"
+                  "    preferredSize: {"
+                  "      width: $2,"
+                  "      height: $3,"
+                  "    },"
+                  "  }},"
+                  "}])",
+                  payment_method, preferred_web_contents_size->width(),
+                  preferred_web_contents_size->height())
+            : content::JsReplace("launchWithoutWaitForResponse($1)",
+                                 payment_method);
+    // ASSERT_* cannot be used in a function that returns a value, so use
+    // EXPECT_* and return early on failure.
+    EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), script));
+    EXPECT_TRUE(WaitForObservedEvent());
+    if (HasFailure()) {
+      return nullptr;
+    }
+
+    return test_api(dialog_view()).GetPaymentHandlerWebContents();
+  }
+
+  // Expects that the payment handler page sees `expected_web_contents_size` as
+  // its [innerWidth, innerHeight], and that the dialog is that size plus
+  // Chrome's header and progress bar.
+  void ExpectPaymentHandlerSize(
+      content::WebContents* payment_handler_web_contents,
+      const gfx::Size& expected_web_contents_size) {
+    EXPECT_EQ(gfx::Size(expected_web_contents_size.width(),
+                        expected_web_contents_size.height() +
+                            kHeaderAndProgressBarHeight),
+              dialog_view()->GetBoundsInScreen().size());
+    content::EvalJsResult inner_size = content::EvalJs(
+        payment_handler_web_contents, "[innerWidth, innerHeight]");
+    ASSERT_TRUE(inner_size.is_ok()) << inner_size;
+    const base::ListValue& list = inner_size.ExtractList();
+    ASSERT_EQ(2u, list.size());
+    EXPECT_EQ(expected_web_contents_size,
+              gfx::Size(list[0].GetInt(), list[1].GetInt()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCustomSizeTest, DefaultWindowSize) {
   // Make the browser large enough that the dialog is not shrunk to fit the
   // browser window.
   ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1000, 800));
 
-  std::string payment_method;
-  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
-
-  // Trigger PaymentRequest without a preferred window size, and wait until the
-  // payment handler window is opened.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::LOADING_VIEW_SHOWN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::LOADING_VIEW_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                       content::JsReplace(
-                                           "launchWithoutWaitForResponse($1)",
-                                           payment_method)));
-  ASSERT_TRUE(WaitForObservedEvent());
-
   content::WebContents* payment_handler_web_contents =
-      test_api(dialog_view()).GetPaymentHandlerWebContents();
+      OpenPaymentHandlerWindow();
   ASSERT_NE(nullptr, payment_handler_web_contents);
 
-  gfx::Size expected_dialog_size(kPreferredPaymentHandlerDialogWidth,
-                                 kPreferredPaymentHandlerDialogHeight);
-  // The WebContents is the dialog minus Chrome's header and progress bar.
-  gfx::Size expected_web_contents_size(
-      expected_dialog_size.width(),
-      expected_dialog_size.height() - kHeaderAndProgressBarHeight);
-
-  // The real dialog bounds have the default size.
-  EXPECT_EQ(expected_dialog_size, dialog_view()->GetBoundsInScreen().size());
-  // The real WebContents bounds have the expected size.
-  EXPECT_EQ(expected_web_contents_size,
-            payment_handler_web_contents->GetContainerBounds().size());
+  // The dialog has the default size, and the WebContents is the dialog minus
+  // Chrome's header and progress bar.
+  ExpectPaymentHandlerSize(payment_handler_web_contents,
+                           gfx::Size(kPreferredPaymentHandlerDialogWidth,
+                                     kPreferredPaymentHandlerDialogHeight -
+                                         kHeaderAndProgressBarHeight));
 }
 
 struct CustomSizeTestParams {
@@ -230,7 +275,7 @@ struct CustomSizeTestParams {
 };
 
 class PaymentHandlerOpenWindowCustomSizeTest
-    : public PaymentHandlerWindowSizeTest,
+    : public PaymentHandlerCustomSizeTest,
       public testing::WithParamInterface<CustomSizeTestParams> {
  private:
   base::test::ScopedFeatureList custom_size_feature_list_{
@@ -245,48 +290,12 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerOpenWindowCustomSizeTest,
   // browser window.
   ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
 
-  std::string payment_method;
-  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
-
-  // Trigger PaymentRequest with a preferred window size, and wait until the
-  // payment handler window is opened.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::LOADING_VIEW_SHOWN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::LOADING_VIEW_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ("success",
-            content::EvalJs(
-                GetActiveWebContents(),
-                content::JsReplace(
-                    "launchWithoutWaitForResponseWithMethods([{"
-                    "  supportedMethods: $1,"
-                    "  data: {openWindowOptions: {"
-                    "    preferredSize: {"
-                    "      width: $2,"
-                    "      height: $3,"
-                    "    },"
-                    "  }},"
-                    "}])",
-                    payment_method, params.preferred_web_contents_size.width(),
-                    params.preferred_web_contents_size.height())));
-  ASSERT_TRUE(WaitForObservedEvent());
-
   content::WebContents* payment_handler_web_contents =
-      test_api(dialog_view()).GetPaymentHandlerWebContents();
+      OpenPaymentHandlerWindow(params.preferred_web_contents_size);
   ASSERT_NE(nullptr, payment_handler_web_contents);
 
-  // The real dialog bounds are the expected WebContents size plus Chrome's
-  // header and progress bar.
-  EXPECT_EQ(gfx::Size(params.expected_web_contents_size.width(),
-                      params.expected_web_contents_size.height() +
-                          kHeaderAndProgressBarHeight),
-            dialog_view()->GetBoundsInScreen().size());
-  // The real WebContents bounds have the expected size.
-  EXPECT_EQ(params.expected_web_contents_size,
-            payment_handler_web_contents->GetContainerBounds().size());
+  ExpectPaymentHandlerSize(payment_handler_web_contents,
+                           params.expected_web_contents_size);
 }
 
 constexpr int kInRangeWebContentWidth =
@@ -356,7 +365,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 class PaymentHandlerOpenWindowCustomSizeShrinkTest
-    : public PaymentHandlerWindowSizeTest {
+    : public PaymentHandlerCustomSizeTest {
  public:
   PaymentHandlerOpenWindowCustomSizeShrinkTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -374,32 +383,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerOpenWindowCustomSizeShrinkTest,
                        ShrinksToFitBrowserContentArea) {
   ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 600, 600));
 
-  std::string payment_method;
-  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
-
-  // Trigger PaymentRequest with a preferred window size, and wait until the
-  // payment handler window is opened.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::LOADING_VIEW_SHOWN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::LOADING_VIEW_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ("success",
-            content::EvalJs(
-                GetActiveWebContents(),
-                content::JsReplace("launchWithoutWaitForResponseWithMethods([{"
-                                   "  supportedMethods: $1,"
-                                   "  data: {openWindowOptions: {"
-                                   "    preferredSize: {"
-                                   "      width: 800,"
-                                   "      height: 800,"
-                                   "    },"
-                                   "  }},"
-                                   "}])",
-                                   payment_method)));
-  ASSERT_TRUE(WaitForObservedEvent());
+  ASSERT_NE(nullptr, OpenPaymentHandlerWindow(gfx::Size(800, 800)));
 
   // The real dialog bounds are shrunk to fit in the browser content area.
   gfx::Size browser_content_size =
@@ -407,6 +391,174 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerOpenWindowCustomSizeShrinkTest,
   gfx::Size dialog_size = dialog_view()->GetBoundsInScreen().size();
   EXPECT_LT(dialog_size.width(), browser_content_size.width());
   EXPECT_LT(dialog_size.height(), browser_content_size.height());
+}
+
+class PaymentHandlerResizeToTest : public PaymentHandlerCustomSizeTest {
+ protected:
+  // Calls window.resizeTo() in the payment handler window and waits for the
+  // resulting `resize` event.
+  void ResizeToAndWait(content::WebContents* payment_handler_web_contents,
+                       const gfx::Size& size) {
+    EXPECT_TRUE(content::ExecJs(
+        payment_handler_web_contents,
+        content::JsReplace(
+            "new Promise(resolve => {"
+            "  addEventListener('resize', resolve, {once: true});"
+            "  resizeTo($1, $2);"
+            "})",
+            size.width(), size.height())));
+  }
+
+ private:
+  base::test::ScopedFeatureList dynamic_size_feature_list_{
+      features::kPaymentHandlerDynamicCustomSize};
+};
+
+class PaymentHandlerResizeToCustomSizeTest
+    : public PaymentHandlerResizeToTest,
+      public testing::WithParamInterface<CustomSizeTestParams> {};
+
+IN_PROC_BROWSER_TEST_P(PaymentHandlerResizeToCustomSizeTest,
+                       ResizesToFitRequestedWebContentsSize) {
+  const CustomSizeTestParams& params = GetParam();
+
+  // Make the browser large enough that the dialog is not shrunk to fit the
+  // browser window.
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+
+  content::WebContents* payment_handler_web_contents =
+      OpenPaymentHandlerWindow();
+  ASSERT_NE(nullptr, payment_handler_web_contents);
+
+  ResizeToAndWait(payment_handler_web_contents,
+                  params.preferred_web_contents_size);
+  ExpectPaymentHandlerSize(payment_handler_web_contents,
+                           params.expected_web_contents_size);
+}
+
+// The same size bounds apply to openWindow() and resizeTo(). None of the
+// expected sizes is the default payment handler size, so each resizeTo() call
+// fires a `resize` event.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaymentHandlerResizeToCustomSizeTest,
+    testing::ValuesIn(kCustomSizeTestParams),
+    [](const testing::TestParamInfo<CustomSizeTestParams>& info) {
+      return std::string(info.param.test_name);
+    });
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToTest, ResizeToRepeatedly) {
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+
+  content::WebContents* payment_handler_web_contents =
+      OpenPaymentHandlerWindow();
+  ASSERT_NE(nullptr, payment_handler_web_contents);
+
+  const gfx::Size kTallSize(kInRangeWebContentWidth, 500);
+  const gfx::Size kShortSize(kInRangeWebContentWidth, 250);
+  const gfx::Size kWideSize(800, kInRangeWebContentHeight);
+
+  ResizeToAndWait(payment_handler_web_contents, kTallSize);
+  ExpectPaymentHandlerSize(payment_handler_web_contents, kTallSize);
+
+  ResizeToAndWait(payment_handler_web_contents, kShortSize);
+  ExpectPaymentHandlerSize(payment_handler_web_contents, kShortSize);
+
+  ResizeToAndWait(payment_handler_web_contents, kWideSize);
+  ExpectPaymentHandlerSize(payment_handler_web_contents, kWideSize);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToTest,
+                       ResizeToIgnoredWhileProcessingSpinnerIsShown) {
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1920, 1080));
+
+  content::WebContents* payment_handler_web_contents =
+      OpenPaymentHandlerWindow();
+  ASSERT_NE(nullptr, payment_handler_web_contents);
+
+  // Cover the payment handler window with the processing spinner, as after the
+  // payment app responds and before the merchant calls complete().
+  dialog_view()->ShowProcessingSpinner();
+  ASSERT_FALSE(dialog_view()->IsShowingInteractivePaymentHandlerWindow());
+
+  EXPECT_TRUE(content::ExecJs(
+      payment_handler_web_contents,
+      content::JsReplace("resizeTo($1, $2);", kInRangeWebContentWidth,
+                         kInRangeWebContentHeight)));
+
+  // The payment handler window keeps its default size.
+  ExpectPaymentHandlerSize(payment_handler_web_contents,
+                           gfx::Size(kPreferredPaymentHandlerDialogWidth,
+                                     kPreferredPaymentHandlerDialogHeight -
+                                         kHeaderAndProgressBarHeight));
+}
+
+class PaymentHandlerResizeToShrinkTest : public PaymentHandlerResizeToTest {
+ public:
+  PaymentHandlerResizeToShrinkTest() {
+    // Browser tests skip the too-small-window check unless it is enabled.
+    SetBrowserWindowSizeCheckEnabled();
+  }
+
+ private:
+  base::test::ScopedFeatureList reject_too_small_feature_list_{
+      features::kPaymentRequestRejectTooSmallWindows};
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToShrinkTest,
+                       ShrinksToFitBrowserContentArea) {
+  // The default size fits in this browser, but the maximum size doesn't.
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1000, 800));
+
+  content::WebContents* payment_handler_web_contents =
+      OpenPaymentHandlerWindow();
+  ASSERT_NE(nullptr, payment_handler_web_contents);
+  ResizeToAndWait(
+      payment_handler_web_contents,
+      gfx::Size(kPaymentHandlerMaxDialogWidth, kPaymentHandlerMaxDialogHeight));
+
+  // The dialog is shrunk to fit in the browser content area, and is still
+  // showing the payment handler.
+  gfx::Size browser_content_size =
+      GetActiveWebContents()->GetContainerBounds().size();
+  gfx::Size dialog_size = dialog_view()->GetBoundsInScreen().size();
+  EXPECT_LT(dialog_size.height(), kPaymentHandlerMaxDialogHeight);
+  EXPECT_LT(dialog_size.width(), browser_content_size.width());
+  EXPECT_LT(dialog_size.height(), browser_content_size.height());
+  EXPECT_EQ(payment_handler_web_contents,
+            test_api(dialog_view()).GetPaymentHandlerWebContents());
+}
+
+class PaymentHandlerResizeToDisabledTest : public PaymentHandlerCustomSizeTest {
+ public:
+  PaymentHandlerResizeToDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kPaymentHandlerDynamicCustomSize);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerResizeToDisabledTest, ResizeToIsIgnored) {
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1000, 800));
+
+  content::WebContents* payment_handler_web_contents =
+      OpenPaymentHandlerWindow();
+  ASSERT_NE(nullptr, payment_handler_web_contents);
+  const gfx::Size dialog_size = dialog_view()->GetBoundsInScreen().size();
+  const gfx::Size web_contents_size =
+      payment_handler_web_contents->GetContainerBounds().size();
+
+  // Call resizeTo() and wait two frames.
+  ASSERT_TRUE(content::ExecJs(payment_handler_web_contents,
+                              "resizeTo(800, 300);"
+                              "new Promise(r => requestAnimationFrame(() => "
+                              "requestAnimationFrame(r)))"));
+
+  EXPECT_EQ(dialog_size, dialog_view()->GetBoundsInScreen().size());
+  EXPECT_EQ(web_contents_size,
+            payment_handler_web_contents->GetContainerBounds().size());
 }
 
 }  // namespace payments

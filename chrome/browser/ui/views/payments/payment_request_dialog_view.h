@@ -202,6 +202,17 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // the underlying WebContents.
   void OnPaymentHandlerThemeColorSet();
 
+  // Resizes the payment handler dialog so that its WebContents is, as closely
+  // as possible, `preferred_web_contents_size`. The preferred size is clamped
+  // by a minimum/maximum allowed dialog size, as well as the overall available
+  // size of the containing browser window.
+  void ResizeToFitPaymentHandlerWebContents(
+      const gfx::Size& preferred_web_contents_size);
+
+  // Returns true if the payment handler window is showing and the user can
+  // interact with it.
+  bool IsShowingInteractivePaymentHandlerWindow();
+
  private:
   friend class PaymentRequestDialogViewTestApi;
 
@@ -220,12 +231,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void OnDialogClosed();
   void ResizeDialogWindow(const gfx::Size& size);
   void ResizeToPaymentHandlerSize();
-  // Resizes the payment handler dialog so that its WebContents is, as closely
-  // as possible, `preferred_web_contents_size`. The preferred size is clamped
-  // by a minimum/maximum allowed dialog size, as well as the overall available
-  // size of the containing browser window.
-  void ResizeToFitPaymentHandlerWebContents(
-      const gfx::Size& preferred_web_contents_size);
   void CheckIfDialogFitsInBrowserWindow();
   bool DialogFitsInBrowserWindow() const;
 

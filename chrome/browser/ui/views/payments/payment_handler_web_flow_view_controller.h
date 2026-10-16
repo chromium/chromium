@@ -146,6 +146,7 @@ class PaymentHandlerWebFlowViewController
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool DisplayDynamicBorderForHiddenContents() override;
   bool CanContentViewBeScrollable() override;
+  bool ShouldContentViewFillPane() override;
   void Stop() override;
   base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
@@ -166,6 +167,12 @@ class PaymentHandlerWebFlowViewController
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   void CloseContents(content::WebContents* source) override;
+  // Handles window.resizeTo() from the payment handler's top-level page.
+  // Unlike other consumers of resizeTo(), which treat `bounds` as their outer
+  // window bounds, the requested size is interpreted as the inner size: the
+  // size of the payment handler WebContents.
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

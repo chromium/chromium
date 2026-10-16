@@ -91,6 +91,9 @@ BASE_FEATURE(kPaymentRequestMandatoryPaymentAppUi,
 
 BASE_FEATURE(kPaymentHandlerCameraAccessUx, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaymentHandlerDynamicCustomSize,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSPCLocaleValidation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreeDSecureTelemetry, base::FEATURE_DISABLED_BY_DEFAULT);

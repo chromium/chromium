@@ -178,6 +178,11 @@ class PaymentRequestSheetController {
   // payment sheet.
   virtual bool CanContentViewBeScrollable();
 
+  // Returns true if the content view should fill the height of the sheet below
+  // the header, instead of keeping its preferred height. Only applies when the
+  // content view is not scrollable, see CanContentViewBeScrollable().
+  virtual bool ShouldContentViewFillPane();
+
   views::MdTextButton* primary_button() { return primary_button_; }
 
   views::View* header_content_separator_container() {

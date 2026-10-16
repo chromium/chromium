@@ -101,6 +101,11 @@ BASE_DECLARE_FEATURE(kPaymentRequestMandatoryPaymentAppUi);
 // and indicator is allowed in Payment Handler windows.
 BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccessUx);
 
+// Used to control whether the top-level page of a Payment Handler window can
+// resize the window at runtime through window.resizeTo(). The arguments are
+// interpreted as the size of the payment handler web contents.
+BASE_DECLARE_FEATURE(kPaymentHandlerDynamicCustomSize);
+
 // Used to control whether SPC supports validating locale.
 BASE_DECLARE_FEATURE(kSPCLocaleValidation);
 

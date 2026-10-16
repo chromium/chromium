@@ -35,6 +35,7 @@
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_utils.h"
 
 namespace payments::internal {
 
@@ -364,6 +365,13 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   // content) fills the dialog.
   view->SetFlexForView(scroll_ ? scroll_ : pane_, 1);
 
+  // A scrollable pane is always sized to its content's preferred height, so
+  // filling the pane only applies to non-scrollable content.
+  if (!scroll_ && ShouldContentViewFillPane()) {
+    views::AsViewClass<views::BoxLayoutView>(pane_.get())
+        ->SetFlexForView(content_view_, 1);
+  }
+
   if (footer) {
     view->AddChildView(std::move(footer));
   }
@@ -588,6 +596,10 @@ bool PaymentRequestSheetController::CanContentViewBeScrollable() {
   // Subclasses may override this behaviour to be 'false', e.g. if they have
   // content that may have its own scrollbar like PaymentHandlerWebFlowView.
   return true;
+}
+
+bool PaymentRequestSheetController::ShouldContentViewFillPane() {
+  return false;
 }
 
 void PaymentRequestSheetController::CloseButtonPressed(const ui::Event& event) {
