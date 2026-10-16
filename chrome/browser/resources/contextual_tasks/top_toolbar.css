@@ -70,7 +70,11 @@ permission-dashboard {
   width: 18px;
 }
 
-:host([is-side-panel-rearchitecture-enabled]) .top-toolbar-logo-container {
+/* Exclude [hidden] so display: flex does not override the HTML hidden
+ * attribute when permission chips are shown.
+ */
+:host([is-side-panel-rearchitecture-enabled])
+    .top-toolbar-logo-container:not([hidden]) {
   align-items: center;
   display: flex;
   flex: 0 0 auto;

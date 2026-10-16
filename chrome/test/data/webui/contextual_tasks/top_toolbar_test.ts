@@ -1059,6 +1059,7 @@ suite('TopToolbarTest', () => {
           // Initial state: `G` logo shows.
           assertFalse(!!topRow.querySelector('permission-dashboard'));
           assertFalse(logoContainer.hidden);
+          assertEquals('flex', getComputedStyle(logoContainer).display);
 
           // Create request chip.
           const fakeState = {
@@ -1078,6 +1079,7 @@ suite('TopToolbarTest', () => {
           assertTrue(!!dashboard);
           assertTrue(!!dashboard.delegate);
           assertTrue(logoContainer.hidden);
+          assertEquals('none', getComputedStyle(logoContainer).display);
 
           // Remove the visible chip, so that the permission dashboard no longer
           // shows and the `G` logo is restored.
@@ -1090,6 +1092,7 @@ suite('TopToolbarTest', () => {
 
           assertFalse(!!topRow.querySelector('permission-dashboard'));
           assertFalse(logoContainer.hidden);
+          assertEquals('flex', getComputedStyle(logoContainer).display);
 
           // Set state to dashboard to null. It should no longer show.
           topToolbar.permissionDashboardState = null;
@@ -1097,6 +1100,7 @@ suite('TopToolbarTest', () => {
 
           assertFalse(!!topRow.querySelector('permission-dashboard'));
           assertFalse(logoContainer.hidden);
+          assertEquals('flex', getComputedStyle(logoContainer).display);
         });
 
     test(
@@ -1112,6 +1116,7 @@ suite('TopToolbarTest', () => {
           // Initial state: `G` logo shows.
           assertFalse(!!topRow.querySelector('permission-dashboard'));
           assertFalse(logoContainer.hidden);
+          assertEquals('flex', getComputedStyle(logoContainer).display);
 
           // Create indicator chip.
           const fakeState = {
@@ -1131,6 +1136,7 @@ suite('TopToolbarTest', () => {
           assertTrue(!!dashboard);
           assertTrue(!!dashboard.delegate);
           assertTrue(logoContainer.hidden);
+          assertEquals('none', getComputedStyle(logoContainer).display);
 
           // Remove the visible chip, so that the permission dashboard no longer
           // shows and the `G` logo is restored.
@@ -1143,6 +1149,7 @@ suite('TopToolbarTest', () => {
 
           assertFalse(!!topRow.querySelector('permission-dashboard'));
           assertFalse(logoContainer.hidden);
+          assertEquals('flex', getComputedStyle(logoContainer).display);
         });
 
     test(
