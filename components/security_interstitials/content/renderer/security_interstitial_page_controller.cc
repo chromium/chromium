@@ -260,55 +260,56 @@ SecurityInterstitialPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<SecurityInterstitialPageController>::
       GetObjectTemplateBuilder(isolate)
-          .SetMethod("dontProceed",
-                     &SecurityInterstitialPageController::DontProceed)
-          .SetMethod("proceed", &SecurityInterstitialPageController::Proceed)
-          .SetMethod("showMoreSection",
-                     &SecurityInterstitialPageController::ShowMoreSection)
-          .SetMethod("openHelpCenter",
-                     &SecurityInterstitialPageController::OpenHelpCenter)
-          .SetMethod("openDiagnostic",
-                     &SecurityInterstitialPageController::OpenDiagnostic)
-          .SetMethod("reload", &SecurityInterstitialPageController::Reload)
-          .SetMethod("openDateSettings",
-                     &SecurityInterstitialPageController::OpenDateSettings)
-          .SetMethod("openLogin",
-                     &SecurityInterstitialPageController::OpenLogin)
-          .SetMethod("doReport", &SecurityInterstitialPageController::DoReport)
-          .SetMethod("dontReport",
-                     &SecurityInterstitialPageController::DontReport)
-          .SetMethod("openReportingPrivacy",
-                     &SecurityInterstitialPageController::OpenReportingPrivacy)
-          .SetMethod("openWhitepaper",
-                     &SecurityInterstitialPageController::OpenWhitepaper)
-          .SetMethod("reportPhishingError",
-                     &SecurityInterstitialPageController::ReportPhishingError)
-          .SetMethod("openEnhancedProtectionSettings",
-                     &SecurityInterstitialPageController::
-                         OpenEnhancedProtectionSettings)
+          .SetMethod<&SecurityInterstitialPageController::DontProceed>(
+              "dontProceed")
+          .SetMethod<&SecurityInterstitialPageController::Proceed>("proceed")
+          .SetMethod<&SecurityInterstitialPageController::ShowMoreSection>(
+              "showMoreSection")
+          .SetMethod<&SecurityInterstitialPageController::OpenHelpCenter>(
+              "openHelpCenter")
+          .SetMethod<&SecurityInterstitialPageController::OpenDiagnostic>(
+              "openDiagnostic")
+          .SetMethod<&SecurityInterstitialPageController::Reload>("reload")
+          .SetMethod<&SecurityInterstitialPageController::OpenDateSettings>(
+              "openDateSettings")
+          .SetMethod<&SecurityInterstitialPageController::OpenLogin>(
+              "openLogin")
+          .SetMethod<&SecurityInterstitialPageController::DoReport>("doReport")
+          .SetMethod<&SecurityInterstitialPageController::DontReport>(
+              "dontReport")
+          .SetMethod<&SecurityInterstitialPageController::OpenReportingPrivacy>(
+              "openReportingPrivacy")
+          .SetMethod<&SecurityInterstitialPageController::OpenWhitepaper>(
+              "openWhitepaper")
+          .SetMethod<&SecurityInterstitialPageController::ReportPhishingError>(
+              "reportPhishingError")
+          .SetMethod<&SecurityInterstitialPageController::
+                         OpenEnhancedProtectionSettings>(
+              "openEnhancedProtectionSettings")
 #if BUILDFLAG(IS_ANDROID)
-          .SetMethod("openAndroidAdvancedProtectionSettings",
-                     &SecurityInterstitialPageController::
-                         OpenAdvancedProtectionSettings)
+          .SetMethod<&SecurityInterstitialPageController::
+                         OpenAdvancedProtectionSettings>(
+              "openAndroidAdvancedProtectionSettings")
 #endif  // BUILDFLAG(IS_ANDROID)
-          .SetMethod(
-              "openHelpCenterInNewTab",
-              &SecurityInterstitialPageController::OpenHelpCenterInNewTab)
-          .SetMethod(
-              "openDiagnosticInNewTab",
-              &SecurityInterstitialPageController::OpenDiagnosticInNewTab)
-          .SetMethod(
-              "openReportingPrivacyInNewTab",
-              &SecurityInterstitialPageController::OpenReportingPrivacyInNewTab)
-          .SetMethod(
-              "openWhitepaperInNewTab",
-              &SecurityInterstitialPageController::OpenWhitepaperInNewTab)
-          .SetMethod(
-              "reportPhishingErrorInNewTab",
-              &SecurityInterstitialPageController::ReportPhishingErrorInNewTab)
+          .SetMethod<
+              &SecurityInterstitialPageController::OpenHelpCenterInNewTab>(
+              "openHelpCenterInNewTab")
+          .SetMethod<
+              &SecurityInterstitialPageController::OpenDiagnosticInNewTab>(
+              "openDiagnosticInNewTab")
+          .SetMethod<&SecurityInterstitialPageController::
+                         OpenReportingPrivacyInNewTab>(
+              "openReportingPrivacyInNewTab")
+          .SetMethod<
+              &SecurityInterstitialPageController::OpenWhitepaperInNewTab>(
+              "openWhitepaperInNewTab")
+          .SetMethod<
+              &SecurityInterstitialPageController::ReportPhishingErrorInNewTab>(
+              "reportPhishingErrorInNewTab")
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-          .SetMethod("showCertificateViewer",
-                     &SecurityInterstitialPageController::ShowCertificateViewer)
+          .SetMethod<
+              &SecurityInterstitialPageController::ShowCertificateViewer>(
+              "showCertificateViewer")
 #endif
       ;
 }
