@@ -792,9 +792,10 @@ class WebMediaPlayerImplTest
     return wmpi_->GetCurrentFrameFromCompositor();
   }
 
-  enum class LoadType { kFullyBuffered, kStreaming };
+  enum class LoadType { kFullyBuffered, kStreaming, kPartiallyBuffered };
   void Load(std::string data_file,
             LoadType load_type = LoadType::kFullyBuffered) {
+    const bool is_fully_buffered = load_type == LoadType::kFullyBuffered;
     const bool is_streaming = load_type == LoadType::kStreaming;
 
     // The URL is used by MultiBufferDataSource to determine if it should assume
@@ -802,7 +803,7 @@ class WebMediaPlayerImplTest
     // we're injecting the response artificially. It's value is unknown to the
     // underlying demuxer.
     const KURL kTestURL(
-        String::FromUtf8(std::string(is_streaming ? "http" : "file") +
+        String::FromUtf8(std::string(is_fully_buffered ? "file" : "http") +
                          "://example.com/sample.webm"));
 
     // This block sets up a fetch context which ultimately provides us a pointer
@@ -842,22 +843,33 @@ class WebMediaPlayerImplTest
     // "Serve" the file to the DataSource. Note: We respond with 200 okay, which
     // will prevent range requests or partial responses from being used. For
     // streaming responses, we'll pretend we don't know the content length.
+    const int64_t content_length =
+        is_streaming ? -1 : static_cast<int64_t>(data->size());
     WebURLResponse response(kTestURL);
+    if (load_type == LoadType::kPartiallyBuffered) {
+      response.SetHttpHeaderField(WebString("Accept-Ranges"),
+                                  WebString("bytes"));
+    }
     response.SetHttpHeaderField(
         WebString("Content-Length"),
-        WebString::FromUtf8(is_streaming ? "-1"
-                                         : base::NumberToString(data->size())));
-    response.SetExpectedContentLength(is_streaming ? -1 : data->size());
+        WebString::FromUtf8(base::NumberToString(content_length)));
+    response.SetExpectedContentLength(content_length);
     response.SetHttpStatusCode(200);
     client->DidReceiveResponse(response);
 
-    // Copy over the file data.
-    client->DidReceiveData(base::as_chars(base::span(*data)));
+    // Copy over the file data. For partially buffered loads, withhold the last
+    // byte so BufferedDataSourceHostImpl sees unloaded bytes remaining.
+    auto data_span = base::span(*data);
+    if (load_type == LoadType::kPartiallyBuffered) {
+      data_span = data_span.first(data_span.size() - 1);
+    }
+    client->DidReceiveData(base::as_chars(data_span));
 
-    // If we're pretending to be a streaming resource, don't complete the load;
-    // otherwise the DataSource will not be marked as streaming.
-    if (!is_streaming)
+    // If we're pretending to be a streaming or partially buffered resource,
+    // don't complete the load.
+    if (is_fully_buffered) {
       client->DidFinishLoading();
+    }
   }
 
   // This runs until we reach the |ready_state_|. Attempting to wait for ready
@@ -865,8 +877,9 @@ class WebMediaPlayerImplTest
   // unreliable due to asynchronous execution of tasks on the
   // base::test:TaskEnvironment.
   void LoadAndWaitForReadyState(std::string data_file,
-                                WebMediaPlayer::ReadyState ready_state) {
-    Load(data_file);
+                                WebMediaPlayer::ReadyState ready_state,
+                                LoadType load_type = LoadType::kFullyBuffered) {
+    Load(data_file, load_type);
     while (wmpi_->GetReadyState() < ready_state) {
       base::RunLoop loop;
       EXPECT_CALL(*client_, ReadyStateChanged())
@@ -918,6 +931,10 @@ class WebMediaPlayerImplTest
   }
 
   void OnProgress() { wmpi_->OnProgress(); }
+
+  void NotifyDownloading(bool is_downloading) {
+    wmpi_->NotifyDownloading(is_downloading);
+  }
 
   void OnCdmCreated(base::RepeatingClosure quit_closure,
                     std::unique_ptr<WebContentDecryptionModule> cdm,
@@ -1031,6 +1048,8 @@ class WebMediaPlayerImplTest
 
   // The WebMediaPlayerImpl's media observer.
   NiceMock<MockMediaObserver> mock_observer_;
+
+  base::SimpleTestTickClock tick_clock_;
 
   // The WebMediaPlayerImpl instance under test.
   std::unique_ptr<WebMediaPlayerImpl> wmpi_;
@@ -1222,6 +1241,51 @@ TEST_F(WebMediaPlayerImplTest, NoBufferSizeIncreaseUntilHaveEnough) {
   EXPECT_TRUE(IsDataSourceMarkedAsPlaying());
 }
 
+// Verify that playing at kReadyStateHaveFutureData after preload=metadata
+// suspend updates the data source playback state when kReadyStateHaveEnoughData
+// is later reached via NotifyDownloading(false).
+TEST_F(WebMediaPlayerImplTest,
+       PlayAtHaveFutureDataAfterPreloadMetadataSuspend) {
+  InitializeWebMediaPlayerImpl();
+  SetTickClock(&tick_clock_);
+  EXPECT_CALL(*client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
+
+  // This test needs a file which is larger than the MultiBuffer block size;
+  // otherwise we'll never complete initialization of the MultiBufferDataSource
+  // when DidFinishLoading() is not called.
+  constexpr char kLargeAudioOnlyTestFile[] = "bear_192kHz.wav";
+  LoadAndWaitForReadyState(kLargeAudioOnlyTestFile,
+                           WebMediaPlayer::kReadyStateHaveMetadata,
+                           LoadType::kPartiallyBuffered);
+  testing::Mock::VerifyAndClearExpectations(client_.Get());
+  EXPECT_CALL(*client_, ReadyStateChanged()).Times(AnyNumber());
+  NotifyDownloading(true);
+  CycleThreads();
+  EXPECT_TRUE(IsSuspended());
+  EXPECT_TRUE(ShouldCancelUponDefer());
+  EXPECT_EQ(wmpi_->GetReadyState(), WebMediaPlayer::kReadyStateHaveFutureData);
+
+  // Simulate starting playback on `canplay` while CanPlayThrough() is still
+  // false.
+  EXPECT_CALL(*client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(true));
+  wmpi_->SetRate(1.0);
+  wmpi_->Play();
+  CycleThreads();
+  EXPECT_FALSE(IsSuspended());
+  EXPECT_EQ(wmpi_->GetReadyState(), WebMediaPlayer::kReadyStateHaveFutureData);
+  EXPECT_FALSE(IsDataSourceMarkedAsPlaying());
+  EXPECT_TRUE(ShouldCancelUponDefer());
+
+  // When downloading pauses/completes and advances ReadyState to
+  // kReadyStateHaveEnoughData, the data source must be notified of playback and
+  // exit cancel-on-defer mode.
+  NotifyDownloading(false);
+  EXPECT_EQ(wmpi_->GetReadyState(), WebMediaPlayer::kReadyStateHaveEnoughData);
+  EXPECT_TRUE(IsDataSourceMarkedAsPlaying());
+  EXPECT_FALSE(ShouldCancelUponDefer());
+}
+
 // Verify that preload=metadata suspend works properly for streaming sources.
 TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoStreaming) {
   InitializeWebMediaPlayerImpl();
@@ -1390,13 +1454,12 @@ TEST_F(WebMediaPlayerImplTest, IdleSuspendBeforeLoadingBegins) {
 TEST_F(WebMediaPlayerImplTest,
        IdleSuspendIsDisabledIfLoadingProgressedRecently) {
   InitializeWebMediaPlayerImpl();
-  base::SimpleTestTickClock clock;
-  clock.Advance(base::Seconds(1));
-  SetTickClock(&clock);
+  tick_clock_.Advance(base::Seconds(1));
+  SetTickClock(&tick_clock_);
   AddBufferedRanges();
   wmpi_->DidLoadingProgress();
   // Advance less than the loading timeout.
-  clock.Advance(base::Seconds(1));
+  tick_clock_.Advance(base::Seconds(1));
   EXPECT_FALSE(delegate_.ExpireForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsSuspended());
@@ -1405,13 +1468,12 @@ TEST_F(WebMediaPlayerImplTest,
 TEST_F(WebMediaPlayerImplTest, IdleSuspendIsEnabledIfLoadingHasStalled) {
   InitializeWebMediaPlayerImpl();
   SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
-  base::SimpleTestTickClock clock;
-  clock.Advance(base::Seconds(1));
-  SetTickClock(&clock);
+  tick_clock_.Advance(base::Seconds(1));
+  SetTickClock(&tick_clock_);
   AddBufferedRanges();
   wmpi_->DidLoadingProgress();
   // Advance more than the loading timeout.
-  clock.Advance(base::Seconds(4));
+  tick_clock_.Advance(base::Seconds(4));
   EXPECT_TRUE(delegate_.ExpireForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSuspended());

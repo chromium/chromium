@@ -2396,11 +2396,8 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     SetReadyState(CanPlayThrough() ? WebMediaPlayer::kReadyStateHaveEnoughData
                                    : WebMediaPlayer::kReadyStateHaveFutureData);
 
-    // Let the DataSource know we have enough data -- this is the only function
-    // during which we advance to (or past) the kReadyStateHaveEnoughData state.
-    // It may use this information to update buffer sizes or release unused
-    // network connections.
-    MaybeUpdateBufferSizesForPlayback();
+    // Let the DataSource know we have enough data. It may use this information
+    // to release unused network connections.
     if (demuxer_manager_->HasDataSource() && !CouldPlayIfEnoughData()) {
       // For LazyLoad this will be handled during OnPipelineSuspended().
       if (for_suspended_start && did_lazy_load_) {
@@ -3118,6 +3115,8 @@ void WebMediaPlayerImpl::SetReadyState(WebMediaPlayer::ReadyState state) {
 
   ready_state_ = state;
   highest_ready_state_ = std::max(highest_ready_state_, ready_state_);
+
+  MaybeUpdateBufferSizesForPlayback();
 
   // Always notify to ensure client has the latest value.
   client_->ReadyStateChanged();
