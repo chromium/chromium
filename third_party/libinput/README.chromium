@@ -2,9 +2,9 @@ Name: libinput
 URL: https://gitlab.freedesktop.org/libinput/libinput
 Version: 1.32.0
 Revision: 5cf833b572f5a33663888da321dce0ba1abd82a2
-Update Mechanism: Manual (https://crbug.com/503546519)
+Update Mechanism: Autoroll
 License: MIT
-License File: LICENSE
+License File: src/COPYING
 Shipped: no
 Security Critical: no
 
@@ -16,7 +16,10 @@ This is only used in tests.
 Local Modifications:
 None.
 
-When updating to a new version, update the Revision above with the new commit hash,
-and perform the following steps:
-1. Run on_update.sh
-2. Check in the generated files along with the changes for the update.
+This is updated by an autoroller that tracks upstream release tags.
+libinput-version.h is generated at build time from the upstream template, and
+include/config.h doesn't depend on the libinput version, so a roll normally
+only needs to update DEPS. If a roll fails:
+1. Add any new sources from the upstream meson.build to BUILD.gn.
+2. If upstream changed its configuration checks, run on_update.sh and check in
+   the regenerated include/config.h.

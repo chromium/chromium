@@ -22,6 +22,30 @@ pkg_config("mtdev") {
 
 config("libinput_private_config") {
   cflags_c = [ "-std=gnu11" ]
+
+  # For libinput-version.h.
+  include_dirs = [ "$target_gen_dir/include" ]
+}
+
+# Generate libinput-version.h from the upstream template and meson.build so it
+# always matches the DEPS revision.
+action("libinput_version_header") {
+  script = "generate_version_header.py"
+  inputs = [
+    "src/meson.build",
+    "src/src/libinput-version.h.in",
+  ]
+  outputs = [ "$target_gen_dir/include/libinput-version.h" ]
+  args = [
+    "--meson-build",
+    rebase_path("src/meson.build", root_build_dir),
+    "--template",
+    rebase_path("src/src/libinput-version.h.in", root_build_dir),
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+    "--prefix",
+    "LIBINPUT",
+  ]
 }
 
 config("libinput_public_config") {
@@ -132,6 +156,8 @@ source_set("libinput") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = [ ":libinput_version_header" ]
 
   public_configs = [ ":libinput_public_config" ]
 }

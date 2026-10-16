@@ -17,6 +17,15 @@ meson setup -Dlibwacom=false -Ddebug-gui=false -Dtests=false \
 
 meson compile -C "$TMP_DIR" input
 
+# libinput-version.h is generated at build time (see BUILD.gn), so that
+# autorolls don't leave a stale checked-in copy.
+rm "$TMP_DIR/libinput-version.h"
+
+# Use the unversioned documentation URL (upstream's choice for development
+# builds) so that config.h doesn't change with every release.
+sed -i 's|^#define HTTP_DOC_LINK .*|#define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/latest"|' \
+  "$TMP_DIR/config.h"
+
 find "$TMP_DIR" -name '*.h' -printf '%P\n' | while read -r file; do
   sed -i 's|"[^"]*third_party/.*[^"]*"|""|' "$TMP_DIR/$file"
   sed -i 's|"/tmp/.*"|""|' "$TMP_DIR/$file"

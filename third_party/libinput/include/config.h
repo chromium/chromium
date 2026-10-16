@@ -15,7 +15,7 @@
 
 #define HAVE_VERSIONSORT 1
 
-#define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/1.32.0"
+#define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/latest"
 
 #define IS_DEBUG_BUILD 1
 
