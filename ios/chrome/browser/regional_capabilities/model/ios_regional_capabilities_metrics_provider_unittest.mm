@@ -12,6 +12,8 @@
 #import "components/regional_capabilities/regional_capabilities_test_utils.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -31,16 +33,26 @@ std::unique_ptr<KeyedService> BuildServiceWithFakeClient(
 
 class IOSRegionalCapabilitiesMetricsProviderTest : public PlatformTest {
  protected:
-  // Creates a testing profile and sets its active regional program.
-  void CreateTestingProfile(const std::string& name,
-                            country_codes::CountryId country_id) {
+  // Creates a personal testing profile and sets its active regional program.
+  void CreatePersonalTestingProfile(country_codes::CountryId country_id) {
+    CHECK(profile_manager_.GetLoadedProfiles().empty());
+    profile_manager_.AddProfileWithBuilder(CreateProfileBuilder(country_id));
+  }
+
+  // Creates a managed testing profile and sets its active regional program.
+  void CreateManagedTestingProfile(country_codes::CountryId country_id) {
+    AddManagedProfileWithBuilder(profile_manager_,
+                                 [FakeSystemIdentity fakeManagedIdentity],
+                                 CreateProfileBuilder(country_id));
+  }
+
+  TestProfileIOS::Builder CreateProfileBuilder(
+      country_codes::CountryId country_id) {
     TestProfileIOS::Builder test_profile_builder;
-    test_profile_builder
-        .AddTestingFactory(
-            ios::RegionalCapabilitiesServiceFactory::GetInstance(),
-            base::BindOnce(&BuildServiceWithFakeClient, country_id))
-        .SetName(name);
-    profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
+    test_profile_builder.AddTestingFactory(
+        ios::RegionalCapabilitiesServiceFactory::GetInstance(),
+        base::BindOnce(&BuildServiceWithFakeClient, country_id));
+    return test_profile_builder;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -59,7 +71,7 @@ TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, NoProfiles_Default) {
 }
 
 TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleWaffle_Waffle) {
-  CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
+  CreatePersonalTestingProfile(country_codes::CountryId("FR"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.ActiveRegionalProgram2",
@@ -67,7 +79,7 @@ TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleWaffle_Waffle) {
 }
 
 TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleDefault_Default) {
-  CreateTestingProfile("Profile 1", country_codes::CountryId("US"));
+  CreatePersonalTestingProfile(country_codes::CountryId("US"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.ActiveRegionalProgram2",
@@ -75,8 +87,8 @@ TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleDefault_Default) {
 }
 
 TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, MultipleWaffle_Waffle) {
-  CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
-  CreateTestingProfile("Profile 2", country_codes::CountryId("FR"));
+  CreatePersonalTestingProfile(country_codes::CountryId("FR"));
+  CreateManagedTestingProfile(country_codes::CountryId("FR"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.ActiveRegionalProgram2",
@@ -84,8 +96,8 @@ TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, MultipleWaffle_Waffle) {
 }
 
 TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, DefaultAndWaffle_Waffle) {
-  CreateTestingProfile("Profile 1", country_codes::CountryId("US"));
-  CreateTestingProfile("Profile 2", country_codes::CountryId("FR"));
+  CreatePersonalTestingProfile(country_codes::CountryId("US"));
+  CreateManagedTestingProfile(country_codes::CountryId("FR"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.ActiveRegionalProgram2",
@@ -96,8 +108,8 @@ TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, WaffleAndTaiyaki_Mixed) {
   if (!IsClientCompatibleWithProgram(Program::kTaiyaki)) {
     GTEST_SKIP() << "Device type does not support the Taiyaki program.";
   }
-  CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
-  CreateTestingProfile("Profile 2", country_codes::CountryId("JP"));
+  CreatePersonalTestingProfile(country_codes::CountryId("FR"));
+  CreateManagedTestingProfile(country_codes::CountryId("JP"));
 
   metrics_provider_.ProvideCurrentSessionData(nullptr);
 
