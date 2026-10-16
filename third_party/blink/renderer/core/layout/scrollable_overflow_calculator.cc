@@ -242,7 +242,8 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
     const PhysicalBoxFragment& child_fragment) {
   // Don't propagate any overflow if:
   //  - We are hidden for painting purposes due to layout rather than CSS
-  //    (empty-cells within a table).
+  //    (e.g. empty-cells within a table, or line-clamp hidden content).
+  //  - We are a float inside a line-clamp container (IsLineClampClippedFloat).
   //  - We are a ::view-transition pseudo. They are positioned as a child of
   //    its owning element, but not subject to that elements overflow clip or
   //    scroll translation. See:
@@ -251,6 +252,7 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
   //    this pseudo; this should be correct as a consequence of the fact that
   //    the scope is treated as having contain:layout.
   if (child_fragment.IsHiddenDueToLayout() ||
+      child_fragment.IsLineClampClippedFloat() ||
       IsA<ViewTransitionTransitionElement>(child_fragment.GetNode())) {
     return {};
   }
