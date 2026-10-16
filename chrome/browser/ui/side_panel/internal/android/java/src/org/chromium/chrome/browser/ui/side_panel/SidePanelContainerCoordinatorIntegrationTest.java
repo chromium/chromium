@@ -31,7 +31,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -600,8 +599,12 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
-    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/window")
-    @DisabledTest(message = "crbug.com/567233434")
+    // BypassOutdatedSurfaceActivation avoids a Viz race that stalls the compositor for ~5s when
+    // switching to an evicted tab with the side panel open. See crbug.com/562893806.
+    @EnableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/window",
+        "BypassOutdatedSurfaceActivation"
+    })
     public void closeAllTabsInGridTabSwitcher_undo_restoresWindowScopedSidePanel() {
         // Arrange: Open a second tab.
         var newTabPageStation = mResponsivePageStation.openNewTabFast();
