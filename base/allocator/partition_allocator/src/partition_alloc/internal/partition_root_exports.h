@@ -92,6 +92,15 @@ EXPORT_TEMPLATE void*
 PartitionRoot::Realloc<AllocFlags::kNone, FreeFlags::kNone>(void*,
                                                             size_t,
                                                             const char*);
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+// Currently Realloc<AllocFlags::kZeroFill>() is used by only
+// PAMemoryToolReplacesTest. To avoid increasing the binary size, we don't
+// define the method without MEMORY_TOOL_REPLACES_ALLOCATOR.
+EXPORT_TEMPLATE void*
+PartitionRoot::Realloc<AllocFlags::kZeroFill, FreeFlags::kNone>(void*,
+                                                                size_t,
+                                                                const char*);
+#endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 EXPORT_TEMPLATE void*
 PartitionRoot::Realloc<AllocFlags::kReturnNull, FreeFlags::kNone>(void*,
                                                                   size_t,

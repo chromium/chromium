@@ -1122,6 +1122,10 @@ if (build_with_chromium) {
       }
     }
 
+    if (memory_tool_replaces_allocator) {
+      sources += [ "memory_tool_replaces_unittest.cc" ]
+    }
+
     if (is_fuchsia) {
       sources +=
           [ "partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc" ]
