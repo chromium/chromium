@@ -15,10 +15,7 @@ import org.chromium.build.annotations.Nullable;
 /** Represents a presentation surface for WebContent in Compose without intermediate View nodes. */
 @NullMarked
 public class WebSurface {
-    // This interface is expected to be expanded in the future.
-    public interface EventListener {
-        void onInvalidate();
-    }
+    public interface EventListener extends AwWebSurface.EventListener {}
 
     @Nullable private AwWebContent mWebContent;
     private final AwWebSurface mAwWebSurface;
@@ -26,7 +23,7 @@ public class WebSurface {
 
     public WebSurface(EventListener eventListener) {
         assert eventListener != null : "EventListener cannot be null.";
-        mAwWebSurface = new AwWebSurface(eventListener::onInvalidate);
+        mAwWebSurface = new AwWebSurface(eventListener);
         mSurfaceBindingListener =
                 awContents -> {
                     if (awContents == null) {

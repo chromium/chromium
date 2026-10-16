@@ -12,14 +12,12 @@ import android.webkit.WebView;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.ProfileStore;
 import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
-import com.android.webview.chromium.WebSurface;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
@@ -33,6 +31,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SharedArrayBuffer;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
@@ -729,13 +728,11 @@ public class SupportLibWebViewChromiumFactory
 
     @Override
     public /* WebSurfaceBoundaryInterface */ InvocationHandler createWebSurface(
-            BiConsumer<@WebSurfaceEvent Integer, Object> eventListener) {
+            BiConsumer<@WebSurfaceEvent Integer, @Nullable Object> eventListener) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.CREATE_WEB_SURFACE")) {
             recordApiCall(ApiCall.CREATE_WEB_SURFACE);
-            WebSurface webSurface =
-                    new WebSurface(() -> eventListener.accept(WebSurfaceEvent.INVALIDATE, null));
-            SupportLibWebSurfaceAdapter adapter = new SupportLibWebSurfaceAdapter(webSurface);
-            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(adapter);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebSurfaceAdapter(eventListener));
         }
     }
 

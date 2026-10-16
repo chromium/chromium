@@ -871,8 +871,22 @@ void BrowserViewRenderer::DidOverscroll(
   gfx::Vector2dF fling_velocity_pixels =
       gfx::ScaleVector2d(current_fling_velocity, physical_pixel_scale);
 
+  if (overscroll_callback_) {
+    // The delta is in scroll direction, while the velocity already follows the
+    // finger. Only report fling velocity on axes that actually overscrolled.
+    gfx::Vector2dF fling_velocity(
+        latest_overscroll_delta.x() != 0.f ? current_fling_velocity.x() : 0.f,
+        latest_overscroll_delta.y() != 0.f ? current_fling_velocity.y() : 0.f);
+    overscroll_callback_.Run(
+        -latest_overscroll_delta,
+        gfx::ScaleVector2d(fling_velocity, dip_scale_));
+  }
   client_->DidOverscroll(rounded_overscroll_delta, fling_velocity_pixels,
                          begin_frame_source_->inside_begin_frame());
+}
+
+void BrowserViewRenderer::SetOverscrollCallback(OverscrollCallback callback) {
+  overscroll_callback_ = std::move(callback);
 }
 
 ui::TouchHandleDrawable* BrowserViewRenderer::CreateDrawable() {

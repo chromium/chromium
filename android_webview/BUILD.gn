@@ -1063,6 +1063,7 @@ generate_jni("browser_jni_headers") {
     "java/src/org/chromium/android_webview/AwWebContentsDelegate.java",
     "java/src/org/chromium/android_webview/AwWebResourceInterceptResponse.java",
     "java/src/org/chromium/android_webview/AwWebResourceRequest.java",
+    "java/src/org/chromium/android_webview/AwWebSurface.java",
     "java/src/org/chromium/android_webview/AwWindowCoverageTracker.java",
     "java/src/org/chromium/android_webview/JsReplyProxy.java",
     "java/src/org/chromium/android_webview/PersistentJavascriptInfo.java",

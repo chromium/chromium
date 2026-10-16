@@ -8,38 +8,75 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Presentation surface helper for rendering and interacting with {@link AwContents} without
  * requiring intermediate Android View hierarchies.
  */
+@Lifetime.WebView
+@JNINamespace("android_webview")
 @NullMarked
 public class AwWebSurface {
-    private final Runnable mInvalidateListener;
+    /**
+     * Listener for surface invalidation and overscroll events. Scroll values are in physical
+     * pixels, or physical pixels per second for velocities, and follow the finger movement like
+     * Blink and Compose (positive means the finger moves right/down).
+     */
+    public interface EventListener {
+        /** Called when the surface needs to be redrawn. */
+        void onInvalidate();
+
+        /** Notified of overscroll. The velocity is zero unless it comes from a fling. */
+        void onOverScroll(float deltaX, float deltaY, float velocityX, float velocityY);
+    }
+
+    private final EventListener mEventListener;
     @Nullable private AwContents mAwContents;
     private int mWidth;
     private int mHeight;
 
-    public AwWebSurface(Runnable invalidateListener) {
-        assert invalidateListener != null : "InvalidateListener cannot be null.";
-        mInvalidateListener = invalidateListener;
+    public AwWebSurface(EventListener eventListener) {
+        assert eventListener != null : "EventListener cannot be null.";
+        mEventListener = eventListener;
     }
 
     public void setAwContents(@Nullable AwContents awContents) {
         if (mAwContents != null && mAwContents != awContents) {
+            mAwContents.setWebSurface(null);
             mAwContents.setInvalidateListener(null);
+            WebContents webContents = mAwContents.getWebContents();
+            if (webContents != null) {
+                AwWebSurfaceJni.get().setForWebContents(webContents, null);
+            }
         }
         mAwContents = awContents;
         if (mAwContents != null) {
-            mAwContents.setInvalidateListener(mInvalidateListener);
+            mAwContents.setWebSurface(this);
+            mAwContents.setInvalidateListener(mEventListener::onInvalidate);
             mAwContents.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            onWebContentsChanged();
             if (mWidth > 0 && mHeight > 0) {
                 mAwContents.getViewMethods().onSizeChanged(mWidth, mHeight, 0, 0);
             }
         }
-        mInvalidateListener.run();
+        mEventListener.onInvalidate();
+    }
+
+    /** Binds the native peer to the current WebContents, which AwContents swaps for popups. */
+    void onWebContentsChanged() {
+        WebContents webContents = mAwContents == null ? null : mAwContents.getWebContents();
+        if (webContents != null) {
+            AwWebSurfaceJni.get().setForWebContents(webContents, this);
+        }
     }
 
     public void draw(Canvas canvas) {
@@ -70,5 +107,17 @@ public class AwWebSurface {
     public boolean onTouchEvent(MotionEvent event) {
         if (mAwContents == null) return false;
         return mAwContents.getViewMethods().onTouchEvent(event);
+    }
+
+    @CalledByNative
+    private void onOverScroll(float deltaX, float deltaY, float velocityX, float velocityY) {
+        mEventListener.onOverScroll(deltaX, deltaY, velocityX, velocityY);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void setForWebContents(
+                @JniType("content::WebContents*") WebContents webContents,
+                @Nullable AwWebSurface surface);
     }
 }

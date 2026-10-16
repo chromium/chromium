@@ -192,6 +192,13 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
       uint32_t layer_tree_frame_sink_id,
       uint32_t sequence_id) override;
 
+  // Called with physical overscroll delta (pixels) and fling velocity
+  // (pixels/s) in the direction of finger movement.
+  using OverscrollCallback =
+      base::RepeatingCallback<void(const gfx::Vector2dF& overscroll_delta,
+                                   const gfx::Vector2dF& fling_velocity)>;
+  void SetOverscrollCallback(OverscrollCallback callback);
+
   // Visible for testing.
   content::SynchronousCompositor* GetActiveCompositorForTesting() const {
     return compositor_;
@@ -288,6 +295,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // visible skew (especially noticeable when scrolling up and down in the same
   // spot over a period of time).
   gfx::Vector2dF overscroll_rounding_error_;
+  OverscrollCallback overscroll_callback_;
 
   // The scroll to apply after the next scroll state update.
   std::optional<gfx::Point> scroll_on_scroll_state_update_;

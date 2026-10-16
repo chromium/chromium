@@ -463,6 +463,7 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsUpdateVisibilityTaskPending;
     private final Runnable mUpdateVisibilityRunnable;
     @Nullable private Runnable mInvalidateListener;
+    @Nullable private AwWebSurface mWebSurface;
 
     private final SparseArray<WindowAndroid.IntentCallback> mOutstandingIntents =
             new SparseArray<>();
@@ -1952,6 +1953,9 @@ public class AwContents implements SmartClipProvider {
 
         // Finally refresh all view state for mNativeAwContents.
         restoreState(prePopupState);
+        if (mWebSurface != null) {
+            mWebSurface.onWebContentsChanged();
+        }
 
         mIsPopupWindow = true;
     }
@@ -4387,6 +4391,10 @@ public class AwContents implements SmartClipProvider {
      */
     public void setInvalidateListener(@Nullable Runnable listener) {
         mInvalidateListener = listener;
+    }
+
+    void setWebSurface(@Nullable AwWebSurface webSurface) {
+        mWebSurface = webSurface;
     }
 
     public int getScrollX() {

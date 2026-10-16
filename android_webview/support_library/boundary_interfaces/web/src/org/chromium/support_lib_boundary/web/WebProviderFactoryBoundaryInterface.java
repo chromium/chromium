@@ -5,6 +5,7 @@
 package org.chromium.support_lib_boundary.web;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.function.BiConsumer;
@@ -17,7 +18,7 @@ public interface WebProviderFactoryBoundaryInterface {
             /* Config= */ Consumer<BiConsumer<@WebContentConfig Integer, Object>> buildConfig);
 
     /* WebSurfaceBoundaryInterface */ InvocationHandler createWebSurface(
-            BiConsumer<@WebSurfaceEvent Integer, Object> eventListener);
+            BiConsumer<@WebSurfaceEvent Integer, @Nullable Object> eventListener);
 
     String[] getSupportedFeatures();
 }

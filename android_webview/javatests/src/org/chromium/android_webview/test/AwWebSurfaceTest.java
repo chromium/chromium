@@ -6,12 +6,14 @@ package org.chromium.android_webview.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.SystemClock;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import androidx.test.filters.SmallTest;
 
@@ -31,13 +33,17 @@ import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.net.test.util.TestWebServer;
 
 /** Tests for {@link AwWebSurface}. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
+// Test drags are sent at once, so latency compensation could drop their scroll updates.
+@CommandLineFlags.Add({"disable-features=CompensateGestureScrollUpdateLatency"})
 public class AwWebSurfaceTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -65,20 +71,20 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(secondClient);
         AwContents secondContents = secondContainerView.getAwContents();
 
-        CallbackHelper invalidateHelper = new CallbackHelper();
-        AwWebSurface surface = new AwWebSurface(invalidateHelper::notifyCalled);
+        TestEventListener listener = new TestEventListener();
+        AwWebSurface surface = new AwWebSurface(listener);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    int callCount = invalidateHelper.getCallCount();
+                    int callCount = listener.mInvalidateHelper.getCallCount();
                     surface.setAwContents(mAwContents);
-                    assertEquals(callCount + 1, invalidateHelper.getCallCount());
+                    assertEquals(callCount + 1, listener.mInvalidateHelper.getCallCount());
 
                     surface.setAwContents(secondContents);
-                    assertEquals(callCount + 2, invalidateHelper.getCallCount());
+                    assertEquals(callCount + 2, listener.mInvalidateHelper.getCallCount());
 
                     surface.setAwContents(null);
-                    assertEquals(callCount + 3, invalidateHelper.getCallCount());
+                    assertEquals(callCount + 3, listener.mInvalidateHelper.getCallCount());
 
                     long now = SystemClock.uptimeMillis();
                     MotionEvent event =
@@ -92,34 +98,34 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCompositorInvalidation() throws Throwable {
-        CallbackHelper invalidateHelper = new CallbackHelper();
-        AwWebSurface surface = new AwWebSurface(invalidateHelper::notifyCalled);
+        TestEventListener listener = new TestEventListener();
+        AwWebSurface surface = new AwWebSurface(listener);
 
         ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
-        int callCount = invalidateHelper.getCallCount();
+        int callCount = listener.mInvalidateHelper.getCallCount();
 
         mActivityTestRule.loadHtmlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
                 "<html><body style='background-color: #00FF00;'>Test</body></html>");
-        invalidateHelper.waitForCallback(callCount);
+        listener.mInvalidateHelper.waitForCallback(callCount);
 
         ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(null));
-        callCount = invalidateHelper.getCallCount();
+        callCount = listener.mInvalidateHelper.getCallCount();
 
         mActivityTestRule.loadHtmlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
                 "<html><body style='background-color: #FF0000;'>Second</body></html>");
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
-        assertEquals(callCount, invalidateHelper.getCallCount());
+        assertEquals(callCount, listener.mInvalidateHelper.getCallCount());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testDraw() throws Throwable {
-        AwWebSurface surface = new AwWebSurface(() -> {});
+        AwWebSurface surface = new AwWebSurface(new TestEventListener());
 
         final int green = Color.rgb(0, 255, 0);
         mActivityTestRule.loadHtmlSync(
@@ -148,8 +154,15 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSwipe() throws Throwable {
-        CallbackHelper invalidateHelper = new CallbackHelper();
-        AwWebSurface surface = new AwWebSurface(invalidateHelper::notifyCalled);
+        TestEventListener listener =
+                new TestEventListener() {
+                    @Override
+                    public void onInvalidate() {
+                        super.onInvalidate();
+                        mContainerView.invalidate();
+                    }
+                };
+        AwWebSurface surface = new AwWebSurface(listener);
 
         mActivityTestRule.loadHtmlSync(
                 mAwContents,
@@ -159,11 +172,11 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
 
-        int callCount = invalidateHelper.getCallCount();
+        int callCount = listener.mInvalidateHelper.getCallCount();
         AwTestTouchUtils.dragCompleteView(mContainerView, 0, 0, 0, -200, 10);
 
         CriteriaHelper.pollInstrumentationThread(() -> mAwContents.getScrollY() > 0);
-        invalidateHelper.waitForCallback(callCount);
+        listener.mInvalidateHelper.waitForCallback(callCount);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -178,40 +191,105 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testSetSize() throws Throwable {
-        AwWebSurface surface = new AwWebSurface(() -> {});
-        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+    public void testOverscroll() throws Throwable {
+        CallbackHelper overScrollHelper = new CallbackHelper();
+        float[] firstOverScrollDelta = new float[2];
+        AwWebSurface surface =
+                new AwWebSurface(
+                        new TestEventListener() {
+                            @Override
+                            public void onInvalidate() {
+                                super.onInvalidate();
+                                mContainerView.invalidate();
+                            }
+
+                            @Override
+                            public void onOverScroll(float dx, float dy, float vx, float vy) {
+                                if (overScrollHelper.getCallCount() > 0) return;
+                                firstOverScrollDelta[0] = dx;
+                                firstOverScrollDelta[1] = dy;
+                                overScrollHelper.notifyCalled();
+                            }
+                        });
 
         mActivityTestRule.loadHtmlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
-                "<html><head><script>"
-                        + "window.resizeCount = 0;"
-                        + "window.addEventListener('resize', () => { window.resizeCount++; });"
-                        + "</script></head><body></body></html>");
+                "<html><body style='margin:0; height: 100px;'></body></html>");
+        mActivityTestRule.waitForVisualStateCallback(mAwContents);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
+
+        // Drag down in a single move, so everything beyond the touch slop overscrolls at once.
+        long downTime = SystemClock.uptimeMillis();
+        sendTouchEvent(surface, downTime, MotionEvent.ACTION_DOWN, 50, 50);
+        sendTouchEvent(surface, downTime, MotionEvent.ACTION_MOVE, 50, 250);
+        overScrollHelper.waitForCallback(0);
+        sendTouchEvent(surface, downTime, MotionEvent.ACTION_UP, 50, 250);
+
+        // The overscroll is in physical pixels and follows the finger, like the drag.
+        int touchSlop = ViewConfiguration.get(mContainerView.getContext()).getScaledTouchSlop();
+        assertEquals(0f, firstOverScrollDelta[0], 0f);
+        assertEquals(200 - touchSlop, firstOverScrollDelta[1], 2f);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOverscrollFromFlingReportsVelocity() throws Throwable {
+        CallbackHelper flingOverScrollHelper = new CallbackHelper();
+        float[] lastVelocity = new float[2];
+        AwWebSurface surface =
+                new AwWebSurface(
+                        new TestEventListener() {
+                            @Override
+                            public void onInvalidate() {
+                                super.onInvalidate();
+                                mContainerView.invalidate();
+                            }
+
+                            @Override
+                            public void onOverScroll(float dx, float dy, float vx, float vy) {
+                                if (vx == 0 && vy == 0) return;
+                                lastVelocity[0] = vx;
+                                lastVelocity[1] = vy;
+                                flingOverScrollHelper.notifyCalled();
+                            }
+                        });
+
+        mActivityTestRule.loadHtmlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "<html><body style='margin:0; height: 100px;'></body></html>");
+        mActivityTestRule.waitForVisualStateCallback(mAwContents);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
+
+        int callCount = flingOverScrollHelper.getCallCount();
+
+        // Fling up (towards the top edge) on a page that cannot scroll.
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.flingScroll(0, -1000));
+        flingOverScrollHelper.waitForCallback(callCount);
+        assertEquals(0f, lastVelocity[0], 0f);
+        assertTrue(lastVelocity[1] > 0);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSetSize() {
+        AwWebSurface surface = new AwWebSurface(new TestEventListener());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // AwContents reports its height as the vertical scroll extent.
                     surface.setAwContents(mAwContents);
                     surface.setSize(320, 480);
-                });
+                    assertEquals(480, mAwContents.getViewMethods().computeVerticalScrollExtent());
 
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        String count =
-                                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                                        mAwContents, mContentsClient, "window.resizeCount");
-                        return Integer.parseInt(count) > 0;
-                    } catch (Exception e) {
-                        return false;
-                    }
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
                     surface.setAwContents(null);
                     surface.setSize(500, 500);
+                    assertEquals(480, mAwContents.getViewMethods().computeVerticalScrollExtent());
                 });
     }
 
@@ -249,27 +327,97 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testMultipleWebSurfaces_evictionTriggersInvalidation() {
-        CallbackHelper invalidateHelper1 = new CallbackHelper();
-        CallbackHelper invalidateHelper2 = new CallbackHelper();
-        WebSurface surface1 = new WebSurface(invalidateHelper1::notifyCalled);
-        WebSurface surface2 = new WebSurface(invalidateHelper2::notifyCalled);
+        TestEventListener listener1 = new TestEventListener();
+        TestEventListener listener2 = new TestEventListener();
+        WebSurface surface1 = new WebSurface(listener1);
+        WebSurface surface2 = new WebSurface(listener2);
         AwWebContent webContent = new AwWebContent();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     surface1.setWebContent(webContent);
 
-                    int callCount1 = invalidateHelper1.getCallCount();
+                    int callCount1 = listener1.mInvalidateHelper.getCallCount();
                     surface2.setWebContent(webContent);
-                    assertEquals(callCount1 + 1, invalidateHelper1.getCallCount());
+                    assertEquals(callCount1 + 1, listener1.mInvalidateHelper.getCallCount());
 
-                    int callCount2 = invalidateHelper2.getCallCount();
+                    int callCount2 = listener2.mInvalidateHelper.getCallCount();
                     surface1.setWebContent(webContent);
-                    assertEquals(callCount2 + 1, invalidateHelper2.getCallCount());
+                    assertEquals(callCount2 + 1, listener2.mInvalidateHelper.getCallCount());
 
                     surface1.setWebContent(null);
                     surface2.setWebContent(null);
                     webContent.destroy();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPopupContentsRebindSurface() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            mActivityTestRule.triggerPopup(
+                    mAwContents,
+                    mContentsClient,
+                    webServer,
+                    "<html></html>",
+                    "<html><head><title>Popup</title></head>"
+                            + "<body style='margin:0; height: 100px;'></body></html>",
+                    "/popup.html",
+                    "window.open('/popup.html')");
+
+            // Bind the surface before the popup WebContents is supplied, like WebSurface does.
+            AwActivityTestRule.PopupInfo popupInfo =
+                    mActivityTestRule.createPopupContents(mAwContents);
+            CallbackHelper overScrollHelper = new CallbackHelper();
+            AwWebSurface surface =
+                    new AwWebSurface(
+                            new TestEventListener() {
+                                @Override
+                                public void onInvalidate() {
+                                    popupInfo.popupContainerView.invalidate();
+                                }
+
+                                @Override
+                                public void onOverScroll(float dx, float dy, float vx, float vy) {
+                                    overScrollHelper.notifyCalled();
+                                }
+                            });
+            ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(popupInfo.popupContents));
+            mActivityTestRule.loadPopupContents(mAwContents, popupInfo, null);
+            mActivityTestRule.waitForVisualStateCallback(popupInfo.popupContents);
+
+            // Overscroll is reported by the native peer, which must follow the popup WebContents.
+            ThreadUtils.runOnUiThreadBlocking(() -> popupInfo.popupContents.flingScroll(0, -1000));
+            overScrollHelper.waitForCallback(0);
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    /** Records invalidations and leaves all scrolling to the page. */
+    private static class TestEventListener implements WebSurface.EventListener {
+        final CallbackHelper mInvalidateHelper = new CallbackHelper();
+
+        @Override
+        public void onInvalidate() {
+            mInvalidateHelper.notifyCalled();
+        }
+
+        @Override
+        public void onOverScroll(float deltaX, float deltaY, float velocityX, float velocityY) {}
+    }
+
+    private static void sendTouchEvent(
+            AwWebSurface surface, long downTime, int action, float x, float y) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MotionEvent event =
+                            MotionEvent.obtain(
+                                    downTime, SystemClock.uptimeMillis(), action, x, y, 0);
+                    surface.onTouchEvent(event);
+                    event.recycle();
                 });
     }
 }
