@@ -54,6 +54,11 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
 
 class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
  public:
+  void TearDownOnMainThread() override {
+    RemoveObserver(&read_anything_observer_);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   void AddObserver(ReadAnythingLifecycleObserver* observer) {
     ReadAnythingController::From(browser()->GetActiveTabInterface())
         ->AddObserver(observer);
