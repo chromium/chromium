@@ -306,23 +306,25 @@ void DisplayLockContext::Lock() {
     return;
   }
 
-  // TODO(vmpstr): Note when an 'auto' context gets locked, we should clear
-  // the ancestor scroll anchors. This is a workaround for a behavior that
-  // happens when the user quickly scrolls (e.g. scrollbar scrolls) into an
-  // area that only has locked content. We can get into a loop that will
-  // keep unlocking an element, which may shrink it to be out of the viewport,
-  // and thus relocking it again. It is is also possible that we selected the
-  // scroller itself or one of the locked elements as the anchor, so we don't
-  // actually shift the scroll and the loop continues indefinitely. The user
-  // can easily get out of the loop by scrolling since that triggers a new
-  // scroll anchor selection. The work-around for us is also to pick a new
-  // scroll anchor for the scroller that has a newly-locked context. The
-  // reason it works is that it causes us to pick an anchor while the element
-  // is still unlocked, so when it gets relocked we shift the scroll to
-  // whatever visible content we had. The TODO here is to figure out if there
-  // is a better way to solve this. In either case, we have to select a new
-  // scroll anchor to get out of this behavior.
-  element_->NotifyPriorityScrollAnchorStatusChanged();
+  if (CanDirtyStyle()) {
+    // TODO(vmpstr): Note when an 'auto' context gets locked, we should clear
+    // the ancestor scroll anchors. This is a workaround for a behavior that
+    // happens when the user quickly scrolls (e.g. scrollbar scrolls) into an
+    // area that only has locked content. We can get into a loop that will
+    // keep unlocking an element, which may shrink it to be out of the viewport,
+    // and thus relocking it again. It is is also possible that we selected the
+    // scroller itself or one of the locked elements as the anchor, so we don't
+    // actually shift the scroll and the loop continues indefinitely. The user
+    // can easily get out of the loop by scrolling since that triggers a new
+    // scroll anchor selection. The work-around for us is also to pick a new
+    // scroll anchor for the scroller that has a newly-locked context. The
+    // reason it works is that it causes us to pick an anchor while the element
+    // is still unlocked, so when it gets relocked we shift the scroll to
+    // whatever visible content we had. The TODO here is to figure out if there
+    // is a better way to solve this. In either case, we have to select a new
+    // scroll anchor to get out of this behavior.
+    element_->NotifyPriorityScrollAnchorStatusChanged();
+  }
 
   // If this element is a scroller, then stash its current scroll offset, so
   // that we can restore it when needed.
