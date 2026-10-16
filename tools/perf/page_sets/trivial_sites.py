@@ -116,6 +116,11 @@ class TrivialFullscreenVideoPage(_BasePage):
     )
 
   def RunPageInteractions(self, action_runner):
+    # Entering fullscreen requires focus and user activation, so focus the tab
+    # before synthesizing the key press that triggers fullscreen.
+    action_runner.tab._inspector_backend._websocket.SyncRequest(
+      {'method': 'Page.bringToFront'}, timeout=60
+    )
     action_runner.PressKey("Return")
     super(TrivialFullscreenVideoPage, self).RunPageInteractions(action_runner)
 
