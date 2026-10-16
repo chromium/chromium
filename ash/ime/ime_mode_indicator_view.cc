@@ -37,7 +37,7 @@ ImeModeIndicatorView::ImeModeIndicatorView(const gfx::Rect& cursor_bounds,
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   set_accept_events(false);
-  set_shadow(views::BubbleBorder::STANDARD_SHADOW);
+  set_shadow_config({.shadow_type = views::BubbleBorder::STANDARD_SHADOW});
   SetArrow(views::BubbleBorder::TOP_CENTER);
   set_frame_margins({.title = gfx::Insets()});
   set_available_screen_bounds_callback(
