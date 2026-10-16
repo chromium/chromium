@@ -5247,6 +5247,18 @@ const FeatureEntry::FeatureVariation kRemoteActorCredentialSharingVariations[] =
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::Choice kPaymentHandlerCustomSizeChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"Static sizing (openWindow)", switches::kEnableFeatures,
+     "PaymentHandlerStaticCustomSize"},
+    {"Dynamic sizing (resizeTo)", switches::kEnableFeatures,
+     "PaymentHandlerDynamicCustomSize"},
+    {"Enable all", switches::kEnableFeatures,
+     "PaymentHandlerStaticCustomSize,PaymentHandlerDynamicCustomSize"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "PaymentHandlerStaticCustomSize,PaymentHandlerDynamicCustomSize"},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -14309,6 +14321,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kWebHidOnDesktopAndroidServiceWorkers)},
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
+    {"payment-handler-custom-size",
+     flag_descriptions::kPaymentHandlerCustomSizeName,
+     flag_descriptions::kPaymentHandlerCustomSizeDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kPaymentHandlerCustomSizeChoices)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
