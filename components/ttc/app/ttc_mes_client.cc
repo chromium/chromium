@@ -20,7 +20,7 @@
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/ttc/app/public/server_journal_event.h"
 
 namespace ttc {

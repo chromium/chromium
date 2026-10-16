@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test.pb.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "net/http/http_request_headers.h"

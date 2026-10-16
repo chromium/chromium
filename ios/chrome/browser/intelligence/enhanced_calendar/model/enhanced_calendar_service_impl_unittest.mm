@@ -9,7 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/mock_callback.h"
-#import "components/optimization_guide/core/model_execution/feature_keys.h"
+#import "components/optimization_guide/core/feature_registry/feature_keys.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
 #import "components/signin/public/base/consent_level.h"

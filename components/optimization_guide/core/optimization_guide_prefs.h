@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 
 class PrefRegistrySimple;
 

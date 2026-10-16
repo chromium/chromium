@@ -10,7 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/mock_callback.h"
-#import "components/optimization_guide/core/model_execution/feature_keys.h"
+#import "components/optimization_guide/core/feature_registry/feature_keys.h"
 #import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"

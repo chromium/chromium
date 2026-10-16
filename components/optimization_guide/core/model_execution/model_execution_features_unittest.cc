@@ -5,7 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

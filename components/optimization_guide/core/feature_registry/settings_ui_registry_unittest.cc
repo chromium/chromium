@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {

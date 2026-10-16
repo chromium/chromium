@@ -6,7 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/optimization_guide/core/model_execution/feature_keys.h"
+#import "components/optimization_guide/core/feature_registry/feature_keys.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"

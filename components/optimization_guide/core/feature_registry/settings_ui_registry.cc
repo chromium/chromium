@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 
 namespace optimization_guide {
 

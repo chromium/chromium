@@ -9,7 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/strcat.h"
 #import "base/time/time.h"
-#import "components/optimization_guide/core/model_execution/feature_keys.h"
+#import "components/optimization_guide/core/feature_registry/feature_keys.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"

@@ -6,7 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/model_quality_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"

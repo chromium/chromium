@@ -6,7 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SETTINGS_ENABLED_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 
 namespace optimization_guide {
 

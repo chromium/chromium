@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
