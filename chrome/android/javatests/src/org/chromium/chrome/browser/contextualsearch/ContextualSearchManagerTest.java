@@ -241,6 +241,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "crbug.com/383144566")
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/574148554
     public void testPromotesToTab() throws Exception {
         // -------- SET UP ---------
         // Track Tab creation with this helper.
@@ -509,7 +510,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky on phones: https://crbug.com/40540341
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444937
+    @DisableIf.Device({
+        DeviceFormFactor.DESKTOP, // https://crbug.com/481444937
+        DeviceFormFactor.AUTOMOTIVE // crbug.com/574148554
+    })
     public void testPanelDismissedOnToggleFullscreen() throws Exception {
         // Simulate a resolving search and assert that the panel peeks.
         simulateResolveSearch("search");
