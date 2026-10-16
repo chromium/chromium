@@ -161,8 +161,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
 
   gfx::ExtensionSet enabled_extensions_;
   VkPhysicalDevice vk_physical_device_ = VK_NULL_HANDLE;
-  VkPhysicalDeviceProperties vk_physical_device_properties_;
-  VkPhysicalDeviceDriverProperties vk_physical_device_driver_properties_;
+  VkPhysicalDeviceProperties vk_physical_device_properties_{};
+  VkPhysicalDeviceDriverProperties vk_physical_device_driver_properties_{
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES};
   uint64_t drm_device_id_ = 0;
   VkDevice owned_vk_device_ = VK_NULL_HANDLE;
   VkDevice vk_device_ = VK_NULL_HANDLE;

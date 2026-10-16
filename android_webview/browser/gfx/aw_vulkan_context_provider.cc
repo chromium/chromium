@@ -110,8 +110,10 @@ AwVulkanContextProvider::Globals::~Globals() {
   g_globals = nullptr;
 
   gr_context.reset();
-  device_queue->Destroy();
-  device_queue = nullptr;
+  if (device_queue) {
+    device_queue->Destroy();
+    device_queue = nullptr;
+  }
 }
 
 bool AwVulkanContextProvider::Globals::Initialize(
@@ -138,9 +140,12 @@ bool AwVulkanContextProvider::Globals::Initialize(
   }
 
   device_queue = std::make_unique<gpu::VulkanDeviceQueue>(params->instance);
-  device_queue->InitializeForWebView(
-      params->physical_device, params->device, params->queue,
-      params->graphics_queue_index, std::move(device_extensions));
+  if (!device_queue->InitializeForWebView(
+          params->physical_device, params->device, params->queue,
+          params->graphics_queue_index, std::move(device_extensions))) {
+    LOG(ERROR) << "Unable to initialize VulkanDeviceQueue.";
+    return false;
+  }
 
   // Create our Skia GrContext.
   skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,

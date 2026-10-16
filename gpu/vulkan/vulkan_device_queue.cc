@@ -511,6 +511,25 @@ bool VulkanDeviceQueue::InitializeForWebView(
     VkQueue vk_queue,
     uint32_t vk_queue_index,
     gfx::ExtensionSet enabled_extensions) {
+  if (vk_physical_device == VK_NULL_HANDLE) {
+    return false;
+  }
+
+  vkGetPhysicalDeviceProperties(vk_physical_device,
+                                &vk_physical_device_properties_);
+  if (vk_physical_device_properties_.apiVersion < kVulkanRequiredApiVersion) {
+    return false;
+  }
+
+  vk_physical_device_driver_properties_ = VkPhysicalDeviceDriverProperties{
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES,
+  };
+  VkPhysicalDeviceProperties2 properties2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+      .pNext = &vk_physical_device_driver_properties_,
+  };
+  vkGetPhysicalDeviceProperties2(vk_physical_device, &properties2);
+
   // VulkanDeviceQueue for compositing on WebView is used on a single
   // thread (Android RenderThread), so it doesn't need to be thread-safe.
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
@@ -526,6 +545,29 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
     gfx::ExtensionSet enabled_extensions,
     const VkPhysicalDeviceFeatures2& vk_physical_device_features2,
     VmaAllocator vma_allocator) {
+  const VulkanInfo& info = instance_->vulkan_info();
+  if (vk_physical_device == VK_NULL_HANDLE) {
+    return false;
+  }
+
+  int device_index = -1;
+  for (size_t i = 0; i < info.physical_devices.size(); ++i) {
+    if (info.physical_devices[i].device == vk_physical_device) {
+      device_index = i;
+      break;
+    }
+  }
+
+  if (device_index == -1) {
+    DLOG(ERROR) << "Cannot find physical device match compositor gpu thread.";
+    return false;
+  }
+
+  const auto& physical_device_info = info.physical_devices[device_index];
+  vk_physical_device_properties_ = physical_device_info.properties;
+  vk_physical_device_driver_properties_ =
+      physical_device_info.driver_properties;
+
   // Currently VulkanDeviceQueue for drdc thread(aka CompositorGpuThread) uses
   // the same vulkan queue as the gpu main thread. Now since both gpu main and
   // drdc threads would be accessing/submitting work to the same queue, all the
