@@ -12,16 +12,10 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -37,24 +31,6 @@
 namespace send_tab_to_self {
 
 namespace {
-
-void SimulateOpeningReceivedTab(BrowserWindowInterface* browser,
-                                const SendTabToSelfEntry& entry) {
-  SendTabToSelfToolbarBubbleController* controller =
-      SendTabToSelfToolbarBubbleController::From(browser);
-
-  if (!controller->IsBubbleShowing()) {
-    PinnedToolbarActions* pinned_controller =
-        BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions();
-    pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
-                                                      true);
-    auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);
-    controller->ShowBubble(entry, anchor);
-  }
-
-  ASSERT_TRUE(controller->IsBubbleShowing());
-  controller->bubble()->OpenInNewTab();
-}
 
 std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
     content::BrowserContext* context) {
@@ -107,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
 
   // Mimic the user opening the received tab.
   base::HistogramTester histogram_tester;
-  SimulateOpeningReceivedTab(browser(), *entry);
+  OpenEntryInNewForegroundTab(browser()->GetProfile(), *entry,
+                              ShareActivatedEntryPoint::kAutoOpened);
 
   navigation_observer.Wait();
   content::WebContents* web_contents =
@@ -150,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
 
   // Mimic the user opening the received tab.
   base::HistogramTester histogram_tester;
-  SimulateOpeningReceivedTab(browser(), *entry);
+  OpenEntryInNewForegroundTab(browser()->GetProfile(), *entry,
+                              ShareActivatedEntryPoint::kAutoOpened);
 
   navigation_observer.Wait();
   content::WebContents* web_contents =

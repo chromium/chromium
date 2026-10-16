@@ -14141,20 +14141,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SEND_TAB_TO_SELF_SEND_BUTTON_LABEL" desc="The label of the Send button in the Send Tab to Self bubble.">
         Send
       </message>
-      <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_FROM_DEVICE" desc="The label for the device a received tab was sent from. Shown in the toolbar bubble.">
-        Shared from <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
-      </message>
-      <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_TITLE" desc="The title for the received tab dialog shown from the toolbar button.">
-        Page shared from another device
-      </message>
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_PICKER_TITLE" desc="Title for the Send Tab To Self device picker bubble.">
         Choose a device
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_PICKER_SUBTITLE" desc="Subtitle for the Send Tab To Self device picker bubble.">
         Select the device where you want to get this link.
-      </message>
-      <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_LABEL" desc="The label for the button in the received tab dialog shown from the toolbar button.">
-        Open in New Tab
       </message>
       <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="The label of a menu entry to share the current tab to another device">
         Send to your &amp;device

@@ -174,7 +174,6 @@
 #include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/ai_overlay_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -1455,15 +1454,9 @@ void BrowserActions::InitializeChromeMenuActions() {
                     chrome::SendTabToSelf(bwi);
                     return;
                   }
-                  auto* const bubble_controller = send_tab_to_self::
-                      SendTabToSelfToolbarBubbleController::From(bwi);
-                  if (bubble_controller->IsBubbleShowing()) {
-                    bubble_controller->HideBubble();
-                  } else {
-                    send_tab_to_self::ShowBubble(
-                        tab_strip_model->GetActiveWebContents(),
-                        send_tab_to_self::ShareEntryPoint::kToolbarIcon);
-                  }
+                  send_tab_to_self::ShowBubble(
+                      tab_strip_model->GetActiveWebContents(),
+                      send_tab_to_self::ShareEntryPoint::kToolbarIcon);
                 },
                 bwi, tab_strip_model),
             kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,

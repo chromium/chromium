@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -146,8 +145,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest,
 }
 
 // Verifies that the device picker bubble opens and closes cleanly.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleDialogTest,
-                       InvokeUi_ShowDeviceList) {
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleDialogTest, InvokeUi_ShowDeviceList) {
   ShowAndVerifyUi();
 }
 

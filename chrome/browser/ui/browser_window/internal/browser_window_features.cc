@@ -147,7 +147,6 @@
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_window_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing/sharing_window_controller.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
@@ -1056,12 +1055,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
             .CreateInstance<qrcode_generator::QRCodeWindowController>(*browser,
                                                                       browser);
 
-    send_tab_to_self_toolbar_bubble_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<
-                send_tab_to_self::SendTabToSelfToolbarBubbleController>(
-                *browser, browser);
-
     if (browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
@@ -1165,7 +1158,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (shared_tab_group_feedback_controller_) {
     shared_tab_group_feedback_controller_->TearDown();
   }
-  send_tab_to_self_toolbar_bubble_controller_.reset();
   qrcode_window_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();
   ios_promo_controller_.reset();

@@ -22,16 +22,13 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -412,25 +409,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
             send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice);
 }
 
-void SimulateOpeningReceivedTab(
-    BrowserWindowInterface* browser,
-    const send_tab_to_self::SendTabToSelfEntry& entry) {
-  send_tab_to_self::SendTabToSelfToolbarBubbleController* controller =
-      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser);
-
-  if (!controller->IsBubbleShowing()) {
-    PinnedToolbarActions* pinned_controller =
-        BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions();
-    pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
-                                                      true);
-    auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);
-    controller->ShowBubble(entry, anchor);
-  }
-
-  ASSERT_TRUE(controller->IsBubbleShowing());
-  controller->bubble()->OpenInNewTab();
-}
-
 // Tests that text fragment directives attached to an encrypted `SendTabToSelf`
 // entry are received and trigger scrolling on page load.
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
@@ -460,7 +438,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
 
   content::WebContentsAddedObserver web_contents_added_observer;
 
-  SimulateOpeningReceivedTab(GetBrowser(0), *entry);
+  send_tab_to_self::OpenEntryInNewForegroundTab(
+      GetProfile(0), *entry,
+      send_tab_to_self::ShareActivatedEntryPoint::kAutoOpened);
 
   // Wait until the entry is marked opened in the model.
   ASSERT_TRUE(
