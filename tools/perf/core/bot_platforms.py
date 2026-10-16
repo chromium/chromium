@@ -898,6 +898,19 @@ def _crossbench_shell_embedder(
   )
 
 
+@_register('notification.embedder.crossbench')
+def _crossbench_notification_embedder(
+  estimated_runtime: int = 900, flags: tuple[str, ...] = ()
+):
+  return CrossbenchConfig(
+    'notification.embedder.crossbench',
+    'embedder',
+    estimated_runtime=estimated_runtime,
+    flags=flags,
+    auto_enable_field_trials=False,
+  )
+
+
 @_register('devtools_frontend.crossbench')
 def _devtools_frontend_crossbench(
   estimated_runtime: int = 60, flags: tuple[str, ...] = ()

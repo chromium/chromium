@@ -5,7 +5,10 @@
                 "abridged": false
             },
             "blink_perf.bindings": {
-                "end": 52,
+                "abridged": false
+            },
+            "blink_perf.css": {
+                "end": 14,
                 "abridged": false
             },
             "speedometer3": {
@@ -15,11 +18,8 @@
     },
     "1": {
         "benchmarks": {
-            "blink_perf.bindings": {
-                "begin": 52,
-                "abridged": false
-            },
             "blink_perf.css": {
+                "begin": 14,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -32,7 +32,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 28,
+                "end": 38,
                 "abridged": false
             },
             "speedometer3": {
@@ -43,14 +43,14 @@
     "2": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 28,
+                "begin": 38,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
                 "abridged": false
             },
             "blink_perf.parser": {
-                "end": 13,
+                "end": 24,
                 "abridged": false
             },
             "speedometer3": {
@@ -61,7 +61,7 @@
     "3": {
         "benchmarks": {
             "blink_perf.parser": {
-                "begin": 13,
+                "begin": 24,
                 "abridged": false
             },
             "blink_perf.shadow_dom": {
@@ -151,10 +151,6 @@
             "media.mobile": {
                 "abridged": false
             },
-            "rasterize_and_record_micro.top_25": {
-                "end": 8,
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -175,23 +171,44 @@
     "7": {
         "benchmarks": {
             "rasterize_and_record_micro.top_25": {
-                "begin": 8,
-                "abridged": false
-            },
-            "rendering.mobile": {
-                "end": 48,
+                "end": 17,
                 "abridged": false
             },
             "speedometer3": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "notification.embedder.crossbench": {
+                "crossbench_name": "embedder",
+                "arguments": [
+                    "--wpr=crossbench_android_embedder_000.wprgo",
+                    "--skip-wpr-script-injection",
+                    "--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",
+                    "--splashscreen=skip",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/notification_cuj_config.hjson",
+                    "--probe-config=../../clank/android_webview/tools/crossbench_config/agsa_probe_config.hjson",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate",
+                    "--http-request-timeout=2s",
+                    "--ignore-partial-failures",
+                    "--embedder-process-name=googleapp",
+                    "--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson",
+                    "--embedder-drop-caches",
+                    "--android-action=android.intent.action.WEB_SEARCH",
+                    "--android-extras=query=weather"
+                ]
+            }
         }
     },
     "8": {
         "benchmarks": {
+            "rasterize_and_record_micro.top_25": {
+                "begin": 17,
+                "abridged": false
+            },
             "rendering.mobile": {
-                "begin": 48,
-                "end": 102,
+                "end": 56,
                 "abridged": false
             },
             "speedometer3": {
@@ -202,8 +219,8 @@
     "9": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 102,
-                "end": 160,
+                "begin": 56,
+                "end": 114,
                 "abridged": false
             },
             "speedometer3": {
@@ -214,8 +231,8 @@
     "10": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 160,
-                "end": 221,
+                "begin": 114,
+                "end": 174,
                 "abridged": false
             },
             "speedometer3": {
@@ -226,8 +243,8 @@
     "11": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 221,
-                "end": 277,
+                "begin": 174,
+                "end": 232,
                 "abridged": false
             },
             "speedometer3": {
@@ -238,8 +255,8 @@
     "12": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 277,
-                "end": 327,
+                "begin": 232,
+                "end": 302,
                 "abridged": false
             },
             "speedometer3": {
@@ -250,8 +267,8 @@
     "13": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 327,
-                "end": 378,
+                "begin": 302,
+                "end": 347,
                 "abridged": false
             },
             "speedometer3": {
@@ -262,7 +279,7 @@
     "14": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 378,
+                "begin": 347,
                 "abridged": false
             },
             "rendering.mobile.notracing": {
@@ -402,26 +419,26 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1125,
-        "predicted_min_shard_time": 670.0,
+        "num_stories": 1130,
+        "predicted_min_shard_time": 587.0,
         "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 1131.0,
-        "predicted_max_shard_index": 16,
-        "shard #0": 992.0,
-        "shard #1": 995.0,
-        "shard #2": 996.0,
-        "shard #3": 670.0,
+        "predicted_max_shard_time": 1197.0,
+        "predicted_max_shard_index": 14,
+        "shard #0": 1037.0,
+        "shard #1": 1033.0,
+        "shard #2": 1036.0,
+        "shard #3": 587.0,
         "shard #4": 942.0,
         "shard #5": 942.0,
-        "shard #6": 1023.0,
-        "shard #7": 1011.0,
-        "shard #8": 1019.0,
-        "shard #9": 1019.0,
-        "shard #10": 1036.0,
-        "shard #11": 1017.0,
-        "shard #12": 982.0,
-        "shard #13": 1016.0,
-        "shard #14": 674.0,
+        "shard #6": 952.0,
+        "shard #7": 1083.0,
+        "shard #8": 1069.0,
+        "shard #9": 1083.0,
+        "shard #10": 1074.0,
+        "shard #11": 1085.0,
+        "shard #12": 1070.0,
+        "shard #13": 1084.0,
+        "shard #14": 1197.0,
         "shard #15": 1067.0,
         "shard #16": 1131.0,
         "shard #17": 1063.0,

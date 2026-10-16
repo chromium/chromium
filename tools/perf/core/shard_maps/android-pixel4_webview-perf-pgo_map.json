@@ -17,6 +17,9 @@
                 "abridged": false
             },
             "blink_perf.image_decoder": {
+                "abridged": false
+            },
+            "blink_perf.layout": {
                 "end": 4,
                 "abridged": false
             },
@@ -27,11 +30,8 @@
     },
     "1": {
         "benchmarks": {
-            "blink_perf.image_decoder": {
-                "begin": 4,
-                "abridged": false
-            },
             "blink_perf.layout": {
+                "begin": 4,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -44,7 +44,7 @@
                 "abridged": false
             },
             "blink_perf.webaudio": {
-                "end": 6,
+                "end": 8,
                 "abridged": false
             },
             "speedometer3": {
@@ -55,7 +55,7 @@
     "2": {
         "benchmarks": {
             "blink_perf.webaudio": {
-                "begin": 6,
+                "begin": 8,
                 "abridged": false
             },
             "blink_perf.webcodecs": {
@@ -133,7 +133,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 44,
+                "end": 5,
                 "abridged": false
             },
             "speedometer3": {
@@ -150,14 +150,34 @@
                     "--cool-down-threshold=moderate",
                     "--stories=cnn"
                 ]
+            },
+            "notification.embedder.crossbench": {
+                "crossbench_name": "embedder",
+                "arguments": [
+                    "--wpr=crossbench_android_embedder_000.wprgo",
+                    "--skip-wpr-script-injection",
+                    "--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",
+                    "--splashscreen=skip",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/notification_cuj_config.hjson",
+                    "--probe-config=../../clank/android_webview/tools/crossbench_config/agsa_probe_config.hjson",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate",
+                    "--http-request-timeout=2s",
+                    "--ignore-partial-failures",
+                    "--embedder-process-name=googleapp",
+                    "--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson",
+                    "--embedder-drop-caches",
+                    "--android-action=android.intent.action.WEB_SEARCH",
+                    "--android-extras=query=weather"
+                ]
             }
         }
     },
     "4": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 44,
-                "end": 137,
+                "begin": 5,
+                "end": 103,
                 "abridged": false
             },
             "speedometer3": {
@@ -168,8 +188,8 @@
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 137,
-                "end": 225,
+                "begin": 103,
+                "end": 196,
                 "abridged": false
             },
             "speedometer3": {
@@ -180,8 +200,8 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 225,
-                "end": 327,
+                "begin": 196,
+                "end": 311,
                 "abridged": false
             },
             "speedometer3": {
@@ -192,10 +212,7 @@
     "7": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 327,
-                "abridged": false
-            },
-            "rendering.mobile.notracing": {
+                "begin": 311,
                 "abridged": false
             },
             "speedometer3": {
@@ -205,6 +222,9 @@
     },
     "8": {
         "benchmarks": {
+            "rendering.mobile.notracing": {
+                "abridged": false
+            },
             "speedometer3": {
                 "abridged": false
             },
@@ -218,7 +238,7 @@
                 "abridged": false
             },
             "system_health.memory_mobile": {
-                "end": 8,
+                "end": 4,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -242,8 +262,8 @@
     "9": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 8,
-                "end": 36,
+                "begin": 4,
+                "end": 31,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -255,8 +275,8 @@
     "10": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 36,
-                "end": 71,
+                "begin": 31,
+                "end": 70,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -268,7 +288,7 @@
     "11": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 71,
+                "begin": 70,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -291,22 +311,22 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1119,
-        "predicted_min_shard_time": 2009.0,
+        "num_stories": 1124,
+        "predicted_min_shard_time": 2129.0,
         "predicted_min_shard_index": 7,
-        "predicted_max_shard_time": 2260.0,
-        "predicted_max_shard_index": 8,
-        "shard #0": 2164.0,
-        "shard #1": 2170.0,
-        "shard #2": 2253.0,
-        "shard #3": 2150.0,
-        "shard #4": 2152.0,
-        "shard #5": 2147.0,
-        "shard #6": 2103.0,
-        "shard #7": 2009.0,
+        "predicted_max_shard_time": 2355.0,
+        "predicted_max_shard_index": 10,
+        "shard #0": 2242.0,
+        "shard #1": 2226.0,
+        "shard #2": 2159.0,
+        "shard #3": 2252.0,
+        "shard #4": 2245.0,
+        "shard #5": 2251.0,
+        "shard #6": 2260.0,
+        "shard #7": 2129.0,
         "shard #8": 2260.0,
-        "shard #9": 2151.0,
-        "shard #10": 2175.0,
-        "shard #11": 2217.0
+        "shard #9": 2265.0,
+        "shard #10": 2355.0,
+        "shard #11": 2247.0
     }
 }

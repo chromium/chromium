@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 14,
+                "end": 36,
                 "abridged": false
             },
             "speedometer3": {
@@ -19,7 +19,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 14,
+                "begin": 36,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -32,7 +32,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 51,
+                "end": 65,
                 "abridged": false
             },
             "speedometer3": {
@@ -43,7 +43,7 @@
     "2": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 51,
+                "begin": 65,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -53,7 +53,10 @@
                 "abridged": false
             },
             "blink_perf.shadow_dom": {
-                "end": 23,
+                "abridged": false
+            },
+            "blink_perf.webaudio": {
+                "end": 1,
                 "abridged": false
             },
             "speedometer3": {
@@ -63,11 +66,8 @@
     },
     "3": {
         "benchmarks": {
-            "blink_perf.shadow_dom": {
-                "begin": 23,
-                "abridged": false
-            },
             "blink_perf.webaudio": {
+                "begin": 1,
                 "abridged": false
             },
             "blink_perf.webcodecs": {
@@ -137,6 +137,16 @@
                     "--embedder-push-files=/b/swarming/w/ir/third_party/crossbench/config/team/woa/dnsmasq.conf:/data/local/tmp/dnsmasq.conf",
                     "--embedder-push-files=/b/swarming/w/ir/clank/android_webview/tools/crossbench_config/cipd/arm64/dummy_vpn.apk:/data/local/tmp/dummy_vpn.apk"
                 ]
+            },
+            "loading.crossbench": {
+                "crossbench_name": "loading",
+                "arguments": [
+                    "--wpr=crossbench_android_loading_000.wprgo",
+                    "--probe=chrome_histograms:{\"baseline\":false,\"metrics\":{\"Android.WebView.Startup.CreationTime.StartChromiumLocked\":[\"mean\"],\"Android.WebView.Startup.CreationTime.Stage1.FactoryInit\":[\"mean\"],\"PageLoad.PaintTiming.NavigationToFirstContentfulPaint\":[\"mean\"]}}",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate",
+                    "--stories=cnn"
+                ]
             }
         },
         "benchmarks": {
@@ -153,23 +163,29 @@
             "rasterize_and_record_micro.top_25": {
                 "abridged": false
             },
-            "rendering.mobile": {
-                "end": 6,
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
         },
         "crossbench": {
-            "loading.crossbench": {
-                "crossbench_name": "loading",
+            "notification.embedder.crossbench": {
+                "crossbench_name": "embedder",
                 "arguments": [
-                    "--wpr=crossbench_android_loading_000.wprgo",
-                    "--probe=chrome_histograms:{\"baseline\":false,\"metrics\":{\"Android.WebView.Startup.CreationTime.StartChromiumLocked\":[\"mean\"],\"Android.WebView.Startup.CreationTime.Stage1.FactoryInit\":[\"mean\"],\"PageLoad.PaintTiming.NavigationToFirstContentfulPaint\":[\"mean\"]}}",
+                    "--wpr=crossbench_android_embedder_000.wprgo",
+                    "--skip-wpr-script-injection",
+                    "--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",
+                    "--splashscreen=skip",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/notification_cuj_config.hjson",
+                    "--probe-config=../../clank/android_webview/tools/crossbench_config/agsa_probe_config.hjson",
                     "--repetitions=50",
                     "--cool-down-threshold=moderate",
-                    "--stories=cnn"
+                    "--http-request-timeout=2s",
+                    "--ignore-partial-failures",
+                    "--embedder-process-name=googleapp",
+                    "--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson",
+                    "--embedder-drop-caches",
+                    "--android-action=android.intent.action.WEB_SEARCH",
+                    "--android-extras=query=weather"
                 ]
             }
         }
@@ -177,8 +193,7 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 6,
-                "end": 70,
+                "end": 63,
                 "abridged": false
             },
             "speedometer3": {
@@ -189,8 +204,8 @@
     "7": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 70,
-                "end": 129,
+                "begin": 63,
+                "end": 123,
                 "abridged": false
             },
             "speedometer3": {
@@ -201,8 +216,8 @@
     "8": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 129,
-                "end": 183,
+                "begin": 123,
+                "end": 179,
                 "abridged": false
             },
             "speedometer3": {
@@ -213,8 +228,8 @@
     "9": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 183,
-                "end": 240,
+                "begin": 179,
+                "end": 236,
                 "abridged": false
             },
             "speedometer3": {
@@ -225,8 +240,8 @@
     "10": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 240,
-                "end": 318,
+                "begin": 236,
+                "end": 315,
                 "abridged": false
             },
             "speedometer3": {
@@ -237,8 +252,8 @@
     "11": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 318,
-                "end": 371,
+                "begin": 315,
+                "end": 367,
                 "abridged": false
             },
             "speedometer3": {
@@ -249,7 +264,7 @@
     "12": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 371,
+                "begin": 367,
                 "abridged": false
             },
             "rendering.mobile.notracing": {
@@ -367,24 +382,24 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1126,
-        "predicted_min_shard_time": 956.0,
+        "num_stories": 1131,
+        "predicted_min_shard_time": 1026.0,
         "predicted_min_shard_index": 12,
-        "predicted_max_shard_time": 1663.0,
-        "predicted_max_shard_index": 3,
-        "shard #0": 1374.0,
-        "shard #1": 1365.0,
-        "shard #2": 1368.0,
-        "shard #3": 1663.0,
-        "shard #4": 992.0,
-        "shard #5": 1389.0,
-        "shard #6": 1372.0,
-        "shard #7": 1365.0,
-        "shard #8": 1369.0,
-        "shard #9": 1381.0,
-        "shard #10": 1362.0,
-        "shard #11": 1373.0,
-        "shard #12": 956.0,
+        "predicted_max_shard_time": 1742.0,
+        "predicted_max_shard_index": 4,
+        "shard #0": 1419.0,
+        "shard #1": 1421.0,
+        "shard #2": 1398.0,
+        "shard #3": 1572.0,
+        "shard #4": 1742.0,
+        "shard #5": 1377.0,
+        "shard #6": 1386.0,
+        "shard #7": 1394.0,
+        "shard #8": 1382.0,
+        "shard #9": 1395.0,
+        "shard #10": 1371.0,
+        "shard #11": 1386.0,
+        "shard #12": 1026.0,
         "shard #13": 1446.0,
         "shard #14": 1486.0,
         "shard #15": 1415.0,
