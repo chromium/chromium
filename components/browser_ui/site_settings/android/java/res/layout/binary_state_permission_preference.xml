@@ -9,7 +9,6 @@ found in the LICENSE file.
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="false"
@@ -47,12 +46,9 @@ found in the LICENSE file.
         style="@style/ManagedDisclaimerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:drawablePadding="8dp"
         android:visibility="gone"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@android:id/summary"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart" />
 
 </LinearLayout>
