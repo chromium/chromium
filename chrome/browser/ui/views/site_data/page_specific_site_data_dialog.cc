@@ -309,9 +309,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   void SetContentException(const url::Origin& origin, ContentSetting setting) {
     status_changed_ = true;
-    DCHECK(setting == CONTENT_SETTING_ALLOW ||
-           setting == CONTENT_SETTING_BLOCK ||
-           setting == CONTENT_SETTING_SESSION_ONLY);
+    CHECK(setting == CONTENT_SETTING_ALLOW ||
+              setting == CONTENT_SETTING_BLOCK ||
+              setting == CONTENT_SETTING_SESSION_ONLY,
+          base::NotFatalUntil::M162);
     GURL url = origin.GetURL();
     if (CanCreateContentException(url)) {
       cookie_settings_->ResetCookieSetting(url);

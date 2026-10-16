@@ -445,7 +445,7 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
 }
 
 void PartialTranslateBubbleView::UpdateLanguageTabNames() {
-  DCHECK(tabbed_pane_);
+  CHECK(tabbed_pane_, base::NotFatalUntil::M162);
   tabbed_pane_->GetTabAt(0)->SetTitleText(model_->GetSourceLanguageName());
   tabbed_pane_->GetTabAt(1)->SetTitleText(model_->GetTargetLanguageName());
 }

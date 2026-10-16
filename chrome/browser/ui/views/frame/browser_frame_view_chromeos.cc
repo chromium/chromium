@@ -513,8 +513,9 @@ void BrowserFrameViewChromeOS::Layout(PassKey) {
 
   // The top right corner must be occupied by a caption button for easy mouse
   // access. This check is agnostic to RTL layout.
-  DCHECK_EQ(caption_button_container_->y(), 0);
-  DCHECK_EQ(caption_button_container_->bounds().right(), width());
+  CHECK_EQ(caption_button_container_->y(), 0, base::NotFatalUntil::M162);
+  CHECK_EQ(caption_button_container_->bounds().right(), width(),
+           base::NotFatalUntil::M162);
 }
 
 gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
@@ -690,7 +691,7 @@ ui::ImageModel BrowserFrameViewChromeOS::GetFaviconForTabIconView() {
 }
 
 void BrowserFrameViewChromeOS::OnWindowDestroying(aura::Window* window) {
-  DCHECK(window_observation_.IsObserving());
+  CHECK(window_observation_.IsObserving(), base::NotFatalUntil::M162);
   window_observation_.Reset();
   display_observer_.reset();
 }
@@ -1079,7 +1080,7 @@ gfx::RoundedCornersF BrowserFrameViewChromeOS::GetWindowRoundedCorners() const {
 }
 
 void BrowserFrameViewChromeOS::UpdateWindowRoundedCorners() {
-  DCHECK(GetWidget());
+  CHECK(GetWidget(), base::NotFatalUntil::M162);
 
   const gfx::RoundedCornersF window_radii = GetWindowRoundedCorners();
 
@@ -1137,7 +1138,8 @@ void BrowserFrameViewChromeOS::LayoutProfileIndicator() {
   profile_indicator_icon_->SetVisible(true);
 
   // The layout size is set along with the image.
-  DCHECK_LE(profile_indicator_icon_->height(), frame_height);
+  CHECK_LE(profile_indicator_icon_->height(), frame_height,
+           base::NotFatalUntil::M162);
 }
 
 bool BrowserFrameViewChromeOS::GetOverviewMode() const {

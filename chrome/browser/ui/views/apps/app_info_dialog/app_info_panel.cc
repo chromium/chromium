@@ -34,7 +34,7 @@ void AppInfoPanel::Close() {
 }
 
 void AppInfoPanel::OpenLink(const GURL& url) {
-  DCHECK(!url.is_empty());
+  CHECK(!url.is_empty(), base::NotFatalUntil::M162);
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
   Navigate(&params);
 }

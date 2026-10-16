@@ -53,7 +53,8 @@ void PictureInPictureBrowserFrameViewAsh::OnWindowPropertyChanged(
 
 void PictureInPictureBrowserFrameViewAsh::OnWindowDestroyed(
     aura::Window* window) {
-  DCHECK(window_observation_.IsObservingSource(GetWidget()->GetNativeWindow()));
+  CHECK(window_observation_.IsObservingSource(GetWidget()->GetNativeWindow()),
+        base::NotFatalUntil::M162);
   window_observation_.Reset();
 }
 

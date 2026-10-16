@@ -169,7 +169,7 @@ void BrowserCaptionButtonContainer::ResetWindowControls() {
 void BrowserCaptionButtonContainer::AddedToWidget() {
   views::Widget* const widget = GetWidget();
 
-  DCHECK(!widget_observation_.IsObserving());
+  CHECK(!widget_observation_.IsObserving(), base::NotFatalUntil::M162);
   widget_observation_.Observe(widget);
 
   UpdateButtons();
@@ -184,7 +184,7 @@ void BrowserCaptionButtonContainer::AddedToWidget() {
 }
 
 void BrowserCaptionButtonContainer::RemovedFromWidget() {
-  DCHECK(widget_observation_.IsObserving());
+  CHECK(widget_observation_.IsObserving(), base::NotFatalUntil::M162);
   widget_observation_.Reset();
 }
 

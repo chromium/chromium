@@ -1676,7 +1676,8 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureAnimationTimingTest,
     show_animation_waiter.WaitForAnimationInterval(
         show_expectations.time_delta);
     if (test_case.disallow_return_to_opener) {
-      DCHECK(!show_expectations.expected_back_to_tab_button_is_visible);
+      CHECK(!show_expectations.expected_back_to_tab_button_is_visible,
+            base::NotFatalUntil::M162);
       ASSERT_EQ(nullptr, GetBackToTabButton());
     } else {
       ASSERT_EQ(show_expectations.expected_back_to_tab_button_is_visible,
@@ -1701,7 +1702,8 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureAnimationTimingTest,
     hide_animation_waiter.WaitForAnimationInterval(
         hide_expectations.time_delta);
     if (test_case.disallow_return_to_opener) {
-      DCHECK(!hide_expectations.expected_back_to_tab_button_is_visible);
+      CHECK(!hide_expectations.expected_back_to_tab_button_is_visible,
+            base::NotFatalUntil::M162);
       ASSERT_EQ(nullptr, GetBackToTabButton());
     } else {
       ASSERT_EQ(hide_expectations.expected_back_to_tab_button_is_visible,

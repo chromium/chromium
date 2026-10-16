@@ -189,7 +189,7 @@ bool ComposeDialogView::HandleContextMenu(
     const content::ContextMenuParams& params) {
   ContextMenuDelegate* menu_delegate = ContextMenuDelegate::FromWebContents(
       content::WebContents::FromRenderFrameHost(&render_frame_host));
-  DCHECK(menu_delegate);
+  CHECK(menu_delegate, base::NotFatalUntil::M162);
 
   menu_delegate->BuildMenuAsync(
       render_frame_host, params,
@@ -235,7 +235,7 @@ void ComposeDialogView::OnBuildMenuComplete(
     context_menu_model_for_testing_ = &menu->menu_model();
     ContextMenuDelegate* menu_delegate =
         ContextMenuDelegate::FromWebContents(bubble_wrapper_->web_contents());
-    DCHECK(menu_delegate);
+    CHECK(menu_delegate, base::NotFatalUntil::M162);
     menu_delegate->ShowMenu(std::move(menu));
   }
 }

@@ -97,7 +97,7 @@ void AppInfoHeaderPanel::CreateControls() {
 }
 
 void AppInfoHeaderPanel::ShowAppInWebStore() {
-  DCHECK(CanShowAppInWebStore());
+  CHECK(CanShowAppInWebStore(), base::NotFatalUntil::M162);
   Close();
   OpenLink(net::AppendQueryParameter(
       extensions::ManifestURL::GetDetailsURL(app_),

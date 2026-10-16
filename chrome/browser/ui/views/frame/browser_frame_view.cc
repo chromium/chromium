@@ -111,8 +111,8 @@ gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
 BrowserFrameView::BrowserFrameView(BrowserWidget* browser_widget,
                                    BrowserView* browser_view)
     : browser_widget_(browser_widget), browser_view_(browser_view) {
-  DCHECK(browser_widget_);
-  DCHECK(browser_view_);
+  CHECK(browser_widget_, base::NotFatalUntil::M162);
+  CHECK(browser_view_, base::NotFatalUntil::M162);
   paint_as_active_subscription_ =
       browser_widget_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &BrowserFrameView::PaintAsActiveChanged, base::Unretained(this)));
@@ -203,7 +203,7 @@ bool BrowserFrameView::IsFrameCondensed() const {
 
 bool BrowserFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
-  DCHECK(GetBrowserView()->GetSupportsTabStrip());
+  CHECK(GetBrowserView()->GetSupportsTabStrip(), base::NotFatalUntil::M162);
 
   const bool active = ShouldPaintAsActiveForState(active_state);
   const std::optional<int> bg_id = GetCustomBackgroundId(active_state);

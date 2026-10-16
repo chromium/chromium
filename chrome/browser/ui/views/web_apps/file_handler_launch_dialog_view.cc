@@ -40,7 +40,7 @@ FileHandlerLaunchDialogView::FileHandlerLaunchDialogView(
     WebAppLaunchAcceptanceCallback close_callback)
     : LaunchAppUserChoiceDialogView(profile, app_id, std::move(close_callback)),
       file_paths_(file_paths) {
-  DCHECK(!file_paths.empty());
+  CHECK(!file_paths.empty(), base::NotFatalUntil::M162);
   auto* layout_provider = views::LayoutProvider::Get();
   gfx::Insets dialog_insets = layout_provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl);
@@ -84,7 +84,7 @@ FileHandlerLaunchDialogView::CreateAboveAppInfoView() {
       file_paths_[0].BaseName(), *style.custom_font, fixed_width() * 2 / 3);
   question_label->SetText(l10n_util::GetStringFUTF16(
       IDS_WEB_APP_FILE_HANDLING_DIALOG_QUESTION, {file_name_text}, &offsets));
-  DCHECK_EQ(1u, offsets.size());
+  CHECK_EQ(1u, offsets.size(), base::NotFatalUntil::M162);
   question_label->AddStyleRange(
       gfx::Range(offsets[0], offsets[0] + file_name_text.length()), style);
   return question_label;

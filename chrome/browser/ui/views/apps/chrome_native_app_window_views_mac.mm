@@ -126,7 +126,7 @@ void ChromeNativeAppWindowViewsMac::OnBeforeWidgetInit(
     const extensions::AppWindow::CreateParams& create_params,
     views::Widget::InitParams* init_params,
     views::Widget* widget) {
-  DCHECK(!init_params->native_widget);
+  CHECK(!init_params->native_widget, base::NotFatalUntil::M162);
   init_params->remove_standard_frame = IsFrameless();
   init_params->native_widget = new AppWindowNativeWidgetMac(widget, this);
   ChromeNativeAppWindowViews::OnBeforeWidgetInit(create_params, init_params,

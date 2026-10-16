@@ -142,7 +142,7 @@ bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
 
 std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
     int command_id) const {
-  DCHECK(IsItemForCommandIdDynamic(command_id));
+  CHECK(IsItemForCommandIdDynamic(command_id), base::NotFatalUntil::M162);
 
   int string_id;
   switch (command_id) {
@@ -152,7 +152,7 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       if (IsCommandIdEnabled(command_id)) {
         sessions::TabRestoreService* trs =
             TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
-        DCHECK(trs);
+        CHECK(trs, base::NotFatalUntil::M162);
         trs->LoadTabsFromLastSession();
         if (!trs->entries().empty()) {
           switch (trs->entries().front()->type) {
@@ -175,7 +175,7 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       if (IsCommandIdEnabled(command_id)) {
         sessions::TabRestoreService* trs =
             TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
-        DCHECK(trs);
+        CHECK(trs, base::NotFatalUntil::M162);
         trs->LoadTabsFromLastSession();
         if (!trs->entries().empty()) {
           switch (trs->entries().front()->type) {

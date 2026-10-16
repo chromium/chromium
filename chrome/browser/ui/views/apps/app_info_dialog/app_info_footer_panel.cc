@@ -120,7 +120,7 @@ void AppInfoFooterPanel::OnExtensionUninstallDialogClosed(
 }
 
 void AppInfoFooterPanel::CreateShortcuts() {
-  DCHECK(CanCreateShortcuts(app_));
+  CHECK(CanCreateShortcuts(app_), base::NotFatalUntil::M162);
   chrome::ShowCreateChromeAppShortcutsDialog(GetWidget()->GetNativeWindow(),
                                              profile_, app_, base::DoNothing());
 }
@@ -138,10 +138,10 @@ bool AppInfoFooterPanel::CanCreateShortcuts(const extensions::Extension* app) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
-  DCHECK(CanSetPinnedToShelf(profile_, app_));
+  CHECK(CanSetPinnedToShelf(profile_, app_), base::NotFatalUntil::M162);
   ash::ShelfModel* shelf_model =
       ChromeShelfController::instance()->shelf_model();
-  DCHECK(shelf_model);
+  CHECK(shelf_model, base::NotFatalUntil::M162);
   ash::ShelfModel::ScopedUserTriggeredMutation user_triggered(shelf_model);
   if (value) {
     PinAppWithIDToShelf(app_->id());
@@ -164,7 +164,7 @@ bool AppInfoFooterPanel::CanSetPinnedToShelf(Profile* profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void AppInfoFooterPanel::UninstallApp() {
-  DCHECK(CanUninstallApp(profile_, app_));
+  CHECK(CanUninstallApp(profile_, app_), base::NotFatalUntil::M162);
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
       profile_, GetWidget()->GetNativeWindow(), this);
   extension_uninstall_dialog_->ConfirmUninstall(

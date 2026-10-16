@@ -95,7 +95,7 @@ BEGIN_METADATA(UninstallView)
 END_METADATA
 
 int ShowUninstallBrowserPrompt() {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M162);
   int result = content::RESULT_CODE_NORMAL_EXIT;
 
   base::RunLoop run_loop;

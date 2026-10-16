@@ -88,7 +88,7 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
 
   // views::FrameView
   void UpdateWindowRoundedCorners() override {
-    DCHECK(GetWidget());
+    CHECK(GetWidget(), base::NotFatalUntil::M162);
 
     aura::Window* window = GetWidget()->GetNativeWindow();
     auto* window_state = ash::WindowState::Get(window);
@@ -149,7 +149,7 @@ class ChromeNativeAppClientView : public views::ClientView {
   // views::ClientView:
   void UpdateWindowRoundedCorners(
       const gfx::RoundedCornersF& window_radii) override {
-    DCHECK(GetWidget());
+    CHECK(GetWidget(), base::NotFatalUntil::M162);
 
     gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),
                                window_radii.lower_left());
@@ -284,7 +284,7 @@ ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
     return ui::ImageModel();
   }
 
-  DCHECK(image.IsImage());
+  CHECK(image.IsImage(), base::NotFatalUntil::M162);
   const gfx::ImageSkia image_skia = image.Rasterize(nullptr);
   return ui::ImageModel::FromImageSkia(
       gfx::CreateStandardAppIconImage(image_skia));
@@ -587,8 +587,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWidgetActivationChanged(
 void ChromeNativeAppWindowViewsAuraAsh::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
-  DCHECK(!IsFrameless());
-  DCHECK_EQ(GetNativeWindow(), window_state->window());
+  CHECK(!IsFrameless(), base::NotFatalUntil::M162);
+  CHECK_EQ(GetNativeWindow(), window_state->window(),
+           base::NotFatalUntil::M162);
   if (window_state->IsFullscreen() != app_window()->IsFullscreen()) {
     // Report OS-initiated state changes to |app_window()|. This is done in
     // OnPostWindowStateTypeChange rather than OnWindowPropertyChanged because
@@ -635,7 +636,8 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
 void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
     aura::Window* window) {
   window_state_observation_.Reset();
-  DCHECK(window_observation_.IsObservingSource(window));
+  CHECK(window_observation_.IsObservingSource(window),
+        base::NotFatalUntil::M162);
   window_observation_.Reset();
 }
 

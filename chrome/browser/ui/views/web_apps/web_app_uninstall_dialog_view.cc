@@ -111,7 +111,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       profile_(profile),
       uninstall_choice_callback_(std::move(uninstall_choice_callback)) {
   provider_ = web_app::WebAppProvider::GetForWebApps(profile_)->AsWeakPtr();
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
 
   web_app::UnorderedSizeToBitmap icon_bitmaps(icon_metadata.icons_map.begin(),
                                               icon_metadata.icons_map.end());
@@ -275,7 +275,7 @@ WebAppUninstallDialogDelegateView::~WebAppUninstallDialogDelegateView() {
 }
 
 void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
   bool is_isolated_web_app = provider_->registrar_unsafe().AppMatches(
       app_id_, web_app::WebAppFilter::IsIsolatedApp());
   bool clear_site_data = checkbox_ && checkbox_->GetChecked();

@@ -95,7 +95,7 @@ void OverlayWidgetMac::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
 
 bool OverlayWidgetMac::GetAccelerator(int cmd_id,
                                       ui::Accelerator* accelerator) const {
-  DCHECK(parent());
+  CHECK(parent(), base::NotFatalUntil::M162);
   return parent()->GetAccelerator(cmd_id, accelerator);
 }
 

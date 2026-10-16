@@ -71,7 +71,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
                                /*autosize=*/true),
       error_(error) {
   // error_ is a WeakPtr, but it's always non-null during construction.
-  DCHECK(error_);
+  CHECK(error_, base::NotFatalUntil::M162);
 
   WidgetDelegate::SetTitle(error_->GetBubbleViewTitle());
   WidgetDelegate::SetShowCloseButton(error_->ShouldShowCloseButton());

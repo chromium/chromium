@@ -30,7 +30,7 @@ void WebContentsCloseHandler::ActiveTabChanged() {
 }
 
 void WebContentsCloseHandler::WillCloseAllTabs() {
-  DCHECK(!in_close_);
+  CHECK(!in_close_, base::NotFatalUntil::M162);
   in_close_ = true;
   tab_changed_after_clone_ = false;
   delegate_->CloneWebContentsLayer();
@@ -38,7 +38,7 @@ void WebContentsCloseHandler::WillCloseAllTabs() {
 }
 
 void WebContentsCloseHandler::CloseAllTabsCanceled() {
-  DCHECK(in_close_);
+  CHECK(in_close_, base::NotFatalUntil::M162);
   in_close_ = false;
   if (tab_changed_after_clone_) {
     // If the tab changed, destroy immediately. That way we make sure we aren't

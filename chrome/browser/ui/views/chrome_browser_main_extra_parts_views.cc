@@ -71,12 +71,12 @@ ChromeBrowserMainExtraPartsViews* g_main_parts_views = nullptr;
 }  // namespace
 
 ChromeBrowserMainExtraPartsViews::ChromeBrowserMainExtraPartsViews() {
-  DCHECK(!g_main_parts_views);
+  CHECK(!g_main_parts_views, base::NotFatalUntil::M162);
   g_main_parts_views = this;
 }
 
 ChromeBrowserMainExtraPartsViews::~ChromeBrowserMainExtraPartsViews() {
-  DCHECK_EQ(g_main_parts_views, this);
+  CHECK_EQ(g_main_parts_views, this, base::NotFatalUntil::M162);
   g_main_parts_views = nullptr;
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
 }
@@ -121,14 +121,14 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
           ui_devtools::switches::kEnableUiDevTools)) {
     base::FilePath output_dir;
     bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
-    DCHECK(result);
+    CHECK(result, base::NotFatalUntil::M162);
 
     ui_devtools::ServerHolder::GetInstance()->CreateUiDevTools(output_dir);
   }
 
   media_router::MediaRouterDialogController::SetGetOrCreate(
       base::BindRepeating([](content::WebContents* web_contents) {
-        DCHECK(web_contents);
+        CHECK(web_contents, base::NotFatalUntil::M162);
         media_router::MediaRouterDialogController* controller = nullptr;
         // This call does nothing if the controller already exists.
         media_router::MediaRouterDialogControllerViews::CreateForWebContents(

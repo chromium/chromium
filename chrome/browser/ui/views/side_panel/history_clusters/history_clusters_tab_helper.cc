@@ -19,7 +19,7 @@ HistoryClustersTabHelper::HistoryClustersTabHelper(
 HistoryClustersTabHelper::~HistoryClustersTabHelper() = default;
 
 void HistoryClustersTabHelper::ShowJourneysSidePanel(const std::string& query) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   delegate_->ShowJourneysSidePanel(query);
 }
 

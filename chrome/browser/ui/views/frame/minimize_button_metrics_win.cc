@@ -32,7 +32,7 @@ MinimizeButtonMetrics::MinimizeButtonMetrics() = default;
 MinimizeButtonMetrics::~MinimizeButtonMetrics() = default;
 
 void MinimizeButtonMetrics::Init(HWND hwnd) {
-  DCHECK(!hwnd_);
+  CHECK(!hwnd_, base::NotFatalUntil::M162);
   hwnd_ = hwnd;
 }
 
@@ -149,7 +149,7 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetX() const {
   // message then calculate and return this via the
   // cached_minimize_button_x_delta_ member value. Please see
   // CacheMinimizeButtonDelta() for more details.
-  DCHECK(cached_minimize_button_x_delta_);
+  CHECK(cached_minimize_button_x_delta_, base::NotFatalUntil::M162);
 
   // In RTL the origin (for Views purposes) is the upper-right corner, and the
   // X axis is reversed.

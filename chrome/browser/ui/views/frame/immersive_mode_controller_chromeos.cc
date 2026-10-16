@@ -357,7 +357,8 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
 void ImmersiveModeControllerChromeos::OnWindowDestroying(aura::Window* window) {
   // Clean up observers here rather than in the destructor because the owning
   // BrowserView has already destroyed the aura::Window.
-  DCHECK(window_observation_.IsObservingSource(window));
+  CHECK(window_observation_.IsObservingSource(window),
+        base::NotFatalUntil::M162);
   window_observation_.Reset();
-  DCHECK(!window_observation_.IsObserving());
+  CHECK(!window_observation_.IsObserving(), base::NotFatalUntil::M162);
 }

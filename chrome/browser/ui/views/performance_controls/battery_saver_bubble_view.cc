@@ -77,6 +77,6 @@ views::BubbleDialogModelHost* BatterySaverBubbleView::CreateBubble(
 // static
 void BatterySaverBubbleView::CloseBubble(
     views::BubbleDialogModelHost* bubble_dialog) {
-  DCHECK(bubble_dialog);
+  CHECK(bubble_dialog, base::NotFatalUntil::M162);
   bubble_dialog->Close();
 }

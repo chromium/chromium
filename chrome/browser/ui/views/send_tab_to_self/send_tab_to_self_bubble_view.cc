@@ -20,7 +20,7 @@ SendTabToSelfBubbleView::SendTabToSelfBubbleView(
       controller_(
           SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents)
               ->AsWeakPtr()) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
   SetShowCloseButton(true);
   SetTitle(IDS_SEND_TAB_TO_SELF);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(

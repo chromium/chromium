@@ -439,7 +439,7 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
 
 void OpaqueBrowserFrameView::GetWindowMask(const gfx::Size& size,
                                            SkPath* window_mask) {
-  DCHECK(window_mask);
+  CHECK(window_mask, base::NotFatalUntil::M162);
 
   if (IsFrameCondensed()) {
     return;

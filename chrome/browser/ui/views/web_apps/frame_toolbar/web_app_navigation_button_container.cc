@@ -105,7 +105,7 @@ void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
       back_button_->SetEnabled(enabled);
       break;
     case IDC_RELOAD:
-      DCHECK(reload_button_);
+      CHECK(reload_button_, base::NotFatalUntil::M162);
       reload_button_->SetEnabled(enabled);
       break;
     default:

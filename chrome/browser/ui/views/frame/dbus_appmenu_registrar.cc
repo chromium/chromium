@@ -40,7 +40,7 @@ void DbusAppmenuRegistrar::OnMenuBarCreated(DbusAppmenu* menu) {
 }
 
 void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
-  DCHECK(menus_.contains(menu));
+  CHECK(menus_.contains(menu), base::NotFatalUntil::M162);
   if (menus_[menu] == kRegistered) {
     if (auto* toplevel_extension =
             ui::GetWaylandToplevelExtension(*menu->platform_window())) {
@@ -67,16 +67,17 @@ DbusAppmenuRegistrar::DbusAppmenuRegistrar()
 }
 
 void DbusAppmenuRegistrar::InitializeMenu(DbusAppmenu* menu) {
-  DCHECK(menus_.contains(menu));
-  DCHECK_EQ(menus_[menu], kUninitialized);
+  CHECK(menus_.contains(menu), base::NotFatalUntil::M162);
+  CHECK_EQ(menus_[menu], kUninitialized, base::NotFatalUntil::M162);
   menus_[menu] = kInitializing;
   menu->Initialize(base::BindOnce(&DbusAppmenuRegistrar::OnMenuInitialized,
                                   weak_ptr_factory_.GetWeakPtr(), menu));
 }
 
 void DbusAppmenuRegistrar::RegisterMenu(DbusAppmenu* menu) {
-  DCHECK(menus_.contains(menu));
-  DCHECK(menus_[menu] == kInitializeSucceeded || menus_[menu] == kRegistered);
+  CHECK(menus_.contains(menu), base::NotFatalUntil::M162);
+  CHECK(menus_[menu] == kInitializeSucceeded || menus_[menu] == kRegistered,
+        base::NotFatalUntil::M162);
   menus_[menu] = kRegistered;
 
   if (auto* toplevel_extension =
@@ -91,8 +92,8 @@ void DbusAppmenuRegistrar::RegisterMenu(DbusAppmenu* menu) {
 }
 
 void DbusAppmenuRegistrar::OnMenuInitialized(DbusAppmenu* menu, bool success) {
-  DCHECK(menus_.contains(menu));
-  DCHECK(menus_[menu] == kInitializing);
+  CHECK(menus_.contains(menu), base::NotFatalUntil::M162);
+  CHECK(menus_[menu] == kInitializing, base::NotFatalUntil::M162);
   menus_[menu] = success ? kInitializeSucceeded : kInitializeFailed;
   if (success && service_has_owner_) {
     RegisterMenu(menu);

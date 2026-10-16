@@ -67,12 +67,12 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   void OnViewIsDeleting(views::View* observed_view) override {
     // The submenu view is being deleted, make sure the parent no longer
     // observes it.
-    DCHECK_EQ(submenu_view_, observed_view);
+    CHECK_EQ(submenu_view_, observed_view, base::NotFatalUntil::M162);
     parent_->OnSubmenuClosed();
   }
 
   void OnViewBoundsChanged(views::View* observed_view) override {
-    DCHECK_EQ(submenu_view_, observed_view);
+    CHECK_EQ(submenu_view_, observed_view, base::NotFatalUntil::M162);
     // Check to make sure the host exists. The SubmenuView can drop the
     // reference to the host.
     if (submenu_view_->host()) {
@@ -82,7 +82,7 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   }
 
   void OnViewAddedToWidget(views::View* observed_view) override {
-    DCHECK_EQ(submenu_view_, observed_view);
+    CHECK_EQ(submenu_view_, observed_view, base::NotFatalUntil::M162);
     auto* widget = submenu_view_->host();
     if (widget) {
       submenu_widget_observation_.Observe(widget);

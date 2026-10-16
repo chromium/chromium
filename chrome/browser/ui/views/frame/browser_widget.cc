@@ -225,7 +225,7 @@ void BrowserWidget::InitBrowserWidget() {
 #endif
 
   if (!browser_native_widget_->UsesNativeSystemMenu()) {
-    DCHECK(non_client_view());
+    CHECK(non_client_view(), base::NotFatalUntil::M162);
     non_client_view()->set_context_menu_controller(this);
   }
 }

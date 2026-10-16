@@ -45,7 +45,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
  public:
   explicit BrowserWindowStateDelegate(BrowserWindowInterface* browser)
       : browser_(browser) {
-    DCHECK(browser_);
+    CHECK(browser_, base::NotFatalUntil::M162);
   }
 
   BrowserWindowStateDelegate(const BrowserWindowStateDelegate&) = delete;
@@ -56,7 +56,8 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 
   // Overridden from ash::WindowStateDelegate.
   bool ToggleFullscreen(ash::WindowState* window_state) override {
-    DCHECK(window_state->IsFullscreen() || window_state->CanFullscreen());
+    CHECK(window_state->IsFullscreen() || window_state->CanFullscreen(),
+          base::NotFatalUntil::M162);
     if (!window_state->IsFullscreen() && !window_state->CanFullscreen()) {
       return true;
     }

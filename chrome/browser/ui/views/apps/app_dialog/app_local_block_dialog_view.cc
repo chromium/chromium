@@ -71,12 +71,12 @@ AppLocalBlockDialogView::AppLocalBlockDialogView(const std::string& app_name)
 
   AddSubtitle(l10n_util::GetStringUTF16(IDS_APP_LOCAL_BLOCK_HEADING));
 
-  DCHECK_EQ(nullptr, g_app_local_block_dialog_view);
+  CHECK_EQ(nullptr, g_app_local_block_dialog_view, base::NotFatalUntil::M162);
   g_app_local_block_dialog_view = this;
 }
 
 AppLocalBlockDialogView::~AppLocalBlockDialogView() {
-  DCHECK_EQ(this, g_app_local_block_dialog_view);
+  CHECK_EQ(this, g_app_local_block_dialog_view, base::NotFatalUntil::M162);
   g_app_local_block_dialog_view = nullptr;
 }
 

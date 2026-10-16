@@ -117,8 +117,8 @@ BrowserFrameHeaderChromeOS::BrowserFrameHeaderChromeOS(
     AppearanceProvider* appearance_provider,
     chromeos::FrameCaptionButtonContainerView* caption_button_container)
     : FrameHeader(target_widget, view) {
-  DCHECK(appearance_provider);
-  DCHECK(caption_button_container);
+  CHECK(appearance_provider, base::NotFatalUntil::M162);
+  CHECK(caption_button_container, base::NotFatalUntil::M162);
   appearance_provider_ = appearance_provider;
 
   SetCaptionButtonContainer(caption_button_container);

@@ -450,8 +450,8 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   gfx::Size button_size = button->GetPreferredSize();
   if (delegate_->GetFrameButtonStyle() ==
       OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::kMdButton) {
-    DCHECK_EQ(views::FrameCaptionButton::kViewClassName,
-              button->GetClassName());
+    CHECK_EQ(views::FrameCaptionButton::kViewClassName, button->GetClassName(),
+             base::NotFatalUntil::M162);
     const int caption_button_center_size =
         button_width - 2 * views::kCaptionButtonInkDropDefaultCornerRadius;
     const int height =
@@ -466,7 +466,8 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
   } else if (delegate_->GetFrameButtonStyle() ==
              OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::
                  kImageButton) {
-    DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
+    CHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName(),
+             base::NotFatalUntil::M162);
     auto* const image_button = static_cast<views::ImageButton*>(button);
     image_button->SetImageHorizontalAlignment(
         (alignment == ButtonAlignment::kAlignLeading)

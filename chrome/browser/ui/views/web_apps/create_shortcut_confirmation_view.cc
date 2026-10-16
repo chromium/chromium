@@ -53,8 +53,8 @@ const char* g_title_to_use_for_app = nullptr;
 
 bool ShowRadioButtons() {
   // This UI is only for prototyping and is not intended for shipping.
-  DCHECK_EQ(features::kDesktopPWAsTabStripSettings.default_state,
-            base::FEATURE_DISABLED_BY_DEFAULT);
+  CHECK_EQ(features::kDesktopPWAsTabStripSettings.default_state,
+           base::FEATURE_DISABLED_BY_DEFAULT, base::NotFatalUntil::M162);
   return base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
          base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings);
 }
@@ -76,7 +76,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
     : web_app_info_(std::move(web_app_info)),
       install_tracker_(std::move(install_tracker)),
       callback_(std::move(callback)) {
-  DCHECK(web_app_info_);
+  CHECK(web_app_info_, base::NotFatalUntil::M162);
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // Define the table layout.
@@ -221,7 +221,7 @@ bool CreateShortcutConfirmationView::IsDialogButtonEnabled(
 void CreateShortcutConfirmationView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  DCHECK_EQ(title_tf_, sender);
+  CHECK_EQ(title_tf_, sender, base::NotFatalUntil::M162);
   DialogModelChanged();
 }
 

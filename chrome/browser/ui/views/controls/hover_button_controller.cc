@@ -46,7 +46,8 @@ bool HoverButtonController::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void HoverButtonController::OnMouseReleased(const ui::MouseEvent& event) {
-  DCHECK(notify_action() == views::ButtonController::NotifyAction::kOnRelease);
+  CHECK(notify_action() == views::ButtonController::NotifyAction::kOnRelease,
+        base::NotFatalUntil::M162);
   views::InkDrop::Get(button())->AnimateToState(views::InkDropState::HIDDEN,
                                                 &event);
   if (button()->GetState() != views::Button::STATE_DISABLED &&

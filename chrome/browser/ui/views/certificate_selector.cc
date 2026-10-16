@@ -102,7 +102,7 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
 CertificateSelector::CertificateTableModel::CertificateTableModel(
     const net::ClientCertIdentityList& identities,
     const std::vector<std::string>& provider_names) {
-  DCHECK_EQ(identities.size(), provider_names.size());
+  CHECK_EQ(identities.size(), provider_names.size(), base::NotFatalUntil::M162);
   for (size_t i = 0; i < identities.size(); i++) {
     net::X509Certificate* cert = identities[i]->certificate();
     Row row;

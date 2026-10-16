@@ -193,7 +193,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     BrowserWidget* widget,
     BrowserView* browser_view)
     : BrowserFrameView(widget, browser_view) {
-  DCHECK(browser_view->GetIsFloatingType());
+  CHECK(browser_view->GetIsFloatingType(), base::NotFatalUntil::M162);
   // We create our own top container, so we hide the one created by default (and
   // its children) from the user and accessibility tools.
   browser_view->top_container()->SetVisible(false);
@@ -495,7 +495,7 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
 
 void PictureInPictureBrowserFrameView::GetWindowMask(const gfx::Size& size,
                                                      SkPath* window_mask) {
-  DCHECK(window_mask);
+  CHECK(window_mask, base::NotFatalUntil::M162);
   views::GetDefaultWindowMask(size, window_mask);
 }
 
@@ -701,7 +701,7 @@ content::WebContents* PictureInPictureBrowserFrameView::GetActiveWebContents()
 }
 
 bool PictureInPictureBrowserFrameView::GetURL(GURL* url) const {
-  DCHECK(url);
+  CHECK(url, base::NotFatalUntil::M162);
   if (GetActiveWebContents()) {
     *url = GetActiveWebContents()->GetLastCommittedURL();
     return true;
@@ -964,14 +964,14 @@ gfx::Rect PictureInPictureBrowserFrameView::ConvertTopBarControlViewBounds(
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetLocationIconViewBounds() const {
-  DCHECK(location_icon_view_);
+  CHECK(location_icon_view_, base::NotFatalUntil::M162);
   return ConvertTopBarControlViewBounds(location_icon_view_,
                                         top_bar_container_view_);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetContentSettingViewBounds(
     size_t index) const {
-  DCHECK(index < content_setting_views_.size());
+  CHECK(index < content_setting_views_.size(), base::NotFatalUntil::M162);
   return ConvertTopBarControlViewBounds(content_setting_views_[index],
                                         button_container_view_);
 }
@@ -985,7 +985,7 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetCloseControlsBounds() const {
-  DCHECK(close_image_button_);
+  CHECK(close_image_button_, base::NotFatalUntil::M162);
   return ConvertTopBarControlViewBounds(close_image_button_,
                                         button_container_view_);
 }

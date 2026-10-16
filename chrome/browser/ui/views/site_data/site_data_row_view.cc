@@ -269,7 +269,7 @@ void SiteDataRowView::OnMenuClosed() {
 }
 
 void SiteDataRowView::OnDeleteIconClicked() {
-  DCHECK_NE(setting_, CONTENT_SETTING_BLOCK);
+  CHECK_NE(setting_, CONTENT_SETTING_BLOCK, base::NotFatalUntil::M162);
   delete_callback_.Run(origin_);
 
   // Hiding the view instead of trying to delete makes the lifecycle management
@@ -300,7 +300,7 @@ void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   // For partitioned access, it's valid to create an allow exception that
   // matches current effective setting to allow 3PC.
   if (!is_fully_partitioned_ || setting_ != CONTENT_SETTING_ALLOW) {
-    DCHECK_NE(setting_, setting);
+    CHECK_NE(setting_, setting, base::NotFatalUntil::M162);
   }
 
   create_exception_callback_.Run(origin_, setting);

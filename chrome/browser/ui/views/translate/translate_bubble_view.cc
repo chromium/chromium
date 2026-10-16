@@ -586,7 +586,7 @@ void TranslateBubbleView::ConfirmAdvancedOptions() {
   } else {
     std::u16string source_language_name;
     std::u16string target_language_name;
-    DCHECK(tabbed_pane_);
+    CHECK(tabbed_pane_, base::NotFatalUntil::M162);
     UpdateLanguageNames(&source_language_name, &target_language_name);
     tabbed_pane_->GetTabAt(0)->SetTitleText(source_language_name);
     tabbed_pane_->GetTabAt(1)->SetTitleText(target_language_name);
@@ -1293,7 +1293,8 @@ void TranslateBubbleView::UpdateAdvancedView() {
 void TranslateBubbleView::UpdateLanguageNames(
     std::u16string* source_language_name,
     std::u16string* target_language_name) {
-  DCHECK(source_language_name && target_language_name);
+  CHECK(source_language_name && target_language_name,
+        base::NotFatalUntil::M162);
   previous_source_language_index_ = model_->GetSourceLanguageIndex();
   *source_language_name =
       model_->GetSourceLanguageNameAt(previous_source_language_index_);

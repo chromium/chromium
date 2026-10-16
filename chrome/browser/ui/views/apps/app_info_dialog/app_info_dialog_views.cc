@@ -120,7 +120,7 @@ void AppInfoDialog::Close() {
 }
 
 void AppInfoDialog::StartObservingExtensionRegistry() {
-  DCHECK(!extension_registry_);
+  CHECK(!extension_registry_, base::NotFatalUntil::M162);
 
   extension_registry_ = extensions::ExtensionRegistry::Get(profile_);
   extension_registry_->AddObserver(this);
@@ -156,7 +156,7 @@ void AppInfoDialog::OnExtensionUninstalled(
 }
 
 void AppInfoDialog::OnShutdown(extensions::ExtensionRegistry* registry) {
-  DCHECK_EQ(extension_registry_, registry);
+  CHECK_EQ(extension_registry_, registry, base::NotFatalUntil::M162);
   StopObservingExtensionRegistry();
   Close();
 }

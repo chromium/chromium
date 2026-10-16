@@ -278,7 +278,7 @@ void ImageCarouselView::Layout(PassKey) {
 }
 
 void ImageCarouselView::OnScrollButtonClicked(ButtonType button_type) {
-  DCHECK(image_inner_container_->children().size());
+  CHECK(image_inner_container_->children().size(), base::NotFatalUntil::M162);
 
   int image_width =
       image_inner_container_->children().front()->bounds().width() +

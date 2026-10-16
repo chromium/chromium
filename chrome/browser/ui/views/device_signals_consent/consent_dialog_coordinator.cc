@@ -104,7 +104,7 @@ std::unique_ptr<ConsentRequester> ConsentRequester::CreateConsentRequester(
 // static
 void ConsentRequester::SetConsentRequesterForTest(
     std::unique_ptr<ConsentRequester> consent_requester) {
-  DCHECK(consent_requester);
+  CHECK(consent_requester, base::NotFatalUntil::M162);
   *GetTestInstanceStorage() = std::move(consent_requester);
 }
 

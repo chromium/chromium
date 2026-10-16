@@ -93,7 +93,7 @@ void ImmersiveModeTester::OnImmersiveRevealEnded() {
 }
 
 void ImmersiveModeTester::OnImmersiveModeControllerDestroyed() {
-  DCHECK(scoped_observation_.IsObserving());
+  CHECK(scoped_observation_.IsObserving(), base::NotFatalUntil::M162);
   scoped_observation_.Reset();
 }
 

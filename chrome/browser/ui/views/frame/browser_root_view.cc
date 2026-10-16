@@ -473,7 +473,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   canvas->UndoDeviceScaleFactor();
 
   const auto* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
 
   const SkColor toolbar_top_separator_color =
       widget->GetColorProvider()->GetColor(
@@ -594,7 +594,7 @@ void BrowserRootView::NavigateToDroppedUrls(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  DCHECK(drop_info);
+  CHECK(drop_info, base::NotFatalUntil::M162);
 
   BrowserWindowInterface* const browser = browser_view_->browser();
   TabStripModel* const model = browser->GetTabStripModel();

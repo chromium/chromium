@@ -487,7 +487,7 @@ void CheckFocusListForCycles(views::View* const start_view) {
 #endif  // DCHECK_IS_ON()
 
 bool GetGestureCommand(ui::GestureEvent* event, int* command) {
-  DCHECK(command);
+  CHECK(command, base::NotFatalUntil::M162);
   *command = 0;
 #if BUILDFLAG(IS_MAC)
   if (event->details().type() == ui::EventType::kGestureSwipe) {
@@ -651,9 +651,9 @@ bool DoCutCopyPasteForWebContents(content::WebContents* contents,
 // Converts |point| from |src| to |dst| and hit tests it against |dst|. The
 // converted |point| can then be retrieved and used for additional tests.
 bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
-  DCHECK(src);
-  DCHECK(dst);
-  DCHECK(point);
+  CHECK(src, base::NotFatalUntil::M162);
+  CHECK(dst, base::NotFatalUntil::M162);
+  CHECK(point, base::NotFatalUntil::M162);
   views::View::ConvertPointToTarget(src, dst, point);
   return dst->HitTestPoint(*point);
 }
@@ -1133,7 +1133,7 @@ BrowserView::~BrowserView() {
 
   // All the tabs should have been destroyed already. If we were closed by the
   // OS with some tabs than the BrowserNativeWidget should have destroyed them.
-  DCHECK_EQ(0, browser_->GetTabStripModel()->count());
+  CHECK_EQ(0, browser_->GetTabStripModel()->count(), base::NotFatalUntil::M162);
 
   // Stop the animation timer explicitly here to avoid running it in a nested
   // message loop, which may run by Browser destructor.
@@ -1896,7 +1896,7 @@ std::vector<StatusBubble*> BrowserView::GetStatusBubbles() {
 void BrowserView::UpdateTitleBar() {
   browser_widget_->UpdateWindowTitle();
   if (web_app_window_title_) {
-    DCHECK(GetIsWebAppType());
+    CHECK(GetIsWebAppType(), base::NotFatalUntil::M162);
     web_app_window_title_->SetText(GetWindowTitle());
     InvalidateLayout();
   }
@@ -1990,7 +1990,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      content::WebContents* new_contents,
                                      int index,
                                      int reason) {
-  DCHECK(new_contents);
+  CHECK(new_contents, base::NotFatalUntil::M162);
   TRACE_EVENT0("ui", "BrowserView::OnActiveTabChanged");
   views::WebView* active_contents_view = GetActiveContentsWebView();
   bool tab_change_in_split_view =
@@ -2142,7 +2142,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
                                 bool was_active) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
   if (!was_active) {
     return;
   }
@@ -2188,12 +2188,12 @@ gfx::Rect BrowserView::GetBounds() const {
 }
 
 gfx::Size BrowserView::GetContentsSize() const {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M162);
   return multi_contents_view_->GetActiveContentsContainerView()->size();
 }
 
 void BrowserView::SetContentsSize(const gfx::Size& size) {
-  DCHECK(!GetContentsSize().IsEmpty());
+  CHECK(!GetContentsSize().IsEmpty(), base::NotFatalUntil::M162);
 
   int width_diff = size.width() - GetContentsSize().width();
   int height_diff = size.height() - GetContentsSize().height();
@@ -2692,7 +2692,7 @@ void BrowserView::UpdateWindowControlsOverlayAvailable() {
     return;
   }
 
-  DCHECK(AppUsesWindowControlsOverlay());
+  CHECK(AppUsesWindowControlsOverlay(), base::NotFatalUntil::M162);
   is_window_controls_overlay_available_ = available;
 
   if (web_app_frame_toolbar()) {
@@ -2874,7 +2874,8 @@ void BrowserView::FocusAppMenu() {
   if (toolbar_->GetAppMenuFocused()) {
     RestoreFocus();
   } else {
-    DCHECK(!ImmersiveModeController::From(browser())->IsEnabled());
+    CHECK(!ImmersiveModeController::From(browser())->IsEnabled(),
+          base::NotFatalUntil::M162);
     toolbar_->SetPaneFocusAndFocusAppMenu();
   }
 }
@@ -3240,7 +3241,7 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
   }
 
   views::FocusManager* focus_manager = GetFocusManager();
-  DCHECK(focus_manager);
+  CHECK(focus_manager, base::NotFatalUntil::M162);
 
   if (focus_manager->shortcut_handling_suspended()) {
     return content::KeyboardEventProcessingResult::NOT_HANDLED;
@@ -3310,7 +3311,8 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
   // command id from |accelerator_table_|, it must be a keydown event. This
   // DCHECK ensures we won't accidentally return NOT_HANDLED for a later added
   // RELEASED accelerator in BrowserView.
-  DCHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown);
+  CHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown,
+           base::NotFatalUntil::M162);
   // |accelerator| is a non-reserved browser shortcut (e.g. Ctrl+f).
   return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
 }
@@ -3602,7 +3604,8 @@ void BrowserView::OnTabStripModelChanged(
       aura::client::ParentWindowWithContext(window, root_window,
                                             root_window->GetBoundsInScreen(),
                                             display::kInvalidDisplayId);
-      DCHECK(contents.contents->GetNativeView()->GetRootWindow());
+      CHECK(contents.contents->GetNativeView()->GetRootWindow(),
+            base::NotFatalUntil::M162);
     }
 #endif
     multi_contents_view_->ExecuteOnEachVisibleContentsView(
@@ -3832,7 +3835,7 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   // The top container must be placed in the same position before the
   // reparenting to maintain the correct Z-order to ensure it can receive mouse
   // events. See crbug.com/454852658.
-  DCHECK(top_container_insertion_index_);
+  CHECK(top_container_insertion_index_, base::NotFatalUntil::M162);
   AddChildViewAt(top_container_.get(), top_container_insertion_index_.value());
 
   ReparentTabStripAndWebAppViewsToBrowserView(
@@ -3894,7 +3897,8 @@ void BrowserView::ReparentTabStripAndWebAppViewsToBrowserView(
   // The TabStrip must be placed in the same position before the reparenting
   // to maintain the correct Z-order to ensure it can receive mouse events.
   // See crbug.com/454852658.
-  DCHECK(horizontal_tab_strip_region_insertion_index_);
+  CHECK(horizontal_tab_strip_region_insertion_index_,
+        base::NotFatalUntil::M162);
   AddChildViewAt(horizontal_tab_strip_region_view_.get(),
                  horizontal_tab_strip_region_insertion_index_.value());
 
@@ -4037,7 +4041,7 @@ bool BrowserView::ShouldSaveWindowPlacement() const {
 
 void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
                                       ui::mojom::WindowShowState show_state) {
-  DCHECK(ShouldSaveWindowPlacement());
+  CHECK(ShouldSaveWindowPlacement(), base::NotFatalUntil::M162);
 
   WidgetDelegate::SaveWindowPlacement(bounds, show_state);
   gfx::Rect saved_bounds = bounds;
@@ -4126,8 +4130,8 @@ views::View* BrowserView::CreateOverlayView() {
 
 #if BUILDFLAG(IS_MAC)
 views::View* BrowserView::CreateMacOverlayView() {
-  DCHECK(
-      WindowFeatureController::From(browser())->UsesImmersiveFullscreenMode());
+  CHECK(WindowFeatureController::From(browser())->UsesImmersiveFullscreenMode(),
+        base::NotFatalUntil::M162);
 
   // Create the toolbar overlay widget.
   overlay_widget_ = OverlayWidgetMac::Create(this, GetWidget());
@@ -4167,7 +4171,8 @@ views::View* BrowserView::CreateMacOverlayView() {
 #endif  // IS_MAC
 
 void BrowserView::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(widget_observation_.IsObservingSource(widget));
+  CHECK(widget_observation_.IsObservingSource(widget),
+        base::NotFatalUntil::M162);
   widget_observation_.Reset();
 
   // Permanently suppress layout during teardown to avoid running layout on
@@ -5065,8 +5070,8 @@ void BrowserView::AddedToWidget() {
   // It also needs to be after the |toolbar_| had been initialized since it uses
   // the omnibox.
   if (GetIsNormalType()) {
-    DCHECK(browser_widget_);
-    DCHECK(toolbar_);
+    CHECK(browser_widget_, base::NotFatalUntil::M162);
+    CHECK(toolbar_, base::NotFatalUntil::M162);
     top_controls_slide_controller_ =
         std::make_unique<TopControlsSlideControllerChromeOS>(this);
   }
@@ -5511,7 +5516,7 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
     LocationBar* location_bar = GetLocationBar();
     if (location_bar && location_bar->IsFocusWithin()) {
       views::FocusManager* focus_manager = GetFocusManager();
-      DCHECK(focus_manager);
+      CHECK(focus_manager, base::NotFatalUntil::M162);
       focus_manager->ClearFocus();
     }
 
@@ -5650,7 +5655,7 @@ void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
 
 void BrowserView::LoadAccelerators() {
   views::FocusManager* focus_manager = GetFocusManager();
-  DCHECK(focus_manager);
+  CHECK(focus_manager, base::NotFatalUntil::M162);
 
   // Let's fill our own accelerator table.
   const bool is_app_mode = IsRunningInForcedAppMode();
@@ -6153,8 +6158,8 @@ void BrowserView::OnFirstPresentation(
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 void BrowserView::ApplyScreenshotSettings(bool allow) {
 #if BUILDFLAG(IS_WIN)
-  DCHECK_NE(GetWidget()->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
-            gfx::kNullAcceleratedWidget);
+  CHECK_NE(GetWidget()->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
+           gfx::kNullAcceleratedWidget, base::NotFatalUntil::M162);
 #endif  // BUILDFLAG(IS_WIN)
   GetWidget()->SetAllowScreenshots(allow);
 }

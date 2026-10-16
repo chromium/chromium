@@ -121,7 +121,8 @@ VirtualDesktopHelper::VirtualDesktopHelper(const std::string& initial_workspace)
       initial_workspace_(initial_workspace) {}
 
 void VirtualDesktopHelper::Init(HWND hwnd) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   owning_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&VirtualDesktopHelper::InitImpl, this, hwnd,
                                 initial_workspace_));
@@ -130,7 +131,8 @@ void VirtualDesktopHelper::Init(HWND hwnd) {
 VirtualDesktopHelper::~VirtualDesktopHelper() = default;
 
 std::string VirtualDesktopHelper::GetWorkspace() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   if (!workspace_.has_value()) {
     workspace_ = initial_workspace_;
   }
@@ -141,7 +143,8 @@ std::string VirtualDesktopHelper::GetWorkspace() {
 void VirtualDesktopHelper::UpdateWindowDesktopId(
     HWND hwnd,
     WorkspaceChangedCallback callback) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   owning_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&VirtualDesktopHelper::GetWindowDesktopIdImpl, hwnd,
@@ -160,7 +163,8 @@ void VirtualDesktopHelper::SetInitialWorkspaceRemembered(bool remembered) {
 
 void VirtualDesktopHelper::SetWorkspace(WorkspaceChangedCallback callback,
                                         const std::string& workspace) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   // If GetWindowDesktopId() fails, |workspace| will be empty, and it's most
   // likely that the current value of |workspace_| is still correct, so don't
   // overwrite it.
@@ -177,7 +181,8 @@ void VirtualDesktopHelper::SetWorkspace(WorkspaceChangedCallback callback,
 
 void VirtualDesktopHelper::InitImpl(HWND hwnd,
                                     const std::string& initial_workspace) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   // Virtual Desktops on Windows are best-effort and may not always be
   // available.
   if (FAILED(::CoCreateInstance(__uuidof(::VirtualDesktopManager), nullptr,
@@ -201,7 +206,8 @@ void VirtualDesktopHelper::InitImpl(HWND hwnd,
 std::string VirtualDesktopHelper::GetWindowDesktopIdImpl(
     HWND hwnd,
     Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   if (!virtual_desktop_manager) {
     return std::string();
   }
