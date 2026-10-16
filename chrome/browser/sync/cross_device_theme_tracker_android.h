@@ -18,6 +18,7 @@ namespace themes {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.ntp_customization.theme_sync.data)
+// LINT.IfChange(PlatformType)
 enum class PlatformType {
   kUnknown = 0,
   kAndroid = 1,
@@ -25,6 +26,8 @@ enum class PlatformType {
   kDesktop = 3,
   kMaxCount = 4,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/histograms.xml:PlatformType,
+// //chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtils.java:getPlatformSuffix)
 
 // Android-specific subclass of CrossDeviceThemeTracker.
 //

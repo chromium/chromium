@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -280,5 +281,42 @@ public class NtpCustomizationMetricsUtilsUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(histogramNameOff, themeCollectionHash);
         NtpCustomizationMetricsUtils.recordThemeCollectionDailyRefresh(themeCollectionHash, false);
         histogramWatcherOff.assertExpected();
+    }
+
+    @Test
+    public void testRecordThemeHistoryClick_Android() {
+        testRecordThemeHistoryClickImpl(PlatformType.ANDROID, "Android", CHROME_COLOR);
+    }
+
+    @Test
+    public void testRecordThemeHistoryClick_IOS() {
+        testRecordThemeHistoryClickImpl(PlatformType.IOS, "IOS", THEME_COLLECTION);
+    }
+
+    @Test
+    public void testRecordThemeHistoryClick_Desktop() {
+        testRecordThemeHistoryClickImpl(PlatformType.DESKTOP, "Desktop", COLOR_FROM_HEX);
+    }
+
+    @Test
+    public void testRecordThemeHistoryClickIndex() {
+        int index = 2;
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.ThemeHistory.Click.Index", index);
+        NtpCustomizationMetricsUtils.recordThemeHistoryClickIndex(index);
+        histogramWatcher.assertExpected();
+    }
+
+    private void testRecordThemeHistoryClickImpl(
+            @PlatformType int platformType,
+            String platformSuffix,
+            @NtpBackgroundType int backgroundType) {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.ThemeHistory.Click." + platformSuffix,
+                        backgroundType);
+        NtpCustomizationMetricsUtils.recordThemeHistoryClick(backgroundType, platformType);
+        histogramWatcher.assertExpected();
     }
 }

@@ -385,10 +385,19 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
 
         int position = 1;
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "NewTabPage.Customization.ThemeHistory.Click.IOS",
+                                remoteColor.getBackgroundType())
+                        .expectIntRecord(
+                                "NewTabPage.Customization.ThemeHistory.Click.Index", position)
+                        .build();
         // Click the remote history item (index 1, after Default)
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         assertBackgroundDataChangedImpl(remoteColor, /* expectedRecreate= */ true);
+        histogramWatcher.assertExpected();
 
         // Click it again, should not trigger changes since it's already selected.
         clearInvocations(mNtpCustomizationConfigManager);
@@ -769,7 +778,16 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 .when(mMockImageFetcher)
                 .fetchImage(any(), any());
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "NewTabPage.Customization.ThemeHistory.Click.Android",
+                                NtpBackgroundType.THEME_COLLECTION)
+                        .expectIntRecord(
+                                "NewTabPage.Customization.ThemeHistory.Click.Index", position)
+                        .build();
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
+        histogramWatcher.assertExpected();
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify it fetches the image again.

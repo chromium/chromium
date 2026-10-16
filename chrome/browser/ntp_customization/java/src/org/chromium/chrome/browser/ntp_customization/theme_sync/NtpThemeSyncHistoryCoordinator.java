@@ -431,6 +431,7 @@ public class NtpThemeSyncHistoryCoordinator {
     private void onItemClicked(NtpBackgroundDataBase backgroundData, int position) {
         boolean shouldRecreate = shouldRecreateActivity(backgroundData);
         mBottomSheetDelegate.onNewColorSelected(shouldRecreate);
+        recordItemClick(backgroundData, position);
 
         boolean updateOtherPlatformThemeData = false;
         if (backgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData) {
@@ -463,6 +464,19 @@ public class NtpThemeSyncHistoryCoordinator {
             mNtpBackgroundDataManager.updateRemoteSyncDataToSharedPreference(
                     (NtpBackgroundDataThemeCollection) backgroundData);
         }
+    }
+
+    /**
+     * Records metrics for a click on an item in the theme history list, including the background
+     * type split by the platform where the theme was originally set, and the clicked index.
+     *
+     * @param backgroundData The {@link NtpBackgroundDataBase} of the clicked item.
+     * @param position The index of the clicked item in the history list.
+     */
+    private void recordItemClick(NtpBackgroundDataBase backgroundData, int position) {
+        NtpCustomizationMetricsUtils.recordThemeHistoryClick(
+                backgroundData.getBackgroundType(), backgroundData.getPlatformType());
+        NtpCustomizationMetricsUtils.recordThemeHistoryClickIndex(position);
     }
 
     /**

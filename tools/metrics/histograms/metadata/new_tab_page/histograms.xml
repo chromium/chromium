@@ -116,6 +116,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/ntp_tiles/metrics.cc:NewTabPageProviders) -->
 
+<!-- LINT.IfChange(PlatformType) -->
+
+<variants name="PlatformType">
+  <variant name="Android" summary="Android"/>
+  <variant name="Desktop" summary="Desktop"/>
+  <variant name="IOS" summary="iOS"/>
+  <variant name="Unknown" summary="an unknown platform"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/sync/cross_device_theme_tracker_android.h:PlatformType, //chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtils.java:getPlatformSuffix) -->
+
 <histogram name="NewTabPage.ActionAndroid2" enum="NewTabPageActionAndroid2"
     expires_after="2027-04-11">
   <owner>twellington@chromium.org</owner>
@@ -722,6 +733,30 @@ chromium-metrics-reviews@google.com.
     preview dialog is shown, regardless of whether the preview dialog has been
     shown before. This metric is logged on Android only.
   </summary>
+</histogram>
+
+<histogram name="NewTabPage.Customization.ThemeHistory.Click.Index"
+    units="index" expires_after="2027-10-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the 0-based index of the item clicked in the theme history section
+    of the NTP customization main bottom sheet. Index 0 is the default theme.
+    Logged every time an item is clicked. This metric is logged on Android only.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Customization.ThemeHistory.Click.{PlatformType}"
+    enum="NtpBackgroundType" expires_after="2027-10-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the background type of the item clicked in the theme history section
+    of the NTP customization main bottom sheet, for themes originally set on
+    {PlatformType}. Logged every time an item is clicked. This metric is logged
+    on Android only.
+  </summary>
+  <token key="PlatformType" variants="PlatformType"/>
 </histogram>
 
 <histogram name="NewTabPage.Customization.ThemeHistory.MoreOptionButton.Click"
