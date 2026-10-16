@@ -10,6 +10,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/hash/hash.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_view_util.h"
 #import "components/payments/core/features.h"
 #import "components/payments/core/web_payments_telemetry.h"
@@ -17,6 +18,9 @@
 #import "ui/base/page_transition_types.h"
 
 namespace {
+
+constexpr char kChallengeRedirectedHistogram[] =
+    "Payments.ThreeDSecure.ChallengeRedirected";
 
 bool IsFormSubmissionPost(
     NSURLRequest* request,
@@ -37,6 +41,8 @@ void WebPaymentsMetricsRecorder::ShouldAllowRequest(
     NSURLRequest* request,
     RequestInfo request_info,
     PolicyDecisionCallback callback) {
+  std::move(callback).Run(PolicyDecision::Allow());
+
   NSData* body = request.HTTPBody;
   if (base::FeatureList::IsEnabled(
           payments::features::kThreeDSecureTelemetryForIos) &&
@@ -48,11 +54,15 @@ void WebPaymentsMetricsRecorder::ShouldAllowRequest(
     // avoid recording duplicate metrics on redirect, we don't emit when the
     // current and previous `form_data` hashes are equal.
     size_t form_data_hash = base::FastHash(form_data);
-    if (form_data_hash != last_form_data_hash_) {
-      last_form_data_hash_ = form_data_hash;
-      payments::RecordThreeDSecureTelemetryFromFormData(
-          form_data, ukm::GetSourceIdForWebStateDocument(web_state()));
+    if (form_data_hash == last_form_data_hash_) {
+      if (last_form_is_3ds_) {
+        base::UmaHistogramBoolean(kChallengeRedirectedHistogram, true);
+      }
+      return;
     }
+
+    last_form_data_hash_ = form_data_hash;
+    last_form_is_3ds_ = payments::RecordThreeDSecureTelemetryFromFormData(
+        form_data, ukm::GetSourceIdForWebStateDocument(web_state()));
   }
-  std::move(callback).Run(PolicyDecision::Allow());
 }

@@ -46,8 +46,8 @@ class WebPaymentsTelemetryTest : public testing::Test {
 TEST_F(WebPaymentsTelemetryTest, UnrelatedFormData) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  RecordThreeDSecureTelemetryFromFormData("username=foo&password=bar",
-                                          source_id_);
+  EXPECT_FALSE(RecordThreeDSecureTelemetryFromFormData(
+      "username=foo&password=bar", source_id_));
   histogram_tester.ExpectTotalCount(kChallengeRequestHistogram, 0);
   histogram_tester.ExpectTotalCount(kChallengeResponseHistogram, 0);
   EXPECT_TRUE(
@@ -65,8 +65,8 @@ TEST_F(WebPaymentsTelemetryTest, UnrelatedFormData) {
 TEST_F(WebPaymentsTelemetryTest, ChallengeRequestTelemetry) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  RecordThreeDSecureTelemetryFromFormData("creq=sample_challenge_request",
-                                          source_id_);
+  EXPECT_TRUE(RecordThreeDSecureTelemetryFromFormData(
+      "creq=sample_challenge_request", source_id_));
   histogram_tester.ExpectUniqueSample(kChallengeRequestHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kChallengeResponseHistogram, 0);
 
@@ -116,7 +116,7 @@ TEST_F(WebPaymentsTelemetryTest, ChallengeResponseTelemetry_ValidStatuses) {
     ukm::TestAutoSetUkmRecorder ukm_recorder;
     std::string form_data =
         "cres=" + Base64UrlEncodeString(CreateCResJson(test_case.status_char));
-    RecordThreeDSecureTelemetryFromFormData(form_data, source_id_);
+    EXPECT_TRUE(RecordThreeDSecureTelemetryFromFormData(form_data, source_id_));
     histogram_tester.ExpectUniqueSample(kChallengeResponseHistogram,
                                         test_case.expected_status, 1);
     histogram_tester.ExpectTotalCount(kChallengeRequestHistogram, 0);
@@ -185,7 +185,7 @@ TEST_F(WebPaymentsTelemetryTest, ChallengeResponseTelemetry_UnknownStatuses) {
     base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
     std::string form_data = "cres=" + Base64UrlEncodeString(json);
-    RecordThreeDSecureTelemetryFromFormData(form_data, source_id_);
+    EXPECT_TRUE(RecordThreeDSecureTelemetryFromFormData(form_data, source_id_));
     histogram_tester.ExpectUniqueSample(kChallengeResponseHistogram,
                                         ThreeDSecureTransactionStatus::kUnknown,
                                         1);
@@ -224,7 +224,7 @@ TEST_F(WebPaymentsTelemetryTest, ChallengeResponseTelemetry_EncryptedJWE) {
       "KDlTtXchhZTGufMYmOYGS4HffxPSnvxxo63n2YsTyUQ."
       "7AEfFlyCLHHZmrientbOTw";
   std::string form_data = "cres=" + jwe;
-  RecordThreeDSecureTelemetryFromFormData(form_data, source_id_);
+  EXPECT_TRUE(RecordThreeDSecureTelemetryFromFormData(form_data, source_id_));
   histogram_tester.ExpectUniqueSample(
       kChallengeResponseHistogram,
       ThreeDSecureTransactionStatus::kJSONEncrypted, 1);
@@ -249,8 +249,8 @@ TEST_F(WebPaymentsTelemetryTest,
        ChallengeResponseTelemetry_InvalidBase64WithoutDots) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  RecordThreeDSecureTelemetryFromFormData("cres=invalid!char#without%dots",
-                                          source_id_);
+  EXPECT_TRUE(RecordThreeDSecureTelemetryFromFormData(
+      "cres=invalid!char#without%dots", source_id_));
   histogram_tester.ExpectUniqueSample(
       kChallengeResponseHistogram, ThreeDSecureTransactionStatus::kUnknown, 1);
   histogram_tester.ExpectTotalCount(kChallengeRequestHistogram, 0);
@@ -276,8 +276,8 @@ TEST_F(WebPaymentsTelemetryTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   // {"transStatus":"Y"} Base64Url-encoded with padding is
   // eyJ0cmFuc1N0YXR1cyI6IlkifQ== Standard form submissions encode '=' as '%3D'.
-  RecordThreeDSecureTelemetryFromFormData(
-      "cres=eyJ0cmFuc1N0YXR1cyI6IlkifQ%3D%3D", source_id_);
+  EXPECT_TRUE(RecordThreeDSecureTelemetryFromFormData(
+      "cres=eyJ0cmFuc1N0YXR1cyI6IlkifQ%3D%3D", source_id_));
   histogram_tester.ExpectUniqueSample(
       kChallengeResponseHistogram, ThreeDSecureTransactionStatus::kSuccess, 1);
   histogram_tester.ExpectTotalCount(kChallengeRequestHistogram, 0);

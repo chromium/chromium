@@ -101,7 +101,7 @@ ThreeDSecureTransactionStatus ParseChallengeResponse(
 
 }  // namespace
 
-void RecordThreeDSecureTelemetryFromFormData(std::string_view form_data,
+bool RecordThreeDSecureTelemetryFromFormData(std::string_view form_data,
                                              ukm::SourceId source_id) {
   url::Component query(form_data);
   url::Component key;
@@ -113,16 +113,19 @@ void RecordThreeDSecureTelemetryFromFormData(std::string_view form_data,
       ukm::builders::Payments_ThreeDSecure_ChallengeRequest(source_id)
           .SetChallengeRequest(true)
           .Record(ukm::UkmRecorder::Get());
-    } else if (base::EqualsCaseInsensitiveASCII(key_view,
-                                                kChallengeResponseKey)) {
+      return true;
+    }
+    if (base::EqualsCaseInsensitiveASCII(key_view, kChallengeResponseKey)) {
       ThreeDSecureTransactionStatus result =
           ParseChallengeResponse(value.AsViewOn(form_data));
       base::UmaHistogramEnumeration(kChallengeResponseHistogram, result);
       ukm::builders::Payments_ThreeDSecure_ChallengeResponse(source_id)
           .SetChallengeResponse(static_cast<int64_t>(result))
           .Record(ukm::UkmRecorder::Get());
+      return true;
     }
   }
+  return false;
 }
 
 }  // namespace payments
