@@ -40,6 +40,9 @@ GlicWebContentsWarmingPool::ContainerCreationReason ToContainerCreationReason(
       return GlicWebContentsWarmingPool::ContainerCreationReason::kNudge;
     case GlicWarmingTrigger::kIph:
       return GlicWebContentsWarmingPool::ContainerCreationReason::kIph;
+    case GlicWarmingTrigger::kSelectionOverlay:
+      return GlicWebContentsWarmingPool::ContainerCreationReason::
+          kSelectionOverlay;
   }
 }
 }  // namespace

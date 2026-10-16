@@ -2180,6 +2180,7 @@ chromium-metrics-reviews@google.com.
   <token key="Trigger">
     <variant name="Iph" summary="iph"/>
     <variant name="Nudge" summary="contextual nudge"/>
+    <variant name="SelectionOverlay" summary="selection overlay"/>
     <variant name="Startup" summary="startup"/>
   </token>
 </histogram>

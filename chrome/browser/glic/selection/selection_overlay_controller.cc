@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -503,6 +504,10 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
 
 void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   options_ = std::move(options);
+  if (GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
+      service && !service->GetInstanceForTab(tab_)) {
+    service->TryPreload(GlicWarmingTrigger::kSelectionOverlay);
+  }
   ObserveActiveTabChanges();
   ShowModalUI();
 }

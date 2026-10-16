@@ -124,6 +124,8 @@ std::string_view GlicWarmingTriggerToString(GlicWarmingTrigger trigger) {
       return "Nudge";
     case GlicWarmingTrigger::kIph:
       return "Iph";
+    case GlicWarmingTrigger::kSelectionOverlay:
+      return "SelectionOverlay";
   }
 }
 

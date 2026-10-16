@@ -8,6 +8,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/explain_suggestion.h"
@@ -41,6 +43,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -52,6 +55,11 @@ class SelectionOverlayBrowserTest : public GlicBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(::features::kGlicCaptureRegion);
   }
   ~SelectionOverlayBrowserTest() override = default;
+
+  void TearDown() override {
+    GlicBrowserTest::TearDown();
+    ForceConnectionTypeForTesting(std::nullopt);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -107,6 +115,41 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
       "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 3);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Prewarming.ChecksResult.SelectionOverlay", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
+                       WarmsWhenOpenedWithoutInstance) {
+  ForceConnectionTypeForTesting(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+  base::HistogramTester histogram_tester;
+
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  EXPECT_FALSE(coordinator()
+                   .GetWebContentsWarmingPoolForTesting()
+                   .HasWarmedContainerForTesting());
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+
+  EXPECT_TRUE(RunUntil(
+      [this]() {
+        return coordinator()
+            .GetWebContentsWarmingPoolForTesting()
+            .HasWarmedContainerForTesting();
+      },
+      "Wait for container to warm"));
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.Prewarming.ChecksResult.SelectionOverlay",
+      GlicPrewarmingChecksResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kSelectionOverlay,
+      1);
 }
 
 namespace {

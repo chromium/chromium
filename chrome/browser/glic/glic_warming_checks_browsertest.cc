@@ -298,7 +298,12 @@ INSTANTIATE_TEST_SUITE_P(
             .trigger = GlicWarmingTrigger::kIph,
             .expected_histogram_suffix = "Iph",
             .expected_creation_reason =
-                GlicWebContentsWarmingPool::ContainerCreationReason::kIph}));
+                GlicWebContentsWarmingPool::ContainerCreationReason::kIph},
+        WarmingTriggerParam{
+            .trigger = GlicWarmingTrigger::kSelectionOverlay,
+            .expected_histogram_suffix = "SelectionOverlay",
+            .expected_creation_reason = GlicWebContentsWarmingPool::
+                ContainerCreationReason::kSelectionOverlay}));
 
 }  // namespace
 }  // namespace glic

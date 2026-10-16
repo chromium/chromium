@@ -49,7 +49,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kNudge = 4,                   // Preloaded when a contextual nudge is shown.
     kIph = 5,                     // Preloaded when Gemini IPH is shown.
     kMemoryPressureRecovery = 6,  // Preloaded when memory pressure subsides.
-    kMaxValue = kMemoryPressureRecovery,
+    kSelectionOverlay = 7,        // Preloaded when selection overlay is shown.
+    kMaxValue = kSelectionOverlay,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
 
