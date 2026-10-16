@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager.h"
-#include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

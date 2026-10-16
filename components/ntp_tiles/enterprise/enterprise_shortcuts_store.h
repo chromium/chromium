@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcut.h"
-#include "components/ntp_tiles/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 

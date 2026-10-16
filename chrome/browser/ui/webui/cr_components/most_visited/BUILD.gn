@@ -66,7 +66,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/search",
     "//chrome/test:test_support",
     "//components/ntp_tiles",
-    "//components/ntp_tiles:pref_names",
+    "//components/ntp_tiles:test_support",
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
