@@ -244,6 +244,53 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_UINT (
   g_value_set_boolean (return_value, v_return);
 }
 
+static void
+_g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint G_GNUC_UNUSED,
+    void         *marshal_data)
+{
+  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectVariantFunc)
+       (void *data1,
+        GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
+        GVariant *arg_options,
+        void *data2);
+  _GDbusCodegenMarshalBoolean_ObjectObjectVariantFunc callback;
+  GCClosure *cc = (GCClosure*) closure;
+  void *data1, *data2;
+  gboolean v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 4);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+
+  callback = (_GDbusCodegenMarshalBoolean_ObjectObjectVariantFunc)
+    (marshal_data ? marshal_data : cc->callback);
+
+  v_return =
+    callback (data1,
+              g_marshal_value_peek_object (param_values + 1),
+              g_marshal_value_peek_object (param_values + 2),
+              g_marshal_value_peek_variant (param_values + 3),
+              data2);
+
+  g_value_set_boolean (return_value, v_return);
+}
+
 /* ------------------------------------------------------------------------
  * Code for interface org.gnome.Mutter.ServiceChannel
  * ------------------------------------------------------------------------
@@ -306,9 +353,57 @@ static const _ExtendedGDBusMethodInfo _meta_dbus_service_channel_method_info_ope
   TRUE
 };
 
+static const _ExtendedGDBusArgInfo _meta_dbus_service_channel_method_info_open_wayland_connection_IN_ARG_options =
+{
+  {
+    -1,
+    (gchar *) "options",
+    (gchar *) "a{sv}",
+    NULL
+  },
+  FALSE
+};
+
+static const GDBusArgInfo * const _meta_dbus_service_channel_method_info_open_wayland_connection_IN_ARG_pointers[] =
+{
+  &_meta_dbus_service_channel_method_info_open_wayland_connection_IN_ARG_options.parent_struct,
+  NULL
+};
+
+static const _ExtendedGDBusArgInfo _meta_dbus_service_channel_method_info_open_wayland_connection_OUT_ARG_fd =
+{
+  {
+    -1,
+    (gchar *) "fd",
+    (gchar *) "h",
+    NULL
+  },
+  FALSE
+};
+
+static const GDBusArgInfo * const _meta_dbus_service_channel_method_info_open_wayland_connection_OUT_ARG_pointers[] =
+{
+  &_meta_dbus_service_channel_method_info_open_wayland_connection_OUT_ARG_fd.parent_struct,
+  NULL
+};
+
+static const _ExtendedGDBusMethodInfo _meta_dbus_service_channel_method_info_open_wayland_connection =
+{
+  {
+    -1,
+    (gchar *) "OpenWaylandConnection",
+    (GDBusArgInfo **) &_meta_dbus_service_channel_method_info_open_wayland_connection_IN_ARG_pointers,
+    (GDBusArgInfo **) &_meta_dbus_service_channel_method_info_open_wayland_connection_OUT_ARG_pointers,
+    NULL
+  },
+  "handle-open-wayland-connection",
+  TRUE
+};
+
 static const GDBusMethodInfo * const _meta_dbus_service_channel_method_info_pointers[] =
 {
   &_meta_dbus_service_channel_method_info_open_wayland_service_connection.parent_struct,
+  &_meta_dbus_service_channel_method_info_open_wayland_connection.parent_struct,
   NULL
 };
 
@@ -369,6 +464,19 @@ meta_dbus_service_channel_method_marshal_open_wayland_service_connection (
     return_value, n_param_values, param_values, invocation_hint, marshal_data);
 }
 
+inline static void
+meta_dbus_service_channel_method_marshal_open_wayland_connection (
+    GClosure     *closure,
+    GValue       *return_value,
+    unsigned int  n_param_values,
+    const GValue *param_values,
+    void         *invocation_hint,
+    void         *marshal_data)
+{
+  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT (closure,
+    return_value, n_param_values, param_values, invocation_hint, marshal_data);
+}
+
 
 /**
  * MetaDBusServiceChannel:
@@ -379,6 +487,7 @@ meta_dbus_service_channel_method_marshal_open_wayland_service_connection (
 /**
  * MetaDBusServiceChannelIface:
  * @parent_iface: The parent interface.
+ * @handle_open_wayland_connection: Handler for the #MetaDBusServiceChannel::handle-open-wayland-connection signal.
  * @handle_open_wayland_service_connection: Handler for the #MetaDBusServiceChannel::handle-open-wayland-service-connection signal.
  *
  * Virtual table for the D-Bus interface <link linkend="gdbus-interface-org-gnome-Mutter-ServiceChannel.top_of_page">org.gnome.Mutter.ServiceChannel</link>.
@@ -414,6 +523,30 @@ meta_dbus_service_channel_default_init (MetaDBusServiceChannelIface *iface)
     G_TYPE_BOOLEAN,
     3,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_UNIX_FD_LIST, G_TYPE_UINT);
+
+  /**
+   * MetaDBusServiceChannel::handle-open-wayland-connection:
+   * @object: A #MetaDBusServiceChannel.
+   * @invocation: A #GDBusMethodInvocation.
+   * @fd_list: (nullable): A #GUnixFDList or %NULL.
+   * @arg_options: Argument passed by remote caller.
+   *
+   * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-gnome-Mutter-ServiceChannel.OpenWaylandConnection">OpenWaylandConnection()</link> D-Bus method.
+   *
+   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call meta_dbus_service_channel_complete_open_wayland_connection() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+   *
+   * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
+   */
+  g_signal_new ("handle-open-wayland-connection",
+    G_TYPE_FROM_INTERFACE (iface),
+    G_SIGNAL_RUN_LAST,
+    G_STRUCT_OFFSET (MetaDBusServiceChannelIface, handle_open_wayland_connection),
+    g_signal_accumulator_true_handled,
+    NULL,
+      meta_dbus_service_channel_method_marshal_open_wayland_connection,
+    G_TYPE_BOOLEAN,
+    3,
+    G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_UNIX_FD_LIST, G_TYPE_VARIANT);
 
 }
 
@@ -468,7 +601,7 @@ meta_dbus_service_channel_call_open_wayland_service_connection (
 gboolean
 meta_dbus_service_channel_call_open_wayland_service_connection_finish (
     MetaDBusServiceChannel *proxy,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -506,7 +639,7 @@ meta_dbus_service_channel_call_open_wayland_service_connection_sync (
     MetaDBusServiceChannel *proxy,
     guint arg_service_client_type,
     GUnixFDList  *fd_list,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -516,6 +649,121 @@ meta_dbus_service_channel_call_open_wayland_service_connection_sync (
     "OpenWaylandServiceConnection",
     g_variant_new ("(u)",
                    arg_service_client_type),
+    G_DBUS_CALL_FLAGS_NONE,
+    -1,
+    fd_list,
+    out_fd_list,
+    cancellable,
+    error);
+  if (_ret == NULL)
+    goto _out;
+  g_variant_get (_ret,
+                 "(@h)",
+                 out_fd);
+  g_variant_unref (_ret);
+_out:
+  return _ret != NULL;
+}
+
+/**
+ * meta_dbus_service_channel_call_open_wayland_connection:
+ * @proxy: A #MetaDBusServiceChannelProxy.
+ * @arg_options: Argument to pass with the method invocation.
+ * @fd_list: (nullable): A #GUnixFDList or %NULL.
+ * @cancellable: (nullable): A #GCancellable or %NULL.
+ * @callback: A #GAsyncReadyCallback to call when the request is satisfied or %NULL.
+ * @user_data: User data to pass to @callback.
+ *
+ * Asynchronously invokes the <link linkend="gdbus-method-org-gnome-Mutter-ServiceChannel.OpenWaylandConnection">OpenWaylandConnection()</link> D-Bus method on @proxy.
+ * When the operation is finished, @callback will be invoked in the thread-default main loop of the thread you are calling this method from (see g_main_context_push_thread_default()).
+ * You can then call meta_dbus_service_channel_call_open_wayland_connection_finish() to get the result of the operation.
+ *
+ * See meta_dbus_service_channel_call_open_wayland_connection_sync() for the synchronous, blocking version of this method.
+ */
+void
+meta_dbus_service_channel_call_open_wayland_connection (
+    MetaDBusServiceChannel *proxy,
+    GVariant *arg_options,
+    GUnixFDList *fd_list,
+    GCancellable *cancellable,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
+{
+  g_dbus_proxy_call_with_unix_fd_list (G_DBUS_PROXY (proxy),
+    "OpenWaylandConnection",
+    g_variant_new ("(@a{sv})",
+                   arg_options),
+    G_DBUS_CALL_FLAGS_NONE,
+    -1,
+    fd_list,
+    cancellable,
+    callback,
+    user_data);
+}
+
+/**
+ * meta_dbus_service_channel_call_open_wayland_connection_finish:
+ * @proxy: A #MetaDBusServiceChannelProxy.
+ * @out_fd: (out) (optional): Return location for return parameter or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
+ * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to meta_dbus_service_channel_call_open_wayland_connection().
+ * @error: Return location for error or %NULL.
+ *
+ * Finishes an operation started with meta_dbus_service_channel_call_open_wayland_connection().
+ *
+ * Returns: (skip): %TRUE if the call succeeded, %FALSE if @error is set.
+ */
+gboolean
+meta_dbus_service_channel_call_open_wayland_connection_finish (
+    MetaDBusServiceChannel *proxy,
+    GVariant ** out_fd,
+    GUnixFDList **out_fd_list,
+    GAsyncResult *res,
+    GError **error)
+{
+  GVariant *_ret;
+  _ret = g_dbus_proxy_call_with_unix_fd_list_finish (G_DBUS_PROXY (proxy), out_fd_list, res, error);
+  if (_ret == NULL)
+    goto _out;
+  g_variant_get (_ret,
+                 "(@h)",
+                 out_fd);
+  g_variant_unref (_ret);
+_out:
+  return _ret != NULL;
+}
+
+/**
+ * meta_dbus_service_channel_call_open_wayland_connection_sync:
+ * @proxy: A #MetaDBusServiceChannelProxy.
+ * @arg_options: Argument to pass with the method invocation.
+ * @fd_list: (nullable): A #GUnixFDList or %NULL.
+ * @out_fd: (out) (optional): Return location for return parameter or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
+ * @cancellable: (nullable): A #GCancellable or %NULL.
+ * @error: Return location for error or %NULL.
+ *
+ * Synchronously invokes the <link linkend="gdbus-method-org-gnome-Mutter-ServiceChannel.OpenWaylandConnection">OpenWaylandConnection()</link> D-Bus method on @proxy. The calling thread is blocked until a reply is received.
+ *
+ * See meta_dbus_service_channel_call_open_wayland_connection() for the asynchronous version of this method.
+ *
+ * Returns: (skip): %TRUE if the call succeeded, %FALSE if @error is set.
+ */
+gboolean
+meta_dbus_service_channel_call_open_wayland_connection_sync (
+    MetaDBusServiceChannel *proxy,
+    GVariant *arg_options,
+    GUnixFDList  *fd_list,
+    GVariant ** out_fd,
+    GUnixFDList **out_fd_list,
+    GCancellable *cancellable,
+    GError **error)
+{
+  GVariant *_ret;
+  _ret = g_dbus_proxy_call_with_unix_fd_list_sync (G_DBUS_PROXY (proxy),
+    "OpenWaylandConnection",
+    g_variant_new ("(@a{sv})",
+                   arg_options),
     G_DBUS_CALL_FLAGS_NONE,
     -1,
     fd_list,
@@ -545,6 +793,30 @@ _out:
  */
 void
 meta_dbus_service_channel_complete_open_wayland_service_connection (
+    MetaDBusServiceChannel *object G_GNUC_UNUSED,
+    GDBusMethodInvocation *invocation,
+    GUnixFDList *fd_list,
+    GVariant *fd)
+{
+  g_dbus_method_invocation_return_value_with_unix_fd_list (invocation,
+    g_variant_new ("(@h)",
+                   fd),
+    fd_list);
+}
+
+/**
+ * meta_dbus_service_channel_complete_open_wayland_connection:
+ * @object: A #MetaDBusServiceChannel.
+ * @invocation: (transfer full): A #GDBusMethodInvocation.
+ * @fd_list: (nullable): A #GUnixFDList or %NULL.
+ * @fd: Parameter to return.
+ *
+ * Helper function used in service implementations to finish handling invocations of the <link linkend="gdbus-method-org-gnome-Mutter-ServiceChannel.OpenWaylandConnection">OpenWaylandConnection()</link> D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
+ *
+ * This method will free @invocation, you cannot use it afterwards.
+ */
+void
+meta_dbus_service_channel_complete_open_wayland_connection (
     MetaDBusServiceChannel *object G_GNUC_UNUSED,
     GDBusMethodInvocation *invocation,
     GUnixFDList *fd_list,
@@ -1131,8 +1403,14 @@ meta_dbus_service_channel_skeleton_finalize (GObject *object)
 {
   MetaDBusServiceChannelSkeleton *skeleton = META_DBUS_SERVICE_CHANNEL_SKELETON (object);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_service_channel_skeleton_parent_class)->finalize (object);

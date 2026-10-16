@@ -38,7 +38,7 @@ struct _MetaDBusSettingsDaemonPowerScreenIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusSettingsDaemonPowerScreen, g_object_unref)
 #endif
 
-GType meta_dbus_settings_daemon_power_screen_get_type (void) G_GNUC_CONST;
+GType meta_dbus_settings_daemon_power_screen_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_settings_daemon_power_screen_interface_info (void);
 guint meta_dbus_settings_daemon_power_screen_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -74,7 +74,7 @@ struct _MetaDBusSettingsDaemonPowerScreenProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_settings_daemon_power_screen_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_settings_daemon_power_screen_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusSettingsDaemonPowerScreenProxy, g_object_unref)
@@ -144,7 +144,7 @@ struct _MetaDBusSettingsDaemonPowerScreenSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_settings_daemon_power_screen_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_settings_daemon_power_screen_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusSettingsDaemonPowerScreenSkeleton, g_object_unref)

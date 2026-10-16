@@ -42,7 +42,7 @@ struct _MetaDBusSettingsDaemonColorIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusSettingsDaemonColor, g_object_unref)
 #endif
 
-GType meta_dbus_settings_daemon_color_get_type (void) G_GNUC_CONST;
+GType meta_dbus_settings_daemon_color_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_settings_daemon_color_interface_info (void);
 guint meta_dbus_settings_daemon_color_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -84,7 +84,7 @@ struct _MetaDBusSettingsDaemonColorProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_settings_daemon_color_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_settings_daemon_color_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusSettingsDaemonColorProxy, g_object_unref)
@@ -154,7 +154,7 @@ struct _MetaDBusSettingsDaemonColorSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_settings_daemon_color_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_settings_daemon_color_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusSettingsDaemonColorSkeleton, g_object_unref)

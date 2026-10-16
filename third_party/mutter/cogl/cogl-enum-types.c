@@ -156,6 +156,7 @@ cogl_pixel_format_get_type (void)
         { COGL_PIXEL_FORMAT_RGBA_FP_32323232_PRE, "COGL_PIXEL_FORMAT_RGBA_FP_32323232_PRE", "rgba-fp-32323232-pre" },
         { COGL_PIXEL_FORMAT_R_16, "COGL_PIXEL_FORMAT_R_16", "r-16" },
         { COGL_PIXEL_FORMAT_RG_1616, "COGL_PIXEL_FORMAT_RG_1616", "rg-1616" },
+        { COGL_PIXEL_FORMAT_RGBX_16161616, "COGL_PIXEL_FORMAT_RGBX_16161616", "rgbx-16161616" },
         { COGL_PIXEL_FORMAT_RGBA_16161616, "COGL_PIXEL_FORMAT_RGBA_16161616", "rgba-16161616" },
         { COGL_PIXEL_FORMAT_RGBA_16161616_PRE, "COGL_PIXEL_FORMAT_RGBA_16161616_PRE", "rgba-16161616-pre" },
         { COGL_PIXEL_FORMAT_DEPTH_16, "COGL_PIXEL_FORMAT_DEPTH_16", "depth-16" },
@@ -316,27 +317,6 @@ cogl_renderer_error_get_type (void)
   return g_enum_type_id;
 }
 GType
-cogl_filter_return_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { COGL_FILTER_CONTINUE, "COGL_FILTER_CONTINUE", "continue" },
-        { COGL_FILTER_REMOVE, "COGL_FILTER_REMOVE", "remove" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("CoglFilterReturn"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
 cogl_winsys_feature_get_type (void)
 {
   static size_t g_enum_type_id = 0;
@@ -344,15 +324,9 @@ cogl_winsys_feature_get_type (void)
   if (g_once_init_enter (&g_enum_type_id))
     {
       static const GEnumValue values[] = {
-        { COGL_WINSYS_FEATURE_VBLANK_COUNTER, "COGL_WINSYS_FEATURE_VBLANK_COUNTER", "vblank-counter" },
-        { COGL_WINSYS_FEATURE_VBLANK_WAIT, "COGL_WINSYS_FEATURE_VBLANK_WAIT", "vblank-wait" },
-        { COGL_WINSYS_FEATURE_TEXTURE_FROM_PIXMAP, "COGL_WINSYS_FEATURE_TEXTURE_FROM_PIXMAP", "texture-from-pixmap" },
-        { COGL_WINSYS_FEATURE_SWAP_BUFFERS_EVENT, "COGL_WINSYS_FEATURE_SWAP_BUFFERS_EVENT", "swap-buffers-event" },
         { COGL_WINSYS_FEATURE_SWAP_REGION, "COGL_WINSYS_FEATURE_SWAP_REGION", "swap-region" },
-        { COGL_WINSYS_FEATURE_SWAP_REGION_THROTTLE, "COGL_WINSYS_FEATURE_SWAP_REGION_THROTTLE", "swap-region-throttle" },
-        { COGL_WINSYS_FEATURE_SWAP_REGION_SYNCHRONIZED, "COGL_WINSYS_FEATURE_SWAP_REGION_SYNCHRONIZED", "swap-region-synchronized" },
         { COGL_WINSYS_FEATURE_BUFFER_AGE, "COGL_WINSYS_FEATURE_BUFFER_AGE", "buffer-age" },
-        { COGL_WINSYS_FEATURE_SYNC_AND_COMPLETE_EVENT, "COGL_WINSYS_FEATURE_SYNC_AND_COMPLETE_EVENT", "sync-and-complete-event" },
+        { COGL_WINSYS_FEATURE_SYNC_FD, "COGL_WINSYS_FEATURE_SYNC_FD", "sync-fd" },
         { COGL_WINSYS_FEATURE_N_FEATURES, "COGL_WINSYS_FEATURE_N_FEATURES", "n-features" },
         { 0, NULL, NULL }
       };
@@ -422,27 +396,6 @@ cogl_read_pixels_flags_get_type (void)
       GType id;
 
       id = g_flags_register_static (g_intern_static_string ("CoglReadPixelsFlags"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
-cogl_shader_type_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { COGL_SHADER_TYPE_VERTEX, "COGL_SHADER_TYPE_VERTEX", "vertex" },
-        { COGL_SHADER_TYPE_FRAGMENT, "COGL_SHADER_TYPE_FRAGMENT", "fragment" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("CoglShaderType"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }

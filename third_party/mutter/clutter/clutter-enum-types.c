@@ -4,8 +4,60 @@
 #include "config.h"
 #include "clutter/clutter-enum-types.h"
 
-/* enumerations from "clutter/clutter-color-state-params.h" */
-#include "clutter/clutter-color-state-params.h"
+/* enumerations from "clutter/clutter-color-op.h" */
+#include "clutter/clutter-color-op.h"
+GType
+clutter_ycbcr_coefficients_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_YCBCR_COEFFICIENTS_IDENTITY_LIMITED, "CLUTTER_YCBCR_COEFFICIENTS_IDENTITY_LIMITED", "identity-limited" },
+        { CLUTTER_YCBCR_COEFFICIENTS_BT601_FULL, "CLUTTER_YCBCR_COEFFICIENTS_BT601_FULL", "bt601-full" },
+        { CLUTTER_YCBCR_COEFFICIENTS_BT601_LIMITED, "CLUTTER_YCBCR_COEFFICIENTS_BT601_LIMITED", "bt601-limited" },
+        { CLUTTER_YCBCR_COEFFICIENTS_BT709_FULL, "CLUTTER_YCBCR_COEFFICIENTS_BT709_FULL", "bt709-full" },
+        { CLUTTER_YCBCR_COEFFICIENTS_BT709_LIMITED, "CLUTTER_YCBCR_COEFFICIENTS_BT709_LIMITED", "bt709-limited" },
+        { CLUTTER_YCBCR_COEFFICIENTS_BT2020_FULL, "CLUTTER_YCBCR_COEFFICIENTS_BT2020_FULL", "bt2020-full" },
+        { CLUTTER_YCBCR_COEFFICIENTS_BT2020_LIMITED, "CLUTTER_YCBCR_COEFFICIENTS_BT2020_LIMITED", "bt2020-limited" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterYcbcrCoefficients"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+
+/* enumerations from "clutter/clutter-color-state.h" */
+#include "clutter/clutter-color-state.h"
+GType
+clutter_color_state_transform_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { CLUTTER_COLOR_STATE_TRANSFORM_OPAQUE, "CLUTTER_COLOR_STATE_TRANSFORM_OPAQUE", "opaque" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("ClutterColorStateTransformFlags"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+
+/* enumerations from "clutter/clutter-color-utils.h" */
+#include "clutter/clutter-color-utils.h"
 GType
 clutter_colorspace_get_type (void)
 {
@@ -17,6 +69,8 @@ clutter_colorspace_get_type (void)
         { CLUTTER_COLORSPACE_SRGB, "CLUTTER_COLORSPACE_SRGB", "srgb" },
         { CLUTTER_COLORSPACE_BT2020, "CLUTTER_COLORSPACE_BT2020", "bt2020" },
         { CLUTTER_COLORSPACE_NTSC, "CLUTTER_COLORSPACE_NTSC", "ntsc" },
+        { CLUTTER_COLORSPACE_PAL, "CLUTTER_COLORSPACE_PAL", "pal" },
+        { CLUTTER_COLORSPACE_P3, "CLUTTER_COLORSPACE_P3", "p3" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -36,9 +90,10 @@ clutter_transfer_function_get_type (void)
   if (g_once_init_enter (&g_enum_type_id))
     {
       static const GEnumValue values[] = {
-        { CLUTTER_TRANSFER_FUNCTION_SRGB, "CLUTTER_TRANSFER_FUNCTION_SRGB", "srgb" },
+        { CLUTTER_TRANSFER_FUNCTION_SRGB_PIECEWISE, "CLUTTER_TRANSFER_FUNCTION_SRGB_PIECEWISE", "srgb-piecewise" },
+        { CLUTTER_TRANSFER_FUNCTION_GAMMA22, "CLUTTER_TRANSFER_FUNCTION_GAMMA22", "gamma22" },
         { CLUTTER_TRANSFER_FUNCTION_PQ, "CLUTTER_TRANSFER_FUNCTION_PQ", "pq" },
-        { CLUTTER_TRANSFER_FUNCTION_BT709, "CLUTTER_TRANSFER_FUNCTION_BT709", "bt709" },
+        { CLUTTER_TRANSFER_FUNCTION_BT1886, "CLUTTER_TRANSFER_FUNCTION_BT1886", "bt1886" },
         { CLUTTER_TRANSFER_FUNCTION_LINEAR, "CLUTTER_TRANSFER_FUNCTION_LINEAR", "linear" },
         { 0, NULL, NULL }
       };
@@ -108,6 +163,60 @@ clutter_luminance_type_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("ClutterLuminanceType"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_cicp_primaries_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_CICP_PRIMARIES_SRGB, "CLUTTER_CICP_PRIMARIES_SRGB", "srgb" },
+        { CLUTTER_CICP_PRIMARIES_PAL, "CLUTTER_CICP_PRIMARIES_PAL", "pal" },
+        { CLUTTER_CICP_PRIMARIES_NTSC, "CLUTTER_CICP_PRIMARIES_NTSC", "ntsc" },
+        { CLUTTER_CICP_PRIMARIES_NTSC_2, "CLUTTER_CICP_PRIMARIES_NTSC_2", "ntsc-2" },
+        { CLUTTER_CICP_PRIMARIES_BT2020, "CLUTTER_CICP_PRIMARIES_BT2020", "bt2020" },
+        { CLUTTER_CICP_PRIMARIES_P3, "CLUTTER_CICP_PRIMARIES_P3", "p3" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterCicpPrimaries"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_cicp_transfer_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_CICP_TRANSFER_BT709, "CLUTTER_CICP_TRANSFER_BT709", "bt709" },
+        { CLUTTER_CICP_TRANSFER_GAMMA22, "CLUTTER_CICP_TRANSFER_GAMMA22", "gamma22" },
+        { CLUTTER_CICP_TRANSFER_GAMMA28, "CLUTTER_CICP_TRANSFER_GAMMA28", "gamma28" },
+        { CLUTTER_CICP_TRANSFER_BT601, "CLUTTER_CICP_TRANSFER_BT601", "bt601" },
+        { CLUTTER_CICP_TRANSFER_LINEAR, "CLUTTER_CICP_TRANSFER_LINEAR", "linear" },
+        { CLUTTER_CICP_TRANSFER_SRGB, "CLUTTER_CICP_TRANSFER_SRGB", "srgb" },
+        { CLUTTER_CICP_TRANSFER_BT2020, "CLUTTER_CICP_TRANSFER_BT2020", "bt2020" },
+        { CLUTTER_CICP_TRANSFER_BT2020_2, "CLUTTER_CICP_TRANSFER_BT2020_2", "bt2020-2" },
+        { CLUTTER_CICP_TRANSFER_PQ, "CLUTTER_CICP_TRANSFER_PQ", "pq" },
+        { CLUTTER_CICP_TRANSFER_HLG, "CLUTTER_CICP_TRANSFER_HLG", "hlg" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterCicpTransfer"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -499,28 +608,6 @@ clutter_effect_paint_flags_get_type (void)
   return g_enum_type_id;
 }
 GType
-clutter_long_press_state_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { CLUTTER_LONG_PRESS_QUERY, "CLUTTER_LONG_PRESS_QUERY", "query" },
-        { CLUTTER_LONG_PRESS_ACTIVATE, "CLUTTER_LONG_PRESS_ACTIVATE", "activate" },
-        { CLUTTER_LONG_PRESS_CANCEL, "CLUTTER_LONG_PRESS_CANCEL", "cancel" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("ClutterLongPressState"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
 clutter_event_flags_get_type (void)
 {
   static size_t g_enum_type_id = 0;
@@ -577,11 +664,13 @@ clutter_event_type_get_type (void)
         { CLUTTER_PAD_BUTTON_RELEASE, "CLUTTER_PAD_BUTTON_RELEASE", "pad-button-release" },
         { CLUTTER_PAD_STRIP, "CLUTTER_PAD_STRIP", "pad-strip" },
         { CLUTTER_PAD_RING, "CLUTTER_PAD_RING", "pad-ring" },
+        { CLUTTER_PAD_DIAL, "CLUTTER_PAD_DIAL", "pad-dial" },
         { CLUTTER_DEVICE_ADDED, "CLUTTER_DEVICE_ADDED", "device-added" },
         { CLUTTER_DEVICE_REMOVED, "CLUTTER_DEVICE_REMOVED", "device-removed" },
         { CLUTTER_IM_COMMIT, "CLUTTER_IM_COMMIT", "im-commit" },
         { CLUTTER_IM_DELETE, "CLUTTER_IM_DELETE", "im-delete" },
         { CLUTTER_IM_PREEDIT, "CLUTTER_IM_PREEDIT", "im-preedit" },
+        { CLUTTER_KEY_STATE, "CLUTTER_KEY_STATE", "key-state" },
         { CLUTTER_EVENT_LAST, "CLUTTER_EVENT_LAST", "event-last" },
         { 0, NULL, NULL }
       };
@@ -671,28 +760,6 @@ clutter_input_device_type_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("ClutterInputDeviceType"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
-clutter_input_mode_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { CLUTTER_INPUT_MODE_LOGICAL, "CLUTTER_INPUT_MODE_LOGICAL", "logical" },
-        { CLUTTER_INPUT_MODE_PHYSICAL, "CLUTTER_INPUT_MODE_PHYSICAL", "physical" },
-        { CLUTTER_INPUT_MODE_FLOATING, "CLUTTER_INPUT_MODE_FLOATING", "floating" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("ClutterInputMode"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -804,29 +871,6 @@ clutter_pick_mode_get_type (void)
   return g_enum_type_id;
 }
 GType
-clutter_swipe_direction_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GFlagsValue values[] = {
-        { CLUTTER_SWIPE_DIRECTION_UP, "CLUTTER_SWIPE_DIRECTION_UP", "up" },
-        { CLUTTER_SWIPE_DIRECTION_DOWN, "CLUTTER_SWIPE_DIRECTION_DOWN", "down" },
-        { CLUTTER_SWIPE_DIRECTION_LEFT, "CLUTTER_SWIPE_DIRECTION_LEFT", "left" },
-        { CLUTTER_SWIPE_DIRECTION_RIGHT, "CLUTTER_SWIPE_DIRECTION_RIGHT", "right" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_flags_register_static (g_intern_static_string ("ClutterSwipeDirection"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
 clutter_pan_axis_get_type (void)
 {
   static size_t g_enum_type_id = 0;
@@ -834,10 +878,9 @@ clutter_pan_axis_get_type (void)
   if (g_once_init_enter (&g_enum_type_id))
     {
       static const GEnumValue values[] = {
-        { CLUTTER_PAN_AXIS_NONE, "CLUTTER_PAN_AXIS_NONE", "axis-none" },
-        { CLUTTER_PAN_X_AXIS, "CLUTTER_PAN_X_AXIS", "x-axis" },
-        { CLUTTER_PAN_Y_AXIS, "CLUTTER_PAN_Y_AXIS", "y-axis" },
-        { CLUTTER_PAN_AXIS_AUTO, "CLUTTER_PAN_AXIS_AUTO", "axis-auto" },
+        { CLUTTER_PAN_AXIS_BOTH, "CLUTTER_PAN_AXIS_BOTH", "both" },
+        { CLUTTER_PAN_AXIS_X, "CLUTTER_PAN_AXIS_X", "x" },
+        { CLUTTER_PAN_AXIS_Y, "CLUTTER_PAN_AXIS_Y", "y" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -1077,28 +1120,6 @@ clutter_step_mode_get_type (void)
   return g_enum_type_id;
 }
 GType
-clutter_gesture_trigger_edge_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { CLUTTER_GESTURE_TRIGGER_EDGE_NONE, "CLUTTER_GESTURE_TRIGGER_EDGE_NONE", "none" },
-        { CLUTTER_GESTURE_TRIGGER_EDGE_AFTER, "CLUTTER_GESTURE_TRIGGER_EDGE_AFTER", "after" },
-        { CLUTTER_GESTURE_TRIGGER_EDGE_BEFORE, "CLUTTER_GESTURE_TRIGGER_EDGE_BEFORE", "before" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("ClutterGestureTriggerEdge"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
 clutter_touchpad_gesture_phase_get_type (void)
 {
   static size_t g_enum_type_id = 0;
@@ -1138,6 +1159,27 @@ clutter_scroll_source_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("ClutterScrollSource"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_scroll_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { CLUTTER_SCROLL_NONE, "CLUTTER_SCROLL_NONE", "none" },
+        { CLUTTER_SCROLL_INVERTED, "CLUTTER_SCROLL_INVERTED", "inverted" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("ClutterScrollFlags"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -1225,6 +1267,7 @@ clutter_input_device_pad_feature_get_type (void)
         { CLUTTER_PAD_FEATURE_BUTTON, "CLUTTER_PAD_FEATURE_BUTTON", "button" },
         { CLUTTER_PAD_FEATURE_RING, "CLUTTER_PAD_FEATURE_RING", "ring" },
         { CLUTTER_PAD_FEATURE_STRIP, "CLUTTER_PAD_FEATURE_STRIP", "strip" },
+        { CLUTTER_PAD_FEATURE_DIAL, "CLUTTER_PAD_FEATURE_DIAL", "dial" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -1254,6 +1297,8 @@ clutter_input_content_hint_flags_get_type (void)
         { CLUTTER_INPUT_CONTENT_HINT_SENSITIVE_DATA, "CLUTTER_INPUT_CONTENT_HINT_SENSITIVE_DATA", "sensitive-data" },
         { CLUTTER_INPUT_CONTENT_HINT_LATIN, "CLUTTER_INPUT_CONTENT_HINT_LATIN", "latin" },
         { CLUTTER_INPUT_CONTENT_HINT_MULTILINE, "CLUTTER_INPUT_CONTENT_HINT_MULTILINE", "multiline" },
+        { CLUTTER_INPUT_CONTENT_HINT_INHIBIT_OSK, "CLUTTER_INPUT_CONTENT_HINT_INHIBIT_OSK", "inhibit-osk" },
+        { CLUTTER_INPUT_CONTENT_HINT_NO_EMOJI, "CLUTTER_INPUT_CONTENT_HINT_NO_EMOJI", "no-emoji" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -1291,6 +1336,49 @@ clutter_input_content_purpose_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("ClutterInputContentPurpose"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_input_action_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_INPUT_ACTION_SUBMIT, "CLUTTER_INPUT_ACTION_SUBMIT", "submit" },
+        { CLUTTER_INPUT_ACTION_LAST, "CLUTTER_INPUT_ACTION_LAST", "last" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterInputAction"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_input_action_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { CLUTTER_INPUT_ACTION_FLAG_NONE, "CLUTTER_INPUT_ACTION_FLAG_NONE", "none" },
+        { CLUTTER_INPUT_ACTION_FLAG_SUBMIT, "CLUTTER_INPUT_ACTION_FLAG_SUBMIT", "submit" },
+        { CLUTTER_INPUT_ACTION_FLAG_ALL, "CLUTTER_INPUT_ACTION_FLAG_ALL", "all" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("ClutterInputActionFlags"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -1341,6 +1429,33 @@ clutter_preedit_reset_mode_get_type (void)
   return g_enum_type_id;
 }
 GType
+clutter_preedit_style_hint_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_PREEDIT_STYLE_NONE, "CLUTTER_PREEDIT_STYLE_NONE", "none" },
+        { CLUTTER_PREEDIT_STYLE_WHOLE, "CLUTTER_PREEDIT_STYLE_WHOLE", "whole" },
+        { CLUTTER_PREEDIT_STYLE_SELECTION, "CLUTTER_PREEDIT_STYLE_SELECTION", "selection" },
+        { CLUTTER_PREEDIT_STYLE_PREDICTION, "CLUTTER_PREEDIT_STYLE_PREDICTION", "prediction" },
+        { CLUTTER_PREEDIT_STYLE_PREFIX, "CLUTTER_PREEDIT_STYLE_PREFIX", "prefix" },
+        { CLUTTER_PREEDIT_STYLE_SUFFIX, "CLUTTER_PREEDIT_STYLE_SUFFIX", "suffix" },
+        { CLUTTER_PREEDIT_STYLE_SPELLING_ERROR, "CLUTTER_PREEDIT_STYLE_SPELLING_ERROR", "spelling-error" },
+        { CLUTTER_PREEDIT_STYLE_COMPOSE_ERROR, "CLUTTER_PREEDIT_STYLE_COMPOSE_ERROR", "compose-error" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterPreeditStyleHint"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
 clutter_event_phase_get_type (void)
 {
   static size_t g_enum_type_id = 0;
@@ -1349,35 +1464,13 @@ clutter_event_phase_get_type (void)
     {
       static const GEnumValue values[] = {
         { CLUTTER_PHASE_CAPTURE, "CLUTTER_PHASE_CAPTURE", "capture" },
+        { CLUTTER_PHASE_TARGET, "CLUTTER_PHASE_TARGET", "target" },
         { CLUTTER_PHASE_BUBBLE, "CLUTTER_PHASE_BUBBLE", "bubble" },
         { 0, NULL, NULL }
       };
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("ClutterEventPhase"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
-clutter_grab_state_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GFlagsValue values[] = {
-        { CLUTTER_GRAB_STATE_NONE, "CLUTTER_GRAB_STATE_NONE", "none" },
-        { CLUTTER_GRAB_STATE_POINTER, "CLUTTER_GRAB_STATE_POINTER", "pointer" },
-        { CLUTTER_GRAB_STATE_KEYBOARD, "CLUTTER_GRAB_STATE_KEYBOARD", "keyboard" },
-        { CLUTTER_GRAB_STATE_ALL, "CLUTTER_GRAB_STATE_ALL", "all" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_flags_register_static (g_intern_static_string ("ClutterGrabState"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -1409,6 +1502,109 @@ clutter_gesture_state_get_type (void)
 
   return g_enum_type_id;
 }
+GType
+clutter_sprite_role_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_SPRITE_ROLE_POINTER, "CLUTTER_SPRITE_ROLE_POINTER", "pointer" },
+        { CLUTTER_SPRITE_ROLE_TABLET, "CLUTTER_SPRITE_ROLE_TABLET", "tablet" },
+        { CLUTTER_SPRITE_ROLE_TOUCHPOINT, "CLUTTER_SPRITE_ROLE_TOUCHPOINT", "touchpoint" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterSpriteRole"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_cursor_type_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_CURSOR_INHERIT, "CLUTTER_CURSOR_INHERIT", "inherit" },
+        { CLUTTER_CURSOR_NONE, "CLUTTER_CURSOR_NONE", "none" },
+        { CLUTTER_CURSOR_DEFAULT, "CLUTTER_CURSOR_DEFAULT", "default" },
+        { CLUTTER_CURSOR_CONTEXT_MENU, "CLUTTER_CURSOR_CONTEXT_MENU", "context-menu" },
+        { CLUTTER_CURSOR_HELP, "CLUTTER_CURSOR_HELP", "help" },
+        { CLUTTER_CURSOR_POINTER, "CLUTTER_CURSOR_POINTER", "pointer" },
+        { CLUTTER_CURSOR_PROGRESS, "CLUTTER_CURSOR_PROGRESS", "progress" },
+        { CLUTTER_CURSOR_WAIT, "CLUTTER_CURSOR_WAIT", "wait" },
+        { CLUTTER_CURSOR_CELL, "CLUTTER_CURSOR_CELL", "cell" },
+        { CLUTTER_CURSOR_CROSSHAIR, "CLUTTER_CURSOR_CROSSHAIR", "crosshair" },
+        { CLUTTER_CURSOR_TEXT, "CLUTTER_CURSOR_TEXT", "text" },
+        { CLUTTER_CURSOR_VERTICAL_TEXT, "CLUTTER_CURSOR_VERTICAL_TEXT", "vertical-text" },
+        { CLUTTER_CURSOR_ALIAS, "CLUTTER_CURSOR_ALIAS", "alias" },
+        { CLUTTER_CURSOR_COPY, "CLUTTER_CURSOR_COPY", "copy" },
+        { CLUTTER_CURSOR_MOVE, "CLUTTER_CURSOR_MOVE", "move" },
+        { CLUTTER_CURSOR_NO_DROP, "CLUTTER_CURSOR_NO_DROP", "no-drop" },
+        { CLUTTER_CURSOR_NOT_ALLOWED, "CLUTTER_CURSOR_NOT_ALLOWED", "not-allowed" },
+        { CLUTTER_CURSOR_GRAB, "CLUTTER_CURSOR_GRAB", "grab" },
+        { CLUTTER_CURSOR_GRABBING, "CLUTTER_CURSOR_GRABBING", "grabbing" },
+        { CLUTTER_CURSOR_E_RESIZE, "CLUTTER_CURSOR_E_RESIZE", "e-resize" },
+        { CLUTTER_CURSOR_N_RESIZE, "CLUTTER_CURSOR_N_RESIZE", "n-resize" },
+        { CLUTTER_CURSOR_NE_RESIZE, "CLUTTER_CURSOR_NE_RESIZE", "ne-resize" },
+        { CLUTTER_CURSOR_NW_RESIZE, "CLUTTER_CURSOR_NW_RESIZE", "nw-resize" },
+        { CLUTTER_CURSOR_S_RESIZE, "CLUTTER_CURSOR_S_RESIZE", "s-resize" },
+        { CLUTTER_CURSOR_SE_RESIZE, "CLUTTER_CURSOR_SE_RESIZE", "se-resize" },
+        { CLUTTER_CURSOR_SW_RESIZE, "CLUTTER_CURSOR_SW_RESIZE", "sw-resize" },
+        { CLUTTER_CURSOR_W_RESIZE, "CLUTTER_CURSOR_W_RESIZE", "w-resize" },
+        { CLUTTER_CURSOR_EW_RESIZE, "CLUTTER_CURSOR_EW_RESIZE", "ew-resize" },
+        { CLUTTER_CURSOR_NS_RESIZE, "CLUTTER_CURSOR_NS_RESIZE", "ns-resize" },
+        { CLUTTER_CURSOR_NESW_RESIZE, "CLUTTER_CURSOR_NESW_RESIZE", "nesw-resize" },
+        { CLUTTER_CURSOR_NWSE_RESIZE, "CLUTTER_CURSOR_NWSE_RESIZE", "nwse-resize" },
+        { CLUTTER_CURSOR_COL_RESIZE, "CLUTTER_CURSOR_COL_RESIZE", "col-resize" },
+        { CLUTTER_CURSOR_ROW_RESIZE, "CLUTTER_CURSOR_ROW_RESIZE", "row-resize" },
+        { CLUTTER_CURSOR_ALL_SCROLL, "CLUTTER_CURSOR_ALL_SCROLL", "all-scroll" },
+        { CLUTTER_CURSOR_ZOOM_IN, "CLUTTER_CURSOR_ZOOM_IN", "zoom-in" },
+        { CLUTTER_CURSOR_ZOOM_OUT, "CLUTTER_CURSOR_ZOOM_OUT", "zoom-out" },
+        { CLUTTER_CURSOR_DND_ASK, "CLUTTER_CURSOR_DND_ASK", "dnd-ask" },
+        { CLUTTER_CURSOR_ALL_RESIZE, "CLUTTER_CURSOR_ALL_RESIZE", "all-resize" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterCursorType"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_scroll_controller_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { CLUTTER_SCROLL_CONTROLLER_FLAG_NONE, "CLUTTER_SCROLL_CONTROLLER_FLAG_NONE", "none" },
+        { CLUTTER_SCROLL_CONTROLLER_FLAG_SCROLL_VERTICAL, "CLUTTER_SCROLL_CONTROLLER_FLAG_SCROLL_VERTICAL", "scroll-vertical" },
+        { CLUTTER_SCROLL_CONTROLLER_FLAG_SCROLL_HORIZONTAL, "CLUTTER_SCROLL_CONTROLLER_FLAG_SCROLL_HORIZONTAL", "scroll-horizontal" },
+        { CLUTTER_SCROLL_CONTROLLER_FLAG_DISCRETE, "CLUTTER_SCROLL_CONTROLLER_FLAG_DISCRETE", "discrete" },
+        { CLUTTER_SCROLL_CONTROLLER_FLAG_PHYSICAL_DIRECTION, "CLUTTER_SCROLL_CONTROLLER_FLAG_PHYSICAL_DIRECTION", "physical-direction" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("ClutterScrollControllerFlags"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
 
 /* enumerations from "clutter/clutter-frame-clock.h" */
 #include "clutter/clutter-frame-clock.h"
@@ -1422,6 +1618,7 @@ clutter_frame_result_get_type (void)
       static const GEnumValue values[] = {
         { CLUTTER_FRAME_RESULT_PENDING_PRESENTED, "CLUTTER_FRAME_RESULT_PENDING_PRESENTED", "pending-presented" },
         { CLUTTER_FRAME_RESULT_IDLE, "CLUTTER_FRAME_RESULT_IDLE", "idle" },
+        { CLUTTER_FRAME_RESULT_IGNORED, "CLUTTER_FRAME_RESULT_IGNORED", "ignored" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -1443,11 +1640,33 @@ clutter_frame_clock_mode_get_type (void)
       static const GEnumValue values[] = {
         { CLUTTER_FRAME_CLOCK_MODE_FIXED, "CLUTTER_FRAME_CLOCK_MODE_FIXED", "fixed" },
         { CLUTTER_FRAME_CLOCK_MODE_VARIABLE, "CLUTTER_FRAME_CLOCK_MODE_VARIABLE", "variable" },
+        { CLUTTER_FRAME_CLOCK_MODE_PASSIVE, "CLUTTER_FRAME_CLOCK_MODE_PASSIVE", "passive" },
         { 0, NULL, NULL }
       };
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("ClutterFrameClockMode"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+clutter_frame_clock_power_state_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { CLUTTER_FRAME_CLOCK_POWER_STATE_OFF, "CLUTTER_FRAME_CLOCK_POWER_STATE_OFF", "off" },
+        { CLUTTER_FRAME_CLOCK_POWER_STATE_ON, "CLUTTER_FRAME_CLOCK_POWER_STATE_ON", "on" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("ClutterFrameClockPowerState"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -1557,7 +1776,8 @@ clutter_pipeline_capability_get_type (void)
   if (g_once_init_enter (&g_enum_type_id))
     {
       static const GEnumValue values[] = {
-        { CLUTTER_PIPELINE_CAPABILITY_COLOR_STATE, "CLUTTER_PIPELINE_CAPABILITY_COLOR_STATE", "state" },
+        { CLUTTER_PIPELINE_CAPABILITY_COLOR_STATE, "CLUTTER_PIPELINE_CAPABILITY_COLOR_STATE", "color-state" },
+        { CLUTTER_PIPELINE_CAPABILITY_SHADER_EFFECT, "CLUTTER_PIPELINE_CAPABILITY_SHADER_EFFECT", "shader-effect" },
         { 0, NULL, NULL }
       };
       GType id;

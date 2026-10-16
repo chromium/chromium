@@ -44,7 +44,7 @@ struct _MetaDBusInputCaptureIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputCapture, g_object_unref)
 #endif
 
-GType meta_dbus_input_capture_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_capture_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_input_capture_interface_info (void);
 guint meta_dbus_input_capture_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -68,14 +68,14 @@ void meta_dbus_input_capture_call_create_session (
 
 gboolean meta_dbus_input_capture_call_create_session_finish (
     MetaDBusInputCapture *proxy,
-    gchar **out_session_path,
+    gchar ** out_session_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_input_capture_call_create_session_sync (
     MetaDBusInputCapture *proxy,
     guint arg_capabilities,
-    gchar **out_session_path,
+    gchar ** out_session_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -111,7 +111,7 @@ struct _MetaDBusInputCaptureProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_input_capture_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_capture_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputCaptureProxy, g_object_unref)
@@ -181,7 +181,7 @@ struct _MetaDBusInputCaptureSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_input_capture_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_capture_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputCaptureSkeleton, g_object_unref)
@@ -268,7 +268,7 @@ struct _MetaDBusInputCaptureSessionIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputCaptureSession, g_object_unref)
 #endif
 
-GType meta_dbus_input_capture_session_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_capture_session_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_input_capture_session_interface_info (void);
 guint meta_dbus_input_capture_session_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -345,15 +345,15 @@ void meta_dbus_input_capture_session_call_get_zones (
 
 gboolean meta_dbus_input_capture_session_call_get_zones_finish (
     MetaDBusInputCaptureSession *proxy,
-    guint *out_serial,
-    GVariant **out_zones,
+    guint* out_serial,
+    GVariant ** out_zones,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_input_capture_session_call_get_zones_sync (
     MetaDBusInputCaptureSession *proxy,
-    guint *out_serial,
-    GVariant **out_zones,
+    guint* out_serial,
+    GVariant ** out_zones,
     GCancellable *cancellable,
     GError **error);
 
@@ -367,7 +367,7 @@ void meta_dbus_input_capture_session_call_add_barrier (
 
 gboolean meta_dbus_input_capture_session_call_add_barrier_finish (
     MetaDBusInputCaptureSession *proxy,
-    guint *out_id,
+    guint* out_id,
     GAsyncResult *res,
     GError **error);
 
@@ -375,7 +375,7 @@ gboolean meta_dbus_input_capture_session_call_add_barrier_sync (
     MetaDBusInputCaptureSession *proxy,
     guint arg_serial,
     GVariant *arg_position,
-    guint *out_id,
+    guint* out_id,
     GCancellable *cancellable,
     GError **error);
 
@@ -436,7 +436,7 @@ void meta_dbus_input_capture_session_call_connect_to_eis (
 
 gboolean meta_dbus_input_capture_session_call_connect_to_eis_finish (
     MetaDBusInputCaptureSession *proxy,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -444,7 +444,7 @@ gboolean meta_dbus_input_capture_session_call_connect_to_eis_finish (
 gboolean meta_dbus_input_capture_session_call_connect_to_eis_sync (
     MetaDBusInputCaptureSession *proxy,
     GUnixFDList  *fd_list,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -510,7 +510,7 @@ struct _MetaDBusInputCaptureSessionProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_input_capture_session_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_capture_session_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputCaptureSessionProxy, g_object_unref)
@@ -580,7 +580,7 @@ struct _MetaDBusInputCaptureSessionSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_input_capture_session_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_capture_session_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputCaptureSessionSkeleton, g_object_unref)

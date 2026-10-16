@@ -46,7 +46,7 @@ struct _MetaDBusDebugControlIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDebugControl, g_object_unref)
 #endif
 
-GType meta_dbus_debug_control_get_type (void) G_GNUC_CONST;
+GType meta_dbus_debug_control_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_debug_control_interface_info (void);
 guint meta_dbus_debug_control_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -94,7 +94,7 @@ struct _MetaDBusDebugControlProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_debug_control_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_debug_control_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDebugControlProxy, g_object_unref)
@@ -164,7 +164,7 @@ struct _MetaDBusDebugControlSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_debug_control_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_debug_control_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDebugControlSkeleton, g_object_unref)

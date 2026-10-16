@@ -30,6 +30,12 @@ struct _MetaDBusServiceChannelIface
 {
   GTypeInterface parent_iface;
 
+  gboolean (*handle_open_wayland_connection) (
+    MetaDBusServiceChannel *object,
+    GDBusMethodInvocation *invocation,
+    GUnixFDList *fd_list,
+    GVariant *arg_options);
+
   gboolean (*handle_open_wayland_service_connection) (
     MetaDBusServiceChannel *object,
     GDBusMethodInvocation *invocation,
@@ -42,7 +48,7 @@ struct _MetaDBusServiceChannelIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusServiceChannel, g_object_unref)
 #endif
 
-GType meta_dbus_service_channel_get_type (void) G_GNUC_CONST;
+GType meta_dbus_service_channel_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_service_channel_interface_info (void);
 guint meta_dbus_service_channel_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -50,6 +56,12 @@ guint meta_dbus_service_channel_override_properties (GObjectClass *klass, guint 
 
 /* D-Bus method call completion functions: */
 void meta_dbus_service_channel_complete_open_wayland_service_connection (
+    MetaDBusServiceChannel *object,
+    GDBusMethodInvocation *invocation,
+    GUnixFDList *fd_list,
+    GVariant *fd);
+
+void meta_dbus_service_channel_complete_open_wayland_connection (
     MetaDBusServiceChannel *object,
     GDBusMethodInvocation *invocation,
     GUnixFDList *fd_list,
@@ -68,7 +80,7 @@ void meta_dbus_service_channel_call_open_wayland_service_connection (
 
 gboolean meta_dbus_service_channel_call_open_wayland_service_connection_finish (
     MetaDBusServiceChannel *proxy,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -77,7 +89,31 @@ gboolean meta_dbus_service_channel_call_open_wayland_service_connection_sync (
     MetaDBusServiceChannel *proxy,
     guint arg_service_client_type,
     GUnixFDList  *fd_list,
-    GVariant **out_fd,
+    GVariant ** out_fd,
+    GUnixFDList **out_fd_list,
+    GCancellable *cancellable,
+    GError **error);
+
+void meta_dbus_service_channel_call_open_wayland_connection (
+    MetaDBusServiceChannel *proxy,
+    GVariant *arg_options,
+    GUnixFDList *fd_list,
+    GCancellable *cancellable,
+    GAsyncReadyCallback callback,
+    gpointer user_data);
+
+gboolean meta_dbus_service_channel_call_open_wayland_connection_finish (
+    MetaDBusServiceChannel *proxy,
+    GVariant ** out_fd,
+    GUnixFDList **out_fd_list,
+    GAsyncResult *res,
+    GError **error);
+
+gboolean meta_dbus_service_channel_call_open_wayland_connection_sync (
+    MetaDBusServiceChannel *proxy,
+    GVariant *arg_options,
+    GUnixFDList  *fd_list,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -109,7 +145,7 @@ struct _MetaDBusServiceChannelProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_service_channel_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_service_channel_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusServiceChannelProxy, g_object_unref)
@@ -179,7 +215,7 @@ struct _MetaDBusServiceChannelSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_service_channel_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_service_channel_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusServiceChannelSkeleton, g_object_unref)

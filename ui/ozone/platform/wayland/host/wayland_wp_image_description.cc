@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
@@ -147,6 +148,15 @@ WaylandWpImageDescription::~WaylandWpImageDescription() = default;
 scoped_refptr<gfx::DisplayColorSpacesRef>
 WaylandWpImageDescription::AsDisplayColorSpaces(
     std::optional<viz::SharedImageFormat> hdr_output_format) const {
+  // Honor --force-color-profile (which is set by browser tests) over the
+  // compositor's description. For example, mutter describes its sRGB outputs
+  // with a gamma 2.2 transfer function, which would otherwise make Chromium
+  // convert sRGB content.
+  if (display::HasForceDisplayColorProfile()) {
+    return base::MakeRefCounted<gfx::DisplayColorSpacesRef>(
+        gfx::DisplayColorSpaces(display::GetForcedDisplayColorProfile()));
+  }
+
   gfx::DisplayColorSpaces display_color_spaces(color_space_);
   display_color_spaces.SetSDRMaxLuminanceNits(sdr_max_luminance_nits_);
   display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_relative_);

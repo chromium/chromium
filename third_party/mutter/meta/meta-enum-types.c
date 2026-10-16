@@ -141,6 +141,7 @@ meta_tab_list_get_type (void)
         { META_TAB_LIST_DOCKS, "META_TAB_LIST_DOCKS", "docks" },
         { META_TAB_LIST_GROUP, "META_TAB_LIST_GROUP", "group" },
         { META_TAB_LIST_NORMAL_ALL, "META_TAB_LIST_NORMAL_ALL", "normal-all" },
+        { META_TAB_LIST_NORMAL_ALL_MRU, "META_TAB_LIST_NORMAL_ALL_MRU", "normal-all-mru" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -183,6 +184,7 @@ meta_pad_feature_type_get_type (void)
       static const GEnumValue values[] = {
         { META_PAD_FEATURE_RING, "META_PAD_FEATURE_RING", "ring" },
         { META_PAD_FEATURE_STRIP, "META_PAD_FEATURE_STRIP", "strip" },
+        { META_PAD_FEATURE_DIAL, "META_PAD_FEATURE_DIAL", "dial" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -392,27 +394,6 @@ meta_debug_topic_get_type (void)
 /* enumerations from "meta/meta-enums.h" */
 #include "meta/meta-enums.h"
 GType
-meta_compositor_type_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { META_COMPOSITOR_TYPE_WAYLAND, "META_COMPOSITOR_TYPE_WAYLAND", "wayland" },
-        { META_COMPOSITOR_TYPE_X11, "META_COMPOSITOR_TYPE_X11", "x11" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("MetaCompositorType"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
 meta_grab_op_get_type (void)
 {
   static size_t g_enum_type_id = 0;
@@ -447,63 +428,6 @@ meta_grab_op_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("MetaGrabOp"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
-meta_cursor_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GEnumValue values[] = {
-        { META_CURSOR_INVALID, "META_CURSOR_INVALID", "invalid" },
-        { META_CURSOR_NONE, "META_CURSOR_NONE", "none" },
-        { META_CURSOR_DEFAULT, "META_CURSOR_DEFAULT", "default" },
-        { META_CURSOR_CONTEXT_MENU, "META_CURSOR_CONTEXT_MENU", "context-menu" },
-        { META_CURSOR_HELP, "META_CURSOR_HELP", "help" },
-        { META_CURSOR_POINTER, "META_CURSOR_POINTER", "pointer" },
-        { META_CURSOR_PROGRESS, "META_CURSOR_PROGRESS", "progress" },
-        { META_CURSOR_WAIT, "META_CURSOR_WAIT", "wait" },
-        { META_CURSOR_CELL, "META_CURSOR_CELL", "cell" },
-        { META_CURSOR_CROSSHAIR, "META_CURSOR_CROSSHAIR", "crosshair" },
-        { META_CURSOR_TEXT, "META_CURSOR_TEXT", "text" },
-        { META_CURSOR_VERTICAL_TEXT, "META_CURSOR_VERTICAL_TEXT", "vertical-text" },
-        { META_CURSOR_ALIAS, "META_CURSOR_ALIAS", "alias" },
-        { META_CURSOR_COPY, "META_CURSOR_COPY", "copy" },
-        { META_CURSOR_MOVE, "META_CURSOR_MOVE", "move" },
-        { META_CURSOR_NO_DROP, "META_CURSOR_NO_DROP", "no-drop" },
-        { META_CURSOR_NOT_ALLOWED, "META_CURSOR_NOT_ALLOWED", "not-allowed" },
-        { META_CURSOR_GRAB, "META_CURSOR_GRAB", "grab" },
-        { META_CURSOR_GRABBING, "META_CURSOR_GRABBING", "grabbing" },
-        { META_CURSOR_E_RESIZE, "META_CURSOR_E_RESIZE", "e-resize" },
-        { META_CURSOR_N_RESIZE, "META_CURSOR_N_RESIZE", "n-resize" },
-        { META_CURSOR_NE_RESIZE, "META_CURSOR_NE_RESIZE", "ne-resize" },
-        { META_CURSOR_NW_RESIZE, "META_CURSOR_NW_RESIZE", "nw-resize" },
-        { META_CURSOR_S_RESIZE, "META_CURSOR_S_RESIZE", "s-resize" },
-        { META_CURSOR_SE_RESIZE, "META_CURSOR_SE_RESIZE", "se-resize" },
-        { META_CURSOR_SW_RESIZE, "META_CURSOR_SW_RESIZE", "sw-resize" },
-        { META_CURSOR_W_RESIZE, "META_CURSOR_W_RESIZE", "w-resize" },
-        { META_CURSOR_EW_RESIZE, "META_CURSOR_EW_RESIZE", "ew-resize" },
-        { META_CURSOR_NS_RESIZE, "META_CURSOR_NS_RESIZE", "ns-resize" },
-        { META_CURSOR_NESW_RESIZE, "META_CURSOR_NESW_RESIZE", "nesw-resize" },
-        { META_CURSOR_NWSE_RESIZE, "META_CURSOR_NWSE_RESIZE", "nwse-resize" },
-        { META_CURSOR_COL_RESIZE, "META_CURSOR_COL_RESIZE", "col-resize" },
-        { META_CURSOR_ROW_RESIZE, "META_CURSOR_ROW_RESIZE", "row-resize" },
-        { META_CURSOR_ALL_SCROLL, "META_CURSOR_ALL_SCROLL", "all-scroll" },
-        { META_CURSOR_ZOOM_IN, "META_CURSOR_ZOOM_IN", "zoom-in" },
-        { META_CURSOR_ZOOM_OUT, "META_CURSOR_ZOOM_OUT", "zoom-out" },
-        { META_CURSOR_DND_ASK, "META_CURSOR_DND_ASK", "dnd-ask" },
-        { META_CURSOR_ALL_RESIZE, "META_CURSOR_ALL_RESIZE", "all-resize" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_enum_register_static (g_intern_static_string ("MetaCursor"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -748,6 +672,76 @@ meta_keyboard_a11y_flags_get_type (void)
 
   return g_enum_type_id;
 }
+GType
+meta_external_constraint_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { META_EXTERNAL_CONSTRAINT_FLAGS_NONE, "META_EXTERNAL_CONSTRAINT_FLAGS_NONE", "none" },
+        { META_EXTERNAL_CONSTRAINT_FLAGS_MOVE, "META_EXTERNAL_CONSTRAINT_FLAGS_MOVE", "move" },
+        { META_EXTERNAL_CONSTRAINT_FLAGS_RESIZE, "META_EXTERNAL_CONSTRAINT_FLAGS_RESIZE", "resize" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("MetaExternalConstraintFlags"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+meta_maximize_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { META_MAXIMIZE_NONE, "META_MAXIMIZE_NONE", "none" },
+        { META_MAXIMIZE_HORIZONTAL, "META_MAXIMIZE_HORIZONTAL", "horizontal" },
+        { META_MAXIMIZE_VERTICAL, "META_MAXIMIZE_VERTICAL", "vertical" },
+        { META_MAXIMIZE_BOTH, "META_MAXIMIZE_BOTH", "both" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("MetaMaximizeFlags"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+
+/* enumerations from "meta/meta-idle-monitor.h" */
+#include "meta/meta-idle-monitor.h"
+GType
+meta_idle_monitor_watch_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { META_IDLE_MONITOR_WATCH_FLAGS_NONE, "META_IDLE_MONITOR_WATCH_FLAGS_NONE", "none" },
+        { META_IDLE_MONITOR_WATCH_FLAGS_UNINHIBITABLE, "META_IDLE_MONITOR_WATCH_FLAGS_UNINHIBITABLE", "uninhibitable" },
+        { META_IDLE_MONITOR_WATCH_FLAGS_START_NOW, "META_IDLE_MONITOR_WATCH_FLAGS_START_NOW", "start-now" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("MetaIdleMonitorWatchFlags"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
 
 /* enumerations from "meta/meta-inhibit-shortcuts-dialog.h" */
 #include "meta/meta-inhibit-shortcuts-dialog.h"
@@ -859,17 +853,115 @@ meta_multi_texture_format_get_type (void)
   if (g_once_init_enter (&g_enum_type_id))
     {
       static const GEnumValue values[] = {
-        { META_MULTI_TEXTURE_FORMAT_INVALID, "META_MULTI_TEXTURE_FORMAT_INVALID", "invalid" },
-        { META_MULTI_TEXTURE_FORMAT_SIMPLE, "META_MULTI_TEXTURE_FORMAT_SIMPLE", "simple" },
-        { META_MULTI_TEXTURE_FORMAT_YUYV, "META_MULTI_TEXTURE_FORMAT_YUYV", "yuyv" },
-        { META_MULTI_TEXTURE_FORMAT_NV12, "META_MULTI_TEXTURE_FORMAT_NV12", "nv12" },
-        { META_MULTI_TEXTURE_FORMAT_P010, "META_MULTI_TEXTURE_FORMAT_P010", "p010" },
-        { META_MULTI_TEXTURE_FORMAT_YUV420, "META_MULTI_TEXTURE_FORMAT_YUV420", "yuv420" },
+        { META_MULTI_TEXTURE_FORMAT_INVALID, "META_MULTI_TEXTURE_FORMAT_INVALID", "meta-multi-texture-format-invalid" },
+        { META_MULTI_TEXTURE_FORMAT_SIMPLE, "META_MULTI_TEXTURE_FORMAT_SIMPLE", "meta-multi-texture-format-simple" },
+        { META_MULTI_TEXTURE_FORMAT_YUYV, "META_MULTI_TEXTURE_FORMAT_YUYV", "meta-multi-texture-format-yuyv" },
+        { META_MULTI_TEXTURE_FORMAT_YVYU, "META_MULTI_TEXTURE_FORMAT_YVYU", "meta-multi-texture-format-yvyu" },
+        { META_MULTI_TEXTURE_FORMAT_UYVY, "META_MULTI_TEXTURE_FORMAT_UYVY", "meta-multi-texture-format-uyvy" },
+        { META_MULTI_TEXTURE_FORMAT_VYUY, "META_MULTI_TEXTURE_FORMAT_VYUY", "meta-multi-texture-format-vyuy" },
+        { META_MULTI_TEXTURE_FORMAT_NV12, "META_MULTI_TEXTURE_FORMAT_NV12", "meta-multi-texture-format-nv12" },
+        { META_MULTI_TEXTURE_FORMAT_NV21, "META_MULTI_TEXTURE_FORMAT_NV21", "meta-multi-texture-format-nv21" },
+        { META_MULTI_TEXTURE_FORMAT_NV16, "META_MULTI_TEXTURE_FORMAT_NV16", "meta-multi-texture-format-nv16" },
+        { META_MULTI_TEXTURE_FORMAT_NV61, "META_MULTI_TEXTURE_FORMAT_NV61", "meta-multi-texture-format-nv61" },
+        { META_MULTI_TEXTURE_FORMAT_NV24, "META_MULTI_TEXTURE_FORMAT_NV24", "meta-multi-texture-format-nv24" },
+        { META_MULTI_TEXTURE_FORMAT_NV42, "META_MULTI_TEXTURE_FORMAT_NV42", "meta-multi-texture-format-nv42" },
+        { META_MULTI_TEXTURE_FORMAT_P010, "META_MULTI_TEXTURE_FORMAT_P010", "meta-multi-texture-format-p010" },
+        { META_MULTI_TEXTURE_FORMAT_P012, "META_MULTI_TEXTURE_FORMAT_P012", "meta-multi-texture-format-p012" },
+        { META_MULTI_TEXTURE_FORMAT_P016, "META_MULTI_TEXTURE_FORMAT_P016", "meta-multi-texture-format-p016" },
+        { META_MULTI_TEXTURE_FORMAT_YUV420, "META_MULTI_TEXTURE_FORMAT_YUV420", "meta-multi-texture-format-yuv420" },
+        { META_MULTI_TEXTURE_FORMAT_YVU420, "META_MULTI_TEXTURE_FORMAT_YVU420", "meta-multi-texture-format-yvu420" },
+        { META_MULTI_TEXTURE_FORMAT_YUV422, "META_MULTI_TEXTURE_FORMAT_YUV422", "meta-multi-texture-format-yuv422" },
+        { META_MULTI_TEXTURE_FORMAT_YVU422, "META_MULTI_TEXTURE_FORMAT_YVU422", "meta-multi-texture-format-yvu422" },
+        { META_MULTI_TEXTURE_FORMAT_YUV444, "META_MULTI_TEXTURE_FORMAT_YUV444", "meta-multi-texture-format-yuv444" },
+        { META_MULTI_TEXTURE_FORMAT_YVU444, "META_MULTI_TEXTURE_FORMAT_YVU444", "meta-multi-texture-format-yvu444" },
+        { META_MULTI_TEXTURE_FORMAT_S010, "META_MULTI_TEXTURE_FORMAT_S010", "meta-multi-texture-format-s010" },
+        { META_MULTI_TEXTURE_FORMAT_S210, "META_MULTI_TEXTURE_FORMAT_S210", "meta-multi-texture-format-s210" },
+        { META_MULTI_TEXTURE_FORMAT_S410, "META_MULTI_TEXTURE_FORMAT_S410", "meta-multi-texture-format-s410" },
+        { META_MULTI_TEXTURE_FORMAT_S012, "META_MULTI_TEXTURE_FORMAT_S012", "meta-multi-texture-format-s012" },
+        { META_MULTI_TEXTURE_FORMAT_S212, "META_MULTI_TEXTURE_FORMAT_S212", "meta-multi-texture-format-s212" },
+        { META_MULTI_TEXTURE_FORMAT_S412, "META_MULTI_TEXTURE_FORMAT_S412", "meta-multi-texture-format-s412" },
+        { META_MULTI_TEXTURE_FORMAT_S016, "META_MULTI_TEXTURE_FORMAT_S016", "meta-multi-texture-format-s016" },
+        { META_MULTI_TEXTURE_FORMAT_S216, "META_MULTI_TEXTURE_FORMAT_S216", "meta-multi-texture-format-s216" },
+        { META_MULTI_TEXTURE_FORMAT_S416, "META_MULTI_TEXTURE_FORMAT_S416", "meta-multi-texture-format-s416" },
+        { N_META_MULTI_TEXTURE_FORMATS, "N_META_MULTI_TEXTURE_FORMATS", "n-meta-multi-texture-formats" },
         { 0, NULL, NULL }
       };
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("MetaMultiTextureFormat"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+meta_multi_texture_alpha_mode_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { META_MULTI_TEXTURE_ALPHA_MODE_NONE, "META_MULTI_TEXTURE_ALPHA_MODE_NONE", "meta-multi-texture-alpha-mode-none" },
+        { META_MULTI_TEXTURE_ALPHA_MODE_PREMULT_ELECTRICAL, "META_MULTI_TEXTURE_ALPHA_MODE_PREMULT_ELECTRICAL", "meta-multi-texture-alpha-mode-premult-electrical" },
+        { META_MULTI_TEXTURE_ALPHA_MODE_STRAIGHT, "META_MULTI_TEXTURE_ALPHA_MODE_STRAIGHT", "meta-multi-texture-alpha-mode-straight" },
+        { N_META_MULTI_TEXTURE_ALPHA_MODES, "N_META_MULTI_TEXTURE_ALPHA_MODES", "n-meta-multi-texture-alpha-modes" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("MetaMultiTextureAlphaMode"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+meta_multi_texture_coefficients_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { META_MULTI_TEXTURE_COEFFICIENTS_NONE, "META_MULTI_TEXTURE_COEFFICIENTS_NONE", "meta-multi-texture-coefficients-none" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_IDENTITY_FULL, "META_MULTI_TEXTURE_COEFFICIENTS_IDENTITY_FULL", "meta-multi-texture-coefficients-identity-full" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_IDENTITY_LIMITED, "META_MULTI_TEXTURE_COEFFICIENTS_IDENTITY_LIMITED", "meta-multi-texture-coefficients-identity-limited" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_BT709_FULL, "META_MULTI_TEXTURE_COEFFICIENTS_BT709_FULL", "meta-multi-texture-coefficients-bt709-full" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_BT709_LIMITED, "META_MULTI_TEXTURE_COEFFICIENTS_BT709_LIMITED", "meta-multi-texture-coefficients-bt709-limited" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_BT601_FULL, "META_MULTI_TEXTURE_COEFFICIENTS_BT601_FULL", "meta-multi-texture-coefficients-bt601-full" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_BT601_LIMITED, "META_MULTI_TEXTURE_COEFFICIENTS_BT601_LIMITED", "meta-multi-texture-coefficients-bt601-limited" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_BT2020_FULL, "META_MULTI_TEXTURE_COEFFICIENTS_BT2020_FULL", "meta-multi-texture-coefficients-bt2020-full" },
+        { META_MULTI_TEXTURE_COEFFICIENTS_BT2020_LIMITED, "META_MULTI_TEXTURE_COEFFICIENTS_BT2020_LIMITED", "meta-multi-texture-coefficients-bt2020-limited" },
+        { N_META_MULTI_TEXTURE_COEFFICIENTS, "N_META_MULTI_TEXTURE_COEFFICIENTS", "n-meta-multi-texture-coefficients" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("MetaMultiTextureCoefficients"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+meta_multi_texture_chroma_loc_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { META_MULTI_TEXTURE_CHROMA_LOC_NONE, "META_MULTI_TEXTURE_CHROMA_LOC_NONE", "none" },
+        { META_MULTI_TEXTURE_CHROMA_LOC_DEFINED, "META_MULTI_TEXTURE_CHROMA_LOC_DEFINED", "defined" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("MetaMultiTextureChromaLoc"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -1139,6 +1231,7 @@ meta_debug_paint_flag_get_type (void)
         { META_DEBUG_PAINT_OPAQUE_REGION, "META_DEBUG_PAINT_OPAQUE_REGION", "opaque-region" },
         { META_DEBUG_PAINT_SYNC_CURSOR_PRIMARY, "META_DEBUG_PAINT_SYNC_CURSOR_PRIMARY", "sync-cursor-primary" },
         { META_DEBUG_PAINT_DISABLE_DIRECT_SCANOUT, "META_DEBUG_PAINT_DISABLE_DIRECT_SCANOUT", "disable-direct-scanout" },
+        { META_DEBUG_PAINT_IGNORE_COLOR_STATE_FOR_DIRECT_SCANOUT, "META_DEBUG_PAINT_IGNORE_COLOR_STATE_FOR_DIRECT_SCANOUT", "ignore-color-state-for-direct-scanout" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -1182,28 +1275,6 @@ meta_window_type_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("MetaWindowType"), values);
-
-      g_once_init_leave (&g_enum_type_id, id);
-    }
-
-  return g_enum_type_id;
-}
-GType
-meta_maximize_flags_get_type (void)
-{
-  static size_t g_enum_type_id = 0;
-
-  if (g_once_init_enter (&g_enum_type_id))
-    {
-      static const GFlagsValue values[] = {
-        { META_MAXIMIZE_HORIZONTAL, "META_MAXIMIZE_HORIZONTAL", "horizontal" },
-        { META_MAXIMIZE_VERTICAL, "META_MAXIMIZE_VERTICAL", "vertical" },
-        { META_MAXIMIZE_BOTH, "META_MAXIMIZE_BOTH", "both" },
-        { 0, NULL, NULL }
-      };
-      GType id;
-
-      id = g_flags_register_static (g_intern_static_string ("MetaMaximizeFlags"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }

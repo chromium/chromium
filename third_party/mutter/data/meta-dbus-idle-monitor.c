@@ -889,7 +889,7 @@ meta_dbus_idle_monitor_call_get_idletime (
 gboolean
 meta_dbus_idle_monitor_call_get_idletime_finish (
     MetaDBusIdleMonitor *proxy,
-    guint64 *out_idletime,
+    guint64* out_idletime,
     GAsyncResult *res,
     GError **error)
 {
@@ -921,7 +921,7 @@ _out:
 gboolean
 meta_dbus_idle_monitor_call_get_idletime_sync (
     MetaDBusIdleMonitor *proxy,
-    guint64 *out_idletime,
+    guint64* out_idletime,
     GCancellable *cancellable,
     GError **error)
 {
@@ -990,7 +990,7 @@ meta_dbus_idle_monitor_call_add_idle_watch (
 gboolean
 meta_dbus_idle_monitor_call_add_idle_watch_finish (
     MetaDBusIdleMonitor *proxy,
-    guint *out_id,
+    guint* out_id,
     GAsyncResult *res,
     GError **error)
 {
@@ -1024,7 +1024,7 @@ gboolean
 meta_dbus_idle_monitor_call_add_idle_watch_sync (
     MetaDBusIdleMonitor *proxy,
     guint64 arg_interval,
-    guint *out_id,
+    guint* out_id,
     GCancellable *cancellable,
     GError **error)
 {
@@ -1091,7 +1091,7 @@ meta_dbus_idle_monitor_call_add_user_active_watch (
 gboolean
 meta_dbus_idle_monitor_call_add_user_active_watch_finish (
     MetaDBusIdleMonitor *proxy,
-    guint *out_id,
+    guint* out_id,
     GAsyncResult *res,
     GError **error)
 {
@@ -1123,7 +1123,7 @@ _out:
 gboolean
 meta_dbus_idle_monitor_call_add_user_active_watch_sync (
     MetaDBusIdleMonitor *proxy,
-    guint *out_id,
+    guint* out_id,
     GCancellable *cancellable,
     GError **error)
 {
@@ -2033,8 +2033,14 @@ meta_dbus_idle_monitor_skeleton_finalize (GObject *object)
 {
   MetaDBusIdleMonitorSkeleton *skeleton = META_DBUS_IDLE_MONITOR_SKELETON (object);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_idle_monitor_skeleton_parent_class)->finalize (object);

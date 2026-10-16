@@ -2775,8 +2775,14 @@ meta_dbus_realtime_kit1_skeleton_finalize (GObject *object)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_realtime_kit1_skeleton_parent_class)->finalize (object);
@@ -3261,7 +3267,7 @@ meta_dbus_dbus_properties_call_get (
 gboolean
 meta_dbus_dbus_properties_call_get_finish (
     MetaDBusDBusProperties *proxy,
-    GVariant **out_value,
+    GVariant ** out_value,
     GAsyncResult *res,
     GError **error)
 {
@@ -3297,7 +3303,7 @@ meta_dbus_dbus_properties_call_get_sync (
     MetaDBusDBusProperties *proxy,
     const gchar *arg_interface,
     const gchar *arg_property,
-    GVariant **out_value,
+    GVariant ** out_value,
     GCancellable *cancellable,
     GError **error)
 {
@@ -3917,8 +3923,14 @@ meta_dbus_dbus_properties_skeleton_finalize (GObject *object)
 {
   MetaDBusDBusPropertiesSkeleton *skeleton = META_DBUS_DBUS_PROPERTIES_SKELETON (object);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_dbus_properties_skeleton_parent_class)->finalize (object);
@@ -4173,7 +4185,7 @@ meta_dbus_dbus_introspectable_call_introspect (
 gboolean
 meta_dbus_dbus_introspectable_call_introspect_finish (
     MetaDBusDBusIntrospectable *proxy,
-    gchar **out_data,
+    gchar ** out_data,
     GAsyncResult *res,
     GError **error)
 {
@@ -4205,7 +4217,7 @@ _out:
 gboolean
 meta_dbus_dbus_introspectable_call_introspect_sync (
     MetaDBusDBusIntrospectable *proxy,
-    gchar **out_data,
+    gchar ** out_data,
     GCancellable *cancellable,
     GError **error)
 {
@@ -4823,8 +4835,14 @@ meta_dbus_dbus_introspectable_skeleton_finalize (GObject *object)
 {
   MetaDBusDBusIntrospectableSkeleton *skeleton = META_DBUS_DBUS_INTROSPECTABLE_SKELETON (object);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_dbus_introspectable_skeleton_parent_class)->finalize (object);

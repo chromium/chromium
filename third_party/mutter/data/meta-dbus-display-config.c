@@ -390,102 +390,6 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT_STRING_INT (
 }
 
 static void
-_g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING_UINT_DOUBLE (
-    GClosure     *closure,
-    GValue       *return_value,
-    unsigned int  n_param_values,
-    const GValue *param_values,
-    void         *invocation_hint G_GNUC_UNUSED,
-    void         *marshal_data)
-{
-  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectStringUintDoubleFunc)
-       (void *data1,
-        GDBusMethodInvocation *arg_method_invocation,
-        const gchar *arg_connector,
-        guint arg_color_mode,
-        gdouble arg_luminance,
-        void *data2);
-  _GDbusCodegenMarshalBoolean_ObjectStringUintDoubleFunc callback;
-  GCClosure *cc = (GCClosure*) closure;
-  void *data1, *data2;
-  gboolean v_return;
-
-  g_return_if_fail (return_value != NULL);
-  g_return_if_fail (n_param_values == 5);
-
-  if (G_CCLOSURE_SWAP_DATA (closure))
-    {
-      data1 = closure->data;
-      data2 = g_value_peek_pointer (param_values + 0);
-    }
-  else
-    {
-      data1 = g_value_peek_pointer (param_values + 0);
-      data2 = closure->data;
-    }
-
-  callback = (_GDbusCodegenMarshalBoolean_ObjectStringUintDoubleFunc)
-    (marshal_data ? marshal_data : cc->callback);
-
-  v_return =
-    callback (data1,
-              g_marshal_value_peek_object (param_values + 1),
-              g_marshal_value_peek_string (param_values + 2),
-              g_marshal_value_peek_uint (param_values + 3),
-              g_marshal_value_peek_double (param_values + 4),
-              data2);
-
-  g_value_set_boolean (return_value, v_return);
-}
-
-static void
-_g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING_UINT (
-    GClosure     *closure,
-    GValue       *return_value,
-    unsigned int  n_param_values,
-    const GValue *param_values,
-    void         *invocation_hint G_GNUC_UNUSED,
-    void         *marshal_data)
-{
-  typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectStringUintFunc)
-       (void *data1,
-        GDBusMethodInvocation *arg_method_invocation,
-        const gchar *arg_connector,
-        guint arg_color_mode,
-        void *data2);
-  _GDbusCodegenMarshalBoolean_ObjectStringUintFunc callback;
-  GCClosure *cc = (GCClosure*) closure;
-  void *data1, *data2;
-  gboolean v_return;
-
-  g_return_if_fail (return_value != NULL);
-  g_return_if_fail (n_param_values == 4);
-
-  if (G_CCLOSURE_SWAP_DATA (closure))
-    {
-      data1 = closure->data;
-      data2 = g_value_peek_pointer (param_values + 0);
-    }
-  else
-    {
-      data1 = g_value_peek_pointer (param_values + 0);
-      data2 = closure->data;
-    }
-
-  callback = (_GDbusCodegenMarshalBoolean_ObjectStringUintFunc)
-    (marshal_data ? marshal_data : cc->callback);
-
-  v_return =
-    callback (data1,
-              g_marshal_value_peek_object (param_values + 1),
-              g_marshal_value_peek_string (param_values + 2),
-              g_marshal_value_peek_uint (param_values + 3),
-              data2);
-
-  g_value_set_boolean (return_value, v_return);
-}
-
-static void
 _g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT_UINT (
     GClosure     *closure,
     GValue       *return_value,
@@ -1002,102 +906,6 @@ static const _ExtendedGDBusMethodInfo _meta_dbus_display_config_method_info_set_
   FALSE
 };
 
-static const _ExtendedGDBusArgInfo _meta_dbus_display_config_method_info_set_luminance_IN_ARG_connector =
-{
-  {
-    -1,
-    (gchar *) "connector",
-    (gchar *) "s",
-    NULL
-  },
-  FALSE
-};
-
-static const _ExtendedGDBusArgInfo _meta_dbus_display_config_method_info_set_luminance_IN_ARG_color_mode =
-{
-  {
-    -1,
-    (gchar *) "color_mode",
-    (gchar *) "u",
-    NULL
-  },
-  FALSE
-};
-
-static const _ExtendedGDBusArgInfo _meta_dbus_display_config_method_info_set_luminance_IN_ARG_luminance =
-{
-  {
-    -1,
-    (gchar *) "luminance",
-    (gchar *) "d",
-    NULL
-  },
-  FALSE
-};
-
-static const GDBusArgInfo * const _meta_dbus_display_config_method_info_set_luminance_IN_ARG_pointers[] =
-{
-  &_meta_dbus_display_config_method_info_set_luminance_IN_ARG_connector.parent_struct,
-  &_meta_dbus_display_config_method_info_set_luminance_IN_ARG_color_mode.parent_struct,
-  &_meta_dbus_display_config_method_info_set_luminance_IN_ARG_luminance.parent_struct,
-  NULL
-};
-
-static const _ExtendedGDBusMethodInfo _meta_dbus_display_config_method_info_set_luminance =
-{
-  {
-    -1,
-    (gchar *) "SetLuminance",
-    (GDBusArgInfo **) &_meta_dbus_display_config_method_info_set_luminance_IN_ARG_pointers,
-    NULL,
-    NULL
-  },
-  "handle-set-luminance",
-  FALSE
-};
-
-static const _ExtendedGDBusArgInfo _meta_dbus_display_config_method_info_reset_luminance_IN_ARG_connector =
-{
-  {
-    -1,
-    (gchar *) "connector",
-    (gchar *) "s",
-    NULL
-  },
-  FALSE
-};
-
-static const _ExtendedGDBusArgInfo _meta_dbus_display_config_method_info_reset_luminance_IN_ARG_color_mode =
-{
-  {
-    -1,
-    (gchar *) "color_mode",
-    (gchar *) "u",
-    NULL
-  },
-  FALSE
-};
-
-static const GDBusArgInfo * const _meta_dbus_display_config_method_info_reset_luminance_IN_ARG_pointers[] =
-{
-  &_meta_dbus_display_config_method_info_reset_luminance_IN_ARG_connector.parent_struct,
-  &_meta_dbus_display_config_method_info_reset_luminance_IN_ARG_color_mode.parent_struct,
-  NULL
-};
-
-static const _ExtendedGDBusMethodInfo _meta_dbus_display_config_method_info_reset_luminance =
-{
-  {
-    -1,
-    (gchar *) "ResetLuminance",
-    (GDBusArgInfo **) &_meta_dbus_display_config_method_info_reset_luminance_IN_ARG_pointers,
-    NULL,
-    NULL
-  },
-  "handle-reset-luminance",
-  FALSE
-};
-
 static const _ExtendedGDBusArgInfo _meta_dbus_display_config_method_info_get_crtc_gamma_IN_ARG_serial =
 {
   {
@@ -1451,8 +1259,6 @@ static const GDBusMethodInfo * const _meta_dbus_display_config_method_info_point
   &_meta_dbus_display_config_method_info_apply_configuration.parent_struct,
   &_meta_dbus_display_config_method_info_change_backlight.parent_struct,
   &_meta_dbus_display_config_method_info_set_backlight.parent_struct,
-  &_meta_dbus_display_config_method_info_set_luminance.parent_struct,
-  &_meta_dbus_display_config_method_info_reset_luminance.parent_struct,
   &_meta_dbus_display_config_method_info_get_crtc_gamma.parent_struct,
   &_meta_dbus_display_config_method_info_set_crtc_gamma.parent_struct,
   &_meta_dbus_display_config_method_info_get_current_state.parent_struct,
@@ -1488,20 +1294,6 @@ static const _ExtendedGDBusPropertyInfo _meta_dbus_display_config_property_info_
     NULL
   },
   "backlight",
-  FALSE,
-  TRUE
-};
-
-static const _ExtendedGDBusPropertyInfo _meta_dbus_display_config_property_info_luminance =
-{
-  {
-    -1,
-    (gchar *) "Luminance",
-    (gchar *) "aa{sv}",
-    G_DBUS_PROPERTY_INFO_FLAGS_READABLE,
-    NULL
-  },
-  "luminance",
   FALSE,
   TRUE
 };
@@ -1579,7 +1371,6 @@ static const _ExtendedGDBusPropertyInfo _meta_dbus_display_config_property_info_
 static const GDBusPropertyInfo * const _meta_dbus_display_config_property_info_pointers[] =
 {
   &_meta_dbus_display_config_property_info_backlight.parent_struct,
-  &_meta_dbus_display_config_property_info_luminance.parent_struct,
   &_meta_dbus_display_config_property_info_power_save_mode.parent_struct,
   &_meta_dbus_display_config_property_info_panel_orientation_managed.parent_struct,
   &_meta_dbus_display_config_property_info_apply_monitors_config_allowed.parent_struct,
@@ -1629,7 +1420,6 @@ guint
 meta_dbus_display_config_override_properties (GObjectClass *klass, guint property_id_begin)
 {
   g_object_class_override_property (klass, property_id_begin++, "backlight");
-  g_object_class_override_property (klass, property_id_begin++, "luminance");
   g_object_class_override_property (klass, property_id_begin++, "power-save-mode");
   g_object_class_override_property (klass, property_id_begin++, "panel-orientation-managed");
   g_object_class_override_property (klass, property_id_begin++, "apply-monitors-config-allowed");
@@ -1701,32 +1491,6 @@ meta_dbus_display_config_method_marshal_set_backlight (
     void         *marshal_data)
 {
   _g_dbus_codegen_marshal_BOOLEAN__OBJECT_UINT_STRING_INT (closure,
-    return_value, n_param_values, param_values, invocation_hint, marshal_data);
-}
-
-inline static void
-meta_dbus_display_config_method_marshal_set_luminance (
-    GClosure     *closure,
-    GValue       *return_value,
-    unsigned int  n_param_values,
-    const GValue *param_values,
-    void         *invocation_hint,
-    void         *marshal_data)
-{
-  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING_UINT_DOUBLE (closure,
-    return_value, n_param_values, param_values, invocation_hint, marshal_data);
-}
-
-inline static void
-meta_dbus_display_config_method_marshal_reset_luminance (
-    GClosure     *closure,
-    GValue       *return_value,
-    unsigned int  n_param_values,
-    const GValue *param_values,
-    void         *invocation_hint,
-    void         *marshal_data)
-{
-  _g_dbus_codegen_marshal_BOOLEAN__OBJECT_STRING_UINT (closure,
     return_value, n_param_values, param_values, invocation_hint, marshal_data);
 }
 
@@ -1811,15 +1575,12 @@ meta_dbus_display_config_method_marshal_set_output_ctm (
  * @handle_get_crtc_gamma: Handler for the #MetaDBusDisplayConfig::handle-get-crtc-gamma signal.
  * @handle_get_current_state: Handler for the #MetaDBusDisplayConfig::handle-get-current-state signal.
  * @handle_get_resources: Handler for the #MetaDBusDisplayConfig::handle-get-resources signal.
- * @handle_reset_luminance: Handler for the #MetaDBusDisplayConfig::handle-reset-luminance signal.
  * @handle_set_backlight: Handler for the #MetaDBusDisplayConfig::handle-set-backlight signal.
  * @handle_set_crtc_gamma: Handler for the #MetaDBusDisplayConfig::handle-set-crtc-gamma signal.
- * @handle_set_luminance: Handler for the #MetaDBusDisplayConfig::handle-set-luminance signal.
  * @handle_set_output_ctm: Handler for the #MetaDBusDisplayConfig::handle-set-output-ctm signal.
  * @get_apply_monitors_config_allowed: Getter for the #MetaDBusDisplayConfig:apply-monitors-config-allowed property.
  * @get_backlight: Getter for the #MetaDBusDisplayConfig:backlight property.
  * @get_has_external_monitor: Getter for the #MetaDBusDisplayConfig:has-external-monitor property.
- * @get_luminance: Getter for the #MetaDBusDisplayConfig:luminance property.
  * @get_night_light_supported: Getter for the #MetaDBusDisplayConfig:night-light-supported property.
  * @get_panel_orientation_managed: Getter for the #MetaDBusDisplayConfig:panel-orientation-managed property.
  * @get_power_save_mode: Getter for the #MetaDBusDisplayConfig:power-save-mode property.
@@ -1934,55 +1695,6 @@ meta_dbus_display_config_default_init (MetaDBusDisplayConfigIface *iface)
     G_TYPE_BOOLEAN,
     4,
     G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_INT);
-
-  /**
-   * MetaDBusDisplayConfig::handle-set-luminance:
-   * @object: A #MetaDBusDisplayConfig.
-   * @invocation: A #GDBusMethodInvocation.
-   * @arg_connector: Argument passed by remote caller.
-   * @arg_color_mode: Argument passed by remote caller.
-   * @arg_luminance: Argument passed by remote caller.
-   *
-   * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.SetLuminance">SetLuminance()</link> D-Bus method.
-   *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call meta_dbus_display_config_complete_set_luminance() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
-   *
-   * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
-   */
-  g_signal_new ("handle-set-luminance",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (MetaDBusDisplayConfigIface, handle_set_luminance),
-    g_signal_accumulator_true_handled,
-    NULL,
-      meta_dbus_display_config_method_marshal_set_luminance,
-    G_TYPE_BOOLEAN,
-    4,
-    G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_DOUBLE);
-
-  /**
-   * MetaDBusDisplayConfig::handle-reset-luminance:
-   * @object: A #MetaDBusDisplayConfig.
-   * @invocation: A #GDBusMethodInvocation.
-   * @arg_connector: Argument passed by remote caller.
-   * @arg_color_mode: Argument passed by remote caller.
-   *
-   * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.ResetLuminance">ResetLuminance()</link> D-Bus method.
-   *
-   * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to @invocation and eventually call meta_dbus_display_config_complete_reset_luminance() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
-   *
-   * Returns: %G_DBUS_METHOD_INVOCATION_HANDLED or %TRUE if the invocation was handled, %G_DBUS_METHOD_INVOCATION_UNHANDLED or %FALSE to let other signal handlers run.
-   */
-  g_signal_new ("handle-reset-luminance",
-    G_TYPE_FROM_INTERFACE (iface),
-    G_SIGNAL_RUN_LAST,
-    G_STRUCT_OFFSET (MetaDBusDisplayConfigIface, handle_reset_luminance),
-    g_signal_accumulator_true_handled,
-    NULL,
-      meta_dbus_display_config_method_marshal_reset_luminance,
-    G_TYPE_BOOLEAN,
-    3,
-    G_TYPE_DBUS_METHOD_INVOCATION, G_TYPE_STRING, G_TYPE_UINT);
 
   /**
    * MetaDBusDisplayConfig::handle-get-crtc-gamma:
@@ -2139,15 +1851,6 @@ meta_dbus_display_config_default_init (MetaDBusDisplayConfigIface *iface)
   g_object_interface_install_property (iface,
     g_param_spec_variant ("backlight", "Backlight", "Backlight", G_VARIANT_TYPE ("(uaa{sv})"), NULL, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
   /**
-   * MetaDBusDisplayConfig:luminance:
-   *
-   * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DisplayConfig.Luminance">"Luminance"</link>.
-   *
-   * Since the D-Bus property for this #GObject property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.
-   */
-  g_object_interface_install_property (iface,
-    g_param_spec_variant ("luminance", "Luminance", "Luminance", G_VARIANT_TYPE ("aa{sv}"), NULL, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-  /**
    * MetaDBusDisplayConfig:power-save-mode:
    *
    * Represents the D-Bus property <link linkend="gdbus-property-org-gnome-Mutter-DisplayConfig.PowerSaveMode">"PowerSaveMode"</link>.
@@ -2245,59 +1948,6 @@ void
 meta_dbus_display_config_set_backlight (MetaDBusDisplayConfig *object, GVariant *value)
 {
   g_object_set (G_OBJECT (object), "backlight", value, NULL);
-}
-
-/**
- * meta_dbus_display_config_get_luminance: (skip)
- * @object: A #MetaDBusDisplayConfig.
- *
- * Gets the value of the <link linkend="gdbus-property-org-gnome-Mutter-DisplayConfig.Luminance">"Luminance"</link> D-Bus property.
- *
- * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
- *
- * The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where @object was constructed. Use meta_dbus_display_config_dup_luminance() if on another thread.
- *
- * Returns: (transfer none) (nullable): The property value or %NULL if the property is not set. Do not free the returned value, it belongs to @object.
- */
-GVariant *
-meta_dbus_display_config_get_luminance (MetaDBusDisplayConfig *object)
-{
-  g_return_val_if_fail (META_DBUS_IS_DISPLAY_CONFIG (object), NULL);
-
-  return META_DBUS_DISPLAY_CONFIG_GET_IFACE (object)->get_luminance (object);
-}
-
-/**
- * meta_dbus_display_config_dup_luminance: (skip)
- * @object: A #MetaDBusDisplayConfig.
- *
- * Gets a copy of the <link linkend="gdbus-property-org-gnome-Mutter-DisplayConfig.Luminance">"Luminance"</link> D-Bus property.
- *
- * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
- *
- * Returns: (transfer full) (nullable): The property value or %NULL if the property is not set. The returned value should be freed with g_variant_unref().
- */
-GVariant *
-meta_dbus_display_config_dup_luminance (MetaDBusDisplayConfig *object)
-{
-  GVariant *value;
-  g_object_get (G_OBJECT (object), "luminance", &value, NULL);
-  return value;
-}
-
-/**
- * meta_dbus_display_config_set_luminance: (skip)
- * @object: A #MetaDBusDisplayConfig.
- * @value: The value to set.
- *
- * Sets the <link linkend="gdbus-property-org-gnome-Mutter-DisplayConfig.Luminance">"Luminance"</link> D-Bus property to @value.
- *
- * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
- */
-void
-meta_dbus_display_config_set_luminance (MetaDBusDisplayConfig *object, GVariant *value)
-{
-  g_object_set (G_OBJECT (object), "luminance", value, NULL);
 }
 
 /**
@@ -2527,12 +2177,12 @@ meta_dbus_display_config_call_get_resources (
 gboolean
 meta_dbus_display_config_call_get_resources_finish (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_crtcs,
-    GVariant **out_outputs,
-    GVariant **out_modes,
-    gint *out_max_screen_width,
-    gint *out_max_screen_height,
+    guint* out_serial,
+    GVariant ** out_crtcs,
+    GVariant ** out_outputs,
+    GVariant ** out_modes,
+    gint* out_max_screen_width,
+    gint* out_max_screen_height,
     GAsyncResult *res,
     GError **error)
 {
@@ -2574,12 +2224,12 @@ _out:
 gboolean
 meta_dbus_display_config_call_get_resources_sync (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_crtcs,
-    GVariant **out_outputs,
-    GVariant **out_modes,
-    gint *out_max_screen_width,
-    gint *out_max_screen_height,
+    guint* out_serial,
+    GVariant ** out_crtcs,
+    GVariant ** out_outputs,
+    GVariant ** out_modes,
+    gint* out_max_screen_width,
+    gint* out_max_screen_height,
     GCancellable *cancellable,
     GError **error)
 {
@@ -2779,7 +2429,7 @@ meta_dbus_display_config_call_change_backlight (
 gboolean
 meta_dbus_display_config_call_change_backlight_finish (
     MetaDBusDisplayConfig *proxy,
-    gint *out_new_value,
+    gint* out_new_value,
     GAsyncResult *res,
     GError **error)
 {
@@ -2819,7 +2469,7 @@ meta_dbus_display_config_call_change_backlight_sync (
     guint arg_serial,
     guint arg_output,
     gint arg_value,
-    gint *out_new_value,
+    gint* out_new_value,
     GCancellable *cancellable,
     GError **error)
 {
@@ -2955,220 +2605,6 @@ _out:
 }
 
 /**
- * meta_dbus_display_config_call_set_luminance:
- * @proxy: A #MetaDBusDisplayConfigProxy.
- * @arg_connector: Argument to pass with the method invocation.
- * @arg_color_mode: Argument to pass with the method invocation.
- * @arg_luminance: Argument to pass with the method invocation.
- * @cancellable: (nullable): A #GCancellable or %NULL.
- * @callback: A #GAsyncReadyCallback to call when the request is satisfied or %NULL.
- * @user_data: User data to pass to @callback.
- *
- * Asynchronously invokes the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.SetLuminance">SetLuminance()</link> D-Bus method on @proxy.
- * When the operation is finished, @callback will be invoked in the thread-default main loop of the thread you are calling this method from (see g_main_context_push_thread_default()).
- * You can then call meta_dbus_display_config_call_set_luminance_finish() to get the result of the operation.
- *
- * See meta_dbus_display_config_call_set_luminance_sync() for the synchronous, blocking version of this method.
- */
-void
-meta_dbus_display_config_call_set_luminance (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    gdouble arg_luminance,
-    GCancellable *cancellable,
-    GAsyncReadyCallback callback,
-    gpointer user_data)
-{
-  g_dbus_proxy_call (G_DBUS_PROXY (proxy),
-    "SetLuminance",
-    g_variant_new ("(sud)",
-                   arg_connector,
-                   arg_color_mode,
-                   arg_luminance),
-    G_DBUS_CALL_FLAGS_NONE,
-    -1,
-    cancellable,
-    callback,
-    user_data);
-}
-
-/**
- * meta_dbus_display_config_call_set_luminance_finish:
- * @proxy: A #MetaDBusDisplayConfigProxy.
- * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to meta_dbus_display_config_call_set_luminance().
- * @error: Return location for error or %NULL.
- *
- * Finishes an operation started with meta_dbus_display_config_call_set_luminance().
- *
- * Returns: (skip): %TRUE if the call succeeded, %FALSE if @error is set.
- */
-gboolean
-meta_dbus_display_config_call_set_luminance_finish (
-    MetaDBusDisplayConfig *proxy,
-    GAsyncResult *res,
-    GError **error)
-{
-  GVariant *_ret;
-  _ret = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, error);
-  if (_ret == NULL)
-    goto _out;
-  g_variant_get (_ret,
-                 "()");
-  g_variant_unref (_ret);
-_out:
-  return _ret != NULL;
-}
-
-/**
- * meta_dbus_display_config_call_set_luminance_sync:
- * @proxy: A #MetaDBusDisplayConfigProxy.
- * @arg_connector: Argument to pass with the method invocation.
- * @arg_color_mode: Argument to pass with the method invocation.
- * @arg_luminance: Argument to pass with the method invocation.
- * @cancellable: (nullable): A #GCancellable or %NULL.
- * @error: Return location for error or %NULL.
- *
- * Synchronously invokes the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.SetLuminance">SetLuminance()</link> D-Bus method on @proxy. The calling thread is blocked until a reply is received.
- *
- * See meta_dbus_display_config_call_set_luminance() for the asynchronous version of this method.
- *
- * Returns: (skip): %TRUE if the call succeeded, %FALSE if @error is set.
- */
-gboolean
-meta_dbus_display_config_call_set_luminance_sync (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    gdouble arg_luminance,
-    GCancellable *cancellable,
-    GError **error)
-{
-  GVariant *_ret;
-  _ret = g_dbus_proxy_call_sync (G_DBUS_PROXY (proxy),
-    "SetLuminance",
-    g_variant_new ("(sud)",
-                   arg_connector,
-                   arg_color_mode,
-                   arg_luminance),
-    G_DBUS_CALL_FLAGS_NONE,
-    -1,
-    cancellable,
-    error);
-  if (_ret == NULL)
-    goto _out;
-  g_variant_get (_ret,
-                 "()");
-  g_variant_unref (_ret);
-_out:
-  return _ret != NULL;
-}
-
-/**
- * meta_dbus_display_config_call_reset_luminance:
- * @proxy: A #MetaDBusDisplayConfigProxy.
- * @arg_connector: Argument to pass with the method invocation.
- * @arg_color_mode: Argument to pass with the method invocation.
- * @cancellable: (nullable): A #GCancellable or %NULL.
- * @callback: A #GAsyncReadyCallback to call when the request is satisfied or %NULL.
- * @user_data: User data to pass to @callback.
- *
- * Asynchronously invokes the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.ResetLuminance">ResetLuminance()</link> D-Bus method on @proxy.
- * When the operation is finished, @callback will be invoked in the thread-default main loop of the thread you are calling this method from (see g_main_context_push_thread_default()).
- * You can then call meta_dbus_display_config_call_reset_luminance_finish() to get the result of the operation.
- *
- * See meta_dbus_display_config_call_reset_luminance_sync() for the synchronous, blocking version of this method.
- */
-void
-meta_dbus_display_config_call_reset_luminance (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    GCancellable *cancellable,
-    GAsyncReadyCallback callback,
-    gpointer user_data)
-{
-  g_dbus_proxy_call (G_DBUS_PROXY (proxy),
-    "ResetLuminance",
-    g_variant_new ("(su)",
-                   arg_connector,
-                   arg_color_mode),
-    G_DBUS_CALL_FLAGS_NONE,
-    -1,
-    cancellable,
-    callback,
-    user_data);
-}
-
-/**
- * meta_dbus_display_config_call_reset_luminance_finish:
- * @proxy: A #MetaDBusDisplayConfigProxy.
- * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to meta_dbus_display_config_call_reset_luminance().
- * @error: Return location for error or %NULL.
- *
- * Finishes an operation started with meta_dbus_display_config_call_reset_luminance().
- *
- * Returns: (skip): %TRUE if the call succeeded, %FALSE if @error is set.
- */
-gboolean
-meta_dbus_display_config_call_reset_luminance_finish (
-    MetaDBusDisplayConfig *proxy,
-    GAsyncResult *res,
-    GError **error)
-{
-  GVariant *_ret;
-  _ret = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, error);
-  if (_ret == NULL)
-    goto _out;
-  g_variant_get (_ret,
-                 "()");
-  g_variant_unref (_ret);
-_out:
-  return _ret != NULL;
-}
-
-/**
- * meta_dbus_display_config_call_reset_luminance_sync:
- * @proxy: A #MetaDBusDisplayConfigProxy.
- * @arg_connector: Argument to pass with the method invocation.
- * @arg_color_mode: Argument to pass with the method invocation.
- * @cancellable: (nullable): A #GCancellable or %NULL.
- * @error: Return location for error or %NULL.
- *
- * Synchronously invokes the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.ResetLuminance">ResetLuminance()</link> D-Bus method on @proxy. The calling thread is blocked until a reply is received.
- *
- * See meta_dbus_display_config_call_reset_luminance() for the asynchronous version of this method.
- *
- * Returns: (skip): %TRUE if the call succeeded, %FALSE if @error is set.
- */
-gboolean
-meta_dbus_display_config_call_reset_luminance_sync (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    GCancellable *cancellable,
-    GError **error)
-{
-  GVariant *_ret;
-  _ret = g_dbus_proxy_call_sync (G_DBUS_PROXY (proxy),
-    "ResetLuminance",
-    g_variant_new ("(su)",
-                   arg_connector,
-                   arg_color_mode),
-    G_DBUS_CALL_FLAGS_NONE,
-    -1,
-    cancellable,
-    error);
-  if (_ret == NULL)
-    goto _out;
-  g_variant_get (_ret,
-                 "()");
-  g_variant_unref (_ret);
-_out:
-  return _ret != NULL;
-}
-
-/**
  * meta_dbus_display_config_call_get_crtc_gamma:
  * @proxy: A #MetaDBusDisplayConfigProxy.
  * @arg_serial: Argument to pass with the method invocation.
@@ -3220,9 +2656,9 @@ meta_dbus_display_config_call_get_crtc_gamma (
 gboolean
 meta_dbus_display_config_call_get_crtc_gamma_finish (
     MetaDBusDisplayConfig *proxy,
-    GVariant **out_red,
-    GVariant **out_green,
-    GVariant **out_blue,
+    GVariant ** out_red,
+    GVariant ** out_green,
+    GVariant ** out_blue,
     GAsyncResult *res,
     GError **error)
 {
@@ -3262,9 +2698,9 @@ meta_dbus_display_config_call_get_crtc_gamma_sync (
     MetaDBusDisplayConfig *proxy,
     guint arg_serial,
     guint arg_crtc,
-    GVariant **out_red,
-    GVariant **out_green,
-    GVariant **out_blue,
+    GVariant ** out_red,
+    GVariant ** out_green,
+    GVariant ** out_blue,
     GCancellable *cancellable,
     GError **error)
 {
@@ -3459,10 +2895,10 @@ meta_dbus_display_config_call_get_current_state (
 gboolean
 meta_dbus_display_config_call_get_current_state_finish (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_monitors,
-    GVariant **out_logical_monitors,
-    GVariant **out_properties,
+    guint* out_serial,
+    GVariant ** out_monitors,
+    GVariant ** out_logical_monitors,
+    GVariant ** out_properties,
     GAsyncResult *res,
     GError **error)
 {
@@ -3500,10 +2936,10 @@ _out:
 gboolean
 meta_dbus_display_config_call_get_current_state_sync (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_monitors,
-    GVariant **out_logical_monitors,
-    GVariant **out_properties,
+    guint* out_serial,
+    GVariant ** out_monitors,
+    GVariant ** out_logical_monitors,
+    GVariant ** out_properties,
     GCancellable *cancellable,
     GError **error)
 {
@@ -3850,42 +3286,6 @@ meta_dbus_display_config_complete_set_backlight (
 }
 
 /**
- * meta_dbus_display_config_complete_set_luminance:
- * @object: A #MetaDBusDisplayConfig.
- * @invocation: (transfer full): A #GDBusMethodInvocation.
- *
- * Helper function used in service implementations to finish handling invocations of the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.SetLuminance">SetLuminance()</link> D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
- *
- * This method will free @invocation, you cannot use it afterwards.
- */
-void
-meta_dbus_display_config_complete_set_luminance (
-    MetaDBusDisplayConfig *object G_GNUC_UNUSED,
-    GDBusMethodInvocation *invocation)
-{
-  g_dbus_method_invocation_return_value (invocation,
-    g_variant_new ("()"));
-}
-
-/**
- * meta_dbus_display_config_complete_reset_luminance:
- * @object: A #MetaDBusDisplayConfig.
- * @invocation: (transfer full): A #GDBusMethodInvocation.
- *
- * Helper function used in service implementations to finish handling invocations of the <link linkend="gdbus-method-org-gnome-Mutter-DisplayConfig.ResetLuminance">ResetLuminance()</link> D-Bus method. If you instead want to finish handling an invocation by returning an error, use g_dbus_method_invocation_return_error() or similar.
- *
- * This method will free @invocation, you cannot use it afterwards.
- */
-void
-meta_dbus_display_config_complete_reset_luminance (
-    MetaDBusDisplayConfig *object G_GNUC_UNUSED,
-    GDBusMethodInvocation *invocation)
-{
-  g_dbus_method_invocation_return_value (invocation,
-    g_variant_new ("()"));
-}
-
-/**
  * meta_dbus_display_config_complete_get_crtc_gamma:
  * @object: A #MetaDBusDisplayConfig.
  * @invocation: (transfer full): A #GDBusMethodInvocation.
@@ -4044,7 +3444,7 @@ meta_dbus_display_config_proxy_get_property (GObject      *object,
 {
   const _ExtendedGDBusPropertyInfo *info;
   GVariant *variant;
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 6);
   info = (const _ExtendedGDBusPropertyInfo *) _meta_dbus_display_config_property_info_pointers[prop_id - 1];
   variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (object), info->parent_struct.name);
   if (info->use_gvariant)
@@ -4091,7 +3491,7 @@ meta_dbus_display_config_proxy_set_property (GObject      *object,
 {
   const _ExtendedGDBusPropertyInfo *info;
   GVariant *variant;
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 6);
   info = (const _ExtendedGDBusPropertyInfo *) _meta_dbus_display_config_property_info_pointers[prop_id - 1];
   variant = g_dbus_gvalue_to_gvariant (value, G_VARIANT_TYPE (info->parent_struct.signature));
   g_dbus_proxy_call (G_DBUS_PROXY (object),
@@ -4180,19 +3580,6 @@ meta_dbus_display_config_proxy_get_backlight (MetaDBusDisplayConfig *object)
   GVariant *variant;
   GVariant *value = NULL;
   variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "Backlight");
-  value = variant;
-  if (variant != NULL)
-    g_variant_unref (variant);
-  return value;
-}
-
-static GVariant *
-meta_dbus_display_config_proxy_get_luminance (MetaDBusDisplayConfig *object)
-{
-  MetaDBusDisplayConfigProxy *proxy = META_DBUS_DISPLAY_CONFIG_PROXY (object);
-  GVariant *variant;
-  GVariant *value = NULL;
-  variant = g_dbus_proxy_get_cached_property (G_DBUS_PROXY (proxy), "Luminance");
   value = variant;
   if (variant != NULL)
     g_variant_unref (variant);
@@ -4312,7 +3699,6 @@ static void
 meta_dbus_display_config_proxy_iface_init (MetaDBusDisplayConfigIface *iface)
 {
   iface->get_backlight = meta_dbus_display_config_proxy_get_backlight;
-  iface->get_luminance = meta_dbus_display_config_proxy_get_luminance;
   iface->get_power_save_mode = meta_dbus_display_config_proxy_get_power_save_mode;
   iface->get_panel_orientation_managed = meta_dbus_display_config_proxy_get_panel_orientation_managed;
   iface->get_apply_monitors_config_allowed = meta_dbus_display_config_proxy_get_apply_monitors_config_allowed;
@@ -4770,12 +4156,18 @@ meta_dbus_display_config_skeleton_finalize (GObject *object)
 {
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
   guint n;
-  for (n = 0; n < 7; n++)
+  for (n = 0; n < 6; n++)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_display_config_skeleton_parent_class)->finalize (object);
@@ -4788,7 +4180,7 @@ meta_dbus_display_config_skeleton_get_property (GObject      *object,
   GParamSpec   *pspec G_GNUC_UNUSED)
 {
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 6);
   g_mutex_lock (&skeleton->priv->lock);
   g_value_copy (&skeleton->priv->properties[prop_id - 1], value);
   g_mutex_unlock (&skeleton->priv->lock);
@@ -4912,7 +4304,7 @@ meta_dbus_display_config_skeleton_set_property (GObject      *object,
 {
   const _ExtendedGDBusPropertyInfo *info;
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
-  g_assert (prop_id != 0 && prop_id - 1 < 7);
+  g_assert (prop_id != 0 && prop_id - 1 < 6);
   info = (const _ExtendedGDBusPropertyInfo *) _meta_dbus_display_config_property_info_pointers[prop_id - 1];
   g_mutex_lock (&skeleton->priv->lock);
   g_object_freeze_notify (object);
@@ -4939,14 +4331,13 @@ meta_dbus_display_config_skeleton_init (MetaDBusDisplayConfigSkeleton *skeleton)
 
   g_mutex_init (&skeleton->priv->lock);
   skeleton->priv->context = g_main_context_ref_thread_default ();
-  skeleton->priv->properties = g_new0 (GValue, 7);
+  skeleton->priv->properties = g_new0 (GValue, 6);
   g_value_init (&skeleton->priv->properties[0], G_TYPE_VARIANT);
-  g_value_init (&skeleton->priv->properties[1], G_TYPE_VARIANT);
-  g_value_init (&skeleton->priv->properties[2], G_TYPE_INT);
+  g_value_init (&skeleton->priv->properties[1], G_TYPE_INT);
+  g_value_init (&skeleton->priv->properties[2], G_TYPE_BOOLEAN);
   g_value_init (&skeleton->priv->properties[3], G_TYPE_BOOLEAN);
   g_value_init (&skeleton->priv->properties[4], G_TYPE_BOOLEAN);
   g_value_init (&skeleton->priv->properties[5], G_TYPE_BOOLEAN);
-  g_value_init (&skeleton->priv->properties[6], G_TYPE_BOOLEAN);
 }
 
 static GVariant *
@@ -4960,24 +4351,13 @@ meta_dbus_display_config_skeleton_get_backlight (MetaDBusDisplayConfig *object)
   return value;
 }
 
-static GVariant *
-meta_dbus_display_config_skeleton_get_luminance (MetaDBusDisplayConfig *object)
-{
-  MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
-  GVariant *value;
-  g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_variant (&(skeleton->priv->properties[1]));
-  g_mutex_unlock (&skeleton->priv->lock);
-  return value;
-}
-
 static gint 
 meta_dbus_display_config_skeleton_get_power_save_mode (MetaDBusDisplayConfig *object)
 {
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
   gint value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_int (&(skeleton->priv->properties[2]));
+  value = g_marshal_value_peek_int (&(skeleton->priv->properties[1]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -4988,7 +4368,7 @@ meta_dbus_display_config_skeleton_get_panel_orientation_managed (MetaDBusDisplay
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
   gboolean value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[3]));
+  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[2]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -4999,7 +4379,7 @@ meta_dbus_display_config_skeleton_get_apply_monitors_config_allowed (MetaDBusDis
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
   gboolean value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[4]));
+  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[3]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -5010,7 +4390,7 @@ meta_dbus_display_config_skeleton_get_night_light_supported (MetaDBusDisplayConf
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
   gboolean value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[5]));
+  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[4]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -5021,7 +4401,7 @@ meta_dbus_display_config_skeleton_get_has_external_monitor (MetaDBusDisplayConfi
   MetaDBusDisplayConfigSkeleton *skeleton = META_DBUS_DISPLAY_CONFIG_SKELETON (object);
   gboolean value;
   g_mutex_lock (&skeleton->priv->lock);
-  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[6]));
+  value = g_marshal_value_peek_boolean (&(skeleton->priv->properties[5]));
   g_mutex_unlock (&skeleton->priv->lock);
   return value;
 }
@@ -5057,7 +4437,6 @@ meta_dbus_display_config_skeleton_iface_init (MetaDBusDisplayConfigIface *iface)
 {
   iface->monitors_changed = _meta_dbus_display_config_on_signal_monitors_changed;
   iface->get_backlight = meta_dbus_display_config_skeleton_get_backlight;
-  iface->get_luminance = meta_dbus_display_config_skeleton_get_luminance;
   iface->get_power_save_mode = meta_dbus_display_config_skeleton_get_power_save_mode;
   iface->get_panel_orientation_managed = meta_dbus_display_config_skeleton_get_panel_orientation_managed;
   iface->get_apply_monitors_config_allowed = meta_dbus_display_config_skeleton_get_apply_monitors_config_allowed;

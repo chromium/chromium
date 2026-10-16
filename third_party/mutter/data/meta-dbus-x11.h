@@ -38,7 +38,7 @@ struct _MetaDBusX11Iface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusX11, g_object_unref)
 #endif
 
-GType meta_dbus_x11_get_type (void) G_GNUC_CONST;
+GType meta_dbus_x11_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_x11_interface_info (void);
 guint meta_dbus_x11_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -74,7 +74,7 @@ struct _MetaDBusX11ProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_x11_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_x11_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusX11Proxy, g_object_unref)
@@ -144,7 +144,7 @@ struct _MetaDBusX11SkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_x11_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_x11_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusX11Skeleton, g_object_unref)

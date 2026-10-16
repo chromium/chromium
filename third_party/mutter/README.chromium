@@ -1,7 +1,7 @@
 Name: mutter
 URL: https://gitlab.gnome.org/GNOME/mutter
-Version: 48.4
-Revision: d7dc2308e095f4267c7e5994b4d66b5f991b7afc
+Version: 51.1
+Revision: 9134e3a5869ce232bf95b77519005865747ba603
 Update Mechanism: Manual (https://crbug.com/503546519)
 License: GPL-2.0
 License File: LICENSE

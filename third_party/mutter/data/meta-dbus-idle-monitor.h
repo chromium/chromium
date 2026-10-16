@@ -63,7 +63,7 @@ struct _MetaDBusIdleMonitorIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusIdleMonitor, g_object_unref)
 #endif
 
-GType meta_dbus_idle_monitor_get_type (void) G_GNUC_CONST;
+GType meta_dbus_idle_monitor_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_idle_monitor_interface_info (void);
 guint meta_dbus_idle_monitor_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -111,13 +111,13 @@ void meta_dbus_idle_monitor_call_get_idletime (
 
 gboolean meta_dbus_idle_monitor_call_get_idletime_finish (
     MetaDBusIdleMonitor *proxy,
-    guint64 *out_idletime,
+    guint64* out_idletime,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_idle_monitor_call_get_idletime_sync (
     MetaDBusIdleMonitor *proxy,
-    guint64 *out_idletime,
+    guint64* out_idletime,
     GCancellable *cancellable,
     GError **error);
 
@@ -130,14 +130,14 @@ void meta_dbus_idle_monitor_call_add_idle_watch (
 
 gboolean meta_dbus_idle_monitor_call_add_idle_watch_finish (
     MetaDBusIdleMonitor *proxy,
-    guint *out_id,
+    guint* out_id,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_idle_monitor_call_add_idle_watch_sync (
     MetaDBusIdleMonitor *proxy,
     guint64 arg_interval,
-    guint *out_id,
+    guint* out_id,
     GCancellable *cancellable,
     GError **error);
 
@@ -149,13 +149,13 @@ void meta_dbus_idle_monitor_call_add_user_active_watch (
 
 gboolean meta_dbus_idle_monitor_call_add_user_active_watch_finish (
     MetaDBusIdleMonitor *proxy,
-    guint *out_id,
+    guint* out_id,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_idle_monitor_call_add_user_active_watch_sync (
     MetaDBusIdleMonitor *proxy,
-    guint *out_id,
+    guint* out_id,
     GCancellable *cancellable,
     GError **error);
 
@@ -220,7 +220,7 @@ struct _MetaDBusIdleMonitorProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_idle_monitor_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_idle_monitor_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusIdleMonitorProxy, g_object_unref)
@@ -290,7 +290,7 @@ struct _MetaDBusIdleMonitorSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_idle_monitor_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_idle_monitor_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusIdleMonitorSkeleton, g_object_unref)
@@ -315,7 +315,7 @@ struct _MetaDBusObjectIface
   GTypeInterface parent_iface;
 };
 
-GType meta_dbus_object_get_type (void) G_GNUC_CONST;
+GType meta_dbus_object_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusObject, g_object_unref)
@@ -347,7 +347,7 @@ struct _MetaDBusObjectProxyClass
   GDBusObjectProxyClass parent_class;
 };
 
-GType meta_dbus_object_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_object_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusObjectProxy, g_object_unref)
@@ -378,7 +378,7 @@ struct _MetaDBusObjectSkeletonClass
   GDBusObjectSkeletonClass parent_class;
 };
 
-GType meta_dbus_object_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_object_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusObjectSkeleton, g_object_unref)
@@ -416,7 +416,7 @@ struct _MetaDBusObjectManagerClientClass
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusObjectManagerClient, g_object_unref)
 #endif
 
-GType meta_dbus_object_manager_client_get_type (void) G_GNUC_CONST;
+GType meta_dbus_object_manager_client_get_type (void);
 
 GType meta_dbus_object_manager_client_get_proxy_type (GDBusObjectManagerClient *manager, const gchar *object_path, const gchar *interface_name, gpointer user_data);
 

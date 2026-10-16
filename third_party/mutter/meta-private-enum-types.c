@@ -92,9 +92,7 @@ meta_kms_device_flag_get_type (void)
         { META_KMS_DEVICE_FLAG_PREFERRED_PRIMARY, "META_KMS_DEVICE_FLAG_PREFERRED_PRIMARY", "preferred-primary" },
         { META_KMS_DEVICE_FLAG_NO_MODE_SETTING, "META_KMS_DEVICE_FLAG_NO_MODE_SETTING", "no-mode-setting" },
         { META_KMS_DEVICE_FLAG_HAS_ADDFB2, "META_KMS_DEVICE_FLAG_HAS_ADDFB2", "has-addfb2" },
-        { META_KMS_DEVICE_FLAG_FORCE_LEGACY, "META_KMS_DEVICE_FLAG_FORCE_LEGACY", "force-legacy" },
         { META_KMS_DEVICE_FLAG_DISABLE_CLIENT_MODIFIERS, "META_KMS_DEVICE_FLAG_DISABLE_CLIENT_MODIFIERS", "disable-client-modifiers" },
-        { META_KMS_DEVICE_FLAG_DISABLE_VRR, "META_KMS_DEVICE_FLAG_DISABLE_VRR", "disable-vrr" },
         { META_KMS_DEVICE_FLAG_SUPPORTS_COLOR_MODES, "META_KMS_DEVICE_FLAG_SUPPORTS_COLOR_MODES", "supports-color-modes" },
         { 0, NULL, NULL }
       };
@@ -116,7 +114,7 @@ meta_kms_resource_changes_get_type (void)
     {
       static const GFlagsValue values[] = {
         { META_KMS_RESOURCE_CHANGE_NONE, "META_KMS_RESOURCE_CHANGE_NONE", "none" },
-        { META_KMS_RESOURCE_CHANGE_GAMMA, "META_KMS_RESOURCE_CHANGE_GAMMA", "gamma" },
+        { META_KMS_RESOURCE_CHANGE_CRTC_COLOR_PIPELINE, "META_KMS_RESOURCE_CHANGE_CRTC_COLOR_PIPELINE", "crtc-color-pipeline" },
         { META_KMS_RESOURCE_CHANGE_NO_DEVICES, "META_KMS_RESOURCE_CHANGE_NO_DEVICES", "no-devices" },
         { META_KMS_RESOURCE_CHANGE_PRIVACY_SCREEN, "META_KMS_RESOURCE_CHANGE_PRIVACY_SCREEN", "privacy-screen" },
         { META_KMS_RESOURCE_CHANGE_FULL, "META_KMS_RESOURCE_CHANGE_FULL", "full" },
@@ -168,6 +166,28 @@ meta_kms_prop_type_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("MetaKmsPropType"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+meta_kms_inhibit_subset_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GEnumValue values[] = {
+        { META_KMS_INHIBIT_NONE, "META_KMS_INHIBIT_NONE", "none" },
+        { META_KMS_INHIBIT_ALL, "META_KMS_INHIBIT_ALL", "all" },
+        { META_KMS_INHIBIT_NON_TEST_ONLY, "META_KMS_INHIBIT_NON_TEST_ONLY", "non-test-only" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_enum_register_static (g_intern_static_string ("MetaKmsInhibitSubset"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }
@@ -268,6 +288,8 @@ meta_move_resize_flags_get_type (void)
         { META_MOVE_RESIZE_PLACEMENT_CHANGED, "META_MOVE_RESIZE_PLACEMENT_CHANGED", "placement-changed" },
         { META_MOVE_RESIZE_WAYLAND_CLIENT_RESIZE, "META_MOVE_RESIZE_WAYLAND_CLIENT_RESIZE", "wayland-client-resize" },
         { META_MOVE_RESIZE_CONSTRAIN, "META_MOVE_RESIZE_CONSTRAIN", "constrain" },
+        { META_MOVE_RESIZE_RECT_INVALID, "META_MOVE_RESIZE_RECT_INVALID", "rect-invalid" },
+        { META_MOVE_RESIZE_WAYLAND_FORCE_CONFIGURE, "META_MOVE_RESIZE_WAYLAND_FORCE_CONFIGURE", "wayland-force-configure" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -290,6 +312,7 @@ meta_place_flag_get_type (void)
         { META_PLACE_FLAG_NONE, "META_PLACE_FLAG_NONE", "none" },
         { META_PLACE_FLAG_FORCE_MOVE, "META_PLACE_FLAG_FORCE_MOVE", "force-move" },
         { META_PLACE_FLAG_DENIED_FOCUS_AND_NOT_TRANSIENT, "META_PLACE_FLAG_DENIED_FOCUS_AND_NOT_TRANSIENT", "denied-focus-and-not-transient" },
+        { META_PLACE_FLAG_CALCULATE, "META_PLACE_FLAG_CALCULATE", "calculate" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -312,6 +335,7 @@ meta_move_resize_result_flags_get_type (void)
         { META_MOVE_RESIZE_RESULT_MOVED, "META_MOVE_RESIZE_RESULT_MOVED", "moved" },
         { META_MOVE_RESIZE_RESULT_RESIZED, "META_MOVE_RESIZE_RESULT_RESIZED", "resized" },
         { META_MOVE_RESIZE_RESULT_STATE_CHANGED, "META_MOVE_RESIZE_RESULT_STATE_CHANGED", "state-changed" },
+        { META_MOVE_RESIZE_RESULT_UPDATE_UNCONSTRAINED, "META_MOVE_RESIZE_RESULT_UPDATE_UNCONSTRAINED", "update-unconstrained" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -435,6 +459,27 @@ meta_window_suspend_state_get_type (void)
       GType id;
 
       id = g_enum_register_static (g_intern_static_string ("MetaWindowSuspendState"), values);
+
+      g_once_init_leave (&g_enum_type_id, id);
+    }
+
+  return g_enum_type_id;
+}
+GType
+meta_window_apply_flags_get_type (void)
+{
+  static size_t g_enum_type_id = 0;
+
+  if (g_once_init_enter (&g_enum_type_id))
+    {
+      static const GFlagsValue values[] = {
+        { META_WINDOW_APPLY_FLAG_NONE, "META_WINDOW_APPLY_FLAG_NONE", "none" },
+        { META_WINDOW_APPLY_FLAG_ALWAYS_MOVE_RESIZE, "META_WINDOW_APPLY_FLAG_ALWAYS_MOVE_RESIZE", "always-move-resize" },
+        { 0, NULL, NULL }
+      };
+      GType id;
+
+      id = g_flags_register_static (g_intern_static_string ("MetaWindowApplyFlags"), values);
 
       g_once_init_leave (&g_enum_type_id, id);
     }

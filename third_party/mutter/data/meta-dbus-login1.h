@@ -505,7 +505,7 @@ struct _MetaDBusLogin1ManagerIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1Manager, g_object_unref)
 #endif
 
-GType meta_dbus_login1_manager_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_manager_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_login1_manager_interface_info (void);
 guint meta_dbus_login1_manager_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -858,14 +858,14 @@ void meta_dbus_login1_manager_call_get_session (
 
 gboolean meta_dbus_login1_manager_call_get_session_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_get_session_sync (
     MetaDBusLogin1Manager *proxy,
     const gchar *arg_session_id,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -878,14 +878,14 @@ void meta_dbus_login1_manager_call_get_session_by_pid (
 
 gboolean meta_dbus_login1_manager_call_get_session_by_pid_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_get_session_by_pid_sync (
     MetaDBusLogin1Manager *proxy,
     guint arg_pid,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -898,14 +898,14 @@ void meta_dbus_login1_manager_call_get_user (
 
 gboolean meta_dbus_login1_manager_call_get_user_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_get_user_sync (
     MetaDBusLogin1Manager *proxy,
     guint arg_uid,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -918,14 +918,14 @@ void meta_dbus_login1_manager_call_get_user_by_pid (
 
 gboolean meta_dbus_login1_manager_call_get_user_by_pid_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_get_user_by_pid_sync (
     MetaDBusLogin1Manager *proxy,
     guint arg_pid,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -938,14 +938,14 @@ void meta_dbus_login1_manager_call_get_seat (
 
 gboolean meta_dbus_login1_manager_call_get_seat_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_get_seat_sync (
     MetaDBusLogin1Manager *proxy,
     const gchar *arg_seat_id,
-    gchar **out_object_path,
+    gchar ** out_object_path,
     GCancellable *cancellable,
     GError **error);
 
@@ -957,13 +957,13 @@ void meta_dbus_login1_manager_call_list_sessions (
 
 gboolean meta_dbus_login1_manager_call_list_sessions_finish (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_sessions,
+    GVariant ** out_sessions,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_list_sessions_sync (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_sessions,
+    GVariant ** out_sessions,
     GCancellable *cancellable,
     GError **error);
 
@@ -975,13 +975,13 @@ void meta_dbus_login1_manager_call_list_sessions_ex (
 
 gboolean meta_dbus_login1_manager_call_list_sessions_ex_finish (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_sessions,
+    GVariant ** out_sessions,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_list_sessions_ex_sync (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_sessions,
+    GVariant ** out_sessions,
     GCancellable *cancellable,
     GError **error);
 
@@ -993,13 +993,13 @@ void meta_dbus_login1_manager_call_list_users (
 
 gboolean meta_dbus_login1_manager_call_list_users_finish (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_users,
+    GVariant ** out_users,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_list_users_sync (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_users,
+    GVariant ** out_users,
     GCancellable *cancellable,
     GError **error);
 
@@ -1011,13 +1011,13 @@ void meta_dbus_login1_manager_call_list_seats (
 
 gboolean meta_dbus_login1_manager_call_list_seats_finish (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_seats,
+    GVariant ** out_seats,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_list_seats_sync (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_seats,
+    GVariant ** out_seats,
     GCancellable *cancellable,
     GError **error);
 
@@ -1029,13 +1029,13 @@ void meta_dbus_login1_manager_call_list_inhibitors (
 
 gboolean meta_dbus_login1_manager_call_list_inhibitors_finish (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_inhibitors,
+    GVariant ** out_inhibitors,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_list_inhibitors_sync (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_inhibitors,
+    GVariant ** out_inhibitors,
     GCancellable *cancellable,
     GError **error);
 
@@ -1061,14 +1061,14 @@ void meta_dbus_login1_manager_call_create_session (
 
 gboolean meta_dbus_login1_manager_call_create_session_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_session_id,
-    gchar **out_object_path,
-    gchar **out_runtime_path,
-    GVariant **out_fifo_fd,
-    guint *out_uid,
-    gchar **out_seat_id,
-    guint *out_vtnr,
-    gboolean *out_existing,
+    gchar ** out_session_id,
+    gchar ** out_object_path,
+    gchar ** out_runtime_path,
+    GVariant ** out_fifo_fd,
+    guint* out_uid,
+    gchar ** out_seat_id,
+    guint* out_vtnr,
+    gboolean* out_existing,
     GAsyncResult *res,
     GError **error);
 
@@ -1088,14 +1088,14 @@ gboolean meta_dbus_login1_manager_call_create_session_sync (
     const gchar *arg_remote_user,
     const gchar *arg_remote_host,
     GVariant *arg_properties,
-    gchar **out_session_id,
-    gchar **out_object_path,
-    gchar **out_runtime_path,
-    GVariant **out_fifo_fd,
-    guint *out_uid,
-    gchar **out_seat_id,
-    guint *out_vtnr,
-    gboolean *out_existing,
+    gchar ** out_session_id,
+    gchar ** out_object_path,
+    gchar ** out_runtime_path,
+    GVariant ** out_fifo_fd,
+    guint* out_uid,
+    gchar ** out_seat_id,
+    guint* out_vtnr,
+    gboolean* out_existing,
     GCancellable *cancellable,
     GError **error);
 
@@ -1122,14 +1122,14 @@ void meta_dbus_login1_manager_call_create_session_with_pidfd (
 
 gboolean meta_dbus_login1_manager_call_create_session_with_pidfd_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_session_id,
-    gchar **out_object_path,
-    gchar **out_runtime_path,
-    GVariant **out_fifo_fd,
-    guint *out_uid,
-    gchar **out_seat_id,
-    guint *out_vtnr,
-    gboolean *out_existing,
+    gchar ** out_session_id,
+    gchar ** out_object_path,
+    gchar ** out_runtime_path,
+    GVariant ** out_fifo_fd,
+    guint* out_uid,
+    gchar ** out_seat_id,
+    guint* out_vtnr,
+    gboolean* out_existing,
     GAsyncResult *res,
     GError **error);
 
@@ -1150,14 +1150,14 @@ gboolean meta_dbus_login1_manager_call_create_session_with_pidfd_sync (
     const gchar *arg_remote_host,
     guint64 arg_flags,
     GVariant *arg_properties,
-    gchar **out_session_id,
-    gchar **out_object_path,
-    gchar **out_runtime_path,
-    GVariant **out_fifo_fd,
-    guint *out_uid,
-    gchar **out_seat_id,
-    guint *out_vtnr,
-    gboolean *out_existing,
+    gchar ** out_session_id,
+    gchar ** out_object_path,
+    gchar ** out_runtime_path,
+    GVariant ** out_fifo_fd,
+    guint* out_uid,
+    gchar ** out_seat_id,
+    guint* out_vtnr,
+    gboolean* out_existing,
     GCancellable *cancellable,
     GError **error);
 
@@ -1721,13 +1721,13 @@ void meta_dbus_login1_manager_call_can_power_off (
 
 gboolean meta_dbus_login1_manager_call_can_power_off_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_power_off_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1739,13 +1739,13 @@ void meta_dbus_login1_manager_call_can_reboot (
 
 gboolean meta_dbus_login1_manager_call_can_reboot_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_reboot_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1757,13 +1757,13 @@ void meta_dbus_login1_manager_call_can_halt (
 
 gboolean meta_dbus_login1_manager_call_can_halt_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_halt_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1775,13 +1775,13 @@ void meta_dbus_login1_manager_call_can_suspend (
 
 gboolean meta_dbus_login1_manager_call_can_suspend_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_suspend_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1793,13 +1793,13 @@ void meta_dbus_login1_manager_call_can_hibernate (
 
 gboolean meta_dbus_login1_manager_call_can_hibernate_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_hibernate_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1811,13 +1811,13 @@ void meta_dbus_login1_manager_call_can_hybrid_sleep (
 
 gboolean meta_dbus_login1_manager_call_can_hybrid_sleep_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_hybrid_sleep_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1829,13 +1829,13 @@ void meta_dbus_login1_manager_call_can_suspend_then_hibernate (
 
 gboolean meta_dbus_login1_manager_call_can_suspend_then_hibernate_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_suspend_then_hibernate_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1847,13 +1847,13 @@ void meta_dbus_login1_manager_call_can_sleep (
 
 gboolean meta_dbus_login1_manager_call_can_sleep_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_sleep_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1885,13 +1885,13 @@ void meta_dbus_login1_manager_call_cancel_scheduled_shutdown (
 
 gboolean meta_dbus_login1_manager_call_cancel_scheduled_shutdown_finish (
     MetaDBusLogin1Manager *proxy,
-    gboolean *out_cancelled,
+    gboolean* out_cancelled,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_cancel_scheduled_shutdown_sync (
     MetaDBusLogin1Manager *proxy,
-    gboolean *out_cancelled,
+    gboolean* out_cancelled,
     GCancellable *cancellable,
     GError **error);
 
@@ -1907,7 +1907,7 @@ void meta_dbus_login1_manager_call_inhibit (
 
 gboolean meta_dbus_login1_manager_call_inhibit_finish (
     MetaDBusLogin1Manager *proxy,
-    GVariant **out_pipe_fd,
+    GVariant ** out_pipe_fd,
     GAsyncResult *res,
     GError **error);
 
@@ -1917,7 +1917,7 @@ gboolean meta_dbus_login1_manager_call_inhibit_sync (
     const gchar *arg_who,
     const gchar *arg_why,
     const gchar *arg_mode,
-    GVariant **out_pipe_fd,
+    GVariant ** out_pipe_fd,
     GCancellable *cancellable,
     GError **error);
 
@@ -1929,13 +1929,13 @@ void meta_dbus_login1_manager_call_can_reboot_parameter (
 
 gboolean meta_dbus_login1_manager_call_can_reboot_parameter_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_reboot_parameter_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -1965,13 +1965,13 @@ void meta_dbus_login1_manager_call_can_reboot_to_firmware_setup (
 
 gboolean meta_dbus_login1_manager_call_can_reboot_to_firmware_setup_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_reboot_to_firmware_setup_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -2001,13 +2001,13 @@ void meta_dbus_login1_manager_call_can_reboot_to_boot_loader_menu (
 
 gboolean meta_dbus_login1_manager_call_can_reboot_to_boot_loader_menu_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_reboot_to_boot_loader_menu_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -2037,13 +2037,13 @@ void meta_dbus_login1_manager_call_can_reboot_to_boot_loader_entry (
 
 gboolean meta_dbus_login1_manager_call_can_reboot_to_boot_loader_entry_finish (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_login1_manager_call_can_reboot_to_boot_loader_entry_sync (
     MetaDBusLogin1Manager *proxy,
-    gchar **out_result,
+    gchar ** out_result,
     GCancellable *cancellable,
     GError **error);
 
@@ -2277,7 +2277,7 @@ struct _MetaDBusLogin1ManagerProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_login1_manager_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_manager_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1ManagerProxy, g_object_unref)
@@ -2347,7 +2347,7 @@ struct _MetaDBusLogin1ManagerSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_login1_manager_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_manager_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1ManagerSkeleton, g_object_unref)
@@ -2530,7 +2530,7 @@ struct _MetaDBusLogin1SessionIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1Session, g_object_unref)
 #endif
 
-GType meta_dbus_login1_session_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_session_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_login1_session_interface_info (void);
 guint meta_dbus_login1_session_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -2847,8 +2847,8 @@ void meta_dbus_login1_session_call_take_device (
 
 gboolean meta_dbus_login1_session_call_take_device_finish (
     MetaDBusLogin1Session *proxy,
-    GVariant **out_fd,
-    gboolean *out_inactive,
+    GVariant ** out_fd,
+    gboolean* out_inactive,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error);
@@ -2858,8 +2858,8 @@ gboolean meta_dbus_login1_session_call_take_device_sync (
     guint arg_major,
     guint arg_minor,
     GUnixFDList  *fd_list,
-    GVariant **out_fd,
-    gboolean *out_inactive,
+    GVariant ** out_fd,
+    gboolean* out_inactive,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error);
@@ -3044,7 +3044,7 @@ struct _MetaDBusLogin1SessionProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_login1_session_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_session_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1SessionProxy, g_object_unref)
@@ -3114,7 +3114,7 @@ struct _MetaDBusLogin1SessionSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_login1_session_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_session_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1SessionSkeleton, g_object_unref)
@@ -3184,7 +3184,7 @@ struct _MetaDBusLogin1SeatIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1Seat, g_object_unref)
 #endif
 
-GType meta_dbus_login1_seat_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_seat_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_login1_seat_interface_info (void);
 guint meta_dbus_login1_seat_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -3354,7 +3354,7 @@ struct _MetaDBusLogin1SeatProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_login1_seat_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_seat_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1SeatProxy, g_object_unref)
@@ -3424,7 +3424,7 @@ struct _MetaDBusLogin1SeatSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_login1_seat_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_login1_seat_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusLogin1SeatSkeleton, g_object_unref)

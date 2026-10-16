@@ -1,0 +1,10 @@
+# Overrides of mutter's default settings for running Chromium tests. This file
+# is compiled into gschemas.compiled along with mutter's schemas.
+
+[org.gnome.mutter]
+# Since mutter 49, nearly monitor-sized new windows are auto-maximized from an
+# idle callback after they're mapped, instead of before the initial configure.
+# This resizes test browser windows (e.g. with --force-device-scale-factor)
+# right after their first frame, making tests that wait for the initial paint
+# flaky.
+auto-maximize=false

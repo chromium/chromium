@@ -69,12 +69,6 @@ struct _MetaDBusDisplayConfigIface
     MetaDBusDisplayConfig *object,
     GDBusMethodInvocation *invocation);
 
-  gboolean (*handle_reset_luminance) (
-    MetaDBusDisplayConfig *object,
-    GDBusMethodInvocation *invocation,
-    const gchar *arg_connector,
-    guint arg_color_mode);
-
   gboolean (*handle_set_backlight) (
     MetaDBusDisplayConfig *object,
     GDBusMethodInvocation *invocation,
@@ -91,13 +85,6 @@ struct _MetaDBusDisplayConfigIface
     GVariant *arg_green,
     GVariant *arg_blue);
 
-  gboolean (*handle_set_luminance) (
-    MetaDBusDisplayConfig *object,
-    GDBusMethodInvocation *invocation,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    gdouble arg_luminance);
-
   gboolean (*handle_set_output_ctm) (
     MetaDBusDisplayConfig *object,
     GDBusMethodInvocation *invocation,
@@ -110,8 +97,6 @@ struct _MetaDBusDisplayConfigIface
   GVariant * (*get_backlight) (MetaDBusDisplayConfig *object);
 
   gboolean  (*get_has_external_monitor) (MetaDBusDisplayConfig *object);
-
-  GVariant * (*get_luminance) (MetaDBusDisplayConfig *object);
 
   gboolean  (*get_night_light_supported) (MetaDBusDisplayConfig *object);
 
@@ -128,7 +113,7 @@ struct _MetaDBusDisplayConfigIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDisplayConfig, g_object_unref)
 #endif
 
-GType meta_dbus_display_config_get_type (void) G_GNUC_CONST;
+GType meta_dbus_display_config_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_display_config_interface_info (void);
 guint meta_dbus_display_config_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -155,14 +140,6 @@ G_GNUC_DEPRECATED void meta_dbus_display_config_complete_change_backlight (
     gint new_value);
 
 void meta_dbus_display_config_complete_set_backlight (
-    MetaDBusDisplayConfig *object,
-    GDBusMethodInvocation *invocation);
-
-void meta_dbus_display_config_complete_set_luminance (
-    MetaDBusDisplayConfig *object,
-    GDBusMethodInvocation *invocation);
-
-void meta_dbus_display_config_complete_reset_luminance (
     MetaDBusDisplayConfig *object,
     GDBusMethodInvocation *invocation);
 
@@ -210,23 +187,23 @@ void meta_dbus_display_config_call_get_resources (
 
 gboolean meta_dbus_display_config_call_get_resources_finish (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_crtcs,
-    GVariant **out_outputs,
-    GVariant **out_modes,
-    gint *out_max_screen_width,
-    gint *out_max_screen_height,
+    guint* out_serial,
+    GVariant ** out_crtcs,
+    GVariant ** out_outputs,
+    GVariant ** out_modes,
+    gint* out_max_screen_width,
+    gint* out_max_screen_height,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_display_config_call_get_resources_sync (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_crtcs,
-    GVariant **out_outputs,
-    GVariant **out_modes,
-    gint *out_max_screen_width,
-    gint *out_max_screen_height,
+    guint* out_serial,
+    GVariant ** out_crtcs,
+    GVariant ** out_outputs,
+    GVariant ** out_modes,
+    gint* out_max_screen_width,
+    gint* out_max_screen_height,
     GCancellable *cancellable,
     GError **error);
 
@@ -265,7 +242,7 @@ G_GNUC_DEPRECATED void meta_dbus_display_config_call_change_backlight (
 
 G_GNUC_DEPRECATED gboolean meta_dbus_display_config_call_change_backlight_finish (
     MetaDBusDisplayConfig *proxy,
-    gint *out_new_value,
+    gint* out_new_value,
     GAsyncResult *res,
     GError **error);
 
@@ -274,7 +251,7 @@ G_GNUC_DEPRECATED gboolean meta_dbus_display_config_call_change_backlight_sync (
     guint arg_serial,
     guint arg_output,
     gint arg_value,
-    gint *out_new_value,
+    gint* out_new_value,
     GCancellable *cancellable,
     GError **error);
 
@@ -300,48 +277,6 @@ gboolean meta_dbus_display_config_call_set_backlight_sync (
     GCancellable *cancellable,
     GError **error);
 
-void meta_dbus_display_config_call_set_luminance (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    gdouble arg_luminance,
-    GCancellable *cancellable,
-    GAsyncReadyCallback callback,
-    gpointer user_data);
-
-gboolean meta_dbus_display_config_call_set_luminance_finish (
-    MetaDBusDisplayConfig *proxy,
-    GAsyncResult *res,
-    GError **error);
-
-gboolean meta_dbus_display_config_call_set_luminance_sync (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    gdouble arg_luminance,
-    GCancellable *cancellable,
-    GError **error);
-
-void meta_dbus_display_config_call_reset_luminance (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    GCancellable *cancellable,
-    GAsyncReadyCallback callback,
-    gpointer user_data);
-
-gboolean meta_dbus_display_config_call_reset_luminance_finish (
-    MetaDBusDisplayConfig *proxy,
-    GAsyncResult *res,
-    GError **error);
-
-gboolean meta_dbus_display_config_call_reset_luminance_sync (
-    MetaDBusDisplayConfig *proxy,
-    const gchar *arg_connector,
-    guint arg_color_mode,
-    GCancellable *cancellable,
-    GError **error);
-
 void meta_dbus_display_config_call_get_crtc_gamma (
     MetaDBusDisplayConfig *proxy,
     guint arg_serial,
@@ -352,9 +287,9 @@ void meta_dbus_display_config_call_get_crtc_gamma (
 
 gboolean meta_dbus_display_config_call_get_crtc_gamma_finish (
     MetaDBusDisplayConfig *proxy,
-    GVariant **out_red,
-    GVariant **out_green,
-    GVariant **out_blue,
+    GVariant ** out_red,
+    GVariant ** out_green,
+    GVariant ** out_blue,
     GAsyncResult *res,
     GError **error);
 
@@ -362,9 +297,9 @@ gboolean meta_dbus_display_config_call_get_crtc_gamma_sync (
     MetaDBusDisplayConfig *proxy,
     guint arg_serial,
     guint arg_crtc,
-    GVariant **out_red,
-    GVariant **out_green,
-    GVariant **out_blue,
+    GVariant ** out_red,
+    GVariant ** out_green,
+    GVariant ** out_blue,
     GCancellable *cancellable,
     GError **error);
 
@@ -402,19 +337,19 @@ void meta_dbus_display_config_call_get_current_state (
 
 gboolean meta_dbus_display_config_call_get_current_state_finish (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_monitors,
-    GVariant **out_logical_monitors,
-    GVariant **out_properties,
+    guint* out_serial,
+    GVariant ** out_monitors,
+    GVariant ** out_logical_monitors,
+    GVariant ** out_properties,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_display_config_call_get_current_state_sync (
     MetaDBusDisplayConfig *proxy,
-    guint *out_serial,
-    GVariant **out_monitors,
-    GVariant **out_logical_monitors,
-    GVariant **out_properties,
+    guint* out_serial,
+    GVariant ** out_monitors,
+    GVariant ** out_logical_monitors,
+    GVariant ** out_properties,
     GCancellable *cancellable,
     GError **error);
 
@@ -471,10 +406,6 @@ GVariant *meta_dbus_display_config_get_backlight (MetaDBusDisplayConfig *object)
 GVariant *meta_dbus_display_config_dup_backlight (MetaDBusDisplayConfig *object);
 void meta_dbus_display_config_set_backlight (MetaDBusDisplayConfig *object, GVariant *value);
 
-GVariant *meta_dbus_display_config_get_luminance (MetaDBusDisplayConfig *object);
-GVariant *meta_dbus_display_config_dup_luminance (MetaDBusDisplayConfig *object);
-void meta_dbus_display_config_set_luminance (MetaDBusDisplayConfig *object, GVariant *value);
-
 gint meta_dbus_display_config_get_power_save_mode (MetaDBusDisplayConfig *object);
 void meta_dbus_display_config_set_power_save_mode (MetaDBusDisplayConfig *object, gint value);
 
@@ -516,7 +447,7 @@ struct _MetaDBusDisplayConfigProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_display_config_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_display_config_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDisplayConfigProxy, g_object_unref)
@@ -586,7 +517,7 @@ struct _MetaDBusDisplayConfigSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_display_config_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_display_config_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDisplayConfigSkeleton, g_object_unref)

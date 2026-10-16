@@ -461,7 +461,7 @@ meta_dbus_input_mapping_call_get_device_mapping (
 gboolean
 meta_dbus_input_mapping_call_get_device_mapping_finish (
     MetaDBusInputMapping *proxy,
-    GVariant **out_rect,
+    GVariant ** out_rect,
     GAsyncResult *res,
     GError **error)
 {
@@ -495,7 +495,7 @@ gboolean
 meta_dbus_input_mapping_call_get_device_mapping_sync (
     MetaDBusInputMapping *proxy,
     const gchar *arg_device_node,
-    GVariant **out_rect,
+    GVariant ** out_rect,
     GCancellable *cancellable,
     GError **error)
 {
@@ -1114,8 +1114,14 @@ meta_dbus_input_mapping_skeleton_finalize (GObject *object)
 {
   MetaDBusInputMappingSkeleton *skeleton = META_DBUS_INPUT_MAPPING_SKELETON (object);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_input_mapping_skeleton_parent_class)->finalize (object);

@@ -68,6 +68,22 @@ typedef struct
   uint64_t time_us;
 } MetaWaylandUiControlsSeenEvent;
 
+/* A key or mouse button request whose modifier key presses have been injected,
+ * but whose remaining events are deferred until the modifier presses have been
+ * dispatched. See notify_modifiers(). */
+typedef struct
+{
+  struct wl_resource *resource;
+  bool is_key;
+  uint32_t key_or_button;
+  uint32_t state;
+  uint32_t pressed_modifiers;
+  uint32_t id;
+
+  /* The last injected modifier key press. */
+  uint64_t modifier_press_time_us;
+} MetaWaylandUiControlsPendingInput;
+
 typedef struct
 {
   MetaWaylandCompositor *compositor;
@@ -97,11 +113,17 @@ typedef struct
    * move/resize has not yet been applied. */
   guint pending_drag_motions;
   gulong after_update_handler_id;
+
+  MetaWaylandUiControlsPendingInput *pending_input;
+  guint pending_input_idle_id;
+  guint pending_input_timeout_id;
 } MetaWaylandUiControls;
 
 /* Prototypes for the link-time wrapper of meta_wayland_compositor_new(). */
 MetaWaylandCompositor *__real_meta_wayland_compositor_new (MetaContext *context);
 MetaWaylandCompositor *__wrap_meta_wayland_compositor_new (MetaContext *context);
+
+static void schedule_continue_pending_input (MetaWaylandUiControls *ui_controls);
 
 static void
 notify_request_done (MetaWaylandUiControlsRequest *request)
@@ -315,6 +337,11 @@ on_event_filter (const ClutterEvent *event,
       return CLUTTER_EVENT_PROPAGATE;
     }
 
+  if (ui_controls->pending_input && event_type == CLUTTER_KEY_PRESS &&
+      clutter_event_get_time_us (event) ==
+        ui_controls->pending_input->modifier_press_time_us)
+    schedule_continue_pending_input (ui_controls);
+
   if (event_type == CLUTTER_MOTION && ui_controls->window_drag &&
       !g_queue_is_empty (ui_controls->pointer_move_requests_during_grab))
     {
@@ -429,32 +456,37 @@ store_request (MetaWaylandUiControls *ui_controls,
   g_queue_push_tail (ui_controls->requests, request);
 }
 
-static void
+/**
+ * Injects key events for the given modifiers. Returns the time of the last
+ * injected event.
+ **/
+static uint64_t
 notify_modifiers (MetaWaylandUiControls *ui_controls,
                   uint32_t               pressed_modifiers,
                   uint32_t               key_state)
 {
-  if (pressed_modifiers != 0)
+  uint64_t time_us = 0;
+
+  if (pressed_modifiers & ZCR_UI_CONTROLS_V2_MODIFIER_SHIFT)
     {
-      if (pressed_modifiers & ZCR_UI_CONTROLS_V2_MODIFIER_SHIFT)
-        {
-          clutter_virtual_input_device_notify_key (
-            ui_controls->virtual_keyboard, g_get_monotonic_time (),
-            KEY_LEFTSHIFT, key_state);
-        }
-      if (pressed_modifiers & ZCR_UI_CONTROLS_V2_MODIFIER_CONTROL)
-        {
-          clutter_virtual_input_device_notify_key (
-            ui_controls->virtual_keyboard, g_get_monotonic_time (),
-            KEY_LEFTCTRL, key_state);
-        }
-      if (pressed_modifiers & ZCR_UI_CONTROLS_V2_MODIFIER_ALT)
-        {
-          clutter_virtual_input_device_notify_key (
-            ui_controls->virtual_keyboard, g_get_monotonic_time (),
-            KEY_LEFTALT, key_state);
-        }
+      time_us = g_get_monotonic_time ();
+      clutter_virtual_input_device_notify_key (
+        ui_controls->virtual_keyboard, time_us, KEY_LEFTSHIFT, key_state);
     }
+  if (pressed_modifiers & ZCR_UI_CONTROLS_V2_MODIFIER_CONTROL)
+    {
+      time_us = g_get_monotonic_time ();
+      clutter_virtual_input_device_notify_key (
+        ui_controls->virtual_keyboard, time_us, KEY_LEFTCTRL, key_state);
+    }
+  if (pressed_modifiers & ZCR_UI_CONTROLS_V2_MODIFIER_ALT)
+    {
+      time_us = g_get_monotonic_time ();
+      clutter_virtual_input_device_notify_key (
+        ui_controls->virtual_keyboard, time_us, KEY_LEFTALT, key_state);
+    }
+
+  return time_us;
 }
 
 /**
@@ -478,27 +510,25 @@ create_virtual_input_devices (MetaWaylandUiControls *ui_controls)
     clutter_seat_create_virtual_device (seat, CLUTTER_KEYBOARD_DEVICE);
 }
 
+/**
+ * Injects the events for a key request, except for modifier key presses, which
+ * must already have been injected.
+ **/
 static void
-ui_controls_send_key_events (struct wl_client   *client,
-                             struct wl_resource *resource,
-                             uint32_t            key,
-                             uint32_t            key_state,
-                             uint32_t            pressed_modifiers,
-                             uint32_t            id)
+send_key_events_after_modifiers (MetaWaylandUiControls *ui_controls,
+                                 struct wl_resource    *resource,
+                                 uint32_t               key,
+                                 uint32_t               key_state,
+                                 uint32_t               pressed_modifiers,
+                                 uint32_t               id)
 {
-  MetaWaylandUiControls *ui_controls = wl_resource_get_user_data (resource);
   ClutterEventType event_type;
   uint64_t time_us;
-
-  meta_topic (META_DEBUG_INPUT, "%s id=%u key=%u state=%u has_modifiers=%d",
-              __func__, id, key, key_state, pressed_modifiers != 0);
 
   if (key_state & ZCR_UI_CONTROLS_V2_KEY_STATE_PRESS)
     {
       event_type = CLUTTER_KEY_PRESS;
       time_us = g_get_monotonic_time ();
-      notify_modifiers (ui_controls, pressed_modifiers,
-                        CLUTTER_KEY_STATE_PRESSED);
       clutter_virtual_input_device_notify_key (ui_controls->virtual_keyboard,
                                                time_us, key,
                                                CLUTTER_KEY_STATE_PRESSED);
@@ -516,6 +546,51 @@ ui_controls_send_key_events (struct wl_client   *client,
 
   store_request (ui_controls, resource, id, event_type, time_us,
                  false /*wait_for_pointer_focus=*/);
+}
+
+/**
+ * Injects the modifier key presses for a key or mouse button request and
+ * defers the remaining events until mutter has dispatched the modifier presses.
+ *
+ * The native backend updates the keymap's modifier state, which mutter uses to
+ * send wl_keyboard.modifiers after a key event, from a high priority idle that
+ * the input thread queues before the key event itself. If all of the request's
+ * events were injected at once, the idles for both the modifier presses and
+ * releases would run before the modifier presses are dispatched, so the client
+ * would never be told that the modifiers are pressed.
+ **/
+static void
+defer_until_modifiers_pressed (MetaWaylandUiControls *ui_controls,
+                               struct wl_resource    *resource,
+                               bool                   is_key,
+                               uint32_t               key_or_button,
+                               uint32_t               state,
+                               uint32_t               pressed_modifiers,
+                               uint32_t               id);
+
+static void
+ui_controls_send_key_events (struct wl_client   *client,
+                             struct wl_resource *resource,
+                             uint32_t            key,
+                             uint32_t            key_state,
+                             uint32_t            pressed_modifiers,
+                             uint32_t            id)
+{
+  MetaWaylandUiControls *ui_controls = wl_resource_get_user_data (resource);
+
+  meta_topic (META_DEBUG_INPUT, "%s id=%u key=%u state=%u has_modifiers=%d",
+              __func__, id, key, key_state, pressed_modifiers != 0);
+
+  if ((key_state & ZCR_UI_CONTROLS_V2_KEY_STATE_PRESS) &&
+      pressed_modifiers != 0)
+    {
+      defer_until_modifiers_pressed (ui_controls, resource, true, key,
+                                     key_state, pressed_modifiers, id);
+      return;
+    }
+
+  send_key_events_after_modifiers (ui_controls, resource, key, key_state,
+                                   pressed_modifiers, id);
 }
 
 static void
@@ -590,21 +665,21 @@ ui_controls_send_mouse_move(struct wl_client   *client,
                  wait_for_pointer_focus);
 }
 
+/**
+ * Injects the events for a mouse button request, except for modifier key
+ * presses, which must already have been injected.
+ **/
 static void
-ui_controls_send_mouse_button (struct wl_client   *client,
-                               struct wl_resource *resource,
-                               uint32_t            button,
-                               uint32_t            button_state,
-                               uint32_t            pressed_modifiers,
-                               uint32_t            id)
+send_mouse_button_after_modifiers (MetaWaylandUiControls *ui_controls,
+                                   struct wl_resource    *resource,
+                                   uint32_t               button,
+                                   uint32_t               button_state,
+                                   uint32_t               pressed_modifiers,
+                                   uint32_t               id)
 {
-  MetaWaylandUiControls *ui_controls = wl_resource_get_user_data (resource);
   uint32_t clutter_button;
   ClutterEventType event_type;
   uint64_t time_us;
-
-  meta_topic (META_DEBUG_INPUT, "%s id=%u button=%u state=%u has_modifiers=%d",
-              __func__, id, button, button_state, pressed_modifiers != 0);
 
   switch (button)
     {
@@ -625,8 +700,6 @@ ui_controls_send_mouse_button (struct wl_client   *client,
     {
       event_type = CLUTTER_BUTTON_PRESS;
       time_us = g_get_monotonic_time ();
-      notify_modifiers (ui_controls, pressed_modifiers,
-                        CLUTTER_KEY_STATE_PRESSED);
       clutter_virtual_input_device_notify_button (ui_controls->virtual_pointer,
                                                   time_us, clutter_button,
                                                   CLUTTER_BUTTON_STATE_PRESSED);
@@ -647,6 +720,141 @@ ui_controls_send_mouse_button (struct wl_client   *client,
                  false /*wait_for_pointer_focus=*/);
 }
 
+static void
+ui_controls_send_mouse_button (struct wl_client   *client,
+                               struct wl_resource *resource,
+                               uint32_t            button,
+                               uint32_t            button_state,
+                               uint32_t            pressed_modifiers,
+                               uint32_t            id)
+{
+  MetaWaylandUiControls *ui_controls = wl_resource_get_user_data (resource);
+
+  meta_topic (META_DEBUG_INPUT, "%s id=%u button=%u state=%u has_modifiers=%d",
+              __func__, id, button, button_state, pressed_modifiers != 0);
+
+  if ((button_state & ZCR_UI_CONTROLS_V2_MOUSE_BUTTON_STATE_DOWN) &&
+      pressed_modifiers != 0)
+    {
+      defer_until_modifiers_pressed (ui_controls, resource, false, button,
+                                     button_state, pressed_modifiers, id);
+      return;
+    }
+
+  send_mouse_button_after_modifiers (ui_controls, resource, button,
+                                     button_state, pressed_modifiers, id);
+}
+
+static void
+clear_pending_input (MetaWaylandUiControls *ui_controls)
+{
+  g_clear_handle_id (&ui_controls->pending_input_idle_id, g_source_remove);
+  g_clear_handle_id (&ui_controls->pending_input_timeout_id, g_source_remove);
+  g_clear_pointer (&ui_controls->pending_input, g_free);
+}
+
+static void
+continue_pending_input (MetaWaylandUiControls *ui_controls)
+{
+  MetaWaylandUiControlsPendingInput *pending =
+    g_steal_pointer (&ui_controls->pending_input);
+
+  clear_pending_input (ui_controls);
+  if (!pending)
+    return;
+
+  meta_topic (META_DEBUG_INPUT, "%s id=%u", __func__, pending->id);
+
+  if (pending->is_key)
+    {
+      send_key_events_after_modifiers (ui_controls, pending->resource,
+                                       pending->key_or_button, pending->state,
+                                       pending->pressed_modifiers,
+                                       pending->id);
+    }
+  else
+    {
+      send_mouse_button_after_modifiers (ui_controls, pending->resource,
+                                         pending->key_or_button,
+                                         pending->state,
+                                         pending->pressed_modifiers,
+                                         pending->id);
+    }
+  g_free (pending);
+}
+
+static gboolean
+on_pending_input_idle (gpointer user_data)
+{
+  MetaWaylandUiControls *ui_controls = user_data;
+
+  ui_controls->pending_input_idle_id = 0;
+  continue_pending_input (ui_controls);
+
+  return G_SOURCE_REMOVE;
+}
+
+static gboolean
+on_pending_input_timeout (gpointer user_data)
+{
+  MetaWaylandUiControls *ui_controls = user_data;
+
+  ui_controls->pending_input_timeout_id = 0;
+  g_warning ("timed out waiting for modifier key presses to be dispatched");
+  continue_pending_input (ui_controls);
+
+  return G_SOURCE_REMOVE;
+}
+
+/**
+ * Called from the event filter when the last modifier key press is about to be
+ * handled. Continue once mutter has finished handling it.
+ **/
+static void
+schedule_continue_pending_input (MetaWaylandUiControls *ui_controls)
+{
+  if (ui_controls->pending_input_idle_id)
+    return;
+
+  ui_controls->pending_input_idle_id =
+    g_idle_add_full (G_PRIORITY_HIGH, on_pending_input_idle, ui_controls,
+                     NULL);
+}
+
+static void
+defer_until_modifiers_pressed (MetaWaylandUiControls *ui_controls,
+                               struct wl_resource    *resource,
+                               bool                   is_key,
+                               uint32_t               key_or_button,
+                               uint32_t               state,
+                               uint32_t               pressed_modifiers,
+                               uint32_t               id)
+{
+  MetaWaylandUiControlsPendingInput *pending;
+
+  /* Clients wait for each request to be processed before sending the next one,
+   * so there shouldn't be another pending request. Finish it if there is. */
+  if (ui_controls->pending_input)
+    continue_pending_input (ui_controls);
+
+  pending = g_new0 (MetaWaylandUiControlsPendingInput, 1);
+  pending->resource = resource;
+  pending->is_key = is_key;
+  pending->key_or_button = key_or_button;
+  pending->state = state;
+  pending->pressed_modifiers = pressed_modifiers;
+  pending->id = id;
+  pending->modifier_press_time_us =
+    notify_modifiers (ui_controls, pressed_modifiers,
+                      CLUTTER_KEY_STATE_PRESSED);
+  ui_controls->pending_input = pending;
+
+  /* In case the modifier presses are never dispatched, e.g. because a modifier
+   * was already pressed. */
+  ui_controls->pending_input_timeout_id =
+    g_timeout_add_seconds (1, on_pending_input_timeout, ui_controls);
+}
+
 static const struct zcr_ui_controls_v2_interface meta_ui_controls_interface = {
   ui_controls_send_key_events,
   ui_controls_send_mouse_move,
@@ -661,6 +869,8 @@ destroy_ui_controls (struct wl_resource *resource)
   meta_topic (META_DEBUG_INPUT, "%s", __func__);
 
   ui_controls->has_client = false;
+
+  clear_pending_input (ui_controls);
 
   // Ensure any pressed keys and buttons are released when a client resource is
   // destroyed. Destroying a virtual input device releases everything that is
@@ -708,6 +918,7 @@ meta_wayland_ui_controls_free (gpointer  data,
   g_clear_handle_id (&ui_controls->event_filter_id,
                      clutter_event_remove_filter);
   g_clear_handle_id (&ui_controls->seen_events_idle_id, g_source_remove);
+  clear_pending_input (ui_controls);
   g_clear_signal_handler (&ui_controls->after_update_handler_id,
                           ui_controls->stage);
   g_signal_handlers_disconnect_by_func (ui_controls->stage,

@@ -41,7 +41,7 @@ struct _MetaDBusInputMappingIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputMapping, g_object_unref)
 #endif
 
-GType meta_dbus_input_mapping_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_mapping_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_input_mapping_interface_info (void);
 guint meta_dbus_input_mapping_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -65,14 +65,14 @@ void meta_dbus_input_mapping_call_get_device_mapping (
 
 gboolean meta_dbus_input_mapping_call_get_device_mapping_finish (
     MetaDBusInputMapping *proxy,
-    GVariant **out_rect,
+    GVariant ** out_rect,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_input_mapping_call_get_device_mapping_sync (
     MetaDBusInputMapping *proxy,
     const gchar *arg_device_node,
-    GVariant **out_rect,
+    GVariant ** out_rect,
     GCancellable *cancellable,
     GError **error);
 
@@ -103,7 +103,7 @@ struct _MetaDBusInputMappingProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_input_mapping_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_mapping_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputMappingProxy, g_object_unref)
@@ -173,7 +173,7 @@ struct _MetaDBusInputMappingSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_input_mapping_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_input_mapping_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusInputMappingSkeleton, g_object_unref)

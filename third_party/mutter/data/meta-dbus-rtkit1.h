@@ -81,7 +81,7 @@ struct _MetaDBusRealtimeKit1Iface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusRealtimeKit1, g_object_unref)
 #endif
 
-GType meta_dbus_realtime_kit1_get_type (void) G_GNUC_CONST;
+GType meta_dbus_realtime_kit1_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_realtime_kit1_interface_info (void);
 guint meta_dbus_realtime_kit1_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -289,7 +289,7 @@ struct _MetaDBusRealtimeKit1ProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_realtime_kit1_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_realtime_kit1_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusRealtimeKit1Proxy, g_object_unref)
@@ -359,7 +359,7 @@ struct _MetaDBusRealtimeKit1SkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_realtime_kit1_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_realtime_kit1_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusRealtimeKit1Skeleton, g_object_unref)
@@ -396,7 +396,7 @@ struct _MetaDBusDBusPropertiesIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDBusProperties, g_object_unref)
 #endif
 
-GType meta_dbus_dbus_properties_get_type (void) G_GNUC_CONST;
+GType meta_dbus_dbus_properties_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_dbus_properties_interface_info (void);
 guint meta_dbus_dbus_properties_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -421,7 +421,7 @@ void meta_dbus_dbus_properties_call_get (
 
 gboolean meta_dbus_dbus_properties_call_get_finish (
     MetaDBusDBusProperties *proxy,
-    GVariant **out_value,
+    GVariant ** out_value,
     GAsyncResult *res,
     GError **error);
 
@@ -429,7 +429,7 @@ gboolean meta_dbus_dbus_properties_call_get_sync (
     MetaDBusDBusProperties *proxy,
     const gchar *arg_interface,
     const gchar *arg_property,
-    GVariant **out_value,
+    GVariant ** out_value,
     GCancellable *cancellable,
     GError **error);
 
@@ -460,7 +460,7 @@ struct _MetaDBusDBusPropertiesProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_dbus_properties_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_dbus_properties_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDBusPropertiesProxy, g_object_unref)
@@ -530,7 +530,7 @@ struct _MetaDBusDBusPropertiesSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_dbus_properties_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_dbus_properties_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDBusPropertiesSkeleton, g_object_unref)
@@ -565,7 +565,7 @@ struct _MetaDBusDBusIntrospectableIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDBusIntrospectable, g_object_unref)
 #endif
 
-GType meta_dbus_dbus_introspectable_get_type (void) G_GNUC_CONST;
+GType meta_dbus_dbus_introspectable_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_dbus_introspectable_interface_info (void);
 guint meta_dbus_dbus_introspectable_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -588,13 +588,13 @@ void meta_dbus_dbus_introspectable_call_introspect (
 
 gboolean meta_dbus_dbus_introspectable_call_introspect_finish (
     MetaDBusDBusIntrospectable *proxy,
-    gchar **out_data,
+    gchar ** out_data,
     GAsyncResult *res,
     GError **error);
 
 gboolean meta_dbus_dbus_introspectable_call_introspect_sync (
     MetaDBusDBusIntrospectable *proxy,
-    gchar **out_data,
+    gchar ** out_data,
     GCancellable *cancellable,
     GError **error);
 
@@ -625,7 +625,7 @@ struct _MetaDBusDBusIntrospectableProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_dbus_introspectable_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_dbus_introspectable_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDBusIntrospectableProxy, g_object_unref)
@@ -695,7 +695,7 @@ struct _MetaDBusDBusIntrospectableSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_dbus_introspectable_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_dbus_introspectable_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusDBusIntrospectableSkeleton, g_object_unref)

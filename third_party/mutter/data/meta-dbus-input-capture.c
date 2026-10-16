@@ -748,7 +748,7 @@ meta_dbus_input_capture_call_create_session (
 gboolean
 meta_dbus_input_capture_call_create_session_finish (
     MetaDBusInputCapture *proxy,
-    gchar **out_session_path,
+    gchar ** out_session_path,
     GAsyncResult *res,
     GError **error)
 {
@@ -782,7 +782,7 @@ gboolean
 meta_dbus_input_capture_call_create_session_sync (
     MetaDBusInputCapture *proxy,
     guint arg_capabilities,
-    gchar **out_session_path,
+    gchar ** out_session_path,
     GCancellable *cancellable,
     GError **error)
 {
@@ -1490,8 +1490,14 @@ meta_dbus_input_capture_skeleton_finalize (GObject *object)
     g_value_unset (&skeleton->priv->properties[n]);
   g_free (skeleton->priv->properties);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_input_capture_skeleton_parent_class)->finalize (object);
@@ -2737,8 +2743,8 @@ meta_dbus_input_capture_session_call_get_zones (
 gboolean
 meta_dbus_input_capture_session_call_get_zones_finish (
     MetaDBusInputCaptureSession *proxy,
-    guint *out_serial,
-    GVariant **out_zones,
+    guint* out_serial,
+    GVariant ** out_zones,
     GAsyncResult *res,
     GError **error)
 {
@@ -2772,8 +2778,8 @@ _out:
 gboolean
 meta_dbus_input_capture_session_call_get_zones_sync (
     MetaDBusInputCaptureSession *proxy,
-    guint *out_serial,
-    GVariant **out_zones,
+    guint* out_serial,
+    GVariant ** out_zones,
     GCancellable *cancellable,
     GError **error)
 {
@@ -2846,7 +2852,7 @@ meta_dbus_input_capture_session_call_add_barrier (
 gboolean
 meta_dbus_input_capture_session_call_add_barrier_finish (
     MetaDBusInputCaptureSession *proxy,
-    guint *out_id,
+    guint* out_id,
     GAsyncResult *res,
     GError **error)
 {
@@ -2882,7 +2888,7 @@ meta_dbus_input_capture_session_call_add_barrier_sync (
     MetaDBusInputCaptureSession *proxy,
     guint arg_serial,
     GVariant *arg_position,
-    guint *out_id,
+    guint* out_id,
     GCancellable *cancellable,
     GError **error)
 {
@@ -3230,7 +3236,7 @@ meta_dbus_input_capture_session_call_connect_to_eis (
 gboolean
 meta_dbus_input_capture_session_call_connect_to_eis_finish (
     MetaDBusInputCaptureSession *proxy,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GAsyncResult *res,
     GError **error)
@@ -3266,7 +3272,7 @@ gboolean
 meta_dbus_input_capture_session_call_connect_to_eis_sync (
     MetaDBusInputCaptureSession *proxy,
     GUnixFDList  *fd_list,
-    GVariant **out_fd,
+    GVariant ** out_fd,
     GUnixFDList **out_fd_list,
     GCancellable *cancellable,
     GError **error)
@@ -4333,8 +4339,14 @@ meta_dbus_input_capture_session_skeleton_finalize (GObject *object)
 {
   MetaDBusInputCaptureSessionSkeleton *skeleton = META_DBUS_INPUT_CAPTURE_SESSION_SKELETON (object);
   g_list_free_full (skeleton->priv->changed_properties, (GDestroyNotify) _changed_property_free);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
+  /* coverity[missing_lock : SUPPRESS] */
+  g_clear_pointer (&skeleton->priv->changed_properties_idle_source, g_source_destroy);
+#else
   if (skeleton->priv->changed_properties_idle_source != NULL)
     g_source_destroy (skeleton->priv->changed_properties_idle_source);
+skeleton->priv->changed_properties_idle_source = NULL;
+#endif
   g_main_context_unref (skeleton->priv->context);
   g_mutex_clear (&skeleton->priv->lock);
   G_OBJECT_CLASS (meta_dbus_input_capture_session_skeleton_parent_class)->finalize (object);

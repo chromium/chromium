@@ -2,13 +2,13 @@
 #define GETTEXT_PACKAGE "mutter"
 
 /* Version number of package */
-#define VERSION "48.4"
+#define VERSION "51.1"
 
 /* Name of package */
 #define PACKAGE_NAME "mutter"
 
 /* Version number of package */
-#define PACKAGE_VERSION "48.4"
+#define PACKAGE_VERSION "51.1"
 
 /* Search path for plugins */
 #define MUTTER_PLUGIN_DIR "."
@@ -20,18 +20,10 @@
 #define MUTTER_LIBEXECDIR "/usr/libexec"
 
 /* */
-#define MUTTER_PKGDATADIR "/usr/share/mutter-16"
+#define MUTTER_PKGDATADIR "/usr/share/mutter-51"
 
 /* Defined if EGL support is enabled */
 #define HAVE_EGL
-
-/* Defined if EGLDevice support is enabled */
-#undef HAVE_EGL_DEVICE
-
-/* Have GLX for rendering */
-#undef HAVE_GLX
-
-#undef HAVE_EGL_PLATFORM_XLIB
 
 /* Have GL for rendering */
 #define HAVE_GL
@@ -39,47 +31,26 @@
 /* Have GLES 2.0 for rendering */
 #define HAVE_GLES2
 
-/* Defined if EGLStream support is enabled */
-#undef HAVE_WAYLAND_EGLSTREAM
-
-/* Building with gudev for device type detection */
-#define HAVE_LIBGUDEV
-
 /* Building with libwacom for advanced tablet management */
 #undef HAVE_LIBWACOM
 
 /* libwacom has get_num_rings() */
 #undef HAVE_LIBWACOM_GET_NUM_RINGS
 
-/* Building with logind */
-#define HAVE_LOGIND
-
-/* Define if you want to enable the native (KMS) backend based on systemd */
-#define HAVE_NATIVE_BACKEND
-
-/* Define if you want to enable Wayland support */
-#define HAVE_WAYLAND
-
 /* Define if you want to enable XWayland support */
 #undef HAVE_XWAYLAND
 
-/* Define if you want to enable X11 backend support */
-#undef HAVE_X11
-
-/* Define if either XWayland or X11 backend are enabled */
-#undef HAVE_X11_CLIENT
-
 /* Defined if screen cast and remote desktop support is enabled */
 #undef HAVE_REMOTE_DESKTOP
+
+/* Defined if the devkit is enabled */
+#undef HAVE_DEVKIT
 
 /* Defined if gnome-desktop is enabled */
 #undef HAVE_GNOME_DESKTOP
 
 /* Defined if sound player is enabled */
 #undef HAVE_SOUND_PLAYER
-
-/* Building with SM support */
-#undef HAVE_SM
 
 /* Building with startup notification support */
 #undef HAVE_STARTUP_NOTIFICATION
@@ -130,9 +101,6 @@
 /* Supports timerfd_create/timerfd_settime */
 #define HAVE_TIMERFD
 
-/* Supports malloc_trim */
-#define HAVE_MALLOC_TRIM
-
 /* Supports eventfd */
 #define HAVE_EVENTFD
 
@@ -144,3 +112,9 @@
 
 /* Building with font rendering integration support */
 #undef HAVE_FONTS
+
+/* Whether libei has eis_event_ref() */
+#define HAVE_EIS_EVENT_REF
+
+/* Whether ASan testing is enabled */
+#undef HAVE_ASAN_TESTS

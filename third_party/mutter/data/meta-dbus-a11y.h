@@ -67,7 +67,7 @@ struct _MetaDBusKeyboardMonitorIface
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusKeyboardMonitor, g_object_unref)
 #endif
 
-GType meta_dbus_keyboard_monitor_get_type (void) G_GNUC_CONST;
+GType meta_dbus_keyboard_monitor_get_type (void);
 
 GDBusInterfaceInfo *meta_dbus_keyboard_monitor_interface_info (void);
 guint meta_dbus_keyboard_monitor_override_properties (GObjectClass *klass, guint property_id_begin);
@@ -219,7 +219,7 @@ struct _MetaDBusKeyboardMonitorProxyClass
   GDBusProxyClass parent_class;
 };
 
-GType meta_dbus_keyboard_monitor_proxy_get_type (void) G_GNUC_CONST;
+GType meta_dbus_keyboard_monitor_proxy_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusKeyboardMonitorProxy, g_object_unref)
@@ -289,13 +289,194 @@ struct _MetaDBusKeyboardMonitorSkeletonClass
   GDBusInterfaceSkeletonClass parent_class;
 };
 
-GType meta_dbus_keyboard_monitor_skeleton_get_type (void) G_GNUC_CONST;
+GType meta_dbus_keyboard_monitor_skeleton_get_type (void);
 
 #if GLIB_CHECK_VERSION(2, 44, 0)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusKeyboardMonitorSkeleton, g_object_unref)
 #endif
 
 MetaDBusKeyboardMonitor *meta_dbus_keyboard_monitor_skeleton_new (void);
+
+
+/* ------------------------------------------------------------------------ */
+/* Declarations for org.freedesktop.a11y.PointerLocator */
+
+#define META_DBUS_TYPE_POINTER_LOCATOR (meta_dbus_pointer_locator_get_type ())
+#define META_DBUS_POINTER_LOCATOR(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), META_DBUS_TYPE_POINTER_LOCATOR, MetaDBusPointerLocator))
+#define META_DBUS_IS_POINTER_LOCATOR(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), META_DBUS_TYPE_POINTER_LOCATOR))
+#define META_DBUS_POINTER_LOCATOR_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), META_DBUS_TYPE_POINTER_LOCATOR, MetaDBusPointerLocatorIface))
+
+struct _MetaDBusPointerLocator;
+typedef struct _MetaDBusPointerLocator MetaDBusPointerLocator;
+typedef struct _MetaDBusPointerLocatorIface MetaDBusPointerLocatorIface;
+
+struct _MetaDBusPointerLocatorIface
+{
+  GTypeInterface parent_iface;
+
+
+  gboolean (*handle_query_pointer) (
+    MetaDBusPointerLocator *object,
+    GDBusMethodInvocation *invocation);
+
+  void (*pointer_position_changed) (
+    MetaDBusPointerLocator *object);
+
+};
+
+#if GLIB_CHECK_VERSION(2, 44, 0)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusPointerLocator, g_object_unref)
+#endif
+
+GType meta_dbus_pointer_locator_get_type (void);
+
+GDBusInterfaceInfo *meta_dbus_pointer_locator_interface_info (void);
+guint meta_dbus_pointer_locator_override_properties (GObjectClass *klass, guint property_id_begin);
+
+
+/* D-Bus method call completion functions: */
+void meta_dbus_pointer_locator_complete_query_pointer (
+    MetaDBusPointerLocator *object,
+    GDBusMethodInvocation *invocation,
+    GVariant *app_data,
+    gdouble rel_x,
+    gdouble rel_y);
+
+
+
+/* D-Bus signal emissions functions: */
+void meta_dbus_pointer_locator_emit_pointer_position_changed (
+    MetaDBusPointerLocator *object);
+
+
+
+/* D-Bus method calls: */
+void meta_dbus_pointer_locator_call_query_pointer (
+    MetaDBusPointerLocator *proxy,
+    GCancellable *cancellable,
+    GAsyncReadyCallback callback,
+    gpointer user_data);
+
+gboolean meta_dbus_pointer_locator_call_query_pointer_finish (
+    MetaDBusPointerLocator *proxy,
+    GVariant ** out_app_data,
+    gdouble* out_rel_x,
+    gdouble* out_rel_y,
+    GAsyncResult *res,
+    GError **error);
+
+gboolean meta_dbus_pointer_locator_call_query_pointer_sync (
+    MetaDBusPointerLocator *proxy,
+    GVariant ** out_app_data,
+    gdouble* out_rel_x,
+    gdouble* out_rel_y,
+    GCancellable *cancellable,
+    GError **error);
+
+
+
+/* ---- */
+
+#define META_DBUS_TYPE_POINTER_LOCATOR_PROXY (meta_dbus_pointer_locator_proxy_get_type ())
+#define META_DBUS_POINTER_LOCATOR_PROXY(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), META_DBUS_TYPE_POINTER_LOCATOR_PROXY, MetaDBusPointerLocatorProxy))
+#define META_DBUS_POINTER_LOCATOR_PROXY_CLASS(k) (G_TYPE_CHECK_CLASS_CAST ((k), META_DBUS_TYPE_POINTER_LOCATOR_PROXY, MetaDBusPointerLocatorProxyClass))
+#define META_DBUS_POINTER_LOCATOR_PROXY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), META_DBUS_TYPE_POINTER_LOCATOR_PROXY, MetaDBusPointerLocatorProxyClass))
+#define META_DBUS_IS_POINTER_LOCATOR_PROXY(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), META_DBUS_TYPE_POINTER_LOCATOR_PROXY))
+#define META_DBUS_IS_POINTER_LOCATOR_PROXY_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), META_DBUS_TYPE_POINTER_LOCATOR_PROXY))
+
+typedef struct _MetaDBusPointerLocatorProxy MetaDBusPointerLocatorProxy;
+typedef struct _MetaDBusPointerLocatorProxyClass MetaDBusPointerLocatorProxyClass;
+typedef struct _MetaDBusPointerLocatorProxyPrivate MetaDBusPointerLocatorProxyPrivate;
+
+struct _MetaDBusPointerLocatorProxy
+{
+  /*< private >*/
+  GDBusProxy parent_instance;
+  MetaDBusPointerLocatorProxyPrivate *priv;
+};
+
+struct _MetaDBusPointerLocatorProxyClass
+{
+  GDBusProxyClass parent_class;
+};
+
+GType meta_dbus_pointer_locator_proxy_get_type (void);
+
+#if GLIB_CHECK_VERSION(2, 44, 0)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusPointerLocatorProxy, g_object_unref)
+#endif
+
+void meta_dbus_pointer_locator_proxy_new (
+    GDBusConnection     *connection,
+    GDBusProxyFlags      flags,
+    const gchar         *name,
+    const gchar         *object_path,
+    GCancellable        *cancellable,
+    GAsyncReadyCallback  callback,
+    gpointer             user_data);
+MetaDBusPointerLocator *meta_dbus_pointer_locator_proxy_new_finish (
+    GAsyncResult        *res,
+    GError             **error);
+MetaDBusPointerLocator *meta_dbus_pointer_locator_proxy_new_sync (
+    GDBusConnection     *connection,
+    GDBusProxyFlags      flags,
+    const gchar         *name,
+    const gchar         *object_path,
+    GCancellable        *cancellable,
+    GError             **error);
+
+void meta_dbus_pointer_locator_proxy_new_for_bus (
+    GBusType             bus_type,
+    GDBusProxyFlags      flags,
+    const gchar         *name,
+    const gchar         *object_path,
+    GCancellable        *cancellable,
+    GAsyncReadyCallback  callback,
+    gpointer             user_data);
+MetaDBusPointerLocator *meta_dbus_pointer_locator_proxy_new_for_bus_finish (
+    GAsyncResult        *res,
+    GError             **error);
+MetaDBusPointerLocator *meta_dbus_pointer_locator_proxy_new_for_bus_sync (
+    GBusType             bus_type,
+    GDBusProxyFlags      flags,
+    const gchar         *name,
+    const gchar         *object_path,
+    GCancellable        *cancellable,
+    GError             **error);
+
+
+/* ---- */
+
+#define META_DBUS_TYPE_POINTER_LOCATOR_SKELETON (meta_dbus_pointer_locator_skeleton_get_type ())
+#define META_DBUS_POINTER_LOCATOR_SKELETON(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), META_DBUS_TYPE_POINTER_LOCATOR_SKELETON, MetaDBusPointerLocatorSkeleton))
+#define META_DBUS_POINTER_LOCATOR_SKELETON_CLASS(k) (G_TYPE_CHECK_CLASS_CAST ((k), META_DBUS_TYPE_POINTER_LOCATOR_SKELETON, MetaDBusPointerLocatorSkeletonClass))
+#define META_DBUS_POINTER_LOCATOR_SKELETON_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), META_DBUS_TYPE_POINTER_LOCATOR_SKELETON, MetaDBusPointerLocatorSkeletonClass))
+#define META_DBUS_IS_POINTER_LOCATOR_SKELETON(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), META_DBUS_TYPE_POINTER_LOCATOR_SKELETON))
+#define META_DBUS_IS_POINTER_LOCATOR_SKELETON_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), META_DBUS_TYPE_POINTER_LOCATOR_SKELETON))
+
+typedef struct _MetaDBusPointerLocatorSkeleton MetaDBusPointerLocatorSkeleton;
+typedef struct _MetaDBusPointerLocatorSkeletonClass MetaDBusPointerLocatorSkeletonClass;
+typedef struct _MetaDBusPointerLocatorSkeletonPrivate MetaDBusPointerLocatorSkeletonPrivate;
+
+struct _MetaDBusPointerLocatorSkeleton
+{
+  /*< private >*/
+  GDBusInterfaceSkeleton parent_instance;
+  MetaDBusPointerLocatorSkeletonPrivate *priv;
+};
+
+struct _MetaDBusPointerLocatorSkeletonClass
+{
+  GDBusInterfaceSkeletonClass parent_class;
+};
+
+GType meta_dbus_pointer_locator_skeleton_get_type (void);
+
+#if GLIB_CHECK_VERSION(2, 44, 0)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (MetaDBusPointerLocatorSkeleton, g_object_unref)
+#endif
+
+MetaDBusPointerLocator *meta_dbus_pointer_locator_skeleton_new (void);
 
 
 G_END_DECLS
