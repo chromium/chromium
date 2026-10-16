@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -61,6 +62,13 @@ class SharedTabGroupInteractiveUiTest
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    TabStripInteractiveTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
+    TabGroupSyncServiceInitializedObserver initialized_observer(
+        TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile()));
+    initialized_observer.Wait();
   }
 
   MultiStep ShowBookmarksBar() {
@@ -219,19 +227,19 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
   ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
                 data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
 
-  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
-                  FinishTabstripAnimations(), ShowBookmarksBar(),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
-                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
-                  EnsurePresent(tab_groups::STGEverythingMenu::kTabGroup),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  Screenshot(STGEverythingMenu::kTabGroup,
-                             "shared_icon_in_app_menu", "5924633"),
-                  // Close the app menu to prevent flakes on mac.
-                  HoverTabAt(0), ClickMouse(),
-                  WaitForHide(AppMenuModel::kTabGroupsMenuItem));
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      ShowBookmarksBar(), PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      EnsurePresent(tab_groups::STGEverythingMenu::kTabGroup),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kSkipPixelTestsReason),
+      Screenshot(STGEverythingMenu::kTabGroup, "shared_icon_in_app_menu",
+                 "5924633"),
+      // Close the app menu to prevent flakes on mac.
+      HoverTabAt(0), ClickMouse(),
+      WaitForHide(AppMenuModel::kTabGroupsMenuItem));
 }
 
 // Take a screenshot of the shared tab group in the everything menu.
@@ -245,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
       ShowBookmarksBar(), PressButton(kSavedTabGroupOverflowButtonElementId),
       EnsurePresent(STGEverythingMenu::kTabGroup),
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSkipPixelTestsReason),
       Screenshot(STGEverythingMenu::kTabGroup, "shared_icon_in_everything_menu",
                  "5924633"),
@@ -269,13 +277,13 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
   browser()->GetTabStripModel()->ChangeTabGroupVisuals(
       group_id, *tab_group->visual_data());
 
-  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
-                  FinishTabstripAnimations(),
-                  NameTabGroupHeaderView(group_id, kTabGroupHeaderToScreenshot),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  Screenshot(kTabGroupHeaderToScreenshot,
-                             "shared_icon_in_tab_group_header", "5924633"));
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      NameTabGroupHeaderView(group_id, kTabGroupHeaderToScreenshot),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kSkipPixelTestsReason),
+      Screenshot(kTabGroupHeaderToScreenshot, "shared_icon_in_tab_group_header",
+                 "5924633"));
 }
 
 // Verify the closed metric is recorded when a shared group is closed from the

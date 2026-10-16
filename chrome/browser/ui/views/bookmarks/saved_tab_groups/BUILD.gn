@@ -139,6 +139,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
       "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/browser/ui/views/commerce",
