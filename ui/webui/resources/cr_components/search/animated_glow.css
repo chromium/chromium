@@ -32,8 +32,6 @@
   --drag-placeholder-font-size: 16px;
 
   --end-angle-expand_: 250deg;
-  --end-angle-listen_: 210deg;
-  --end-angle-submit_: 330deg;
 
   --expand-timing_: var(--glif-rotation-duration_)
       var(--standard-curve, var(--search-animated-glow-standard-curve));
@@ -81,8 +79,6 @@
   --search-animated-glow-standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
 
   --start-angle-expand_: 90deg;
-  --start-angle-submit_: 200deg;
-  --start-angle-listen_: 35deg;
 
   border-radius: inherit;
 
@@ -93,26 +89,6 @@
 
 :host([animation-state='expanding'][energy-effect-animation-enabled]) {
   --glow-animation-delay: 150ms;
-}
-
-/*
- * Style the host as a solid white base layer for the static energy effect
- * to prevent dark flashing gaps when the inner glow animation runs.
- */
-:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled]):not([is-listening])) {
-  background-color: var(--cr-composebox-background-color, var(--color-search-animated-glow-background));
-  border-radius: inherit;
-  display: block;
-  inset: 0;
-  position: absolute;
-}
-
-/*
- * Hide the legacy outer glow when energy effect is active but animations
- * are disabled, keeping only the inner border-width animation.
- */
-:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled]):not([is-listening])) .gradient-outer-glow {
-  display: none;
 }
 
 .audio-animation {
@@ -215,7 +191,7 @@
 
 :host([entrypoint-name='Omnibox'][animation-state='expanding'])
     .double-gradient::before,
-:host(:not([entrypoint-name='Omnibox'])[animation-state='expanding'])
+:host([animation-state='expanding'])
     .gradient::before {
   animation: gradient-spin-expand var(--glif-rotation-duration_)
     var(--search-animated-glow-gradient-curve) forwards;
@@ -224,8 +200,6 @@
 :host([entrypoint-name='Omnibox'][animation-state='expanding'])
     .gradient::before {
    --gradient-spin-expand-peak-opacity_: 0.4;
-  animation: gradient-spin-expand var(--glif-rotation-duration_)
-    var(--search-animated-glow-gradient-curve) forwards;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -345,13 +319,6 @@
   }
 }
 
-@keyframes blur-close {
-  17% {
-    filter: blur(30px);
-    opacity: 17.5%;
-  }
-}
-
 @keyframes gradient-spin-expand {
   0% {
     opacity: 0;
@@ -363,37 +330,6 @@
   100% {
     opacity: 0;
     transform: rotate(var(--end-angle-expand_));
-  }
-}
-
-/* So can go from "expanding" to "submit" and still trigger gradient-spin
- * (same animation not run twice unless it's a new animation or class). */
-@keyframes gradient-spin-submit {
-  0% {
-    opacity: 0;
-    transform: rotate(var(--start-angle-submit_));
-  }
-  17% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(var(--end-angle-submit_));
-  }
-}
-
-/* So can go from "expanding" to "listen" and still trigger gradient-spin. */
-@keyframes gradient-spin-listen {
-  0% {
-    opacity: 0;
-    transform: rotate(var(--start-angle-listen_));
-  }
-  8% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(var(--end-angle-listen_));
   }
 }
 
@@ -476,21 +412,6 @@
   }
   11% {
     filter: blur(7px);
-  }
-  100% {
-    filter: blur(0);
-  }
-}
-
-@keyframes plate-background-blur-on-listen {
-  0% {
-    filter: blur(0);
-  }
-  12% {
-    filter: blur(7px);
-  }
-  30% {
-    filter: blur(0.5px);
   }
   100% {
     filter: blur(0);
@@ -700,19 +621,6 @@
   pointer-events: none;
 }
 
-/*
- * The same style as the entry above, except for the inset value to avoid the
- * double border issue at the corners.
- */
-:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .background,
-:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='OmniboxEverywhere']) .background {
-  animation: none;
-  background-color: var(--cr-composebox-background-color, var(--color-search-animated-glow-background));
-  border-width: 0;
-  inset: 0;
-  pointer-events: none;
-}
-
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .background {
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
@@ -744,18 +652,6 @@
     border-width: 0;
   }
   17% {
-    border-width: var(--glow-stroke-width_);
-  }
-  100% {
-    border-width: 0;
-  }
-}
-
-@keyframes gradient-border-width-close-listen {
-  0% {
-    border-width: 0;
-  }
-  11% {
     border-width: var(--glow-stroke-width_);
   }
   100% {
