@@ -7,6 +7,7 @@
 #import <optional>
 #import <utility>
 
+#import "base/check.h"
 #import "base/containers/flat_set.h"
 #import "base/feature_list.h"
 #import "base/features.h"
@@ -29,6 +30,7 @@
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -57,7 +59,9 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
         sync_invalidations_service_(sync_invalidations_service),
         identity_manager_(identity_manager),
         personal_context_eligibility_service_(
-            personal_context_eligibility_service) {}
+            personal_context_eligibility_service) {
+    CHECK(prefs_);
+  }
   ~DeviceInfoSyncClient() override = default;
 
   // syncer::DeviceInfoSyncClient:
@@ -175,6 +179,14 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo
   GetLocalPersonalContextInfo() const override {
+    // `PersonalContextEligibilityServiceImpl` in `//components/` only checks
+    // `kGlicCompletedFre` on non-iOS platforms (`!BUILDFLAG(IS_IOS)`). On iOS,
+    // Gemini consent is tracked via `prefs::kIOSBwgConsent` in `//ios/`, so it
+    // must be checked explicitly here before sharing local personal context
+    // encryption keys.
+    if (!gemini::DidUserConsentToGemini(prefs_)) {
+      return syncer::DeviceInfo::PersonalContextInfo::NotEligible();
+    }
     return personal_context::PersonalContextKeyManager::
         GetLocalPersonalContextInfo(prefs_,
                                     personal_context_eligibility_service_);
