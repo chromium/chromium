@@ -150,9 +150,6 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16? tail_suggest_common_prefix;
   // Keyword UI state for this match. Empty if not a keyword suggestion.
   MatchKeywordModel? keyword_model;
-  // FuseboxAction carries client behavior and configuration to apply when the
-  // user accepts a suggestion.
-  fusebox_action.mojom.FuseboxAction? fusebox_action;
   // Precomputed URL emphasis for the text this match shows in the input:
   // `fill_into_edit`, or, for an inline-autocompleted default match, the
   // user's input text followed by `inline_autocompletion`.

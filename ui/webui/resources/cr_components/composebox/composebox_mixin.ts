@@ -2483,7 +2483,7 @@ export const ComposeboxEmbedderMixin =
 
         private maybeHandleSuggestionFuseboxAction_(
             match: AutocompleteMatch, event?: Event): boolean {
-          const action = match.fuseboxAction;
+          const action = match.suggestTemplate.fuseboxAction;
           if (!this.shouldHandleSuggestionFuseboxActions() || !action ||
               action.queryActionOverride === QueryActionOverride.kDefault) {
             return false;

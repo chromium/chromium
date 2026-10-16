@@ -4,7 +4,6 @@
 
 module action_chips.mojom;
 
-import "components/omnibox/browser/fusebox_action.mojom";
 import "components/omnibox/browser/searchbox.mojom";
 import "components/omnibox/browser/suggest_template_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -22,10 +21,6 @@ struct TabInfo {
 struct ActionChip {
   string suggestion;
   suggest_template_info.mojom.SuggestTemplateInfo suggest_template_info;
-  // What to do when the user clicks the chip, e.g. which tool to preselect.
-  // TODO(crbug.com/573636071): Move this and AutocompleteMatch.fusebox_action
-  // in searchbox.mojom into SuggestTemplateInfo.
-  fusebox_action.mojom.FuseboxAction? fusebox_action;
   // the tab associated with this chip.
   TabInfo? tab;
 };

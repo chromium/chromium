@@ -3085,10 +3085,10 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kFavicon,
               primaryText: 'TabContext',
               secondaryText: 'tab-subtitle',
-            }),
-            fuseboxAction: createFuseboxAction({
-              preselectedTool: ToolMode.kUnspecified,
-              preselectedModel: ModelMode.kUnspecified,
+              fuseboxAction: createFuseboxAction({
+                preselectedTool: ToolMode.kUnspecified,
+                preselectedModel: ModelMode.kUnspecified,
+              }),
             }),
             tab: fakeTab,
           },
@@ -3098,10 +3098,10 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kBanana,
               primaryText: 'Nano Banana',
               secondaryText: 'image-subtitle',
-            }),
-            fuseboxAction: createFuseboxAction({
-              preselectedTool: ToolMode.kImageGen,
-              preselectedModel: ModelMode.kUnspecified,
+              fuseboxAction: createFuseboxAction({
+                preselectedTool: ToolMode.kImageGen,
+                preselectedModel: ModelMode.kUnspecified,
+              }),
             }),
             tab: null,
           },
@@ -3111,10 +3111,10 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kGlobeWithSearchLoop,
               primaryText: 'DeepSearch',
               secondaryText: 'ds-subtitle',
-            }),
-            fuseboxAction: createFuseboxAction({
-              preselectedTool: ToolMode.kDeepSearch,
-              preselectedModel: ModelMode.kUnspecified,
+              fuseboxAction: createFuseboxAction({
+                preselectedTool: ToolMode.kDeepSearch,
+                preselectedModel: ModelMode.kUnspecified,
+              }),
             }),
             tab: null,
           },
@@ -3486,10 +3486,10 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kSubArrowRight,
               primaryText: 'Model test',
               secondaryText: 'subtitle',
-            }),
-            fuseboxAction: createFuseboxAction({
-              preselectedTool: ToolMode.kUnspecified,
-              preselectedModel: ModelMode.kGeminiPro,
+              fuseboxAction: createFuseboxAction({
+                preselectedTool: ToolMode.kUnspecified,
+                preselectedModel: ModelMode.kGeminiPro,
+              }),
             }),
             tab: null,
           }]);

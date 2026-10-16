@@ -11,6 +11,8 @@
 #include "base/containers/to_vector.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/fusebox_action.mojom.h"
+#include "components/omnibox/browser/fusebox_action_mojo_utils.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 namespace suggest_template_info {
@@ -103,6 +105,18 @@ mojom::IconType GetTypeIcon(const AutocompleteMatch& match) {
   return static_cast<mojom::IconType>(match.suggest_template->type_icon());
 }
 
+// Returns the FuseboxAction from the server-provided SuggestTemplateInfo of
+// `match`, or null if it has none.
+fusebox_action::mojom::FuseboxActionPtr GetFuseboxAction(
+    const AutocompleteMatch& match) {
+  if (!match.suggest_template ||
+      !match.suggest_template->has_fusebox_action()) {
+    return nullptr;
+  }
+  return fusebox_action::SyncFuseboxActionProtoToMojo(
+      match.suggest_template->fusebox_action());
+}
+
 }  // namespace
 
 mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
@@ -131,6 +145,7 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
         static_cast<mojom::SuggestStyle>(match.suggest_template->style());
   }
   suggest_template->type_icon = GetTypeIcon(match);
+  suggest_template->fusebox_action = GetFuseboxAction(match);
   return suggest_template;
 }
 

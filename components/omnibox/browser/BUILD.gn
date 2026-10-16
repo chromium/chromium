@@ -1177,6 +1177,7 @@ if (!is_ios) {
     sources = [ "suggest_template_info.mojom" ]
     webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
     public_deps = [
+      ":fusebox_action_mojo_bindings",
       "//mojo/public/mojom/base",
       "//url/mojom:url_mojom_gurl",
     ]
@@ -1190,6 +1191,7 @@ if (!is_ios) {
     public_deps = [ ":suggest_template_info_mojo_bindings" ]
     deps = [
       ":browser",
+      ":fusebox_action_mojo_utils",
       "//third_party/omnibox_proto",
     ]
   }

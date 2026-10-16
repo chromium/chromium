@@ -87,14 +87,15 @@ suite('NewTabPageActionChipsTest', () => {
     },
   ];
 
-  // A helper type for test definitions: the template text can be plain strings
-  // and fuseboxAction is optional and partial.
-  type TestFuseboxAction = Partial<ActionChip['fuseboxAction']>;
-  type TestActionChip =
-      Omit<ActionChip, 'suggestTemplateInfo'|'fuseboxAction'>&{
-        suggestTemplateInfo: SuggestTemplateInfoModifiers,
-        fuseboxAction?: TestFuseboxAction,
-      };
+  // A helper type for test definitions: the template text can be plain strings,
+  // and fuseboxAction is optional and partial. initializeChips() moves it into
+  // the template.
+  type TestFuseboxAction =
+      Partial<ActionChip['suggestTemplateInfo']['fuseboxAction']>;
+  type TestActionChip = Omit<ActionChip, 'suggestTemplateInfo'>&{
+    suggestTemplateInfo: SuggestTemplateInfoModifiers,
+    fuseboxAction?: TestFuseboxAction,
+  };
 
   interface InitializeChipsOptions {
     actionChips: TestActionChip[];
@@ -117,16 +118,17 @@ suite('NewTabPageActionChipsTest', () => {
     };
     const options = {...defaultOptions, ...providedOptions};
     const actionChips: ActionChip[] = options.actionChips.map(
-        chip => ({
+        ({fuseboxAction, ...chip}) => ({
           ...chip,
-          suggestTemplateInfo:
-              createSuggestTemplateInfo(chip.suggestTemplateInfo),
-          fuseboxAction: chip.fuseboxAction ? createFuseboxAction({
-            preselectedTool: ToolMode.kUnspecified,
-            preselectedModel: ModelMode.kUnspecified,
-            ...chip.fuseboxAction,
-          }) :
-                                              null,
+          suggestTemplateInfo: createSuggestTemplateInfo({
+            ...chip.suggestTemplateInfo,
+            fuseboxAction: fuseboxAction ? createFuseboxAction({
+              preselectedTool: ToolMode.kUnspecified,
+              preselectedModel: ModelMode.kUnspecified,
+              ...fuseboxAction,
+            }) :
+                                           null,
+          }),
         }));
     handler.setResultMapperFor('startActionChipsRetrieval', () => {
       pageRemote.onActionChipsChanged(actionChips);
