@@ -652,6 +652,30 @@ bool WebUIReadOnlyOmnibox::IsWebUIToolbarViewOrDescendant(
   return toolbar_view && toolbar_view->Contains(view);
 }
 
+bool WebUIReadOnlyOmnibox::IsViewsFocusOutsideToolbar() const {
+  if (!toolbar_delegate_ || !toolbar_delegate_->GetView()) {
+    return false;
+  }
+  views::Widget* widget = toolbar_delegate_->GetView()->GetWidget();
+  views::FocusManager* focus_manager =
+      widget ? widget->GetFocusManager() : nullptr;
+  // Note that `GetFocusedView()` is null while the widget is inactive: on
+  // deactivation, `FocusManager::StoreFocusedView()` blurs the focused view
+  // and only remembers it as the *stored* view to re-focus on activation. So
+  // an inactive widget deliberately counts as "focus outside the toolbar".
+  // That matches OmniboxViewViews, which gets `OnBlur()` through the same
+  // path and is only re-focused via `RestoreFocusedView()` once the window is
+  // active again, and it's consistent with `OnBlur()` below, which keys its
+  // revert decision on `Widget::IsActive()`. If a focus request (e.g. Ctrl+L)
+  // races with deactivation, the WebUI's reply is dropped, but the WebView is
+  // still the stored focus view, so activation restores views focus to it,
+  // the page regains focus, and Blink dispatches `focus` on the still-focused
+  // `<input>` (which it skipped while the page was unfocused), producing a
+  // fresh report that is accepted then.
+  return focus_manager &&
+         !IsWebUIToolbarViewOrDescendant(focus_manager->GetFocusedView());
+}
+
 void WebUIReadOnlyOmnibox::OnBlur() {
   if (!has_focus_) {
     return;
@@ -715,16 +739,19 @@ base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
   if (focus_change.has_focus) {
-    // Ignore stale focus notifications from the WebUI if the toolbar's view
-    // (or one of its descendants) doesn't actually hold Views focus.
-    if (toolbar_delegate_ && toolbar_delegate_->GetView()) {
-      views::Widget* widget = toolbar_delegate_->GetView()->GetWidget();
-      views::FocusManager* focus_manager =
-          widget ? widget->GetFocusManager() : nullptr;
-      if (focus_manager &&
-          !IsWebUIToolbarViewOrDescendant(focus_manager->GetFocusedView())) {
-        return base::ok(std::monostate());
-      }
+    // Focus reports from the WebUI are asynchronous, so by the time one
+    // arrives, views focus may have moved out of the toolbar already (e.g.
+    // the widget got deactivated or the user clicked into the page between
+    // the focus request and the reply). Honoring such a stale claim would
+    // leave `has_focus_` and the edit model focused with no `Blur()` to ever
+    // clear them (a later `SetFocus()` then becomes a no-op and
+    // `OmniboxTabHelper` observers never hear about focus changes). If the
+    // toolbar regains views focus later, the renderer dispatches a focus
+    // event and the WebUI reports again, at which point we accept it. The
+    // text/selection update that accompanies a focus request is rejected on
+    // the same grounds in `OnTextInput()`.
+    if (IsViewsFocusOutsideToolbar()) {
+      return base::ok(std::monostate());
     }
 
     if (!has_focus_) {
@@ -760,6 +787,18 @@ base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnTextInput(
     const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input) {
   if (text_input.browser_version != browser_version_) {
+    return base::ok(std::monostate());
+  }
+
+  // Text input can only legitimately originate from the WebUI while the
+  // toolbar's WebView holds views focus. If it doesn't (e.g. a focus request
+  // was queued before page init and flushed after focus moved on, or the
+  // widget was deactivated in between), this is the stale text/selection
+  // update that accompanies a stale focus request (see `OnFocusChange()`).
+  // Feeding it to `OnAfterPossibleChange()` would flip the edit model to
+  // focused via OMNIBOX_FOCUS_CHANGE_TYPING with no `Blur()` ever arriving to
+  // clear it, so drop it here instead.
+  if (IsViewsFocusOutsideToolbar()) {
     return base::ok(std::monostate());
   }
 

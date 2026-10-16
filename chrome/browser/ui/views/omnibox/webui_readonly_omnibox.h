@@ -192,6 +192,15 @@ class WebUIReadOnlyOmnibox
   // delegate/view.
   bool IsWebUIToolbarViewOrDescendant(const views::View* view) const;
 
+  // Returns true if the toolbar's widget has a FocusManager whose focused view
+  // is *not* the WebUI toolbar's View or one of its descendants, i.e. views
+  // focus is verifiably somewhere else. This includes the widget being
+  // inactive, since FocusManager has no focused view then (see the
+  // implementation for why that's intended). Used to reject stale focus claims
+  // and the text input that accompanies them. Returns false if there's no
+  // toolbar delegate/view/widget/FocusManager to consult (e.g. in some tests).
+  bool IsViewsFocusOutsideToolbar() const;
+
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnFocusChange(
       const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnTextInput(

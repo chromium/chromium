@@ -101,8 +101,13 @@ class WebUIReadOnlyOmniboxTest : public ChromeViewsTestBase {
     return omnibox_client_->location_bar_model();
   }
 
+  // Gives the (stand-in) toolbar WebView views focus, as it would have while
+  // the user interacts with the WebUI. Text input from the WebUI is only
+  // honored in that state.
+  void FocusWebView() { widget_->GetContentsView()->RequestFocus(); }
+
   void FocusOmnibox(uint32_t browser_version = 0) {
-    widget_->GetContentsView()->RequestFocus();
+    FocusWebView();
     EXPECT_TRUE(
         omnibox_view_
             ->OnOmniboxAction(
@@ -373,6 +378,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, SSLError) {
 TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
   location_bar_model()->set_url(GURL("https://www.example.org/"));
   omnibox_view_->Update();
+  FocusWebView();
 
   // Send some input as if from the WebUI.
   EXPECT_TRUE(
@@ -458,6 +464,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, ClearInputFromWebUI) {
 
   // Verify initial state.
   EXPECT_EQ(initial_text, omnibox_view_->GetText());
+  FocusWebView();
 
   // Simulate WebUI clearing the text.
   // This sends an empty text with updated UI version.
@@ -492,6 +499,7 @@ TEST_F(WebUIReadOnlyOmniboxTest, UnelideUserInputBit) {
   EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
   EXPECT_EQ(1u, mojo_state->browser_version);
   EXPECT_EQ(0u, mojo_state->ui_version);
+  FocusWebView();
 
   EXPECT_TRUE(
       omnibox_view_
@@ -610,7 +618,9 @@ TEST_F(WebUIReadOnlyOmniboxTest, SetUserTextBumpsBrowserVersion) {
   EXPECT_EQ(u"Typing in the Omnibox...", omnibox_view_->GetText());
 
   // A racing unelision input with stale browser_version (e.g. triggered by a
-  // focus request in flight before SetUserText) should be ignored.
+  // focus request in flight before SetUserText) should be ignored. Focus the
+  // WebView so that it's the version check doing the rejecting.
+  FocusWebView();
   EXPECT_TRUE(
       omnibox_view_
           ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
@@ -855,6 +865,67 @@ TEST_F(WebUIReadOnlyOmniboxTest, OnTabChangedFocusState) {
   EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
             omnibox_controller_->edit_model()->focus_state());
   EXPECT_EQ(std::nullopt, update_propagator_.TakeLastFocusRequestTarget());
+}
+
+// A "has focus" report from the WebUI, and the text/selection update the WebUI
+// sends right before it when handling a focus request, are only honored when
+// the toolbar's WebView actually holds views focus. Otherwise (e.g. a focus
+// request queued before page init and flushed after focus moved on, or while
+// the widget is inactive) the edit model would be stuck believing it's
+// focused, since no `Blur()` would ever arrive to clear it.
+TEST_F(WebUIReadOnlyOmniboxTest, IgnoresFocusClaimWithoutViewsFocus) {
+  const std::u16string url = u"https://www.example.org/";
+  location_bar_model()->set_url(GURL(url));
+  omnibox_view_->Update();
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  const uint32_t browser_version = mojo_state->browser_version;
+
+  ASSERT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
+  widget_->GetFocusManager()->ClearFocus();
+  ASSERT_FALSE(widget_->GetContentsView()->HasFocus());
+
+  // Stale select-all text input (what the WebUI sends along with a focus
+  // request): views focus is elsewhere, so it must not reach
+  // `OnAfterPossibleChange()` and flip the model to focused via
+  // OMNIBOX_FOCUS_CHANGE_TYPING.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
+              toolbar_ui_api::mojom::OmniboxActionTextInput::New(
+                  /*text=*/url, /*inline_completion=*/u"",
+                  /*browser_version=*/browser_version, /*ui_version=*/1,
+                  /*unelision=*/false, /*paste=*/false,
+                  gfx::Range(url.size(), 0))))
+          .has_value());
+  EXPECT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
+  EXPECT_FALSE(update_propagator_.TakeState());
+
+  // Stale focus claim that follows it.
+  EXPECT_TRUE(omnibox_view_
+                  ->OnOmniboxAction(
+                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                              /*has_focus=*/true,
+                              /*request_clear_keyword=*/false,
+                              /*activate_default_search=*/false,
+                              /*start_zero_suggest=*/false,
+                              /*browser_version=*/browser_version,
+                              /*selection=*/gfx::Range(url.size(), 0))))
+                  .has_value());
+  EXPECT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  // A genuine focus (views focus in the WebView) is accepted, and a subsequent
+  // `SetFocus()` round-trip still produces a NONE -> VISIBLE transition.
+  FocusOmnibox(browser_version);
+  EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+  BlurOmnibox(browser_version);
+  EXPECT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
 }
 
 }  // namespace

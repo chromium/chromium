@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +21,9 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -28,6 +32,8 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/collaboration/public/features.h"
@@ -37,14 +43,22 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -228,6 +242,291 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
                       "  return active ? active.ariaLabel : null;"
                       "}",
                       l10n_util::GetStringUTF8(IDS_ACCNAME_RELOAD)));
+}
+
+// A focus request that could not be delivered (here: the WebView was hidden
+// and so not focusable) must be dropped once it is clear that focus is not
+// going to come back to the WebView on its own, rather than left pending and
+// fired on some unrelated later focus of the WebView.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       StaleFocusRequestDropped) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  WebUIToolbarWebView* const toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(toolbar);
+  views::WebView* const web_view = toolbar->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  views::FocusManager* const focus_manager = web_view->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+
+  // Put views focus on some other view, so that the stored focus view is not
+  // the WebView either.
+  views::View* const contents_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->contents_web_view_for_testing();
+  ASSERT_TRUE(contents_view);
+  contents_view->RequestFocus();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return contents_view->HasFocus(); }));
+  ASSERT_FALSE(web_view->HasFocus());
+
+  web_view->SetVisible(false);
+  ASSERT_FALSE(web_view->IsFocusable());
+
+  static_cast<WebUIToolbarControlDelegate*>(toolbar)->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
+
+  // `RequestFocus()` was a silent no-op, focus is still elsewhere and not set
+  // to return to the WebView: the request is stale and gone.
+  EXPECT_FALSE(web_view->HasFocus());
+  EXPECT_TRUE(contents_view->HasFocus());
+  EXPECT_FALSE(toolbar->HasPendingFocusRequestForTesting());
+
+  // Focusing the WebView later must not resurrect the dropped request.
+  web_view->SetVisible(true);
+  web_view->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  EXPECT_FALSE(toolbar->HasPendingFocusRequestForTesting());
+}
+
+// A focus request must survive views focus being merely cleared:
+// `FocusManager::ClearFocus()` keeps the WebView as the stored focus view, so
+// focus comes back to it (e.g. on the next activation) and the request is
+// delivered then.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       FocusRequestKeptWhileFocusCleared) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  WebUIToolbarWebView* const toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(toolbar);
+  views::WebView* const web_view = toolbar->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  views::FocusManager* const focus_manager = web_view->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+
+  web_view->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  focus_manager->ClearFocus();
+  ASSERT_FALSE(web_view->HasFocus());
+  ASSERT_EQ(focus_manager->GetStoredFocusView(), web_view);
+
+  // Make the WebView temporarily unfocusable so that `RequestFocus()` inside
+  // `OnFocusRequested()` cannot just grant focus synchronously.
+  web_view->SetVisible(false);
+  static_cast<WebUIToolbarControlDelegate*>(toolbar)->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
+  EXPECT_FALSE(web_view->HasFocus());
+  EXPECT_TRUE(toolbar->HasPendingFocusRequestForTesting());
+
+  // Focus coming back to the WebView delivers the request.
+  web_view->SetVisible(true);
+  ASSERT_TRUE(focus_manager->RestoreFocusedView());
+  ASSERT_TRUE(web_view->HasFocus());
+  EXPECT_FALSE(toolbar->HasPendingFocusRequestForTesting());
+}
+
+// If a pending focus request was kept because `web_view` was the stored focus
+// view, but before `web_view` regains focus something else replaces or clears
+// the stored focus view, the request is stale and must be dropped rather than
+// firing on a later unrelated focus of `web_view`.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       PendingFocusRequestDroppedWhenStoredFocusLost) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  WebUIToolbarWebView* const toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(toolbar);
+  views::WebView* const web_view = toolbar->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  views::FocusManager* const focus_manager = web_view->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+  views::View* const contents_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->contents_web_view_for_testing();
+  ASSERT_TRUE(contents_view);
+
+  // Queue a pending focus request waiting on stored focus in `web_view`.
+  web_view->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  focus_manager->ClearFocus();
+  web_view->SetVisible(false);
+  static_cast<WebUIToolbarControlDelegate*>(toolbar)->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
+  web_view->SetVisible(true);
+  ASSERT_TRUE(toolbar->HasPendingFocusRequestForTesting());
+  ASSERT_EQ(focus_manager->GetStoredFocusView(), web_view);
+
+  // Case 1: Stored focus moves to another view before restoration. Restoring
+  // focus to that other view must drop the pending request.
+  focus_manager->SetStoredFocusView(contents_view);
+  ASSERT_TRUE(focus_manager->RestoreFocusedView());
+  EXPECT_TRUE(contents_view->HasFocus());
+  EXPECT_FALSE(toolbar->HasPendingFocusRequestForTesting());
+
+  // Case 2: Stored focus is cleared without focusing another view, and later
+  // `web_view` is focused directly (e.g. a user click). The stale request must
+  // be dropped before `OnInternalWebViewFocused()` runs rather than delivered
+  // to the WebUI.
+  web_view->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  // Any focus request legitimately delivered to the WebUI so far (e.g. the
+  // browser focusing the location bar for the initial about:blank tab once
+  // `web_view` first gained focus above) travels over mojo. Make sure the page
+  // has processed it before blurring, otherwise it would land after the blur
+  // and leave the input focused, making the final check below fail.
+  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+  // Blur whatever is focused in the page so the final check below starts from
+  // an unfocused input. `blur()` drops focus synchronously and nothing in the
+  // toolbar WebUI refocuses on blur/focusout, so there is nothing to verify
+  // here; if the input were still focused, the final check would catch it.
+  ASSERT_TRUE(content::ExecJs(web_view->web_contents(), R"(
+    (() => {
+      let active = document.activeElement;
+      while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+        active = active.shadowRoot.activeElement;
+      }
+      if (active) {
+        active.blur();
+      }
+    })()
+  )"));
+  focus_manager->ClearFocus();
+  web_view->SetVisible(false);
+  static_cast<WebUIToolbarControlDelegate*>(toolbar)->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
+  web_view->SetVisible(true);
+  ASSERT_TRUE(toolbar->HasPendingFocusRequestForTesting());
+
+  focus_manager->SetStoredFocusView(nullptr);
+  web_view->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  EXPECT_FALSE(toolbar->HasPendingFocusRequestForTesting());
+  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+  EXPECT_EQ("", content::EvalJs(web_view->web_contents(), R"(
+              (() => {
+                let active = document.activeElement;
+                while (active && active.shadowRoot &&
+                       active.shadowRoot.activeElement) {
+                  active = active.shadowRoot.activeElement;
+                }
+                return active && active.id === 'input' ? active.id : '';
+              })()
+            )"));
+}
+
+// A focus request made while the widget is inactive must not be dropped:
+// `RequestFocus()` only stores the WebView as the view to focus on activation,
+// so the request has to stay pending until the WebView actually gains views
+// focus, at which point it is handed to the WebUI.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       FocusRequestKeptWhileWidgetInactive) {
+#if BUILDFLAG(IS_OZONE)
+  // The test re-activates `browser()` after another window took activation.
+  // Wayland does not support programmatic window activation, so
+  // `BringBrowserWindowToFront()` would never return there.
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support programmatic window activation";
+  }
+#endif
+
+  WaitForInitialWebUIToolbar(browser());
+
+  WebUIToolbarWebView* const toolbar = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(toolbar);
+  views::WebView* const web_view = toolbar->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  views::FocusManager* const focus_manager = web_view->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+  views::Widget* const widget = web_view->GetWidget();
+  ASSERT_TRUE(widget);
+
+  // Deactivate the browser window by activating another one. Losing activation
+  // stores the focused view and clears views focus
+  // (`FocusManager::StoreFocusedView()`), so the WebView loses focus without
+  // any explicit `ClearFocus()`. Don't call `FocusManager::ClearFocus()` here:
+  // it also clears native focus, which on Windows is `::SetFocus(hwnd)` and
+  // re-activates the browser window, restoring focus to the WebView.
+  BrowserWindowInterface* const other =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
+          browser()->GetProfile());
+  ASSERT_TRUE(other);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !widget->IsActive() && !web_view->HasFocus(); }));
+
+  static_cast<WebUIToolbarControlDelegate*>(toolbar)->OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
+
+  // `RequestFocus()` on an inactive widget stores the view and asks the widget
+  // to activate. Activation may complete synchronously on some platforms, in
+  // which case the WebView is focused and the request already flushed. Either
+  // way the request must not have been dropped: it is pending exactly as long
+  // as the WebView has not gained focus yet.
+  EXPECT_EQ(toolbar->HasPendingFocusRequestForTesting(), !web_view->HasFocus());
+  if (!web_view->HasFocus()) {
+    EXPECT_EQ(focus_manager->GetStoredFocusView(), web_view);
+  }
+
+  // Once the window is active and the WebView gets focus, the request is
+  // delivered and no longer pending.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  EXPECT_FALSE(toolbar->HasPendingFocusRequestForTesting());
+}
+
+// Opening a new browser window via the new-window shortcut (Cmd-N on Mac,
+// Ctrl-N elsewhere / `IDC_NEW_WINDOW`) requests omnibox focus before the new
+// window's toolbar WebUI is initialized and before the window finishes
+// activating (and on Mac, across transient native first-responder blurs as the
+// WebUI frame swaps in). The pending focus request must survive until the new
+// window is active and the toolbar page is ready, leaving the omnibox focused.
+// Note: crbug.com/571806192 tracks a separate Mac-specific failure in this
+// scenario under additional WebUIToolbar startup/prewarm variations, where
+// AppKit's `_selectFirstKeyView` moves focus to `ContentsWebView` while the
+// toolbar NSView is still hidden before initial layout.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       NewWindowAcceleratorFocusesOmnibox) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_N, /*control=*/!BUILDFLAG(IS_MAC),
+      /*shift=*/false, /*alt=*/false, /*command=*/BUILDFLAG(IS_MAC)));
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  ASSERT_NE(new_browser, browser());
+
+  WaitForInitialWebUIToolbar(new_browser);
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+
+  WebUIToolbarWebView* const new_toolbar = GetWebUIToolbarWebView(new_browser);
+  ASSERT_TRUE(new_toolbar);
+  views::WebView* const new_web_view = new_toolbar->GetWebViewForTesting();
+  ASSERT_TRUE(new_web_view);
+
+  ui_test_utils::WaitForViewFocus(new_browser, VIEW_ID_OMNIBOX, true);
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(new_browser, VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(new_web_view->HasFocus());
+  // Views focus is granted before the new window's toolbar page is
+  // initialized, and `WaitForInitialWebUIToolbar()` only waits while the
+  // window's show is deferred, so the page may still be initializing here.
+  // The request is handed to the WebUI once it is.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !new_toolbar->HasPendingFocusRequestForTesting(); }));
+  EXPECT_TRUE(new_web_view->HasFocus());
+  ASSERT_TRUE(FlushWebUIToolbarPipes(new_browser));
+  EXPECT_EQ("input", content::EvalJs(new_web_view->web_contents(), R"(
+              (() => {
+                let active = document.activeElement;
+                while (active && active.shadowRoot &&
+                       active.shadowRoot.activeElement) {
+                  active = active.shadowRoot.activeElement;
+                }
+                return active ? active.id : null;
+              })()
+            )"));
 }
 
 class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {

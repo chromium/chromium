@@ -686,6 +686,9 @@ if (!is_android && !is_chromeos_device) {
     if (use_aura) {
       deps += [ "//ui/aura:test_support" ]
     }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }
 
