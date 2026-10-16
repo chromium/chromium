@@ -78,6 +78,8 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1498,6 +1500,9 @@ void FetchCallback(
 
   FetchPageContextResult& fetch_result = **result;
   bool has_apc = fetch_result.annotated_page_content_result.has_value();
+  RecordPageContextApcStatus(
+      has_apc ? optimization_guide::AIPageContentExtractionStatus::kSuccess
+              : fetch_result.annotated_page_content_result.error().status);
   tab_observation->set_annotated_page_content_result(
       has_apc ? apc::TabObservation::ANNOTATED_PAGE_CONTENT_OK
               : apc::TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
@@ -1505,6 +1510,12 @@ void FetchCallback(
   bool has_screenshot = fetch_result.screenshot_result.has_value();
   bool screenshot_required =
       !base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot);
+  if (screenshot_required) {
+    RecordPageContextScreenshotStatus(
+        has_screenshot
+            ? page_content_annotations::ScreenshotCaptureStatus::kSuccess
+            : fetch_result.screenshot_result.error().status);
+  }
   tab_observation->set_screenshot_result(
       has_screenshot || !screenshot_required
           ? apc::TabObservation::SCREENSHOT_OK

@@ -14,9 +14,17 @@
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 
-namespace optimization_guide::proto {
+namespace optimization_guide {
+enum class AIPageContentExtractionStatus;
+
+namespace proto {
 class ActionsResult;
-}  // namespace optimization_guide::proto
+}  // namespace proto
+}  // namespace optimization_guide
+
+namespace page_content_annotations {
+enum class ScreenshotCaptureStatus;
+}  // namespace page_content_annotations
 
 namespace actor {
 
@@ -73,8 +81,26 @@ void RecordActionResultCode(actor::mojom::ActionResultCode action_result_code);
 // Records the time spent fetching the APC for a PerformActions response.
 void RecordPageContextApcDuration(base::TimeDelta duration);
 
+// Histogram for tracking the outcome of an APC extraction for a PerformActions
+// response.
+inline constexpr std::string_view kActorPageContextApcStatus =
+    "Actor.PageContext.APC.Status";
+
+// Records the outcome of an APC extraction for a PerformActions response.
+void RecordPageContextApcStatus(
+    optimization_guide::AIPageContentExtractionStatus status);
+
 // Records the time spent fetching a screenshot for a PerformActions response.
 void RecordPageContextScreenshotDuration(base::TimeDelta duration);
+
+// Histogram for tracking the outcome of a screenshot capture for a
+// PerformActions response.
+inline constexpr std::string_view kActorPageContextScreenshotStatus =
+    "Actor.PageContext.Screenshot.Status";
+
+// Records the outcome of a screenshot capture for a PerformActions response.
+void RecordPageContextScreenshotStatus(
+    page_content_annotations::ScreenshotCaptureStatus status);
 
 // Records the number of tabs that were observed for a PerformActions response.
 void RecordPageContextTabCount(size_t tab_count);

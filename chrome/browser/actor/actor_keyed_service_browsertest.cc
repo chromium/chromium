@@ -37,6 +37,7 @@
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -322,6 +323,14 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 
   const ActorKeyedService::TabObservationResult& result = future.Get();
   ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->annotated_page_content_result.has_value());
+  EXPECT_EQ(
+      result.value()->annotated_page_content_result.error().status,
+      optimization_guide::AIPageContentExtractionStatus::kMainFrameNotLive);
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(
+      result.value()->screenshot_result.error().status,
+      page_content_annotations::ScreenshotCaptureStatus::kNoViewOrSurface);
 
   // Crashing the main frame does not destroy the `WebContents`, so
   // `PageContextFetcher` still returns a `FetchPageContextResult` rather than

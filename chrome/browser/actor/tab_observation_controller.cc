@@ -18,6 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/actor_features.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -381,6 +384,11 @@ void TabObservationController::OnTabObservationFetched(
 
     page_content_annotations::FetchPageContextResult& fetch_result = **result;
     bool has_apc = fetch_result.annotated_page_content_result.has_value();
+    if (extract_apc) {
+      actor::RecordPageContextApcStatus(
+          has_apc ? optimization_guide::AIPageContentExtractionStatus::kSuccess
+                  : fetch_result.annotated_page_content_result.error().status);
+    }
     observation->set_annotated_page_content_result(
         has_apc || !extract_apc ? optimization_guide::proto::TabObservation::
                                       ANNOTATED_PAGE_CONTENT_OK
@@ -391,6 +399,12 @@ void TabObservationController::OnTabObservationFetched(
     bool screenshot_required =
         !base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot) &&
         take_screenshot;
+    if (screenshot_required) {
+      actor::RecordPageContextScreenshotStatus(
+          has_screenshot
+              ? page_content_annotations::ScreenshotCaptureStatus::kSuccess
+              : fetch_result.screenshot_result.error().status);
+    }
     observation->set_screenshot_result(
         has_screenshot || !screenshot_required
             ? optimization_guide::proto::TabObservation::SCREENSHOT_OK

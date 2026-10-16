@@ -746,6 +746,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.PageContext.APC.Status"
+    enum="AIPageContentExtractionStatus" expires_after="2027-03-14">
+  <owner>linnan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records the outcome of an Annotated Page Content (APC) extraction for the
+    PerformActions response.
+  </summary>
+</histogram>
+
 <histogram name="Actor.PageContext.ObservationOutcome"
     enum="ActorObservationOutcome" expires_after="2027-03-14">
   <owner>bokan@google.com</owner>
@@ -762,6 +772,15 @@ chromium-metrics-reviews@google.com.
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>Duration of screenshot for the PerformActions response.</summary>
+</histogram>
+
+<histogram name="Actor.PageContext.Screenshot.Status"
+    enum="ScreenshotCaptureStatus" expires_after="2027-03-14">
+  <owner>linnan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records the outcome of a screenshot capture for the PerformActions response.
+  </summary>
 </histogram>
 
 <histogram name="Actor.PageContext.TabCount" units="count"
