@@ -303,7 +303,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)updateTrailingButtonState {
-  if (IsChromeNextIaEnabled()) {
+  if (IsChromeNextIaEnabled() && !IsNextOldDesignEnabled()) {
     BOOL shouldShowVoiceSearch = self.traitCollection.verticalSizeClass ==
                                  UIUserInterfaceSizeClassCompact;
 
