@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -1532,6 +1533,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_TRUE(
       permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
           panel_contents));
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+      panel_contents->GetPrimaryMainFrame()));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

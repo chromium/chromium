@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "content/public/browser/web_contents.h"
@@ -106,8 +107,17 @@ bool ContextualTasksLocationBar::IsFullscreen() const {
 
 std::optional<bubble_anchor_util::AnchorConfiguration>
 ContextualTasksLocationBar::GetChipAnchor() {
-  if (permission_dashboard_) {
-    return {{permission_dashboard_->GetAnchor(), std::nullopt,
+  if (!permission_dashboard_) {
+    return std::nullopt;
+  }
+  PermissionChipInterface* request_chip =
+      permission_dashboard_->GetRequestChip();
+  if (request_chip && request_chip->GetVisible()) {
+    // Do not set a highlighted element: `SetHighlightedElement()` resolves the
+    // ID in the browser window's context, so it would highlight the main
+    // toolbar's chip whenever that one is showing. With no ID, the bubble
+    // highlights its anchor, i.e. this chip.
+    return {{request_chip->GetAnchor(), std::nullopt,
              views::BubbleBorder::TOP_LEFT}};
   }
   return std::nullopt;

@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
@@ -67,6 +68,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -177,6 +179,11 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       web_contents.get());
 
+  // Create PageSpecificContentSettings for chip indicating which
+  // permissions are being used currently.
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents.get(), std::make_unique<PageSpecificContentSettingsDelegate>(
+                              web_contents.get()));
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // WebContents created here never go through TabHelpers::AttachTabHelpers(),
   // unlike the ones the panel adopts from a real tab via
