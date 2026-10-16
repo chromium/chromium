@@ -17,6 +17,7 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -31,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -100,6 +102,9 @@ class ChromeSelectionDropdownMenuDelegateTest
  protected:
   MockAutofillDriver* autofill_driver() {
     return autofill_driver_injector_[main_rfh()];
+  }
+  autofill::TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
   }
 
  private:
@@ -363,6 +368,37 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
           autofill::AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
 
   model->ActivatedAt(*at_memory_index);
+}
+
+TEST_F(ChromeSelectionDropdownMenuDelegateTest,
+       OnShowSelectionPopup_HideAutofillSuggestions) {
+  ChromeSelectionDropdownMenuDelegate delegate;
+  content::ContextMenuParams params;
+
+  params.source_type = ui::mojom::MenuSourceType::kTouch;
+  delegate.OnShowSelectionPopup(*main_rfh(), params);
+  EXPECT_NE(autofill_client()->popup_hiding_reason(),
+            autofill::SuggestionHidingReason::kContextMenuOpened);
+
+  params.source_type = ui::mojom::MenuSourceType::kMouse;
+  delegate.OnShowSelectionPopup(*main_rfh(), params);
+  EXPECT_EQ(autofill_client()->popup_hiding_reason(),
+            autofill::SuggestionHidingReason::kContextMenuOpened);
+}
+
+TEST_F(ChromeSelectionDropdownMenuDelegateTest,
+       OnShowSelectionPopup_HideAutofillSuggestionsFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillAndroidHideSuggestionsOnContextMenu);
+
+  ChromeSelectionDropdownMenuDelegate delegate;
+  content::ContextMenuParams params;
+  params.source_type = ui::mojom::MenuSourceType::kMouse;
+
+  delegate.OnShowSelectionPopup(*main_rfh(), params);
+  EXPECT_NE(autofill_client()->popup_hiding_reason(),
+            autofill::SuggestionHidingReason::kContextMenuOpened);
 }
 
 }  // namespace android

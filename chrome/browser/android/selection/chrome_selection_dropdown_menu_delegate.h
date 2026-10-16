@@ -17,8 +17,9 @@ class RenderFrameHost;
 
 namespace android {
 
-// Delegate to create a menu model containing selected-text context menu items
-// from extensions and printing.
+// Delegate that provides extra selected-text context menu items (from
+// extensions, printing, DevTools, and Autofill) and hides overlapping Autofill
+// UI when the popup is shown.
 class ChromeSelectionDropdownMenuDelegate final
     : public content::SelectionPopupDelegate {
  public:
@@ -34,6 +35,13 @@ class ChromeSelectionDropdownMenuDelegate final
   std::unique_ptr<ui::MenuModel> GetSelectionPopupExtraItems(
       content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params) override;
+
+  void OnShowSelectionPopup(content::RenderFrameHost& render_frame_host,
+                            const content::ContextMenuParams& params) override;
+
+ private:
+  void OnShowDropdownContextMenu(content::RenderFrameHost& render_frame_host,
+                                 const content::ContextMenuParams& params);
 };
 
 }  // namespace android

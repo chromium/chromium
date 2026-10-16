@@ -4,19 +4,29 @@
 
 #include "chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.h"
 
+#include <optional>
+
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -293,6 +303,58 @@ ChromeSelectionDropdownMenuDelegate::GetSelectionPopupExtraItems(
   }
 
   return model;
+}
+
+void ChromeSelectionDropdownMenuDelegate::OnShowSelectionPopup(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  switch (params.source_type) {
+    case ui::mojom::MenuSourceType::kMouse:
+      OnShowDropdownContextMenu(render_frame_host, params);
+      break;
+    case ui::mojom::MenuSourceType::kNone:
+    case ui::mojom::MenuSourceType::kKeyboard:
+    case ui::mojom::MenuSourceType::kTouch:
+    case ui::mojom::MenuSourceType::kTouchEditMenu:
+    case ui::mojom::MenuSourceType::kLongPress:
+    case ui::mojom::MenuSourceType::kLongTap:
+    case ui::mojom::MenuSourceType::kTouchHandle:
+    case ui::mojom::MenuSourceType::kStylus:
+    case ui::mojom::MenuSourceType::kAdjustSelection:
+    case ui::mojom::MenuSourceType::kAdjustSelectionReset:
+      break;
+  }
+}
+
+void ChromeSelectionDropdownMenuDelegate::OnShowDropdownContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK_EQ(params.source_type, ui::mojom::MenuSourceType::kMouse);
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAndroidHideSuggestionsOnContextMenu)) {
+    return;
+  }
+
+  // Hide Autofill/@memory suggestions and the keyboard accessory so they do
+  // not overlap with the dropdown context menu.
+  // `HideSuggestions()` dismisses @memory and clears Autofill suggestions and
+  // keyboard listeners.
+  // `ManualFillingController::Hide()` hides the accessory bar itself (which
+  // stays visible in floating mode with a hardware keyboard when fallback
+  // sources are available).
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
+  if (autofill::AutofillClient* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents)) {
+    autofill_client->HideSuggestions(
+        autofill::SuggestionHidingReason::kContextMenuOpened,
+        /*product=*/std::nullopt);
+  }
+
+  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+          ManualFillingController::Get(web_contents)) {
+    manual_filling_controller->Hide();
+  }
 }
 
 }  // namespace android

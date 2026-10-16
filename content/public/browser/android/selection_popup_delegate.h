@@ -32,6 +32,10 @@ class CONTENT_EXPORT SelectionPopupDelegate {
   virtual std::unique_ptr<ui::MenuModel> GetSelectionPopupExtraItems(
       RenderFrameHost& render_frame_host,
       const ContextMenuParams& params);
+
+  // Notifies the delegate that the selection popup is about to be shown.
+  virtual void OnShowSelectionPopup(RenderFrameHost& render_frame_host,
+                                    const ContextMenuParams& params);
 };
 
 }  // namespace content

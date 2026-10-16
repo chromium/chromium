@@ -20,4 +20,8 @@ SelectionPopupDelegate::GetSelectionPopupExtraItems(
   return nullptr;
 }
 
+void SelectionPopupDelegate::OnShowSelectionPopup(
+    RenderFrameHost& render_frame_host,
+    const ContextMenuParams& params) {}
+
 }  // namespace content
