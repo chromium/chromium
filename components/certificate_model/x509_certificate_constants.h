@@ -134,7 +134,8 @@ inline constexpr uint8_t kOidAlgMldsa87[] = {OBJ_ENC_ML_DSA_87};
 
 // Merkle Tree Certificates, draft-ietf-plants-merkle-tree-certs:
 // TODO(crbug.com/457784778): Add final OID when draft is finalized.
-inline constexpr uint8_t kOidAlgMtcProofDraft[] = {OBJ_ENC_alg_mtcProof_draft};
+inline constexpr uint8_t kOidAlgMtcProofDraft[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x00};
 
 // The certificate viewer may be used to view client certificates, so use the
 // relaxed parsing mode. See crbug.com/41347446 and crbug.com/41357486.
