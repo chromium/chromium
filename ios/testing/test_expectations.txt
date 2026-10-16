@@ -81,9 +81,6 @@ crbug.com/541236854 ComposeboxTestCase/testAttachUnrealizedTab [ Pass Failure ]
 crbug.com/541236775 OmniboxHardwareKeyboardInteractionTestCase/testHardwareLeftRightArrowKey [ Pass Failure ]
 crbug.com/541290681 SafariDataImportTestCase/testPasswordConflictResolution [ Pass Failure ]
 
-# Gardening suppression 2026-08-06
-crbug.com/543490495 GeminiCopresenceTestCase/testFloatyHiddenOnNTPAndTabGrid [ Failure ]
-
 # Gardening suppression 2026-08-11
 crbug.com/545123760 [ iPad Simulator ] TabGroupsTestCase/testReopenGroupFromAnotherWindow [ Pass Failure ]
 crbug.com/545122908 [ iPad Simulator ] MailtoHandlerTestCase/testDefaultAppsInMultiWindow [ Pass Failure ]
@@ -159,13 +156,7 @@ crbug.com/565777195 [ iPad ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWi
 crbug.com/565792499 PasswordControllerEGTest/testLoginEventReported [ Pass Failure Skip Crash ]
 crbug.com/565748739 GeminiFirstRunTestCase/testVisualRichFRECarouselNavigation [ Pass Failure ]
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure ]
-crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnBackgrounding [ Pass Failure ]
-crbug.com/565749273 [ iPad14 Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnBackgrounding [ Pass Failure ]
 crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
-crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testFloatyCollapseFromScrimTap [ Pass Failure ]
-crbug.com/565749273 [ iPad14 Simulator ] GeminiCopresenceTestCase/testFloatyCollapseFromScrimTap [ Pass Failure ]
-crbug.com/565749273 [ iPad Device ] GeminiCopresenceTestCase/testFloatyHiddenWhenOmniboxFocused [ Pass Failure ]
-crbug.com/565749273 [ iPad14 Simulator ] GeminiCopresenceTestCase/testFloatyHiddenWhenOmniboxFocused [ Pass Failure ]
 crbug.com/565749273 GeminiCopresenceTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
 crbug.com/565749273 GeminiEntrypointTestCase/testFloatyInputButtonTogglesBetweenLiveAndSend [ Pass Failure ]
 crbug.com/565749273 [ iPad ] GeminiEntrypointTestCase/testInvokeGeminiFloatyViaAssistantButton [ Pass Failure ]
