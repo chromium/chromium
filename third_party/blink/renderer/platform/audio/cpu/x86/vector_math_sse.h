@@ -10,9 +10,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 
-namespace blink {
-namespace vector_math {
-namespace sse {
+namespace blink::vector_math::sse {
 
 constexpr size_t kBitsPerRegister = 128u;
 constexpr size_t kPackedFloatsPerRegister =
@@ -80,8 +78,6 @@ void Zvmul(base::span<const float> real1,
            base::span<float> real_dest,
            base::span<float> imag_dest);
 
-}  // namespace sse
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::sse
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_SSE_H_

@@ -10,15 +10,11 @@
 
 #include <xmmintrin.h>
 
-namespace blink {
-namespace vector_math {
-namespace sse {
+namespace blink::vector_math::sse {
 
 using MType = __m128;
 
-}  // namespace sse
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::sse
 
 #define MM_PS(name) _mm_##name##_ps
 #define VECTOR_MATH_SIMD_NAMESPACE_NAME sse

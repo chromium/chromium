@@ -13,9 +13,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
-namespace blink {
-namespace vector_math {
-namespace scalar {
+namespace blink::vector_math::scalar {
 
 ALWAYS_INLINE static void Conv(base::span<const float> source,
                                base::span<const float> filter,
@@ -419,8 +417,6 @@ ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
   }
 }
 
-}  // namespace scalar
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::scalar
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_VECTOR_MATH_SCALAR_H_

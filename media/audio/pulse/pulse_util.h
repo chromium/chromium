@@ -15,11 +15,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 
-namespace media {
-
-class AudioParameters;
-
-namespace pulse {
+namespace media::pulse {
 
 enum class RequestType : int8_t { INPUT, OUTPUT };
 
@@ -113,8 +109,6 @@ std::string GetRealDefaultDeviceId(pa_threaded_mainloop* mainloop,
 std::string GetMonitorSourceNameForSink(pa_threaded_mainloop* mainloop,
                                         pa_context* context,
                                         const std::string& sink_name);
-}  // namespace pulse
-
-}  // namespace media
+}  // namespace media::pulse
 
 #endif  // MEDIA_AUDIO_PULSE_PULSE_UTIL_H_

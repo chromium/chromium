@@ -14,9 +14,7 @@
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_sse.h"
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
 
-namespace blink {
-namespace vector_math {
-namespace x86 {
+namespace blink::vector_math::x86 {
 
 struct FrameCounts {
   size_t scalar_for_alignment;
@@ -533,8 +531,6 @@ ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
   DCHECK_EQ(real_dest.size(), offset);
 }
 
-}  // namespace x86
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::x86
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_X86_H_

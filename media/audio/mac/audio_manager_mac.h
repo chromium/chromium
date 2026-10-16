@@ -22,12 +22,9 @@
 #include "media/audio/mac/audio_device_listener_mac.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
-namespace base {
-
-namespace apple {
+namespace base::apple {
 class ScopedObjCClassSwizzler;
-}  // namespace apple
-}  // namespace base
+}  // namespace base::apple
 
 namespace media {
 

@@ -22,9 +22,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 
-namespace blink {
-namespace vector_math {
-namespace VECTOR_MATH_SIMD_NAMESPACE_NAME {
+namespace blink::vector_math::VECTOR_MATH_SIMD_NAMESPACE_NAME {
 
 // This stride is chosen so that the same prepared filter created by
 // AVX::PrepareFilterForConv can be used by both AVX::Conv and sse::Conv.
@@ -441,8 +439,6 @@ void Zvmul(base::span<const float> real1,
 #undef MULTIPLY_ALL
 }
 
-}  // namespace VECTOR_MATH_SIMD_NAMESPACE_NAME
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::VECTOR_MATH_SIMD_NAMESPACE_NAME
 
 #endif  // defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)

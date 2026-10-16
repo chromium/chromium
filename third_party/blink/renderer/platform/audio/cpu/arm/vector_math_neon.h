@@ -15,9 +15,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
 
-namespace blink {
-namespace vector_math {
-namespace neon {
+namespace blink::vector_math::neon {
 
 constexpr size_t kPackedFloatsPerRegister = 4u;
 
@@ -307,8 +305,6 @@ ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
   }
 }
 
-}  // namespace neon
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::neon
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_ARM_VECTOR_MATH_NEON_H_

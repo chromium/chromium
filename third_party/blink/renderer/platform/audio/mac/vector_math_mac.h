@@ -12,9 +12,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 
-namespace blink {
-namespace vector_math {
-namespace mac {
+namespace blink::vector_math::mac {
 
 // On the Mac we use the highly optimized versions in Accelerate.framework
 // In 32-bit mode (__ppc__ or __i386__) <Accelerate/Accelerate.h> includes
@@ -155,8 +153,6 @@ ALWAYS_INLINE static void Zvmul(base::span<const float> real1,
 #endif
 }
 
-}  // namespace mac
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math::mac
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_MAC_VECTOR_MATH_MAC_H_
