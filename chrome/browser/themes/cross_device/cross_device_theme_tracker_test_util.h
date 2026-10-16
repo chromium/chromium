@@ -17,7 +17,10 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/themes/cross_device/cross_device_theme_sync_bridge.h"
@@ -42,6 +45,16 @@ class CrossDeviceThemeTrackerTestBase : public testing::Test {
     data.specifics = specifics;
     data.client_tag_hash = syncer::ClientTagHash::FromHashed(storage_key);
     return syncer::EntityChange::CreateAdd(storage_key, std::move(data));
+  }
+
+  std::unique_ptr<syncer::MetadataChangeList> CreateSyncedMetadata(
+      syncer::DataTypeSyncBridge* bridge) {
+    auto metadata_change_list = bridge->CreateMetadataChangeList();
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    metadata_change_list->UpdateDataTypeState(data_type_state);
+    return metadata_change_list;
   }
 
   template <typename RemoteSpecifics>

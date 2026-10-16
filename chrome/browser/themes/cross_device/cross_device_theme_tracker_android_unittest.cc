@@ -6,7 +6,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/themes/cross_device/cross_device_theme_tracker_test_util.h"
-#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/theme_android_specifics.pb.h"
 #include "components/sync/protocol/theme_ios_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
@@ -79,20 +78,11 @@ TEST_F(CrossDeviceThemeTrackerAndroidTest, SyncStarted) {
   ios_bridge_->OnSyncStarting(request);
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
 
-  auto create_synced_metadata = [](syncer::DataTypeSyncBridge* bridge) {
-    auto metadata_change_list = bridge->CreateMetadataChangeList();
-    sync_pb::DataTypeState data_type_state;
-    data_type_state.set_initial_sync_state(
-        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    metadata_change_list->UpdateDataTypeState(data_type_state);
-    return metadata_change_list;
-  };
-
-  desktop_bridge_->MergeFullSyncData(create_synced_metadata(desktop_bridge_),
+  desktop_bridge_->MergeFullSyncData(CreateSyncedMetadata(desktop_bridge_),
                                      syncer::EntityChangeList());
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
 
-  ios_bridge_->MergeFullSyncData(create_synced_metadata(ios_bridge_),
+  ios_bridge_->MergeFullSyncData(CreateSyncedMetadata(ios_bridge_),
                                  syncer::EntityChangeList());
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kActive);
 
@@ -122,10 +112,10 @@ TEST_F(CrossDeviceThemeTrackerAndroidTest, SyncStarted) {
   ios_bridge_->OnSyncStarting(request);
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
 
-  desktop_bridge_->MergeFullSyncData(create_synced_metadata(desktop_bridge_),
+  desktop_bridge_->MergeFullSyncData(CreateSyncedMetadata(desktop_bridge_),
                                      syncer::EntityChangeList());
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kInitializing);
-  ios_bridge_->MergeFullSyncData(create_synced_metadata(ios_bridge_),
+  ios_bridge_->MergeFullSyncData(CreateSyncedMetadata(ios_bridge_),
                                  syncer::EntityChangeList());
   EXPECT_EQ(tracker_->GetServiceStatus(), ServiceStatus::kActive);
 
