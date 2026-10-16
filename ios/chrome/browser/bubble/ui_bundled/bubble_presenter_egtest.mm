@@ -26,6 +26,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -110,8 +111,9 @@ void ReloadFromOmnibox() {
 
   // Enable lens overlay flag to test the IPH.
   if ([self
-          isRunningTest:@selector
-          (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
+          isRunningTest:
+              @selector(
+                  testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
     config.features_enabled.push_back(kGeminiKillSwitch);
     config.features_disabled.push_back(kPageActionMenu);
     config.iph_feature_enabled = "IPH_iOSLensOverlayEntrypointTip";
@@ -716,6 +718,43 @@ void ReloadFromOmnibox() {
       waitForUIElementToAppearWithMatcher:
           chrome_test_util::StaticTextWithAccessibilityLabel(
               l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT))];
+}
+
+// Tests that presenting the swipe back/forward gesture IPH while the
+// application is in the background does not crash.
+// Regression test for crbug.com/573369036.
+- (void)testSwipeBackForwardIPHInBackground {
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  // Use the built-in `/slow?5` default handler so the back navigation takes 5
+  // seconds to complete, giving the test time to background the application
+  // before `DidFinishNavigation` triggers the swipe back/forward gesture IPH.
+  // Note: If the `isLoadingInWindowWithNumber:0` check below ever flakes on a
+  // slow bot where `backgroundApplication` takes > 5 seconds, increase the
+  // `/slow?N` delay.
+  const GURL destinationUrl1 = self.testServer->GetURL("/slow?5");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+
+  // Purge WKWebView's in-memory back-forward cache so tapping the back button
+  // re-fetches `destinationUrl1` from `self.testServer` instead of restoring it
+  // synchronously from memory.
+  [ChromeEarlGrey purgeCachedWebViewPages];
+
+  {
+    ScopedSynchronizationDisabler syncDisabler;
+    [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+    [[AppLaunchManager sharedManager] backgroundApplication];
+    GREYAssertTrue(
+        [ChromeEarlGrey isLoadingInWindowWithNumber:0],
+        @"Page should still be loading when the app enters the background.");
+    [ChromeEarlGrey waitForPageToFinishLoadingInWindowWithNumber:0];
+  }
+  [[[XCUIApplication alloc] init] activate];
 }
 
 @end
