@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
+#include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
@@ -93,6 +94,36 @@ base::expected<actor::PageTarget, std::string> ParseNodeIdArgument(
 
   return actor::PageTarget(actor::DomNode{.node_id = *dom_node_id,
                                           .document_identifier = *document_id});
+}
+
+std::optional<actor::ScrollPageToolRequest::Granularity> ParseScrollGranularity(
+    std::string_view granularity) {
+  using Granularity = actor::ScrollPageToolRequest::Granularity;
+  if (granularity == "page") {
+    return Granularity::kPage;
+  }
+  if (granularity == "document") {
+    return Granularity::kDocument;
+  }
+  return std::nullopt;
+}
+
+std::optional<actor::ScrollPageToolRequest::Direction> ParseScrollDirection(
+    std::string_view direction) {
+  using Direction = actor::ScrollPageToolRequest::Direction;
+  if (direction == "up") {
+    return Direction::kUp;
+  }
+  if (direction == "down") {
+    return Direction::kDown;
+  }
+  if (direction == "left") {
+    return Direction::kLeft;
+  }
+  if (direction == "right") {
+    return Direction::kRight;
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -170,9 +201,9 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     }
   }
 
-  // TODO(b/573150754): Migrate click_element, set_text, and
-  // select_option to kClick, kType, and kSelectOption once MES supports
-  // rewriting dom_node_id for TOCTOU checks.
+  // TODO(b/573150754): Migrate click_element, set_text, select_option, and
+  // scroll_page to kClick, kType, kSelectOption, and kScrollPage once MES
+  // supports rewriting dom_node_id for TOCTOU checks.
   if (tool_request.name == "click_element") {
     ClickElement(tool_request.arguments, std::move(callback));
     return;
@@ -185,6 +216,11 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "select_option") {
     SelectOption(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "scroll_page") {
+    ScrollPage(tool_request.arguments, std::move(callback));
     return;
   }
 
@@ -223,8 +259,9 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   std::vector<const actor::ToolDefinition*> actor_tools =
       actor_service->tool_registry().GetToolsByIds(*kSupportedToolIds);
 
-  // Legacy tools defined below: click_element, set_text, and select_option.
-  constexpr size_t kNumLegacyTools = 3;
+  // Legacy tools defined below: click_element, set_text, select_option, and
+  // scroll_page.
+  constexpr size_t kNumLegacyTools = 4;
   std::vector<ToolDefinition> tools;
   tools.reserve(actor_tools.size() + kNumLegacyTools);
   for (const actor::ToolDefinition* actor_tool : actor_tools) {
@@ -237,10 +274,10 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
     tools.push_back(std::move(tool));
   }
 
-  // TODO(b/570042394): Remove legacy click_element, set_text, and
-  // select_option definitions once MES supports rewriting dom_node_id for
-  // TOCTOU checks and ProcessToolCall() dispatches kClick, kType, and
-  // kSelectOption.
+  // TODO(b/573150754): Remove legacy click_element, set_text, select_option,
+  // and scroll_page definitions once MES supports rewriting dom_node_id for
+  // TOCTOU checks and ProcessToolCall() dispatches kClick, kType,
+  // kSelectOption, and kScrollPage.
   ToolDefinition click_element;
   click_element.name = "click_element";
   click_element.description =
@@ -313,6 +350,50 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   select_option.behavior = ToolDefinition::Behavior::kBlocking;
   select_option.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(select_option));
+
+  ToolDefinition scroll_page;
+  scroll_page.name = "scroll_page";
+  scroll_page.description =
+      "Scrolls the page or a specific scrollable element in the given "
+      "direction by one page, or all the way to its start or end.";
+  scroll_page.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set(
+              "properties",
+              base::DictValue()
+                  .Set("granularity",
+                       base::DictValue()
+                           .Set("type", "string")
+                           .Set("description",
+                                "The units to scroll by. \"page\" scrolls by "
+                                "one page of the scroller. \"document\" "
+                                "scrolls to the start or end of the "
+                                "scroller.")
+                           .Set("enum", base::ListValue().Append("page").Append(
+                                            "document")))
+                  .Set("direction",
+                       base::DictValue()
+                           .Set("type", "string")
+                           .Set("description", "The direction to scroll.")
+                           .Set("enum", base::ListValue()
+                                            .Append("up")
+                                            .Append("down")
+                                            .Append("left")
+                                            .Append("right")))
+                  .Set("node_id",
+                       base::DictValue()
+                           .Set("type", "integer")
+                           .Set("description",
+                                "The DOM node ID of the scrollable element, "
+                                "or 0 to scroll the main viewport.")))
+          .Set("required", base::ListValue()
+                               .Append("granularity")
+                               .Append("direction")
+                               .Append("node_id"));
+  scroll_page.behavior = ToolDefinition::Behavior::kBlocking;
+  scroll_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(scroll_page));
 
   return tools;
 }
@@ -600,6 +681,49 @@ void ToolController::SelectOption(const base::DictValue& arguments,
           -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::SelectToolRequest>(actor_surface_handle,
                                                           *page_target, *value);
+      },
+      std::move(callback));
+}
+
+void ToolController::ScrollPage(const base::DictValue& arguments,
+                                ToolResponseCallback callback) {
+  const std::string* granularity_arg =
+      arguments.FindString(actor::ScrollPageToolRequest::kGranularityParam);
+  std::optional<actor::ScrollPageToolRequest::Granularity> granularity =
+      granularity_arg ? ParseScrollGranularity(*granularity_arg) : std::nullopt;
+  if (!granularity) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or invalid granularity argument"));
+    return;
+  }
+
+  const std::string* direction_arg =
+      arguments.FindString(actor::ScrollPageToolRequest::kDirectionParam);
+  std::optional<actor::ScrollPageToolRequest::Direction> direction =
+      direction_arg ? ParseScrollDirection(*direction_arg) : std::nullopt;
+  if (!direction) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or invalid direction argument"));
+    return;
+  }
+
+  base::expected<actor::PageTarget, std::string> page_target =
+      ParseNodeIdArgument(arguments);
+  if (!page_target.has_value()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            page_target.error()));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&page_target, &granularity,
+       &direction](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::ScrollPageToolRequest>(
+            actor_surface_handle, *page_target, *granularity, *direction);
       },
       std::move(callback));
 }

@@ -15,6 +15,7 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -67,7 +69,9 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/ttc/app/public/tool_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1212,6 +1216,204 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                                      ".value"));
 }
 
+class ToolControllerScrollPageBrowserTest : public ToolControllerBrowserTest {
+ public:
+  ToolControllerScrollPageBrowserTest() = default;
+  ~ToolControllerScrollPageBrowserTest() override = default;
+
+  // ToolControllerBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ToolControllerBrowserTest::SetUpCommandLine(command_line);
+    // Page/document scrolls are user scrolls, which animate when smooth
+    // scrolling is enabled. Disable it so offsets can be checked as soon as
+    // the tool call completes.
+    command_line->AppendSwitch(switches::kDisableSmoothScrolling);
+  }
+
+  void SetUpOnMainThread() override {
+    ToolControllerBrowserTest::SetUpOnMainThread();
+    ttc_service().StartSession();
+    ASSERT_TRUE(ttc_service().session_controller());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_https_test_server().GetURL(
+                       "example.com", "/actor/scrollable_page.html")));
+  }
+
+ protected:
+  // Returns the `node_id` argument for the element matching `selector` in the
+  // main frame, or for the main viewport if `selector` is not set.
+  base::DictValue MakeNodeId(std::optional<std::string_view> selector) {
+    content::RenderFrameHost* main_frame =
+        web_contents()->GetPrimaryMainFrame();
+    int dom_node_id = actor::kRootElementDomNodeId;
+    if (selector) {
+      std::optional<int> id = content::GetDOMNodeId(*main_frame, *selector);
+      CHECK(id);
+      dom_node_id = *id;
+    }
+    return base::DictValue()
+        .Set("document_id", optimization_guide::DocumentIdentifierUserData::
+                                GetOrCreateForCurrentDocument(main_frame)
+                                    ->serialized_token())
+        .Set("dom_node_id", dom_node_id);
+  }
+
+  ToolResponse ScrollPage(base::DictValue arguments) {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "scroll_page";
+    tool_request.arguments = std::move(arguments);
+    ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
+                                                        future.GetCallback());
+    return future.Take();
+  }
+
+  ToolResponse ScrollPage(std::string_view granularity,
+                          std::string_view direction,
+                          std::optional<std::string_view> selector) {
+    return ScrollPage(base::DictValue()
+                          .Set("granularity", granularity)
+                          .Set("direction", direction)
+                          .Set("node_id", MakeNodeId(selector)));
+  }
+
+  // Evaluates `script` and returns the result rounded to an int, since scroll
+  // offsets may be fractional.
+  int EvalInt(std::string_view script) {
+    return content::EvalJs(web_contents(),
+                           base::StrCat({"Math.round(", script, ")"}))
+        .ExtractInt();
+  }
+};
+
+// A page scroll of the viewport moves by most, but not all, of the viewport,
+// and a page scroll back returns to the top.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
+                       PageDownAndUpViewport) {
+  const int client_height = EvalInt("document.scrollingElement.clientHeight");
+
+  EXPECT_TRUE(ScrollPage("page", "down", /*selector=*/std::nullopt).Ok());
+  const int scroll_y = EvalInt("window.scrollY");
+  EXPECT_GT(scroll_y, client_height / 2);
+  EXPECT_LE(scroll_y, client_height);
+
+  EXPECT_TRUE(ScrollPage("page", "up", /*selector=*/std::nullopt).Ok());
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
+// A document scroll of the viewport goes to the end, then back to the start.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
+                       DocumentDownAndUpViewport) {
+  EXPECT_TRUE(ScrollPage("document", "down", /*selector=*/std::nullopt).Ok());
+  EXPECT_EQ(EvalInt("document.scrollingElement.scrollHeight - "
+                    "document.scrollingElement.clientHeight"),
+            EvalInt("window.scrollY"));
+
+  EXPECT_TRUE(ScrollPage("document", "up", /*selector=*/std::nullopt).Ok());
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
+// A horizontal page scroll of the viewport, and a page scroll back returns to
+// the left edge.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
+                       PageRightAndLeftViewport) {
+  EXPECT_TRUE(ScrollPage("page", "right", /*selector=*/std::nullopt).Ok());
+  EXPECT_GT(EvalInt("window.scrollX"), 0);
+
+  EXPECT_TRUE(ScrollPage("page", "left", /*selector=*/std::nullopt).Ok());
+  EXPECT_EQ(0, EvalInt("window.scrollX"));
+}
+
+// A horizontal document scroll of the viewport goes to the right edge, then
+// back to the left edge.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
+                       DocumentRightAndLeftViewport) {
+  EXPECT_TRUE(ScrollPage("document", "right", /*selector=*/std::nullopt).Ok());
+  EXPECT_EQ(EvalInt("document.scrollingElement.scrollWidth - "
+                    "document.scrollingElement.clientWidth"),
+            EvalInt("window.scrollX"));
+
+  EXPECT_TRUE(ScrollPage("document", "left", /*selector=*/std::nullopt).Ok());
+  EXPECT_EQ(0, EvalInt("window.scrollX"));
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
+// Scrolling a sub-scroller scrolls it without scrolling the viewport.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest, ScrollElement) {
+  EXPECT_TRUE(ScrollPage("page", "down", "#scroller").Ok());
+  EXPECT_GT(EvalInt("document.getElementById('scroller').scrollTop"), 0);
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+
+  EXPECT_TRUE(ScrollPage("document", "down", "#scroller").Ok());
+  EXPECT_EQ(EvalInt("(() => { const s = document.getElementById('scroller');"
+                    "         return s.scrollHeight - s.clientHeight; })()"),
+            EvalInt("document.getElementById('scroller').scrollTop"));
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
+// Scrolling up at the top of the viewport fails.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest, PageUpAtTopFails) {
+  ToolResponse response = ScrollPage("page", "up", /*selector=*/std::nullopt);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kScrollOffsetDidNotChange);
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest, InvalidArguments) {
+  const struct {
+    std::string_view name;
+    base::DictValue arguments;
+  } kCases[] = {
+      {"Missing granularity",
+       base::DictValue()
+           .Set("direction", "down")
+           .Set("node_id", MakeNodeId(/*selector=*/std::nullopt))},
+      {"Invalid granularity",
+       base::DictValue()
+           .Set("granularity", "line")
+           .Set("direction", "down")
+           .Set("node_id", MakeNodeId(/*selector=*/std::nullopt))},
+      {"Missing direction",
+       base::DictValue()
+           .Set("granularity", "page")
+           .Set("node_id", MakeNodeId(/*selector=*/std::nullopt))},
+      {"Invalid direction",
+       base::DictValue()
+           .Set("granularity", "page")
+           .Set("direction", "sideways")
+           .Set("node_id", MakeNodeId(/*selector=*/std::nullopt))},
+      {"Missing node_id",
+       base::DictValue().Set("granularity", "page").Set("direction", "down")},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    ToolResponse response = ScrollPage(test_case.arguments.Clone());
+    EXPECT_TOOL_ERROR(response,
+                      actor::mojom::ActionResultCode::kArgumentsInvalid);
+  }
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
+// Ensures that scrolling with the document ID of a previously
+// navigated-away-from document is rejected.
+IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
+                       StaleDocumentIdAfterNavigation) {
+  base::DictValue old_node_id = MakeNodeId(/*selector=*/std::nullopt);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "foo.com", "/actor/scrollable_page.html")));
+  ASSERT_NE(*old_node_id.FindString("document_id"),
+            *MakeNodeId(/*selector=*/std::nullopt).FindString("document_id"));
+
+  EXPECT_FALSE(ScrollPage(base::DictValue()
+                              .Set("granularity", "page")
+                              .Set("direction", "down")
+                              .Set("node_id", std::move(old_node_id)))
+                   .Ok());
+  EXPECT_EQ(0, EvalInt("window.scrollY"));
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -1256,7 +1458,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor_service->tool_registry().GetToolsByIds(kExpectedToolIds);
   ASSERT_EQ(expected_tools.size(), kExpectedToolIds.size());
 
-  constexpr size_t kNumLegacyTools = 3;
+  constexpr size_t kNumLegacyTools = 4;
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
   ASSERT_EQ(tools.size(), expected_tools.size() + kNumLegacyTools);
 
@@ -1349,6 +1551,51 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(select_required);
   EXPECT_EQ(*select_required,
             base::ListValue().Append("node_id").Append("value"));
+
+  const ToolDefinition& scroll_page = tools[expected_tools.size() + 3];
+  EXPECT_EQ(scroll_page.name, "scroll_page");
+  EXPECT_FALSE(scroll_page.description.empty());
+  EXPECT_EQ(scroll_page.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(scroll_page.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& scroll_schema = scroll_page.parameters_json_schema;
+  const std::string* scroll_schema_type = scroll_schema.FindString("type");
+  ASSERT_TRUE(scroll_schema_type);
+  EXPECT_EQ(*scroll_schema_type, "object");
+
+  const std::string* scroll_granularity_type =
+      scroll_schema.FindStringByDottedPath("properties.granularity.type");
+  ASSERT_TRUE(scroll_granularity_type);
+  EXPECT_EQ(*scroll_granularity_type, "string");
+  const base::ListValue* scroll_granularity_enum =
+      scroll_schema.FindListByDottedPath("properties.granularity.enum");
+  ASSERT_TRUE(scroll_granularity_enum);
+  EXPECT_EQ(*scroll_granularity_enum,
+            base::ListValue().Append("page").Append("document"));
+
+  const std::string* scroll_direction_type =
+      scroll_schema.FindStringByDottedPath("properties.direction.type");
+  ASSERT_TRUE(scroll_direction_type);
+  EXPECT_EQ(*scroll_direction_type, "string");
+  const base::ListValue* scroll_direction_enum =
+      scroll_schema.FindListByDottedPath("properties.direction.enum");
+  ASSERT_TRUE(scroll_direction_enum);
+  EXPECT_EQ(*scroll_direction_enum,
+            base::ListValue().Append("up").Append("down").Append("left").Append(
+                "right"));
+
+  const std::string* scroll_node_id_type =
+      scroll_schema.FindStringByDottedPath("properties.node_id.type");
+  ASSERT_TRUE(scroll_node_id_type);
+  EXPECT_EQ(*scroll_node_id_type, "integer");
+
+  const base::ListValue* scroll_required = scroll_schema.FindList("required");
+  ASSERT_TRUE(scroll_required);
+  EXPECT_EQ(*scroll_required, base::ListValue()
+                                  .Append("granularity")
+                                  .Append("direction")
+                                  .Append("node_id"));
 }
 
 // The session's actor task is started with the session and stopped when it

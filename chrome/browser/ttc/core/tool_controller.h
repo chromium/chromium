@@ -66,6 +66,8 @@ class ToolController {
   void SetText(const base::DictValue& arguments, ToolResponseCallback callback);
   void SelectOption(const base::DictValue& arguments,
                     ToolResponseCallback callback);
+  void ScrollPage(const base::DictValue& arguments,
+                  ToolResponseCallback callback);
 
   // TODO(crbug.com/470475787): The actor tools backing these haven't been
   // ported to Android yet (see `skip_android_unmigrated_actor_files` in
