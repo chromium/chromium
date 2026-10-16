@@ -29,15 +29,6 @@ NSData* SerializeProtoToNSData(const ProtoMessage& message) {
   return self;
 }
 
-- (instancetype)initWithReason:(GeminiYieldReason)reason
-                 messageToUser:(NSString*)messageToUser {
-  self = [self initWithReason:reason];
-  if (self) {
-    _messageToUser = [messageToUser copy];
-  }
-  return self;
-}
-
 @end
 
 @implementation GeminiActuationRequest

@@ -44,11 +44,6 @@ enum class GeminiYieldReason {
 - (instancetype)initWithReason:(GeminiYieldReason)reason
     NS_DESIGNATED_INITIALIZER;
 
-// TODO(crbug.com/571143843): Remove once `ios_internal` is updated to call
-// `initWithReason:`.
-- (instancetype)initWithReason:(GeminiYieldReason)reason
-                 messageToUser:(NSString*)messageToUser;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
