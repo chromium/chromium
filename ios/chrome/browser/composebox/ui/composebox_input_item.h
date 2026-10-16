@@ -16,6 +16,7 @@ class UnguessableToken;
 
 // Enum for the loading state of an item.
 enum class ComposeboxInputItemState {
+  kDeferred,
   kLoading,
   kUploading,
   kLoaded,
@@ -58,6 +59,9 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, assign) NSInteger uploadIndex;
 // The current state of the item.
 @property(nonatomic, assign) ComposeboxInputItemState state;
+// Whether the item is ready for the query to be sent (i.e. not deferred,
+// loading, or uploading).
+@property(nonatomic, assign, readonly) BOOL readyForSend;
 // The type of the input item.
 @property(nonatomic, assign) ComposeboxInputItemType type;
 // Optional, uniquely identifying the asset the item is associated with.

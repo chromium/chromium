@@ -36,6 +36,18 @@
   return _identifier;
 }
 
+- (BOOL)readyForSend {
+  switch (_state) {
+    case ComposeboxInputItemState::kDeferred:
+    case ComposeboxInputItemState::kLoading:
+    case ComposeboxInputItemState::kUploading:
+      return NO;
+    case ComposeboxInputItemState::kLoaded:
+    case ComposeboxInputItemState::kError:
+      return YES;
+  }
+}
+
 - (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;

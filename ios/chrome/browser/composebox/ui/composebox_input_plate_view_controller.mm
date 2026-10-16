@@ -649,15 +649,16 @@ UIImage* SendButtonImage(BOOL highlighted,
     return;
   }
 
-  BOOL allLoaded = YES;
+  BOOL canSend = YES;
   for (ComposeboxInputItem* item in _currentItems) {
-    if (item.state != ComposeboxInputItemState::kLoaded) {
-      allLoaded = NO;
+    if (item.state != ComposeboxInputItemState::kLoaded &&
+        item.state != ComposeboxInputItemState::kDeferred) {
+      canSend = NO;
       break;
     }
   }
 
-  [self enableSendButton:allLoaded];
+  [self enableSendButton:canSend];
 }
 
 - (void)enableSendButton:(BOOL)enableSending {
