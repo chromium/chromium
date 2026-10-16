@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +37,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.Token;
@@ -50,7 +53,9 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -65,6 +70,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -2102,5 +2108,225 @@ public class TabGroupUiUtilsUnitTest {
         verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager, never()).closeChromeWindowIfEmpty(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testAddTabsToGroup_anotherWindow_inactiveSelector_resolvesViaSyncAndMoves() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Token groupId = Token.createRandom();
+        final int windowId = 2;
+        final @TabId int destTabId = 42;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getTabGroupId()).thenReturn(null);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
+        when(mTabWindowManager.getTabModelSelectorById(windowId)).thenReturn(null);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = destTabId;
+        savedGroup.savedTabs = List.of(savedTab);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(groupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(any(String.class))).thenReturn(savedGroup);
+
+        TabMovedCallback callback = mock(TabMovedCallback.class);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_ANOTHER),
+                mTabGroupSyncService,
+                mUiActionHandler,
+                callback,
+                /* bringToFront= */ true);
+
+        verify(orchestrator)
+                .moveTabsToWindowByIdChecked(
+                        eq(windowId),
+                        eq(List.of(tab)),
+                        eq(TabList.INVALID_TAB_INDEX),
+                        eq(destTabId),
+                        eq(true));
+        verify(callback).onTabMoved();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void
+            testAddTabsToGroup_anotherWindow_headlessSelector_uninitialized_fallsThroughToSyncAndMoves() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Token groupId = Token.createRandom();
+        final int windowId = 2;
+        final @TabId int destTabId = 42;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getTabGroupId()).thenReturn(null);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
+        TabModelSelector headlessSelector = mock(TabModelSelector.class);
+        TabModel headlessTabModel = mock(TabModel.class);
+        when(mTabWindowManager.getTabModelSelectorById(windowId)).thenReturn(headlessSelector);
+        when(headlessSelector.getModel(false)).thenReturn(headlessTabModel);
+        when(headlessSelector.isTabStateInitialized()).thenReturn(false);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = destTabId;
+        savedGroup.savedTabs = List.of(savedTab);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(groupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(any(String.class))).thenReturn(savedGroup);
+
+        TabMovedCallback callback = mock(TabMovedCallback.class);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_ANOTHER),
+                mTabGroupSyncService,
+                mUiActionHandler,
+                callback,
+                /* bringToFront= */ true);
+
+        verify(orchestrator)
+                .moveTabsToWindowByIdChecked(
+                        eq(windowId),
+                        eq(List.of(tab)),
+                        eq(TabList.INVALID_TAB_INDEX),
+                        eq(destTabId),
+                        eq(true));
+        verify(callback).onTabMoved();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void
+            testAddTabsToGroup_anotherWindow_activeSelectorInitialized_doesNotFallThroughToSync() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Token groupId = Token.createRandom();
+        final int windowId = 2;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getTabGroupId()).thenReturn(null);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
+        TabModelSelector activeSelector = mock(TabModelSelector.class);
+        TabModel activeTabModel = mock(TabModel.class);
+        when(mTabWindowManager.getTabModelSelectorById(windowId)).thenReturn(activeSelector);
+        when(activeSelector.getModel(false)).thenReturn(activeTabModel);
+        when(activeSelector.isTabStateInitialized()).thenReturn(true);
+
+        TabMovedCallback callback = mock(TabMovedCallback.class);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_ANOTHER),
+                mTabGroupSyncService,
+                mUiActionHandler,
+                callback,
+                /* bringToFront= */ true);
+
+        verify(mTabGroupSyncService, never()).getGroup(any(String.class));
+        verify(mTabGroupSyncService, never()).getGroup(any(LocalTabGroupId.class));
+        verify(orchestrator, never())
+                .moveTabsToWindowByIdChecked(anyInt(), anyList(), anyInt(), anyInt(), anyBoolean());
+        verify(callback, never()).onTabMoved();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testAddTabsToGroup_anotherWindow_destinationActivityFinishing_returnsEarly() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Token groupId = Token.createRandom();
+        final int windowId = 2;
+        final @TabId int destTabId = 42;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getTabGroupId()).thenReturn(null);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
+        when(mTabWindowManager.getTabModelSelectorById(windowId)).thenReturn(null);
+
+        Activity finishingActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        finishingActivity.finish();
+        MultiWindowUtils.setActivityByWindowIdForTesting(windowId, finishingActivity);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = destTabId;
+        savedGroup.savedTabs = List.of(savedTab);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(groupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(any(String.class))).thenReturn(savedGroup);
+
+        TabMovedCallback callback = mock(TabMovedCallback.class);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_ANOTHER),
+                mTabGroupSyncService,
+                mUiActionHandler,
+                callback,
+                /* bringToFront= */ true);
+
+        verify(orchestrator, never())
+                .moveTabsToWindowByIdChecked(anyInt(), anyList(), anyInt(), anyInt(), anyBoolean());
+        verify(callback, never()).onTabMoved();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testAddTabsToGroup_anotherWindow_incognito_doesNotFallThroughToSync() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Token groupId = Token.createRandom();
+        final int windowId = 2;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getTabGroupId()).thenReturn(null);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(true);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
+        when(mTabWindowManager.getTabModelSelectorById(windowId)).thenReturn(null);
+
+        TabMovedCallback callback = mock(TabMovedCallback.class);
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                createGroupWindowInfo(groupId, GroupWindowState.IN_ANOTHER),
+                mTabGroupSyncService,
+                mUiActionHandler,
+                callback,
+                /* bringToFront= */ true);
+
+        verify(mTabGroupSyncService, never()).getGroup(any(String.class));
+        verify(mTabGroupSyncService, never()).getGroup(any(LocalTabGroupId.class));
+        verify(orchestrator, never())
+                .moveTabsToWindowByIdChecked(anyInt(), anyList(), anyInt(), anyInt(), anyBoolean());
+        verify(callback, never()).onTabMoved();
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -37,6 +38,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
@@ -586,7 +588,12 @@ public class TabGroupUiUtils {
 
         if (isCrossWindowTabGroupOperationsEnabled()) {
             moveTabsToAnotherWindow(
-                    sourceTabModel, tabs, destinationGroupId, tabMovedCallback, bringToFront);
+                    sourceTabModel,
+                    tabs,
+                    destinationGroup,
+                    syncService,
+                    tabMovedCallback,
+                    bringToFront);
         }
     }
 
@@ -642,24 +649,79 @@ public class TabGroupUiUtils {
         TabGroupUtils.mergeTabsToDest(tabs, destTabId, sourceTabModel, tabMovedCallback);
     }
 
+    /**
+     * Resolves the destination tab ID for a cross-window move. If the window's TabModelSelector is
+     * not yet active or initialized, falls back to TabGroupSyncService to look up a constituent tab
+     * ID from the persisted saved group.
+     */
+    private static @TabId int resolveDestTabId(
+            @WindowId int windowId,
+            GroupWindowInfo destinationGroup,
+            @Nullable TabGroupSyncService syncService,
+            boolean isIncognito) {
+        Token localId = destinationGroup.localId;
+        if (localId == null) {
+            return Tab.INVALID_TAB_ID;
+        }
+        TabModelSelector selector =
+                TabWindowManagerSingleton.getInstance().getTabModelSelectorById(windowId);
+        if (selector != null) {
+            @TabId
+            int destTabId =
+                    TabGroupUtils.getFirstTabIdInGroup(selector.getModel(isIncognito), localId);
+            if (destTabId != Tab.INVALID_TAB_ID) {
+                return destTabId;
+            }
+            if (selector.isTabStateInitialized()) {
+                // If the selector is active and initialized, the live TabModel is authoritative.
+                return Tab.INVALID_TAB_ID;
+            }
+        }
+        if (isIncognito || syncService == null) {
+            return Tab.INVALID_TAB_ID;
+        }
+        SavedTabGroup savedGroup =
+                destinationGroup.syncId != null
+                        ? syncService.getGroup(destinationGroup.syncId)
+                        : syncService.getGroup(new LocalTabGroupId(localId));
+        if (savedGroup == null) {
+            return Tab.INVALID_TAB_ID;
+        }
+        for (SavedTabGroupTab savedTab : savedGroup.savedTabs) {
+            if (savedTab.localId != null) {
+                return savedTab.localId;
+            }
+        }
+        // If constituent tabs do not have local tab IDs assigned yet, we cannot target
+        // a specific tab in the uninitialized destination model.
+        return Tab.INVALID_TAB_ID;
+    }
+
     private static void moveTabsToAnotherWindow(
             TabModel sourceTabModel,
             List<Tab> tabs,
-            Token destinationGroupId,
+            @Nullable GroupWindowInfo destinationGroup,
+            @Nullable TabGroupSyncService syncService,
             @Nullable TabMovedCallback tabMovedCallback,
             boolean bringToFront) {
+        if (destinationGroup == null || destinationGroup.localId == null) {
+            return;
+        }
+        Token localId = destinationGroup.localId;
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-        @WindowId int windowId = windowManager.findWindowIdForTabGroup(destinationGroupId);
+        @WindowId int windowId = windowManager.findWindowIdForTabGroup(localId);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return;
         }
-        TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
-        if (selector == null) {
+        @TabId
+        int destTabId =
+                resolveDestTabId(
+                        windowId, destinationGroup, syncService, sourceTabModel.isIncognito());
+        if (destTabId == Tab.INVALID_TAB_ID) {
             return;
         }
-        TabModel destTabModel = selector.getModel(sourceTabModel.isIncognito());
-        @TabId int destTabId = TabGroupUtils.getFirstTabIdInGroup(destTabModel, destinationGroupId);
-        if (destTabId == Tab.INVALID_TAB_ID) {
+        Activity destActivity = MultiWindowUtils.getActivityById(windowId);
+        if (destActivity != null && destActivity.isFinishing()) {
             return;
         }
         maybeUngroupTabs(sourceTabModel, tabs);
