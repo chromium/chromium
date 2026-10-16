@@ -118,6 +118,25 @@ public class TabStateStoreUnitTest {
         };
     }
 
+    private void createNonAuthoritativeStore() {
+        mTabStateStore =
+                new TabStateStore(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
+        mTabStateStore.addObserver(mObserver);
+        when(mMigrationManager.shouldRazeStoreForWindow(false)).thenReturn(false);
+    }
+
     @Before
     public void setUp() throws Exception {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
@@ -161,6 +180,113 @@ public class TabStateStoreUnitTest {
         mTabStateStore.onNativeLibraryReady();
         mTabStateStore.clearState();
         verify(mTabStateStorageService).clearState();
+    }
+
+    @Test
+    public void testLoadStateAndRestoreTabs_AuthoritativeDoesNotDuplicateRegistrationOrFullSave() {
+        mTabStateStore.onNativeLibraryReady();
+
+        Tab tab = createMockTabWithParentCollection(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        verify(mMigrationManager).onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
+
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+        verify(mMigrationManager, times(1))
+                .onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
+
+        mTabStateStore.onTabRegistered(tab);
+        verify(mModelTrackingOrchestrator, times(1)).saveTab(tab);
+    }
+
+    @Test
+    public void testLoadStateAndRestoreTabs_ShadowCatchUpUpdatesCounts() {
+        createNonAuthoritativeStore();
+        mTabStateStore.onNativeLibraryReady();
+
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(false)).thenReturn(true);
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(true)).thenReturn(true);
+        when(mRegularTabModel.getCount()).thenReturn(2);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mRegularTabModel).addObserver(captor.capture());
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        mTabStateStore.onAuthoritativeStateLoaded();
+        mTabStateStore.restoreTabs(/* setActiveTab= */ false);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mTabCountTracker).updateTabCount(false, 2);
+        verify(mTabCountTracker).updateTabCount(true, 1);
+        verify(mObserver).onStateLoaded();
+    }
+
+    @Test
+    public void testClearStateThenLoadStateAndRestoreTabs_Authoritative() {
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.clearState();
+        verify(mTabStateStorageService).clearState();
+        verify(mObserver).onStateLoaded();
+
+        clearInvocations(mObserver);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+    }
+
+    @Test
+    public void testPostRestoreTabRegistration_UpdatesCountAndSavesTab() {
+        mTabStateStore.onNativeLibraryReady();
+
+        Tab regularTab = createMockTabWithParentCollection(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                regularTab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+
+        when(mIncognitoTabModel.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        when(mRegularTabModel.getCount()).thenReturn(1);
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(false)).thenReturn(true);
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(true)).thenReturn(true);
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+
+        mTabStateStore.onTabRegistered(regularTab);
+        verify(mModelTrackingOrchestrator).saveTab(regularTab);
+        verify(mTabCountTracker).updateTabCount(false, 1);
+
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        Tab incognitoTab = createMockTabWithParentCollection(2, incognitoProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                incognitoTab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabStateStore.onTabRegistered(incognitoTab);
+        verify(mModelTrackingOrchestrator).saveTab(incognitoTab);
+        verify(mTabCountTracker).updateTabCount(true, 1);
     }
 
     @Test

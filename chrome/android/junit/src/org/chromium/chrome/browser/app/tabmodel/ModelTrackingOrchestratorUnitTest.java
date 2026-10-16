@@ -179,6 +179,58 @@ public class ModelTrackingOrchestratorUnitTest {
     }
 
     @Test
+    public void testAuthoritativeNormalRestore_OnRestoreFinishedAfterInitAndTrackGeneral() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        // When data is loaded, synchronizer is in RESTORING or TRACKING and does not do fullSave.
+        verify(mRegularSynchronizer, never()).fullSave(any());
+        verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
+    }
+
+    @Test
+    public void testNonAuthoritativeOnRestoreFinished_FullSaves() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+
+        when(mRegularTabModel.iterator())
+                .thenAnswer(inv -> Collections.singletonList((Tab) tab).iterator());
+
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        verify(mRegularSynchronizer).fullSave(any());
+        assertTrue(mOrchestrator.isSynchronizerPresent(false));
+    }
+
+    @Test
+    public void testIncognitoCipherLoadedBeforeAndAfterOnRestoreFinished() {
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        // Without cipher factory, incognito synchronizer is not created.
+        createOrchestrator(/* hasCipherFactory= */ false, /* isAuthoritative= */ false);
+
+        mOrchestrator.onAuthoritativeStateLoaded();
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+        verify(mRegularSynchronizer).fullSave(any());
+
+        mOrchestrator.onRestoredForModel(/* incognito= */ true);
+        verify(mIncognitoSynchronizer, never()).fullSave(any());
+
+        // With cipher factory, incognito synchronizer is created and full-saved.
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+        mOrchestrator.onAuthoritativeStateLoaded();
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+        mOrchestrator.onRestoredForModel(/* incognito= */ true);
+        verify(mIncognitoSynchronizer).fullSave(any());
+    }
+
+    @Test
     public void testShadowStoreCatchUpLifecycle_simpleNoIncognito() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
 
