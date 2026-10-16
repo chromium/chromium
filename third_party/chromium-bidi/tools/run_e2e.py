@@ -21,6 +21,7 @@ import argparse
 import datetime
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -301,6 +302,30 @@ def main():
         return result.returncode
     finally:
         server.stop()
+        if isolated_script_test_output:
+            copy_server_log_to_output_dir(
+                log_file, os.path.dirname(isolated_script_test_output)
+            )
+
+
+def copy_server_log_to_output_dir(log_file: str, output_dir: str) -> None:
+    """Copies the ChromeDriver log next to the isolated script output.
+
+    Swarming uploads the output directory as task outputs, so the log becomes
+    available for failed CI runs.
+    """
+    if not os.path.exists(log_file):
+        return
+    try:
+        os.makedirs(output_dir, exist_ok=True)
+        destination = os.path.join(output_dir, "chromedriver_e2e.log")
+        shutil.copyfile(log_file, destination)
+        print(f"(run_e2e.py) Copied server log to {destination}")
+    except OSError as e:
+        print(
+            f"(run_e2e.py) Warning: could not copy server log: {e}",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":

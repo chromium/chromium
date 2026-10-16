@@ -16,6 +16,7 @@
 import asyncio
 import logging
 import os
+import time
 from asyncio import Timeout
 from collections.abc import Callable, Generator
 from uuid import uuid4
@@ -44,6 +45,14 @@ logger = logging.getLogger(__name__)
 pytest_plugins = ["resultsink_reporter"]
 
 GOOD_SSL_CERT_SPKI = "QQDsUATYj6FX2oHvQ5/cyDW9CutD2sp9z+qeLfNGHHw="
+
+# `session.new` starts a new browser. On slow CI bots this can take longer than
+# the per-test timeout, so it gets a longer timeout and several attempts.
+SESSION_NEW_TIMEOUT_SECONDS = 40
+SESSION_NEW_MAX_ATTEMPTS = 5
+# Log a warning if `session.new` takes longer than this, to make slow browser
+# startup visible in the test output.
+SLOW_SESSION_NEW_THRESHOLD_SECONDS = 10
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -183,14 +192,21 @@ async def websocket(test_headless_mode, capabilities, current_test_name):
             default_capabilities, capabilities
         )
 
+        # Starting a browser can take long on slow bots. Use a timeout longer
+        # than the per-test timeout. `timeout_func_only` in `pytest.ini`
+        # excludes the fixture from the per-test timeout.
+        start_time = time.monotonic()
         await execute_command(
             connection,
             {
                 "method": "session.new",
                 "params": {"capabilities": {"alwaysMatch": session_capabilities}},
             },
-            timeout=40,
+            timeout=SESSION_NEW_TIMEOUT_SECONDS,
         )
+        elapsed = time.monotonic() - start_time
+        if elapsed > SLOW_SESSION_NEW_THRESHOLD_SECONDS:
+            logger.warning(f"Slow session.new: {elapsed:.1f}s")
 
     async def connect_and_create_new_session():
         """
@@ -198,7 +214,7 @@ async def websocket(test_headless_mode, capabilities, current_test_name):
         creation timed out, retries several time to avoid infra CI issues.
         """
         current_attempt = 0
-        max_attempt = 5
+        max_attempt = SESSION_NEW_MAX_ATTEMPTS
         while True:
             try:
                 connection = await connect_websocket()
@@ -210,9 +226,13 @@ async def websocket(test_headless_mode, capabilities, current_test_name):
                 if "connection" in locals() and not connection.closed:
                     await connection.close()
                 if current_attempt >= max_attempt:
+                    logger.error(
+                        f"session.new timed out {current_attempt} times with "
+                        f"{SESSION_NEW_TIMEOUT_SECONDS}s timeout each. Giving up."
+                    )
                     raise
                 else:
-                    logger.info(
+                    logger.warning(
                         f"Error during creating session. Attempts: {current_attempt}/{max_attempt}. {e}"
                     )
             except Exception as e:
