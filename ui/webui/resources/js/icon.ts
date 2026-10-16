@@ -112,6 +112,16 @@ function getBaseFaviconUrl(): URL {
 }
 
 /**
+ * Returns whether `url` is a favicon request URL, i.e. one that was or could
+ * have been produced by `getFavicon()` or `getFaviconUrl()`. In extension pages
+ * this is the `/_favicon/` URL of the extension, otherwise chrome://favicon2.
+ */
+export function isFaviconUrl(url: string): boolean {
+  return url.startsWith('chrome://favicon2/') ||
+      /^chrome-extension:\/\/[^/]+\/_favicon\//.test(url);
+}
+
+/**
  * Creates a CSS image-set for a favicon.
  *
  * @param url URL of the favicon

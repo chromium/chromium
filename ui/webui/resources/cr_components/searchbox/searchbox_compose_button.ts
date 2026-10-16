@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {isFaviconUrl} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -140,7 +141,7 @@ export class SearchboxComposeButtonElement extends
   protected accessor showAnimation_: boolean = false;
 
   protected hasFavicon_(): boolean {
-    return this.composeIcon.startsWith('chrome://favicon2/');
+    return isFaviconUrl(this.composeIcon);
   }
 
   override focus() {
