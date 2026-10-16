@@ -669,9 +669,13 @@ protocol::Response InspectorAccessibilityAgent::enable() {
 }
 
 protocol::Response InspectorAccessibilityAgent::disable() {
-  if (!enabled_.Get())
-    return protocol::Response::Success();
-  enabled_.Set(false);
+  const bool was_enabled = enabled_.Get();
+  if (was_enabled) {
+    enabled_.Set(false);
+  }
+
+  // Protocol methods can create AX contexts before the agent is enabled.
+  // Always release them when the session is disposed.
   for (auto& document : document_to_context_map_.Keys()) {
     DCHECK(document);
     // We do not rely on AXContext::GetAXObjectCache here, since it might
@@ -688,6 +692,11 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   document_to_context_map_.clear();
   nodes_requested_.clear();
   dirty_nodes_.clear();
+
+  if (!was_enabled) {
+    return protocol::Response::Success();
+  }
+
   LocalFrame* frame = inspected_frames_->Root();
   DCHECK(EnabledAgents().Contains(frame));
   auto it = EnabledAgents().find(frame);

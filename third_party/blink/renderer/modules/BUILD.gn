@@ -413,6 +413,7 @@ source_set("unit_tests") {
     "accessibility/ax_range_test.cc",
     "accessibility/ax_selection_test.cc",
     "accessibility/blink_ax_tree_source_test.cc",
+    "accessibility/inspector_accessibility_agent_test.cc",
     "accessibility/testing/accessibility_dom_fuzztest.cc",
     "accessibility/testing/accessibility_selection_test.cc",
     "accessibility/testing/accessibility_selection_test.h",
