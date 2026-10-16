@@ -257,7 +257,6 @@ if (!is_android) {
       ":impl",
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/profiles/keep_alive",
       "//components/keyed_service/core",
       "//net:test_support",
       "//testing/gtest",
@@ -296,7 +295,6 @@ if (!is_android) {
       "//components/actor/core:task_id",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
-      "//components/keep_alive_registry",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/page_content_annotations/content",
       "//components/search_engines",
@@ -307,12 +305,10 @@ if (!is_android) {
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//net:test_support",
-      "//skia",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public/common",
       "//ui/base",
-      "//ui/gfx/codec",
       "//url",
     ]
     if (use_ozone) {

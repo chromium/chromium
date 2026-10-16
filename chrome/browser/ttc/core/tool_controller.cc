@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -35,18 +34,13 @@
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
-#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/page.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -194,11 +188,6 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     return;
   }
 
-  if (tool_request.name == "get_screenshot") {
-    GetScreenshot(std::move(callback));
-    return;
-  }
-
   std::move(callback).Run(ToolResponse::Error(
       actor::mojom::ActionResultCode::kToolUnknown, "Unsupported tool"));
 }
@@ -324,15 +313,6 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   select_option.behavior = ToolDefinition::Behavior::kBlocking;
   select_option.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(select_option));
-
-  ToolDefinition get_screenshot;
-  get_screenshot.name = "get_screenshot";
-  get_screenshot.description =
-      "Capture a screenshot of the active webpage's current viewport.";
-  // The tool takes no arguments, so its schema is left empty.
-  get_screenshot.behavior = ToolDefinition::Behavior::kBlocking;
-  get_screenshot.verbalization = ToolDefinition::Verbalization::kSilentAction;
-  tools.push_back(std::move(get_screenshot));
 
   return tools;
 }
@@ -622,150 +602,6 @@ void ToolController::SelectOption(const base::DictValue& arguments,
                                                           *page_target, *value);
       },
       std::move(callback));
-}
-
-// TODO(b/573253710): Migrate this to be an actor tool once ActorKeyedService
-// returns `ToolResponse`s.
-void ToolController::GetScreenshot(ToolResponseCallback callback) {
-  if (is_capturing_screenshot_) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureThrottled,
-        "A screenshot capture is already in progress"));
-    return;
-  }
-
-  content::WebContents* contents =
-      session_controller_->GetVoiceFocusedWebContents();
-  if (!contents) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
-    return;
-  }
-
-  is_capturing_screenshot_ = true;
-  content::Page& page = contents->GetPrimaryPage();
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-
-  IsUrlSupportedForPageContext(
-      url, base::BindOnce(&ToolController::OnGetScreenshotUrlChecked,
-                          weak_factory_.GetWeakPtr(), page.GetWeakPtr(),
-                          std::move(callback)));
-}
-
-void ToolController::OnGetScreenshotUrlChecked(
-    base::WeakPtr<content::Page> page,
-    ToolResponseCallback callback,
-    bool is_url_supported) {
-  if (!is_url_supported) {
-    is_capturing_screenshot_ = false;
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kUrlBlocked,
-                            "URL is not supported for screenshot capture"));
-    return;
-  }
-
-  content::WebContents* web_contents =
-      session_controller_->GetVoiceFocusedWebContents();
-  if (!web_contents) {
-    is_capturing_screenshot_ = false;
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
-    return;
-  }
-
-  if (!page || &*page != &web_contents->GetPrimaryPage()) {
-    is_capturing_screenshot_ = false;
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        "Focused page changed before screenshot capture"));
-    return;
-  }
-
-  if (web_contents->IsCrashed()) {
-    is_capturing_screenshot_ = false;
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kRendererCrashed, "Renderer crashed"));
-    return;
-  }
-
-  page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions
-      collection_options;
-  collection_options.screenshot_image_format =
-      page_content_annotations::ScreenshotOptions::ScreenshotImageFormat::kJpeg;
-  collection_options.screenshot_compression_quality = page_content_annotations::
-      ScreenshotOptions::ScreenshotCompressionQuality::kHigh;
-
-  page_content_annotations::FetchPageContextOptions options;
-  options.screenshot_options =
-      page_content_annotations::ScreenshotOptions::ViewportOnly(
-          /*paint_preview_options=*/std::nullopt, collection_options);
-
-  screenshot_fetcher_ =
-      std::make_unique<page_content_annotations::PageContextFetcher>(
-          /*get_screenshot_service_callback=*/base::NullCallback(),
-          /*progress_listener=*/nullptr,
-          /*fetch_pdf_content_callback=*/base::NullCallback());
-  screenshot_fetcher_->FetchStart(
-      *web_contents, options,
-      base::BindOnce(&ToolController::OnGetScreenshotFetched,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ToolController::OnGetScreenshotFetched(
-    ToolResponseCallback callback,
-    base::expected<
-        std::unique_ptr<page_content_annotations::FetchPageContextResult>,
-        page_content_annotations::FetchPageContextErrorDetails> result) {
-  is_capturing_screenshot_ = false;
-  screenshot_fetcher_.reset();
-
-  if (!result.has_value()) {
-    auto error = actor::mojom::ActionResultCode::kScreenshotCaptureFailed;
-    switch (result.error().error_code) {
-      case page_content_annotations::FetchPageContextError::
-          kWebContentsWentAway:
-        error = actor::mojom::ActionResultCode::kTabWentAway;
-        break;
-      case page_content_annotations::FetchPageContextError::kWebContentsChanged:
-        error = actor::mojom::ActionResultCode::kScreenshotCapturePageChanged;
-        break;
-      case page_content_annotations::FetchPageContextError::
-          kPageContextNotEligible:
-        error =
-            actor::mojom::ActionResultCode::kScreenshotCapturePageNotEligible;
-        break;
-      default:
-        break;
-    }
-
-    std::move(callback).Run(ToolResponse::Error(error, result.error().message));
-    return;
-  }
-
-  // `PageContextFetcher` only reports success with a non-null result.
-  CHECK(result.value());
-  if (!result.value()->screenshot_result.has_value()) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        result.value()->screenshot_result.error()));
-    return;
-  }
-
-  page_content_annotations::ScreenshotResult& screenshot_result =
-      *result.value()->screenshot_result;
-  if (screenshot_result.screenshot_data.empty()) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        "Captured screenshot data is empty"));
-    return;
-  }
-
-  base::DictValue result_dict;
-  result_dict.Set(
-      "image_b64",
-      base::Base64Encode(std::move(screenshot_result.screenshot_data)));
-  result_dict.Set("mime_type", screenshot_result.mime_type);
-  std::move(callback).Run(ToolResponse::Success(std::move(result_dict)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
