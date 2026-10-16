@@ -353,12 +353,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       render_pass_bypass_quads_;
   base::flat_map<AggregatedRenderPassId, std::optional<SkPath>>
       render_pass_backdrop_filter_bounds_;
-  base::flat_map<AggregatedRenderPassId, gfx::Rect>
-      backdrop_filter_output_rects_;
-
-  // Whether a render pass with foreground filters that move pixels is found in
-  // this frame.
-  bool has_pixel_moving_foreground_filters_ = false;
 
   // Track skipped non-root render passes in DrawRenderPass.
   base::flat_set<AggregatedRenderPassId> skipped_render_pass_ids_;
