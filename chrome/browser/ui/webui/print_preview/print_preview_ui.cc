@@ -960,6 +960,9 @@ void PrintPreviewUI::OnCancelPendingPreviewRequest() {
 
 void PrintPreviewUI::OnPrintPreviewFailed(int request_id) {
   OnCancelPendingPreviewRequest();
+  if (g_test_delegate) {
+    g_test_delegate->PreviewFailed();
+  }
   handler_->OnPrintPreviewFailed(request_id);
 }
 

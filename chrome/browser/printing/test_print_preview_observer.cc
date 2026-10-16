@@ -30,7 +30,8 @@ TestPrintPreviewObserver::~TestPrintPreviewObserver() {
 
 [[nodiscard]] content::WebContents*
 TestPrintPreviewObserver::WaitUntilPreviewIsReadyAndReturnPreviewDialog() {
-  if (rendered_page_count_ < expected_rendered_page_count_) {
+  if (!preview_failed_ &&
+      rendered_page_count_ < expected_rendered_page_count_) {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -41,6 +42,7 @@ TestPrintPreviewObserver::WaitUntilPreviewIsReadyAndReturnPreviewDialog() {
       EXPECT_EQ("\"success\"", message);
     }
   }
+  EXPECT_FALSE(preview_failed_);
 
   // Grab and reset `preview_dialog_` to avoid potential dangling pointers.
   content::WebContents* dialog = preview_dialog_;
@@ -113,6 +115,13 @@ void TestPrintPreviewObserver::PreviewDocumentReady(
     if (wait_for_loaded_) {
       EnsureWaitForLoaded();
     }
+  }
+}
+
+void TestPrintPreviewObserver::PreviewFailed() {
+  preview_failed_ = true;
+  if (quit_closure_) {
+    std::move(quit_closure_).Run();
   }
 }
 

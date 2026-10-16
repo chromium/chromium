@@ -56,6 +56,7 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override;
   void PreviewDocumentReady(content::WebContents* preview_dialog,
                             base::span<const uint8_t> data) override;
+  void PreviewFailed() override;
 
   std::optional<content::DOMMessageQueue> queue_;
 
@@ -65,6 +66,7 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   const int pages_per_sheet_;
   uint32_t expected_rendered_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
+  bool preview_failed_ = false;
 
 #if BUILDFLAG(IS_WIN)
   bool did_composite_pdf_document_ = false;

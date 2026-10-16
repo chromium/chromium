@@ -1942,6 +1942,19 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SpecifiedPageSizeCrash) {
   PrintAndWaitUntilPreviewIsReadyAndLoaded();
 }
 
+// Regression test for crbug.com/568827486
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintCssLuminanceMask) {
+  static constexpr char kHtmlData[] =
+      "data:text/html,<div style='mask-image: linear-gradient(black, "
+      "transparent); mask-mode: luminance; print-color-adjust: exact;'>Hello "
+      "world!</div>";
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kHtmlData)));
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  EXPECT_EQ(rendered_page_count(), 1u);
+}
+
 class PrintPrerenderBrowserTest
     : public PrintBrowserTest,
       public testing::WithParamInterface<std::string> {

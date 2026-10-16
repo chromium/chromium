@@ -186,6 +186,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
     virtual void PreviewDocumentReady(content::WebContents* preview_dialog,
                                       base::span<const uint8_t> data) {}
 
+    // Notifies that the print preview failed.
+    virtual void PreviewFailed() {}
+
    protected:
     virtual ~TestDelegate() = default;
   };
