@@ -406,8 +406,16 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 }
 
 // The correct label should be rendered for different memory savings amounts.
+// TODO(crbug.com/574506268): Flaky on Linux, ChromeOS, and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_ShowsCorrectLabelsForDifferentSavings \
+  DISABLED_ShowsCorrectLabelsForDifferentSavings
+#else
+#define MAYBE_ShowsCorrectLabelsForDifferentSavings \
+  ShowsCorrectLabelsForDifferentSavings
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverBubbleViewSavingsTest,
-                       ShowsCorrectLabelsForDifferentSavings) {
+                       MAYBE_ShowsCorrectLabelsForDifferentSavings) {
   AddNewTab(std::get<0>(GetParam()),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
