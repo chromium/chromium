@@ -8565,9 +8565,6 @@ crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/b
 # Gardener 2026-05-18
 crbug.com/514075904 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
 
-# TODO(crbug.com/475867727): Flaky. Reenable it.
-crbug.com/475867727 [ Mac15-arm64 ] http/tests/devtools/network/font-face.js [ Failure Pass ]
-
 # Gardener 2026-05-22
 crbug.com/515670908 [ Release Win11-arm64 ] inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Failure Pass ]
 crbug.com/515194597 [ Release Win11-arm64 ] virtual/text-antialias/font-fallback.html [ Failure Pass ]

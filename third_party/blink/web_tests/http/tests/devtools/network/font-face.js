@@ -18,13 +18,26 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     }
   }
 
+  const startedRequests = [];
+  const finishedRequests = [];
+
   function onRequest(eventType, event) {
     var request = getRequestFromEvent(eventType, event);
     if (request.name() === 'done') {
+      startedRequests.sort();
+      finishedRequests.sort();
+      for (const result of [...startedRequests, ...finishedRequests]) {
+        TestRunner.addResult(result);
+      }
       TestRunner.completeTest();
       return;
     }
-    TestRunner.addResult(eventType + ': ' + request.name());
+    const result = eventType + ': ' + request.name();
+    if (eventType === 'RequestStarted') {
+      startedRequests.push(result);
+    } else {
+      finishedRequests.push(result);
+    }
   }
 
   TestRunner.networkManager.addEventListener(
