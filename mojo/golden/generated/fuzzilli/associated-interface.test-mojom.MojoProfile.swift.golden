@@ -54,6 +54,7 @@ extension ILType {
         ofGroup: "golden.DelegateTwoRemote",
         withProperties: ["$"],
         withMethods: [
+            "sendNestedDelegate",
         ])
     fileprivate static let jsGoldenDelegateTwoRemoteWrapper: ILType = .object(
         ofGroup: "golden.DelegateTwoRemoteWrapper",
@@ -65,12 +66,28 @@ extension ILType {
     fileprivate static let jsGoldenDelegateTwoPendingAssociatedReceiver: ILType = .object(
         ofGroup: "golden.DelegateTwoPendingAssociatedReceiver")
 
+    // NestedDelegate
+    fileprivate static let jsGoldenNestedDelegateRemote: ILType = .object(
+        ofGroup: "golden.NestedDelegateRemote",
+        withProperties: ["$"],
+        withMethods: [
+        ])
+    fileprivate static let jsGoldenNestedDelegateRemoteWrapper: ILType = .object(
+        ofGroup: "golden.NestedDelegateRemoteWrapper",
+        withMethods: [
+          "close",
+          "isBound",
+          "associateAndPassReceiver",
+        ])
+    fileprivate static let jsGoldenNestedDelegatePendingAssociatedReceiver: ILType = .object(
+        ofGroup: "golden.NestedDelegatePendingAssociatedReceiver")
+
     // ObserverOne
     fileprivate static let jsGoldenObserverOneCallbackRouter: ILType = .object(
         ofGroup: "golden.ObserverOneCallbackRouter",
         withProperties: [
             "$",
-            "sendDelegateTwo",
+            "sendDelegateOne",
         ])
     fileprivate static let jsGoldenObserverOneCallbackRouterReceiverHelper: ILType = .object(
         ofGroup: "golden.ObserverOneCallbackRouterReceiverHelper",
@@ -90,8 +107,8 @@ extension ILType {
         ])
     fileprivate static let jsGoldenObserverOnePendingAssociatedReceiver: ILType = .object(
         ofGroup: "golden.ObserverOnePendingAssociatedReceiver")
-    fileprivate static let jsGoldenObserverOneSendDelegateTwoCallbackReceiver: ILType = .object(
-        ofGroup: "GoldenObserverOneSendDelegateTwoCallbackReceiver",
+    fileprivate static let jsGoldenObserverOneSendDelegateOneCallbackReceiver: ILType = .object(
+        ofGroup: "GoldenObserverOneSendDelegateOneCallbackReceiver",
         withMethods: ["addListener"])
 
     // ObserverTwo
@@ -188,7 +205,11 @@ extension ObjectGroup {
         name: "golden.DelegateTwoRemote",
         instanceType: .jsGoldenDelegateTwoRemote,
         properties: ["$": .jsGoldenDelegateTwoRemoteWrapper],
-        methods: [:]
+        methods: [
+            "sendNestedDelegate": [
+                .plain(.jsGoldenNestedDelegatePendingAssociatedReceiver),
+            ] => .undefined,
+        ]
     )
 
     fileprivate static let goldenDelegateTwoRemoteWrapper = ObjectGroup(
@@ -207,13 +228,37 @@ extension ObjectGroup {
         methods: [:]
     )
 
+    // NestedDelegate
+    fileprivate static let goldenNestedDelegateRemote = ObjectGroup(
+        name: "golden.NestedDelegateRemote",
+        instanceType: .jsGoldenNestedDelegateRemote,
+        properties: ["$": .jsGoldenNestedDelegateRemoteWrapper],
+        methods: [:]
+    )
+
+    fileprivate static let goldenNestedDelegateRemoteWrapper = ObjectGroup(
+        name: "golden.NestedDelegateRemoteWrapper",
+        instanceType: .jsGoldenNestedDelegateRemoteWrapper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "isBound": [] => .boolean,
+            "associateAndPassReceiver": [] => .jsGoldenNestedDelegatePendingAssociatedReceiver,
+        ])
+    fileprivate static let goldenNestedDelegatePendingAssociatedReceiver = ObjectGroup(
+        name: "golden.NestedDelegatePendingAssociatedReceiver",
+        instanceType: .jsGoldenNestedDelegatePendingAssociatedReceiver,
+        properties: [:],
+        methods: [:]
+    )
+
     // ObserverOne
     fileprivate static let goldenObserverOneCallbackRouter = ObjectGroup(
         name: "golden.ObserverOneCallbackRouter",
         instanceType: .jsGoldenObserverOneCallbackRouter,
         properties: [
             "$": .jsGoldenObserverOneCallbackRouterReceiverHelper,
-            "sendDelegateTwo": .jsGoldenObserverOneSendDelegateTwoCallbackReceiver,
+            "sendDelegateOne": .jsGoldenObserverOneSendDelegateOneCallbackReceiver,
         ],
         methods: [:]
     )
@@ -227,9 +272,9 @@ extension ObjectGroup {
             "associateAndPassRemote": [] => .jsGoldenObserverOnePendingAssociatedRemote,
         ])
 
-    fileprivate static let goldenObserverOneSendDelegateTwoCallbackReceiver = ObjectGroup(
-        name: "GoldenObserverOneSendDelegateTwoCallbackReceiver",
-        instanceType: .jsGoldenObserverOneSendDelegateTwoCallbackReceiver,
+    fileprivate static let goldenObserverOneSendDelegateOneCallbackReceiver = ObjectGroup(
+        name: "GoldenObserverOneSendDelegateOneCallbackReceiver",
+        instanceType: .jsGoldenObserverOneSendDelegateOneCallbackReceiver,
         properties: [:],
         methods: [
             "addListener": [
@@ -314,8 +359,8 @@ extension ObjectGroup {
 /// Structs
 ///
 extension ILType {
-    fileprivate static let jsGoldenObserverOne_SendDelegateTwo_ResponseParams: ILType = .object(
-        ofGroup: "golden.ObserverOne_SendDelegateTwo_ResponseParams",
+    fileprivate static let jsGoldenObserverOne_SendDelegateOne_ResponseParams: ILType = .object(
+        ofGroup: "golden.ObserverOne_SendDelegateOne_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -344,9 +389,9 @@ extension ILType {
 }
 
 extension ObjectGroup {
-    fileprivate static let goldenObserverOneSendDelegateTwoResponseParams = ObjectGroup(
-        name: "golden.ObserverOne_SendDelegateTwo_ResponseParams",
-        instanceType: .jsGoldenObserverOne_SendDelegateTwo_ResponseParams,
+    fileprivate static let goldenObserverOneSendDelegateOneResponseParams = ObjectGroup(
+        name: "golden.ObserverOne_SendDelegateOne_ResponseParams",
+        instanceType: .jsGoldenObserverOne_SendDelegateOne_ResponseParams,
         properties: [
             "result": .boolean,
         ],
@@ -480,18 +525,21 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenDelegateTwoRemote,
     .goldenDelegateTwoRemoteWrapper,
     .goldenDelegateTwoPendingAssociatedReceiver,
+    .goldenNestedDelegateRemote,
+    .goldenNestedDelegateRemoteWrapper,
+    .goldenNestedDelegatePendingAssociatedReceiver,
     .goldenObserverOneCallbackRouter,
     .goldenObserverOneCallbackRouterReceiverHelper,
     .goldenObserverOnePendingAssociatedRemote,
     .goldenObserverOnePendingAssociatedReceiver,
     .goldenObserverOneRemoteWrapper,
-    .goldenObserverOneSendDelegateTwoCallbackReceiver,
+    .goldenObserverOneSendDelegateOneCallbackReceiver,
     .goldenObserverTwoCallbackRouter,
     .goldenObserverTwoCallbackRouterReceiverHelper,
     .goldenObserverTwoPendingAssociatedRemote,
     .goldenObserverTwoPendingAssociatedReceiver,
     .goldenObserverTwoRemoteWrapper,
-    .goldenObserverOneSendDelegateTwoResponseParams,
+    .goldenObserverOneSendDelegateOneResponseParams,
     .goldenPrimarySendObserverResponseParams,
     .goldenPrimaryGetDelegateOneResponseParams,
     .goldenPrimaryGetObserverTwoResponseParams,

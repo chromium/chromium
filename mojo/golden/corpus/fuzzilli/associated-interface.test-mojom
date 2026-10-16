@@ -14,7 +14,7 @@ interface Primary {
 };
 
 interface ObserverOne {
-  SendDelegateTwo(int32? id, pending_associated_remote<DelegateOne> remote) => (bool result);
+  SendDelegateOne(int32? id, pending_associated_remote<DelegateOne> remote) => (bool result);
 };
 
 interface ObserverTwo {
@@ -25,4 +25,8 @@ interface DelegateOne {
 };
 
 interface DelegateTwo {
+  SendNestedDelegate(pending_associated_receiver<NestedDelegate> delegate);
+};
+
+interface NestedDelegate {
 };

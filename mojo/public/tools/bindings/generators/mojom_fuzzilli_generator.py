@@ -224,18 +224,23 @@ class Generator(generator.Generator):
     if name in self.interface_remotes or name in self.interface_receivers:
       return
 
-    if is_pending_remote or is_pending_receiver:
-      if is_pending_remote == is_in_js:
-        # Either (1) is pending remote used in JS side OR
-        #        (2) is pending receiver used in browser side
-        # In either case, JS side keeps a receiver
+    if is_pending_remote:
+      if is_in_js:
+        # Pending remote passed from JS side, JS keeps receiver
         self.interface_receivers[name] = interface
       else:
-        # Either (1) is pending remote used in browser side OR
-        #        (2) is pending receiver used in JS side
-        # In either case, JS side keeps a remote
+        # Pending remote passed from browser side, JS keeps remote
         self.interface_remotes[name] = interface
-      is_in_js = not is_in_js  # interface is used from other side
+      is_in_js = not is_in_js  # interface is used from the other side
+    elif is_pending_receiver:
+      if is_in_js:
+        # Pending receiver passed from JS side, JS keeps remote
+        self.interface_remotes[name] = interface
+      else:
+        # Pending receiver passed from browser side, JS keeps receiver
+        self.interface_receivers[name] = interface
+      # Do NOT flip is_in_js; the interface is used from the same side that
+      # passed the receiver to the other side.
     else:
       self.interface_remotes[name] = interface
 
