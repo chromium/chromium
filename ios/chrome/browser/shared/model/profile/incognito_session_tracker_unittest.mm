@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -11,6 +12,8 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -18,11 +21,6 @@
 #import "testing/platform_test.h"
 
 namespace {
-
-// Names of the created Profiles.
-constexpr char kProfile1[] = "Profile1";
-constexpr char kProfile2[] = "Profile2";
-constexpr char kProfile3[] = "Profile3";
 
 // Wrapper over a Browser that registers it with the Profile's
 // BrowserList on construction and unregister it on destruction. It must
@@ -110,22 +108,20 @@ void InsertNewTab(Browser* browser) {
 class IncognitoSessionTrackerTest : public PlatformTest {
  public:
   IncognitoSessionTrackerTest() {
-    AddProfileWithName(kProfile1);
-    AddProfileWithName(kProfile2);
-  }
-
-  // Adds a new Profile with the given name.
-  void AddProfileWithName(const char* name) {
-    profile_manager_.AddProfileWithBuilder(
-        std::move(TestProfileIOS::Builder().SetName(name)));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    managed_profile1_ = AddManagedProfileWithBuilder(
+        profile_manager_, [FakeSystemIdentity fakeManagedIdentity]);
   }
 
   ProfileManagerIOS* profile_manager() { return &profile_manager_; }
 
- private:
+ protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_local_state_;
   TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> personal_profile_;
+  raw_ptr<TestProfileIOS> managed_profile1_;
 };
 
 // Tests that `HasIncognitoSessionTabs()` value changes when off-the-record
@@ -143,23 +139,22 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   EXPECT_FALSE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(0, false));
 
-  // Install a regular Browser for kProfile1 ...
-  ScopedBrowser scoped_browser_for_profile1(std::make_unique<TestBrowser>(
-      profile_manager()->GetProfileWithName(kProfile1)));
+  // Install a regular Browser for `personal_profile_` ...
+  ScopedBrowser scoped_browser_for_personal_profile(
+      std::make_unique<TestBrowser>(personal_profile_));
 
   // ... and insert a few tabs. Then check that HasIncognitoSessionTabs()
   // still returns false and the callbacks must not have been notified.
-  InsertNewTab(scoped_browser_for_profile1.get());
-  InsertNewTab(scoped_browser_for_profile1.get());
-  InsertNewTab(scoped_browser_for_profile1.get());
+  InsertNewTab(scoped_browser_for_personal_profile.get());
+  InsertNewTab(scoped_browser_for_personal_profile.get());
+  InsertNewTab(scoped_browser_for_personal_profile.get());
   EXPECT_FALSE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(0, false));
 
-  // Install a new off-the-record Browser for kProfile1 ...
-  ScopedBrowser otr_scoped_browser_for_profile1(
-      std::make_unique<TestBrowser>(profile_manager()
-                                        ->GetProfileWithName(kProfile1)
-                                        ->GetOffTheRecordProfile()));
+  // Install a new off-the-record Browser for `personal_profile_` ...
+  ScopedBrowser otr_scoped_browser_for_personal_profile(
+      std::make_unique<TestBrowser>(
+          personal_profile_->GetOffTheRecordProfile()));
 
   // ... and HasIncognitoSessionTabs() should still return false and the
   // callbacks must not have been notified.
@@ -169,16 +164,16 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   // Insert a few tabs in the off-the-record Browser however should cause
   // HasIncognitoSessionTabs() to return true and the callbacks to be
   // notified once.
-  InsertNewTab(otr_scoped_browser_for_profile1.get());
-  InsertNewTab(otr_scoped_browser_for_profile1.get());
-  InsertNewTab(otr_scoped_browser_for_profile1.get());
+  InsertNewTab(otr_scoped_browser_for_personal_profile.get());
+  InsertNewTab(otr_scoped_browser_for_personal_profile.get());
+  InsertNewTab(otr_scoped_browser_for_personal_profile.get());
   EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(1, true));
 
   // Closing some of the off-the-record Browser should not change the value
   // returned by HasIncognitoSessionTabs() and the callbacks must not have
   // been notified.
-  otr_scoped_browser_for_profile1->GetWebStateList()->CloseWebStateAt(
+  otr_scoped_browser_for_personal_profile->GetWebStateList()->CloseWebStateAt(
       0, WebStateList::ClosingReason::kDefault);
   EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(1, true));
@@ -188,7 +183,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   // batch operation.
   {
     WebStateList* const web_state_list =
-        otr_scoped_browser_for_profile1->GetWebStateList();
+        otr_scoped_browser_for_personal_profile->GetWebStateList();
 
     WebStateList::ScopedBatchOperation batch_operation =
         web_state_list->StartBatchOperation();
@@ -208,43 +203,42 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   EXPECT_FALSE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(2, false));
 
-  // Install a new off-the-record Browser for kProfile2 ...
-  ScopedBrowser otr_scoped_browser_for_profile2(
-      std::make_unique<TestBrowser>(profile_manager()
-                                        ->GetProfileWithName(kProfile2)
-                                        ->GetOffTheRecordProfile()));
+  // Install a new off-the-record Browser for `managed_profile1_` ...
+  ScopedBrowser otr_scoped_browser_for_managed_profile1(
+      std::make_unique<TestBrowser>(
+          managed_profile1_->GetOffTheRecordProfile()));
 
   // ... and create a few tabs and check that this change the value of
   // HasIncognitoSessionTabs() and has notified the callbacks.
-  InsertNewTab(otr_scoped_browser_for_profile2.get());
-  InsertNewTab(otr_scoped_browser_for_profile2.get());
-  InsertNewTab(otr_scoped_browser_for_profile2.get());
+  InsertNewTab(otr_scoped_browser_for_managed_profile1.get());
+  InsertNewTab(otr_scoped_browser_for_managed_profile1.get());
+  InsertNewTab(otr_scoped_browser_for_managed_profile1.get());
   EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(3, true));
 
-  // Dynamically create a new Profile kProfile3, insert some
+  // Dynamically create a new managed profile `managed_profile2`, insert some
   // off-the-record tabs there, and check that even after closing all
-  // the tabs in otr_scoped_browser_for_profile2, there value returned
-  // by HasIncognitoSessionTabs().
-  AddProfileWithName(kProfile3);
+  // the tabs in `otr_scoped_browser_for_managed_profile1`, the value returned
+  // by HasIncognitoSessionTabs() remains true.
+  TestProfileIOS* managed_profile2 = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity identityWithEmail:@"bar@foo.com"]);
 
   {
-    ScopedBrowser otr_scoped_browser_for_profile3_1(
-        std::make_unique<TestBrowser>(profile_manager()
-                                          ->GetProfileWithName(kProfile3)
-                                          ->GetOffTheRecordProfile()));
+    ScopedBrowser otr_scoped_browser_for_managed_profile2_1(
+        std::make_unique<TestBrowser>(
+            managed_profile2->GetOffTheRecordProfile()));
 
-    ScopedBrowser otr_scoped_browser_for_profile3_2(
-        std::make_unique<TestBrowser>(profile_manager()
-                                          ->GetProfileWithName(kProfile3)
-                                          ->GetOffTheRecordProfile()));
+    ScopedBrowser otr_scoped_browser_for_managed_profile2_2(
+        std::make_unique<TestBrowser>(
+            managed_profile2->GetOffTheRecordProfile()));
 
-    InsertNewTab(otr_scoped_browser_for_profile3_1.get());
-    InsertNewTab(otr_scoped_browser_for_profile3_1.get());
-    InsertNewTab(otr_scoped_browser_for_profile3_2.get());
+    InsertNewTab(otr_scoped_browser_for_managed_profile2_1.get());
+    InsertNewTab(otr_scoped_browser_for_managed_profile2_1.get());
+    InsertNewTab(otr_scoped_browser_for_managed_profile2_2.get());
 
-    CloseAllWebStates(*otr_scoped_browser_for_profile2->GetWebStateList(),
-                      WebStateList::ClosingReason::kDefault);
+    CloseAllWebStates(
+        *otr_scoped_browser_for_managed_profile1->GetWebStateList(),
+        WebStateList::ClosingReason::kDefault);
 
     EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
     EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(3, true));
