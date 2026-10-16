@@ -125,8 +125,9 @@ class ProfileNetworkContextService
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate);
 
-  // Returns true if a proxy is configured for this profile, false if direct,
-  // or std::nullopt if the proxy configuration is pending/unknown.
+  // Returns true if an explicit proxy is configured for this profile, false if
+  // direct (or only WPAD auto-detect), or std::nullopt if the proxy
+  // configuration is pending/unknown.
   std::optional<bool> IsProxyConfigured() const;
 
   // Flushes all pending proxy configuration changes.

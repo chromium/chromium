@@ -27,8 +27,10 @@ class PrivateAiNetworkDriver {
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver,
       network::mojom::NetworkContextParamsPtr params) = 0;
 
-  // Returns whether a proxy is configured for Chrome's profile, or
-  // std::nullopt if unknown/unsupported on the current platform.
+  // Returns whether an explicit proxy (manual proxy rules, PAC script URL,
+  // proxy override rules, or dynamic routing rules) is configured for Chrome's
+  // profile, false if direct (or only WPAD auto-detect), or std::nullopt if
+  // unknown/unsupported on the current platform.
   virtual std::optional<bool> IsProxyConfigured() const = 0;
 };
 

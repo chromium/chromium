@@ -63,8 +63,10 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
   void AddToNetworkContextParams(
       network::mojom::NetworkContextParams* network_context_params);
 
-  // Returns true if a proxy is configured (not direct), false if direct,
-  // or std::nullopt if the proxy configuration is pending/unknown.
+  // Returns true if an explicit proxy is configured (manual proxy rules, PAC
+  // URL, proxy override rules, or dynamic routing rules), false if direct (or
+  // only WPAD auto-detect), or std::nullopt if the proxy configuration is
+  // pending/unknown.
   std::optional<bool> IsProxyConfigured() const;
 
   // Flushes all pending data on the pipe, blocking the current thread until
