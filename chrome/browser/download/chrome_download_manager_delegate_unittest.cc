@@ -3356,7 +3356,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_AndroidDesktop) {
   GURL url("http://example.com");
   EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(url));
 
-  base::FilePath fake_path = GetPathInDownloadDir(FILE_PATH_LITERAL("foo.txt"));
+  std::string unique_file_name =
+      "foo_" + base::Uuid::GenerateRandomV4().AsLowercaseString() + ".txt";
+  base::FilePath fake_path = GetPathInDownloadDir(unique_file_name.c_str());
   EXPECT_CALL(*delegate(), RequestConfirmation_(_, _, _, _))
       .WillRepeatedly(Invoke(
           delegate(),
