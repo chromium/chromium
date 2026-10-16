@@ -41,6 +41,9 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
       previous_info ? previous_info->current_path : base::FilePath();
 
   bool previous_paused = previous_info && previous_info->paused;
+  DownloadDangerType previous_danger_type =
+      previous_info ? previous_info->danger_type
+                    : DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
 
   std::optional<InProgressInfo> current_info;
   if (current.download_info)
@@ -48,22 +51,25 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
 
   base::FilePath current_path;
   bool paused = false;
+  DownloadDangerType danger_type = DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
   GURL url;
   DownloadItem::DownloadState state = DownloadItem::DownloadState::IN_PROGRESS;
   DownloadInterruptReason interrupt_reason = DOWNLOAD_INTERRUPT_REASON_NONE;
   if (current_info) {
     current_path = current_info->current_path;
     paused = current_info->paused;
+    danger_type = current_info->danger_type;
     if (!current_info->url_chain.empty())
       url = current_info->url_chain.back();
     state = current_info->state;
     interrupt_reason = current_info->interrupt_reason;
   }
 
-  // When download path is determined, Chrome should commit the history
-  // immediately. Otherwise the file will be left permanently on the external
-  // storage if Chrome crashes right away.
-  if (current_path != previous_path || paused != previous_paused) {
+  // When download path is determined, paused state changes, or the danger
+  // type changes, Chrome should commit the history immediately so that the state
+  // is not lost if Chrome crashes or is killed right away.
+  if (current_path != previous_path || paused != previous_paused ||
+      danger_type != previous_danger_type) {
     return ShouldUpdateDownloadDBResult::UPDATE_IMMEDIATELY;
   }
 
