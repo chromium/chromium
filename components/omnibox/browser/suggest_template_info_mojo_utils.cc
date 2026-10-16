@@ -27,11 +27,22 @@ std::vector<mojom::ACMatchClassificationPtr> CreateClassifications(
                         });
 }
 
+// Returns the color for text with the classification `style`. If both URL and
+// DIM are set, URL wins. Other styles get kUnknown and keep the line's default
+// color.
+mojom::ColorType ACMatchClassificationToColorType(int style) {
+  if (style & ACMatchClassification::URL) {
+    return mojom::ColorType::kPrimary;
+  }
+  if (style & ACMatchClassification::DIM) {
+    return mojom::ColorType::kOnSurfaceDeemphasis;
+  }
+  return mojom::ColorType::kUnknown;
+}
+
 // Converts `text` and its `classifications` to a FormattedString. Each
-// classification becomes one fragment. Only the MATCH style is converted, to
-// `is_bolded`.
-// TODO(crbug.com/571949416): Convert the DIM and URL styles too, once it's
-// decided which colors they map to.
+// classification becomes one fragment. The MATCH style is converted to
+// `is_bolded`, and the URL and DIM styles to colors.
 mojom::FormattedStringPtr CreateFormattedString(
     const std::u16string& text,
     const ACMatchClassifications& classifications) {
@@ -43,7 +54,9 @@ mojom::FormattedStringPtr CreateFormattedString(
             const bool is_bolded =
                 (classification.style & ACMatchClassification::MATCH) != 0;
             return mojom::FormattedStringFragment::New(
-                classification.offset, mojom::ColorType::kUnknown, is_bolded);
+                classification.offset,
+                ACMatchClassificationToColorType(classification.style),
+                is_bolded);
           }),
       /*a11y_text=*/std::nullopt);
 }

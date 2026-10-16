@@ -164,6 +164,8 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
     EXPECT_EQ(suggest_template->secondary_text_class[0]->style,
               ACMatchClassification::URL);
     ASSERT_EQ(suggest_template->secondary_text->fragments.size(), 1u);
+    EXPECT_EQ(suggest_template->secondary_text->fragments[0]->color,
+              mojom::ColorType::kPrimary);
     EXPECT_FALSE(suggest_template->secondary_text->fragments[0]->is_bolded);
   }
 }
@@ -178,7 +180,8 @@ TEST(SuggestTemplateInfoMojoUtilsTest, ConvertsClassificationsToFragments) {
       {3, ACMatchClassification::URL},
       {4, ACMatchClassification::URL | ACMatchClassification::MATCH},
       {5, ACMatchClassification::DIM | ACMatchClassification::MATCH},
-      {6, ACMatchClassification::TOOLBELT},
+      {6, ACMatchClassification::URL | ACMatchClassification::DIM},
+      {7, ACMatchClassification::TOOLBELT},
   };
 
   mojom::SuggestTemplateInfoPtr suggest_template =
@@ -189,26 +192,28 @@ TEST(SuggestTemplateInfoMojoUtilsTest, ConvertsClassificationsToFragments) {
 
   struct Expected {
     uint32_t start_index;
+    mojom::ColorType color;
     bool is_bolded;
   };
   const auto kExpected = std::to_array<Expected>({
-      {0, false},
-      {1, true},
-      {2, false},
-      {3, false},
-      {4, true},
-      {5, true},
-      {6, false},
+      {0, mojom::ColorType::kUnknown, false},
+      {1, mojom::ColorType::kUnknown, true},
+      {2, mojom::ColorType::kOnSurfaceDeemphasis, false},
+      {3, mojom::ColorType::kPrimary, false},
+      {4, mojom::ColorType::kPrimary, true},
+      {5, mojom::ColorType::kOnSurfaceDeemphasis, true},
+      {6, mojom::ColorType::kPrimary, false},
+      {7, mojom::ColorType::kUnknown, false},
   });
   // Each classification becomes exactly one fragment, even when neighboring
-  // classifications have the same style. Only MATCH is converted, to
-  // `is_bolded`. The color is not set yet.
+  // classifications have the same style. MATCH is converted to `is_bolded`,
+  // and URL and DIM to colors. URL wins when both are set.
   ASSERT_EQ(primary_text.fragments.size(), kExpected.size());
   for (size_t i = 0; i < kExpected.size(); ++i) {
     SCOPED_TRACE(i);
     const mojom::FormattedStringFragment& fragment = *primary_text.fragments[i];
     EXPECT_EQ(fragment.start_index, kExpected[i].start_index);
-    EXPECT_EQ(fragment.color, mojom::ColorType::kUnknown);
+    EXPECT_EQ(fragment.color, kExpected[i].color);
     EXPECT_EQ(fragment.is_bolded, kExpected[i].is_bolded);
   }
 }
