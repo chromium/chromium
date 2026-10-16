@@ -4,7 +4,7 @@
 
 use super::TypemappedStruct;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug)]
 pub struct MyCustomStruct {
     pub value: i32,
 }

@@ -204,10 +204,105 @@ def _GetParseAsType(
   return None
 
 
-def _ShouldDeriveClone(ty: mojom.Kind) -> bool:
-  '''We derive clone as a convenience to the user, but we can't do so if the
-  type contains any handles, since those can't be copied.'''
-  return not mojom.ContainsHandlesOrInterfaces(ty)
+_VALID_DERIVABLE_TRAITS = (
+  "Clone",
+  "PartialEq",
+  "Eq",
+  "PartialOrd",
+  "Ord",
+  "Hash",
+)
+
+_RUST_SUPERTRAITS = [
+  ("Eq", "PartialEq"),
+  ("PartialOrd", "PartialEq"),
+  ("Ord", "Eq"),
+  ("Ord", "PartialOrd"),
+]
+
+
+def _ParseDerivableTraits(type_entry: dict) -> list[str]:
+  '''Extract and validate the `derivable_traits` list from a typemap entry.'''
+  derivable_traits = type_entry.get('derivable_traits', [])
+  for trait in derivable_traits:
+    if trait not in _VALID_DERIVABLE_TRAITS:
+      raise ValueError(
+        f"Invalid derivable_trait '{trait}' for "
+        f"'{type_entry['mojom']}'. Valid traits are: "
+        f"{', '.join(_VALID_DERIVABLE_TRAITS)}"
+      )
+  for trait, supertrait in _RUST_SUPERTRAITS:
+    if trait in derivable_traits and supertrait not in derivable_traits:
+      raise ValueError(
+        f"Invalid derivable_trait '{trait}' for "
+        f"'{type_entry['mojom']}'. Requires '{supertrait}'."
+      )
+  return derivable_traits
+
+
+def _GetDerivableTraits(ty: mojom.Kind, typemap: dict) -> list[str]:
+  '''Return the list of standard Rust traits that a generated Mojom struct or
+  union definition can #[derive(...)].
+
+  Every generated struct/union always derives `Debug` and `MojomParse`. For the
+  remaining traits in `_VALID_DERIVABLE_TRAITS`, a struct or union can derive
+  it if and only if all of its fields implement that trait.
+  '''
+  # Track visited struct/union types so recursive Mojom types terminate.
+  checked = set()
+
+  def GetFieldTraits(kind: mojom.Kind) -> set[str]:
+    '''Return the subset of `_VALID_DERIVABLE_TRAITS` implemented by the Rust
+    representation of `kind` when it appears as a field.
+    '''
+    if mojom.IsAnyInterfaceKind(kind):
+      return {"PartialEq", "Eq"}
+
+    if mojom.IsAnyHandleKind(kind):
+      return set(_VALID_DERIVABLE_TRAITS) - {"Clone"}
+
+    # `Option<T>`, `Vec<T>`, and `[T; N]` implement all 6 traits
+    # whenever `T` does.
+    if mojom.IsNullableKind(kind):
+      return GetFieldTraits(kind.MakeUnnullableKind())
+    if mojom.IsArrayKind(kind):
+      return GetFieldTraits(kind.kind)
+
+    # Typemapped types implement whatever the users told us they implement
+    if hasattr(kind, 'qualified_name') and kind.qualified_name in typemap:
+      return set(typemap[kind.qualified_name].get('derivable_traits', []))
+
+    # Generated structs and unions implement the intersection of their fields'
+    # traits.
+    if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
+      if kind.spec in checked:
+        return set(_VALID_DERIVABLE_TRAITS)
+      checked.add(kind.spec)
+      return set(_VALID_DERIVABLE_TRAITS).intersection(
+        *(GetFieldTraits(field.kind) for field in kind.fields)
+      )
+
+    # Rust's `std::collections::HashMap<K, V>` only implements `Clone`,
+    # `PartialEq`, and `Eq`; the latter two require require `K: Eq + Hash`.
+    if mojom.IsMapKind(kind):
+      key_traits = GetFieldTraits(kind.key_kind)
+      val_traits = GetFieldTraits(kind.value_kind)
+      allowed = (
+        {"Clone", "PartialEq", "Eq"}
+        if {"Eq", "Hash"} <= key_traits
+        else {"Clone"}
+      )
+      return allowed & key_traits & val_traits
+
+    # Primitives (`bool`, integers, `OrderedFloat`, `String`) and generated
+    # Mojom enums implement all 6 traits.
+    return set(_VALID_DERIVABLE_TRAITS)
+
+  checked.add(ty.spec)
+  traits = set(_VALID_DERIVABLE_TRAITS).intersection(
+    *(GetFieldTraits(field.kind) for field in ty.fields)
+  )
+  return [t for t in _VALID_DERIVABLE_TRAITS if t in traits]
 
 
 # Note that _GetCanonicalEnumFields returns different results depending on the
@@ -360,7 +455,7 @@ class Generator(generator.Generator):
       "get_parse_as_type": lambda ty: _GetParseAsType(
         ty, self.module, self.source_to_target_map, self.typemap
       ),
-      "should_derive_clone": _ShouldDeriveClone,
+      "derivable_traits": lambda ty: _GetDerivableTraits(ty, self.typemap),
       "get_canonical_enum_fields": _GetCanonicalEnumFields,
       "get_duplicate_enum_fields": _GetDuplicateEnumFields,
     }
@@ -458,6 +553,7 @@ class Generator(generator.Generator):
                 self.typemap[type_entry['mojom']] = {
                   'typename': type_entry['rust'],
                   'traits_file': typemap.get('traits_file'),
+                  'derivable_traits': _ParseDerivableTraits(type_entry),
                 }
 
     self.WriteWithComment(self._GenerateModule(), f"{self.module.path}.rs")

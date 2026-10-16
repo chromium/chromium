@@ -1,11 +1,12 @@
 {% macro declare_struct(name, struct, is_pub) -%}
 
 {%- set pub = "pub " if is_pub else "" -%}
+{%- set traits = struct|derivable_traits -%}
 
-{# Debug and PartialEq are included for convenience, testing, and debugging. -#}
-#[derive(Debug, PartialEq, MojomParse)]
-{%- if struct|should_derive_clone %}
-#[derive(Clone)]
+{# Debug is included for convenience, testing, and debugging. -#}
+#[derive(Debug, MojomParse)]
+{%- if traits %}
+#[derive({{traits|join(", ")}})]
 {%- endif %}
 {{pub}}struct {{name}} {
 {%- for field in struct.fields %}

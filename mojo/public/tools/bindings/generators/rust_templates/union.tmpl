@@ -1,9 +1,11 @@
 {% macro declare_union(name, union) -%}
 
-{# Debug and PartialEq are included for convenience, testing, and debugging. -#}
-#[derive(Debug, PartialEq, MojomParse)]
-{%- if union|should_derive_clone %}
-#[derive(Clone)]
+{%- set traits = union|derivable_traits -%}
+
+{# Debug is included for convenience, testing, and debugging. -#}
+#[derive(Debug, MojomParse)]
+{%- if traits %}
+#[derive({{traits|join(", ")}})]
 {%- endif %}
 pub enum {{name}} {
 {%- for field in union.fields %}

@@ -1,8 +1,7 @@
 {% macro declare_enum(name, enum) -%}
 
-{# Debug, PartialEq, and Clone are included for convenience/testing/debugging. -#}
 {# Hash and Eq are needed because enums can be keys in (hash)maps. -#}
-#[derive(Debug, PartialEq, Clone, PrimitiveEnum, Hash, Eq)]
+#[derive(Debug, PartialEq, Clone, PrimitiveEnum, Hash, Eq, PartialOrd, Ord)]
 pub enum {{name}} {
 {%- for field in enum|get_canonical_enum_fields %}
   {{field.name}} = {{field.numeric_value}},

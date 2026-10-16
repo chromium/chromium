@@ -198,6 +198,7 @@ def LoadTypemaps(typemaps, langs):
             language_map[mojom_type] = {
               'typename': rust_type,
               'traits_file': traits_file,
+              'derivable_traits': type_mapping.get('derivable_traits', []),
             }
         loaded_typemap["rust"] = language_map
       else:

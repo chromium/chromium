@@ -449,6 +449,13 @@ if (enable_scrambled_message_ids) {
 #             argument of the type `mojo::DefaultConstruct::Tag` (essentially a
 #             passkey-like type specifically for this use case).
 #
+#         derivable_traits (optional, Rust only)
+#             A list of Rust traits implemented by the mapped Rust type that
+#             can be derived by enclosing structs and unions.
+#             Valid entries are:
+#               "Clone", "PartialEq", "Eq", "PartialOrd", "Ord", "Hash"
+#             Note that the mapped Rust type must always implement `Debug`.
+#
 #         force_serialize (optional)
 #             A boolean value (default false) which disables lazy serialization
 #             of the typemapped type if lazy serialization is enabled for the
