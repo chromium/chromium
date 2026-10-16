@@ -27,6 +27,12 @@ constexpr std::string_view kActivateWindowToolDescription =
 constexpr std::string_view kWindowIdParamDescription =
     "The ID of the window to activate.";
 
+constexpr std::string_view kCloseWindowToolDescription =
+    "Closes the specified window.";
+
+constexpr std::string_view kCloseWindowIdParamDescription =
+    "The ID of the window to close.";
+
 constexpr std::string_view kEnterFullscreenToolDescription =
     "Enter full screen mode for the active browser window.";
 
@@ -96,6 +102,15 @@ std::string_view ActivateWindowToolRequest::Name() const {
 CloseWindowToolRequest::CloseWindowToolRequest(int32_t window_id)
     : window_id_(window_id) {}
 CloseWindowToolRequest::~CloseWindowToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> CloseWindowToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kCloseWindow, kModelFacingName,
+                               kCloseWindowToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddIntegerProperty(
+          kWindowIdParam, kCloseWindowIdParamDescription))
+      .Build();
+}
 
 ToolRequest::CreateToolResult CloseWindowToolRequest::CreateTool(
     TaskId task_id,

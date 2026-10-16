@@ -75,7 +75,9 @@ enum class ToolId {
   kCreateWindow = 27,
   // Brings the specified window to the foreground.
   kActivateWindow = 28,
-  kMaxValue = kActivateWindow,
+  // Closes the specified window.
+  kCloseWindow = 29,
+  kMaxValue = kCloseWindow,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

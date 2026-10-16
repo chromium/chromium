@@ -307,6 +307,19 @@ TEST(ToolRegistryTest, ActivateWindowToolDefinition) {
   EXPECT_THAT(*definition,
               RequiresParam(ActivateWindowToolRequest::kWindowIdParam));
 }
+
+TEST(ToolRegistryTest, CloseWindowToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      CloseWindowToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kCloseWindow);
+  EXPECT_EQ(definition->name, CloseWindowToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(CloseWindowToolRequest::kWindowIdParam, "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(CloseWindowToolRequest::kWindowIdParam));
+}
 #endif
 
 TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
@@ -683,6 +696,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsActivateWindowTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kActivateWindow,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsCloseWindowTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kCloseWindow, &ToolDefinition::id));
 }
 #endif
 
