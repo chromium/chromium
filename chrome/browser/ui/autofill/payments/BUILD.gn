@@ -16,6 +16,7 @@ source_set("payments") {
     "credit_card_scanner_view_delegate.h",
     "mandatory_reauth_bubble_controller.h",
     "mandatory_reauth_bubble_controller_impl.h",
+    "offer_notification_handler.h",
     "payments_ui_constants.h",
     "payments_view_factory.h",
     "virtual_card_enroll_bubble_controller_impl.h",
@@ -105,6 +106,7 @@ source_set("impl") {
     "credit_card_scanner_controller.cc",
     "credit_card_scanner_view.cc",
     "mandatory_reauth_bubble_controller_impl.cc",
+    "offer_notification_handler.cc",
     "virtual_card_enroll_bubble_controller_impl.cc",
   ]
 
@@ -291,6 +293,7 @@ source_set("unit_tests") {
   sources = [
     "card_unmask_authentication_selection_dialog_controller_impl_unittest.cc",
     "chrome_payments_autofill_client_unittest.cc",
+    "offer_notification_handler_unittest.cc",
   ]
 
   public_deps = []
@@ -312,6 +315,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
+    "//components/sync:test_support",
     "//components/tabs:test_support",
     "//content/public/browser",
     "//testing/gmock",
