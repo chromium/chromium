@@ -100,6 +100,34 @@ public class ActorMetricsTest {
     }
 
     @Test
+    public void testRecordTabCreatedInBackground() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_CHROME_SUCCESS,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_CHROME_FAILURE,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_FCM_SUCCESS,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_FCM_FAILURE)
+                        .build();
+
+        ActorMetrics.recordTabCreatedInBackground(
+                ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_SUCCESS);
+        ActorMetrics.recordTabCreatedInBackground(
+                ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_FAILURE);
+        ActorMetrics.recordTabCreatedInBackground(
+                ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_FCM_SUCCESS);
+        ActorMetrics.recordTabCreatedInBackground(
+                ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_FCM_FAILURE);
+
+        watcher.assertExpected();
+    }
+
+    @Test
     public void testMaybeRecordBackgroundActuationTrigger_Deduplicates() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(

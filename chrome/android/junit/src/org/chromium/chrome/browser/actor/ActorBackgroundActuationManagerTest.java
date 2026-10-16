@@ -190,9 +190,15 @@ public class ActorBackgroundActuationManagerTest {
     @Test
     public void testStartBackgroundActuation_Success() {
         var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Actor.BackgroundActuation.Trigger",
-                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Actor.BackgroundActuation.Trigger",
+                                ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_FCM_SUCCESS)
+                        .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_SUCCESS);
 
         // Verify offscreen rendering started
@@ -224,6 +230,10 @@ public class ActorBackgroundActuationManagerTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_FCM_FAILURE)
                         .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_FAIL);
 
@@ -248,6 +258,10 @@ public class ActorBackgroundActuationManagerTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_FCM_FAILURE)
                         .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_CRASH);
 
@@ -271,6 +285,8 @@ public class ActorBackgroundActuationManagerTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND)
                         .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_CANCELLED);
 
@@ -638,6 +654,10 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testProvisionBackgroundTabForTask_Success() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                        ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_SUCCESS);
         @SuppressWarnings("unchecked")
         Callback<Tab> callback = mock(Callback.class);
         mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
@@ -651,6 +671,7 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
+        watcher.assertExpected();
 
         // Verify callback invoked with tab
         verify(callback).onResult(mTab);
@@ -679,6 +700,10 @@ public class ActorBackgroundActuationManagerTest {
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
 
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                        ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_SUCCESS);
         @SuppressWarnings("unchecked")
         Callback<Tab> callback = mock(Callback.class);
         mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
@@ -691,11 +716,16 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
+        watcher.assertExpected();
         verify(callback).onResult(mTab);
     }
 
     @Test
     public void testProvisionBackgroundTabForTask_PageLoadFailed() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                        ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_FAILURE);
         @SuppressWarnings("unchecked")
         Callback<Tab> callback = mock(Callback.class);
         mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
@@ -705,6 +735,7 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onPageLoadFailed(mTab, -1);
+        watcher.assertExpected();
 
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
         verify(mTab).destroy();
@@ -713,6 +744,10 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testProvisionBackgroundTabForTask_Crash() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_BACKGROUND_ACTUATION_TAB_CREATED_IN_BACKGROUND,
+                        ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_CHROME_FAILURE);
         @SuppressWarnings("unchecked")
         Callback<Tab> callback = mock(Callback.class);
         mManager.provisionBackgroundTabForTask(mProfile, 123, callback);
@@ -722,6 +757,7 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onCrash(mTab);
+        watcher.assertExpected();
 
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
         verify(mTab).destroy();

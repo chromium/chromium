@@ -157,6 +157,8 @@ public class ActorBackgroundActuationManager {
                     actorService.setTabReady(tab, glicTriggerMessageId);
                     ActorMetrics.recordBackgroundActuationTrigger(
                             ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
+                    ActorMetrics.recordTabCreatedInBackground(
+                            ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_FCM_SUCCESS);
                 });
     }
 
@@ -176,6 +178,9 @@ public class ActorBackgroundActuationManager {
                 tab,
                 (preparedTab) -> {
                     if (preparedTab == null) {
+                        ActorMetrics.recordTabCreatedInBackground(
+                                ActorMetrics.ActorBackgroundTabCreationStatus
+                                        .TASK_INIT_BY_CHROME_FAILURE);
                         OffscreenRenderingManager.getInstance().stopOffscreenRendering(tab);
                         tab.destroy();
                         callback.onResult(null);
@@ -190,6 +195,9 @@ public class ActorBackgroundActuationManager {
                         session.addTab(preparedTab);
                     }
                     ingestSessionsIntoPool(profile, List.of(session));
+                    ActorMetrics.recordTabCreatedInBackground(
+                            ActorMetrics.ActorBackgroundTabCreationStatus
+                                    .TASK_INIT_BY_CHROME_SUCCESS);
                     callback.onResult(preparedTab);
                 });
     }
@@ -808,6 +816,8 @@ public class ActorBackgroundActuationManager {
 
     private void notifySetupFailed(Profile profile, String glicTriggerMessageId) {
         Log.d(TAG, "Background setup failed, notifying native. messageId=%s", glicTriggerMessageId);
+        ActorMetrics.recordTabCreatedInBackground(
+                ActorMetrics.ActorBackgroundTabCreationStatus.TASK_INIT_BY_FCM_FAILURE);
         ActorKeyedService actorService = ActorKeyedServiceFactory.getForProfile(profile);
         if (actorService != null) {
             actorService.notifyBackgroundSetupFailed(glicTriggerMessageId);

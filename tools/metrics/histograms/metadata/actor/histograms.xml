@@ -179,6 +179,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.BackgroundActuation.TabCreatedInBackground"
+    enum="ActorBackgroundTabCreationStatus" expires_after="2027-10-09">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>clank-actor@google.com</owner>
+  <summary>
+    Recorded each time an offscreen tab creation attempt completes during
+    background actuation, capturing whether the task was initiated by Chrome or
+    by FCM (message triggered) and whether the tab was successfully provisioned
+    (finished initial about:blank load) or failed. Note that this metric is only
+    recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.BackgroundActuation.Trigger"
     enum="ActorBackgroundActuationTrigger" expires_after="2027-10-01">
   <owner>bbetini@google.com</owner>
