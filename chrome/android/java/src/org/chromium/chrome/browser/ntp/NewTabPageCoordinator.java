@@ -688,7 +688,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void onComposeplateButtonClicked(View view) {
-        if (((mIsAiModeButtonRedirectEnabled
+        // Devices that don't support the fusebox (e.g. automotive) can't host the AI Mode omnibox,
+        // so they always navigate to the AI Mode SRP instead.
+        if (OmniboxCapabilities.isFuseboxSupportedDeviceType()
+                && ((mIsAiModeButtonRedirectEnabled
                                 && mSearchProviderInfoDelegate.getSearchProviderIsGoogle())
                         || (OmniboxFeatures.isMultimodalInputEnabled(mActivity)
                                 && OmniboxFeatures.sRedirectComposeplateButton.getValue()
@@ -1323,7 +1326,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void updateComposeplateOptionalButtonVisibility() {
         if (mComposeplateCoordinator == null) return;
 
-        @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
+        @ActionChips int chipType = getOptionalButtonChipType();
         boolean isOptionalButtonVisible =
                 mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                         && (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE
@@ -1333,11 +1336,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /**
      * Returns the {@link NewTabPageUtils.ActionChips} type to show on the composeplate's optional
-     * button. The create image chip falls back to the canvas chip when image generation isn't an
-     * allowed tool for the current profile.
+     * button. The create image and gallery chips fall back to the default chip on devices that
+     * don't support the fusebox, since both rely on it. The create image chip falls back to the
+     * gallery chip when image generation isn't an allowed tool for the current profile.
      */
     private @ActionChips int getOptionalButtonChipType() {
         @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
+        if ((chipType == ActionChips.CREATE_IMAGE || chipType == ActionChips.GALLERY)
+                && !OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
+            return ActionChips.DEFAULT;
+        }
         if (chipType == ActionChips.CREATE_IMAGE && !isImageGenToolAllowed()) {
             return ActionChips.GALLERY;
         }

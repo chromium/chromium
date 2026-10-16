@@ -126,6 +126,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -993,6 +994,66 @@ public class NewTabPageCoordinatorUnitTest {
     @Test
     public void testComposeplateButtonClicked_ActionChipsDisabled() {
         testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ false);
+    }
+
+    /**
+     * Verifies that on devices that don't support the fusebox, the AI Mode button remains visible
+     * and clicking it navigates to the AI Mode SRP rather than focusing the AI Mode omnibox.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"
+    })
+    public void testComposeplateButtonClicked_NonFuseboxDevice_NavigatesToSrp() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        when(mTemplateUrlService.getComposeplateUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        View composeplateButton = mNewTabPageLayout.findViewById(R.id.composeplate_button);
+        assertEquals(View.VISIBLE, composeplateButton.getVisibility());
+
+        composeplateButton.performClick();
+
+        verify(mManager, never())
+                .focusSearchBox(anyBoolean(), eq(AutocompleteRequestType.AI_MODE), anyInt(), any());
+        verify(mManager).loadUrl(any(LoadUrlParams.class), eq(false));
+    }
+
+    /**
+     * Verifies that the Create image chip falls back to the default chip on devices that don't
+     * support the fusebox.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testOptionalButton_CreateImage_NonFuseboxDevice_FallsBackToDefault() {
+        testOptionalButtonNonFuseboxDeviceImpl();
+    }
+
+    /**
+     * Verifies that the gallery chip falls back to the default chip on devices that don't support
+     * the fusebox.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testOptionalButton_Gallery_NonFuseboxDevice_FallsBackToDefault() {
+        testOptionalButtonNonFuseboxDeviceImpl();
+    }
+
+    private void testOptionalButtonNonFuseboxDeviceImpl() {
+        // The chip type is resolved when the composeplate is created, so recreate the coordinator.
+        mCoordinator.destroy();
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        createCoordinator();
+
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
+        assertEquals(View.GONE, optionalButton.getVisibility());
     }
 
     /**
