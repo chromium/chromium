@@ -614,6 +614,7 @@ try_.builder(
             "arm64_size_config_json": "config/ChromeAndWebView64_size_config.json",
             "compile_targets": [
                 "check_chrome_static_initializers",
+                "check_webview_static_initializers",
                 "chrome_and_webview_32_minimal_apks",
                 "chrome_and_webview_64_minimal_apks",
                 "validate_expectations",

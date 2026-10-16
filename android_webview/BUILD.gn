@@ -32,6 +32,7 @@ if (_is_default_toolchain) {
   import("//android_webview/system_webview_apk_tmpl.gni")
   import("//android_webview/system_webview_bundle.gni")
   import("//chrome/android/chrome_public_apk_tmpl.gni")
+  import("//chrome/android/static_initializers.gni")
   import("//chrome/android/trichrome.gni")
 }
 assert(!is_cronet_build)
@@ -231,6 +232,15 @@ if (_is_default_toolchain) {
       create_app_bundle_minimal_apks("system_webview_32_minimal_apks") {
         deps = [ ":system_webview_32_bundle" ]
         bundle_path = "$root_build_dir/apks/SystemWebView32.aab"
+      }
+    }
+  }
+
+  if (has_static_initializer_checks) {
+    check_static_initializers("check_webview_static_initializers") {
+      library_target = ":libwebviewchromium"
+      if (use_webview_pgo_profile) {
+        toolchain_64 = webview_toolchain
       }
     }
   }

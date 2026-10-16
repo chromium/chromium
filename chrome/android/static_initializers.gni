@@ -4,15 +4,17 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/features.gni")
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//components/optimization_guide/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//ui/gl/features.gni")
 
-# The check_chrome_static_initializers target will cause release bots to fail if
-# the count of static initializers change in either direction. Please try not to
-# increase the numbers. If they come from third-party code, please try to update
-# the code, or apply a local modification to remove them.
+# The check_chrome_static_initializers and check_webview_static_initializers
+# targets will cause release bots to fail if the count of static initializers
+# change in either direction. Please try not to increase the numbers. If they
+# come from third-party code, please try to update the code, or apply a local
+# modification to remove them.
 #
 # Some helpful hints at //docs/static_initializers.md
 if (proprietary_codecs && !is_debug && !is_component_build) {
@@ -42,5 +44,80 @@ if (proprietary_codecs && !is_debug && !is_component_build) {
   if (target_cpu == "arm64" && is_high_end_android) {
     expected_static_initializer_64bit_count =
         _chrome_common_count + _chrome_64only_count
+  }
+}
+
+_verify_32bit_static_initializers =
+    defined(expected_static_initializer_32bit_count) &&
+    defined(android_app_secondary_abi)
+_verify_64bit_static_initializers =
+    defined(expected_static_initializer_64bit_count) && android_64bit_target_cpu
+has_static_initializer_checks =
+    _verify_32bit_static_initializers || _verify_64bit_static_initializers
+
+template("_assert_static_initializers") {
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    script = "//build/android/gyp/assert_static_initializers.py"
+    _lib_out_dir = get_label_info(invoker.library_target, "root_out_dir")
+    _lib_name = get_label_info(invoker.library_target, "name")
+    deps = [ invoker.library_target ]
+    inputs = [ "$_lib_out_dir/lib.unstripped/$_lib_name.so" ]
+    outputs = [ "$target_gen_dir/$target_name.stamp" ]
+    args = [
+      "--expected-count=${invoker.expected_count}",
+      "--tool-prefix",
+      rebase_path(android_tool_prefix, root_build_dir),
+      "--touch",
+      rebase_path(outputs[0], root_build_dir),
+      rebase_path(inputs[0], root_build_dir),
+    ]
+  }
+}
+
+# Checks that the static initializer count in a shared library matches the
+# expected value. Can only be invoked when `has_static_initializer_checks` is
+# true.
+#
+# Variables:
+#   library_target: GN label of the shared library target to check (without
+#     toolchain).
+#   toolchain_64: (optional) Toolchain label to use for the 64-bit library
+#     instead of the default toolchain.
+template("check_static_initializers") {
+  assert(has_static_initializer_checks)
+
+  group(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    deps = []
+    if (_verify_32bit_static_initializers) {
+      deps += [ ":${target_name}__32" ]
+    }
+    if (_verify_64bit_static_initializers) {
+      deps += [ ":${target_name}__64" ]
+    }
+  }
+  if (_verify_32bit_static_initializers) {
+    _assert_static_initializers("${target_name}__32") {
+      forward_variables_from(invoker, [ "testonly" ])
+      if (android_64bit_target_cpu) {
+        library_target =
+            "${invoker.library_target}($android_secondary_abi_toolchain)"
+      } else {
+        library_target = invoker.library_target
+      }
+      expected_count = expected_static_initializer_32bit_count
+    }
+  }
+  if (_verify_64bit_static_initializers) {
+    _assert_static_initializers("${target_name}__64") {
+      forward_variables_from(invoker, [ "testonly" ])
+      if (defined(invoker.toolchain_64)) {
+        library_target = "${invoker.library_target}(${invoker.toolchain_64})"
+      } else {
+        library_target = invoker.library_target
+      }
+      expected_count = expected_static_initializer_64bit_count
+    }
   }
 }
