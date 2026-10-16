@@ -78,6 +78,17 @@ message AdaptationRecipe {
   FileReference weights_file = 2;
 }
 
+// A recipe for a model with a postprocessor model.
+// Both identifiers must reference a BaseModelRecipe, as neither the primary
+// model nor the postprocessor model supports LoRA adaptations or nested
+// postprocessing.
+message PostprocessedModelRecipe {
+  // The identifier of the primary BaseModelRecipe.
+  string base_model_recipe_id = 1;
+  // The identifier of a BaseModelRecipe for the postprocessor model.
+  string postprocessor_model_recipe_id = 2;
+}
+
 // A recipe for a safety model.
 message SafetyModelRecipe {
   FileReference weights_file = 1;
@@ -86,18 +97,16 @@ message SafetyModelRecipe {
 
 // A recipe for a ModelSolution provided by the ModelBroker.
 message SolutionRecipe {
-  // The identifier of a BaseModelRecipe or AdaptationRecipe that provides the
-  // model for this use case.
+  reserved 4;
+
+  // The identifier of a BaseModelRecipe, AdaptationRecipe, or
+  // PostprocessedModelRecipe that provides the model for this use case.
   string model_recipe_id = 1;
   // The identifier of a SafetyModelRecipe that provides the safety model for
   // this use case.  May be empty if no safety model is required.
   string safety_model_recipe_id = 2 [features.field_presence = EXPLICIT];
   // Which file contains a serialized SolutionConfig for this use case.
   FileReference config_file = 3;
-  // The identifier of a BaseModelRecipe that provides the optional
-  // postprocessor model for this use case. May be empty if no postprocessor
-  // model is required.
-  string postprocessor_model_recipe_id = 4 [features.field_presence = EXPLICIT];
 }
 
 // Contents of a SolutionRecipe's config file. These messages are opaque to the
@@ -127,6 +136,8 @@ message Recipes {
   map<string, AdaptationRecipe> adaptations = 2;
   // Defines a set of safety model recipes, keyed by identifier strings.
   map<string, SafetyModelRecipe> safety_models = 3;
+  // Defines a set of postprocessed model recipes, keyed by identifier strings.
+  map<string, PostprocessedModelRecipe> postprocessed_models = 5;
   // Defines a set of solution recipes, keyed by identifier strings.
   map<string, SolutionRecipe> solutions = 4;
 }
