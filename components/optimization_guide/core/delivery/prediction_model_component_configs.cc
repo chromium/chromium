@@ -19,10 +19,10 @@
 namespace optimization_guide {
 
 BASE_FEATURE(kPredictionModelComponentDelivery,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPredictionModelTargets{
-    &kPredictionModelComponentDelivery, "targets", ""};
+    &kPredictionModelComponentDelivery, "targets", "20"};
 
 PredictionModelComponentConfig::PredictionModelComponentConfig(
     std::string name,

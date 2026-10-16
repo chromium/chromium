@@ -27,17 +27,6 @@ TEST_F(PredictionModelComponentConfigsTest, FeatureDisabled) {
   EXPECT_TRUE(GetPredictionModelTargets().empty());
 }
 
-TEST_F(PredictionModelComponentConfigsTest, FeatureEnabledEmptyTargetsParam) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kPredictionModelComponentDelivery);
-
-  EXPECT_FALSE(
-      GetPredictionModelComponentConfig(
-          proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS)
-          .has_value());
-  EXPECT_TRUE(GetPredictionModelTargets().empty());
-}
-
 TEST_F(PredictionModelComponentConfigsTest, FeatureEnabledWithTargets) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::string targets_param =
