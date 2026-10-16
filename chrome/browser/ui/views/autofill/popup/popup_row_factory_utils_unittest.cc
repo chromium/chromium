@@ -30,6 +30,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -751,6 +752,26 @@ TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferShortTextNoExtraPadding) {
   gfx::Insets insets = row_view().GetContentView().GetInsideBorderInsets();
   EXPECT_EQ(insets.top(), 0);
   EXPECT_EQ(insets.bottom(), 0);
+}
+
+TEST_F(PopupRowFactoryUtilsTest,
+       GmailOneTimePasswordSenderAddressElideBehavior) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kOneTimePassword));
+
+  Suggestion suggestion(u"123456", SuggestionType::kGmailOneTimePasswordEntry);
+  suggestion.labels = {{Suggestion::Text(u"sender@example.com")}};
+  ShowSuggestion(suggestion);
+
+  views::Label* main_label =
+      FindLabelWithText(&row_view().GetContentView(), u"123456");
+  ASSERT_THAT(main_label, NotNull());
+  EXPECT_EQ(main_label->GetElideBehavior(), gfx::ELIDE_TAIL);
+
+  views::Label* sender_label =
+      FindLabelWithText(&row_view().GetContentView(), u"sender@example.com");
+  ASSERT_THAT(sender_label, NotNull());
+  EXPECT_EQ(sender_label->GetElideBehavior(), gfx::ELIDE_EMAIL);
 }
 
 }  // namespace autofill

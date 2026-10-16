@@ -7280,7 +7280,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, GmailOtpSuggestions) {
               ElementsAre(EqualsSuggestion(
                               SuggestionType::kGmailOneTimePasswordEntry,
                               u"123456", Suggestion::Icon::kMailAsterisk,
-                              {{Suggestion::Text(u"From sender@example.com")}}),
+                              {{Suggestion::Text(u"sender@example.com")}}),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kOpenGmailForOtps)));
 }

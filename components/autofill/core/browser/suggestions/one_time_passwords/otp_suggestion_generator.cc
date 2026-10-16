@@ -41,11 +41,7 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
     suggestion.icon = Suggestion::Icon::kMailAsterisk;
     suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
-    // TODO(crbug.com/570459643): Elide long sender email addresses before
-    // displaying them in the suggestion label.
-    suggestion.labels = {{Suggestion::Text(
-        l10n_util::GetStringFUTF16(IDS_AUTOFILL_GMAIL_OTP_FROM_ACCOUNT_LABEL,
-                                   base::UTF8ToUTF16(sender_address)))}};
+    suggestion.labels = {{Suggestion::Text(base::UTF8ToUTF16(sender_address))}};
   }
 #if BUILDFLAG(IS_ANDROID)
   // Choose the right icon and A11Y label when more OTP options are supported

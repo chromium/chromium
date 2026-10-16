@@ -330,6 +330,9 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
       if (IsDeactivatedBnplSuggestion(suggestion)) {
         label->SetEnabledColor(kColorAutofillPopupDeactivatedBnplForeground);
       }
+      if (suggestion.type == SuggestionType::kGmailOneTimePasswordEntry) {
+        label->SetElideBehavior(gfx::ELIDE_EMAIL);
+      }
       if (suggestion.type == SuggestionType::kAtMemorySearchResult) {
         const int remaining_width = kAtMemorySuggestionWidth - used_width;
         FormatLabel(*label, label_text, main_filling_product, remaining_width);
