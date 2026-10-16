@@ -11,11 +11,13 @@ import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.net.http.SslCertificate;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.textclassifier.TextClassifier;
 import android.widget.FrameLayout;
 
 import androidx.annotation.UiThread;
@@ -23,6 +25,7 @@ import androidx.annotation.UiThread;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.gfx.AwDrawFnImpl.DrawFnAccess;
+import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -324,6 +327,52 @@ public class AwWebContent {
 
     public boolean pageDown(boolean bottom) {
         return ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_PAGE_DOWN).pageDown(bottom);
+    }
+
+    public void setRendererPriorityPolicy(
+            @RendererPriority int rendererRequestedPriority, boolean waivedWhenNotVisible) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY)
+                .setRendererPriorityPolicy(rendererRequestedPriority, waivedWhenNotVisible);
+    }
+
+    @RendererPriority
+    public int getRendererRequestedPriority() {
+        return ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY)
+                .getRendererRequestedPriority();
+    }
+
+    public boolean getRendererPriorityWaivedWhenNotVisible() {
+        return ensureAwContents(
+                        StartupCallSite
+                                .WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE)
+                .getRendererPriorityWaivedWhenNotVisible();
+    }
+
+    public void setTextClassifier(@Nullable TextClassifier textClassifier) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER)
+                .setTextClassifier(textClassifier);
+    }
+
+    public @Nullable TextClassifier getTextClassifier() {
+        return ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER)
+                .getTextClassifier();
+    }
+
+    public void extractSmartClipData(int x, int y, int width, int height) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA)
+                .extractSmartClipData(x, y, width, height);
+    }
+
+    public void setSmartClipResultHandler(@Nullable Handler resultHandler) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER)
+                .setSmartClipResultHandler(resultHandler);
+    }
+
+    public AwPrintDocumentAdapter createPrintDocumentAdapter(String documentName) {
+        return new AwPrintDocumentAdapter(
+                ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER)
+                        .getPdfExporter(),
+                documentName);
     }
 
     public void loadUrl(@Nullable String url) {

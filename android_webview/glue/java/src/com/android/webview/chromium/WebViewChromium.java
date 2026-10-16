@@ -68,7 +68,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDataDirLock;
 import org.chromium.android_webview.AwLayoutSizer;
-import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwWebContent;
@@ -1796,8 +1795,6 @@ class WebViewChromium
     public void setRendererPriorityPolicy(
             int rendererRequestedPriority, boolean waivedWhenNotVisible) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY);
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.SET_RENDERER_PRIORITY_POLICY",
@@ -1818,7 +1815,7 @@ class WebViewChromium
                     awRendererRequestedPriority = RendererPriority.HIGH;
                     break;
             }
-            mAwContents.setRendererPriorityPolicy(
+            mAwWebContent.setRendererPriorityPolicy(
                     awRendererRequestedPriority, waivedWhenNotVisible);
         }
     }
@@ -1826,15 +1823,13 @@ class WebViewChromium
     @Override
     public int getRendererRequestedPriority() {
         // This is an inspectable property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_RENDERER_REQUESTED_PRIORITY")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_RENDERER_REQUESTED_PRIORITY,
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY);
             @RendererPriority
-            final int awRendererRequestedPriority = mAwContents.getRendererRequestedPriority();
+            final int awRendererRequestedPriority = mAwWebContent.getRendererRequestedPriority();
             switch (awRendererRequestedPriority) {
                 case RendererPriority.WAIVED:
                     return WebView.RENDERER_PRIORITY_WAIVED;
@@ -1850,8 +1845,6 @@ class WebViewChromium
     @Override
     public boolean getRendererPriorityWaivedWhenNotVisible() {
         // This is an inspectable property - don't forbid builder.
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework."
@@ -1860,35 +1853,31 @@ class WebViewChromium
                     ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE,
                     ApiCallUserAction
                             .WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
-            return mAwContents.getRendererPriorityWaivedWhenNotVisible();
+            return mAwWebContent.getRendererPriorityWaivedWhenNotVisible();
         }
     }
 
     @Override
     public void setTextClassifier(TextClassifier textClassifier) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_TEXT_CLASSIFIER")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.SET_TEXT_CLASSIFIER,
                     ApiCallUserAction.WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER);
-            mAwContents.setTextClassifier(textClassifier);
+            mAwWebContent.setTextClassifier(textClassifier);
         }
     }
 
     @Override
     public TextClassifier getTextClassifier() {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_TEXT_CLASSIFIER")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_TEXT_CLASSIFIER,
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER);
-            return mAwContents.getTextClassifier();
+            return mAwWebContent.getTextClassifier();
         }
     }
 
@@ -2858,15 +2847,13 @@ class WebViewChromium
     @Override
     @UiThread
     public PrintDocumentAdapter createPrintDocumentAdapter(String documentName) {
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.CREATE_PRINT_DOCUMENT_ADAPTER")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER,
                     ApiCallUserAction.WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER);
-            return new AwPrintDocumentAdapter(mAwContents.getPdfExporter(), documentName);
+            return mAwWebContent.createPrintDocumentAdapter(documentName);
         }
     }
 
@@ -2952,31 +2939,29 @@ class WebViewChromium
 
     // Implements SmartClipProvider
     @Override
+    @UiThread
     public void extractSmartClipData(int x, int y, int width, int height) {
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA);
+        checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EXTRACT_SMART_CLIP_DATA")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.EXTRACT_SMART_CLIP_DATA,
                     ApiCallUserAction.WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA);
-            checkThread();
-            mAwContents.extractSmartClipData(x, y, width, height);
+            mAwWebContent.extractSmartClipData(x, y, width, height);
         }
     }
 
     // Implements SmartClipProvider
     @Override
+    @UiThread
     public void setSmartClipResultHandler(final Handler resultHandler) {
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER);
+        checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_SMART_CLIP_RESULT_HANDLER")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.SET_SMART_CLIP_RESULT_HANDLER,
                     ApiCallUserAction.WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER);
-            checkThread();
-            mAwContents.setSmartClipResultHandler(resultHandler);
+            mAwWebContent.setSmartClipResultHandler(resultHandler);
         }
     }
 
