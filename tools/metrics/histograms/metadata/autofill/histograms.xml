@@ -9142,6 +9142,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FlowType" variants="Autofill.ServerCardUnmaskFlowType"/>
 </histogram>
 
+<histogram name="Autofill.ServerControlledReauth.CardVerificationStatus"
+    enum="CardVerificationStatus" expires_after="2027-04-30">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the card-on-device verification status of a masked server card when
+    evaluating the GetDetailsForGetRealPan preflight response (whether the card
+    is verified on this device, unverified and mandated to undergo CVC
+    authentication, or the preflight call timed out). Logged once per masked
+    server card authentication attempt on FIDO-verifiable devices when
+    card-on-device verification enforcement is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ServerIbanLinkClicked" enum="AutofillSyncState"
     expires_after="2027-04-30">
   <owner>qihuizhao@google.com</owner>

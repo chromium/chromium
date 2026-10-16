@@ -1321,10 +1321,11 @@ bool CreditCardAccessManager::ShouldWaitForPreflightCallResponse(
          is_user_verifiable_call_in_progress;
 }
 
-bool CreditCardAccessManager::ShouldForceCvcAuthentication(
+std::optional<autofill_metrics::CardVerificationStatus>
+CreditCardAccessManager::GetCardVerificationStatus(
     bool get_unmask_details_returned) const {
   if (!IsCardOnDeviceVerificationEnforced()) {
-    return false;
+    return std::nullopt;
   }
 
   // Client-side CVC enforcement only applies when a preflight call was (or was
@@ -1335,12 +1336,24 @@ bool CreditCardAccessManager::ShouldForceCvcAuthentication(
   const bool is_user_verifiable_or_pending = is_user_verifiable_.value_or(
       is_user_verifiable_called_timestamp_.has_value());
   if (!is_user_verifiable_or_pending) {
-    return false;
+    return std::nullopt;
   }
 
-  return !get_unmask_details_returned ||
-         !unmask_details_.verified_instrument_ids.contains(
-             card_->instrument_id());
+  if (!get_unmask_details_returned) {
+    return autofill_metrics::CardVerificationStatus::kTimedOut;
+  }
+  return unmask_details_.verified_instrument_ids.contains(
+             card_->instrument_id())
+             ? autofill_metrics::CardVerificationStatus::kVerified
+             : autofill_metrics::CardVerificationStatus::kUnverified;
+}
+
+bool CreditCardAccessManager::ShouldForceCvcAuthentication(
+    bool get_unmask_details_returned) const {
+  std::optional<autofill_metrics::CardVerificationStatus> status =
+      GetCardVerificationStatus(get_unmask_details_returned);
+  return status.has_value() &&
+         status.value() != autofill_metrics::CardVerificationStatus::kVerified;
 }
 
 void CreditCardAccessManager::FetchMaskedServerCard() {
@@ -1450,6 +1463,11 @@ void CreditCardAccessManager::AuthenticateForMaskedServerCard(
       std::exchange(waiting_for_preflight_call_response_, false);
 
   if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+    if (std::optional<autofill_metrics::CardVerificationStatus> status =
+            GetCardVerificationStatus(get_unmask_details_returned)) {
+      autofill_metrics::LogServerControlledReauthCardVerificationStatus(
+          status.value());
+    }
     if (ShouldForceCvcAuthentication(get_unmask_details_returned)) {
       if (waited_for_preflight) {
         payments_autofill_client().CloseAutofillProgressDialog(

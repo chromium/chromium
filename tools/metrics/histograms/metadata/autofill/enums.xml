@@ -5116,6 +5116,17 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Unexpected errors"/>
 </enum>
 
+<!-- LINT.IfChange(CardVerificationStatus) -->
+
+<enum name="CardVerificationStatus">
+  <int value="0" label="Card is verified on this device"/>
+  <int value="1"
+      label="Card is not verified on this device (forces required CVC auth)"/>
+  <int value="2" label="Preflight call timed out (forces fallback CVC auth)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/better_auth_metrics.h:CardVerificationStatus) -->
+
 <enum name="CheckBoxStatus">
   <int value="0" label="Not shown"/>
   <int value="1" label="Unchecked"/>

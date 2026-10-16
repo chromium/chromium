@@ -45,8 +45,9 @@ class AutofillClient;
 enum class WebauthnDialogCallbackType;
 
 namespace autofill_metrics {
+enum class CardVerificationStatus;
 class CreditCardFormEventLogger;
-}
+}  // namespace autofill_metrics
 
 // TODO(crbug.com/40927041): Remove CVC from CachedServerCardInfo.
 struct CachedServerCardInfo {
@@ -335,6 +336,12 @@ class CreditCardAccessManager
   // authentication will handle the card.
   bool ShouldWaitForPreflightCallResponse(bool get_unmask_details_returned,
                                           bool risk_based_auth_available);
+
+  // Returns the card-on-device verification status of `card_` when
+  // card-on-device verification is enforced and a preflight call was (or was
+  // about to be) issued, or `std::nullopt` otherwise.
+  std::optional<autofill_metrics::CardVerificationStatus>
+  GetCardVerificationStatus(bool get_unmask_details_returned) const;
 
   // Returns whether `card_` must bypass risk-based authentication and
   // immediately undergo CVC authentication because card-on-device verification

@@ -1205,6 +1205,79 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
   EXPECT_FALSE(risk_based_authentication_invoked());
 }
 
+// Ensures that `Autofill.ServerControlledReauth.CardVerificationStatus` logs
+// `kVerified` once the preflight call returns with the card in
+// `verified_instrument_ids`.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       CardVerificationStatusMetric_VerifiedCard) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card =
+      SetUpCardWithPendingPreflightCall(/*card_is_verified=*/true);
+
+  FetchCreditCard(masked_server_card);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.ServerControlledReauth.CardVerificationStatus", 0);
+
+  InvokeDelayedGetUnmaskDetailsResponse();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerControlledReauth.CardVerificationStatus",
+      autofill_metrics::CardVerificationStatus::kVerified, 1);
+}
+
+// Ensures that `Autofill.ServerControlledReauth.CardVerificationStatus` logs
+// `kUnverified` when the preflight call returns without the card in
+// `verified_instrument_ids`.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       CardVerificationStatusMetric_UnverifiedCard) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card =
+      SetUpCardWithPendingPreflightCall(/*card_is_verified=*/false);
+
+  FetchCreditCard(masked_server_card);
+  InvokeDelayedGetUnmaskDetailsResponse();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerControlledReauth.CardVerificationStatus",
+      autofill_metrics::CardVerificationStatus::kUnverified, 1);
+}
+
+// Ensures that `Autofill.ServerControlledReauth.CardVerificationStatus` logs
+// `kTimedOut` when the wait for the preflight call times out.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       CardVerificationStatusMetric_TimedOut) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card =
+      SetUpCardWithPendingPreflightCall(/*card_is_verified=*/true);
+
+  FetchCreditCard(masked_server_card);
+  FastForwardBy(CreditCardAccessManager::kUnmaskDetailsResponseTimeout);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ServerControlledReauth.CardVerificationStatus",
+      autofill_metrics::CardVerificationStatus::kTimedOut, 1);
+}
+
+// Ensures that `Autofill.ServerControlledReauth.CardVerificationStatus` is not
+// logged when card-on-device verification enforcement is disabled.
+TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+       CardVerificationStatusMetric_NotLoggedWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(
+      features::kAutofillEnableCardOnDeviceVerificationEnforcement);
+  const CreditCard* masked_server_card =
+      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  FetchCreditCard(masked_server_card);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.ServerControlledReauth.CardVerificationStatus", 0);
+}
+
 // Ensures that the risk-based authentication is not delayed when the feature is
 // disabled, even if the preflight call has not returned.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,

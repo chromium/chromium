@@ -60,6 +60,12 @@ void LogPreflightCallResponseReceivedOnCardSelection(
   base::UmaHistogramEnumeration(histogram_name, event);
 }
 
+void LogServerControlledReauthCardVerificationStatus(
+    CardVerificationStatus status) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ServerControlledReauth.CardVerificationStatus", status);
+}
+
 void LogUserPerceivedLatencyOnCardSelection(PreflightCallEvent event,
                                             bool fido_auth_enabled) {
   std::string histogram_name =
