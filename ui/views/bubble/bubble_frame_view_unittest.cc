@@ -10,22 +10,31 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
+#include "cc/paint/paint_record.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/compositor/paint_context.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -35,6 +44,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metrics.h"
+#include "ui/views/paint_info.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/test/test_views.h"
@@ -1599,6 +1609,57 @@ TEST_F(BubbleFrameViewTest, MainImageUpdatesOnThemeChanged) {
   EXPECT_GT(generation_count, count_before_theme_change);
 
   widget->CloseNow();
+}
+
+namespace {
+
+// Returns true if `buffer`, or any record nested in it, contains a
+// ClipRRectOp with SkClipOp::kDifference.
+bool HasDifferenceClipRRect(const cc::PaintOpBuffer& buffer) {
+  for (const cc::PaintOp& op : buffer) {
+    if (op.GetType() == cc::PaintOpType::kClipRRect &&
+        static_cast<const cc::ClipRRectOp&>(op).op == SkClipOp::kDifference) {
+      return true;
+    }
+    if (op.GetType() == cc::PaintOpType::kDrawRecord &&
+        HasDifferenceClipRRect(
+            static_cast<const cc::DrawRecordOp&>(op).record.buffer())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+// Regression test for crbug.com/535315035.
+TEST_F(BubbleFrameViewTest,
+       NoShadowTranslucentBackgroundMiddleTileNotTransparent) {
+  frame()->SetBubbleBorder(std::make_unique<BubbleBorder>(
+      BubbleBorder::NONE, BubbleBorder::NO_SHADOW));
+  frame()->SetRoundedCorners(gfx::RoundedCornersF(12));
+  frame()->SetBackgroundColor(SkColorSetARGB(230, 0, 0, 0));
+  frame()->SetBounds(0, 0, 536, 372);
+
+  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
+  frame()->Paint(PaintInfo::CreateRootPaintInfo(
+      ui::PaintContext(display_list.get(), /*device_scale_factor=*/1.0f,
+                       frame()->bounds(), /*is_pixel_canvas=*/false),
+      frame()->bounds().size()));
+  display_list->Finalize();
+
+  // Make sure BubbleBorder::PaintNoShadow's difference clip was recorded, so
+  // the check below cannot pass vacuously.
+  ASSERT_TRUE(HasDifferenceClipRRect(display_list->paint_op_buffer()));
+
+  // The middle tile row [0, 128, 536, 128] does not intersect the 12 DIP
+  // top/bottom rounded corners. When BubbleBorder::PaintNoShadow records
+  // clipRRect(kDifference) + drawColor(kTransparent, kSrc), solid color
+  // analysis must not misclassify the interior tile as solid transparent.
+  // `max_ops_to_analyze` matches kMaxOpsToAnalyze in cc/tiles/tile_manager.cc.
+  SkColor4f solid_color = SkColors::kTransparent;
+  EXPECT_FALSE(display_list->GetColorIfSolidInRect(
+      gfx::Rect(0, 128, 536, 128), &solid_color, /*max_ops_to_analyze=*/5));
 }
 
 }  // namespace views

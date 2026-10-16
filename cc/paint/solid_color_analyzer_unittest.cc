@@ -389,5 +389,38 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectCoversCanvas) {
   }
 }
 
+TEST_F(SolidColorAnalyzerTest, DrawRectClipRRectDifference) {
+  PaintFlags flags;
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
+  flags.setColor(color);
+  SkRRect rrect;
+  rrect.setRectXY(SkRect::MakeWH(200, 200), 5, 5);
+  // A difference clip whose RRect covers the canvas clips out the entire
+  // canvas. SolidColorAnalyzer does not model difference clips, so it must
+  // bail out rather than report the drawn rect's color.
+  canvas_.clipRRect(rrect, SkClipOp::kDifference, /*antialias=*/false);
+  canvas_.drawRect(SkRect::MakeWH(200, 200), flags);
+  EXPECT_FALSE(
+      IsSolidColor(/*max_ops_to_analyze=*/1, gfx::Rect(10, 10, 100, 100)));
+}
+
+TEST_F(SolidColorAnalyzerTest, ClipRRectDifferenceCoversCanvasWithClear) {
+  SkRRect rrect;
+  rrect.setRectXY(SkRect::MakeWH(200, 200), 12, 12);
+  PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(SkColor4f::FromColor(SkColorSetARGB(230, 0, 0, 0)));
+  canvas_.drawRRect(rrect, flags);
+  canvas_.save();
+  canvas_.clipRRect(rrect, SkClipOp::kDifference, /*antialias=*/true);
+  canvas_.drawColor(SkColors::kTransparent, SkBlendMode::kSrc);
+  canvas_.restore();
+  // The interior tile [0, 50, 200, 100] is fully inside `rrect`, so the
+  // kDifference clip masks out the entire tile and the clear is a no-op
+  // inside the tile. It must not be misclassified as solid transparent.
+  EXPECT_FALSE(
+      IsSolidColor(/*max_ops_to_analyze=*/5, gfx::Rect(0, 50, 200, 100)));
+}
+
 }  // namespace
 }  // namespace cc
