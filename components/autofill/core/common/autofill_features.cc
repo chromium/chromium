@@ -873,6 +873,13 @@ BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillHideSuggestionsOnFocusChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Keeps the Autofill popup open when layout reflow (`kClamping` or
+// `kAnchoring`) produces a scroll event. The feature flag guards logic
+// only on Desktop platforms.
+// TODO(crbug.com/564353467): Remove once the experiment is over.
+BASE_FEATURE(kAutofillIgnoreLayoutInducedScrollEvents,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, corrects missclassification of NAME_LAST as NAME_LAST_SECOND in
 // an absence of NAME_LAST_FIRST.
 // TODO(crbug.com/400995432): Clean-up when launched.

@@ -2081,6 +2081,24 @@
             ]
         }
     ],
+    "AutofillIgnoreLayoutInducedScrollEvents": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIgnoreLayoutInducedScrollEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillImproveClassificationForTwoWordLastNames": [
         {
             "platforms": [

@@ -313,6 +313,25 @@ gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
   return gfx::Rect();
 }
 
+// Returns `true` if the scroll event with `scroll_type` should hide the
+// popup. When `kAutofillIgnoreLayoutInducedScrollEvents` is enabled, layout
+// reflow (clamping or anchoring) keeps the popup open.
+bool ShouldHidePopupOnScroll(blink::mojom::ScrollType scroll_type) {
+  switch (scroll_type) {
+    case blink::mojom::ScrollType::kUser:
+    case blink::mojom::ScrollType::kProgrammatic:
+    case blink::mojom::ScrollType::kCompositor:
+    case blink::mojom::ScrollType::kScrollStart:
+      return true;
+    case blink::mojom::ScrollType::kClamping:
+    case blink::mojom::ScrollType::kAnchoring:
+      break;
+  }
+
+  return !base::FeatureList::IsEnabled(
+      features::kAutofillIgnoreLayoutInducedScrollEvents);
+}
+
 AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
   if (uses_platform_autofill) {
     return {
@@ -592,9 +611,12 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   }
 }
 
-void AutofillAgent::DidChangeScrollOffset(blink::mojom::ScrollType) {
+void AutofillAgent::DidChangeScrollOffset(
+    blink::mojom::ScrollType scroll_type) {
   if (config_.focus_requires_scroll) {
-    HidePopup();
+    if (ShouldHidePopupOnScroll(scroll_type)) {
+      HidePopup();
+    }
     return;
   }
 
