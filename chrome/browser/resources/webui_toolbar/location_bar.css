@@ -56,8 +56,7 @@
 }
 
 :host(.aim-last-page-action) {
-  /* kTrailingEdgePaddingForAim = 5 in LocationBarView::Layout. */
-  padding-inline-end: 5px;
+  padding-inline-end: var(--location-bar-trailing-decoration-aim-edge-padding);
 }
 
 @media not (prefers-contrast: more) {
@@ -121,10 +120,10 @@
 
 permission-dashboard {
   flex-shrink: 0;
-  /* Mirrors identically to 'icon_left' (5) and 'text_left' (8) mathematically
-   * processed from internal LocationBarView::Layout(). */
-  margin-inline-start: calc(5px - var(--border-radius));
-  margin-inline-end: 8px;
+  margin-inline-start: calc(
+      var(--location-bar-leading-decoration-edge-padding) -
+      var(--border-radius));
+  margin-inline-end: var(--location-bar-leading-decoration-inner-padding);
 }
 
 permission-dashboard:not([visible]) {
@@ -134,8 +133,10 @@ permission-dashboard:not([visible]) {
 location-icon {
   flex-shrink: 1;
   margin: 4px;
-  margin-inline-start: calc(5px - var(--border-radius));
-  margin-inline-end: 8px;
+  margin-inline-start: calc(
+      var(--location-bar-leading-decoration-edge-padding) -
+      var(--border-radius));
+  margin-inline-end: var(--location-bar-leading-decoration-inner-padding);
   max-width: 50%; /* See kLeadingDecorationMaxFraction */
 }
 
@@ -144,11 +145,15 @@ location-icon {
    from that area, but for location icon we need to undo some of the
    compensation that does. */
 :host(.popup-open) {
-  --omnibox-start-padding: calc(14px - var(--touch-mode)*10px);
+  --omnibox-start-padding: calc(
+      var(--location-bar-leading-decoration-inner-padding) +
+      var(--location-bar-input-text-indent) - var(--touch-mode)*10px);
 }
 
 :host(.popup-open) location-icon {
-  margin-inline-start: calc(12px - var(--border-radius));
+  margin-inline-start: calc(
+      var(--location-bar-leading-decoration-edge-padding) +
+      var(--location-bar-input-icon-indent) - var(--border-radius));
   margin-inline-end: var(--omnibox-start-padding);
 }
 
