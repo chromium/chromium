@@ -34,6 +34,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     private static final float THRESHOLD_FIT_DP = 700f;
     private static final float THRESHOLD_ZOOM_DP = 650f;
     private static final float THRESHOLD_NAV_EDIT_DP = 600f;
+    static final float MIN_DISPLAY_ZOOM = 0.25f;
+    static final float MAX_DISPLAY_ZOOM = 5.0f;
     @VisibleForTesting static final float ZOOM_EPSILON = 0.005f;
 
     private final PropertyModel mModel;
@@ -42,8 +44,23 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             mPropertyModelChangeProcessor;
     private final List<Float> mDisplayZoomLevels =
             List.of(
-                    0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f,
-                    2.0f, 2.5f, 3.0f, 4.0f, 5.0f);
+                    MIN_DISPLAY_ZOOM,
+                    0.33f,
+                    0.5f,
+                    0.67f,
+                    0.75f,
+                    0.8f,
+                    0.9f,
+                    1.0f,
+                    1.1f,
+                    1.25f,
+                    1.5f,
+                    1.75f,
+                    2.0f,
+                    2.5f,
+                    3.0f,
+                    4.0f,
+                    MAX_DISPLAY_ZOOM);
     private float mDefaultZoomLevel = -1f;
     private @Nullable PdfToolbar mToolbar;
     private @Nullable ListMenu mListMenu;
@@ -263,7 +280,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         float currentDisplayZoom = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
 
         if (increase) {
-            if (currentDisplayZoom >= mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1)) {
+            if (currentDisplayZoom >= MAX_DISPLAY_ZOOM) {
                 // Already at max zoom, return null to indicate no change.
                 return null;
             }
@@ -274,10 +291,10 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                 }
             }
             // currentDisplayZoom is slightly below max zoom, so just return max zoom.
-            return getEngineZoomLevel(mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1));
+            return getEngineZoomLevel(MAX_DISPLAY_ZOOM);
 
         } else {
-            if (currentDisplayZoom <= mDisplayZoomLevels.get(0)) {
+            if (currentDisplayZoom <= MIN_DISPLAY_ZOOM) {
                 // Already at min zoom, return null to indicate no change.
                 return null;
             }
@@ -289,7 +306,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                 }
             }
             // currentDisplayZoom is slightly above min zoom, so just return min zoom.
-            return getEngineZoomLevel(mDisplayZoomLevels.get(0));
+            return getEngineZoomLevel(MIN_DISPLAY_ZOOM);
         }
     }
 
@@ -356,9 +373,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
      */
     private void onZoomSubmitted(int zoomPercentage) {
         if (zoomPercentage < 0) return;
-        float minZoom = mDisplayZoomLevels.get(0);
-        float maxZoom = mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1);
-        float displayZoomLevel = MathUtils.clamp(zoomPercentage / 100f, minZoom, maxZoom);
+        float displayZoomLevel =
+                MathUtils.clamp(zoomPercentage / 100f, MIN_DISPLAY_ZOOM, MAX_DISPLAY_ZOOM);
         float currentDisplayZoom = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
         if (Math.abs(displayZoomLevel - currentDisplayZoom) < ZOOM_EPSILON) {
             return;
@@ -372,15 +388,13 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     }
 
     private void updateZoomModel(float displayZoomLevel) {
-        float minZoom = mDisplayZoomLevels.get(0);
-        float maxZoom = mDisplayZoomLevels.get(mDisplayZoomLevels.size() - 1);
         mModel.set(PdfToolbarProperties.ZOOM_LEVEL, displayZoomLevel);
         mModel.set(
                 PdfToolbarProperties.ZOOM_DECREASE_BUTTON_ENABLED,
-                displayZoomLevel > minZoom + ZOOM_EPSILON);
+                displayZoomLevel > MIN_DISPLAY_ZOOM + ZOOM_EPSILON);
         mModel.set(
                 PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED,
-                displayZoomLevel < maxZoom - ZOOM_EPSILON);
+                displayZoomLevel < MAX_DISPLAY_ZOOM - ZOOM_EPSILON);
     }
 
     private void onWidthChanged(int widthPx) {

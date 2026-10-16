@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.pdf;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -156,8 +155,7 @@ public class PdfCoordinatorUnitTest {
     private static final String PDF_TITLE = "fw4.pdf";
     private static final String LINK_URL = "https://www.bar.com";
     private String mFilePath;
-    private static final String TEST_CONTENT_URI =
-            "content://com.android.chrome.provider/fw4.pdf";
+    private static final String TEST_CONTENT_URI = "content://com.android.chrome.provider/fw4.pdf";
     private static final int TAB_ID = 123;
     private static final int PDF_CONTENT_HEIGHT = 1000;
 
@@ -593,6 +591,7 @@ public class PdfCoordinatorUnitTest {
                         /* isWorkProfile= */ false, "com.google.android.googlequicksearchbox");
         assertEquals(null, uri);
     }
+
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testCalculateFitToPageZoom() {
@@ -1143,11 +1142,39 @@ public class PdfCoordinatorUnitTest {
         // viewportWidth = 1000. contentWidth = 200.
         // expectedZoom = (1000 * 0.5) / 200 = 500 / 200 = 2.5f
         assertEquals(2.5f, shadowPdfView.mZoom, 0.001f);
+        assertEquals(2.5f * 0.25f, mPdfView.getMinZoom(), 0.001f);
+        assertEquals(2.5f * 5.0f, mPdfView.getMaxZoom(), 0.001f);
         assertNotNull(mPdfCoordinator.getToolbarCoordinatorForTesting());
         assertEquals(
                 2.5f,
                 mPdfCoordinator.getToolbarCoordinatorForTesting().getDefaultZoomLevel(),
                 0.001f);
+
+        // Verify minZoom is also set to 25% when 0.25f * defaultZoom is below
+        // PdfView.MIN_PERMISSIBLE_ZOOM (0.5f):
+        // viewportWidth = 1000, contentWidth = 400 -> defaultZoom = 500 / 400 = 1.25f
+        // minZoom = 1.25f * 0.25f = 0.3125f (< 0.5f)
+        setupMockPdfDocumentForPageInfo(shadowPdfView, 800, 400);
+        mPdfView.layout(0, 0, /* width= */ 1000, /* height= */ PDF_CONTENT_HEIGHT);
+        mPdfCoordinator.mIsInitialZoomPass = true;
+        mPdfCoordinator.onViewportChanged(0, 1.0f);
+        ShadowLooper.idleMainLooper();
+        assertEquals(1.25f, shadowPdfView.mZoom, 0.001f);
+        assertEquals(1.25f * 0.25f, mPdfView.getMinZoom(), 0.001f);
+        assertEquals(1.25f * 5.0f, mPdfView.getMaxZoom(), 0.001f);
+
+        // Verify maxZoom is also set to 500% when 5.0f * defaultZoom exceeds
+        // PdfView.MAX_PERMISSIBLE_ZOOM (25.0f):
+        // viewportWidth = 2400, contentWidth = 200 -> defaultZoom = 1200 / 200 = 6.0f
+        // maxZoom = 6.0f * 5.0f = 30.0f (> 25.0f)
+        setupMockPdfDocumentForPageInfo(shadowPdfView, 400, 200);
+        mPdfView.layout(0, 0, /* width= */ 2400, /* height= */ PDF_CONTENT_HEIGHT);
+        mPdfCoordinator.mIsInitialZoomPass = true;
+        mPdfCoordinator.onViewportChanged(0, 1.0f);
+        ShadowLooper.idleMainLooper();
+        assertEquals(6.0f, shadowPdfView.mZoom, 0.001f);
+        assertEquals(6.0f * 0.25f, mPdfView.getMinZoom(), 0.001f);
+        assertEquals(6.0f * 5.0f, mPdfView.getMaxZoom(), 0.001f);
     }
 
     @SuppressWarnings("unchecked")
@@ -1294,8 +1321,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
         ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
         assertTrue(
-                "Form filling should be enabled initially",
-                shadowPdfView.isFormFillingEnabled());
+                "Form filling should be enabled initially", shadowPdfView.isFormFillingEnabled());
 
         PdfDocument pdfDocument = Mockito.mock(PdfDocument.class);
 
@@ -1354,7 +1380,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
         assertFalse(
                 "Form filling should still not be enabled after document load success when"
-                    + " InlinePdfV2 is disabled",
+                        + " InlinePdfV2 is disabled",
                 shadowPdfView.isFormFillingEnabled());
     }
 
@@ -3360,7 +3386,8 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testFindInPage_InEditModeWithUnsavedChanges_ShowsToastAndDoesNotActivateTextSearch() {
+    public void
+            testFindInPage_InEditModeWithUnsavedChanges_ShowsToastAndDoesNotActivateTextSearch() {
         createPdfCoordinator();
         mPdfCoordinator.mChromePdfViewerFragment.mIsLoadDocumentSuccess = true;
         mPdfCoordinator.onEditModeChanged(true);
@@ -3434,12 +3461,7 @@ public class PdfCoordinatorUnitTest {
         // Ctrl + G
         KeyEvent ctrlG =
                 new KeyEvent(
-                        0,
-                        0,
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_G,
-                        0,
-                        KeyEvent.META_CTRL_ON);
+                        0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_G, 0, KeyEvent.META_CTRL_ON);
         assertFalse(fragment.handleFindInPageKey(null, KeyEvent.KEYCODE_G, ctrlG));
 
         verify(mockDelegate, never()).findInPage();
@@ -3926,16 +3948,6 @@ public class PdfCoordinatorUnitTest {
         @Implementation
         public float getZoom() {
             return mZoom;
-        }
-
-        @Implementation
-        public float getMinZoom() {
-            return 0.1f;
-        }
-
-        @Implementation
-        public float getMaxZoom() {
-            return 25.0f;
         }
 
         @Implementation

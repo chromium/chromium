@@ -101,6 +101,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -363,6 +364,8 @@ public class PdfCoordinator
         private static final String KEY_FILE_NAME = "file_name";
         static final String KEY_INITIAL_PAGE_NUMBER = "initial_page_number";
         static final String KEY_HAS_SCROLLED_TO_INITIAL_PAGE = "has_scrolled_to_initial_page";
+        private static @Nullable Field sPdfViewMinZoomField;
+        private static @Nullable Field sPdfViewMaxZoomField;
         private @Nullable PdfActionsDelegate mDelegate;
         @VisibleForTesting @Nullable PdfView mPdfView;
         @VisibleForTesting boolean mIsPdfViewSetup;
@@ -1203,7 +1206,7 @@ public class PdfCoordinator
                             return;
                         }
                         float newZoom =
-                                calculateFitToPageZoom(
+                                calculateUnclampedFitToPageZoom(
                                         pageInfo,
                                         /* fitToPage= */ false,
                                         pdfView,
@@ -1211,6 +1214,14 @@ public class PdfCoordinator
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
+                                    if (newZoom > 0f) {
+                                        setPdfViewMinZoom(
+                                                pdfView,
+                                                newZoom * PdfToolbarCoordinator.MIN_DISPLAY_ZOOM);
+                                        setPdfViewMaxZoom(
+                                                pdfView,
+                                                newZoom * PdfToolbarCoordinator.MAX_DISPLAY_ZOOM);
+                                    }
                                     float zoomToReport = newZoom;
                                     if (!mRestorePositionPending) {
                                         pdfView.setZoom(newZoom);
@@ -1226,6 +1237,43 @@ public class PdfCoordinator
                     });
         }
 
+        private static void setPdfViewMinZoom(PdfView pdfView, float minZoom) {
+            if (minZoom <= 0f) return;
+            pdfView.setMinZoom(minZoom);
+            // PdfView#setMinZoom clamps to PdfView.MIN_PERMISSIBLE_ZOOM (0.5f), which prevents
+            // zooming out to 25% display zoom whenever the 100% baseline zoom is below 2.0f.
+            if (minZoom < PdfView.MIN_PERMISSIBLE_ZOOM) {
+                try {
+                    if (sPdfViewMinZoomField == null) {
+                        Field minZoomField = PdfView.class.getDeclaredField("minZoom");
+                        minZoomField.setAccessible(true);
+                        sPdfViewMinZoomField = minZoomField;
+                    }
+                    sPdfViewMinZoomField.setFloat(pdfView, minZoom);
+                } catch (ReflectiveOperationException e) {
+                    Log.w(TAG, "Failed to set PdfView minZoom below MIN_PERMISSIBLE_ZOOM", e);
+                }
+            }
+        }
+
+        private static void setPdfViewMaxZoom(PdfView pdfView, float maxZoom) {
+            if (maxZoom <= 0f) return;
+            pdfView.setMaxZoom(maxZoom);
+            // PdfView#setMaxZoom clamps to PdfView.MAX_PERMISSIBLE_ZOOM (25.0f), which prevents
+            // zooming in to 500% display zoom whenever the 100% baseline zoom exceeds 5.0f.
+            if (maxZoom > PdfView.MAX_PERMISSIBLE_ZOOM) {
+                try {
+                    if (sPdfViewMaxZoomField == null) {
+                        Field maxZoomField = PdfView.class.getDeclaredField("maxZoom");
+                        maxZoomField.setAccessible(true);
+                        sPdfViewMaxZoomField = maxZoomField;
+                    }
+                    sPdfViewMaxZoomField.setFloat(pdfView, maxZoom);
+                } catch (ReflectiveOperationException e) {
+                    Log.w(TAG, "Failed to set PdfView maxZoom above MAX_PERMISSIBLE_ZOOM", e);
+                }
+            }
+        }
 
         void setPagesPerRow(boolean twoPagesPerRowEnabled) {
             mTwoPagesPerRowEnabled = twoPagesPerRowEnabled;
@@ -1242,6 +1290,13 @@ public class PdfCoordinator
 
         @VisibleForTesting
         float calculateFitToPageZoom(
+                PageInfo info, boolean fitToPage, PdfView pdfView, float zoomRatio) {
+            float newZoom = calculateUnclampedFitToPageZoom(info, fitToPage, pdfView, zoomRatio);
+            if (newZoom <= 0f) return 0f;
+            return Math.max(pdfView.getMinZoom(), Math.min(newZoom, pdfView.getMaxZoom()));
+        }
+
+        private float calculateUnclampedFitToPageZoom(
                 PageInfo info, boolean fitToPage, PdfView pdfView, float zoomRatio) {
             int contentWidth = info.getWidth();
             int contentHeight = info.getHeight();
@@ -1264,7 +1319,7 @@ public class PdfCoordinator
                 newZoom = Math.min(zoomWidth, zoomHeight);
             }
 
-            return Math.max(pdfView.getMinZoom(), Math.min(newZoom, pdfView.getMaxZoom()));
+            return newZoom;
         }
 
         private void runWithPageInfo(int pageIndex, Consumer<@Nullable PageInfo> action) {
@@ -2391,8 +2446,6 @@ public class PdfCoordinator
         }
         mToolbarCoordinator.onViewportChanged(pageIndex, zoomLevel);
     }
-
-
 
     private String formatPageSize(PageInfo pageInfo) {
         float widthInches = pageInfo.getWidth() / POINTS_PER_INCH;
