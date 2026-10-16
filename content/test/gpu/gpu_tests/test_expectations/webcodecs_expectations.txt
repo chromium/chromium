@@ -154,7 +154,7 @@ crbug.com/398904317 [ win11 amd ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 crbug.com/398904317 [ win11 amd ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 # Linux/AMD RX 7600 Failures
-crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_DrawImage_hw_decoder [ Failure ]
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_av01.0.04M.08_prefer-software [ Failure ]
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-software [ Failure ]
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_EncodeDecode_arraybuffer_vp09.00.10.08_prefer-software [ Failure ]
@@ -197,9 +197,9 @@ crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ Failure ]
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_3 [ Failure ]
-crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_convertToRGB_hw_decoder [ Failure ]
-crbug.com/436300892 [ linux amd mesa_ge_24.2 ] WebCodecs_copyTo_hw_decoder [ Failure ]
+crbug.com/436300892 [ amd-0x7480 linux mesa_ge_24.2 ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
 # Linux/AMD 890M Failures
 # Commented out until full procurement is ready since UAT is done.
@@ -284,9 +284,6 @@ crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac 
 
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
-
-# Linux Wayland/AMD color mismatch in cropped frames.
-crbug.com/574107321 [ amd-0x7340 display-server-wayland linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
 
 # Linux/AMD RX 9070 XT failures
 crbug.com/515133241 [ amd-0x7550 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]

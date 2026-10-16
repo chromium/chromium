@@ -148,9 +148,10 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     // see a slight difference in compositing vs. overlays (note that the
     // BT.601 and BT.709 primaries are close to each other, so this shouldn't
     // be a huge correctness issue, though we'll need to address this at some
-    // point); b) use EGL_ITU_REC2020_EXT for BT.2020 frames in order to
-    // composite them correctly (and we won't need to worry about a difference
-    // in compositing vs. overlays in this case since those frames won't be
+    // point); b) use EGL_ITU_REC2020_EXT for BT.2020 frames and
+    // EGL_ITU_REC709_EXT for full-range BT.709 frames in order to composite
+    // them correctly (and we won't need to worry about a difference in
+    // compositing vs. overlays in this case since those frames won't be
     // promoted to overlays). We'll need to revisit this once we plumb the
     // color space and range to DRM/KMS.
     attrs.push_back(EGL_YUV_COLOR_SPACE_HINT_EXT);
@@ -158,6 +159,14 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
       case gfx::ColorSpace::MatrixID::BT2020_NCL:
         attrs.push_back(EGL_ITU_REC2020_EXT);
         break;
+      case gfx::ColorSpace::MatrixID::BT709:
+        // Full-range frames are not promoted to overlays, so they don't need
+        // the DRM/KMS BT.601 workaround below.
+        if (color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL) {
+          attrs.push_back(EGL_ITU_REC709_EXT);
+          break;
+        }
+        [[fallthrough]];
       default:
         attrs.push_back(EGL_ITU_REC601_EXT);
     }
