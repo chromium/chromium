@@ -640,6 +640,13 @@ bool TabView::OnMousePressed(const ui::MouseEvent& event) {
 
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
+    // Changing the selection may cause our bounds to change. If that happens
+    // the location of the event may no longer be valid. Create a copy of the
+    // event in the root view's coordinate system, which won't change, and
+    // recreate an event after changing so the coordinates are correct.
+    views::View* root_view = GetWidget()->GetRootView();
+    ui::MouseEvent event_in_root(event, views::AsViewClass<View>(this),
+                                 root_view);
     if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
       controller->AddSelectionFromAnchorTo(GetTabInterface());
       base::RecordAction(
@@ -659,11 +666,13 @@ bool TabView::OnMousePressed(const ui::MouseEvent& event) {
       controller->SelectTab(GetTabInterface(), GetGestureDetail(event));
       base::RecordAction(base::UserMetricsAction("SwitchTab_Click"));
     }
+    ui::MouseEvent cloned_event(event_in_root, root_view,
+                                views::AsViewClass<View>(this));
     // Potentially start the drag for the mouse press.
     // Follow-up mouse-movement events will update the drag controller and
     // eventually kick off the drag-loop.
     controller->GetDragHandler().InitializeDrag(
-        *collection_node_, original_selection_model, event);
+        *collection_node_, original_selection_model, cloned_event);
   }
   return true;
 }

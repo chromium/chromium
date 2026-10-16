@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_link_drop_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
@@ -262,7 +263,9 @@ TabDragHandlerImpl::DragInitData
 TabDragHandlerImpl::GetDragInitDataForGroupHeaderDrag(
     TabCollectionNode& source_node) {
   DragInitData drag_init_data;
-  drag_init_data.source_dragged_view = source_node.view();
+  auto* group_view = views::AsViewClass<TabGroupView>(source_node.view());
+  CHECK(group_view);
+  drag_init_data.source_dragged_view = group_view->group_header();
   CHECK(drag_init_data.source_dragged_view);
   drag_init_data.dragged_views.push_back(drag_init_data.source_dragged_view);
   for (const auto& child : source_node.children()) {
@@ -293,8 +296,11 @@ TabDragHandlerImpl::GetFullySelectedGroups(
     CHECK(group);
     if (group->tab_count() == dragged_tab_count) {
       auto* selected_node = GetNodeForTabGroup(group_id);
-      CHECK(selected_node && selected_node->view());
-      selected_groups.insert({group_id, selected_node->view()});
+      CHECK(selected_node);
+      auto* group_view =
+          views::AsViewClass<TabGroupView>(selected_node->view());
+      CHECK(group_view);
+      selected_groups.insert({group_id, group_view->group_header()});
     }
   }
   return selected_groups;
@@ -475,8 +481,10 @@ views::View* TabDragHandlerImpl::ViewFromTabSlot(views::View* view) const {
     return tab_view;
   }
 
-  CHECK(views::IsViewClass<TabGroupView>(view));
-  return view;
+  CHECK(views::IsViewClass<TabGroupHeaderView>(view));
+  views::View* group_view = view->parent();
+  CHECK(views::IsViewClass<TabGroupView>(group_view));
+  return group_view;
 }
 
 std::optional<gfx::Vector2d> TabDragHandlerImpl::GetOffsetFromSourceAtDragStart(
@@ -645,13 +653,17 @@ bool TabDragHandlerImpl::IsTabDetachable(const views::View* view) const {
 views::View* TabDragHandlerImpl::GetTabGroupHeader(
     const tab_groups::TabGroupId& group_id) {
   TabCollectionNode* node = GetNodeForTabGroup(group_id);
-  return node ? node->view() : nullptr;
+  return node ? views::AsViewClass<TabGroupView>(node->view())->group_header()
+              : nullptr;
 }
 
 std::optional<tab_groups::TabGroupId> TabDragHandlerImpl::GetTabGroupForHeader(
     const views::View* header_view) const {
-  if (const auto* group_view = views::AsViewClass<TabGroupView>(header_view)) {
-    return group_view->GetTabGroup().id();
+  if (views::IsViewClass<TabGroupHeaderView>(header_view)) {
+    if (const auto* group_view =
+            views::AsViewClass<TabGroupView>(header_view->parent())) {
+      return group_view->GetTabGroup().id();
+    }
   }
   return std::nullopt;
 }

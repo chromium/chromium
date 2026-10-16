@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "content/public/browser/navigation_controller.h"
@@ -38,24 +39,41 @@ gfx::Vector2d GetSourceViewOffsetFromMouse(
     const DragSessionData& session_data) {
   views::View* source_slot_view =
       session_data.source_view_drag_data()->attached_view;
+  CHECK(source_slot_view);
 
   // The view that initiated the drag may not be the same as the view that
-  // is being dragged (e.g. dragging a tab group header).
-  gfx::Vector2d slot_view_offset_to_source =
-      views::View::ConvertPointToTarget(source_slot_view, &source_dragged_view,
-                                        gfx::Point(0, 0))
-          .OffsetFromOrigin();
-  int mouse_offset_x = static_cast<int>(
-      session_data.mouse_offset_to_size_ratios.x() * source_slot_view->width());
-  if (base::i18n::IsRTL()) {
-    mouse_offset_x = source_slot_view->GetMirroredXInView(mouse_offset_x);
+  // is being dragged (e.g. dragging a tab group header). This is equivalent to
+  // `views::View::ConvertPointToTarget`, but uses target layout bounds instead
+  // of live bounds which may still be animating.
+  const bool is_rtl = base::i18n::IsRTL();
+  gfx::Vector2d slot_view_offset_to_source;
+  for (const views::View* view = source_slot_view;
+       view && view != &source_dragged_view; view = view->parent()) {
+    const gfx::Rect target_bounds = GetTabStripViewTargetBounds(view);
+    int x = target_bounds.x();
+    if (is_rtl && view->parent()) {
+      const int parent_width =
+          GetTabStripViewTargetBounds(view->parent()).width();
+      x = parent_width - target_bounds.right();
+    }
+    slot_view_offset_to_source += gfx::Vector2d(x, target_bounds.y());
+  }
+  gfx::Rect source_slot_bounds = GetTabStripViewTargetBounds(source_slot_view);
+  if (source_slot_bounds.IsEmpty()) {
+    source_slot_bounds = source_slot_view->GetLocalBounds();
+  }
+  int mouse_offset_x =
+      static_cast<int>(session_data.mouse_offset_to_size_ratios.x() *
+                       source_slot_bounds.width());
+  if (is_rtl) {
+    mouse_offset_x = source_slot_bounds.width() - mouse_offset_x;
   }
   gfx::Vector2d dragged_view_bounds_offset_from_bounds;
   dragged_view_bounds_offset_from_bounds -= slot_view_offset_to_source;
   dragged_view_bounds_offset_from_bounds -=
       {mouse_offset_x,
        static_cast<int>(session_data.mouse_offset_to_size_ratios.y() *
-                        source_slot_view->height())};
+                        source_slot_bounds.height())};
 
   return dragged_view_bounds_offset_from_bounds;
 }
