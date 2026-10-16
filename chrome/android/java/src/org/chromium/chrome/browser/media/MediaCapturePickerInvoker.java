@@ -41,14 +41,20 @@ public class MediaCapturePickerInvoker {
         MediaCapturePickerDelegate impl =
                 ServiceLoaderUtil.maybeCreate(MediaCapturePickerDelegate.class);
         if (impl != null) {
+            Activity activity = ContextUtils.activityFromContext(context);
+            // We should always get a non-null ChromeActivity which is a FragmentActivity.
+            // Crash here if this is not true for investigation.
+            MediaCapturePickerHeadlessFragment fragment =
+                    MediaCapturePickerHeadlessFragment.getInstance(
+                            assumeNonNull((FragmentActivity) activity));
+            // One prompt per window. Reject before createScreenCaptureIntent().
+            if (fragment.hasPendingRequest()) {
+                // A capture prompt is already showing, cancel request.
+                delegate.onCancel();
+                return;
+            }
             Intent intent = impl.createScreenCaptureIntent(context, params, delegate);
             if (intent != null) {
-                Activity activity = ContextUtils.activityFromContext(context);
-                // We should always get a non-null ChromeActivity which is a FragmentActivity.
-                // Crash here if this is not true for investigation.
-                MediaCapturePickerHeadlessFragment fragment =
-                        MediaCapturePickerHeadlessFragment.getInstance(
-                                assumeNonNull((FragmentActivity) activity));
                 Log.d(
                         TAG,
                         "PickerInvoker: Starting AndroidCapturePrompt for tab/ window/ screen"

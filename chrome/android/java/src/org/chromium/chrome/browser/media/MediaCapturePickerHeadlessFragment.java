@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
+import android.util.SparseArray;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -54,7 +55,24 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
 
     private MediaProjectionManager mMediaProjectionManager;
     private ActivityResultLauncher<Intent> mLauncher;
-    /* package */ @Nullable Delegate mNextDelegate;
+
+    /**
+     * Task id of the hosting Activity, resolved in {@link #onCreate} while the Activity is live.
+     * {@link Activity#getTaskId()} is a binder call that returns -1 once the Activity has been
+     * detached from its task, which can already be the case in {@link #onDestroy}.
+     */
+    private int mTaskId;
+
+    /**
+     * Delegate of the prompt showing in each window, keyed by the Activity's task id.
+     *
+     * <p>Static because the Activity, and this fragment with it, may be recreated while the system
+     * prompt is showing; the result is then delivered to the new fragment instance. The task id is
+     * stable across recreation and unique per Chrome window. Entries are removed when the result
+     * arrives or the Activity is destroyed other than for recreation, and do not survive process
+     * death.
+     */
+    /* package */ static final SparseArray<Delegate> sNextDelegates = new SparseArray<>();
 
     public static MediaCapturePickerHeadlessFragment getInstance(FragmentActivity activity) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
@@ -76,6 +94,7 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mTaskId = requireActivity().getTaskId();
         mMediaProjectionManager =
                 (MediaProjectionManager)
                         requireActivity().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
@@ -84,22 +103,45 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
                 registerForActivityResult(
                         new ActivityResultContracts.StartActivityForResult(),
                         result -> {
-                            assert mNextDelegate != null;
+                            Delegate delegate = sNextDelegates.get(mTaskId);
+                            sNextDelegates.remove(mTaskId);
+                            // No pending request: the process was restarted while the prompt was
+                            // showing, so there is nothing to deliver the result to.
+                            if (delegate == null) return;
                             if (result.getResultCode() == Activity.RESULT_OK
                                     && result.getData() != null) {
                                 // There is currently no way to differentiate between window and
                                 // screen sharing.
-                                mNextDelegate.onPicked(CaptureAction.CAPTURE_WINDOW, result);
+                                delegate.onPicked(CaptureAction.CAPTURE_WINDOW, result);
                             } else {
-                                mNextDelegate.onPicked(CaptureAction.CAPTURE_CANCELLED, result);
+                                delegate.onPicked(CaptureAction.CAPTURE_CANCELLED, result);
                             }
-                            mNextDelegate = null;
                         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Keep the entry only across recreate() / a configuration relaunch, where the pending
+        // result is delivered to the new instance; drop it for any other destruction.
+        if (!requireActivity().isChangingConfigurations()) sNextDelegates.remove(mTaskId);
+    }
+
+    /** Returns whether a prompt launched from this window is still awaiting the user's choice. */
+    public boolean hasPendingRequest() {
+        return sNextDelegates.get(mTaskId) != null;
+    }
+
     public void startAndroidCapturePrompt(Delegate delegate, @Nullable Intent intent) {
-        assert mNextDelegate == null;
-        mNextDelegate = delegate;
+        if (hasPendingRequest()) {
+            // Callers are expected to check hasPendingRequest() first; cancel the new request
+            // rather than overwriting the one that owns the prompt.
+            delegate.onPicked(
+                    CaptureAction.CAPTURE_CANCELLED,
+                    new ActivityResult(Activity.RESULT_CANCELED, null));
+            return;
+        }
+        sNextDelegates.put(mTaskId, delegate);
         mLauncher.launch(
                 intent != null ? intent : mMediaProjectionManager.createScreenCaptureIntent());
     }

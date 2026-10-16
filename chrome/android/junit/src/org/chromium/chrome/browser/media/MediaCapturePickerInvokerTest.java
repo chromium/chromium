@@ -5,9 +5,14 @@
 package org.chromium.chrome.browser.media;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +20,8 @@ import android.content.Intent;
 
 import androidx.activity.result.ActivityResult;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
@@ -25,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowActivity.IntentForResult;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ServiceLoaderUtil;
@@ -122,17 +130,22 @@ public class MediaCapturePickerInvokerTest {
     @After
     public void tearDown() {
         ScreenCapture.resetStaticStateForTesting();
+        MediaCapturePickerHeadlessFragment.sNextDelegates.clear();
+    }
+
+    /** The delegate of the prompt currently showing in {@link #mActivity}'s window. */
+    private MediaCapturePickerHeadlessFragment.Delegate pendingDelegate() {
+        return MediaCapturePickerHeadlessFragment.sNextDelegates.get(mActivity.getTaskId());
     }
 
     @Test
     public void testShow_cancel() {
         mPickerDelegate.setIntent(new Intent());
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
-        MediaCapturePickerHeadlessFragment fragment =
-                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
-        fragment.mNextDelegate.onPicked(
-                CaptureAction.CAPTURE_CANCELLED,
-                new ActivityResult(Activity.RESULT_CANCELED, null));
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_CANCELLED,
+                        new ActivityResult(Activity.RESULT_CANCELED, null));
         verify(mDelegate).onCancel();
     }
 
@@ -145,10 +158,10 @@ public class MediaCapturePickerInvokerTest {
         mPickerDelegate.setPickedTab(tab);
         mPickerDelegate.setShouldShareAudio(true);
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
-        MediaCapturePickerHeadlessFragment fragment =
-                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
-        fragment.mNextDelegate.onPicked(
-                CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mDelegate).onPickTab(mTabWebContents, true);
     }
@@ -162,10 +175,10 @@ public class MediaCapturePickerInvokerTest {
         mPickerDelegate.setPickedTab(tab);
         mPickerDelegate.setShouldShareAudio(false);
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
-        MediaCapturePickerHeadlessFragment fragment =
-                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
-        fragment.mNextDelegate.onPicked(
-                CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
         verify(mDelegate).onPickTab(mTabWebContents, false);
     }
@@ -175,10 +188,10 @@ public class MediaCapturePickerInvokerTest {
         mPickerDelegate.setIntent(new Intent());
         Params params = mediaCaptureParams();
         MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
-        MediaCapturePickerHeadlessFragment fragment =
-                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
-        fragment.mNextDelegate.onPicked(
-                CaptureAction.CAPTURE_WINDOW, new ActivityResult(Activity.RESULT_OK, new Intent()));
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(mDelegate).onPickWindow();
         assertEquals(params.webContents, mPickerDelegate.getStoppedWebContents());
     }
@@ -188,11 +201,95 @@ public class MediaCapturePickerInvokerTest {
         mPickerDelegate.setIntent(new Intent());
         Params params = mediaCaptureParams();
         MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
-        MediaCapturePickerHeadlessFragment fragment =
-                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
-        fragment.mNextDelegate.onPicked(
-                CaptureAction.CAPTURE_SCREEN, new ActivityResult(Activity.RESULT_OK, new Intent()));
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_SCREEN,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(mDelegate).onPickScreen();
         assertEquals(params.webContents, mPickerDelegate.getStoppedWebContents());
+    }
+
+    /**
+     * Regression test: the Activity is recreated (e.g. ChromeActivity#recreate() on a tablet-mode
+     * or night-mode change) while the system prompt is showing. The restored fragment is a new
+     * instance; the result must still reach the delegate of the request that launched the prompt.
+     */
+    @Test
+    public void testShow_activityRecreatedWhilePromptShowing() {
+        mPickerDelegate.setIntent(new Intent());
+        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        MediaCapturePickerHeadlessFragment fragmentBefore =
+                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
+        IntentForResult launched = shadowOf(mActivity).getNextStartedActivityForResult();
+        assertNotNull(launched);
+
+        ActivityScenario<TestActivity> scenario = mActivityScenarioRule.getScenario();
+        scenario.recreate();
+        scenario.onActivity(activity -> mActivity = activity);
+        assertNotSame(
+                fragmentBefore,
+                MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity));
+
+        // Same path as Activity#onActivityResult -> ActivityResultRegistry#dispatchResult.
+        ((FragmentActivity) mActivity)
+                .getActivityResultRegistry()
+                .dispatchResult(launched.requestCode, Activity.RESULT_OK, new Intent());
+
+        verify(mDelegate).onPickWindow();
+    }
+
+    /** Closing the window while its prompt is showing must free the window's slot. */
+    @Test
+    public void testShow_windowClosedWhilePromptShowing() {
+        mPickerDelegate.setIntent(new Intent());
+        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        assertNotNull(pendingDelegate());
+
+        // finish() then destroy: onDestroy() runs with isFinishing() == true.
+        mActivity.finish();
+        mActivityScenarioRule.getScenario().moveToState(Lifecycle.State.DESTROYED);
+
+        assertNull(pendingDelegate());
+        verify(mDelegate, never()).onCancel();
+    }
+
+    /**
+     * An Activity destroyed for a reason other than recreation (no relaunch pending) must also free
+     * its slot, even if it is not finishing.
+     */
+    @Test
+    public void testShow_activityDestroyedWhilePromptShowing() {
+        mPickerDelegate.setIntent(new Intent());
+        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        assertNotNull(pendingDelegate());
+
+        // Destroy without finish() and without recreate(): isChangingConfigurations() is false.
+        mActivityScenarioRule.getScenario().moveToState(Lifecycle.State.DESTROYED);
+
+        assertNull(pendingDelegate());
+        verify(mDelegate, never()).onCancel();
+    }
+
+    /** A second request from the same window while its prompt is showing is cancelled. */
+    @Test
+    public void testShow_secondRequestWhilePromptShowingIsCancelled() {
+        mPickerDelegate.setIntent(new Intent());
+        Delegate secondDelegate = mock(Delegate.class);
+
+        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), secondDelegate);
+
+        // The second request is cancelled right away and no second prompt is launched.
+        verify(secondDelegate).onCancel();
+        verify(mDelegate, never()).onCancel();
+        assertNotNull(shadowOf(mActivity).getNextStartedActivityForResult());
+        assertNull(shadowOf(mActivity).getNextStartedActivityForResult());
+
+        // The first request still completes normally.
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
+        verify(mDelegate).onPickWindow();
     }
 }
