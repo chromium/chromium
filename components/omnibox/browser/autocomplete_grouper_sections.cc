@@ -245,11 +245,15 @@ AndroidHubZPSSection::AndroidHubZPSSection(
 
 AndroidTabSearchZPSSection::AndroidTabSearchZPSSection(
     const omnibox::GroupConfigMap& group_configs)
-    : Section(35,
+    : Section(40,
               {
                   Group(35,
                         {
                             {omnibox::GROUP_MOBILE_OPEN_TABS, 35},
+                        }),
+                  Group(5,
+                        {
+                            {omnibox::GROUP_RECENTLY_CLOSED_TABS, 5},
                         }),
               },
               group_configs) {}
@@ -289,12 +293,17 @@ AndroidHubNonZPSSection::AndroidHubNonZPSSection(
 AndroidTabSearchNonZPSSection::AndroidTabSearchNonZPSSection(
     const omnibox::GroupConfigMap& group_configs)
     : Section(
-          35,
+          40,
           {
               // Reserve most of the spots for open tabs.
               Group(30,
                     {
                         {omnibox::GROUP_MOBILE_OPEN_TABS, 30},
+                    },
+                    /*is_zps=*/false),
+              Group(5,
+                    {
+                        {omnibox::GROUP_RECENTLY_CLOSED_TABS, 5},
                     },
                     /*is_zps=*/false),
               // LINT.IfChange(TabSearchHistorySectionSlots)

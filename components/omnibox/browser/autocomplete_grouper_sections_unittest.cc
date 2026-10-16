@@ -2564,6 +2564,13 @@ TEST(AutocompleteGrouperSectionsTest, AndroidTabSearchZPSSection) {
   sections.push_back(
       std::make_unique<AndroidTabSearchZPSSection>(group_configs));
   ACMatches matches;
+  // AndroidTabSearchZPSSection allows up to 35 open tabs followed by 5 recently
+  // closed tabs. Recently closed tabs are added first to verify that they
+  // cannot take slots reserved for open tabs.
+  for (int i = 0; i < 10; ++i) {
+    matches.push_back(
+        CreateMatch(200 - i, omnibox::GROUP_RECENTLY_CLOSED_TABS));
+  }
   for (int i = 0; i < 40; ++i) {
     matches.push_back(CreateMatch(100 - i, omnibox::GROUP_MOBILE_OPEN_TABS));
   }
@@ -2572,6 +2579,9 @@ TEST(AutocompleteGrouperSectionsTest, AndroidTabSearchZPSSection) {
   std::vector<int> expected_relevances;
   for (int i = 0; i < 35; ++i) {
     expected_relevances.push_back(100 - i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    expected_relevances.push_back(200 - i);
   }
   VerifyMatches(out_matches, expected_relevances);
 }
@@ -2596,8 +2606,14 @@ TEST(AutocompleteGrouperSectionsTest, AndroidTabSearchNonZPSSection) {
   sections.push_back(
       std::make_unique<AndroidTabSearchNonZPSSection>(group_configs));
   ACMatches matches;
-  // AndroidTabSearchNonZPSSection allows up to 30 open tabs and 5 history
-  // matches.
+  // AndroidTabSearchNonZPSSection allows up to 30 open tabs, followed by 5
+  // recently closed tabs and 5 history matches. Recently closed tabs are added
+  // first to verify that they cannot take slots reserved for open tabs or
+  // history.
+  for (int i = 0; i < 10; ++i) {
+    matches.push_back(
+        CreateMatch(200 - i, omnibox::GROUP_RECENTLY_CLOSED_TABS));
+  }
   for (int i = 0; i < 35; ++i) {
     matches.push_back(CreateMatch(100 - i, omnibox::GROUP_MOBILE_OPEN_TABS));
   }
@@ -2609,6 +2625,9 @@ TEST(AutocompleteGrouperSectionsTest, AndroidTabSearchNonZPSSection) {
   std::vector<int> expected_relevances;
   for (int i = 0; i < 30; ++i) {
     expected_relevances.push_back(100 - i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    expected_relevances.push_back(200 - i);
   }
   for (int i = 0; i < 5; ++i) {
     expected_relevances.push_back(65 - i);

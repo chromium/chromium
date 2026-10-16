@@ -121,6 +121,10 @@ TEST(SuggestionGroupTest, AndroidHubZPS) {
   ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
             open_tabs_group_config->second.render_type());
   ASSERT_EQ("Last open tabs", open_tabs_group_config->second.header_text());
+
+  // Recently closed tabs are only supported by the Tab Search overlay.
+  ASSERT_EQ(default_groups.find(omnibox::GROUP_RECENTLY_CLOSED_TABS),
+            default_groups.end());
 }
 
 TEST(SuggestionGroupTest, AndroidHubTyped) {
@@ -152,6 +156,10 @@ TEST(SuggestionGroupTest, AndroidHubTyped) {
   ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
             search_group_config->second.render_type());
   ASSERT_EQ("Search the web", search_group_config->second.header_text());
+
+  // Recently closed tabs are only supported by the Tab Search overlay.
+  ASSERT_EQ(default_groups.find(omnibox::GROUP_RECENTLY_CLOSED_TABS),
+            default_groups.end());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -257,6 +265,16 @@ TEST(SuggestionGroupTest, AndroidTabSearchOverlayZPS) {
             open_tabs_group_config->second.render_type());
   ASSERT_EQ("Last open tabs", open_tabs_group_config->second.header_text());
 
+  auto recently_closed_group_config =
+      default_groups.find(omnibox::GROUP_RECENTLY_CLOSED_TABS);
+  ASSERT_NE(recently_closed_group_config, default_groups.end());
+  ASSERT_EQ(omnibox::SECTION_RECENTLY_CLOSED_TABS,
+            recently_closed_group_config->second.section());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
+            recently_closed_group_config->second.render_type());
+  ASSERT_EQ("Recently closed",
+            recently_closed_group_config->second.header_text());
+
   // Bookmark, history and Search groups should NOT be present.
   auto bookmark_group_config =
       default_groups.find(omnibox::GROUP_MOBILE_BOOKMARKS);
@@ -268,6 +286,41 @@ TEST(SuggestionGroupTest, AndroidTabSearchOverlayZPS) {
 
   auto search_group_config = default_groups.find(omnibox::GROUP_SEARCH);
   ASSERT_EQ(search_group_config, default_groups.end());
+
+  omnibox::ResetDefaultGroupsForTest();
+}
+
+TEST(SuggestionGroupTest,
+     AndroidTabSearchOverlay_RecentlyClosedTabsOnlyInRegularProfile) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  using OEP = ::metrics::OmniboxEventProto;
+  AutocompleteInput zps_input(u"", OEP::ANDROID_TAB_SEARCH_OVERLAY,
+                              TestingSchemeClassifier());
+  AutocompleteInput typed_input(u"test", OEP::ANDROID_TAB_SEARCH_OVERLAY,
+                                TestingSchemeClassifier());
+
+  // Incognito is queried first to verify that the regular cached maps are not
+  // polluted by the prior incognito invocations, and vice versa.
+  for (const AutocompleteInput* input : {&zps_input, &typed_input}) {
+    SCOPED_TRACE(input == &zps_input ? "ZPS input" : "Typed input");
+    auto incognito_groups =
+        omnibox::BuildDefaultGroupsForInput(*input, /*is_incognito=*/true);
+    ASSERT_NE(incognito_groups.find(omnibox::GROUP_MOBILE_OPEN_TABS),
+              incognito_groups.end());
+    ASSERT_EQ(incognito_groups.find(omnibox::GROUP_RECENTLY_CLOSED_TABS),
+              incognito_groups.end());
+
+    auto regular_groups =
+        omnibox::BuildDefaultGroupsForInput(*input, /*is_incognito=*/false);
+    ASSERT_NE(regular_groups.find(omnibox::GROUP_RECENTLY_CLOSED_TABS),
+              regular_groups.end());
+
+    auto incognito_groups_2 =
+        omnibox::BuildDefaultGroupsForInput(*input, /*is_incognito=*/true);
+    ASSERT_EQ(incognito_groups_2.find(omnibox::GROUP_RECENTLY_CLOSED_TABS),
+              incognito_groups_2.end());
+  }
 
   omnibox::ResetDefaultGroupsForTest();
 }
