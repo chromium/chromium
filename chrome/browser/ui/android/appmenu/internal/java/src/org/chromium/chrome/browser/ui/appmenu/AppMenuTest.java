@@ -450,6 +450,51 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
+    public void testFlyoutPopup_ClampedToFlyoutMaxWidth() throws TimeoutException {
+        showMenuAndAssert(mAppMenuHandler);
+        View anchorView = getViewAtPosition(0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    String longTitle = "Very long menu item title ".repeat(20);
+                    ListItem wideItem =
+                            new MVCListAdapter.ListItem(
+                                    AppMenuItemType.STANDARD,
+                                    new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                                            .with(AppMenuItemProperties.MENU_ITEM_ID, 31)
+                                            .with(AppMenuItemProperties.TITLE, longTitle)
+                                            .with(AppMenuItemProperties.ENABLED, true)
+                                            .build());
+
+                    AppMenu.AppMenuPopup flyoutPopup =
+                            mAppMenuHandler.createAndShowFlyoutPopup(
+                                    List.of(wideItem),
+                                    anchorView,
+                                    () -> {},
+                                    (v, x, y, ox, oy) -> {});
+
+                    View contentView = flyoutPopup.getContentView();
+                    Assert.assertNotNull(contentView);
+
+                    int lateralPadding =
+                            contentView.getPaddingLeft() + contentView.getPaddingRight();
+                    int expectedMaxWidth =
+                            sActivity
+                                            .getResources()
+                                            .getDimensionPixelSize(R.dimen.flyout_menu_max_width)
+                                    + lateralPadding;
+
+                    Assert.assertEquals(
+                            "Flyout popup width should be clamped to flyout_menu_max_width",
+                            expectedMaxWidth,
+                            contentView.getMeasuredWidth());
+
+                    flyoutPopup.dismiss();
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testLongClickMenuItem_Title() throws TimeoutException {
         mPropertiesDelegate.enableAppIconRow = true;
         showMenuAndAssert(mAppMenuHandler);
