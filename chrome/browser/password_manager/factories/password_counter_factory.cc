@@ -48,7 +48,8 @@ bool PasswordCounterFactory::ServiceIsCreatedWithBrowserContext() const {
 std::unique_ptr<KeyedService>
 PasswordCounterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_DESKTOP) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_DESKTOP &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return nullptr;
   }
 #if BUILDFLAG(IS_ANDROID)
