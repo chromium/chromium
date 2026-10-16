@@ -2,7 +2,7 @@
 
 ## Status
 
-**Active Design & Implementation**
+**Shipping on Android**
 
 ## Objective
 
@@ -39,36 +39,57 @@ during page loads.
 
 ### 1. Cache Data Structures & Capacity
 
-We introduce a bounded LRU cache inside
-[`AddressSorterPosix`](../dns/address_sorter_posix.h):
+[`AddressSorterPosix`](../dns/address_sorter_posix.h) delegates connect result
+caching to a [`ConnectPredictor`](../dns/connect_predictor.h) interface,
+implemented by
+[`ConnectPredictorLRUCache`](../dns/connect_predictor_lru_cache.h) using a
+three-level `base::HashingLRUCache` hierarchy:
 
-- **Cache Key**: `std::pair<IPAddress, NetworkAnonymizationKey>`.
-  - **Subnet Masking**: To maximize hit rate, the destination IP is zero-masked
-    to a `/24` prefix for IPv4 (and IPv4-mapped IPv6) and to a `/64` prefix for
-    IPv6. Standard operating system routing tables operate at a subnet level;
-    therefore, IPs within the same subnet share the same route, outgoing
-    interface, and selected local source IP.
-  - **State Partitioning**: Including
-    [`NetworkAnonymizationKey`](../base/network_anonymization_key.h) prevents
-    cross-origin timing attacks where a malicious top-level site uses the cache
-    speedup as a browser history oracle.
-- **Cache Capacity**: A limit of `4096` entries (approximately 400 KB memory
-  footprint) provides an excellent hit rate for multi-tab sessions.
-- **Thread Safety**: Access is guarded by `THREAD_CHECKER(thread_checker_)`.
+- **Cache Hierarchy & Keys**:
+  1. **Network Level**: Keyed by
+     [`handles::NetworkHandle`](../base/network_handle.h) (`target_network`),
+     mapping to a per-network `NetworkAnonymizationKey` LRU cache.
+  2. **Partition Level**: Keyed by
+     [`NetworkAnonymizationKey`](../base/network_anonymization_key.h), mapping
+     to a `ConnectPredictorLRUCache::Partition`. Including
+     `NetworkAnonymizationKey` and `target_network` isolates routing state
+     across networks and prevents cross-origin timing attacks where a malicious
+     top-level site uses the cache speedup as a browser history oracle.
+  3. **Prediction Level**: Each `Partition` maintains an LRU cache keyed by
+     masked destination [`IPAddress`](../base/ip_address.h) and mapping to
+     `ConnectPredictor::ConnectResult` (`rv` and `source_address`).
+- **Subnet Masking**: To maximize hit rate, the destination IP is zero-masked to
+  a `/24` prefix for IPv4 (and IPv4-mapped IPv6) and to a `/64` prefix for IPv6.
+  Standard operating system routing tables operate at a subnet level; therefore,
+  IPs within the same subnet share the same route, outgoing interface, and
+  selected local source IP.
+- **Cache Capacity**: Controlled by feature parameters on
+  `net::features::kAddressSorterConnectCache`:
+  - `kAddressSorterConnectCacheMaxNetworks`: default `2` networks.
+  - `kAddressSorterConnectCacheMaxNaksPerNetwork`: default `16` partitions per
+    network.
+  - `kAddressSorterConnectCacheMaxPredictionsPerPartition`: default `1024`
+    predictions per partition.
+- **Thread Safety**: Access in `AddressSorterPosix` is guarded by
+  `THREAD_CHECKER(thread_checker_)`.
 
 ### 2. Lookup & Insertion Flow
 
-`AddressSorter::Sort()` is updated to accept
-`const NetworkAnonymizationKey& anonymization_key`.
+`AddressSorter::Sort()` accepts `const NetworkAnonymizationKey&
+anonymization_key` and `handles::NetworkHandle target_network`, which are used
+to look up a `base::WeakPtr<ConnectPredictor::Partition>` via
+`ConnectPredictor::GetPartition()` at the start of `Sort()`.
 
-- **Cache Hit**: Bypasses socket creation and `ConnectAsync()` entirely,
-  populating the route reachability and source address from the cache.
+- **Cache Hit**: When `Partition::Predict()` returns a cached `ConnectResult`,
+  `SortContext` bypasses socket creation and `ConnectAsync()` entirely,
+  populating the route reachability and source address from the cached result.
 - **Cache Miss**: Allocates a socket and initiates `ConnectAsync()`.
   - If `ConnectAsync()` completes synchronously, the result is immediately
-    cached inline. This allows duplicate subnets within the same `Sort()`
-    invocation to hit the cache.
-  - If it returns `net::ERR_IO_PENDING`, the result is cached in the
-    asynchronous completion callback.
+    recorded via `Partition::RecordResult()` inline. This allows duplicate
+    subnets within the same `Sort()` invocation to hit the cache.
+  - If it returns `net::ERR_IO_PENDING`, the result is recorded in the
+    asynchronous completion callback (provided the `Partition` `WeakPtr` is
+    still valid).
 - **No Coalescing**: Concurrent `Sort()` requests for the same subnet are not
   coalesced. The minor overhead of occasional redundant local `connect()` calls
   is preferred over the high complexity of managing pending callback queues.
@@ -78,33 +99,44 @@ We introduce a bounded LRU cache inside
 To prevent serving stale routing decisions after a network change (e.g.,
 switching from Wi-Fi to Cellular, or connecting to a VPN):
 
-- `AddressSorterPosix` implements both
-  [`IPAddressObserver`](../base/network_change_notifier.h) and
-  [`NetworkChangeObserver`](../base/network_change_notifier.h).
-- The connect cache is fully cleared (`connect_cache_.Clear()`) on both
-  `OnIPAddressChanged()` and `OnNetworkChanged()`.
+- [`ConnectPredictorLRUCache`](../dns/connect_predictor_lru_cache.h) implements
+  [`NetworkChangeObserver`](../base/network_change_notifier.h) and clears the
+  entire cache (`cache_.Clear()`) on `OnNetworkChanged()`.
+- Because `SortContext` holds a `base::WeakPtr<ConnectPredictor::Partition>`,
+  clearing the cache (or evicting a partition) safely invalidates outstanding
+  partition references held by any in-flight asynchronous `Sort()` calls.
 
 ### 4. Configuration
 
 The cache is guarded by the `net::features::kAddressSorterConnectCache` feature
-flag (disabled by default). When disabled, `AddressSorterPosix` falls back to
-the original un-cached behavior.
+flag (enabled by default on Android), along with the capacity parameters
+`kAddressSorterConnectCacheMaxNetworks`,
+`kAddressSorterConnectCacheMaxNaksPerNetwork`, and
+`kAddressSorterConnectCacheMaxPredictionsPerPartition`. When the feature is
+disabled, `ConnectPredictor::Create()` returns `nullptr` and
+`AddressSorterPosix` falls back to the un-cached behavior.
 
 ## Testing
 
 ### Parameterized Unit Tests
 
-All existing tests in
+Existing sorting tests in
 [`net/dns/address_sorter_posix_unittest.cc`](../dns/address_sorter_posix_unittest.cc)
-are parameterized to run twice: with caching enabled and with caching disabled.
+(`AddressSorterPosixSyncOrAsyncTest`) are parameterized over both synchronous /
+asynchronous socket connect modes and caching enabled / disabled.
 
-### New Cache Tests
+### Cache Unit Tests
 
-We verify:
+In [`net/dns/address_sorter_posix_unittest.cc`](../dns/address_sorter_posix_unittest.cc)
+(`AddressSorterPosixCacheTest`) and
+[`net/dns/connect_predictor_lru_cache_unittest.cc`](../dns/connect_predictor_lru_cache_unittest.cc)
+(`ConnectPredictorLRUCacheTest`), we verify:
 
 1. **Cache Hit**: Second sort for the same IP bypasses socket creation.
-2. **Invalidation**: `OnIPAddressChanged()` and `OnNetworkChanged()` empty the
-   cache.
-3. **Partitioning**: Unique `NetworkAnonymizationKey`s partition cached entries.
-4. **Subnet Masking**: IPs in the same `/24` or `/64` subnet successfully hit
-   the same cache entry, while differing subnets do not.
+2. **Invalidation**: `OnNetworkChanged()` empties the cache and safely handles
+   in-flight asynchronous sorts.
+3. **Partitioning & Eviction**: Unique `NetworkAnonymizationKey`s and
+   `handles::NetworkHandle`s partition cached entries, with LRU eviction at each
+   of the three cache levels.
+4. **Subnet Masking**: IPs in the same `/24` (IPv4 and IPv4-mapped IPv6) or
+   `/64` (IPv6) subnet hit the same cache entry, while differing subnets do not.
