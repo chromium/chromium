@@ -61,7 +61,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"recentlyVisited", IDS_ORGANIZER_PANEL_RECENTLY_VISITED},
-      {"searchTabsAndGroups", IDS_ORGANIZER_PANEL_SEARCH_TABS_AND_GROUPS},
+      {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"showAll", IDS_ORGANIZER_PANEL_SHOW_ALL},
       {"showSome", IDS_ORGANIZER_PANEL_SHOW_SOME},
       {"splitView", IDS_ORGANIZER_PANEL_SPLIT_VIEW},

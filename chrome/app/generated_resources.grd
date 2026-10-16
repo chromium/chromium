@@ -10754,9 +10754,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL_CROSS_DEVICE_TABS" desc="The label on the organizer panel list section corresponding to tabs on other devices.">
         Tabs on other devices
       </message>
-      <message name="IDS_ORGANIZER_PANEL_SEARCH_TABS_AND_GROUPS" desc="The placeholder text in the search box of the organizer panel.">
-        Search tabs and groups
-      </message>
       <message name="IDS_ORGANIZER_PANEL_RECENTLY_VISITED" desc="The label on the organizer panel list section corresponding to recently visited tabs.">
         Recently visited
       </message>
