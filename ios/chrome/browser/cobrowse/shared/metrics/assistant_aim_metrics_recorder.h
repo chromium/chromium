@@ -38,9 +38,9 @@ enum class AssistantContainerDetent : NSInteger;
 // Records an outbound link click from the Assistant AIM.
 - (void)recordLinkClicked;
 
-// Records a follow-up query submission in the Assistant AIM bottom sheet and
-// whether the follow-up included an attachment (`hasAttachment`).
-- (void)recordFollowupSubmittedWithAttachment:(BOOL)hasAttachment;
+// Records a follow-up query submission in the Assistant AIM bottom sheet with
+// `attachmentCount` attached items.
+- (void)recordFollowupSubmittedWithAttachmentCount:(NSUInteger)attachmentCount;
 
 @end
 

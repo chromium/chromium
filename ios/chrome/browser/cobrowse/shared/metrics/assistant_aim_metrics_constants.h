@@ -38,6 +38,8 @@ inline constexpr std::string_view kAssistantAimFollowupsPerSessionHistogram =
     "IOS.SicBottomSheet.FollowupsPerSession";
 inline constexpr std::string_view kAssistantAimFollowupHadAttachmentHistogram =
     "IOS.SicBottomSheet.FollowupHadAttachment";
+inline constexpr std::string_view kAssistantAimAttachmentsPerSessionHistogram =
+    "IOS.SicBottomSheet.AttachmentsPerSession";
 
 // Entrypoints for starting an Assistant AIM bottom sheet session.
 enum class AssistantAimEntrypoint {

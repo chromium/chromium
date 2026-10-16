@@ -215,39 +215,45 @@ TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedWithoutReturn) {
 }
 
 // Tests that submitting follow-up queries increments the per-session follow-up
-// count, records whether each follow-up had an attachment, marks positive
-// engagement at session end, and resets `_followupsSubmittedCount` when a new
-// session starts.
+// and attachment counts, records whether each follow-up had an attachment, and
+// marks positive engagement at session end.
 TEST_F(AssistantAIMMetricsRecorderTest, FollowupSubmissionsPerSession) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
                                                     kAskAboutCurrentPage];
 
-  [recorder_ recordFollowupSubmittedWithAttachment:YES];
-  [recorder_ recordFollowupSubmittedWithAttachment:NO];
-  [recorder_ recordFollowupSubmittedWithAttachment:NO];
+  [recorder_ recordFollowupSubmittedWithAttachmentCount:2];
+  [recorder_ recordFollowupSubmittedWithAttachmentCount:0];
+  [recorder_ recordFollowupSubmittedWithAttachmentCount:1];
   [recorder_ recordSessionEnded];
 
   histogram_tester_.ExpectBucketCount(
-      kAssistantAimFollowupHadAttachmentHistogram, true, 1);
+      kAssistantAimFollowupHadAttachmentHistogram, true, 2);
   histogram_tester_.ExpectBucketCount(
-      kAssistantAimFollowupHadAttachmentHistogram, false, 2);
+      kAssistantAimFollowupHadAttachmentHistogram, false, 1);
   histogram_tester_.ExpectTotalCount(
       kAssistantAimFollowupHadAttachmentHistogram, 3);
   histogram_tester_.ExpectUniqueSample(
       kAssistantAimFollowupsPerSessionHistogram, 3, 1);
   histogram_tester_.ExpectUniqueSample(
+      kAssistantAimAttachmentsPerSessionHistogram, 3, 1);
+  histogram_tester_.ExpectUniqueSample(
       kAssistantAimSessionHadEngagementHistogram, true, 1);
 
-  // Starting a new session should reset `_followupsSubmittedCount`.
+  // Starting a new session should reset `_followupsSubmittedCount` and
+  // `_attachmentsSubmittedCount`.
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
                                                     kAskAboutCurrentPage];
-  [recorder_ recordFollowupSubmittedWithAttachment:YES];
+  [recorder_ recordFollowupSubmittedWithAttachmentCount:1];
   [recorder_ recordSessionEnded];
 
   histogram_tester_.ExpectBucketCount(kAssistantAimFollowupsPerSessionHistogram,
                                       1, 1);
   histogram_tester_.ExpectTotalCount(kAssistantAimFollowupsPerSessionHistogram,
                                      2);
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimAttachmentsPerSessionHistogram, 1, 1);
+  histogram_tester_.ExpectTotalCount(
+      kAssistantAimAttachmentsPerSessionHistogram, 2);
 }
 
 }  // namespace

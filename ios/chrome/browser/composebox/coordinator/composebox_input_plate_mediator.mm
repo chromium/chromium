@@ -1689,7 +1689,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   request_info->query_start_time = base::Time::Now();
   request_info->file_tokens =
       _contextualSearchSession->GetUploadedContextTokens();
-  BOOL hasAttachment = !request_info->file_tokens.empty();
+  NSUInteger attachmentCount = request_info->file_tokens.size();
 
   request_info->active_tool = inputState->active_tool;
   request_info->active_model = inputState->active_model;
@@ -1700,7 +1700,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   [self.URLLoader prepareLoadWithClientToAimMessage:message];
   [self.assistantMetricsRecorder
-      recordFollowupSubmittedWithAttachment:hasAttachment];
+      recordFollowupSubmittedWithAttachmentCount:attachmentCount];
   [self clearNonTabItems];
 }
 

@@ -2665,15 +2665,17 @@ TEST_F(ComposeboxInputPlateMediatorTest,
     [mediator disconnect];
   }));
 
-  OCMExpect([assistant_recorder recordFollowupSubmittedWithAttachment:NO]);
+  OCMExpect([assistant_recorder recordFollowupSubmittedWithAttachmentCount:0]);
   EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_)).Times(1);
   [mediator sendAIMFollowup:@"test followup without attachment"];
 
   raw_mock_session->GetUploadedContextTokensForTesting().push_back(
       base::UnguessableToken::Create());
-  OCMExpect([assistant_recorder recordFollowupSubmittedWithAttachment:YES]);
+  raw_mock_session->GetUploadedContextTokensForTesting().push_back(
+      base::UnguessableToken::Create());
+  OCMExpect([assistant_recorder recordFollowupSubmittedWithAttachmentCount:2]);
   EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_)).Times(1);
-  [mediator sendAIMFollowup:@"test followup with attachment"];
+  [mediator sendAIMFollowup:@"test followup with attachments"];
 
   EXPECT_OCMOCK_VERIFY(assistant_recorder);
 }
