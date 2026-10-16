@@ -244,7 +244,7 @@ crbug.com/573630697 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptCo
 crbug.com/573630697 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
 
 # Gardening suppression 2026-10-15
-crbug.com/573994066 [ Device ] TracingTestCase/testStartupTracing [ Pass Failure ]
+crbug.com/573994066 [ Device ] TracingTestCase/testStartupTracing [ Skip ]
 crbug.com/573995191 TabGridTestCase/testHistorySuggestedActionInRegularTabsSearch [ Pass Failure ]
 crbug.com/573994751 StartSurfaceTestCase/testOpenNewWindowDoesNotReopenNTP [ Pass Failure ]
 crbug.com/573993705 AssistantAIMTestCase/testInputPlateHiddenOnPlusMenu [ Pass Failure ]
