@@ -29,9 +29,21 @@ enum class MatchFlag {
   kAffectedByActive = 1 << 3,
   // @starting-style
   kAffectedByStartingStyle = 1 << 4,
+  // Unconditionally matched :hover in rightmost compound to precompute hover
+  // styles for the compositor.
+  kPrecomputedHoverMatch = 1 << 5,
+  // Set when matching :hover outside the rightmost compound or in nested
+  // complex selectors. Will cancel out a kPrecomputedHoverMatch.
+  kCancelPrecomputedHoverMatch = 1 << 6,
 };
 
 using MatchFlags = uint8_t;
+
+inline constexpr MatchFlags kPrecomputedHoverMask =
+    static_cast<MatchFlags>(MatchFlag::kPrecomputedHoverMatch) |
+    static_cast<MatchFlags>(MatchFlag::kCancelPrecomputedHoverMatch);
+
+// #define DUMP_PRECOMPUTED_HOVER
 
 }  // namespace blink
 

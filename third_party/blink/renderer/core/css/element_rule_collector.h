@@ -70,7 +70,8 @@ class MatchedRule {
   MatchedRule(const RuleData* rule_data,
               uint16_t layer_order,
               unsigned proximity,
-              unsigned style_sheet_index)
+              unsigned style_sheet_index,
+              bool precompute_hover)
       : sort_key_((static_cast<uint64_t>(layer_order) << 48) |
                   (static_cast<uint64_t>(rule_data->Specificity()) << 16) |
                   (65535 - ClampTo<uint16_t>(proximity))),
@@ -79,6 +80,7 @@ class MatchedRule {
                   rule_data->GetPosition()),
         rule_(rule_data->Rule()),
         link_match_type_(rule_data->LinkMatchType()),
+        precompute_hover_(precompute_hover),
         valid_property_filter_(
             static_cast<unsigned>(rule_data->GetValidPropertyFilter())),
         selector_index_(rule_data->SelectorIndex()) {}
@@ -91,6 +93,7 @@ class MatchedRule {
   uint64_t SortKey() const { return sort_key_; }
   uint64_t GetPosition() const { return position_; }  // Secondary sort key.
   unsigned LinkMatchType() const { return link_match_type_; }
+  bool PrecomputeHover() const { return precompute_hover_; }
   ValidPropertyFilter GetValidPropertyFilter(bool is_matching_ua_rules) const {
     return is_matching_ua_rules
                ? ValidPropertyFilter::kNoFilter
@@ -113,7 +116,8 @@ class MatchedRule {
   // in position_ upwards and use some of the bottom. Right now, though,
   // packing these better wouldn't make the struct any smaller, due to
   // alignment/padding.
-  uint8_t link_match_type_;        // 2 bits needed.
+  uint8_t link_match_type_ : 2;
+  uint8_t precompute_hover_ : 1;
   uint8_t valid_property_filter_;  // ValidPropertyFilter, 3 bits needed.
   uint16_t selector_index_;  // RuleData::kSelectorIndexBits (13) bits needed.
 

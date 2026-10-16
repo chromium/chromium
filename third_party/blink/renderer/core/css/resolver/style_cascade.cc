@@ -330,6 +330,35 @@ void StyleCascade::Apply(CascadeFilter filter) {
   ApplyUnresolvedEnv(resolver);
 }
 
+void StyleCascade::ApplyPrecomputedHover() {
+  SetApplyPrecomputeHoverRules(true);
+  ResetAndCollectAgain();
+
+  CascadeFilter filter;
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED CascadeResolver resolver(filter);
+
+  // TODO: If the property value depends on the parent style, we cannot do the
+  // precomputation without also precomputing the ancestor chain :hover styles.
+  // That includes 'unset', color functions with currentcolor, etc.
+  if (map_.NativeBitset().Has(CSSPropertyID::kColor)) {
+    LookupAndApply(GetCSSPropertyColor(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kTextDecorationColor)) {
+    LookupAndApply(GetCSSPropertyTextDecorationColor(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kTextDecorationLine)) {
+    LookupAndApply(GetCSSPropertyTextDecorationLine(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kTextDecorationStyle)) {
+    LookupAndApply(GetCSSPropertyTextDecorationStyle(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kTextDecorationThickness)) {
+    LookupAndApply(GetCSSPropertyTextDecorationThickness(), resolver);
+  }
+  state_.StyleBuilder().SetStyleType(kPseudoIdPrecomputedHover);
+}
+
 std::unique_ptr<CSSBitset> StyleCascade::ReleaseImportantSet() {
   CollectDeclarationsIfNeeded();
   return map_.ReleaseImportantSet();
@@ -472,6 +501,10 @@ void StyleCascade::CollectFromMatchResult() {
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
+    if (properties.data_.precompute_hover && !apply_precompute_hover_rules_) {
+      index++;
+      continue;
+    }
     ExpandCascade(
         properties, GetDocument(), index++,
         [this](CascadePriority cascade_priority,

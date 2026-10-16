@@ -1291,7 +1291,8 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
              matched_rule.GetValidPropertyFilter(matching_ua_rules_)),
          .is_inline_style = static_cast<uint8_t>(is_vtt_embedded_style),
          .origin = origin,
-         .layer_order = matched_rule.LayerOrder()});
+         .layer_order = matched_rule.LayerOrder(),
+         .precompute_hover = matched_rule.PrecomputeHover()});
   }
 
   if (tracker) {
@@ -1453,6 +1454,26 @@ void ElementRuleCollector::DidMatchRule(
       result_.SetFirstLineDependsOnSizeContainerQueries();
     }
   } else {
+    bool precompute_hover =
+        (result.flags & kPrecomputedHoverMask) ==
+        static_cast<MatchFlags>(MatchFlag::kPrecomputedHoverMatch);
+#if defined DUMP_PRECOMPUTED_HOVER
+    if (result.HasFlag(MatchFlag::kCancelPrecomputedHoverMatch)) {
+      LOG(ERROR) << "Unsupported pre-computed hover selector: "
+                 << rule_data->Rule()->SelectorsText();
+    }
+#endif
+    if (precompute_hover && !rule_data->Rule()
+                                 ->Properties()
+                                 .ContainsPrecomputableHoverStyleOnly()) {
+      result_.AddFlags(
+          static_cast<MatchFlags>(MatchFlag::kCancelPrecomputedHoverMatch));
+#if defined DUMP_PRECOMPUTED_HOVER
+      LOG(ERROR) << "Unsupported pre-computed hover properties: "
+                 << rule_data->Rule()->Properties().AsText();
+#endif
+      return;
+    }
     if (rule_data->Rule()->Properties().ContainsCursorHand()) {
       context_.GetElement().GetDocument().CountUse(
           WebFeature::kQuirksModeCursorHandApplied);
@@ -1462,7 +1483,7 @@ void ElementRuleCollector::DidMatchRule(
           static_cast<MatchFlags>(MatchFlag::kAffectedByStartingStyle));
     }
     matched_rules_.emplace_back(rule_data, layer_order, proximity,
-                                style_sheet_index);
+                                style_sheet_index, precompute_hover);
   }
 }
 

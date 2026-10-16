@@ -1514,6 +1514,26 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     SetAnimationUpdateIfNeeded(style_recalc_context, state, *animating_element);
   }
 
+  state.LoadPendingResources();
+
+  PropagateStyleBuilderFlags(state);
+
+  if (!cascade.GetMatchResult().MayPrecomputeHover()) {
+    return state.TakeStyle();
+  }
+
+  CHECK(RuntimeEnabledFeatures::CompositeHoverStyleEnabled());
+
+  const ComputedStyle* style = state.CloneStyle();
+  cascade.ApplyPrecomputedHover();
+  PropagateStyleBuilderFlags(state);
+  style->AddCachedPseudoElementStyle(state.TakeStyle(),
+                                     kPseudoIdPrecomputedHover, g_null_atom);
+  return style;
+}
+
+void StyleResolver::PropagateStyleBuilderFlags(
+    const StyleResolverState& state) {
   GetDocument().AddViewportUnitFlags(state.StyleBuilder().ViewportUnitFlags());
 
   if (state.StyleBuilder().HasRootRelativeUnits()) {
@@ -1539,11 +1559,6 @@ const ComputedStyle* StyleResolver::ResolveStyle(
       GetDocument().GetStyleEngine().SetUsesTreeCountingFunctions();
     }
   }
-
-  state.LoadPendingResources();
-
-  // Now return the style.
-  return state.TakeStyle();
 }
 
 const ComputedStyle& StyleResolver::ResolveBaseStyle(

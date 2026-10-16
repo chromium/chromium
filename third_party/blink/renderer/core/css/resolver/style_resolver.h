@@ -392,6 +392,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   void ExpandInheritedVisitedProperties(StyleResolverState& state);
 
+  void PropagateStyleBuilderFlags(const StyleResolverState& state);
+
   enum UASheetCacheKeyIndex {
     kHTMLUASheet,
     kSVGUASheet,

@@ -335,6 +335,7 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:
+    case kPseudoIdPrecomputedHover:
       NOTREACHED();
   }
 }

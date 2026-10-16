@@ -236,6 +236,10 @@ class CORE_EXPORT CSSPropertyValueSet
   bool ShorthandPropertyMatches(CSSPropertyID shorthand_id,
                                 const CSSStyleDeclaration& style) const;
 
+  // Returns true if all property values can be pre-computed hover effects on
+  // the compositor.
+  bool ContainsPrecomputableHoverStyleOnly() const;
+
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
 

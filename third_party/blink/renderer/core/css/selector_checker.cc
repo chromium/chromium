@@ -2646,8 +2646,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return slot->HasFlattenedAssignedNodesNoRecalc();
       }
       return false;
-    case CSSSelector::kPseudoHover:
-      if (mode_ == kResolvingStyle) {
+    case CSSSelector::kPseudoHover: {
+      if (mode_ == kResolvingStyle &&
+          !result.HasFlag(MatchFlag::kPrecomputedHoverMatch)) {
         if (context.is_inside_has_pseudo_class) [[unlikely]] {
           element.SetAncestorsOrSiblingsAffectedByHoverInHas();
         } else if (ImpactsNonSubject(context)) {
@@ -2665,7 +2666,23 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
-      return element.IsHovered() && !element.GetDocument().Printing();
+      if (element.GetDocument().Printing()) {
+        return false;
+      }
+      bool is_hovered = element.IsHovered();
+      if (!is_hovered && RuntimeEnabledFeatures::CompositeHoverStyleEnabled()) {
+        // TODO(crbug.com/571157138): Also need to handle pre-computation of
+        // non-hovered style when is_hovered is true.
+        if (mode_ == kResolvingStyle && !context.in_nested_complex_selector &&
+            !context.is_inside_has_pseudo_class &&
+            !ImpactsNonSubject(context)) {
+          result.SetFlag(MatchFlag::kPrecomputedHoverMatch);
+          return true;
+        }
+        result.SetFlag(MatchFlag::kCancelPrecomputedHoverMatch);
+      }
+      return is_hovered;
+    }
     case CSSSelector::kPseudoActive:
       if (mode_ == kResolvingStyle) {
         if (context.is_inside_has_pseudo_class) [[unlikely]] {

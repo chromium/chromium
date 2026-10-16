@@ -330,6 +330,8 @@ String ToString(PseudoId pseudo_id) {
       return "kPseudoIdViewTransitionNew";
     case kPseudoIdFirstLineInherited:
       return "kPseudoIdFirstLineInherited";
+    case kPseudoIdPrecomputedHover:
+      return "kPseudoIdPrecomputedHover";
     case kPseudoIdScrollbarThumb:
       return "kPseudoIdScrollbarThumb";
     case kPseudoIdScrollbarButton:

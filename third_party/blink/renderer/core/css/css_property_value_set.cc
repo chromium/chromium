@@ -90,6 +90,22 @@ uint32_t CSSPropertyValueSet::ComputeHash() const {
   return hash;
 }
 
+bool CSSPropertyValueSet::ContainsPrecomputableHoverStyleOnly() const {
+  for (const CSSPropertyValue& property : Properties()) {
+    switch (property.PropertyID()) {
+      case CSSPropertyID::kColor:
+      case CSSPropertyID::kTextDecorationColor:
+      case CSSPropertyID::kTextDecorationLine:
+      case CSSPropertyID::kTextDecorationStyle:
+      case CSSPropertyID::kTextDecorationThickness:
+        continue;
+      default:
+        return false;
+    }
+  }
+  return true;
+}
+
 MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
     CSSParserMode css_parser_mode)
     : CSSPropertyValueSet(css_parser_mode) {}

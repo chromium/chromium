@@ -4902,4 +4902,62 @@ TEST_F(StyleResolverTest, PreserveParentColorSkipsFastPath) {
   EXPECT_EQ(color_of("parent"), color_of("preserve"));
 }
 
+TEST_F(StyleResolverTest, PrecomputeHover) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #t1 { color: red; }
+      #t1:hover { color: green; }
+      #t2 { color: red; }
+      #t2:hover { color: green; }
+      #t2:hover { background-color: lime; }
+      #t3 { color: green !important; }
+      #t3:hover { color: red; }
+      #t4 { color: red; }
+      :hover #t4:hover { color: green; }
+    </style>
+    <div id="t1"></div>
+    <div id="t2"></div>
+    <div id="t3"></div>
+    <div id="t4"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  const ComputedStyle* t1_style = GetElementById("t1")->GetComputedStyle();
+  const ComputedStyle* t2_style = GetElementById("t2")->GetComputedStyle();
+  const ComputedStyle* t3_style = GetElementById("t3")->GetComputedStyle();
+  const ComputedStyle* t4_style = GetElementById("t4")->GetComputedStyle();
+  const ComputedStyle* t1_hover =
+      t1_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t2_hover =
+      t2_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t3_hover =
+      t3_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  const ComputedStyle* t4_hover =
+      t4_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+
+  EXPECT_EQ(t1_style->VisitedDependentColor(GetCSSPropertyColor()),
+            Color(255, 0, 0));
+
+  ASSERT_TRUE(t1_hover);
+  EXPECT_EQ(t1_hover->VisitedDependentColor(GetCSSPropertyColor()),
+            Color(0, 128, 0));
+
+  EXPECT_EQ(t2_style->VisitedDependentColor(GetCSSPropertyColor()),
+            Color(255, 0, 0));
+  EXPECT_FALSE(t2_hover);
+
+  EXPECT_EQ(t3_style->VisitedDependentColor(GetCSSPropertyColor()),
+            Color(0, 128, 0));
+  ASSERT_TRUE(t3_hover);
+  EXPECT_EQ(t3_hover->VisitedDependentColor(GetCSSPropertyColor()),
+            Color(0, 128, 0));
+
+  EXPECT_EQ(t4_style->VisitedDependentColor(GetCSSPropertyColor()),
+            Color(255, 0, 0));
+  EXPECT_FALSE(t4_hover);
+}
+
 }  // namespace blink

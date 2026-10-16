@@ -103,6 +103,9 @@ enum PseudoId : uint8_t {
 
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
+  // Only used as a key to store precomputed hover styles in the
+  // PseudoElementStyleCache.
+  kPseudoIdPrecomputedHover,
 
   // These five must be together, due to code in
   // CollectMatchingRulesInternal().

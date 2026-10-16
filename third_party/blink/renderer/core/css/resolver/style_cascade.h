@@ -109,6 +109,11 @@ class CORE_EXPORT StyleCascade {
   // provide a different filter.
   void Apply(CascadeFilter = CascadeFilter());
 
+  // Rebuild the cascade map to include precomputed :hover style, and apply the
+  // cascaded values for the set of supported precomputed properties on top of
+  // the actual style.
+  void ApplyPrecomputedHover();
+
   // Returns a CSSBitset containing the !important declarations (collecting
   // declarations if needed). If there are no !important declarations,
   // returns nullptr. Can only be called once (or will DCHECK), as the bitset
@@ -200,6 +205,10 @@ class CORE_EXPORT StyleCascade {
       const CSSUnparsedDeclarationValue&,
       const TreeScope*,
       const CSSParserContext&);
+
+  void SetApplyPrecomputeHoverRules(bool apply_precompute_hover_rules) {
+    apply_precompute_hover_rules_ = apply_precompute_hover_rules;
+  }
 
  private:
   friend class TestCascade;
@@ -864,6 +873,11 @@ class CORE_EXPORT StyleCascade {
   bool depends_on_cascade_affecting_property_ = false;
   // See comment in StyleCascade::AddExplicitDefaults (.cc file).
   bool effective_zoom_changed_ = false;
+  // With RuntimeEnabledFeatures::CompositeHoverStyleEnabled(), rules only
+  // trivially failing :hover in subject with a predefined set of CSS properties
+  // will be included in MatchResult. They will be skipped while building the
+  // cascade map when this flag is false.
+  bool apply_precompute_hover_rules_ = false;
 };
 
 }  // namespace blink

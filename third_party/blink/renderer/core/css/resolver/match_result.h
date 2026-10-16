@@ -72,15 +72,16 @@ struct CORE_EXPORT MatchedProperties {
     uint16_t layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
     // Try-tactics style come from <try-tactic>.
     // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
-    bool is_try_tactics_style = false;
+    uint16_t is_try_tactics_style : 1 = false;
     // With SVG reuse enabled, distinguishes SVG hints from HTML hints in the
     // MPC key to isolate cached cascade-loss flags.
-    bool is_svg_presentation_hint = false;
-
-    // NOTE: MPC hashes and compares raw bytes. The two bools occupy one byte
-    // each, completing the eight-byte layout without padding; the uint8_t
-    // bitfields above occupy all eight bits of their byte. If extending this
-    // structure, ensure all bytes are defined and initialized.
+    uint16_t is_svg_presentation_hint : 1 = false;
+    // Set to true if these MatchedProperties is included for precomputing
+    // :hover styles.
+    uint16_t precompute_hover : 1 = false;
+    // 14 free bits after this, but since the MPC hashes and compares
+    // this as raw bytes, we cannot have undefined padding.
+    uint16_t padding : 13 = 0;
 
     bool operator==(const Data& other) const {
       return UNSAFE_BUFFERS(memcmp(this, &other, sizeof(*this))) == 0;
@@ -240,6 +241,11 @@ class CORE_EXPORT MatchResult {
     return flags_ & static_cast<MatchFlags>(flag);
   }
   void AddFlags(MatchFlags flags) { flags_ |= flags; }
+
+  bool MayPrecomputeHover() const {
+    return (flags_ & kPrecomputedHoverMask) ==
+           static_cast<MatchFlags>(MatchFlag::kPrecomputedHoverMatch);
+  }
 
   void SetHasPseudoElementStyle(PseudoId pseudo) {
     DCHECK(pseudo >= kFirstPublicPseudoId);

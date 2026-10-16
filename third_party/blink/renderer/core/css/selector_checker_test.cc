@@ -339,7 +339,7 @@ TEST_P(MatchFlagsTest, All) {
   using Bits = std::bitset<sizeof(MatchFlags) * 8>;
 
   SCOPED_TRACE(param.selector);
-  EXPECT_EQ(Bits(param.expected), Bits(result.flags));
+  EXPECT_EQ(Bits(param.expected), Bits(result.flags & ~kPrecomputedHoverMask));
 }
 
 class ImpactTest : public PageTestBase {
@@ -386,7 +386,7 @@ class ImpactTest : public PageTestBase {
     SelectorChecker::MatchResult result;
     checker.Match(context, result);
 
-    return result.flags;
+    return result.flags & ~kPrecomputedHoverMask;
   }
 };
 
