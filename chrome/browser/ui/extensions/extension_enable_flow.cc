@@ -131,7 +131,7 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
           extensions::ManagementAPI::GetFactoryInstance()
               ->Get(profile_)
               ->GetSupervisedUserExtensionsDelegate();
-  DCHECK(supervised_user_extensions_delegate);
+  CHECK(supervised_user_extensions_delegate, base::NotFatalUntil::M162);
   if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
       // Only ask for parent approval if the extension still requires approval.
       !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
@@ -167,7 +167,8 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
     // This is a no-op if the extension was previously terminated.
     registrar->EnableExtension(extension_id_);
 
-    DCHECK(registrar->IsExtensionEnabled(extension_id_));
+    CHECK(registrar->IsExtensionEnabled(extension_id_),
+          base::NotFatalUntil::M162);
     delegate_->ExtensionEnableFlowFinished();  // |delegate_| may delete us.
     return;
   }
@@ -289,7 +290,8 @@ void ExtensionEnableFlow::EnableExtension() {
   auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
   registrar->GrantPermissionsAndEnableExtension(*extension);
 
-  DCHECK(registrar->IsExtensionEnabled(extension_id_));
+  CHECK(registrar->IsExtensionEnabled(extension_id_),
+        base::NotFatalUntil::M162);
   delegate_->ExtensionEnableFlowFinished();  // |delegate_| may delete us.
 }
 

@@ -67,7 +67,7 @@ ExtensionUninstallDialogImpl::~ExtensionUninstallDialogImpl() {
   if (dialog_model_) {
     dialog_model_->host()->Close();
   }
-  DCHECK(!dialog_model_);
+  CHECK(!dialog_model_, base::NotFatalUntil::M162);
 }
 
 void ExtensionUninstallDialogImpl::Show() {
@@ -128,12 +128,12 @@ void ExtensionUninstallDialogImpl::Show() {
 }
 
 void ExtensionUninstallDialogImpl::Close() {
-  DCHECK(dialog_model_);
+  CHECK(dialog_model_, base::NotFatalUntil::M162);
   dialog_model_->host()->Close();
 }
 
 void ExtensionUninstallDialogImpl::DialogAccepted() {
-  DCHECK(dialog_model_);
+  CHECK(dialog_model_, base::NotFatalUntil::M162);
   const bool checkbox_is_checked =
       ShouldShowCheckbox() &&
       dialog_model_->GetCheckboxByUniqueId(kCheckboxId)->is_checked();

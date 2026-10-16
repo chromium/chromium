@@ -281,7 +281,7 @@ void PinnedToolbarActionsContainer::MovePinnedAction(
 
 void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
                                                        int delta) {
-  DCHECK(IsActionPinned(id));
+  CHECK(IsActionPinned(id), base::NotFatalUntil::M162);
   const auto& pinned_action_ids = model_->PinnedActionIds();
 
   auto iter = std::ranges::find(pinned_action_ids, id);
@@ -424,7 +424,7 @@ void PinnedToolbarActionsContainer::WriteDragDataForView(
     View* sender,
     const gfx::Point& press_pt,
     ui::OSExchangeData* data) {
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M162);
 
   const auto iter = std::ranges::find(pinned_buttons_, sender);
   CHECK(iter != pinned_buttons_.end());

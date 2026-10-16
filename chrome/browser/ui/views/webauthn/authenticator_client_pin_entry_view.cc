@@ -96,7 +96,7 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
       AddChildView(std::make_unique<PinTextfield>(this, pin_label));
 
   if (show_confirmation_text_field_) {
-    DCHECK(confirmation_label);
+    CHECK(confirmation_label, base::NotFatalUntil::M162);
     confirmation_text_field_ =
         AddChildView(std::make_unique<PinTextfield>(this, confirmation_label));
   } else {
@@ -113,7 +113,8 @@ void AuthenticatorClientPinEntryView::RequestFocus() {
 void AuthenticatorClientPinEntryView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  DCHECK(sender == pin_text_field_ || sender == confirmation_text_field_);
+  CHECK(sender == pin_text_field_ || sender == confirmation_text_field_,
+        base::NotFatalUntil::M162);
 
   if (sender == pin_text_field_) {
     delegate_->OnPincodeChanged(new_contents);

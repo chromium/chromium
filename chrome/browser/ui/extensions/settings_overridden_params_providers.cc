@@ -176,7 +176,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
       GetNumberOfExtensionsThatOverrideSearch(profile);
   // This method should only be called when there's an extension that overrides
   // the search engine.
-  DCHECK_GE(num_overriding_extensions, 1u);
+  CHECK_GE(num_overriding_extensions, 1u, base::NotFatalUntil::M162);
 
   // Another extension would take over.
   std::optional<const TemplateURL> secondary_extension_search;
@@ -413,7 +413,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
       content::BrowserURLHandler::GetInstance()->GetPossibleRewrites(ntp_url,
                                                                      profile);
   // We already know that the extension is the primary NTP controller.
-  DCHECK(!possible_rewrites.empty());
+  CHECK(!possible_rewrites.empty(), base::NotFatalUntil::M162);
   DCHECK_EQ(extension->url().host(), possible_rewrites[0].host())
       << "Unexpected NTP URL: " << possible_rewrites[0];
 
@@ -459,8 +459,8 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
         IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_TITLE_GENERIC);
     histogram_name = kGenericDialogHistogramName;
   }
-  DCHECK(!dialog_title.empty());
-  DCHECK(histogram_name);
+  CHECK(!dialog_title.empty(), base::NotFatalUntil::M162);
+  CHECK(histogram_name, base::NotFatalUntil::M162);
 
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_BODY_GENERIC,
@@ -561,12 +561,13 @@ void GetSearchOverriddenParamsThenRun(
   // Find the active search engine (which is provided by the extension).
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(template_url_service->IsExtensionControlledDefaultSearch());
+  CHECK(template_url_service->IsExtensionControlledDefaultSearch(),
+        base::NotFatalUntil::M162);
   const TemplateURL* default_search =
       template_url_service->GetDefaultSearchProvider();
-  DCHECK(default_search);
-  DCHECK_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION,
-            default_search->type());
+  CHECK(default_search, base::NotFatalUntil::M162);
+  CHECK_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, default_search->type(),
+           base::NotFatalUntil::M162);
 
   // NOTE: For most TemplateURLs, there's no guarantee that search_url is a
   // valid URL (it could contain placeholders, etc). However, for extension-
@@ -603,7 +604,7 @@ void GetSearchOverriddenParamsThenRun(
       histogram_name = kBackToGoogleHistogramName;
       break;
     case SecondarySearchInfo::Type::kNonGoogleInDefaultList:
-      DCHECK(!secondary_search.name.empty());
+      CHECK(!secondary_search.name.empty(), base::NotFatalUntil::M162);
       histogram_name = kBackToOtherHistogramName;
       break;
     case SecondarySearchInfo::Type::kOther:
@@ -708,7 +709,7 @@ void GetSearchOverriddenParamsThenRun(
 #endif
       break;
     case SecondarySearchInfo::Type::kNonGoogleInDefaultList:
-      DCHECK(!secondary_search.name.empty());
+      CHECK(!secondary_search.name.empty(), base::NotFatalUntil::M162);
       dialog_title = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_BACK_TO_OTHER,
           secondary_search.name);

@@ -93,7 +93,7 @@ void StatusTrayStateChangerWin::EnsureTrayIconVisible() {
 HRESULT StatusTrayStateChangerWin::Notify(ULONG event,
                                           NOTIFYITEM* notify_item) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(notify_item);
+  CHECK(notify_item, base::NotFatalUntil::M162);
   if (notify_item->hwnd != window_ || notify_item->id != icon_id_ ||
       std::wstring(notify_item->exe_name) != file_name_) {
     return S_OK;
@@ -139,7 +139,7 @@ std::unique_ptr<NOTIFYITEM> StatusTrayStateChangerWin::RegisterCallback() {
   // |notify_item_| is used to store the result of the callback from
   // Explorer.exe, which happens synchronously during
   // RegisterCallbackWin8 or RegisterCallbackLegacy.
-  DCHECK(!notify_item_);
+  CHECK(!notify_item_, base::NotFatalUntil::M162);
 
   // TODO(dewittj): Add UMA logging here to report if either of our strategies
   // has a tendency to fail on particular versions of Windows.

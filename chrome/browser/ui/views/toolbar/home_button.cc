@@ -78,7 +78,7 @@ HomePageUndoBubble::HomePageUndoBubble(views::BubbleAnchor anchor,
       prefs_(prefs),
       undo_url_(undo_url),
       undo_value_is_ntp_(undo_value_is_ntp) {
-  DCHECK(prefs_);
+  CHECK(prefs_, base::NotFatalUntil::M162);
   SetProperty(views::kElementIdentifierKey,
               HomePageUndoBubbleCoordinator::kHomePageUndoBubbleMainViewId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));

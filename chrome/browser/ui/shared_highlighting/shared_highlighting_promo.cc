@@ -51,7 +51,7 @@ void SharedHighlightingPromo::DidFinishLoad(
 
 void SharedHighlightingPromo::CheckExistingSelectors(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host->GetOutermostMainFrame());
+  CHECK(render_frame_host->GetOutermostMainFrame(), base::NotFatalUntil::M162);
   if (!remote_.is_bound()) {
     render_frame_host->GetRemoteInterfaces()->GetInterface(
         remote_.BindNewPipeAndPassReceiver());

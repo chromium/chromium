@@ -77,7 +77,7 @@ IconWithBadgeImageSource::IconWithBadgeImageSource(
     GetColorProviderCallback get_color_provider_callback)
     : gfx::CanvasImageSource(size),
       get_color_provider_callback_(std::move(get_color_provider_callback)) {
-  DCHECK(get_color_provider_callback_);
+  CHECK(get_color_provider_callback_, base::NotFatalUntil::M162);
 }
 
 IconWithBadgeImageSource::~IconWithBadgeImageSource() = default;
@@ -250,8 +250,9 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
 
   // Sanity checking.
   const gfx::Rect icon_rect = GetIconAreaRect();
-  DCHECK_LE(2 * blocked_action_badge_radius, icon_rect.width());
-  DCHECK_EQ(icon_rect.width(), icon_rect.height());
+  CHECK_LE(2 * blocked_action_badge_radius, icon_rect.width(),
+           base::NotFatalUntil::M162);
+  CHECK_EQ(icon_rect.width(), icon_rect.height(), base::NotFatalUntil::M162);
 
   cc::PaintFlags paint_flags;
   paint_flags.setStyle(cc::PaintFlags::kFill_Style);

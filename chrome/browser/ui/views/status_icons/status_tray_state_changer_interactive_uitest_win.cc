@@ -60,8 +60,8 @@ class StatusTrayStateChangerWinTest : public testing::Test {
 
     std::unique_ptr<NOTIFYITEM> notify_item = GetNotifyItem();
     EXPECT_TRUE(notify_item.get() != NULL);
-    DCHECK_EQ(notify_item->hwnd, icon_window());
-    DCHECK_EQ(notify_item->id, icon_id());
+    CHECK_EQ(notify_item->hwnd, icon_window(), base::NotFatalUntil::M162);
+    CHECK_EQ(notify_item->id, icon_id(), base::NotFatalUntil::M162);
 
     return notify_item;
   }

@@ -521,7 +521,7 @@ class AppMenuView : public views::View {
       bool use_accessible_name_as_tooltip_text,
       const gfx::VectorIcon& vector_icon = gfx::VectorIcon::EmptyIcon()) {
     // Should only be invoked during construction when |menu_| is valid.
-    DCHECK(menu_);
+    CHECK(menu_, base::NotFatalUntil::M162);
 
     std::unique_ptr<views::Button> menu_button;
     auto button = std::make_unique<InMenuImageButton>(std::move(callback));
@@ -539,7 +539,8 @@ class AppMenuView : public views::View {
 
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation work.
-    DCHECK(views::IsViewClass<views::Button>(menu_button.get()));
+    CHECK(views::IsViewClass<views::Button>(menu_button.get()),
+          base::NotFatalUntil::M162);
 
     return AddChildView(std::move(menu_button));
   }
@@ -798,12 +799,13 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
 
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation to work.
-    DCHECK(views::IsViewClass<views::Button>(fullscreen_button.get()));
+    CHECK(views::IsViewClass<views::Button>(fullscreen_button.get()),
+          base::NotFatalUntil::M162);
     fullscreen_button_ = AddChildView(std::move(fullscreen_button));
 
     // The max width for `zoom_label_` should not be valid until the calls into
     // UpdateZoomControls().
-    DCHECK(!zoom_label_max_width_.has_value());
+    CHECK(!zoom_label_max_width_.has_value(), base::NotFatalUntil::M162);
     UpdateZoomControls(/*on_construction=*/true);
     UpdateFullScreenButton();
   }
@@ -918,7 +920,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
       if (selected_tab) {
         const auto* zoom_controller =
             zoom::ZoomController::FromWebContents(selected_tab);
-        DCHECK(zoom_controller);
+        CHECK(zoom_controller, base::NotFatalUntil::M162);
         // Enumerate all zoom factors that can be used in PageZoom::Zoom.
         std::vector<double> zoom_factors = zoom::PageZoom::PresetZoomFactors(
             zoom_controller->GetZoomPercent());
@@ -987,7 +989,7 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
     size_t index;
     model_->GetModelAndIndexForCommandId(command_id, &model, &index);
     views::MenuItemView* item = menu_item_->GetMenuItemByID(command_id);
-    DCHECK(item);
+    CHECK(item, base::NotFatalUntil::M162);
     item->SetIcon(model->GetIconAt(index));
   }
 
@@ -1027,17 +1029,18 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   // Recursive helper function for OnMenuStructureChanged() which builds the
   // |menu| and all descendant submenus.
   void BuildMenu(MenuItemView* menu, ui::MenuModel* model) {
-    DCHECK(menu);
-    DCHECK(model);
+    CHECK(menu, base::NotFatalUntil::M162);
+    CHECK(model, base::NotFatalUntil::M162);
     const size_t item_count = model->GetItemCount();
     for (size_t i = 0; i < item_count; ++i) {
       MenuItemView* const item =
           app_menu_->AddMenuItem(menu, i, model, i, model->GetTypeAt(i));
       if (model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU ||
           model->GetTypeAt(i) == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU) {
-        DCHECK(item);
-        DCHECK(item->GetType() == MenuItemView::Type::kSubMenu ||
-               item->GetType() == MenuItemView::Type::kActionableSubMenu);
+        CHECK(item, base::NotFatalUntil::M162);
+        CHECK(item->GetType() == MenuItemView::Type::kSubMenu ||
+                  item->GetType() == MenuItemView::Type::kActionableSubMenu,
+              base::NotFatalUntil::M162);
         BuildMenu(item, model->GetSubmenuModelAt(i));
       }
     }
@@ -1070,7 +1073,7 @@ AppMenu::AppMenu(BrowserWindowInterface* browser,
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(browser->GetProfile()));
 
-  DCHECK(!root_);
+  CHECK(!root_, base::NotFatalUntil::M162);
   auto root = std::make_unique<MenuItemView>(/*delegate=*/this);
   root_ = root.get();
   PopulateMenu(root_, model);
@@ -1236,7 +1239,7 @@ bool AppMenu::CanDrag(MenuItemView* menu) {
 }
 
 void AppMenu::WriteDragData(MenuItemView* sender, ui::OSExchangeData* data) {
-  DCHECK(IsBookmarkCommand(sender->GetCommand()));
+  CHECK(IsBookmarkCommand(sender->GetCommand()), base::NotFatalUntil::M162);
   return bookmark_menu_delegate_->WriteDragData(sender, data);
 }
 
@@ -1501,7 +1504,7 @@ bool AppMenu::ShouldTryPositioningBesideAnchor() const {
 }
 
 void AppMenu::BookmarkMergedSurfaceServiceChanged() {
-  DCHECK(bookmark_menu_delegate_.get());
+  CHECK(bookmark_menu_delegate_.get(), base::NotFatalUntil::M162);
   if (!bookmark_menu_delegate_->is_mutating_model()) {
     root_->Cancel();
   }
@@ -1561,7 +1564,7 @@ void AppMenu::OnGlobalErrorsChanged() {
 views::View* AppMenu::GetZoomAppMenuViewForTest(views::MenuItemView* root) {
   std::optional<int> zoom_view_command_id = AppMenuModel::kZoomMenuPlaceholder;
   auto* menu_item = root->GetMenuItemByID(zoom_view_command_id.value());
-  DCHECK(menu_item);
+  CHECK(menu_item, base::NotFatalUntil::M162);
 
   for (views::View* child : menu_item->children()) {
     if (views::IsViewClass<ZoomView>(child)) {
@@ -1652,9 +1655,12 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       }
       case AppMenuModel::kEditMenuPlaceholder: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
-        DCHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0));
-        DCHECK_EQ(IDC_COPY, submodel->GetCommandIdAt(1));
-        DCHECK_EQ(IDC_PASTE, submodel->GetCommandIdAt(2));
+        CHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0),
+                 base::NotFatalUntil::M162);
+        CHECK_EQ(IDC_COPY, submodel->GetCommandIdAt(1),
+                 base::NotFatalUntil::M162);
+        CHECK_EQ(IDC_PASTE, submodel->GetCommandIdAt(2),
+                 base::NotFatalUntil::M162);
         item->SetTitle(l10n_util::GetStringUTF16(IDS_EDIT2));
         item->AddChildView(
             std::make_unique<CutCopyPasteView>(this, submodel, 0, 1, 2));
@@ -1664,9 +1670,12 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
 
       case AppMenuModel::kZoomMenuPlaceholder: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
-        DCHECK_EQ(IDC_ZOOM_MINUS, submodel->GetCommandIdAt(0));
-        DCHECK_EQ(IDC_ZOOM_PLUS, submodel->GetCommandIdAt(1));
-        DCHECK_EQ(IDC_FULLSCREEN, submodel->GetCommandIdAt(2));
+        CHECK_EQ(IDC_ZOOM_MINUS, submodel->GetCommandIdAt(0),
+                 base::NotFatalUntil::M162);
+        CHECK_EQ(IDC_ZOOM_PLUS, submodel->GetCommandIdAt(1),
+                 base::NotFatalUntil::M162);
+        CHECK_EQ(IDC_FULLSCREEN, submodel->GetCommandIdAt(2),
+                 base::NotFatalUntil::M162);
         item->SetTitle(l10n_util::GetStringUTF16(IDS_ZOOM_MENU2));
         item->AddChildView(std::make_unique<ZoomView>(this, submodel, 0, 1, 2));
         item->set_children_use_full_width(true);
@@ -1674,31 +1683,32 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       }
 
       case AppMenuModel::kBookmarksMenuPlaceholder:
-        DCHECK(!bookmark_menu_);
+        CHECK(!bookmark_menu_, base::NotFatalUntil::M162);
         bookmark_menu_ = item;
         break;
 
       case AppMenuModel::kSavedTabGroupsMenuPlaceholder:
-        DCHECK(!saved_tab_groups_menu_);
+        CHECK(!saved_tab_groups_menu_, base::NotFatalUntil::M162);
         saved_tab_groups_menu_ = item;
         break;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       case IDC_FEEDBACK:
-        DCHECK(!feedback_menu_item_);
+        CHECK(!feedback_menu_item_, base::NotFatalUntil::M162);
         feedback_menu_item_ = item;
         break;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
       case IDC_TAKE_SCREENSHOT:
-        DCHECK(!screenshot_menu_item_);
+        CHECK(!screenshot_menu_item_, base::NotFatalUntil::M162);
         screenshot_menu_item_ = item;
         break;
 #endif
 
       case AppMenuModel::kRecentTabsMenuPlaceholder:
-        DCHECK(!recent_tabs_menu_model_delegate_.get());
+        CHECK(!recent_tabs_menu_model_delegate_.get(),
+              base::NotFatalUntil::M162);
         recent_tabs_menu_model_delegate_ =
             std::make_unique<RecentTabsMenuModelDelegate>(
                 this, model->GetSubmenuModelAt(i), item);

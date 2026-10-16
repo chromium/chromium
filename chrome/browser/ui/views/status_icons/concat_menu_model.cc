@@ -104,6 +104,6 @@ ui::MenuModel* ConcatMenuModel::GetMenuAndIndex(size_t* index) const {
   }
 
   *index -= m1_count;
-  DCHECK_LT(*index, m2_->GetItemCount());
+  CHECK_LT(*index, m2_->GetItemCount(), base::NotFatalUntil::M162);
   return m2_;
 }

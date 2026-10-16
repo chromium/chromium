@@ -114,7 +114,7 @@ SerialChooserController::SerialChooserController(
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   chooser_context_ =
       SerialChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
-  DCHECK(chooser_context_);
+  CHECK(chooser_context_, base::NotFatalUntil::M162);
 
   // Post `GetDevices` to be run later after the view is set in the current
   // sequence, so that it will have a valid view when running `GetDevices`.
@@ -228,7 +228,7 @@ bool SerialChooserController::DisplayServiceClassId(
 }
 
 std::u16string SerialChooserController::GetOption(size_t index) const {
-  DCHECK_LT(index, ports_.size());
+  CHECK_LT(index, ports_.size(), base::NotFatalUntil::M162);
   const device::mojom::SerialPortInfo& port = *ports_[index];
 
   // Get the last component of the device path i.e. COM1 or ttyS0 to show the
@@ -259,7 +259,7 @@ std::u16string SerialChooserController::GetOption(size_t index) const {
 }
 
 bool SerialChooserController::IsPaired(size_t index) const {
-  DCHECK_LE(index, ports_.size());
+  CHECK_LE(index, ports_.size(), base::NotFatalUntil::M162);
 
   if (!chooser_context_) {
     return false;
@@ -273,9 +273,9 @@ void SerialChooserController::RefreshOptions() {
 }
 
 void SerialChooserController::Select(const std::vector<size_t>& indices) {
-  DCHECK_EQ(1u, indices.size());
+  CHECK_EQ(1u, indices.size(), base::NotFatalUntil::M162);
   size_t index = indices[0];
-  DCHECK_LT(index, ports_.size());
+  CHECK_LT(index, ports_.size(), base::NotFatalUntil::M162);
 
   if (!chooser_context_) {
     RunCallback(/*port=*/nullptr);

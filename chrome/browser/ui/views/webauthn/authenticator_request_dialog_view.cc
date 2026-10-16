@@ -90,7 +90,7 @@ void AuthenticatorRequestDialogView::Show() {
 
 void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
-  DCHECK(new_sheet);
+  CHECK(new_sheet, base::NotFatalUntil::M162);
 
   const bool is_sheet_transition = (sheet_ != nullptr);
   if (sheet_) {
@@ -116,7 +116,7 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
 }
 
 void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
-  DCHECK(sheet_);
+  CHECK(sheet_, base::NotFatalUntil::M162);
 
   sheet_->ReInitChildViews();
 

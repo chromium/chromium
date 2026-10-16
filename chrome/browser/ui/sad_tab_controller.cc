@@ -29,7 +29,7 @@ ContentsWebView* FindContentsWebView(content::WebContents* web_contents) {
     return nullptr;
   }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  DCHECK(browser_view);
+  CHECK(browser_view, base::NotFatalUntil::M162);
 
   for (auto* contents_view : browser_view->GetAllVisibleContentsWebViews()) {
     if (contents_view->web_contents() == web_contents) {

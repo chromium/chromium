@@ -204,7 +204,7 @@ void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
     safe_browsing::WarningAction action) {
   auto* chrome_password_protection_service =
       GetChromePasswordProtectionService();
-  DCHECK(chrome_password_protection_service);
+  CHECK(chrome_password_protection_service, base::NotFatalUntil::M162);
 
   chrome_password_protection_service->OnUserAction(
       web_contents_->GetWeakPtr(),
@@ -398,8 +398,8 @@ void ChromePageInfoDelegate::OpenCookiesDialog() {
 void ChromePageInfoDelegate::OpenCertificateDialog(
     net::X509Certificate* certificate) {
   gfx::NativeWindow top_window = web_contents_->GetTopLevelNativeWindow();
-  DCHECK(certificate);
-  DCHECK(top_window);
+  CHECK(certificate, base::NotFatalUntil::M162);
+  CHECK(top_window, base::NotFatalUntil::M162);
 
   FocusWebContents();
   ShowCertificateViewer(web_contents_, top_window, certificate);

@@ -519,7 +519,7 @@ void ShowSiteSettings(BrowserWindowInterface* browser, const GURL& url) {
 }
 
 void ShowSiteSettings(Profile* profile, const GURL& url) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   ShowSiteSettingsImpl(nullptr, profile, url);
 }
 
@@ -529,7 +529,7 @@ void ShowSiteSettingsFileSystem(BrowserWindowInterface* browser,
 }
 
 void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   ShowSiteSettingsFileSystemImpl(nullptr, profile, url);
 }
 

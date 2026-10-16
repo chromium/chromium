@@ -143,7 +143,8 @@ void MacAuthenticationView::VisibilityChanged(views::View* from,
 }
 
 void MacAuthenticationView::OnAuthenticationComplete(bool success) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   // It takes a while for the Touch ID animation to finish after success is
   // reported. Avoid jank by waiting for the animation to finish before
   // notifying the client.

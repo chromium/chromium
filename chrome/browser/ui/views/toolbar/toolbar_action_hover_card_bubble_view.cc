@@ -51,8 +51,9 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
       controller_(controller) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
+  CHECK(base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl),
+        base::NotFatalUntil::M162);
 
   // Remove dialog's default buttons.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -178,8 +179,9 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     action_title_label_->SetVisible(true);
   }
 
-  DCHECK(ui_state.site_access_title.has_value() ==
-         ui_state.site_access_description.has_value());
+  CHECK(ui_state.site_access_title.has_value() ==
+            ui_state.site_access_description.has_value(),
+        base::NotFatalUntil::M162);
   bool show_site_access_labels = ui_state.site_access_title.has_value();
 
   bool show_policy_label = ui_state.policy_text.has_value();

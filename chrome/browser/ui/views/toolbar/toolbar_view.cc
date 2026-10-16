@@ -1238,7 +1238,7 @@ void ToolbarView::SetToolbarVisibility(bool visible) {
 }
 
 void ToolbarView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
-  DCHECK_EQ(display_mode_, DisplayMode::kCustomTab);
+  CHECK_EQ(display_mode_, DisplayMode::kCustomTab, base::NotFatalUntil::M162);
 
   if (!animate) {
     size_animation_.Reset(visible ? 1.0 : 0.0);
@@ -1366,7 +1366,7 @@ ToolbarView::GetContentSettingBubbleModelDelegate() {
 // ToolbarView, CommandObserver implementation:
 
 void ToolbarView::EnabledStateChangedForCommand(int id, bool enabled) {
-  DCHECK(display_mode_ == DisplayMode::kNormal);
+  CHECK(display_mode_ == DisplayMode::kNormal, base::NotFatalUntil::M162);
 
   if ((id == IDC_BACK || id == IDC_FORWARD) &&
       features::IsWebUIBackForwardButtonEnabled()) {
@@ -1699,7 +1699,7 @@ void ToolbarView::InitLayout() {
 }
 
 void ToolbarView::LayoutCommon() {
-  DCHECK(display_mode_ == DisplayMode::kNormal);
+  CHECK(display_mode_ == DisplayMode::kNormal, base::NotFatalUntil::M162);
 
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
@@ -2123,7 +2123,7 @@ void ToolbarView::OnChromeLabsPrefChanged() {
 }
 
 void ToolbarView::LoadImages() {
-  DCHECK_EQ(display_mode_, DisplayMode::kNormal);
+  CHECK_EQ(display_mode_, DisplayMode::kNormal, base::NotFatalUntil::M162);
 
   if (extensions_container_) {
     extensions_container_->UpdateAllIcons();

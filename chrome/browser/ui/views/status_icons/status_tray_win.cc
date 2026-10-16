@@ -91,7 +91,7 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
   // Called on UI thread.
   void ChangeDone() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_GT(pending_requests_, 0);
+    CHECK_GT(pending_requests_, 0, base::NotFatalUntil::M162);
 
     if (--pending_requests_ == 0) {
       worker_thread_.Stop();

@@ -169,7 +169,7 @@ void WebUIBatterySaverControl::OnButtonShownWithPendingShowBubble(
     ui::TrackedElement* element) {
   // This call should have been cancelled if `pending_show_bubble_` became false
   // before it was invoked.
-  DCHECK(pending_show_bubble_);
+  CHECK(pending_show_bubble_, base::NotFatalUntil::M162);
   // ShowBubble() will clear `pending_show_bubble_`, and is guaranteed to find
   // `element` when it looks for it, so we don't get into an infinite loop
   // trying to show the bubble and not finding the TrackedElement.

@@ -172,7 +172,7 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
 
 void ExtensionInstallUIDesktop::OnInstallFailure(
     const extensions::CrxInstallError& error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (IsUiDisabled() || skip_post_install_ui()) {
     return;
   }

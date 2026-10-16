@@ -119,7 +119,8 @@ bool ControlledHomeDialogController::ShouldShow() {
 }
 
 void ControlledHomeDialogController::PendingShow() {
-  DCHECK_EQ(0u, GetPendingProfileSet().count(profile_));
+  CHECK_EQ(0u, GetPendingProfileSet().count(profile_),
+           base::NotFatalUntil::M162);
   // Mark the profile as having a pending bubble. This way, we won't queue up
   // another bubble if one is waiting for animation.
   GetPendingProfileSet().insert(profile_);
@@ -179,8 +180,9 @@ std::string ControlledHomeDialogController::GetAnchorActionId() {
 }
 
 void ControlledHomeDialogController::OnBubbleShown() {
-  DCHECK_EQ(0u, GetShownProfileSet().count(profile_));
-  DCHECK_EQ(1u, GetPendingProfileSet().count(profile_));
+  CHECK_EQ(0u, GetShownProfileSet().count(profile_), base::NotFatalUntil::M162);
+  CHECK_EQ(1u, GetPendingProfileSet().count(profile_),
+           base::NotFatalUntil::M162);
 
   GetShownProfileSet().insert(profile_);
   GetPendingProfileSet().erase(profile_);
@@ -191,8 +193,9 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
   // "OnWidgetDestroying" notifications (this can at least happen when we close
   // a window with a notification open). Handle this gracefully.
   if (close_action_) {
-    DCHECK(close_action_ == CLOSE_DISMISS_USER_ACTION ||
-           close_action_ == CLOSE_DISMISS_DEACTIVATION);
+    CHECK(close_action_ == CLOSE_DISMISS_USER_ACTION ||
+              close_action_ == CLOSE_DISMISS_DEACTIVATION,
+          base::NotFatalUntil::M162);
     return;
   }
 

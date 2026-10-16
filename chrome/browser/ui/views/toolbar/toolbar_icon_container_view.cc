@@ -143,7 +143,7 @@ ToolbarIconContainerView::~ToolbarIconContainerView() {
 }
 
 void ToolbarIconContainerView::AddMainItem(views::View* item) {
-  DCHECK(!main_item_);
+  CHECK(!main_item_, base::NotFatalUntil::M162);
   main_item_ = item;
   auto* const main_button = views::Button::AsButton(item);
   if (main_button) {

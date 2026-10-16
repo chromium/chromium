@@ -210,8 +210,9 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   // so that the focus behavior of the `title_label` is set correctly.
   std::tie(step_specific_content, should_focus_step_specific_content_) =
       BuildStepSpecificContent();
-  DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
-         step_specific_content);
+  CHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
+            step_specific_content,
+        base::NotFatalUntil::M162);
 
   const std::u16string title = model()->GetStepTitle();
   if (!title.empty()) {

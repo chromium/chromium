@@ -71,7 +71,7 @@ class SafeWidgetDestroyedWaiter : public views::WidgetObserver {
     if (!observation_.IsObserving()) {
       return;
     }
-    DCHECK(quit_closure_.is_null());
+    CHECK(quit_closure_.is_null(), base::NotFatalUntil::M162);
     quit_closure_ = run_loop_.QuitClosure();
     run_loop_.Run();
   }

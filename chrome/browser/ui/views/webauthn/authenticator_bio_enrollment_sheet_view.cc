@@ -74,7 +74,7 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
 
 bool AuthenticatorBioEnrollmentSheetView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  DCHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code());
+  CHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code(), base::NotFatalUntil::M162);
   model()->OnCancel();
   return true;
 }

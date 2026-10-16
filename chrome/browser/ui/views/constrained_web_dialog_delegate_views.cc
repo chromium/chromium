@@ -281,7 +281,7 @@ ConstrainedWebDialogDelegateViews::ConstrainedWebDialogDelegateViews(
               browser_context,
               initiator_web_contents,
               view)) {
-  DCHECK(web_dialog_delegate_);
+  CHECK(web_dialog_delegate_, base::NotFatalUntil::M162);
   web_contents_holder_ =
       WebContents::Create(WebContents::CreateParams(browser_context));
   web_contents_ = web_contents_holder_->GetWeakPtr();
@@ -475,7 +475,7 @@ bool ConstrainedDialogWebView::ShouldShowCloseButton() const {
 bool ConstrainedDialogWebView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   // Pressing ESC closes the dialog.
-  DCHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code());
+  CHECK_EQ(ui::VKEY_ESCAPE, accelerator.key_code(), base::NotFatalUntil::M162);
   GetWebDialogDelegate()->OnDialogClosingFromKeyEvent();
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   return true;
@@ -541,8 +541,8 @@ ConstrainedWebDialogDelegate* ShowConstrainedWebDialogWithAutoResize(
     content::WebContents* web_contents,
     const gfx::Size& min_size,
     const gfx::Size& max_size) {
-  DCHECK(!min_size.IsEmpty());
-  DCHECK(!max_size.IsEmpty());
+  CHECK(!min_size.IsEmpty(), base::NotFatalUntil::M162);
+  CHECK(!max_size.IsEmpty(), base::NotFatalUntil::M162);
   ConstrainedDialogWebView* dialog = new ConstrainedDialogWebView(
       browser_context, std::move(delegate), web_contents, min_size, max_size);
 
@@ -550,7 +550,7 @@ ConstrainedWebDialogDelegate* ShowConstrainedWebDialogWithAutoResize(
   // window.
   content::WebContents* top_level_web_contents =
       constrained_window::GetTopLevelWebContents(web_contents);
-  DCHECK(top_level_web_contents);
+  CHECK(top_level_web_contents, base::NotFatalUntil::M162);
   constrained_window::CreateWebModalDialogViews(dialog, top_level_web_contents);
   return dialog;
 }

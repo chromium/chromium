@@ -22,7 +22,7 @@ namespace {
 views::BubbleAnchor GetDialogAnchor(
     ExtensionsContainerViews* container,
     const std::vector<extensions::ExtensionId>& extension_ids) {
-  DCHECK(container);
+  CHECK(container, base::NotFatalUntil::M162);
 
   if (extension_ids.size() == 1) {
     return container->GetReferenceButtonForPopup(extension_ids[0]);
@@ -81,7 +81,7 @@ void ShowDialog(content::WebContents* web_contents,
 void ShowDialog(ExtensionsContainerViews* container,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
-  DCHECK(container);
+  CHECK(container, base::NotFatalUntil::M162);
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), GetDialogAnchor(container, extension_ids),

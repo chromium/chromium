@@ -208,7 +208,7 @@ void PinnedActionToolbarButtonMenuModel::ActivatedAt(size_t index) {
 
 void PinnedActionToolbarButtonMenuModel::ActivatedAt(size_t index,
                                                      int event_flags) {
-  DCHECK(GetTypeAt(index) != TYPE_SEPARATOR);
+  CHECK(GetTypeAt(index) != TYPE_SEPARATOR, base::NotFatalUntil::M162);
   auto action_id = items_[index].action_id;
   if (action_id == kActionPinActionToToolbar ||
       action_id == kActionUnpinActionFromToolbar) {

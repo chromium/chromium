@@ -65,10 +65,11 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
       delegate_(CreateDelegate(this)) {
   // Only one of `browser` or `tab_interface` should be defined when
   // constructing this class.
-  DCHECK(browser != nullptr ^ tab_interface != nullptr);
+  CHECK(browser != nullptr ^ tab_interface != nullptr,
+        base::NotFatalUntil::M162);
 
   // The registry should always be available for this class.
-  DCHECK(registry_);
+  CHECK(registry_, base::NotFatalUntil::M162);
 
   SidePanelService* service = SidePanelService::Get(profile);
   // `service` can be null for some tests.

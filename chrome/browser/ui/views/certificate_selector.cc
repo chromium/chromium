@@ -123,7 +123,7 @@ size_t CertificateSelector::CertificateTableModel::RowCount() const {
 std::u16string CertificateSelector::CertificateTableModel::GetText(
     size_t index,
     int column_id) const {
-  DCHECK_LT(index, rows_.size());
+  CHECK_LT(index, rows_.size(), base::NotFatalUntil::M162);
 
   const Row& row = rows_[index];
   switch (column_id) {
@@ -303,7 +303,7 @@ net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
   if (!selected.has_value()) {
     return nullptr;
   }
-  DCHECK_LT(selected.value(), identities_.size());
+  CHECK_LT(selected.value(), identities_.size(), base::NotFatalUntil::M162);
   return identities_[selected.value()].get();
 }
 
@@ -313,7 +313,7 @@ bool CertificateSelector::Accept() {
     return false;
   }
 
-  DCHECK_LT(selected.value(), identities_.size());
+  CHECK_LT(selected.value(), identities_.size(), base::NotFatalUntil::M162);
   AcceptCertificate(std::move(identities_[selected.value()]));
   return true;
 }
@@ -328,7 +328,7 @@ bool CertificateSelector::IsDialogButtonEnabled(
 }
 
 views::View* CertificateSelector::GetInitiallyFocusedView() {
-  DCHECK(table_);
+  CHECK(table_, base::NotFatalUntil::M162);
   return table_;
 }
 

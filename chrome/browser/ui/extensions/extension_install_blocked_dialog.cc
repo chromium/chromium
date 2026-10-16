@@ -27,7 +27,7 @@ void ShowExtensionInstallBlockedDialog(
     const gfx::ImageSkia& icon,
     content::WebContents* web_contents,
     base::OnceClosure done_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder

@@ -659,7 +659,7 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
           delegate_->GetWebContents());
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
 
-  DCHECK(tab_strip_model);
+  CHECK(tab_strip_model, base::NotFatalUntil::M162);
   // Add a tab for the URL at the end of the tab strip, in the foreground.
   tab_strip_model->delegate()->AddTabAt(url, -1, true);
 
@@ -739,8 +739,8 @@ void FedCmAccountSelectionView::OnAccountsDisplayed() {
 bool FedCmAccountSelectionView::OnAccountSelected(
     const IdentityRequestAccountPtr& account,
     const ui::Event& event) {
-  DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
-  DCHECK(state_ != State::AUTO_REAUTHN);
+  CHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH, base::NotFatalUntil::M162);
+  CHECK(state_ != State::AUTO_REAUTHN, base::NotFatalUntil::M162);
 
   if (input_protector_->IsPossiblyUnintendedInteraction(
           event, /*allow_key_events=*/false) ||

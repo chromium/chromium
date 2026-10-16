@@ -11,7 +11,7 @@
 
 std::unique_ptr<PageInfoDelegate> ChromePageInfoClient::CreatePageInfoDelegate(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   return std::make_unique<ChromePageInfoDelegate>(web_contents);
 }
 

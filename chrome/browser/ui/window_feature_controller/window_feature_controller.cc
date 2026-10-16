@@ -45,7 +45,8 @@ bool WindowFeatureController::SupportsWindowFeature(
   bool supports =
       SupportsWindowFeatureImpl(feature, /*check_can_support=*/false);
   // Supported features imply CanSupportWindowFeature.
-  DCHECK(!supports || CanSupportWindowFeature(feature));
+  CHECK(!supports || CanSupportWindowFeature(feature),
+        base::NotFatalUntil::M162);
   return supports;
 }
 
@@ -121,7 +122,7 @@ bool WindowFeatureController::AppPopupBrowserSupportsWindowFeature(
 bool WindowFeatureController::AppBrowserSupportsWindowFeature(
     WindowFeature feature,
     bool check_can_support) const {
-  DCHECK(app_controller_);
+  CHECK(app_controller_, base::NotFatalUntil::M162);
   switch (feature) {
     // Web apps should always support the toolbar, so the title/origin of the
     // current page can be shown when browsing a url that is not inside the app.

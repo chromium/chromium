@@ -461,7 +461,7 @@ views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     ui::TrackedElement* element =
         BrowserElements::From(delegate_->GetBrowser())
             ->GetElement(webui_toolbar::ActionIdToElementIdentifier(action_id));
-    DCHECK(element);
+    CHECK(element, base::NotFatalUntil::M162);
     return views::BubbleAnchor(element);
   }
   return views::BubbleAnchor();
@@ -577,7 +577,7 @@ void WebUIPinnedToolbarActions::MovePinnedAction(actions::ActionId action_id,
 
 void WebUIPinnedToolbarActions::MovePinnedActionBy(actions::ActionId action_id,
                                                    int delta) {
-  DCHECK(IsActionPinned(action_id));
+  CHECK(IsActionPinned(action_id), base::NotFatalUntil::M162);
   const auto& pinned_actions = GetVisiblePinnedActionIds();
   auto iter = std::ranges::find(pinned_actions, action_id);
   if (iter == pinned_actions.end()) {

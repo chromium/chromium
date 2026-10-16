@@ -48,8 +48,8 @@ AuthenticatorRequestDialogViewControllerViews::
         AuthenticatorRequestDialogModel* model)
     : model_(model),
       view_(new AuthenticatorRequestDialogView(web_contents, model_)) {
-  DCHECK(model_);
-  DCHECK(!model_->should_dialog_be_closed());
+  CHECK(model_, base::NotFatalUntil::M162);
+  CHECK(!model_->should_dialog_be_closed(), base::NotFatalUntil::M162);
 
   widget_ = constrained_window::ShowWebModalDialogViewsOwned(
       view_, web_contents, views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -63,7 +63,7 @@ AuthenticatorRequestDialogViewControllerViews::
     ~AuthenticatorRequestDialogViewControllerViews() = default;
 
 void AuthenticatorRequestDialogViewControllerViews::OnStepTransition() {
-  DCHECK(!model_->should_dialog_be_closed());
+  CHECK(!model_->should_dialog_be_closed(), base::NotFatalUntil::M162);
   view_->ReplaceCurrentSheetWith(CreateSheetViewForCurrentStepOf(model_));
   view_->Show();
 }

@@ -88,7 +88,8 @@ class ControlledHomeDialogDelegate
     // It is possible that the extension registry is destroyed before the
     // dialog. In such case, the controller should no longer observe the
     // registry.
-    DCHECK(extension_registry_observation_.IsObservingSource(registry));
+    CHECK(extension_registry_observation_.IsObservingSource(registry),
+          base::NotFatalUntil::M162);
     extension_registry_observation_.Reset();
   }
 

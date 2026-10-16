@@ -117,7 +117,8 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
   // ChromeLabsButton should not appear in the toolbar if there are no
   // experiments to show. Therefore ChromeLabsBubble should not be created.
-  DCHECK_GE(chrome_labs_bubble_view->GetNumLabItems(), 1u);
+  CHECK_GE(chrome_labs_bubble_view->GetNumLabItems(), 1u,
+           base::NotFatalUntil::M162);
 
   views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(chrome_labs_bubble_view));

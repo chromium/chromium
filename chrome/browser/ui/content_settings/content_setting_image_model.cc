@@ -744,14 +744,14 @@ void ContentSettingImageModel::Update(content::WebContents* contents) {
 
 bool ContentSettingImageModel::ShouldRunAnimation(
     content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
   return !ContentSettingImageModelStates::Get(contents)->AnimationHasRun(
       image_type());
 }
 
 void ContentSettingImageModel::SetAnimationHasRun(
     content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
   ContentSettingImageModelStates::Get(contents)->SetAnimationHasRun(
       image_type(), true);
 }
@@ -859,7 +859,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 
   SetIcon(type, is_blocked);
   set_explanatory_string_id(explanation_id);
-  DCHECK(tooltip_id);
+  CHECK(tooltip_id, base::NotFatalUntil::M162);
   set_tooltip(l10n_util::GetStringUTF16(tooltip_id));
   return true;
 }
@@ -1174,7 +1174,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  DCHECK(IsMicAccessed() || IsCamAccessed());
+  CHECK(IsMicAccessed() || IsCamAccessed(), base::NotFatalUntil::M162);
 
   int id = IDS_CAMERA_BLOCKED;
   if (IsMicBlockedOnSiteLevel() || IsCameraBlockedOnSiteLevel()) {
@@ -1575,7 +1575,7 @@ std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingImageModel::CreateBubbleModel(
     ContentSettingBubbleModel::Delegate* delegate,
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   return CreateBubbleModelImpl(delegate, web_contents->GetPrimaryPage());
 }
 

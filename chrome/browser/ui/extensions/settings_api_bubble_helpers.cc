@@ -79,7 +79,7 @@ base::AutoReset<bool> SetAcknowledgeExistingNtpExtensionsForTesting(
 }
 
 void AcknowledgePreExistingNtpExtensions(Profile* profile) {
-  DCHECK(g_acknowledge_existing_ntp_extensions);
+  CHECK(g_acknowledge_existing_ntp_extensions, base::NotFatalUntil::M162);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   PrefService* profile_prefs = profile->GetPrefs();

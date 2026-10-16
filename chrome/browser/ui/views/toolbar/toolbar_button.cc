@@ -671,7 +671,7 @@ SkColor FadeWithAnimation(SkColor color, const gfx::Animation& animation) {
 ToolbarButton::HighlightColorAnimation::HighlightColorAnimation(
     ToolbarButton* parent)
     : parent_(parent), highlight_color_animation_(this) {
-  DCHECK(parent_);
+  CHECK(parent_, base::NotFatalUntil::M162);
   highlight_color_animation_.SetTweenType(gfx::Tween::EASE_IN_OUT);
   highlight_color_animation_.SetSlideDuration(kHighlightAnimationDuration);
 }

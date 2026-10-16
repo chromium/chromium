@@ -688,9 +688,9 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
     allowed = false;
   }
 
-  DCHECK(!allowed ||
-         PageSpecificContentSettings::GetForPage(GetPage())->IsContentAllowed(
-             content_type()));
+  CHECK(!allowed || PageSpecificContentSettings::GetForPage(GetPage())
+                        ->IsContentAllowed(content_type()),
+        base::NotFatalUntil::M162);
 
   RadioGroup radio_group;
   radio_group.url = url;
@@ -1120,10 +1120,10 @@ void ContentSettingMediaStreamBubbleModel::OnManageButtonClicked() {
 void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
   if (ShouldShowSystemMediaPermissions()) {
 #if BUILDFLAG(IS_MAC)
-    DCHECK(CameraAccessed() || MicrophoneAccessed());
+    CHECK(CameraAccessed() || MicrophoneAccessed(), base::NotFatalUntil::M162);
 
     base::RecordAction(UserMetricsAction("Media.OpenPreferencesClicked"));
-    DCHECK(ShouldShowSystemMediaPermissions());
+    CHECK(ShouldShowSystemMediaPermissions(), base::NotFatalUntil::M162);
 
     if (CameraAccessed()) {
       base::mac::OpenSystemSettingsPane(
@@ -1325,7 +1325,7 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
 #if BUILDFLAG(IS_MAC)
 void ContentSettingMediaStreamBubbleModel::
     InitializeSystemMediaPermissionBubble() {
-  DCHECK(CameraAccessed() || MicrophoneAccessed());
+  CHECK(CameraAccessed() || MicrophoneAccessed(), base::NotFatalUntil::M162);
   base::RecordAction(
       base::UserMetricsAction("Media.ShowSystemMediaPermissionBubble"));
   int title_id = 0;
@@ -1570,7 +1570,7 @@ void ContentSettingSubresourceFilterBubbleModel::OnManageCheckboxChecked(
 }
 
 void ContentSettingSubresourceFilterBubbleModel::OnLearnMoreClicked() {
-  DCHECK(delegate());
+  CHECK(delegate(), base::NotFatalUntil::M162);
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
       subresource_filter::SubresourceFilterAction::kClickedLearnMore);
   delegate()->ShowLearnMorePage(ContentSettingsType::ADS);
@@ -1649,7 +1649,7 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
   const std::u16string& display_url =
       GetUrlForDisplay(GetProfile(), download_origin);
 
-  DCHECK(download_request_limiter);
+  CHECK(download_request_limiter, base::NotFatalUntil::M162);
 
   RadioGroup radio_group;
   radio_group.url = download_origin;
@@ -1676,7 +1676,7 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
 void ContentSettingDownloadsBubbleModel::SetTitle() {
   DownloadRequestLimiter* download_request_limiter =
       g_browser_process->download_request_limiter();
-  DCHECK(download_request_limiter);
+  CHECK(download_request_limiter, base::NotFatalUntil::M162);
 
   switch (download_request_limiter->GetDownloadUiStatus(web_contents())) {
     case DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED:
@@ -1758,7 +1758,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
     return;
   }
   CHECK_GT(manager->Requests().size(), 0u);
-  DCHECK_EQ(manager->Requests().size(), 1u);
+  CHECK_EQ(manager->Requests().size(), 1u, base::NotFatalUntil::M162);
   request_type_ = manager->Requests()[0]->request_type();
   quiet_ui_reason_ = quiet_ui_reason;
   prm_observation_.Observe(manager);
@@ -1776,8 +1776,9 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
   set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
   switch (*quiet_ui_reason_) {
     case QuietUiReason::kEnabledInPrefs:
-      DCHECK(*request_type_ == permissions::RequestType::kNotifications ||
-             *request_type_ == permissions::RequestType::kGeolocation);
+      CHECK(*request_type_ == permissions::RequestType::kNotifications ||
+                *request_type_ == permissions::RequestType::kGeolocation,
+            base::NotFatalUntil::M162);
       set_message(l10n_util::GetStringUTF16(
           *request_type_ == permissions::RequestType::kNotifications
               ? IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION
@@ -1789,7 +1790,8 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
           base::UserMetricsAction("Notifications.Quiet.AnimatedIconClicked"));
       break;
     case QuietUiReason::kTriggeredByCrowdDeny:
-      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
+      CHECK_EQ(*request_type_, permissions::RequestType::kNotifications,
+               base::NotFatalUntil::M162);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1800,7 +1802,8 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
-      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
+      CHECK_EQ(*request_type_, permissions::RequestType::kNotifications,
+               base::NotFatalUntil::M162);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ABUSIVE_DESCRIPTION));
       // TODO(crbug.com/40131070): It is rather confusing to have the `Cancel`
@@ -1815,7 +1818,8 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
           base::UserMetricsAction("Notifications.Quiet.StaticIconClicked"));
       break;
     case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
-      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
+      CHECK_EQ(*request_type_, permissions::RequestType::kNotifications,
+               base::NotFatalUntil::M162);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DISRUPTIVE_DESCRIPTION));
       set_cancel_button_text(l10n_util::GetStringUTF16(
@@ -1948,7 +1952,8 @@ void ContentSettingQuietRequestBubbleModel::OnLearnMoreClicked() {
     // We only show learn more button for Notification quiet ui dialog when it
     // is triggered due to abusive requests or contents. We don't have any learn
     // more button for the geolocation quiet ui dialogs.
-    DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
+    CHECK_EQ(*request_type_, permissions::RequestType::kNotifications,
+             base::NotFatalUntil::M162);
     delegate()->ShowLearnMorePage(ContentSettingsType::NOTIFICATIONS);
   }
 }
@@ -1960,7 +1965,7 @@ void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
   }
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
-  DCHECK_EQ(manager->Requests().size(), 1u);
+  CHECK_EQ(manager->Requests().size(), 1u, base::NotFatalUntil::M162);
 
   // GEOLOCATION_WITH_OPTIONS is currently not supported on desktop.
   //
@@ -2005,7 +2010,8 @@ void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
     case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
-      DCHECK_EQ(*request_type_, permissions::RequestType::kNotifications);
+      CHECK_EQ(*request_type_, permissions::RequestType::kNotifications,
+               base::NotFatalUntil::M162);
       manager->Accept(/*prompt_options=*/std::monostate());
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.ShowForSiteClicked"));

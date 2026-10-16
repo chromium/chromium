@@ -129,7 +129,7 @@ void ShowBubble(ui::ElementContext element_context,
     views::Widget* const primary_widget =
         views::ElementTrackerViews::GetInstance()
             ->GetPrimaryWindowWidgetForContext(element_context);
-    DCHECK(primary_widget);
+    CHECK(primary_widget, base::NotFatalUntil::M162);
     primary_widget->SetProperty(
         kPendingBubbleShowerKey,
         std::make_unique<PendingBubbleShower>(primary_widget, element_context,

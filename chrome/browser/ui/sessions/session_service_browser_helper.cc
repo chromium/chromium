@@ -187,8 +187,9 @@ void SessionServiceBrowserHelper::OnTabGroupChanged(
   // AppSessionService doesn't support SetTabGroupMetadata, so some
   // work to refactor the code to support that into SessionServiceBase
   // would be the best way to achieve that.
-  DCHECK(!IsRelevantToAppSessionService(browser_type_));
-  DCHECK(tab_strip_model_->group_model());
+  CHECK(!IsRelevantToAppSessionService(browser_type_),
+        base::NotFatalUntil::M162);
+  CHECK(tab_strip_model_->group_model(), base::NotFatalUntil::M162);
 
   if (change.type == TabGroupChange::kVisualsChanged) {
     UpdateTabGroupSessionMetadata(*profile_, *tab_strip_model_, session_id_,
@@ -220,7 +221,8 @@ void SessionServiceBrowserHelper::OnTabPinnedStateChanged(
     tabs::TabInterface* tab,
     int index) {
   // See comment in `OnTabGroupChanged`.
-  DCHECK(!IsRelevantToAppSessionService(browser_type_));
+  CHECK(!IsRelevantToAppSessionService(browser_type_),
+        base::NotFatalUntil::M162);
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(&*profile_);
   if (session_service) {
@@ -319,7 +321,8 @@ void SessionServiceBrowserHelper::UpdateTabGroupSessionDataForTab(
     tabs::TabInterface* tab,
     std::optional<tab_groups::TabGroupId> group) {
   // See comment in `OnTabGroupChanged`.
-  DCHECK(!IsRelevantToAppSessionService(browser_type_));
+  CHECK(!IsRelevantToAppSessionService(browser_type_),
+        base::NotFatalUntil::M162);
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(&*profile_);
   if (!session_service) {
@@ -334,7 +337,8 @@ void SessionServiceBrowserHelper::UpdateTabGroupSessionDataForTab(
 void SessionServiceBrowserHelper::UpdateSplitTabSessionData(
     tabs::TabInterface* tab,
     std::optional<split_tabs::SplitTabId> split_id) {
-  DCHECK(!IsRelevantToAppSessionService(browser_type_));
+  CHECK(!IsRelevantToAppSessionService(browser_type_),
+        base::NotFatalUntil::M162);
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(&*profile_);
   if (!session_service) {

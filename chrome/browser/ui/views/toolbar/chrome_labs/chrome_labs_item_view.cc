@@ -70,7 +70,8 @@ class LabsComboboxModel : public ui::ComboboxModel {
   // this, the same changes must be made in
   // flags_ui::FeatureEntry::DescriptionForOption(..).
   std::u16string GetItemAt(size_t index) const override {
-    DCHECK_LT(index, static_cast<size_t>(feature_entry_->NumOptions()));
+    CHECK_LT(index, static_cast<size_t>(feature_entry_->NumOptions()),
+             base::NotFatalUntil::M162);
     int description_translation_id = IDS_CHROMELABS_DEFAULT;
     if (feature_entry_->type ==
         flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {

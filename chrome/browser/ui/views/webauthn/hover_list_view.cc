@@ -63,7 +63,7 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
 
 HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
     : model_(std::move(model)) {
-  DCHECK(model_);
+  CHECK(model_, base::NotFatalUntil::M162);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto item_container = std::make_unique<views::View>();
@@ -126,7 +126,7 @@ void HoverListView::OnListItemSelected(int item_tag, const ui::Event& event) {
 }
 
 views::Button& HoverListView::GetTopListItemView() const {
-  DCHECK(!tags_to_list_item_views_.empty());
+  CHECK(!tags_to_list_item_views_.empty(), base::NotFatalUntil::M162);
   return *tags_to_list_item_views_.begin()->second.item_view;
 }
 

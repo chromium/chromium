@@ -433,7 +433,7 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const gfx::Image& rp_icon,
     bool show_back_button) {
-  DCHECK(!show_back_button);
+  CHECK(!show_back_button, base::NotFatalUntil::M162);
   ShowAccounts(accounts, idp_list, rp_icon,
                /*is_single_account_chooser=*/false);
 }

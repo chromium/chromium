@@ -354,7 +354,7 @@ void CommerceUiTabHelper::SetPriceTrackingState(
         shopping_service_.get(), bookmark_model_.get(), node, enable,
         std::move(wrapped_callback), enable && is_new_bookmark);
   } else {
-    DCHECK(!enable);
+    CHECK(!enable, base::NotFatalUntil::M162);
     std::optional<commerce::ProductInfo> info =
         shopping_service_->GetAvailableProductInfoForUrl(
             web_contents()->GetLastCommittedURL());
@@ -369,10 +369,10 @@ void CommerceUiTabHelper::SetPriceTrackingState(
 
 void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
   auto* side_panel_ui = GetSidePanelUI();
-  DCHECK(side_panel_ui);
+  CHECK(side_panel_ui, base::NotFatalUntil::M162);
   SidePanelEntry* const entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntryKey(SidePanelEntry::Id::kShoppingInsights));
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M162);
 
   if (side_panel_ui->IsSidePanelEntryShowing(
           SidePanelEntryKey(SidePanelEntryId::kShoppingInsights))) {

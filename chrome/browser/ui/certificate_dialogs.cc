@@ -255,7 +255,7 @@ void ShowCertExportDialog(content::WebContents* web_contents,
                           gfx::NativeWindow parent,
                           std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
                           const std::string& cert_title) {
-  DCHECK(!certs.empty());
+  CHECK(!certs.empty(), base::NotFatalUntil::M162);
   // Exporter is self-deleting.
   new Exporter(web_contents, parent, std::move(certs), cert_title,
                /*full_export=*/false);
@@ -267,7 +267,7 @@ void ShowCertExportDialogSaveAll(
     gfx::NativeWindow parent,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
     const std::string& suggested_file_name) {
-  DCHECK(!certs.empty());
+  CHECK(!certs.empty(), base::NotFatalUntil::M162);
   // Exporter is self-deleting.
   new Exporter(web_contents, parent, std::move(certs), suggested_file_name,
                /*full_export=*/true);

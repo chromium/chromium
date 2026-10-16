@@ -50,7 +50,7 @@ int PageInfoInfoBarDelegate::GetButtons() const {
 
 std::u16string PageInfoInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  DCHECK_EQ(BUTTON_OK, button);
+  CHECK_EQ(BUTTON_OK, button, base::NotFatalUntil::M162);
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_INFOBAR_BUTTON);
 }
 
