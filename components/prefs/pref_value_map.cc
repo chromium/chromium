@@ -45,9 +45,10 @@ bool PrefValueMap::GetValue(std::string_view key, base::Value** value) {
 bool PrefValueMap::SetValue(std::string_view key, base::Value value) {
   // Once C++26 is supported, just do `base::Value& existing_value =
   // prefs_[key]`.
-  auto it = prefs_.find(key);
-  if (it == prefs_.end()) {
-    it = prefs_.insert({std::string(key), base::Value()}).first;
+  auto it = prefs_.lower_bound(key);
+  if (it == prefs_.end() || it->first != key) {
+    prefs_.emplace_hint(it, std::string(key), std::move(value));
+    return true;
   }
   base::Value& existing_value = it->second;
   if (value == existing_value)
