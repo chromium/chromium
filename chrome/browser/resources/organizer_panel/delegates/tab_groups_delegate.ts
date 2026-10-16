@@ -141,6 +141,9 @@ export class TabGroupsDelegate implements
       OrganizerListSectionItem<TabGroup> {
     return {
       title: [group.title],
+      description: group.lastActiveElapsedText ?
+          [{text: group.lastActiveElapsedText, matchable: false}] :
+          undefined,
       prefixIcon: {
         element: html`<tab-group-dot .color="${group.color}"
             .filled="${group.isOpen}"
@@ -150,7 +153,6 @@ export class TabGroupsDelegate implements
         icon: 'cr:more-vert',
         ariaLabel: loadTimeData.getString('tabGroupMoreOptions'),
       },
-      size: CrUrlListItemSize.COMPACT,
       data: group,
     };
   }

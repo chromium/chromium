@@ -33,18 +33,21 @@ suite('TabGroupsDelegateTest', () => {
       color: Color.kBlue,
       title: 'Sample Group 1',
       isOpen: true,
+      lastActiveElapsedText: '10m ago',
     },
     {
       id: '2',
       color: Color.kRed,
       title: 'Sample Group 2',
       isOpen: false,
+      lastActiveElapsedText: '1h ago',
     },
     {
       id: '3',
       color: Color.kGreen,
       title: 'Sample Group 3',
       isOpen: true,
+      lastActiveElapsedText: '',
     },
   ];
 
@@ -83,8 +86,14 @@ suite('TabGroupsDelegateTest', () => {
     const items = await delegate.getItems();
     assertEquals(3, items.length);
     assertEquals('Sample Group 1', items[0]!.title[0]);
+    assertDeepEquals(
+        [{text: '10m ago', matchable: false}], items[0]!.description);
     assertEquals('Sample Group 2', items[1]!.title[0]);
+    assertDeepEquals(
+        [{text: '1h ago', matchable: false}], items[1]!.description);
     assertEquals('Sample Group 3', items[2]!.title[0]);
+    assertEquals(undefined, items[2]!.description);
+    assertEquals(undefined, items[0]!.size);
     assertEquals(1, mockHandler.getCallCount('getTabGroups'));
 
     assertTrue(!!items[0]!.hoveredActionButton);
@@ -129,6 +138,7 @@ suite('TabGroupsDelegateTest', () => {
       color: Color.kYellow,
       title: 'Sample Group 4',
       isOpen: true,
+      lastActiveElapsedText: 'just now',
     };
 
     remotePage.tabGroupAdded(newGroup);
@@ -136,6 +146,8 @@ suite('TabGroupsDelegateTest', () => {
 
     assertEquals(4, client.items.length);
     assertEquals('Sample Group 4', client.items[0]!.title[0]);
+    assertDeepEquals(
+        [{text: 'just now', matchable: false}], client.items[0]!.description);
     assertEquals('Sample Group 1', client.items[1]!.title[0]);
     assertEquals('Sample Group 2', client.items[2]!.title[0]);
     assertEquals('Sample Group 3', client.items[3]!.title[0]);
@@ -166,6 +178,7 @@ suite('TabGroupsDelegateTest', () => {
       color: Color.kCyan,
       title: 'Updated Group 2',
       isOpen: true,
+      lastActiveElapsedText: '5m ago',
     };
 
     remotePage.tabGroupUpdated(updatedGroup);
@@ -174,6 +187,8 @@ suite('TabGroupsDelegateTest', () => {
     assertEquals(3, client.items.length);
     assertEquals('Sample Group 1', client.items[0]!.title[0]);
     assertEquals('Updated Group 2', client.items[1]!.title[0]);
+    assertDeepEquals(
+        [{text: '5m ago', matchable: false}], client.items[1]!.description);
     assertEquals('Sample Group 3', client.items[2]!.title[0]);
 
     const container = document.createElement('div');

@@ -242,14 +242,17 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   EXPECT_EQ(returned_groups[0]->id, id1.AsLowercaseString());
   EXPECT_EQ(returned_groups[0]->title, "Group 1");
   EXPECT_EQ(returned_groups[0]->color, tab_groups::TabGroupColorId::kBlue);
+  EXPECT_FALSE(returned_groups[0]->last_active_elapsed_text.empty());
 
   EXPECT_EQ(returned_groups[1]->id, id2.AsLowercaseString());
   EXPECT_EQ(returned_groups[1]->title, "Group 2");
   EXPECT_EQ(returned_groups[1]->color, tab_groups::TabGroupColorId::kRed);
+  EXPECT_FALSE(returned_groups[1]->last_active_elapsed_text.empty());
 
   EXPECT_EQ(returned_groups[2]->id, id3.AsLowercaseString());
   EXPECT_EQ(returned_groups[2]->title, "Group 3");
   EXPECT_EQ(returned_groups[2]->color, tab_groups::TabGroupColorId::kGreen);
+  EXPECT_FALSE(returned_groups[2]->last_active_elapsed_text.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
@@ -351,6 +354,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   EXPECT_EQ(page.added_groups()[0]->title, "New Group");
   EXPECT_EQ(page.added_groups()[0]->color,
             tab_groups::TabGroupColorId::kYellow);
+  EXPECT_FALSE(page.added_groups()[0]->last_active_elapsed_text.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
@@ -409,6 +413,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   EXPECT_EQ(page.updated_groups()[0]->id, id.AsLowercaseString());
   EXPECT_EQ(page.updated_groups()[0]->title, "Updated Title");
   EXPECT_EQ(page.updated_groups()[0]->color, tab_groups::TabGroupColorId::kRed);
+  EXPECT_FALSE(page.updated_groups()[0]->last_active_elapsed_text.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
@@ -518,11 +523,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   EXPECT_EQ(returned_groups[0]->title, "Unsaved Local Group");
   EXPECT_EQ(returned_groups[0]->color, tab_groups::TabGroupColorId::kGreen);
   EXPECT_TRUE(returned_groups[0]->is_open);
+  EXPECT_FALSE(returned_groups[0]->last_active_elapsed_text.empty());
 
   EXPECT_EQ(returned_groups[1]->id, saved_id.AsLowercaseString());
   EXPECT_EQ(returned_groups[1]->title, "Saved Group");
   EXPECT_EQ(returned_groups[1]->color, tab_groups::TabGroupColorId::kBlue);
   EXPECT_FALSE(returned_groups[1]->is_open);
+  EXPECT_FALSE(returned_groups[1]->last_active_elapsed_text.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
