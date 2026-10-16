@@ -267,20 +267,41 @@ namespace {
 // has been selected in the PDF.
 views::Widget* TouchSelectText(content::WebContents* contents,
                                content::RenderFrameHost* listener_host,
+                               bool use_oopif,
                                const gfx::Point& screen_pos) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TouchSelectionMenuViews");
   content::SimulateTouchEventAt(contents, ui::EventType::kTouchPressed,
                                 screen_pos);
 
-  EXPECT_EQ(true, content::EvalJs(
-                      listener_host,
-                      "new Promise(resolve => {"
-                      "  window.addEventListener('message', function(event) {"
-                      "    if (event.data.type == 'touchSelectionOccurred')"
-                      "      resolve(true);"
-                      "  });"
-                      "});"));
+  static constexpr char kEnsureOopifTouchSelectionScript[] = R"(
+    new Promise(resolve => {
+      const source = new MessageChannel().port1;
+      source.postMessage = data => {
+        if (data.type === 'touchSelectionOccurred') {
+          resolve(true);
+        }
+      };
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {type: 'initialize'},
+        origin: window.location.origin,
+        source: source,
+      }));
+    });
+  )";
+  static constexpr char kEnsureGuestViewTouchSelectionScript[] = R"(
+    new Promise(resolve => {
+      window.addEventListener('message', function(event) {
+        if (event.data.type == 'touchSelectionOccurred') {
+          resolve(true);
+        }
+      });
+    });
+  )";
+  EXPECT_EQ(true,
+            content::EvalJs(listener_host,
+                            use_oopif ? kEnsureOopifTouchSelectionScript
+                                      : kEnsureGuestViewTouchSelectionScript));
 
   content::SimulateTouchEventAt(contents, ui::EventType::kTouchReleased,
                                 screen_pos);
@@ -305,15 +326,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
   // For GuestView PDF viewer, the listener host can be the PDF embedder host.
   // For OOPIF PDF viewer, the listener host can't be the embedder host, since
   // the PDF extension host doesn't send it messages. Instead, the listener host
-  // can be the extension host and listen for messages from the PDF content
-  // host.
+  // can be the extension host.
   content::RenderFrameHost* listener_host =
       UseOopif() ? extension_host : contents->GetPrimaryMainFrame();
   const gfx::Point point_in_root_coords =
       extension_host->GetView()->TransformPointToRootCoordSpace(
           ConvertPageCoordToScreenCoord(extension_host, {12, 12}));
-  views::Widget* widget =
-      TouchSelectText(contents, listener_host, point_in_root_coords);
+  views::Widget* widget = TouchSelectText(contents, listener_host, UseOopif(),
+                                          point_in_root_coords);
   ASSERT_TRUE(widget);
   views::View* menu = widget->GetContentsView();
   ASSERT_TRUE(menu);
@@ -368,11 +388,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
   // For GuestView PDF viewer, the listener host can be the PDF embedder host.
   // For OOPIF PDF viewer, the listener host can't be the embedder host, since
   // the PDF extension host doesn't send it messages. Instead, the listener host
-  // can be the extension host and listen for messages from the PDF content
-  // host.
+  // can be the extension host.
   content::RenderFrameHost* listener_host =
       UseOopif() ? extension_host : contents->GetPrimaryMainFrame();
-  views::Widget* widget = TouchSelectText(contents, listener_host, {473, 166});
+  views::Widget* widget =
+      TouchSelectText(contents, listener_host, UseOopif(), {473, 166});
   ASSERT_TRUE(widget);
 
   EXPECT_EQ(u"some", view->GetSelectedText());

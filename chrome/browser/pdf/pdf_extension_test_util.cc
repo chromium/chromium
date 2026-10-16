@@ -121,9 +121,29 @@ testing::AssertionResult EnsurePDFHasLoadedWithOptions(
     const content::ToRenderFrameHost& frame,
     const EnsurePDFHasLoadedOptions& options) {
   // OOPIF PDF intentionally doesn't support postMessage() API for embedders.
-  // postMessage() can still be used if the script is injected into the
-  // extension frame.
-  static constexpr char kEnsurePdfHasLoadedScript[] = R"(
+  // Dispatch a synthetic 'initialize' MessageEvent in the extension frame with
+  // a mock MessagePort source so `viewer.parentWindow_` is not set to the
+  // extension's own `window` (which would cause outgoing viewer messages to be
+  // posted back to `window` and overwrite `parentWindow_`).
+  static constexpr char kEnsureOopifPdfHasLoadedScript[] = R"(
+    new Promise(resolve => {
+      const source = new MessageChannel().port1;
+      source.postMessage = data => {
+        if (data.type === 'documentLoaded') {
+          resolve(data.load_state === 'success');
+        } else if (data.type === 'passwordPrompted') {
+          resolve(true);
+        }
+      };
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {type: 'initialize'},
+        origin: window.location.origin,
+        source: source,
+      }));
+    });
+  )";
+
+  static constexpr char kEnsureGuestViewPdfHasLoadedScript[] = R"(
     new Promise(resolve => {
       window.addEventListener('message', event => {
         if (event.origin !==
@@ -136,14 +156,10 @@ testing::AssertionResult EnsurePDFHasLoadedWithOptions(
           resolve(true);
         }
       });
-      %s.postMessage(
+      document.getElementsByTagName($1)[0].postMessage(
         {type: 'initialize'});
     });
   )";
-
-  static constexpr char kOopifPostMessageTarget[] = "window";
-  static constexpr char kGuestViewPostMessageTarget[] =
-      "document.getElementsByTagName($1)[0]";
 
   bool use_oopif =
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif);
@@ -160,15 +176,11 @@ testing::AssertionResult EnsurePDFHasLoadedWithOptions(
     return testing::AssertionFailure() << "Failed to get PDF extension frame.";
   }
 
-  const std::string post_message_target =
-      use_oopif ? kOopifPostMessageTarget
-                : content::JsReplace(kGuestViewPostMessageTarget,
+  const std::string script =
+      use_oopif ? kEnsureOopifPdfHasLoadedScript
+                : content::JsReplace(kEnsureGuestViewPdfHasLoadedScript,
                                      options.pdf_element);
-  bool load_success =
-      content::EvalJs(target_frame,
-                      base::StringPrintf(kEnsurePdfHasLoadedScript,
-                                         post_message_target.c_str()))
-          .ExtractBool();
+  bool load_success = content::EvalJs(target_frame, script).ExtractBool();
 
   if (!load_success) {
     return testing::AssertionFailure() << "Load failed.";
