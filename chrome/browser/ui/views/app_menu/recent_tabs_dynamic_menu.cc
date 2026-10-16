@@ -14,7 +14,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
-#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -34,7 +34,6 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -93,23 +92,15 @@ void RecentTabsDynamicMenu::ExecuteRecentTab(
     ExecuteRestoreEntry(recent_item.session_id(), disposition);
   } else {
     sync_sessions::SessionSyncService* session_sync_service =
-        SessionSyncServiceFactory::GetInstance()->GetForProfile(
+        SessionSyncServiceFactory::GetForProfile(
             browser_window_interface_->GetProfile());
     sync_sessions::OpenTabsUIDelegate* open_tabs =
         session_sync_service ? session_sync_service->GetOpenTabsUIDelegate()
                              : nullptr;
-    if (open_tabs) {
-      const sessions::SessionTab* session_tab = nullptr;
-      if (open_tabs->GetForeignTab(recent_item.session_tag(),
-                                   recent_item.session_id(), &session_tab) &&
-          session_tab && !session_tab->navigations.empty()) {
-        base::RecordAction(
-            base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));
-        SessionRestore::RestoreForeignSessionTab(
-            browser_window_interface_->GetActiveTabInterface()->GetContents(),
-            *session_tab, disposition);
-      }
-    }
+    remote_tabs_menu_util::OpenForeignSessionTab(
+        browser_window_interface_, open_tabs, recent_item.session_tag(),
+        recent_item.session_id(), disposition,
+        base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));
   }
 }
 
