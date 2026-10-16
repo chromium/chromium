@@ -26,6 +26,13 @@ UnderlyingSourceBase*
 RtcEncodedVideoReceiverSourceOptimizer::PerformInProcessOptimization(
     ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context || context->IsContextDestroyed()) {
+    // A source created on a destroyed context would never get
+    // ContextDestroyed(), so the disconnect callback would never run and the
+    // transformer would keep pushing frames to a dead heap. Disconnect now.
+    std::move(disconnect_callback_).Run();
+    return nullptr;
+  }
 
   scoped_refptr<base::SingleThreadTaskRunner> current_runner =
       context->GetTaskRunner(TaskType::kInternalMediaRealTime);

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -22,16 +23,20 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_sink_optimizer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_sender_sink_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
@@ -189,6 +194,36 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInDifferentDirectionIsAllowed) {
                   webrtc::TransformableFrameInterface::Direction::kReceiver),
               /*controller=*/nullptr, dummy_exception_state);
   EXPECT_FALSE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest,
+       ReceiverOptimizerAfterContextDestroyedReturnsNull) {
+  V8TestingScope v8_scope;
+  base::MockOnceCallback<void(RTCEncodedAudioUnderlyingSink*)>
+      set_underlying_sink;
+  RtcEncodedAudioReceiverSinkOptimizer optimizer(
+      CrossThreadBindOnce(set_underlying_sink.Get()), transformer_.GetBroker());
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  EXPECT_CALL(set_underlying_sink, Run(_)).Times(0);
+  EXPECT_EQ(optimizer.PerformInProcessOptimization(v8_scope.GetScriptState()),
+            nullptr);
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest,
+       SenderOptimizerAfterContextDestroyedReturnsNull) {
+  V8TestingScope v8_scope;
+  base::MockOnceCallback<void(RTCEncodedAudioUnderlyingSink*)>
+      set_underlying_sink;
+  RtcEncodedAudioSenderSinkOptimizer optimizer(
+      CrossThreadBindOnce(set_underlying_sink.Get()), transformer_.GetBroker());
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  EXPECT_CALL(set_underlying_sink, Run(_)).Times(0);
+  EXPECT_EQ(optimizer.PerformInProcessOptimization(v8_scope.GetScriptState()),
+            nullptr);
 }
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
@@ -22,6 +23,13 @@ RtcEncodedVideoReceiverSinkOptimizer::RtcEncodedVideoReceiverSinkOptimizer(
 UnderlyingSinkBase*
 RtcEncodedVideoReceiverSinkOptimizer::PerformInProcessOptimization(
     ScriptState* script_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context || context->IsContextDestroyed()) {
+    // Do not allocate a sink on a destroyed context or bind a persistent
+    // reference to it on the receiver.
+    return nullptr;
+  }
+
   auto* new_sink = MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
       script_state, std::move(transformer_),
       /*detach_frame_data_on_write=*/false);
