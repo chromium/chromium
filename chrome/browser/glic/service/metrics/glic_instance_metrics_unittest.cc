@@ -14,14 +14,23 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/public/skills_metrics.h"
@@ -47,14 +56,14 @@ class GlicInstanceMetricsTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_tester_;
   TestingProfile profile_;
   metrics::ProfileMetricsService profile_metrics_service_;
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   GlicInstanceMetrics metrics_{&profile_metrics_service_, &profile_};
   tabs::MockTabInterface mock_tab_;
   ui::UnownedUserDataHost unowned_user_data_host_;
-  base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kGlicCaptureRegion};
 };
@@ -1171,6 +1180,15 @@ TEST_F(GlicInstanceMetricsTest, PanelPresentationTime_ActiveFlow_SidePanel) {
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
   histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.Instance.PanelPresentationTime.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
       "Glic.Instance.TimeToDismissWhileLoading.SidePanel", 0);
 }
 
@@ -1240,6 +1258,15 @@ TEST_F(GlicInstanceMetricsTest,
       1);
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.Instance.PanelPresentationTime.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
 }
 
 TEST_F(GlicInstanceMetricsTest,
@@ -1259,6 +1286,14 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.Instance.PanelPresentationTime.SidePanel", 0);
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
 
   // Client finishes loading later after close; should not record presentation
   // time.
@@ -1269,6 +1304,14 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.Instance.PanelPresentationTime.SidePanel", 0);
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instance.PanelPresentationTime.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
 }
 
 TEST_F(GlicInstanceMetricsTest,
@@ -1657,4 +1700,276 @@ TEST_F(GlicInstanceMetricsTest,
                                      1);
 }
 
+class GlicInstanceMetricsGeicTest : public GlicInstanceMetricsTest {
+ protected:
+  GlicInstanceMetricsGeicTest() {
+    geic_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGeic, {{"geic-guest-url", "http://localhost"}});
+  }
+
+  void SetUp() override {
+    GlicInstanceMetricsTest::SetUp();
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.push_back(
+        {GlicKeyedServiceFactory::GetInstance(),
+         base::BindRepeating(
+             [](ProfileManager* pm, GlicProfileManager* gpm,
+                content::BrowserContext* context)
+                 -> std::unique_ptr<KeyedService> {
+               return std::make_unique<testing::NiceMock<MockGlicKeyedService>>(
+                   context,
+                   IdentityManagerFactory::GetForProfile(
+                       Profile::FromBrowserContext(context)),
+                   pm, gpm,
+                   /*contextual_cueing_service=*/nullptr,
+                   /*actor_keyed_service=*/nullptr);
+             },
+             testing_profile_manager_.profile_manager(),
+             &glic_profile_manager_)});
+
+    geic_profile_ = testing_profile_manager_.CreateTestingProfile(
+        "geic_profile", std::move(factories));
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(geic_profile_);
+
+    ASSERT_TRUE(
+        GlicKeyedServiceFactory::GetGlicKeyedService(geic_profile_.get(),
+                                                     /*create=*/true));
+
+    geic_metrics_ = std::make_unique<GlicInstanceMetrics>(
+        &profile_metrics_service_, geic_profile_);
+  }
+
+  GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_enablement_;
+  base::test::ScopedFeatureList geic_feature_list_;
+  GlicProfileManager glic_profile_manager_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> geic_profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  std::unique_ptr<GlicInstanceMetrics> geic_metrics_;
+};
+
+TEST_F(GlicInstanceMetricsGeicTest,
+       PanelPresentationTime_ActiveFlow_SidePanel_Geic) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  geic_metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        show_options);
+  geic_metrics_->OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(350));
+  geic_metrics_->OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Enterprise.Instance.PanelPresentationTime.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.SidePanel", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsGeicTest,
+       PanelPresentationTime_InactiveFlow_SidePanel_Geic) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  geic_metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        show_options);
+  geic_metrics_->OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Milliseconds(350));
+  geic_metrics_->OnClientReady();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Enterprise.Instance.PanelPresentationTime.Inactive.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.PanelPresentationTime.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsGeicTest, WebUiLoadTime_Geic) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  geic_metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        show_options);
+  geic_metrics_->OnVisibilityChanged(true);
+
+  geic_metrics_->OnWebUiStateChanged(mojom::WebUiState::kBeginLoad);
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  geic_metrics_->OnWebUiStateChanged(mojom::WebUiState::kReady);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Enterprise.Instance.WebUiLoadTime.Visible", base::Milliseconds(300),
+      1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.WebUiLoadTime.Visible", 1);
+}
+
+TEST_F(GlicInstanceMetricsGeicTest, TurnResponseStartTime_Geic) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  geic_metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        show_options);
+  geic_metrics_->OnVisibilityChanged(true);
+  geic_metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                      mojom::PromptType::kUnspecified);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  geic_metrics_->OnResponseStarted();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Enterprise.Turn.ResponseStartTime", base::Milliseconds(200), 1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ResponseStartTime", 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Enterprise.Turn.ResponseStartTime.InputMode.Text",
+      base::Milliseconds(200), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.ResponseStartTime.InputMode.Text", 1);
+}
+
+TEST_F(GlicInstanceMetricsGeicTest, TurnDuration_Geic) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  geic_metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        show_options);
+  geic_metrics_->OnVisibilityChanged(true);
+
+  geic_metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                      mojom::PromptType::kUnspecified);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  geic_metrics_->OnTurnCompleted(mojom::WebClientModel::kActor,
+                                 base::Milliseconds(500));
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Enterprise.Turn.Duration.Actor", base::Milliseconds(500), 1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.Duration.Actor", 1);
+}
+TEST_F(GlicInstanceMetricsGeicTest, PanelWebUiStateFinishState3_Geic) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  geic_metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        show_options);
+  geic_metrics_->OnWebUiStateChanged(mojom::WebUiState::kReady);
+  geic_metrics_->OnClose();
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Enterprise.PanelWebUiState.FinishState3", mojom::WebUiState::kReady,
+      1);
+  histogram_tester_.ExpectTotalCount("Glic.PanelWebUiState.FinishState3", 1);
+}
+
+class GlicInstanceProviderMetricsTest
+    : public testing::TestWithParam<GlicProvider> {
+ protected:
+  GlicInstanceProviderMetricsTest() {
+    if (GetParam() == GlicProvider::kGeminiEnterprise) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kGeic, {{"geic-guest-url", "http://localhost"}});
+    } else {
+      feature_list_.InitAndDisableFeature(features::kGeic);
+    }
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.push_back(
+        {GlicKeyedServiceFactory::GetInstance(),
+         base::BindRepeating(
+             [](ProfileManager* pm, GlicProfileManager* gpm,
+                content::BrowserContext* context)
+                 -> std::unique_ptr<KeyedService> {
+               return std::make_unique<testing::NiceMock<MockGlicKeyedService>>(
+                   context,
+                   IdentityManagerFactory::GetForProfile(
+                       Profile::FromBrowserContext(context)),
+                   pm, gpm,
+                   /*contextual_cueing_service=*/nullptr,
+                   /*actor_keyed_service=*/nullptr);
+             },
+             testing_profile_manager_.profile_manager(),
+             &glic_profile_manager_)});
+
+    profile_ = testing_profile_manager_.CreateTestingProfile(
+        "profile", std::move(factories));
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+
+    ASSERT_TRUE(GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
+                                                             /*create=*/true));
+
+    metrics_ = std::make_unique<GlicInstanceMetrics>(&profile_metrics_service_,
+                                                     profile_);
+  }
+
+  GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_enablement_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
+  GlicProfileManager glic_profile_manager_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  metrics::ProfileMetricsService profile_metrics_service_{1};
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
+  std::unique_ptr<GlicInstanceMetrics> metrics_;
+};
+
+TEST_P(GlicInstanceProviderMetricsTest, GeicConsumerNames) {
+  metrics_->OnActivationChanged(true);
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_->OnActivationChanged(false);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  metrics_->OnActivationChanged(true);
+
+  metrics_->OnTurnCompleted(mojom::WebClientModel::kDefault,
+                            base::Milliseconds(100));
+  metrics_->OnReaction(mojom::MetricUserInputReactionType::kModel);
+
+  std::string specific_prefix = (GetParam() == GlicProvider::kGeminiEnterprise)
+                                    ? "Glic.Enterprise"
+                                    : "Glic.Consumer";
+  std::string other_prefix = (GetParam() == GlicProvider::kGeminiEnterprise)
+                                 ? "Glic.Consumer"
+                                 : "Glic.Enterprise";
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 1);
+  histogram_tester_.ExpectTotalCount(
+      specific_prefix + ".Instance.TimeSinceLastActive", 1);
+  histogram_tester_.ExpectTotalCount(
+      other_prefix + ".Instance.TimeSinceLastActive", 0);
+
+  // Check Glic.X=1
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Turn.Duration.Default",
+                                           base::Milliseconds(100), 1);
+  // Check specific prefix=1
+  histogram_tester_.ExpectUniqueTimeSample(
+      specific_prefix + ".Turn.Duration.Default", base::Milliseconds(100), 1);
+  // Check other prefix=0
+  histogram_tester_.ExpectTotalCount(other_prefix + ".Turn.Duration.Default",
+                                     0);
+
+  // Check no-dot action GlicReactionModelled
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicReactionModelled"));
+
+  // Check dotted action Glic.Instance.Created (emitted in constructor)
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("Glic.Instance.Created"));
+
+  metrics_->OnFloatyClosed();
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Metrics.Error",
+      GlicInstanceMetricsError::kFloatyClosedWithoutOpen, 1);
+  histogram_tester_.ExpectUniqueSample(
+      specific_prefix + ".Instance.Metrics.Error",
+      GlicInstanceMetricsError::kFloatyClosedWithoutOpen, 1);
+  histogram_tester_.ExpectTotalCount(other_prefix + ".Instance.Metrics.Error",
+                                     0);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicInstanceProviderMetricsTest,
+                         testing::Values(GlicProvider::kGemini,
+                                         GlicProvider::kGeminiEnterprise));
 }  // namespace glic

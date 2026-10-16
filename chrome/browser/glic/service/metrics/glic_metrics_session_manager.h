@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 
 namespace glic {
 
@@ -62,7 +63,8 @@ enum class GlicMultiInstanceSessionEndReason {
 // object.
 class GlicMetricsSessionManager {
  public:
-  explicit GlicMetricsSessionManager(GlicInstanceMetrics* owner);
+  GlicMetricsSessionManager(GlicInstanceMetrics* owner,
+                            const GlicMetricReporter& reporter);
   ~GlicMetricsSessionManager();
 
   GlicMetricsSessionManager(const GlicMetricsSessionManager&) = delete;
@@ -85,6 +87,7 @@ class GlicMetricsSessionManager {
   void CreatePendingSession();
 
   const raw_ptr<GlicInstanceMetrics> owner_;
+  GlicMetricReporter metric_reporter_;
 
   // Holds the state and timers for a single, active session.
   // Its lifetime defines the duration of the session.

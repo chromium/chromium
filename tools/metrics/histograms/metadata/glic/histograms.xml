@@ -220,6 +220,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
 
+<variants name="GlicProvider">
+  <variant name="" summary="all providers combined"/>
+  <variant name=".Consumer" summary="Gemini in Chrome (consumer) only"/>
+  <variant name=".Enterprise" summary="Gemini Enterprise in Chrome only"/>
+</variants>
+
 <variants name="MemoryTriggerEvent">
   <variant name="CriticalPressure"
       summary="recorded upon critical memory pressure"/>
@@ -1372,153 +1378,6 @@ chromium-metrics-reviews@google.com.
   <token key="TriggerEvent" variants="MemoryTriggerEvent"/>
 </histogram>
 
-<histogram name="Glic.Instance.EventCounts" enum="GlicInstanceEvent"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records every event that happens during a Glic Instance's lifecycle. This
-    histogram answers the question: What is the total number of times each event
-    occurred across all Glic instances? An event is recorded each time it
-    occurs.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.InitialMode" enum="GlicWebClientMode"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the initial mode (Text or Audio) when a Glic Floaty is shown.
-    Recorded each time a Floaty instance is shown with a specified initial mode.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.OpenDuration" units="ms"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the duration that a Glic Floaty was open. Recorded each time a
-    Floaty instance is closed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.OpenSource" enum="GlicInvocationSource"
-    expires_after="2027-04-11">
-  <owner>basiaz@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the source of the invocation when the Glic Floaty panel becomes
-    visible for the first time after being closed. Recorded when detached from
-    Side Panel, when opened directly via os button / hotkey, or when the
-    conversation is switched. In M151, the default invocation source was fixed
-    to no longer be the TopChromeButton.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.ToggleSource" enum="GlicInvocationSource"
-    expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the source of the invocation that caused the floaty GlicInstance to
-    be toggled. Recorded each time the instance is toggled. See
-    Glic.Instance.Floaty.OpenSource for the metric only including invocations
-    that open Floaty. In M151, the default invocation source was fixed to no
-    longer be the TopChromeButton.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.UserResizeEnded.{Dimension}" units="DIPs"
-    expires_after="2027-03-21">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the {Dimension} of the Glic instance in DIP when the user stops
-    resizing the instance showing in a floaty window.
-  </summary>
-  <token key="Dimension" variants="Dimension"/>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.UserResizeStarted.{Dimension}"
-    units="DIPs" expires_after="2027-03-21">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the {Dimension} of the Glic instance in DIP when the user starts
-    resizing the instance showing in a floaty window.
-  </summary>
-  <token key="Dimension" variants="Dimension"/>
-</histogram>
-
-<histogram name="Glic.Instance.HadEvent" enum="GlicInstanceEvent"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records events that happen during a Glic Instance's lifecycle. This
-    histogram answers the question: How many instances had each event type occur
-    at least once? Even if an event occurs multiple times in an instance, only
-    one event is recorded per instance.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.InitialInvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the first invocation source that was used to open a Glic instance.
-    Recorded when an instance is opened for the first time. In M151, the default
-    invocation source was fixed to no longer be the TopChromeButton.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.InputModesUsed" enum="GlicInputModesUsed"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    The input modes that were used during the instance's lifetime. Recorded when
-    the instance is destroyed. Metrics recorded on instance destruction may not
-    be recorded successfully on irregular Chrome shutdowns.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.InputSubmitted.Selection.PolylinePointCount"
-    units="points" expires_after="2027-03-31">
-  <owner>wusirui@google.com</owner>
-  <owner>naai-xfn@google.com</owner>
-  <summary>
-    Recorded when user input is submitted. Counts the number of points in active
-    polylines drawn by the user at the time of submission.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.InputSubmitted.SelectionCount" units="areas"
-    expires_after="2027-03-07">
-  <owner>dtapuska@google.com</owner>
-  <owner>liuwilliam@google.com</owner>
-  <owner>naai-xfn@google.com</owner>
-  <summary>
-    Recorded when user input is submitted. The value is the number of active
-    selection areas at the time of submission. The maximum recorded is 10.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.MaxConcurrentlyBoundTabs" units="count"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the maximum number of tabs that were simultaneously bound to a
-    single GlicInstance throughout its lifetime. Recorded when the GlicInstance
-    is destroyed. Metrics recorded on instance destruction may not be recorded
-    successfully on irregular Chrome shutdowns.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Instance.MemoryUsageAtThreshold" units="MB"
     expires_after="2026-12-16">
   <owner>birnie@google.com</owner>
@@ -1526,192 +1385,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the private memory footprint of the Glic instance (sum of WebUI +
     WebClient) when the hibernation memory threshold is exceeded.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Metrics.Error{Cause}"
-    enum="GlicInstanceMetricsError" expires_after="2027-03-21">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Recorded when an unusual sequence of events is seen by glic instance metrics
-    recorder. Usually replaces a real histogram event.
-
-    Limited to the following causes: {Cause}
-  </summary>
-  <token key="Cause">
-    <variant name="" summary="Cause not applicable"/>
-    <variant name=".ByUser" summary="User stopped the response"/>
-    <variant name=".Other"
-        summary="Other cause (infra) for stopping the response"/>
-    <variant name=".UnknownCause" summary="Unspecified stop reason"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Instance.PanelPresentationTime.Inactive.{EmbedderType}"
-    units="ms" expires_after="2027-08-11">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@chromium.org</owner>
-  <summary>
-    Measures the time from when a user toggles the Glic panel to be shown until
-    the web client signals that it is ready, for panels that were backgrounded
-    or closed before the client finished loading. Recorded at most once per
-    instance when an inactive {EmbedderType} panel first finishes loading.
-  </summary>
-  <token key="EmbedderType" variants="EmbedderType"/>
-</histogram>
-
-<histogram name="Glic.Instance.PanelPresentationTime.{EmbedderType}" units="ms"
-    expires_after="2027-04-04">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time from when a user toggles the Glic panel to be shown until
-    the web client signals that it is ready. Recorded at most once per instance
-    when a {EmbedderType} panel first finishes loading while visible.
-  </summary>
-  <token key="EmbedderType" variants="EmbedderType"/>
-</histogram>
-
-<histogram name="Glic.Instance.Session.CreateTabCount" units="count"
-    expires_after="2026-12-27">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    The number of new tabs that are created during a single Glic multi-instance
-    session. Recorded when the session ends.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.Duration" units="ms"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the duration of a single Glic multi-instance session. A session
-    represents a period of continuous user engagement with a single Glic
-    instance. It starts after the instance has been visible for a short duration
-    (to exclude accidental opens) or when the user submits input. It ends after
-    a period of inactivity, being hidden for too long, or when the instance is
-    destroyed. See `chrome/browser/glic/service/glic_metrics_session_manager.h`
-    for more details.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.EndReason"
-    enum="GlicMultiInstanceSessionEndReason" expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the reason why a Glic multi-instance session ended. Recorded each
-    time a session finishes.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.HadEvent" enum="GlicInstanceEvent"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records events that happen during a Glic Sessions's lifecycle. This
-    histogram answers the question: How many sessions had each event type occur
-    at least once? Even if an event occurs multiple times in a session, only one
-    event is recorded per session.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.InputModesUsed"
-    enum="GlicInputModesUsed" expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@chromium.org</owner>
-  <summary>
-    The input modes that were used during a Glic multi-instance session.
-    Recorded when the session ends.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.MaxPinnedTabs" units="count"
-    expires_after="2027-04-11">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the maximum number of tabs that were pinned at any time during a
-    single session. This is recorded when the session finishes.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.MultipleTabsPinnedInAnyTurn"
-    enum="Boolean" expires_after="2027-04-11">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Boolean histogram that logs whether multiple tabs were pinned for any input
-    submitted during a single session. This is recorded when the session
-    finishes.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.ToggleCount" units="count"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    The number of times that a single Glic session was toggled. Recorded when
-    the session ends.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.TotalActiveDuration" units="ms"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a Glic multi-instance session was active. Recorded
-    when the session ends. A session is active when it is showing in an embedder
-    in the active browser window.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.TotalHiddenDuration" units="ms"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a Glic multi-instance session was hidden. Recorded
-    when the session ends. A session is hidden when it is not shown in any
-    embedder. This does not account for occlusion.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.TotalInactiveDuration" units="ms"
-    expires_after="2026-12-27">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a Glic multi-instance session was inactive. Recorded
-    when the session ends. A session is inactive when it is not showing in any
-    embedder of an active browser window.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.TotalVisibleDuration" units="ms"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a Glic multi-instance session was visible. Recorded
-    when the session ends. A session is visible when it is shown in any
-    embedder. This does not account for occlusion.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Session.TurnCount" units="count"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    The number of turns that occurred in a single Glic multi-instance session.
-    Recorded when the session ends.
   </summary>
 </histogram>
 
@@ -1737,119 +1410,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Glic.Instance.Session.WasTurnSubmitted.{EmbedderType}.{InvocationSource}"
-    enum="Boolean" expires_after="2027-07-31">
-  <owner>andreaxg@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Whether at least one turn was submitted during the Glic multi-instance
-    session that was opened via {InvocationSource} in {EmbedderType}. Logged
-    when the session (panel or floaty window) is closed. Previously recorded as
-    Glic.Session.WasTurnSubmitted.{EmbedderType}.{InvocationSource}.
-  </summary>
-  <token key="EmbedderType" variants="EmbedderType"/>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-</histogram>
-
-<histogram name="Glic.Instance.SessionCount" units="count"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    The number of Glic multi-instance sessions that occurred in a single Glic
-    instance's lifetime. Recorded when the instance is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.SidePanel.OpenDuration" units="ms"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the duration that a Glic Side Panel was open. Recorded each time a
-    Side Panel instance is closed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.SidePanel.OpenSource"
-    enum="GlicInvocationSource" expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the source of the invocation when the Glic panel becomes visible for
-    the first time after being closed. Recorded when first visible (for
-    foreground and background instance creation), when popped back from Floaty,
-    for a conversation switch. Background opens were not recorded before M150.
-    This metric is not logged on tab switches. In M151, the default invocation
-    source was fixed to no longer be the TopChromeButton.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.SidePanel.ToggleSource"
-    enum="GlicInvocationSource" expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the source of the invocation that caused the side panel GlicInstance
-    to be toggled. Recorded each time the instance is toggled. See
-    Glic.Instance.SidePanel.OpenSource for the metric only including invocations
-    that open the side panel. In M151, the default invocation source was fixed
-    to no longer be the TopChromeButton.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TabPinTrigger" enum="GlicPinTrigger"
-    expires_after="2027-03-21">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the trigger responsible for pinning a tab to a Glic Instance.
-    Recorded each time a tab is pinned.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TabUnpinTrigger" enum="GlicUnpinTrigger"
-    expires_after="2027-03-21">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the trigger responsible for unpinning a tab from a Glic Instance.
-    Recorded each time a tab is unpinned.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TimeBetweenSessions.{Range}" units="ms"
-    expires_after="2027-03-07">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@chromium.org</owner>
-  <summary>
-    Records the time between the end of one Glic multi-instance session and the
-    start of the next one within the same instance. Max bucket is {Range}.
-  </summary>
-  <token key="Range">
-    <variant name="7D" summary="7 days"/>
-    <variant name="24H" summary="24 hours"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Instance.TimeSinceLastActive{Range}" units="ms"
-    expires_after="2027-03-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time elapsed since the instance was last active. This is
-    measured on reactivation as the duration from the last time the instance
-    became inactive to the current time of activation.
-  </summary>
-  <token key="Range">
-    <variant name="" summary="Default range"/>
-    <variant name=".7D" summary="7 day range"/>
-    <variant name=".24H" summary="24 hour range"/>
-  </token>
-</histogram>
-
 <histogram name="Glic.Instance.TimeSinceLastInstanceActiveOnOpen" units="ms"
     expires_after="2027-03-28">
   <owner>birnie@google.com</owner>
@@ -1857,79 +1417,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time elapsed since the last active Glic instance was active.
     Recorded when Glic is opened and a previous active instance exists.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TimeToActionable.Inactive.{EmbedderType}"
-    units="ms" expires_after="2027-08-11">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@chromium.org</owner>
-  <summary>
-    Measures the time from when a user toggles the Glic panel to be shown until
-    the guest web client emits its actionability performance.mark()
-    (&quot;gemini.interactive&quot;), for panels that were backgrounded before
-    that happened. Recorded at most once per guest document when an inactive
-    {EmbedderType} panel becomes actionable.
-  </summary>
-  <token key="EmbedderType" variants="EmbedderType"/>
-</histogram>
-
-<histogram name="Glic.Instance.TimeToActionable.{EmbedderType}" units="ms"
-    expires_after="2027-08-11">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@chromium.org</owner>
-  <summary>
-    Measures the time from when a user toggles the Glic panel to be shown until
-    the renderer submits a compositor frame after the guest WebContents is shown
-    in the panel and has emitted its actionability performance.mark()
-    (&quot;gemini.interactive&quot;). If that frame is submitted while the panel
-    is briefly hidden, the end time is when the panel is shown again. Recorded
-    at most once per guest document when a {EmbedderType} panel first presents
-    its actionable state.
-  </summary>
-  <token key="EmbedderType" variants="EmbedderType"/>
-</histogram>
-
-<histogram name="Glic.Instance.TimeToDismissWhileLoading.{EmbedderType}"
-    units="ms" expires_after="2027-08-11">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@chromium.org</owner>
-  <summary>
-    Measures the time from when a user toggles the Glic panel to be shown until
-    the user closes, collapses, or switches away from the panel before the web
-    client finishes loading. Recorded when an active {EmbedderType} panel is
-    dismissed while loading.
-  </summary>
-  <token key="EmbedderType" variants="EmbedderType"/>
-</histogram>
-
-<histogram name="Glic.Instance.TotalActiveDuration" units="ms"
-    expires_after="2027-03-07">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a GlicInstance was active throughout its lifetime.
-    Recorded when the GlicInstance is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TotalBackgroundDuration" units="ms"
-    expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a GlicInstance was in the background throughout its
-    lifetime. Recorded when the GlicInstance is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TotalHiddenDuration" units="ms"
-    expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a GlicInstance was hidden throughout its lifetime.
-    Recorded when the GlicInstance is destroyed.
   </summary>
 </histogram>
 
@@ -1942,28 +1429,6 @@ chromium-metrics-reviews@google.com.
     all unhibernated Glic instances, {TriggerEvent}.
   </summary>
   <token key="TriggerEvent" variants="MemoryTriggerEvent"/>
-</histogram>
-
-<histogram name="Glic.Instance.TotalTabsBoundInLifetime" units="count"
-    expires_after="2027-02-07">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total number of tabs that were bound to a single GlicInstance
-    throughout its lifetime. Recorded when the GlicInstance is destroyed.
-    Metrics recorded on instance destruction may not be recorded successfully on
-    irregular Chrome shutdowns.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.TotalVisibleDuration" units="ms"
-    expires_after="2027-03-21">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the total time a GlicInstance was visible (in the foreground)
-    throughout its lifetime. Recorded when the GlicInstance is destroyed.
-  </summary>
 </histogram>
 
 <histogram name="Glic.Instance.TurnCount{Profile}" units="count"
@@ -1997,30 +1462,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration of a single, uninterrupted period of time that a
     GlicInstance was visible. Recorded each time an instance becomes hidden.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.WebUiLoadTime.{Visibility}" units="ms"
-    expires_after="2027-03-07">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
-    state to the `kReady` state. This is recorded for both user-visible loads
-    and non-visible pre-warming loads, distinguished by the {Visibility}
-    variant.
-  </summary>
-  <token key="Visibility" variants="Visibility"/>
-</histogram>
-
-<histogram name="Glic.Instance.ZoomChangeCount" units="count"
-    expires_after="2027-03-28">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Records the number of times the zoom level of the Glic panel was changed
-    throughout the lifetime of a single Glic instance. Recorded when the
-    instance is destroyed.
   </summary>
 </histogram>
 
@@ -2063,117 +1504,6 @@ chromium-metrics-reviews@google.com.
     Records the target of a conversation switch. Recorded each time
     SwitchConversation is called.
   </summary>
-</histogram>
-
-<histogram name="Glic.InvocationSource.{InvocationSource}.EventCounts"
-    enum="GlicInstanceEvent" expires_after="2027-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records every event that happens during a Glic Instance's lifecycle broken
-    down by {InvocationSource} that instance was created with. This histogram
-    answers the question: What is the total number of times each event occurred
-    across all Glic instances created via {InvocationSource}? An event is
-    recorded each time it occurs. Events that are recorded before an initial
-    invocation source is assigned are also backfilled for that invocation
-    source. In M151, the default invocation source was fixed to no longer be the
-    TopChromeButton.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-</histogram>
-
-<histogram
-    name="Glic.InvocationSource.{InvocationSource}.FloatyFirstOpenDuration"
-    units="ms" expires_after="2027-06-01">
-  <owner>andreaxg@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the duration that a Glic Floaty window was open. Recorded for the
-    first time the floaty was open for an instance without an error. In M151,
-    the default invocation source was fixed to no longer be the TopChromeButton.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-</histogram>
-
-<histogram name="Glic.InvocationSource.{InvocationSource}.HadEvent"
-    enum="GlicInstanceEvent" expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records events that happen during a Glic Instance's lifecycle broken down by
-    {InvocationSource} that instance was created with. This histogram answers
-    the question: How many instances created via {InvocationSource} had each
-    event type occur at least once? Even if an event occurs multiple times in an
-    instance, only one event is recorded per instance. Events that are recorded
-    before an initial invocation source is assigned are also backfilled for that
-    invocation source. In M151, the default invocation source was fixed to no
-    longer be the TopChromeButton.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-</histogram>
-
-<histogram
-    name="Glic.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration"
-    units="ms" expires_after="2027-04-11">
-  <owner>basiaz@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the duration that a Glic Side Panel was open. Recorded for the first
-    time side panel was open for an instance without an error. Switching away
-    from a tab with side panel counts as closure for the purpose of this metric.
-    In M151, the default invocation source was fixed to no longer be the
-    TopChromeButton.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-</histogram>
-
-<histogram
-    name="Glic.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration.{PromptStatus}"
-    units="ms" expires_after="2027-02-28">
-  <owner>sanaakbani@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <summary>
-    Records the duration that a Glic Side Panel was open when opened via
-    {InvocationSource}, split by whether any user prompts were submitted while
-    open. Recorded when the side panel is closed or tab is switched for the
-    first time.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-  <token key="PromptStatus">
-    <variant name="NoPrompts"
-        summary="Recorded when 0 prompts were submitted while open."/>
-    <variant name="WithPrompts"
-        summary="Recorded when 1 or more prompts were submitted while open."/>
-  </token>
-</histogram>
-
-<histogram
-    name="Glic.InvocationSource.{InvocationSource}.SidePanelFirstOpenPromptCount"
-    units="prompts" expires_after="2027-02-28">
-  <owner>sanaakbani@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <summary>
-    Records the total number of user prompts submitted while the Glic Side Panel
-    is initially open when opened via {InvocationSource}. Recorded when the side
-    panel is closed or tab is switched for the first time.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-</histogram>
-
-<histogram
-    name="Glic.InvocationSource.{InvocationSource}.WebUiLoadTime.{Visibility}"
-    units="ms" expires_after="2027-03-07">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
-    state to the `kReady` state. This is recorded for both user-visible loads
-    and non-visible pre-warming loads, distinguished by the {InvocationSource}
-    this instance was created with and {Visibility} variant. In M151, the
-    default invocation source was fixed to no longer be the TopChromeButton.
-  </summary>
-  <token key="InvocationSource" variants="GlicInvocationSource"/>
-  <token key="Visibility" variants="Visibility"/>
 </histogram>
 
 <histogram name="Glic.Invoke.Duration" units="ms" expires_after="2027-06-01">
@@ -2759,16 +2089,6 @@ chromium-metrics-reviews@google.com.
   <summary>Record the current state when the panel is closed.</summary>
 </histogram>
 
-<histogram name="Glic.PanelWebUiState.FinishState3" enum="WebUiState"
-    expires_after="2027-02-28">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Record the current state when the panel is closed for multi instance
-    supported clients.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Paste.AttemptedFormat.{CopySource}"
     enum="GlicPasteFormat" expires_after="2027-03-07">
   <owner>birnie@google.com</owner>
@@ -3019,16 +2339,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Response.AttachedContextCount" units="tabs"
-    expires_after="2027-04-11">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the number of tabs attached as context when a response is received
-    from Glic. This is recorded for each response. The value is capped at 50.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Response.ClosedCaptionsShown" enum="Boolean"
     expires_after="2026-01-15">
   <owner>sanaakbani@google.com</owner>
@@ -3069,16 +2379,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded anytime a response is rated. There is no guarantee of correlation
     with any other Response.* metrics. This exists for diagnostic purposes only.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Response.Segmentation" enum="GlicResponseSegmentation"
-    expires_after="2027-02-14">
-  <owner>iwells@google.com</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded after a turn. Records the invocation source, attachment, and input
-    mode.
   </summary>
 </histogram>
 
@@ -3166,27 +2466,6 @@ chromium-metrics-reviews@google.com.
     Records the scroll distance (in device independent pixels) for a scroll
     triggered by scrollTo()
   </summary>
-</histogram>
-
-<histogram name="Glic.ScrollTo.SessionCount" units="count"
-    expires_after="2027-03-21">
-  <owner>liuwilliam@google.com</owner>
-  <owner>adithyas@google.com</owner>
-  <summary>
-    Records the number of scrollTo() attempts in a single session. Currently
-    configured to have a max recorded value of 100.
-  </summary>
-</histogram>
-
-<histogram name="Glic.ScrollTo.UserPromptToScrollTime.{Mode}" units="ms"
-    expires_after="2027-01-15">
-  <owner>liuwilliam@google.com</owner>
-  <owner>adithyas@google.com</owner>
-  <summary>
-    Records the time between when the user submitting input and a scroll
-    (triggered by scrollTo()) starting, when the web client is in {Mode}.
-  </summary>
-  <token key="Mode" variants="WebClientMode"/>
 </histogram>
 
 <histogram name="Glic.Selection.Action.{FreState}" enum="GlicSelectionAction"
@@ -3406,58 +2685,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Skills.Invoke.Funnel" enum="SkillsInvokeFunnel"
-    expires_after="2027-04-04">
-  <owner>michelleabreo@google.com</owner>
-  <owner>skills-eng@google.com</owner>
-  <summary>
-    Records the progression of a user opening the skills menu and subsequently
-    invoking a skill. This is used to measure how often users who open the UI
-    actually proceed to execute a skill. Used to track overall engagement and
-    drop-off rates for the core invocation flow.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Skills.SkillBuilder.Event" enum="SkillBuilderEvent"
-    expires_after="2027-04-04">
-  <owner>michelleabreo@google.com</owner>
-  <owner>skills-eng@google.com</owner>
-  <summary>
-    Records the progression of user actions and system events within the
-    AI-assisted Skill Builder flow. This metric is logged whenever the user
-    interacts with the builder's UI (e.g., clicking the proactive promo chip,
-    clicking 'Save as skill') or when the backend successfully completes a
-    generation step (e.g., generation of the skill prompt). This acts as a
-    high-level funnel to measure engagement and drop-off during the AI-driven
-    skill creation process.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Skills.WebClient.Event" enum="SkillsWebClientEvent"
-    expires_after="2027-04-04">
-  <owner>michelleabreo@google.com</owner>
-  <owner>skills-eng@google.com</owner>
-  <summary>
-    Records key events within the Skills section of the Glic WebClient. This is
-    logged immediately when a user interacts with the UI (such as invoking a
-    skill, clicking 'Add Skill', or opening the menu) or when a notable system
-    state transition occurs (such as Gemini successfully generating a prompt).
-    This serves as a top-level metric to measure user engagement, feature
-    distribution, and funnel progression directly within the Glic panel.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Tab.DaisyChainDepth" units="count"
-    expires_after="2027-04-11">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the depth of a tab in a daisy chain. Depth 1 means opened directly
-    from Glic. Depth 2 means opened from a tab that was opened from Glic, and so
-    on. Recorded each time a tab is bound via daisy chaining from another tab.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Tab.InstanceBindCount" units="count"
     expires_after="2027-03-21">
   <owner>birnie@google.com</owner>
@@ -3567,172 +2794,6 @@ chromium-metrics-reviews@google.com.
     Records whether the Glic-eligible profiles are enabled for tiered rollout.
     Emitted in every UMA record from the current session (at the time the record
     is finalized), but only if there is at least one Glic-eligible profile.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.Actuation.IsRetry" enum="Boolean"
-    expires_after="2027-02-14">
-  <owner>qinmin@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records whether a browser actuation result submitted by the web client is a
-    retry of a previous actuation in the same turn. Recorded for each actuation
-    result submitted.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.Actuation.ResponseStartTime" units="ms"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when the web client sends a browser actuation result
-    over the network until a response starts being presented to the user.
-    Recorded for each turn in a Glic instance where an actuation result was
-    submitted.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.Actuation.ResponseStopTime" units="ms"
-    expires_after="2026-10-16">
-  <owner>qinmin@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time from when the web client sends a browser actuation result
-    until a response stops. Recorded for each turn where an actuation result was
-    submitted.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.Actuation.ResponseStopTime.{Cause}" units="ms"
-    expires_after="2026-10-16">
-  <owner>qinmin@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time from when the web client sends a browser actuation result
-    until a response stops for the specific cause: {Cause}. Recorded for each
-    turn where an actuation result was submitted.
-  </summary>
-  <token key="Cause">
-    <variant name="ByUser"/>
-    <variant name="Other"/>
-    <variant name="UnknownCause"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Turn.Duration.{Model}" units="ms"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Recorded at the end of a turn response from the server indicating the time
-    the entire request/response sequence took.
-  </summary>
-  <token key="Model">
-    <variant name="Actor"/>
-    <variant name="Default"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Turn.InvocationSource" enum="GlicInvocationSource"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the last invocation source that was used to open the Glic panel for
-    a given turn. Recorded at the end of each turn.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.LatencyByAttachedTabCount.{AttachedTabCount}"
-    units="ms" expires_after="2027-04-11">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the time from when the user submitted input until a response stops
-    for a given number of attached tabs. Recorded after each turn.
-  </summary>
-  <token key="AttachedTabCount" variants="AttachedTabCount"/>
-</histogram>
-
-<histogram name="Glic.Turn.PromptType" enum="GlicPromptType"
-    expires_after="2027-03-01">
-  <owner>basiaz@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Recorded when user input is submitted for a turn in a Glic instance.
-    Indicates the submission prompt type (e.g. typed text, zero state
-    suggestions, auto prompt, audio).
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.ResponseStartTime" units="ms"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when the user submitted input until a response starts
-    being presented to the user. Recorded for each turn in a Glic instance.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Turn.ResponseStartTime.InputMode.{Mode}" units="ms"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when the user submitted input until a response starts
-    being presented to the user, for a given input mode.
-  </summary>
-  <token key="Mode">
-    <variant name="Audio"/>
-    <variant name="Text"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Turn.ResponseStartTime.{TabContext}" units="ms"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when the user submitted input until a response starts
-    being presented to the user, for turns where {TabContext} (*). This is
-    reported for all web client modes (text or audio).
-
-    (*) Chrome knows if tab context was requested by the web client and the
-    internal state of tabs' sharing status, but it cannot know for certain if
-    tab context was or was not actually attached to requests by the web client.
-  </summary>
-  <token key="TabContext">
-    <variant name="WithContext"
-        summary="tab context was likely used in the request"/>
-    <variant name="WithoutContext"
-        summary="tab context was likely NOT used in the request"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Turn.ResponseStopTime.{Cause}" units="ms"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time from a user's submitted input until a response stops.
-    Recorded for each turn in a Glic instance.
-  </summary>
-  <token key="Cause">
-    <variant name="ByUser"/>
-    <variant name="Other"/>
-    <variant name="UnknownCause"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Turn.Source" enum="GlicTurnSource"
-    expires_after="2027-02-14">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the source of the turn, including the UI mode (Side Panel or Floaty)
-    and the input mode (Text or Audio). Recorded at the end of each turn.
   </summary>
 </histogram>
 
@@ -3913,22 +2974,1099 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Glic.ZoomLevel.{Suffix}" units="%" expires_after="2027-04-04">
+<histogram name="Glic.ZoomLevel.SteadyState" units="%"
+    expires_after="2027-04-04">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
-    The zoom level of the Glic webview as a percentage. Recorded {Suffix}.
+    The zoom level of the Glic webview as a percentage. Recorded periodically
+    for active users (those who have completed the Glic FRE).
   </summary>
-  <token key="Suffix">
-    <variant name="OnOpen"
-        summary="when the Glic panel is opened by the user for the first time
-                 from a closed state, see
-                 Glic.Instance.{SidePanel,Floaty}.OpenSource for detailed
-                 definitions."/>
-    <variant name="SteadyState"
-        summary="periodically for active users (those who have completed the
-                 Glic FRE)."/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.EventCounts"
+    enum="GlicInstanceEvent" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records every event that happens during a Glic Instance's lifecycle. This
+    histogram answers the question: What is the total number of times each event
+    occurred across all Glic instances? An event is recorded each time it
+    occurs. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Floaty.InitialMode"
+    enum="GlicWebClientMode" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the initial mode (Text or Audio) when a Glic Floaty is shown.
+    Recorded each time a Floaty instance is shown with a specified initial mode.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Floaty.OpenDuration" units="ms"
+    expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Floaty was open. Recorded each time a
+    Floaty instance is closed. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Floaty.OpenSource"
+    enum="GlicInvocationSource" expires_after="2027-04-11">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the source of the invocation when the Glic Floaty panel becomes
+    visible for the first time after being closed. Recorded when detached from
+    Side Panel, when opened directly via os button / hotkey, or when the
+    conversation is switched. In M151, the default invocation source was fixed
+    to no longer be the TopChromeButton. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Floaty.ToggleSource"
+    enum="GlicInvocationSource" expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation that caused the floaty GlicInstance to
+    be toggled. Recorded each time the instance is toggled. See
+    Glic{GlicProvider}.Instance.Floaty.OpenSource for the metric only including
+    invocations that open Floaty. In M151, the default invocation source was
+    fixed to no longer be the TopChromeButton. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.Floaty.UserResizeEnded.{Dimension}"
+    units="DIPs" expires_after="2027-03-21">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the {Dimension} of the Glic instance in DIP when the user stops
+    resizing the instance showing in a floaty window. Scope: {GlicProvider}.
+  </summary>
+  <token key="Dimension" variants="Dimension"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.Floaty.UserResizeStarted.{Dimension}"
+    units="DIPs" expires_after="2027-03-21">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the {Dimension} of the Glic instance in DIP when the user starts
+    resizing the instance showing in a floaty window. Scope: {GlicProvider}.
+  </summary>
+  <token key="Dimension" variants="Dimension"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.HadEvent" enum="GlicInstanceEvent"
+    expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Instance's lifecycle. This
+    histogram answers the question: How many instances had each event type occur
+    at least once? Even if an event occurs multiple times in an instance, only
+    one event is recorded per instance. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.InitialInvocationSource"
+    enum="GlicInvocationSource" expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the first invocation source that was used to open a Glic instance.
+    Recorded when an instance is opened for the first time. In M151, the default
+    invocation source was fixed to no longer be the TopChromeButton. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.InputModesUsed"
+    enum="GlicInputModesUsed" expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The input modes that were used during the instance's lifetime. Recorded when
+    the instance is destroyed. Metrics recorded on instance destruction may not
+    be recorded successfully on irregular Chrome shutdowns. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.InputSubmitted.Selection.PolylinePointCount"
+    units="points" expires_after="2027-03-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when user input is submitted. Counts the number of points in active
+    polylines drawn by the user at the time of submission. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.InputSubmitted.SelectionCount"
+    units="areas" expires_after="2027-03-07">
+  <owner>dtapuska@google.com</owner>
+  <owner>liuwilliam@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Recorded when user input is submitted. The value is the number of active
+    selection areas at the time of submission. The maximum recorded is 10.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.MaxConcurrentlyBoundTabs"
+    units="count" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the maximum number of tabs that were simultaneously bound to a
+    single GlicInstance throughout its lifetime. Recorded when the GlicInstance
+    is destroyed. Metrics recorded on instance destruction may not be recorded
+    successfully on irregular Chrome shutdowns. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Metrics.Error{Cause}"
+    enum="GlicInstanceMetricsError" expires_after="2027-03-21">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded when an unusual sequence of events is seen by glic instance metrics
+    recorder. Usually replaces a real histogram event.
+
+    Limited to the following causes: {Cause}. Scope: {GlicProvider}.
+  </summary>
+  <token key="Cause">
+    <variant name="" summary="Cause not applicable"/>
+    <variant name=".ByUser" summary="User stopped the response"/>
+    <variant name=".Other"
+        summary="Other cause (infra) for stopping the response"/>
+    <variant name=".UnknownCause" summary="Unspecified stop reason"/>
   </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.PanelPresentationTime.Inactive.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the web client signals that it is ready, for panels that were backgrounded
+    or closed before the client finished loading. Recorded at most once per
+    instance when an inactive {EmbedderType} panel first finishes loading.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.PanelPresentationTime.{EmbedderType}"
+    units="ms" expires_after="2027-04-04">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the web client signals that it is ready. Recorded at most once per instance
+    when a {EmbedderType} panel first finishes loading while visible. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.CreateTabCount"
+    units="count" expires_after="2026-12-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The number of new tabs that are created during a single Glic multi-instance
+    session. Recorded when the session ends. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.Duration" units="ms"
+    expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the duration of a single Glic multi-instance session. A session
+    represents a period of continuous user engagement with a single Glic
+    instance. It starts after the instance has been visible for a short duration
+    (to exclude accidental opens) or when the user submits input. It ends after
+    a period of inactivity, being hidden for too long, or when the instance is
+    destroyed. See `chrome/browser/glic/service/glic_metrics_session_manager.h`
+    for more details. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.EndReason"
+    enum="GlicMultiInstanceSessionEndReason" expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the reason why a Glic multi-instance session ended. Recorded each
+    time a session finishes. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.HadEvent"
+    enum="GlicInstanceEvent" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Sessions's lifecycle. This
+    histogram answers the question: How many sessions had each event type occur
+    at least once? Even if an event occurs multiple times in a session, only one
+    event is recorded per session. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.InputModesUsed"
+    enum="GlicInputModesUsed" expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    The input modes that were used during a Glic multi-instance session.
+    Recorded when the session ends. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.MaxPinnedTabs"
+    units="count" expires_after="2027-04-11">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the maximum number of tabs that were pinned at any time during a
+    single session. This is recorded when the session finishes. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.Session.MultipleTabsPinnedInAnyTurn"
+    enum="Boolean" expires_after="2027-04-11">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Boolean histogram that logs whether multiple tabs were pinned for any input
+    submitted during a single session. This is recorded when the session
+    finishes. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.ToggleCount" units="count"
+    expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The number of times that a single Glic session was toggled. Recorded when
+    the session ends. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.TotalActiveDuration"
+    units="ms" expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was active. Recorded
+    when the session ends. A session is active when it is showing in an embedder
+    in the active browser window. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.TotalHiddenDuration"
+    units="ms" expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was hidden. Recorded
+    when the session ends. A session is hidden when it is not shown in any
+    embedder. This does not account for occlusion. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.TotalInactiveDuration"
+    units="ms" expires_after="2026-12-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was inactive. Recorded
+    when the session ends. A session is inactive when it is not showing in any
+    embedder of an active browser window. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.TotalVisibleDuration"
+    units="ms" expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was visible. Recorded
+    when the session ends. A session is visible when it is shown in any
+    embedder. This does not account for occlusion. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.Session.TurnCount" units="count"
+    expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    The number of turns that occurred in a single Glic multi-instance session.
+    Recorded when the session ends. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.Session.WasTurnSubmitted.{EmbedderType}.{InvocationSource}"
+    enum="Boolean" expires_after="2027-07-31">
+  <owner>andreaxg@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Whether at least one turn was submitted during the Glic multi-instance
+    session that was opened via {InvocationSource} in {EmbedderType}. Logged
+    when the session (panel or floaty window) is closed. Previously recorded as
+    Glic.Session.WasTurnSubmitted.{EmbedderType}.{InvocationSource}. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.SessionCount" units="count"
+    expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    The number of Glic multi-instance sessions that occurred in a single Glic
+    instance's lifetime. Recorded when the instance is destroyed. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.SidePanel.OpenDuration" units="ms"
+    expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open. Recorded each time a
+    Side Panel instance is closed. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.SidePanel.OpenSource"
+    enum="GlicInvocationSource" expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation when the Glic panel becomes visible for
+    the first time after being closed. Recorded when first visible (for
+    foreground and background instance creation), when popped back from Floaty,
+    for a conversation switch. Background opens were not recorded before M150.
+    This metric is not logged on tab switches. In M151, the default invocation
+    source was fixed to no longer be the TopChromeButton. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.SidePanel.ToggleSource"
+    enum="GlicInvocationSource" expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation that caused the side panel GlicInstance
+    to be toggled. Recorded each time the instance is toggled. See
+    Glic{GlicProvider}.Instance.SidePanel.OpenSource for the metric only
+    including invocations that open the side panel. In M151, the default
+    invocation source was fixed to no longer be the TopChromeButton. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TabPinTrigger"
+    enum="GlicPinTrigger" expires_after="2027-03-21">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the trigger responsible for pinning a tab to a Glic Instance.
+    Recorded each time a tab is pinned. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TabUnpinTrigger"
+    enum="GlicUnpinTrigger" expires_after="2027-03-21">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the trigger responsible for unpinning a tab from a Glic Instance.
+    Recorded each time a tab is unpinned. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TimeBetweenSessions.{Range}"
+    units="ms" expires_after="2027-03-07">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    Records the time between the end of one Glic multi-instance session and the
+    start of the next one within the same instance. Max bucket is {Range}.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="Range">
+    <variant name="7D" summary="7 days"/>
+    <variant name="24H" summary="24 hours"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TimeSinceLastActive{Range}"
+    units="ms" expires_after="2027-03-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time elapsed since the instance was last active. This is
+    measured on reactivation as the duration from the last time the instance
+    became inactive to the current time of activation. Scope: {GlicProvider}.
+  </summary>
+  <token key="Range">
+    <variant name="" summary="Default range"/>
+    <variant name=".7D" summary="7 day range"/>
+    <variant name=".24H" summary="24 hour range"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.TimeToActionable.Inactive.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the guest web client emits its actionability performance.mark()
+    (&quot;gemini.interactive&quot;), for panels that were backgrounded before
+    that happened. Recorded at most once per guest document when an inactive
+    {EmbedderType} panel becomes actionable. Scope: {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TimeToActionable.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the renderer submits a compositor frame after the guest WebContents is shown
+    in the panel and has emitted its actionability performance.mark()
+    (&quot;gemini.interactive&quot;). If that frame is submitted while the panel
+    is briefly hidden, the end time is when the panel is shown again. Recorded
+    at most once per guest document when a {EmbedderType} panel first presents
+    its actionable state. Scope: {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.TimeToDismissWhileLoading.{EmbedderType}"
+    units="ms" expires_after="2027-08-11">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the user closes, collapses, or switches away from the panel before the web
+    client finishes loading. Recorded when an active {EmbedderType} panel is
+    dismissed while loading. Scope: {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TotalActiveDuration" units="ms"
+    expires_after="2027-03-07">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was active throughout its lifetime.
+    Recorded when the GlicInstance is destroyed. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TotalBackgroundDuration"
+    units="ms" expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was in the background throughout its
+    lifetime. Recorded when the GlicInstance is destroyed. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TotalHiddenDuration" units="ms"
+    expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was hidden throughout its lifetime.
+    Recorded when the GlicInstance is destroyed. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TotalTabsBoundInLifetime"
+    units="count" expires_after="2027-02-07">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total number of tabs that were bound to a single GlicInstance
+    throughout its lifetime. Recorded when the GlicInstance is destroyed.
+    Metrics recorded on instance destruction may not be recorded successfully on
+    irregular Chrome shutdowns. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TotalVisibleDuration" units="ms"
+    expires_after="2027-03-21">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was visible (in the foreground)
+    throughout its lifetime. Recorded when the GlicInstance is destroyed. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.WebUiLoadTime.{Visibility}"
+    units="ms" expires_after="2027-03-07">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
+    state to the `kReady` state. This is recorded for both user-visible loads
+    and non-visible pre-warming loads, distinguished by the {Visibility}
+    variant. Scope: {GlicProvider}.
+  </summary>
+  <token key="Visibility" variants="Visibility"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.ZoomChangeCount" units="count"
+    expires_after="2027-03-28">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the number of times the zoom level of the Glic panel was changed
+    throughout the lifetime of a single Glic instance. Recorded when the
+    instance is destroyed. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.EventCounts"
+    enum="GlicInstanceEvent" expires_after="2027-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records every event that happens during a Glic Instance's lifecycle broken
+    down by {InvocationSource} that instance was created with. This histogram
+    answers the question: What is the total number of times each event occurred
+    across all Glic instances created via {InvocationSource}? An event is
+    recorded each time it occurs. Events that are recorded before an initial
+    invocation source is assigned are also backfilled for that invocation
+    source. In M151, the default invocation source was fixed to no longer be the
+    TopChromeButton. Scope: {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.FloatyFirstOpenDuration"
+    units="ms" expires_after="2027-06-01">
+  <owner>andreaxg@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Floaty window was open. Recorded for the
+    first time the floaty was open for an instance without an error. In M151,
+    the default invocation source was fixed to no longer be the TopChromeButton.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.HadEvent"
+    enum="GlicInstanceEvent" expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Instance's lifecycle broken down by
+    {InvocationSource} that instance was created with. This histogram answers
+    the question: How many instances created via {InvocationSource} had each
+    event type occur at least once? Even if an event occurs multiple times in an
+    instance, only one event is recorded per instance. Events that are recorded
+    before an initial invocation source is assigned are also backfilled for that
+    invocation source. In M151, the default invocation source was fixed to no
+    longer be the TopChromeButton. Scope: {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration"
+    units="ms" expires_after="2027-04-11">
+  <owner>basiaz@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open. Recorded for the first
+    time side panel was open for an instance without an error. Switching away
+    from a tab with side panel counts as closure for the purpose of this metric.
+    In M151, the default invocation source was fixed to no longer be the
+    TopChromeButton. Scope: {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration.{PromptStatus}"
+    units="ms" expires_after="2027-02-28">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open when opened via
+    {InvocationSource}, split by whether any user prompts were submitted while
+    open. Recorded when the side panel is closed or tab is switched for the
+    first time. Scope: {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="PromptStatus">
+    <variant name="NoPrompts"
+        summary="Recorded when 0 prompts were submitted while open."/>
+    <variant name="WithPrompts"
+        summary="Recorded when 1 or more prompts were submitted while open."/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.SidePanelFirstOpenPromptCount"
+    units="prompts" expires_after="2027-02-28">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records the total number of user prompts submitted while the Glic Side Panel
+    is initially open when opened via {InvocationSource}. Recorded when the side
+    panel is closed or tab is switched for the first time. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.WebUiLoadTime.{Visibility}"
+    units="ms" expires_after="2027-03-07">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
+    state to the `kReady` state. This is recorded for both user-visible loads
+    and non-visible pre-warming loads, distinguished by the {InvocationSource}
+    this instance was created with and {Visibility} variant. In M151, the
+    default invocation source was fixed to no longer be the TopChromeButton.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="Visibility" variants="Visibility"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.PanelWebUiState.FinishState3"
+    enum="WebUiState" expires_after="2027-02-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Record the current state when the panel is closed for multi instance
+    supported clients. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Response.AttachedContextCount" units="tabs"
+    expires_after="2027-04-11">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs attached as context when a response is received
+    from Glic. This is recorded for each response. The value is capped at 50.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Response.Segmentation"
+    enum="GlicResponseSegmentation" expires_after="2027-02-14">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the invocation source, attachment, and input
+    mode. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.ScrollTo.SessionCount" units="count"
+    expires_after="2027-03-21">
+  <owner>liuwilliam@google.com</owner>
+  <owner>adithyas@google.com</owner>
+  <summary>
+    Records the number of scrollTo() attempts in a single session. Currently
+    configured to have a max recorded value of 100. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.ScrollTo.UserPromptToScrollTime.{Mode}"
+    units="ms" expires_after="2027-01-15">
+  <owner>liuwilliam@google.com</owner>
+  <owner>adithyas@google.com</owner>
+  <summary>
+    Records the time between when the user submitting input and a scroll
+    (triggered by scrollTo()) starting, when the web client is in {Mode}. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="Mode" variants="WebClientMode"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Skills.Invoke.Funnel"
+    enum="SkillsInvokeFunnel" expires_after="2027-04-04">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the progression of a user opening the skills menu and subsequently
+    invoking a skill. This is used to measure how often users who open the UI
+    actually proceed to execute a skill. Used to track overall engagement and
+    drop-off rates for the core invocation flow. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Skills.SkillBuilder.Event"
+    enum="SkillBuilderEvent" expires_after="2027-04-04">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the progression of user actions and system events within the
+    AI-assisted Skill Builder flow. This metric is logged whenever the user
+    interacts with the builder's UI (e.g., clicking the proactive promo chip,
+    clicking 'Save as skill') or when the backend successfully completes a
+    generation step (e.g., generation of the skill prompt). This acts as a
+    high-level funnel to measure engagement and drop-off during the AI-driven
+    skill creation process. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Skills.WebClient.Event"
+    enum="SkillsWebClientEvent" expires_after="2027-04-04">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records key events within the Skills section of the Glic WebClient. This is
+    logged immediately when a user interacts with the UI (such as invoking a
+    skill, clicking 'Add Skill', or opening the menu) or when a notable system
+    state transition occurs (such as Gemini successfully generating a prompt).
+    This serves as a top-level metric to measure user engagement, feature
+    distribution, and funnel progression directly within the Glic panel. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Tab.DaisyChainDepth" units="count"
+    expires_after="2027-04-11">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the depth of a tab in a daisy chain. Depth 1 means opened directly
+    from Glic. Depth 2 means opened from a tab that was opened from Glic, and so
+    on. Recorded each time a tab is bound via daisy chaining from another tab.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.Actuation.IsRetry" enum="Boolean"
+    expires_after="2027-02-14">
+  <owner>qinmin@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records whether a browser actuation result submitted by the web client is a
+    retry of a previous actuation in the same turn. Recorded for each actuation
+    result submitted. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.Actuation.ResponseStartTime"
+    units="ms" expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the web client sends a browser actuation result
+    over the network until a response starts being presented to the user.
+    Recorded for each turn in a Glic instance where an actuation result was
+    submitted. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.Actuation.ResponseStopTime" units="ms"
+    expires_after="2026-10-16">
+  <owner>qinmin@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from when the web client sends a browser actuation result
+    until a response stops. Recorded for each turn where an actuation result was
+    submitted. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.Actuation.ResponseStopTime.{Cause}"
+    units="ms" expires_after="2026-10-16">
+  <owner>qinmin@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from when the web client sends a browser actuation result
+    until a response stops for the specific cause: {Cause}. Recorded for each
+    turn where an actuation result was submitted. Scope: {GlicProvider}.
+  </summary>
+  <token key="Cause">
+    <variant name="ByUser"/>
+    <variant name="Other"/>
+    <variant name="UnknownCause"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.Duration.{Model}" units="ms"
+    expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded at the end of a turn response from the server indicating the time
+    the entire request/response sequence took. Scope: {GlicProvider}.
+  </summary>
+  <token key="Model">
+    <variant name="Actor"/>
+    <variant name="Default"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.InvocationSource"
+    enum="GlicInvocationSource" expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the last invocation source that was used to open the Glic panel for
+    a given turn. Recorded at the end of each turn. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Turn.LatencyByAttachedTabCount.{AttachedTabCount}"
+    units="ms" expires_after="2027-04-11">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response stops
+    for a given number of attached tabs. Recorded after each turn. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="AttachedTabCount" variants="AttachedTabCount"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.PromptType" enum="GlicPromptType"
+    expires_after="2027-03-01">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when user input is submitted for a turn in a Glic instance.
+    Indicates the submission prompt type (e.g. typed text, zero state
+    suggestions, auto prompt, audio). Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.ResponseStartTime" units="ms"
+    expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user. Recorded for each turn in a Glic instance.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.ResponseStartTime.InputMode.{Mode}"
+    units="ms" expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user, for a given input mode. Scope: {GlicProvider}.
+  </summary>
+  <token key="Mode">
+    <variant name="Audio"/>
+    <variant name="Text"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.ResponseStartTime.{TabContext}"
+    units="ms" expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user, for turns where {TabContext} (*). This is
+    reported for all web client modes (text or audio).
+
+    (*) Chrome knows if tab context was requested by the web client and the
+    internal state of tabs' sharing status, but it cannot know for certain if
+    tab context was or was not actually attached to requests by the web client.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="TabContext">
+    <variant name="WithContext"
+        summary="tab context was likely used in the request"/>
+    <variant name="WithoutContext"
+        summary="tab context was likely NOT used in the request"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.ResponseStopTime" units="ms"
+    expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from a user's submitted input until a response stops.
+    Recorded for each turn in a Glic instance. Recorded for all stop causes.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.ResponseStopTime.{Cause}" units="ms"
+    expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from a user's submitted input until a response stops.
+    Recorded for each turn in a Glic instance. Broken down by stop cause. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="Cause">
+    <variant name="ByUser"/>
+    <variant name="Other"/>
+    <variant name="UnknownCause"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.Source" enum="GlicTurnSource"
+    expires_after="2027-02-14">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the turn, including the UI mode (Side Panel or Floaty)
+    and the input mode (Text or Audio). Recorded at the end of each turn. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.ZoomLevel.OnOpen" units="%"
+    expires_after="2027-04-04">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The zoom level of the Glic webview as a percentage. Recorded when the Glic
+    panel is opened by the user for the first time from a closed state, see
+    Glic{GlicProvider}.Instance.SidePanel.OpenSource or
+    Glic{GlicProvider}.Instance.Floaty.OpenSource for detailed definitions.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
 </histograms>

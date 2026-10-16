@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -389,6 +390,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   std::unique_ptr<GlicStateTracker> activity_tracker_;
   std::unique_ptr<GlicStateTracker> visibility_tracker_;
 
+  // Must be declared before `session_manager_`, which copies it.
+  GlicMetricReporter metric_reporter_;
   GlicMetricsSessionManager session_manager_;
   base::TimeTicks last_session_end_time_;
   int session_count_ = 0;

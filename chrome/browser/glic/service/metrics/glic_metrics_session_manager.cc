@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
@@ -112,7 +113,8 @@ class ActiveSession {
       return;
     }
     if (event_counts_[event] == 0) {
-      base::UmaHistogramEnumeration("Glic.Instance.Session.HadEvent", event);
+      owner_->metric_reporter_.RecordEnumeration("Instance.Session.HadEvent",
+                                                 event);
     }
     event_counts_[event]++;
   }
@@ -125,8 +127,7 @@ class ActiveSession {
     return it == event_counts_.end() ? 0 : it->second;
   }
   base::TimeTicks start_time() const { return start_time_; }
-  const base::EnumSet<mojom::WebClientMode>&
-  inputs_modes_used() const {
+  const base::EnumSet<mojom::WebClientMode>& inputs_modes_used() const {
     return inputs_modes_used_;
   }
 
@@ -217,8 +218,7 @@ class ActiveSession {
   base::OneShotTimer activation_debounce_timer_;
 
   base::TimeTicks start_time_;
-  base::EnumSet<mojom::WebClientMode>
-      inputs_modes_used_;
+  base::EnumSet<mojom::WebClientMode> inputs_modes_used_;
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   int pinned_tab_count_ = 0;
   int session_max_pinned_tab_count_ = 0;
@@ -226,8 +226,10 @@ class ActiveSession {
 };
 
 // GlicMetricsSessionManager implementation
-GlicMetricsSessionManager::GlicMetricsSessionManager(GlicInstanceMetrics* owner)
-    : owner_(owner) {}
+GlicMetricsSessionManager::GlicMetricsSessionManager(
+    GlicInstanceMetrics* owner,
+    const GlicMetricReporter& reporter)
+    : owner_(owner), metric_reporter_(reporter) {}
 
 GlicMetricsSessionManager::~GlicMetricsSessionManager() = default;
 
@@ -298,11 +300,11 @@ void GlicMetricsSessionManager::FinishSession(
 
   if (active_session_->is_started()) {
     base::RecordAction(base::UserMetricsAction("Glic.Instance.Session.End"));
-    base::UmaHistogramEnumeration("Glic.Instance.Session.EndReason", reason);
+    metric_reporter_.RecordEnumeration("Instance.Session.EndReason", reason);
     if (owner_->current_ui_mode_ != EmbedderType::kUnknown) {
-      base::UmaHistogramBoolean(
+      metric_reporter_.RecordBoolean(
           base::StrCat(
-              {"Glic.Instance.Session.WasTurnSubmitted.",
+              {"Instance.Session.WasTurnSubmitted.",
                GetEmbedderTypeString(owner_->current_ui_mode_), ".",
                GetInvocationSourceString(owner_->last_invocation_source_)}),
           !active_session_->inputs_modes_used().empty());
@@ -318,32 +320,33 @@ void GlicMetricsSessionManager::FinishSession(
         session_duration -
         active_session_->visibility_tracker_.total_duration();
 
-    base::UmaHistogramCustomTimes(
-        "Glic.Instance.Session.TotalActiveDuration",
+    metric_reporter_.RecordCustomTimes(
+        "Instance.Session.TotalActiveDuration",
         active_session_->activity_tracker_.total_duration(),
         base::Milliseconds(1), base::Hours(24), 50);
-    base::UmaHistogramCustomTimes("Glic.Instance.Session.TotalInactiveDuration",
-                                  inactive_time, base::Milliseconds(1),
-                                  base::Hours(24), 50);
-    base::UmaHistogramCustomTimes(
-        "Glic.Instance.Session.TotalVisibleDuration",
+    metric_reporter_.RecordCustomTimes("Instance.Session.TotalInactiveDuration",
+                                       inactive_time, base::Milliseconds(1),
+                                       base::Hours(24), 50);
+    metric_reporter_.RecordCustomTimes(
+        "Instance.Session.TotalVisibleDuration",
         active_session_->visibility_tracker_.total_duration(),
         base::Milliseconds(1), base::Hours(24), 50);
-    base::UmaHistogramCustomTimes("Glic.Instance.Session.TotalHiddenDuration",
-                                  hidden_time, base::Milliseconds(1),
-                                  base::Hours(24), 50);
+    metric_reporter_.RecordCustomTimes("Instance.Session.TotalHiddenDuration",
+                                       hidden_time, base::Milliseconds(1),
+                                       base::Hours(24), 50);
 
-    base::UmaHistogramCustomTimes("Glic.Instance.Session.Duration",
-                                  session_duration, base::Milliseconds(1),
-                                  base::Hours(1), 50);
-    base::UmaHistogramCounts100(
-        "Glic.Instance.Session.TurnCount",
+    metric_reporter_.RecordCustomTimes("Instance.Session.Duration",
+                                       session_duration, base::Milliseconds(1),
+                                       base::Hours(1), 50);
+    metric_reporter_.RecordCounts100(
+        "Instance.Session.TurnCount",
         GetEventCount(GlicInstanceEvent::kTurnCompleted));
 
-    base::UmaHistogramCounts100("Glic.Instance.Session.CreateTabCount",
-                                GetEventCount(GlicInstanceEvent::kCreateTab));
-    base::UmaHistogramCounts100("Glic.Instance.Session.ToggleCount",
-                                GetEventCount(GlicInstanceEvent::kToggle));
+    metric_reporter_.RecordCounts100(
+        "Instance.Session.CreateTabCount",
+        GetEventCount(GlicInstanceEvent::kCreateTab));
+    metric_reporter_.RecordCounts100("Instance.Session.ToggleCount",
+                                     GetEventCount(GlicInstanceEvent::kToggle));
 
     InputModesUsed modes_used = InputModesUsed::kNone;
     bool has_audio =
@@ -356,14 +359,14 @@ void GlicMetricsSessionManager::FinishSession(
     } else if (has_text) {
       modes_used = InputModesUsed::kOnlyText;
     }
-    base::UmaHistogramEnumeration("Glic.Instance.Session.InputModesUsed",
-                                  modes_used);
+    metric_reporter_.RecordEnumeration("Instance.Session.InputModesUsed",
+                                       modes_used);
 
-    base::UmaHistogramBoolean(
-        "Glic.Instance.Session.MultipleTabsPinnedInAnyTurn",
+    metric_reporter_.RecordBoolean(
+        "Instance.Session.MultipleTabsPinnedInAnyTurn",
         active_session_->input_submitted_with_multiple_pinned_tabs());
-    base::UmaHistogramCounts100(
-        "Glic.Instance.Session.MaxPinnedTabs",
+    metric_reporter_.RecordCounts100(
+        "Instance.Session.MaxPinnedTabs",
         active_session_->session_max_pinned_tab_count());
 
     owner_->OnSessionFinished();
