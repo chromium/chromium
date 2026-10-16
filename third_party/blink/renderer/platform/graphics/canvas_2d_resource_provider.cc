@@ -706,7 +706,8 @@ Canvas2DResourceProvider::CreateWithClear(
   if (!provider->IsValid()) {
     return nullptr;
   }
-  if (!is_accelerated && !provider->GetSkSurface()) {
+  if (!is_accelerated &&
+      (!provider->resource_ || !provider->CreateSkSurface())) {
     return nullptr;
   }
 
@@ -749,7 +750,7 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
   auto provider = base::WrapUnique(new Canvas2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, std::move(context_lost_callback)));
-  if (provider->IsValid() && provider->GetSkSurface()) {
+  if (provider->IsValid() && provider->CreateSkSurface()) {
     provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
     CHECK(provider->IsValid());
@@ -857,9 +858,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   if (resource_) {
     EnsureWriteAccess();
   }
-  if (!is_accelerated_) {
-    surface_ = CreateSkSurface();
-  }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 
   // Single buffered mode supported only for accelerated canvas.
@@ -935,7 +933,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
           image_info, sii, "CanvasResourceSharedImage",
           kMaxRecycledCanvasResources);
-      surface_ = CreateSkSurface();
     }
   }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
@@ -996,14 +993,11 @@ bool Canvas2DResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-sk_sp<SkSurface> Canvas2DResourceProvider::CreateSkSurface() const {
+bool Canvas2DResourceProvider::CreateSkSurface() {
   TRACE_EVENT0("blink", "Canvas2DResourceProvider::CreateSkSurface");
 
   CHECK(!IsAccelerated());
-
-  if (!is_software_ && (IsGpuContextLost() || !resource_)) {
-    return nullptr;
-  }
+  CHECK(!surface_);
 
   // When using software raster, we render into CPU memory managed internally by
   // SkSurface and copy the rendered results to the backing SharedImage before
@@ -1014,7 +1008,8 @@ sk_sp<SkSurface> Canvas2DResourceProvider::CreateSkSurface() const {
   const auto info = SkImageInfo::Make(
       size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
       alpha_type_, color_space_.ToSkColorSpace());
-  return SkSurfaces::Raster(info, &props);
+  surface_ = SkSurfaces::Raster(info, &props);
+  return surface_ != nullptr;
 }
 
 void Canvas2DResourceProvider::ClearAtCreation() {
