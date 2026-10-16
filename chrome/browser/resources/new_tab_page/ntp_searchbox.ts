@@ -150,15 +150,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         reflect: true,
       },
 
-      /**
-       * Whether the secondary side was at any point available to be shown.
-       */
-      hadSecondarySide: {
-        type: Boolean,
-        reflect: true,
-        notify: true,
-      },
-
       /*
        * Whether the secondary side is currently available to be shown.
        */
@@ -243,7 +234,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   accessor isDark: boolean = false;
   accessor searchboxLayoutMode: string = '';
   accessor canShowSecondarySide: boolean = false;
-  accessor hadSecondarySide: boolean = false;
   accessor hasSecondarySide: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
@@ -872,10 +862,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected onLensSearchClick_() {
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
-  }
-
-  protected onHadSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
-    this.hadSecondarySide = e.detail.value;
   }
 
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
