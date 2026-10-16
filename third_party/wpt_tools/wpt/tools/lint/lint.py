@@ -722,7 +722,7 @@ def check_script_metadata(repo_root: Text, path: Text, f: IO[bytes]) -> List[rul
                     errors.append(rules.MultipleTestharness.error(path, line_no=line_no))
                 elif value == b"/resources/testharnessreport.js":
                     errors.append(rules.MultipleTestharnessReport.error(path, line_no=line_no))
-            elif key not in (b"title", b"quic", b"spec"):
+            elif key not in (b"title", b"quic", b"spec", b"pac"):
                 errors.append(rules.UnknownMetadata.error(path, line_no=line_no))
         else:
             done = True

@@ -992,6 +992,37 @@
                     return window.test_driver_internal.bidi.emulation.set_touch_override(
                         params);
                 },
+                /**
+                 * Overrides whether the browser respects the
+                 * `<meta name=viewport>` tag for the specified browsing
+                 * contexts.
+                 * Matches the `emulation.setViewportMetaOverride
+                 * <https://w3c.github.io/webdriver-bidi/#command-emulation-setViewportMetaOverride>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.emulation.set_viewport_meta_override({
+                 *     viewportMeta: true
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {null|true} params.viewportMeta - Whether to enable
+                 * viewport meta tag parsing (`true`). If `null` or omitted, the
+                 * override will be removed.
+                 * @param {null|Array.<(Context)>} [params.contexts] The
+                 * optional contexts parameter specifies which browsing contexts
+                 * to set the viewport meta override on. It should be either an
+                 * array of Context objects (window or browsing context id), or
+                 * null. If null or omitted, the override will be set on the
+                 * current browsing context.
+                 * @returns {Promise<void>} Resolves when the viewport meta
+                 * override is successfully set.
+                 */
+                set_viewport_meta_override: function (params) {
+                    assertBidiIsEnabled();
+                    return window.test_driver_internal.bidi.emulation.set_viewport_meta_override(
+                        params);
+                },
             },
             /**
              * `user_agent_client_hints <https://wicg.github.io/ua-client-hints/#automation>`_ module.
@@ -1504,6 +1535,33 @@
          */
         get_window_rect: function(context=null) {
             return window.test_driver_internal.get_window_rect(context);
+        },
+
+        /**
+         * Navigates the top-level browsing context to the given absolute URL.
+         *
+         * Matches the behaviour of the `Navigate To
+         * <https://www.w3.org/TR/webdriver/#navigate-to>`_
+         * WebDriver command.
+         *
+         * Navigating the browsing context in which the
+         * test is running will unload the test.
+         *
+         * @param {String} url - The URL to navigate to. This must be absolute.
+         * @param {(String|WindowProxy)} context - Browsing context in which
+         *                                         to run the call: a
+         *                                         ``WindowProxy``, a WebDriver
+         *                                         window handle as returned by
+         *                                         :js:func:`create_window`, or
+         *                                         null to use the current
+         *                                         browsing context.
+         *
+         * @returns {Promise} fulfilled when the WebDriver command returns, which
+         *                    depends on the session's page load strategy, or
+         *                    rejected if the WebDriver command errors.
+         */
+        navigate: function(url, context=null) {
+            return window.test_driver_internal.navigate(url, context);
         },
 
         /**
@@ -2557,6 +2615,10 @@
                 set_touch_override: function (params) {
                     throw new Error(
                         "bidi.emulation.set_touch_override is not implemented by testdriver-vendor.js");
+                },
+                set_viewport_meta_override: function (params) {
+                    throw new Error(
+                        "bidi.emulation.set_viewport_meta_override is not implemented by testdriver-vendor.js");
                 }
             },
             user_agent_client_hints: {
@@ -2673,6 +2735,10 @@
 
         async create_window(type=null, context=null) {
             throw new Error("create_window() is not implemented by testdriver-vendor.js");
+        },
+
+        async navigate(url, context=null) {
+            throw new Error("navigate() is not implemented by testdriver-vendor.js");
         },
 
         async minimize_window(context=null) {

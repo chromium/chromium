@@ -248,6 +248,26 @@ def has_openh264_gmp(gmp_path):
                for entry in gmp_path.split(os.pathsep) if entry)
 
 
+def has_vmp_signature(binary):
+    """Whether the Firefox binary has a Widevine Verified Media Path (VMP)
+    signature, i.e. the .sig file that signing places alongside it.
+
+    On macOS the signature files live in the bundle's Resources directory
+    rather than next to the binary.
+    """
+    if not binary:
+        return False
+    binary = os.path.abspath(binary)
+    if binary.endswith(".app"):
+        return os.path.isfile(os.path.join(binary, "Contents", "Resources",
+                                           "firefox.sig"))
+    name = os.path.basename(binary) + ".sig"
+    return any(os.path.isfile(path) for path in (
+        os.path.join(os.path.dirname(binary), name),
+        os.path.join(os.path.dirname(os.path.dirname(binary)), "Resources", name),
+    ))
+
+
 def run_info_extras(logger, default_prefs=None, **kwargs):
     extra_prefs = kwargs.get("extra_prefs", [])
     default_prefs = list(default_prefs.items()) if default_prefs is not None else []
@@ -271,12 +291,17 @@ def run_info_extras(logger, default_prefs=None, **kwargs):
           "sessionHistoryInParent": True,
           "swgl": bool_pref("gfx.webrender.software"),
           "useDrawSnapshot": bool_pref("reftest.use-draw-snapshot"),
+          "nativePrinter": any(key == "remote.print.printer_name" and value
+                               for key, value in extra_prefs + default_prefs),
           "privateBrowsing": bool_pref("browser.privatebrowsing.autostart"),
           "remoteAsyncMouseEvents": bool_pref("remote.events.async.mouse.enabled"),
           "remoteAsyncTouchEvents": bool_pref("remote.events.async.touch.enabled"),
           "remoteAsyncWheelEvents": bool_pref("remote.events.async.wheel.enabled"),
           "incOriginInit": os.environ.get("MOZ_ENABLE_INC_ORIGIN_INIT") == "1",
           "openh264": prefers_openh264(),
+          "isolated_process": kwargs.get("isolated_process"),
+          "vmpSigned": has_vmp_signature(kwargs.get("binary")),
+          "playready": bool_pref("media.eme.playready.enabled"),
           }
     rv.update(run_info_browser_version(**kwargs))
 
@@ -314,6 +339,7 @@ def update_properties():
             "remoteAsyncWheelEvents",
             "sessionHistoryInParent",
             "openh264",
+            "playready",
             "subsuite",
         ],
         {"os": ["display", "version", "os_version"], "processor": ["bits"]},
@@ -1016,7 +1042,7 @@ class FirefoxPytestBrowser(WebDriverBrowser):
                  disable_fission=False, stackfix_dir=None, leak_check=False,
                  asan=False, chaos_mode_flags=None, config=None, browser_channel="nightly",
                  headless=None, debug_test=False, profile_creator_cls=ProfileCreator,
-                 allow_list_paths=None, gmp_path=None, **kwargs):
+                 allow_list_paths=None, gmp_path=None, isolated_process=False, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args, **kwargs)
         self.binary = binary
@@ -1031,7 +1057,7 @@ class FirefoxPytestBrowser(WebDriverBrowser):
         self.leak_check = leak_check
         self.leak_report_file = None
 
-        self.env = self.get_env(binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s)
+        self.env = self.get_env(binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s, isolated_process)
 
         # Todo: need test type to use "aam" test in profile_creator_cls
         profile_creator = profile_creator_cls(logger,
@@ -1051,7 +1077,7 @@ class FirefoxPytestBrowser(WebDriverBrowser):
         self.profile = profile_creator.create()
         self.marionette_port = None
 
-    def get_env(self, binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s):
+    def get_env(self, binary, debug_info, headless, gmp_path, chaos_mode_flags, e10s, isolated_process):
         env = get_environ(self.logger,
                           binary,
                           debug_info,

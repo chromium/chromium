@@ -197,8 +197,15 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
         chrome_options["args"].append(
             "--ip-address-space-overrides=" + address_space_overrides_arg)
 
-    # Disable overlay scrollbar animations to prevent flaky wpt screenshots based on timing.
-    chrome_options["args"].append("--disable-features=ScrollbarAnimations")
+    chrome_options["args"].append("--disable-features=" + ",".join([
+        # Disable overlay scrollbar animations to prevent flaky wpt screenshots based on timing.
+        "ScrollbarAnimations",
+        # Compression dictionaries are only used over certificates that chain to a
+        # known root (or on localhost), which the wpt test CA never does, so every
+        # fetch/compression-dictionary/ test that expects Available-Dictionary fails.
+        # Keep both in one flag: a later --disable-features would replace this one.
+        "CompressionDictionaryTransportRequireKnownRootCert",
+    ]))
 
     # Always enable ViewTransitions long callback timeout to avoid erroneous
     # failures due to implicit timeout within the API.
