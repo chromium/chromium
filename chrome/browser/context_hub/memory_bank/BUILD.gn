@@ -5,12 +5,14 @@
 source_set("memory_bank") {
   sources = [
     "memory_bank.h",
+    "memory_bank_chat_types.h",
     "memory_bank_entry.cc",
     "memory_bank_entry.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//url",
   ]
 }

@@ -1087,23 +1087,25 @@ void ContextHubService::ClearTabGroupChatHistory() {
 
 void ContextHubService::AddMemoryBankChatHistoryTurn(
     optimization_guide::proto::ChatHistoryTurn::Role role,
-    std::string_view message_content) {
-  optimization_guide::proto::ChatHistoryTurn turn;
-  turn.set_role(role);
-  turn.set_message_content(message_content);
-  turn.set_timestamp_ms(base::Time::Now().InMillisecondsSinceUnixEpoch());
+    std::string_view message_content,
+    const std::vector<MemoryBankChatCitation>& citations) {
+  MemoryBankChatHistoryTurn entry;
+  entry.turn.set_role(role);
+  entry.turn.set_message_content(message_content);
+  entry.turn.set_timestamp_ms(base::Time::Now().InMillisecondsSinceUnixEpoch());
+  entry.citations = citations;
   MemoryBankChatHistoryTurnId id =
       memory_bank_chat_history_turn_id_generator_.GenerateNextId();
-  memory_bank_chat_history_cache_.Put(id, std::move(turn));
+  memory_bank_chat_history_cache_.Put(id, std::move(entry));
 }
 
-std::vector<optimization_guide::proto::ChatHistoryTurn>
+std::vector<MemoryBankChatHistoryTurn>
 ContextHubService::GetMemoryBankChatHistory() const {
-  std::vector<optimization_guide::proto::ChatHistoryTurn> history;
+  std::vector<MemoryBankChatHistoryTurn> history;
   history.reserve(memory_bank_chat_history_cache_.size());
-  for (const auto& [id, turn] :
+  for (const auto& [id, history_turn] :
        std::views::reverse(memory_bank_chat_history_cache_)) {
-    history.push_back(turn);
+    history.push_back(history_turn);
   }
   return history;
 }
@@ -1471,8 +1473,9 @@ void ContextHubService::OnMemoryBankEntriesFetched(
   }
 
   if (save_to_history) {
-    for (const auto& turn : GetMemoryBankChatHistory()) {
-      *request.add_chat_history() = turn;
+    for (const auto& [id, history_turn] :
+         std::views::reverse(memory_bank_chat_history_cache_)) {
+      *request.add_chat_history() = history_turn.turn;
     }
   }
 
@@ -1517,13 +1520,6 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
   const optimization_guide::proto::MemoryBankChatResponse& chat_response =
       response->memory_bank_chat_response();
   std::string text_response = chat_response.text_response();
-  if (save_to_history && !text_response.empty()) {
-    AddMemoryBankChatHistoryTurn(
-        optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
-    AddMemoryBankChatHistoryTurn(
-        optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
-        text_response);
-  }
 
   std::vector<MemoryBankChatCitation> citations;
   base::flat_set<GURL> seen_urls;
@@ -1539,6 +1535,14 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
         .title = entry.tab_title.empty() ? entry.url.spec() : entry.tab_title,
         .url = entry.url,
     });
+  }
+
+  if (save_to_history && !text_response.empty()) {
+    AddMemoryBankChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
+    AddMemoryBankChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
+        text_response, citations);
   }
 
   std::move(callback).Run(std::move(text_response), std::move(citations));

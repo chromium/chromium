@@ -41,6 +41,7 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_chat_types.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -764,20 +765,6 @@ std::vector<browser::context_hub::mojom::TabInfoPtr> ToMojoTabs(
   return mojo_tabs;
 }
 
-std::vector<browser::context_hub::mojom::ChatReferencePtr> ToMojoChatReferences(
-    base::span<const context_hub::ContextHubService::MemoryBankChatCitation>
-        citations) {
-  std::vector<browser::context_hub::mojom::ChatReferencePtr> references;
-  references.reserve(citations.size());
-  for (const auto& citation : citations) {
-    auto ref = browser::context_hub::mojom::ChatReference::New();
-    ref->title = citation.title;
-    ref->url = citation.url;
-    references.push_back(std::move(ref));
-  }
-  return references;
-}
-
 std::vector<browser::context_hub::mojom::ChatMessagePtr> ToMojoChatHistory(
     const std::vector<optimization_guide::proto::ChatHistoryTurn>& history) {
   std::vector<browser::context_hub::mojom::ChatMessagePtr> mojo_history;
@@ -1012,10 +999,11 @@ void ContextHubPageHandler::AskGeminiWithContext(
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
   if (!service) {
-    auto response = browser::context_hub::mojom::ChatMessage::New();
-    response->role = browser::context_hub::mojom::ChatRole::kAssistant;
-    response->content = "Service unavailable.";
-    std::move(callback).Run(std::move(response), {});
+    context_hub::MemoryBankChatHistoryTurn response;
+    response.turn.set_role(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+    response.turn.set_message_content("Service unavailable.");
+    std::move(callback).Run(std::move(response));
     return;
   }
 
@@ -1024,14 +1012,15 @@ void ContextHubPageHandler::AskGeminiWithContext(
       base::BindOnce(
           [](AskGeminiWithContextCallback callback,
              std::optional<std::string> response_text,
-             std::vector<context_hub::ContextHubService::MemoryBankChatCitation>
-                 citations) {
-            auto response = browser::context_hub::mojom::ChatMessage::New();
-            response->role = browser::context_hub::mojom::ChatRole::kAssistant;
-            response->content =
-                response_text.value_or("Failed to generate response.");
-            std::move(callback).Run(std::move(response),
-                                    ToMojoChatReferences(citations));
+             std::vector<context_hub::MemoryBankChatCitation> citations) {
+            context_hub::MemoryBankChatHistoryTurn response;
+            response.turn.set_role(
+                optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+            response.turn.set_message_content(
+                std::move(response_text)
+                    .value_or("Failed to generate response."));
+            response.citations = std::move(citations);
+            std::move(callback).Run(std::move(response));
           },
           std::move(callback)));
 }
@@ -1045,8 +1034,7 @@ void ContextHubPageHandler::GetMemoryBankChatHistory(
     return;
   }
 
-  std::move(callback).Run(
-      ToMojoChatHistory(service->GetMemoryBankChatHistory()));
+  std::move(callback).Run(service->GetMemoryBankChatHistory());
 }
 
 void ContextHubPageHandler::ClearMemoryBankChatHistory(

@@ -181,6 +181,18 @@ struct ChatMessage {
   string content;
 };
 
+// Represents a message in the memory bank chat, including any source
+// references cited by the assistant.
+struct MemoryBankChatMessage {
+  // The author role of the chat message (user or assistant).
+  ChatRole role;
+  // The textual content of the chat message.
+  string content;
+  // Source references cited in the message. Empty for user messages or when no
+  // sources were cited.
+  array<ChatReference> references;
+};
+
 // Context provided to the WebUI dialog for previewing the item to be saved.
 struct SaveToMemoryBankContext {
   // The URL of the page where the context originated.
@@ -627,15 +639,16 @@ interface PageHandler {
   ClearTabGroupChatHistory() => ();
 
   // Sends a request to Gemini with the user command and selected memory bank
-  // entry IDs. If `save_to_history` is true, the turn is saved to the memory
+  // entry IDs, returning the assistant response along with any cited source
+  // references. If `save_to_history` is true, the turn is saved to the memory
   // bank chat history.
   AskGeminiWithContext(
       string user_command, array<int64> memory_bank_entry_ids,
       bool save_to_history)
-      => (ChatMessage response, array<ChatReference> references);
+      => (MemoryBankChatMessage response);
 
   // Returns stored memory bank chat history.
-  GetMemoryBankChatHistory() => (array<ChatMessage> history);
+  GetMemoryBankChatHistory() => (array<MemoryBankChatMessage> history);
 
   // Clears stored memory bank chat history.
   ClearMemoryBankChatHistory() => ();

@@ -14,9 +14,11 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_chat_types.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
+#include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/personal_context/proto/features/smart_search.pb.h"
 #include "mojo/public/cpp/bindings/array_traits_protobuf.h"
@@ -336,9 +338,45 @@ struct StructTraits<browser::context_hub::mojom::SmartSearchResultDataView,
     return item.source_references();
   }
 
+  static bool Read(browser::context_hub::mojom::SmartSearchResultDataView data,
+                   personal_context::proto::SmartSearchItem* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::ChatReferenceDataView,
+                    context_hub::MemoryBankChatCitation> {
+  static const std::string& title(
+      const context_hub::MemoryBankChatCitation& citation) {
+    return citation.title;
+  }
+
+  static const GURL& url(const context_hub::MemoryBankChatCitation& citation) {
+    return citation.url;
+  }
+
+  static bool Read(browser::context_hub::mojom::ChatReferenceDataView data,
+                   context_hub::MemoryBankChatCitation* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::MemoryBankChatMessageDataView,
+                    context_hub::MemoryBankChatHistoryTurn> {
+  static browser::context_hub::mojom::ChatRole role(
+      const context_hub::MemoryBankChatHistoryTurn& entry);
+
+  static std::string_view content(
+      const context_hub::MemoryBankChatHistoryTurn& entry) {
+    return entry.turn.message_content();
+  }
+
+  static const std::vector<context_hub::MemoryBankChatCitation>& references(
+      const context_hub::MemoryBankChatHistoryTurn& entry) {
+    return entry.citations;
+  }
+
   static bool Read(
-      browser::context_hub::mojom::SmartSearchResultDataView data,
-      personal_context::proto::SmartSearchItem* out);
+      browser::context_hub::mojom::MemoryBankChatMessageDataView data,
+      context_hub::MemoryBankChatHistoryTurn* out);
 };
 
 }  // namespace mojo

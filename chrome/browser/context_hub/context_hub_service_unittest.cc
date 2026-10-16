@@ -2539,6 +2539,13 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
 
   std::vector<int64_t> ids = {entries[0].id, entries[1].id};
 
+  service_.AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "previous prompt");
+  service_.AddMemoryBankChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
+      "previous answer",
+      {{.title = entries[0].tab_title, .url = entries[0].url}});
+
   EXPECT_CALL(
       mock_remote_model_executor_,
       ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
@@ -2559,6 +2566,14 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
 
         EXPECT_TRUE(request.entry_items(0).has_memory_bank_entry());
         EXPECT_TRUE(request.entry_items(1).has_memory_bank_entry());
+
+        ASSERT_EQ(request.chat_history_size(), 2);
+        EXPECT_EQ(request.chat_history(0).role(),
+                  optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+        EXPECT_EQ(request.chat_history(0).message_content(), "previous prompt");
+        EXPECT_EQ(request.chat_history(1).role(),
+                  optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+        EXPECT_EQ(request.chat_history(1).message_content(), "previous answer");
 
         optimization_guide::proto::ContextHubResponse response;
         auto* chat_response = response.mutable_memory_bank_chat_response();
@@ -2582,7 +2597,7 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
       });
 
   base::test::TestFuture<std::optional<std::string>,
-                         std::vector<ContextHubService::MemoryBankChatCitation>>
+                         std::vector<MemoryBankChatCitation>>
       future;
   service_.ExecuteMemoryBankChat(ids, "summarize these",
                                  /*save_to_history=*/true,
@@ -2595,7 +2610,32 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
   EXPECT_EQ(citations[0].url, entries[1].url);
   EXPECT_EQ(citations[1].title, entries[0].tab_title);
   EXPECT_EQ(citations[1].url, entries[0].url);
-  EXPECT_EQ(service_.GetMemoryBankChatHistory().size(), 2u);
+
+  std::vector<MemoryBankChatHistoryTurn> history =
+      service_.GetMemoryBankChatHistory();
+  ASSERT_EQ(history.size(), 4u);
+  EXPECT_EQ(history[0].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(history[0].turn.message_content(), "previous prompt");
+  EXPECT_TRUE(history[0].citations.empty());
+  EXPECT_EQ(history[1].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(history[1].turn.message_content(), "previous answer");
+  ASSERT_EQ(history[1].citations.size(), 1u);
+  EXPECT_EQ(history[1].citations[0].title, entries[0].tab_title);
+  EXPECT_EQ(history[1].citations[0].url, entries[0].url);
+  EXPECT_EQ(history[2].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(history[2].turn.message_content(), "summarize these");
+  EXPECT_TRUE(history[2].citations.empty());
+  EXPECT_EQ(history[3].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(history[3].turn.message_content(), "This is the LLM summary.");
+  ASSERT_EQ(history[3].citations.size(), 2u);
+  EXPECT_EQ(history[3].citations[0].title, entries[1].tab_title);
+  EXPECT_EQ(history[3].citations[0].url, entries[1].url);
+  EXPECT_EQ(history[3].citations[1].title, entries[0].tab_title);
+  EXPECT_EQ(history[3].citations[1].url, entries[0].url);
 }
 
 TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_NoSaveToHistory) {
@@ -2645,7 +2685,7 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_NoSaveToHistory) {
       });
 
   base::test::TestFuture<std::optional<std::string>,
-                         std::vector<ContextHubService::MemoryBankChatCitation>>
+                         std::vector<MemoryBankChatCitation>>
       future;
   service_.ExecuteMemoryBankChat(ids, "summarize these",
                                  /*save_to_history=*/false,
@@ -2676,7 +2716,7 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {
           });
 
   base::test::TestFuture<std::optional<std::string>,
-                         std::vector<ContextHubService::MemoryBankChatCitation>>
+                         std::vector<MemoryBankChatCitation>>
       future;
   std::vector<int64_t> ids = {100};
   service_.ExecuteMemoryBankChat(ids, "hello", /*save_to_history=*/true,
@@ -2707,7 +2747,7 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {
           });
 
   base::test::TestFuture<std::optional<std::string>,
-                         std::vector<ContextHubService::MemoryBankChatCitation>>
+                         std::vector<MemoryBankChatCitation>>
       throttled_future;
   service_.ExecuteMemoryBankChat(ids, "hello", /*save_to_history=*/true,
                                  throttled_future.GetCallback());
@@ -2725,16 +2765,22 @@ TEST_F(ContextHubServiceTest, AddAndGetMemoryBankChatHistory) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
   service_.AddMemoryBankChatHistoryTurn(
       optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
-      "Assistant memory answer");
+      "Assistant memory answer",
+      {{.title = "Source 1", .url = GURL("https://example.com/source1")}});
 
-  auto history = service_.GetMemoryBankChatHistory();
+  std::vector<MemoryBankChatHistoryTurn> history =
+      service_.GetMemoryBankChatHistory();
   ASSERT_EQ(history.size(), 2u);
-  EXPECT_EQ(history[0].role(),
+  EXPECT_EQ(history[0].turn.role(),
             optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
-  EXPECT_EQ(history[0].message_content(), "User query");
-  EXPECT_EQ(history[1].role(),
+  EXPECT_EQ(history[0].turn.message_content(), "User query");
+  EXPECT_TRUE(history[0].citations.empty());
+  EXPECT_EQ(history[1].turn.role(),
             optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
-  EXPECT_EQ(history[1].message_content(), "Assistant memory answer");
+  EXPECT_EQ(history[1].turn.message_content(), "Assistant memory answer");
+  ASSERT_EQ(history[1].citations.size(), 1u);
+  EXPECT_EQ(history[1].citations[0].title, "Source 1");
+  EXPECT_EQ(history[1].citations[0].url, GURL("https://example.com/source1"));
 }
 
 TEST_F(ContextHubServiceTest, MemoryBankChatHistory_Clear) {

@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
@@ -428,6 +429,61 @@ bool StructTraits<browser::context_hub::mojom::SmartSearchResultDataView,
   }
   out->set_description(description);
   return data.ReadSourceReferences(out->mutable_source_references());
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::ChatReferenceDataView,
+                  context_hub::MemoryBankChatCitation>::
+    Read(browser::context_hub::mojom::ChatReferenceDataView data,
+         context_hub::MemoryBankChatCitation* out) {
+  std::string title;
+  GURL url;
+  if (!data.ReadTitle(&title) || !data.ReadUrl(&url)) {
+    return false;
+  }
+  out->title = std::move(title);
+  out->url = std::move(url);
+  return true;
+}
+
+// static
+browser::context_hub::mojom::ChatRole
+StructTraits<browser::context_hub::mojom::MemoryBankChatMessageDataView,
+             context_hub::MemoryBankChatHistoryTurn>::
+    role(const context_hub::MemoryBankChatHistoryTurn& entry) {
+  if (entry.turn.role() ==
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER) {
+    return browser::context_hub::mojom::ChatRole::kUser;
+  }
+  CHECK_EQ(entry.turn.role(),
+           optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  return browser::context_hub::mojom::ChatRole::kAssistant;
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::MemoryBankChatMessageDataView,
+                  context_hub::MemoryBankChatHistoryTurn>::
+    Read(browser::context_hub::mojom::MemoryBankChatMessageDataView data,
+         context_hub::MemoryBankChatHistoryTurn* out) {
+  browser::context_hub::mojom::ChatRole role;
+  std::string_view content;
+  std::vector<context_hub::MemoryBankChatCitation> citations;
+  if (!data.ReadRole(&role) || !data.ReadContent(&content) ||
+      !data.ReadReferences(&citations)) {
+    return false;
+  }
+  switch (role) {
+    case browser::context_hub::mojom::ChatRole::kUser:
+      out->turn.set_role(optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+      break;
+    case browser::context_hub::mojom::ChatRole::kAssistant:
+      out->turn.set_role(
+          optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+      break;
+  }
+  out->turn.set_message_content(content);
+  out->citations = std::move(citations);
+  return true;
 }
 
 }  // namespace mojo

@@ -27,6 +27,7 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_chat_types.h"
 #include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -941,6 +942,56 @@ TEST(ContextHubMojomTraitsTest, MemoryBankEntrySerialization_Image) {
   EXPECT_EQ(output.tab_title, "Gallery Title");
   EXPECT_FALSE(output.selected_text.has_value());
   EXPECT_EQ(output.image_url, GURL("https://example.com/photo.png"));
+}
+
+TEST(ContextHubMojomTraitsTest, ChatReferenceSerialization) {
+  context_hub::MemoryBankChatCitation input{
+      .title = "Example Doc",
+      .url = GURL("https://example.com/doc"),
+  };
+
+  context_hub::MemoryBankChatCitation output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::ChatReference>(input, output));
+  EXPECT_EQ(output.title, "Example Doc");
+  EXPECT_EQ(output.url, GURL("https://example.com/doc"));
+}
+
+TEST(ContextHubMojomTraitsTest, MemoryBankChatMessageSerialization) {
+  context_hub::MemoryBankChatHistoryTurn user_input;
+  user_input.turn.set_role(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  user_input.turn.set_message_content("What did I read?");
+
+  context_hub::MemoryBankChatHistoryTurn user_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::MemoryBankChatMessage>(user_input,
+                                                                  user_output));
+  EXPECT_EQ(user_output.turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(user_output.turn.message_content(), "What did I read?");
+  EXPECT_TRUE(user_output.citations.empty());
+
+  context_hub::MemoryBankChatHistoryTurn assistant_input;
+  assistant_input.turn.set_role(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  assistant_input.turn.set_message_content("Summary of your memories.");
+  assistant_input.citations.push_back(context_hub::MemoryBankChatCitation{
+      .title = "Article 1",
+      .url = GURL("https://example.com/1"),
+  });
+
+  context_hub::MemoryBankChatHistoryTurn assistant_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::MemoryBankChatMessage>(
+      assistant_input, assistant_output));
+  EXPECT_EQ(assistant_output.turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(assistant_output.turn.message_content(),
+            "Summary of your memories.");
+  ASSERT_EQ(assistant_output.citations.size(), 1u);
+  EXPECT_EQ(assistant_output.citations[0].title, "Article 1");
+  EXPECT_EQ(assistant_output.citations[0].url, GURL("https://example.com/1"));
 }
 
 TEST_F(ContextHubPageHandlerTest, GetAutoTodos_Empty) {
@@ -2286,19 +2337,24 @@ TEST_F(ContextHubPageHandlerTest, GetAndClearMemoryBankChatHistory) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
   service->AddMemoryBankChatHistoryTurn(
       optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
-      "Assistant response");
+      "Assistant response",
+      {{.title = "Ref Title", .url = GURL("https://example.com/ref")}});
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::ChatMessagePtr>>
+  base::test::TestFuture<const std::vector<MemoryBankChatHistoryTurn>&>
       get_future;
   handler_->GetMemoryBankChatHistory(get_future.GetCallback());
-  auto history = get_future.Take();
+  std::vector<MemoryBankChatHistoryTurn> history = get_future.Take();
   ASSERT_EQ(history.size(), 2u);
-  EXPECT_EQ(history[0]->role, browser::context_hub::mojom::ChatRole::kUser);
-  EXPECT_EQ(history[0]->content, "User query");
-  EXPECT_EQ(history[1]->role,
-            browser::context_hub::mojom::ChatRole::kAssistant);
-  EXPECT_EQ(history[1]->content, "Assistant response");
+  EXPECT_EQ(history[0].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(history[0].turn.message_content(), "User query");
+  EXPECT_TRUE(history[0].citations.empty());
+  EXPECT_EQ(history[1].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(history[1].turn.message_content(), "Assistant response");
+  ASSERT_EQ(history[1].citations.size(), 1u);
+  EXPECT_EQ(history[1].citations[0].title, "Ref Title");
+  EXPECT_EQ(history[1].citations[0].url, GURL("https://example.com/ref"));
 
   base::test::TestFuture<void> clear_future;
   handler_->ClearMemoryBankChatHistory(clear_future.GetCallback());
@@ -2357,19 +2413,16 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_Success) {
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<
-      browser::context_hub::mojom::ChatMessagePtr,
-      std::vector<browser::context_hub::mojom::ChatReferencePtr>>
-      future;
+  base::test::TestFuture<const MemoryBankChatHistoryTurn&> future;
   handler_->AskGeminiWithContext("Summarize memories", {1, 2},
                                  /*save_to_history=*/true,
                                  future.GetCallback());
 
-  auto [response, references] = future.Take();
-  ASSERT_TRUE(response);
-  EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
-  EXPECT_EQ(response->content, "Gemini response for prompt.");
-  EXPECT_TRUE(references.empty());
+  MemoryBankChatHistoryTurn response = future.Take();
+  EXPECT_EQ(response.turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(response.turn.message_content(), "Gemini response for prompt.");
+  EXPECT_TRUE(response.citations.empty());
   EXPECT_EQ(service->GetMemoryBankChatHistory().size(), 2u);
 }
 
@@ -2434,21 +2487,18 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
             nullptr);
       });
 
-  base::test::TestFuture<
-      browser::context_hub::mojom::ChatMessagePtr,
-      std::vector<browser::context_hub::mojom::ChatReferencePtr>>
-      ask_future;
+  base::test::TestFuture<const MemoryBankChatHistoryTurn&> ask_future;
   handler_->AskGeminiWithContext("Summarize", {entry_id},
                                  /*save_to_history=*/false,
                                  ask_future.GetCallback());
 
-  auto [response, references] = ask_future.Take();
-  ASSERT_TRUE(response);
-  EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
-  EXPECT_EQ(response->content, "Summary of Test Page.");
-  ASSERT_EQ(references.size(), 1u);
-  EXPECT_EQ(references[0]->title, "Test Page");
-  EXPECT_EQ(references[0]->url, GURL("https://example.com/test"));
+  MemoryBankChatHistoryTurn response = ask_future.Take();
+  EXPECT_EQ(response.turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(response.turn.message_content(), "Summary of Test Page.");
+  ASSERT_EQ(response.citations.size(), 1u);
+  EXPECT_EQ(response.citations[0].title, "Test Page");
+  EXPECT_EQ(response.citations[0].url, GURL("https://example.com/test"));
   EXPECT_TRUE(service->GetMemoryBankChatHistory().empty());
 }
 

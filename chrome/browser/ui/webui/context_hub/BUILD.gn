@@ -66,6 +66,14 @@ mojom("mojo_bindings") {
           mojom = "browser.context_hub.mojom.SmartSearchResult"
           cpp = "::personal_context::proto::SmartSearchItem"
         },
+        {
+          mojom = "browser.context_hub.mojom.ChatReference"
+          cpp = "::context_hub::MemoryBankChatCitation"
+        },
+        {
+          mojom = "browser.context_hub.mojom.MemoryBankChatMessage"
+          cpp = "::context_hub::MemoryBankChatHistoryTurn"
+        },
       ]
       traits_headers = [ "context_hub_mojom_traits.h" ]
       traits_sources = [ "context_hub_mojom_traits.cc" ]
@@ -73,6 +81,7 @@ mojom("mojo_bindings") {
         "//base",
         "//chrome/browser/context_hub/auto_todos",
         "//chrome/browser/context_hub/memory_bank",
+        "//components/optimization_guide/proto:optimization_guide_proto",
         "//components/personal_context/proto:personal_context_proto",
         "//mojo/public/mojom/base",
         "//third_party/abseil-cpp:absl",
