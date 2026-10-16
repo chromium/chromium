@@ -45,9 +45,11 @@ class CORE_EXPORT DisplayAdElementMonitor final
   // `rect_in_viewport` to determine if the front-most content there is rendered
   // by `element_` itself (including its user-agent shadow tree and, for a frame
   // owner, the content of its frame), as opposed to an overlay or one of its
-  // descendant elements. This check can be skipped due to frequency-capping or
-  // if the element is outside the viewport to reduce performance impact. Set
-  // `ignore_throttling` to true to bypass the frequency capping.
+  // descendant elements. Transparent boxes in front of it (e.g., an overlay
+  // hosting video controls) are looked through.
+  // This check can be skipped due to frequency-capping or if the element is
+  // outside the viewport to reduce performance impact. Set `ignore_throttling`
+  // to true to bypass the frequency capping.
   OverlayVisibility CheckOverlayVisibility(const LocalFrame& main_frame,
                                            const gfx::Rect& rect_in_viewport,
                                            bool ignore_throttling = false);

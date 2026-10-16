@@ -138,7 +138,7 @@ AdPositioning ComputeAdPositioning(Element* element) {
           .viewport_sticky_offset_y = viewport_sticky_offset_y.Round()};
 }
 
-// Returns whether `hit_element`, the front-most element at a sample point, is
+// Returns whether `hit_element`, one of the elements hit at a sample point, is
 // rendered by `element` itself: `element` proper, an internal of its user-agent
 // shadow tree (e.g., the media controls of a <video>), or the content of a
 // frame it owns (e.g., an ad <iframe>). Other descendants are deliberately not
@@ -159,6 +159,15 @@ bool IsRenderedByElement(const Element* hit_element, const Element& element) {
     }
   }
   return false;
+}
+
+// Returns whether `node` is a box that paints nothing itself (no background,
+// border or box-shadow), e.g., a transparent overlay hosting the controls of a
+// video player.
+bool IsTransparentBox(const Node& node) {
+  const LayoutObject* object = node.GetLayoutObject();
+  return node.IsElementNode() && object && object->IsBox() &&
+         !object->IsLayoutReplaced() && !object->HasBoxDecorationBackground();
 }
 
 }  // namespace
@@ -385,10 +394,14 @@ DisplayAdElementMonitor::CheckOverlayVisibility(
 
   HitTestLocation location(intersection_rect_center);
 
+  // Collect all the nodes at the sample point, so that a transparent box in
+  // front of the element (e.g., an overlay hosting video controls) can be
+  // looked through.
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kReadOnly | HitTestRequest::kAllowChildFrameContent |
       HitTestRequest::kIgnoreZeroOpacityObjects |
-      HitTestRequest::kHitTestVisualOverflow;
+      HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
+      HitTestRequest::kPenetratingList;
 
   // No stop node on purpose: it would skip the element's descendants, so a
   // container (e.g., a <body> whose background image is an ad) covered by
@@ -399,10 +412,22 @@ DisplayAdElementMonitor::CheckOverlayVisibility(
 
   main_frame.ContentLayoutObject()->HitTestNoLifecycleUpdate(location, result);
 
-  // `InnerElement()` maps a text hit to its parent element.
-  return IsRenderedByElement(result.InnerElement(), *element_)
-             ? OverlayVisibility::kVisible
-             : OverlayVisibility::kInvisible;
+  // Walk the nodes from front to back, skipping transparent boxes.
+  for (const auto& node : result.ListBasedTestResult()) {
+    // Like `InnerElement()`, map a text node or a pseudo-element to its parent
+    // element.
+    const Element* hit_element =
+        node->IsElementNode() && !node->IsPseudoElement()
+            ? To<Element>(node.Get())
+            : node->parentElement();
+    if (IsRenderedByElement(hit_element, *element_)) {
+      return OverlayVisibility::kVisible;
+    }
+    if (!IsTransparentBox(*node)) {
+      break;
+    }
+  }
+  return OverlayVisibility::kInvisible;
 }
 
 DisplayAdElementMonitor::OverlayVisibility
