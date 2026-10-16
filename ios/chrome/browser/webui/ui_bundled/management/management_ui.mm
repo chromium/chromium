@@ -38,8 +38,6 @@ namespace {
 
 using enterprise_connectors::ConnectorsService;
 
-// TODO(crbug.com/539934808): Add eg test for the iOS management page.
-
 // Returns the management message depending on the levels of the policies that
 // are applied. Returns std::nullopt if there are no policies.
 std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
