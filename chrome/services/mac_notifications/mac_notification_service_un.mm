@@ -4,6 +4,7 @@
 
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
+#import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <UserNotifications/UserNotifications.h>
@@ -148,6 +149,19 @@ MacNotificationServiceUN::MacNotificationServiceUN(
   // Query current notification settings and authorization status.
   SynchronizePermissionStatus(/*log_result=*/true);
 
+  // Re-query the authorization status whenever the app becomes active, as the
+  // user might have changed it in System Settings while the app was inactive.
+  base::RepeatingCallback<void(NSNotification*)> on_did_become_active =
+      base::IgnoreArgs<NSNotification*>(
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &MacNotificationServiceUN::OnApplicationDidBecomeActive,
+              weak_factory_.GetWeakPtr())));
+  did_become_active_observer_ = [NSNotificationCenter.defaultCenter
+      addObserverForName:NSApplicationDidBecomeActiveNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(on_did_become_active)];
+
   // Schedule a timer to regularly check for any closed notifications and
   // updates to the current notification settings.
   ScheduleSynchronizeNotifications();
@@ -161,6 +175,8 @@ MacNotificationServiceUN::MacNotificationServiceUN(
 }
 
 MacNotificationServiceUN::~MacNotificationServiceUN() {
+  [NSNotificationCenter.defaultCenter
+      removeObserver:did_become_active_observer_];
   [notification_center_ setDelegate:nil];
 }
 
@@ -715,6 +731,11 @@ void MacNotificationServiceUN::SynchronizePermissionStatus(bool log_result) {
     }
     std::move(permission_status_callback).Run(settings.authorizationStatus);
   }];
+}
+
+void MacNotificationServiceUN::OnApplicationDidBecomeActive() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SynchronizePermissionStatus(/*log_result=*/false);
 }
 
 void MacNotificationServiceUN::OnNotificationAction(

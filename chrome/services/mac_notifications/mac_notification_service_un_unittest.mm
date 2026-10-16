@@ -4,6 +4,7 @@
 
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
+#import <AppKit/AppKit.h>
 #import <UserNotifications/UserNotifications.h>
 
 #include <string>
@@ -1248,6 +1249,58 @@ TEST_F(MacNotificationServiceUNTest,
 
   current_status = UNAuthorizationStatusAuthorized;
   EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       PermissionStateChangedCallback_ApplicationDidBecomeActive) {
+  // Reset the service created by the test harness so it doesn't interfere with
+  // the one created in this test.
+  ResetService();
+
+  UNAuthorizationStatus current_status = UNAuthorizationStatusAuthorized;
+  auto& status_ref = current_status;
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([settings authorizationStatus]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)(&status_ref)];
+  });
+  id mock_notification_center = CreateMockNotificationCenter(settings);
+
+  MockNotificationActionHandler mock_handler;
+  mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+      &mock_handler};
+
+  base::test::TestFuture<mojom::PermissionStatus> status;
+  auto service = std::make_unique<MacNotificationServiceUN>(
+      handler_receiver.BindNewPipeAndPassRemote(),
+      status.GetRepeatingCallback(), mock_notification_center);
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
+
+  // Becoming active without a status change should not run the callback.
+  // Only advance mock time by a second (well below the 10 minute periodic
+  // synchronization interval), so only the activation can trigger a poll.
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidBecomeActiveNotification
+                    object:nil];
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(status.IsReady());
+
+  // A status change is picked up as soon as the app becomes active.
+  current_status = UNAuthorizationStatusDenied;
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidBecomeActiveNotification
+                    object:nil];
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(status.IsReady());
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kDenied);
+
+  // After the service is destroyed, becoming active is a no-op.
+  service.reset();
+  current_status = UNAuthorizationStatusAuthorized;
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidBecomeActiveNotification
+                    object:nil];
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(status.IsReady());
 }
 
 }  // namespace mac_notifications

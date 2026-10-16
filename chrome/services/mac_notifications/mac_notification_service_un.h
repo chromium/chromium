@@ -92,6 +92,11 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
   void SynchronizePermissionStatus(bool log_result);
 
+  // Called when the application becomes active. macOS doesn't notify apps when
+  // their notification permission changes, so this is a good moment to poll
+  // for changes the user might have made in System Settings.
+  void OnApplicationDidBecomeActive();
+
   // Called by |delegate_| when a user interacts with a notification.
   void OnNotificationAction(mojom::NotificationActionInfoPtr action);
 
@@ -105,6 +110,8 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   mojo::Remote<mojom::MacNotificationActionHandler> action_handler_;
   AlertUNNotificationCenterDelegate* __strong delegate_;
   UNUserNotificationCenter* __strong notification_center_;
+  // Observer token for NSApplicationDidBecomeActiveNotification.
+  id<NSObject> __strong did_become_active_observer_;
 
   // Set to true when initialization has finished, and this service is ready
   // to receive mojo calls. `binding_` will not be bound until this happens.
