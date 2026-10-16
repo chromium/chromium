@@ -181,7 +181,7 @@ BaseRenderingContext2D::BaseRenderingContext2D(
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
-  if (surface_) {
+  if (surface_ && !shared_image_provider_) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
   if (context_provider_wrapper_) {
@@ -210,11 +210,13 @@ bool BaseRenderingContext2D::IsBackingValid() const {
 }
 
 void BaseRenderingContext2D::ResetBacking() {
-  shared_image_provider_.reset();
   if (surface_) {
-    CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+    if (!shared_image_provider_) {
+      CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+    }
     surface_.reset();
   }
+  shared_image_provider_.reset();
   canvas_image_provider_.reset();
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
@@ -265,6 +267,14 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
       shared_image_usage_flags,
       blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
                       WrapWeakPersistent(Host())));
+  if (shared_image_provider_ && raster_mode == RasterMode::kCPU) {
+    CreateSoftwareSurface();
+    if (!surface_) {
+      shared_image_provider_.reset();
+    } else {
+      shared_image_provider_->SetSkSurface(surface_);
+    }
+  }
 }
 
 void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
@@ -276,16 +286,26 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
           SharedGpuContext::SharedImageInterfaceProvider(),
           blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
                           WrapWeakPersistent(Host())));
+  if (shared_image_provider_) {
+    CreateSoftwareSurface();
+    if (!surface_) {
+      shared_image_provider_.reset();
+    } else {
+      shared_image_provider_->SetSkSurface(surface_);
+    }
+  }
 }
 
 void BaseRenderingContext2D::CreateSoftwareSurface() {
+  CHECK(!surface_);
   const gfx::Size size = Host()->Size();
   const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();
   const SkAlphaType alpha_type = color_params_.GetAlphaType();
   const gfx::ColorSpace color_space = color_params_.GetGfxColorSpace();
   const auto info = SkImageInfo::Make(
       size.width(), size.height(), viz::ToClosestSkColorType(format),
-      kPremul_SkAlphaType, color_space.ToSkColorSpace());
+      shared_image_provider_ ? alpha_type : kPremul_SkAlphaType,
+      color_space.ToSkColorSpace());
   const bool can_use_lcd_text = alpha_type == kOpaque_SkAlphaType;
   const auto props =
       skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
@@ -296,7 +316,9 @@ void BaseRenderingContext2D::CreateSoftwareSurface() {
   surface_->getCanvas()->clear(alpha_type == kOpaque_SkAlphaType
                                    ? SkColors::kBlack
                                    : SkColors::kTransparent);
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  if (!shared_image_provider_) {
+    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  }
   sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
   sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
   sw_snapshot_sk_image_id_ = 0u;

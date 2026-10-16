@@ -46,7 +46,6 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "skia/buildflags.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
@@ -715,7 +714,7 @@ Canvas2DResourceProvider::CreateWithClear(
       recorder.getRecordingCanvas().clear(SkColors::kTransparent);
     }
     provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  } else if (!provider->resource_ || !provider->CreateSkSurface()) {
+  } else if (!provider->resource_) {
     return nullptr;
   }
 
@@ -756,7 +755,7 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
   auto provider = base::WrapUnique(new Canvas2DResourceProvider(
       size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, std::move(context_lost_callback)));
-  if (provider->IsValid() && provider->CreateSkSurface()) {
+  if (provider->IsValid()) {
     return provider;
   }
 
@@ -994,32 +993,6 @@ bool Canvas2DResourceProvider::IsGpuContextLost() const {
   auto* raster_interface = RasterInterface();
   return !raster_interface ||
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
-
-bool Canvas2DResourceProvider::CreateSkSurface() {
-  TRACE_EVENT0("blink", "Canvas2DResourceProvider::CreateSkSurface");
-
-  CHECK(!IsAccelerated());
-  CHECK(!surface_);
-
-  // When using software raster, we render into CPU memory managed internally by
-  // SkSurface and copy the rendered results to the backing SharedImage before
-  // dispatching that SharedImage to the display compositor.
-  const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
-  const auto props =
-      skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-  const auto info = SkImageInfo::Make(
-      size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-      alpha_type_, color_space_.ToSkColorSpace());
-  surface_ = SkSurfaces::Raster(info, &props);
-  if (!surface_) {
-    return false;
-  }
-
-  surface_->getCanvas()->clear(alpha_type_ == kOpaque_SkAlphaType
-                                   ? SkColors::kBlack
-                                   : SkColors::kTransparent);
-  return true;
 }
 
 }  // namespace blink

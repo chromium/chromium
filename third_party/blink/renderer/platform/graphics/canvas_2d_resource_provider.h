@@ -114,7 +114,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
-  // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -147,7 +146,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags);
 
-  // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProvider>
   CreateWithClearForSoftwareCompositor(
       gfx::Size size,
@@ -159,6 +157,11 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       base::OnceClosure context_lost_callback = {});
 
   ~Canvas2DResourceProvider() override;
+
+  void SetSkSurface(sk_sp<SkSurface> surface) {
+    CHECK(!is_accelerated_);
+    surface_ = std::move(surface);
+  }
 
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
@@ -263,8 +266,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
-
-  bool CreateSkSurface();
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 
