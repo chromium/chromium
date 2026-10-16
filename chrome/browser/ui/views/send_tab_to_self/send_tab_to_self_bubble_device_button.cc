@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
@@ -31,26 +32,11 @@ namespace {
 // Size of the checkmark icon.
 constexpr int kCheckmarkIconSize = 20;
 
-const gfx::VectorIcon& GetIconType(
-    const syncer::DeviceInfo::FormFactor& device_form_factor) {
-  switch (device_form_factor) {
-    case syncer::DeviceInfo::FormFactor::kPhone:
-      return features::IsRoundedIconsEnabled() ? kMobileIcon
-                                               : kHardwareSmartphoneOldIcon;
-    case syncer::DeviceInfo::FormFactor::kTablet:
-      return features::IsRoundedIconsEnabled() ? kTabletFilledIcon
-                                               : kTabletOldIcon;
-    default:
-      return features::IsRoundedIconsEnabled() ? kComputerCustomIcon
-                                               : kHardwareComputerOldIcon;
-  }
-}
-
 std::unique_ptr<views::ImageView> CreateIcon(
     const syncer::DeviceInfo::FormFactor device_form_factor) {
   static constexpr int kPrimaryIconSize = 20;
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      GetIconType(device_form_factor), ui::kColorIcon, kPrimaryIconSize));
+      GetDeviceIcon(device_form_factor), ui::kColorIcon, kPrimaryIconSize));
 }
 
 views::Button::PressedCallback GetPressedCallback(

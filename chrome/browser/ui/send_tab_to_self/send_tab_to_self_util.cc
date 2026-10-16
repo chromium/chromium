@@ -81,7 +81,48 @@ base::WeakPtr<content::WebContents> OpenEntryInNewTabWithDisposition(
              : nullptr;
 }
 
-const gfx::VectorIcon& GetSharingDeviceIcon(
+void ShowTabSentToastWithDevice(content::WebContents* web_contents,
+                                ToastId toast_id,
+                                std::string_view device_name,
+                                syncer::DeviceInfo::FormFactor form_factor) {
+  ToastController* toast_controller =
+      ToastController::MaybeGetForWebContents(web_contents);
+  if (!toast_controller) {
+    return;
+  }
+
+  ToastParams params(toast_id);
+  // TODO(crbug.com/492072882): The string "Sent to Chrome on your [device]"
+  // only really makes sense if `device_name` is a device type/class (e.g.
+  // "iPhone" or "Pixel"), not a custom name or hostname. Check with UX
+  // whether to use manufacturer + form factor to construct the device name
+  // where available, and how to handle edge cases like custom-made PCs.
+  params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
+  params.image_override = ui::ImageModel::FromVectorIcon(
+      GetDeviceIcon(form_factor), ui::kColorToastForeground, 20);
+  toast_controller->MaybeShowToast(std::move(params));
+}
+
+void ShowTabSentFailure(content::WebContents* web_contents,
+                        SendTabToSelfResult result) {
+  CHECK(web_contents);
+  ToastController* toast_controller =
+      ToastController::MaybeGetForWebContents(web_contents);
+  if (!toast_controller) {
+    return;
+  }
+
+  ToastId toast_id = ToastId::kSendTabToSelfFailure;
+  if (result == SendTabToSelfResult::kFailureNoInternetConnection ||
+      result == SendTabToSelfResult::kFailureCommitTimeout) {
+    toast_id = ToastId::kSendTabToSelfNoInternetConnection;
+  }
+  toast_controller->MaybeShowToast(ToastParams(toast_id));
+}
+
+}  // namespace
+
+const gfx::VectorIcon& GetDeviceIcon(
     syncer::DeviceInfo::FormFactor form_factor) {
   switch (form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
@@ -95,8 +136,6 @@ const gfx::VectorIcon& GetSharingDeviceIcon(
                                                : kHardwareComputerOldIcon;
   }
 }
-
-}  // namespace
 
 void MarkEntryMatchingGuidActivated(Profile* profile,
                                     const std::string& guid,
@@ -135,51 +174,35 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
   return web_contents;
 }
 
-void ShowTabSentSuccessToast(content::WebContents* web_contents,
-                             std::string_view device_name,
-                             syncer::DeviceInfo::FormFactor form_factor) {
-  ToastController* toast_controller =
-      ToastController::MaybeGetForWebContents(web_contents);
-  if (toast_controller) {
-    ToastParams params(ToastId::kSendTabToSelfSuccess);
-    // TODO(mtatarski): The string "Sent to Chrome on your [device]" only really
-    // makes sense if `device_name` is a device type/class (e.g. "iPhone" or "Pixel"),
-    // not a custom name or hostname. Check with UX if we should use manufacturer
-    // + form factor to construct the device name where available, and how to
-    // handle edge cases like custom-made PCs.
-    params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
-    params.image_override = ui::ImageModel::FromVectorIcon(
-        GetSharingDeviceIcon(form_factor), ui::kColorToastForeground, 20);
-    toast_controller->MaybeShowToast(std::move(params));
+void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
+                               const std::string& device_name,
+                               syncer::DeviceInfo::FormFactor form_factor,
+                               SendTabToSelfResult result) {
+  if (!web_contents) {
+    return;
   }
-}
 
-void ShowTabSentThrottledToast(content::WebContents* web_contents,
-                               std::string_view device_name,
-                               syncer::DeviceInfo::FormFactor form_factor) {
-  ToastController* toast_controller =
-      ToastController::MaybeGetForWebContents(web_contents);
-  if (toast_controller) {
-    ToastParams params(ToastId::kSendTabToSelfSuccessThrottled);
-    params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
-    params.image_override = ui::ImageModel::FromVectorIcon(
-        GetSharingDeviceIcon(form_factor), ui::kColorToastForeground, 20);
-    toast_controller->MaybeShowToast(std::move(params));
-  }
-}
-
-void ShowTabSentFailure(content::WebContents* web_contents,
-                        SendTabToSelfResult result) {
-  CHECK(web_contents);
-  ToastController* toast_controller =
-      ToastController::MaybeGetForWebContents(web_contents);
-  if (toast_controller) {
-    ToastId toast_id = ToastId::kSendTabToSelfFailure;
-    if (result == SendTabToSelfResult::kFailureNoInternetConnection ||
-        result == SendTabToSelfResult::kFailureCommitTimeout) {
-      toast_id = ToastId::kSendTabToSelfNoInternetConnection;
-    }
-    toast_controller->MaybeShowToast(ToastParams(toast_id));
+  switch (result) {
+    case SendTabToSelfResult::kSuccess:
+      ShowTabSentToastWithDevice(web_contents.get(),
+                                 ToastId::kSendTabToSelfSuccess, device_name,
+                                 form_factor);
+      break;
+    case SendTabToSelfResult::kSuccessThrottled:
+      ShowTabSentToastWithDevice(web_contents.get(),
+                                 ToastId::kSendTabToSelfSuccessThrottled,
+                                 device_name, form_factor);
+      break;
+    case SendTabToSelfResult::kFailureInvalidUrl:
+    case SendTabToSelfResult::kFailureNotTrackingMetadata:
+    case SendTabToSelfResult::kFailureCommitAttemptFailed:
+    case SendTabToSelfResult::kFailureCommitAttemptError:
+    case SendTabToSelfResult::kFailureSyncDisabled:
+    case SendTabToSelfResult::kFailureEntryRemoved:
+    case SendTabToSelfResult::kFailureCommitTimeout:
+    case SendTabToSelfResult::kFailureNoInternetConnection:
+      ShowTabSentFailure(web_contents.get(), result);
+      break;
   }
 }
 

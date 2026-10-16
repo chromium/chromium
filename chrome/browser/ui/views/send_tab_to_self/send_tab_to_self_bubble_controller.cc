@@ -267,10 +267,8 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   // unit tests), `kShareSheet` is used as a generic fallback.
   handler->SendTabToDevice(
       target_device_guid, url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
-      base::BindOnce(
-          &SendTabToSelfBubbleController::HandleSendTabToDeviceResult,
-          weak_ptr_factory_.GetWeakPtr(), std::string(device_name),
-          form_factor),
+      base::BindOnce(&OnSendTabToDeviceComplete, GetWebContents().GetWeakPtr(),
+                     std::string(device_name), form_factor),
       entry_point_.value_or(ShareEntryPoint::kShareSheet));
 }
 
@@ -344,30 +342,6 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           &GetWebContents());
   controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
-}
-
-void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
-    std::string_view device_name,
-    syncer::DeviceInfo::FormFactor form_factor,
-    SendTabToSelfResult result) {
-  switch (result) {
-    case SendTabToSelfResult::kSuccess:
-      ShowTabSentSuccessToast(&GetWebContents(), device_name, form_factor);
-      break;
-    case SendTabToSelfResult::kSuccessThrottled:
-      ShowTabSentThrottledToast(&GetWebContents(), device_name, form_factor);
-      break;
-    case SendTabToSelfResult::kFailureInvalidUrl:
-    case SendTabToSelfResult::kFailureNotTrackingMetadata:
-    case SendTabToSelfResult::kFailureCommitAttemptFailed:
-    case SendTabToSelfResult::kFailureCommitAttemptError:
-    case SendTabToSelfResult::kFailureSyncDisabled:
-    case SendTabToSelfResult::kFailureEntryRemoved:
-    case SendTabToSelfResult::kFailureCommitTimeout:
-    case SendTabToSelfResult::kFailureNoInternetConnection:
-      ShowTabSentFailure(&GetWebContents(), result);
-      break;
-  }
 }
 
 void SendTabToSelfBubbleController::SetSelectorGenerationTimeoutForTesting(

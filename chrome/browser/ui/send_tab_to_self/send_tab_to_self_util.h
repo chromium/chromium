@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 
-#include <string_view>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync_device_info/device_info.h"
@@ -14,6 +14,10 @@
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace send_tab_to_self {
 
@@ -45,20 +49,17 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
     Profile* profile,
     const SendTabToSelfEntry& entry);
 
-// Shows a success toast confirming that the tab was successfully sent.
-void ShowTabSentSuccessToast(content::WebContents* web_contents,
-                             std::string_view device_name,
-                             syncer::DeviceInfo::FormFactor form_factor);
+// Returns the vector icon corresponding to `form_factor`.
+const gfx::VectorIcon& GetDeviceIcon(
+    syncer::DeviceInfo::FormFactor form_factor);
 
-// Shows a toast confirming that the tab was already sent to the device
-// recently.
-void ShowTabSentThrottledToast(content::WebContents* web_contents,
-                               std::string_view device_name,
-                               syncer::DeviceInfo::FormFactor form_factor);
-
-// Shows a failure toast when the tab failed to send.
-void ShowTabSentFailure(content::WebContents* web_contents,
-                        SendTabToSelfResult result);
+// Shows the appropriate toast in `web_contents` for `result` after attempting
+// to send a tab to a target device. Does nothing if `web_contents` is null.
+void OnSendTabToDeviceComplete(
+    base::WeakPtr<content::WebContents> web_contents,
+    const std::string& device_name,
+    syncer::DeviceInfo::FormFactor form_factor,
+    SendTabToSelfResult result);
 
 // Opens the "Manage account devices" page for `profile` with `disposition`.
 void OpenManageDevicesPage(Profile* profile,

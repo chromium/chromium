@@ -47,7 +47,6 @@ struct RemoteDeviceInfo;
 
 namespace send_tab_to_self {
 
-enum class SendTabToSelfResult;
 class SendTabToSelfBubbleView;
 
 class SendTabToSelfModel;
@@ -118,10 +117,6 @@ class SendTabToSelfBubbleController
   void ShowBubbleWithAnchor(EntryPointDisplayReason reason,
                             base::WeakPtr<BrowserWindowInterface> browser,
                             BubbleAnchorResult anchor);
-
-  void HandleSendTabToDeviceResult(std::string_view device_name,
-                                   syncer::DeviceInfo::FormFactor form_factor,
-                                   SendTabToSelfResult result);
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

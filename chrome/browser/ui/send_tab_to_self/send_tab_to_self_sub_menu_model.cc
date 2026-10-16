@@ -51,34 +51,6 @@ static_assert(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST -
               "kMaxDevices must match the number of command IDs reserved for "
               "target devices in chrome_command_ids.h");
 
-void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
-                               std::string_view device_name,
-                               syncer::DeviceInfo::FormFactor form_factor,
-                               SendTabToSelfResult result) {
-  if (!web_contents) {
-    return;
-  }
-
-  switch (result) {
-    case SendTabToSelfResult::kSuccess:
-      ShowTabSentSuccessToast(web_contents.get(), device_name, form_factor);
-      break;
-    case SendTabToSelfResult::kSuccessThrottled:
-      ShowTabSentThrottledToast(web_contents.get(), device_name, form_factor);
-      break;
-    case SendTabToSelfResult::kFailureInvalidUrl:
-    case SendTabToSelfResult::kFailureNotTrackingMetadata:
-    case SendTabToSelfResult::kFailureCommitAttemptFailed:
-    case SendTabToSelfResult::kFailureCommitAttemptError:
-    case SendTabToSelfResult::kFailureSyncDisabled:
-    case SendTabToSelfResult::kFailureEntryRemoved:
-    case SendTabToSelfResult::kFailureCommitTimeout:
-    case SendTabToSelfResult::kFailureNoInternetConnection:
-      ShowTabSentFailure(web_contents.get(), result);
-      break;
-  }
-}
-
 // Returns `target_url` if valid; otherwise falls back to the last committed URL
 // of `web_contents`.
 GURL ResolveTargetUrl(const GURL& target_url,

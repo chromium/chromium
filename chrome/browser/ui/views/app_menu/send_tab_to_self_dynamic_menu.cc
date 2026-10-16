@@ -51,51 +51,6 @@ namespace {
 
 constexpr size_t kMaxDevices = 5;
 
-const gfx::VectorIcon& GetDeviceIcon(
-    syncer::DeviceInfo::FormFactor form_factor) {
-  switch (form_factor) {
-    case syncer::DeviceInfo::FormFactor::kPhone:
-      return features::IsRoundedIconsEnabled() ? kMobileIcon
-                                               : kHardwareSmartphoneOldIcon;
-    case syncer::DeviceInfo::FormFactor::kTablet:
-      return features::IsRoundedIconsEnabled() ? kTabletFilledIcon
-                                               : kTabletOldIcon;
-    default:
-      return features::IsRoundedIconsEnabled() ? kComputerCustomIcon
-                                               : kHardwareComputerOldIcon;
-  }
-}
-
-void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
-                               std::string_view device_name,
-                               syncer::DeviceInfo::FormFactor form_factor,
-                               send_tab_to_self::SendTabToSelfResult result) {
-  if (!web_contents) {
-    return;
-  }
-
-  switch (result) {
-    case send_tab_to_self::SendTabToSelfResult::kSuccess:
-      send_tab_to_self::ShowTabSentSuccessToast(web_contents.get(), device_name,
-                                                form_factor);
-      break;
-    case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled:
-      send_tab_to_self::ShowTabSentThrottledToast(web_contents.get(),
-                                                  device_name, form_factor);
-      break;
-    case send_tab_to_self::SendTabToSelfResult::kFailureInvalidUrl:
-    case send_tab_to_self::SendTabToSelfResult::kFailureNotTrackingMetadata:
-    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptFailed:
-    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptError:
-    case send_tab_to_self::SendTabToSelfResult::kFailureSyncDisabled:
-    case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved:
-    case send_tab_to_self::SendTabToSelfResult::kFailureCommitTimeout:
-    case send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection:
-      send_tab_to_self::ShowTabSentFailure(web_contents.get(), result);
-      break;
-  }
-}
-
 content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
   if (tabs::TabInterface* active_tab = browser->GetActiveTabInterface()) {
     return active_tab->GetContents();
@@ -237,7 +192,7 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
   for (const auto& device : devices) {
     std::u16string label = GetDeviceItemLabel(device);
     ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
-        GetDeviceIcon(device.form_factor), ui::kColorMenuIcon,
+        send_tab_to_self::GetDeviceIcon(device.form_factor), ui::kColorMenuIcon,
         ui::SimpleMenuModel::kDefaultIconSize);
 
     parent_item->AddChild(
@@ -293,9 +248,9 @@ void SendTabToSelfDynamicMenu::ExecuteDeviceSelection(
       send_tab_to_self::SendTabToSelfPageHandler::GetOrCreateForWebContents(
           web_contents);
 
-  auto callback =
-      base::BindOnce(&OnSendTabToDeviceComplete, web_contents->GetWeakPtr(),
-                     device_name, form_factor);
+  auto callback = base::BindOnce(&send_tab_to_self::OnSendTabToDeviceComplete,
+                                 web_contents->GetWeakPtr(), device_name,
+                                 form_factor);
 
   handler->SendTabToDevice(
       target_device_guid, web_contents->GetLastCommittedURL(),
