@@ -10111,6 +10111,7 @@ from previous Chrome versions.
   <int value="-1469555275"
       label="VmCameraMicIndicatorsAndNotifications:enabled"/>
   <int value="-1469536698" label="ChromeHomeDoodle:enabled"/>
+  <int value="-1469287473" label="SettingsIaReorganization:enabled"/>
   <int value="-1469273573" label="BrowserActuatorInternals:disabled"/>
   <int value="-1469234511" label="KeyboardFocusableScrollers:disabled"/>
   <int value="-1469228683" label="QuickUnlockPinSignin:disabled"/>
@@ -18822,6 +18823,7 @@ from previous Chrome versions.
   <int value="1165828757" label="kAutofillEnableOffersInDownstream:disabled"/>
   <int value="1166000396" label="NewHorizontalPinnedTabStyling:enabled"/>
   <int value="1166169237" label="disable-delay-agnostic-aec"/>
+  <int value="1166739050" label="SettingsIaReorganization:disabled"/>
   <int value="1166789664" label="SyncPseudoUSSAppList:disabled"/>
   <int value="1166883356" label="CWSInfoFastCheck:enabled"/>
   <int value="1166897718" label="TextSuggestionsTouchBar:disabled"/>

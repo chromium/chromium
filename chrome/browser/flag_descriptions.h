@@ -1505,6 +1505,12 @@ inline constexpr char kSyncRestoreOnStartupPrefName[] =
 inline constexpr char kSyncRestoreOnStartupPrefDescription[] =
     "Enables syncing of the session restore-on-startup preference on Android.";
 
+inline constexpr char kSettingsIaReorganizationName[] =
+    "Settings IA Reorganization";
+inline constexpr char kSettingsIaReorganizationDescription[] =
+    "Enables the reorganized information architecture for Chrome Settings on "
+    "Android.";
+
 inline constexpr char kSettingsInTabName[] = "Settings in Tab";
 inline constexpr char kSettingsInTabDescription[] =
     "Allows the Chrome Settings UI to appear in a tab on Android.";

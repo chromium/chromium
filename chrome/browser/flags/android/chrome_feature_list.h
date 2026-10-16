@@ -291,6 +291,7 @@ BASE_DECLARE_FEATURE(kRobustWindowManagementExperimental);
 BASE_DECLARE_FEATURE(kSafetyFrePromo);
 BASE_DECLARE_FEATURE(kScheduleWindowCleaning);
 BASE_DECLARE_FEATURE(kSessionRestoreAfterCrash);
+BASE_DECLARE_FEATURE(kSettingsIaReorganization);
 BASE_DECLARE_FEATURE(kSettingsInTab);
 BASE_DECLARE_FEATURE(kSettingsInTabDesktop);
 BASE_DECLARE_FEATURE(kSettingsInTabUrlNav);

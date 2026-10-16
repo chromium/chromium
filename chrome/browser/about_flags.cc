@@ -7935,6 +7935,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncRestoreOnStartupPrefDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSyncRestoreOnStartupPref)},
 
+    {"settings-ia-reorganization",
+     flag_descriptions::kSettingsIaReorganizationName,
+     flag_descriptions::kSettingsIaReorganizationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSettingsIaReorganization)},
+
     {"settings-in-tab", flag_descriptions::kSettingsInTabName,
      flag_descriptions::kSettingsInTabDescription, kOsAndroid,
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
