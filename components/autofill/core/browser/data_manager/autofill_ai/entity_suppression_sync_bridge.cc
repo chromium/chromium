@@ -133,7 +133,9 @@ bool EntitySuppressionSyncBridge::Suppress(
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::Time creation_time = base::Time::Now();
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time);
+      CreateSpecificsFromEntitySuppressionEntry(
+          guid, entry, creation_time,
+          GetPossiblyTrimmedEntitySuppressionSpecifics(guid));
 
   const std::string encrypted_value =
       EncryptSuppressionSpecifics(specifics, *encryptor_);
@@ -403,10 +405,12 @@ EntitySuppressionSyncBridge::MergeFullSyncData(
   // conflict resolution against remote duplicates).
   for (const auto& [entry, metadata] : metadata_by_entry_) {
     if (!synced_remote_guids.contains(metadata.guid)) {
-      change_processor()->Put(metadata.guid,
-                              CreateEntityDataFromEntitySuppressionEntry(
-                                  metadata.guid, entry, metadata.creation_time),
-                              batch->GetMetadataChangeList());
+      change_processor()->Put(
+          metadata.guid,
+          CreateEntityDataFromEntitySuppressionEntry(
+              metadata.guid, entry, metadata.creation_time,
+              GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid)),
+          batch->GetMetadataChangeList());
     }
   }
 
@@ -505,11 +509,21 @@ EntitySuppressionSyncBridge::GetAllData() {
   CHECK(IsLoaded());
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [entry, metadata] : metadata_by_entry_) {
-    batch->Put(metadata.guid,
-               CreateEntityDataFromEntitySuppressionEntry(
-                   metadata.guid, entry, metadata.creation_time));
+    batch->Put(
+        metadata.guid,
+        CreateEntityDataFromEntitySuppressionEntry(
+            metadata.guid, entry, metadata.creation_time,
+            GetPossiblyTrimmedEntitySuppressionSpecifics(metadata.guid)));
   }
   return batch;
+}
+
+const sync_pb::AutofillEntitySuppressionSpecifics&
+EntitySuppressionSyncBridge::GetPossiblyTrimmedEntitySuppressionSpecifics(
+    const std::string& storage_key) const {
+  return change_processor()
+      ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
+      .autofill_entity_suppression();
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -554,7 +568,22 @@ bool EntitySuppressionSyncBridge::IsEntityDataValid(
 sync_pb::EntitySpecifics
 EntitySuppressionSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
-  return sync_pb::EntitySpecifics();
+  sync_pb::AutofillEntitySuppressionSpecifics
+      trimmed_entity_suppression_specifics =
+          TrimAutofillEntitySuppressionSpecificsDataForCaching(
+              entity_specifics.autofill_entity_suppression());
+
+  // If all fields are cleared from the entity suppression specifics, return a
+  // fresh EntitySpecifics to avoid caching a few residual bytes.
+  if (trimmed_entity_suppression_specifics.ByteSizeLong() == 0u) {
+    return sync_pb::EntitySpecifics();
+  }
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  *trimmed_entity_specifics.mutable_autofill_entity_suppression() =
+      std::move(trimmed_entity_suppression_specifics);
+
+  return trimmed_entity_specifics;
 }
 
 void EntitySuppressionSyncBridge::OnStoreCreated(

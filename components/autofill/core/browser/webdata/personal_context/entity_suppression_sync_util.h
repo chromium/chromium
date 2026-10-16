@@ -20,19 +20,21 @@ struct EntityData;
 namespace autofill {
 
 // For a given `guid`, `entry`, and `creation_time`, returns the corresponding
-// `sync_pb::AutofillEntitySuppressionSpecifics`.
+// `sync_pb::AutofillEntitySuppressionSpecifics` merged with `base_specifics`.
 sync_pb::AutofillEntitySuppressionSpecifics
 CreateSpecificsFromEntitySuppressionEntry(
     const std::string& guid,
     const EntitySuppressionEntry& entry,
-    base::Time creation_time = base::Time::Now());
+    base::Time creation_time,
+    const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics);
 
 // Converts the given `guid`, `entry`, and `creation_time` into a
-// `syncer::EntityData`.
+// `syncer::EntityData` merged with `base_specifics`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionEntry(
     const std::string& guid,
     const EntitySuppressionEntry& entry,
-    base::Time creation_time = base::Time::Now());
+    base::Time creation_time,
+    const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics);
 
 // Converts the given `specifics` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData>
@@ -46,6 +48,13 @@ std::optional<EntitySuppressionEntry> CreateEntitySuppressionEntryFromSpecifics(
 
 // Tests if the entity suppression `specifics` are valid.
 bool AreEntitySuppressionSpecificsValid(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
+
+// Clears all supported fields from `specifics`. Supported fields are all
+// fields in the protobuf definition that have already been included in the
+// client version.
+sync_pb::AutofillEntitySuppressionSpecifics
+TrimAutofillEntitySuppressionSpecificsDataForCaching(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
 
 }  // namespace autofill

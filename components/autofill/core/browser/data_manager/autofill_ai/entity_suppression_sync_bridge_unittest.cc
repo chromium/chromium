@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -31,6 +32,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/sync/test/unknown_field_util.h"
 #include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +41,9 @@ namespace autofill {
 
 namespace {
 
+using ::base::test::EqualsProto;
+using ::syncer::test::AddUnknownFieldToProto;
+using ::syncer::test::HasUnknownField;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::ElementsAre;
@@ -46,6 +51,7 @@ using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
 
 // The maximum number of suppressions that the bridge keeps.
@@ -78,16 +84,16 @@ std::unique_ptr<syncer::EntityChange> CreateAddChange(
     const std::string& guid,
     const EntitySuppressionEntry& entry) {
   return syncer::EntityChange::CreateAdd(
-      guid,
-      std::move(*CreateEntityDataFromEntitySuppressionEntry(guid, entry)));
+      guid, std::move(*CreateEntityDataFromEntitySuppressionEntry(
+                guid, entry, base::Time::Now(), /*base_specifics=*/{})));
 }
 
 std::unique_ptr<syncer::EntityChange> CreateUpdateChange(
     const std::string& guid,
     const EntitySuppressionEntry& entry) {
   return syncer::EntityChange::CreateUpdate(
-      guid,
-      std::move(*CreateEntityDataFromEntitySuppressionEntry(guid, entry)));
+      guid, std::move(*CreateEntityDataFromEntitySuppressionEntry(
+                guid, entry, base::Time::Now(), /*base_specifics=*/{})));
 }
 
 class MockBridgeObserver : public EntitySuppressionSyncBridge::Observer {
@@ -108,6 +114,8 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
   }
 
   void CreateBridge() {
@@ -129,9 +137,10 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
   void WriteToStore(const std::string& guid,
                     const EntitySuppressionEntry& entry,
                     base::Time creation_time = base::Time::Now()) {
-    WriteEncryptedToStore(guid, CreateSpecificsFromEntitySuppressionEntry(
-                                    guid, entry, creation_time)
-                                    .SerializeAsString());
+    WriteEncryptedToStore(guid,
+                          CreateSpecificsFromEntitySuppressionEntry(
+                              guid, entry, creation_time, /*base_specifics=*/{})
+                              .SerializeAsString());
   }
 
   // Writes `count` distinct suppressions with random GUIDs and the given
@@ -151,7 +160,8 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
       };
       std::string encrypted_blob;
       ASSERT_TRUE(encryptor().EncryptString(
-          CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time)
+          CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time,
+                                                    /*base_specifics=*/{})
               .SerializeAsString(),
           &encrypted_blob));
       batch->WriteData(guid, encrypted_blob);
@@ -839,6 +849,105 @@ TEST_F(EntitySuppressionSyncBridgeTest, Metrics_LoadWithDroppedRecords) {
           base::Bucket(EntitySuppressionLoadDropReason::kDecryptionFailed, 1),
           base::Bucket(EntitySuppressionLoadDropReason::kParseFailed, 1),
           base::Bucket(EntitySuppressionLoadDropReason::kInvalidEntry, 1)));
+}
+
+// Tests that `TrimAllSupportedFieldsFromRemoteSpecifics()` correctly trims all
+// supported fields from the specifics.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       TrimAllSupportedFieldsFromRemoteSpecifics) {
+  CreateBridge();
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_autofill_entity_suppression() =
+      CreateSpecificsFromEntitySuppressionEntry("guid1", CreatePassportEntry(),
+                                                base::Time::Now(),
+                                                /*base_specifics=*/{});
+  entity_specifics.mutable_autofill_entity_suppression()->set_schema_version(1);
+
+  EXPECT_EQ(bridge()
+                .TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics)
+                .ByteSizeLong(),
+            0u);
+}
+
+// Tests that supported fields and nested messages are successfully trimmed but
+// that unsupported fields are preserved.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       TrimAllSupportedFieldsFromRemoteSpecifics_PreserveUnsupportedFields) {
+  CreateBridge();
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  sync_pb::AutofillEntitySuppressionSpecifics*
+      suppression_specifics_with_only_unknown_fields =
+          trimmed_entity_specifics.mutable_autofill_entity_suppression();
+
+  // Set an unsupported field in the top-level message and in the nested key.
+  AddUnknownFieldToProto(*suppression_specifics_with_only_unknown_fields,
+                         "unsupported_fields");
+  AddUnknownFieldToProto(*suppression_specifics_with_only_unknown_fields
+                              ->mutable_entity_suppression_key(),
+                         "unsupported_key_fields");
+
+  // Create a copy and set supported values in the top-level and nested
+  // messages.
+  sync_pb::EntitySpecifics entity_specifics = trimmed_entity_specifics;
+  sync_pb::AutofillEntitySuppressionSpecifics* specifics =
+      entity_specifics.mutable_autofill_entity_suppression();
+  specifics->set_guid("guid1");
+  specifics->set_schema_version(1);
+  specifics->set_creation_time_windows_epoch_micros(12345);
+  specifics->mutable_entity_suppression_key()->set_entity_type_name("passport");
+  sync_pb::EntitySuppressionKey::Attribute* attr =
+      specifics->mutable_entity_suppression_key()->add_attributes();
+  attr->set_name("passport_number");
+  attr->set_value_hash("hash");
+
+  EXPECT_THAT(
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics),
+      EqualsProto(trimmed_entity_specifics));
+}
+
+// Tests that `GetDataForCommit()` includes unknown fields from the server.
+TEST_F(EntitySuppressionSyncBridgeTest,
+       GetDataForCommit_PreservesUnknownFields) {
+  WriteToStore("guid1", CreatePassportEntry());
+  CreateBridge();
+
+  sync_pb::EntitySpecifics base_specifics;
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_entity_suppression(),
+                         "unknown_field");
+  EXPECT_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics("guid1"))
+      .WillOnce(ReturnRef(base_specifics));
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({"guid1"});
+
+  ASSERT_TRUE(batch);
+  ASSERT_TRUE(batch->HasNext());
+  const syncer::KeyAndData& data_pair = batch->Next();
+  EXPECT_EQ(data_pair.first, "guid1");
+  EXPECT_THAT(data_pair.second->specifics.autofill_entity_suppression(),
+              HasUnknownField("unknown_field"));
+}
+
+// Tests that `Suppress()` includes unknown fields from the server when
+// calling `Put()`.
+TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppress_PreservesUnknownFields) {
+  CreateBridge();
+
+  sync_pb::EntitySpecifics base_specifics;
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_entity_suppression(),
+                         "unknown_field");
+  EXPECT_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics)
+      .WillOnce(ReturnRef(base_specifics));
+
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([](const std::string& storage_key,
+                   std::unique_ptr<syncer::EntityData> entity_data,
+                   syncer::MetadataChangeList* metadata_change_list) {
+        EXPECT_THAT(entity_data->specifics.autofill_entity_suppression(),
+                    HasUnknownField("unknown_field"));
+      });
+
+  EXPECT_TRUE(bridge().Suppress(CreatePassportEntry()));
 }
 
 }  // namespace

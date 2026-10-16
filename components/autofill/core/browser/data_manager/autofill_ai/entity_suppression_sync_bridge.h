@@ -163,6 +163,13 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // `syncer::MutableDataBatch`.
   std::unique_ptr<syncer::MutableDataBatch> GetAllData();
 
+  // If available, returns cached possibly trimmed
+  // `AutofillEntitySuppressionSpecifics` for given `storage_key`. By default,
+  // empty `AutofillEntitySuppressionSpecifics` is returned.
+  const sync_pb::AutofillEntitySuppressionSpecifics&
+  GetPossiblyTrimmedEntitySuppressionSpecifics(
+      const std::string& storage_key) const;
+
   void NotifySuppressionsChanged();
 
   SEQUENCE_CHECKER(sequence_checker_);

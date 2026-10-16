@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/test/unknown_field_util.h"
 #include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,9 @@
 namespace autofill {
 
 namespace {
+
+using ::syncer::test::AddUnknownFieldToProto;
+using ::syncer::test::HasUnknownField;
 
 AttributeValueHash CreateTestHash(uint8_t fill_value) {
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
@@ -49,7 +53,8 @@ TEST(EntitySuppressionSyncUtilTest, RoundTripConversion) {
 
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateSpecificsFromEntitySuppressionEntry("test-guid-1234",
-                                                original_entry, creation_time);
+                                                original_entry, creation_time,
+                                                /*base_specifics=*/{});
   std::optional<EntitySuppressionEntry> converted_entry =
       CreateEntitySuppressionEntryFromSpecifics(specifics);
 
@@ -60,11 +65,32 @@ TEST(EntitySuppressionSyncUtilTest, RoundTripConversion) {
   EXPECT_EQ(*converted_entry, original_entry);
 }
 
+// Tests that `CreateSpecificsFromEntitySuppressionEntry` preserves unknown
+// fields from `base_specifics`.
+TEST(EntitySuppressionSyncUtilTest,
+     CreateSpecificsFromEntitySuppressionEntry_MergesBaseSpecifics) {
+  sync_pb::AutofillEntitySuppressionSpecifics base_specifics;
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
+  AddUnknownFieldToProto(*base_specifics.mutable_entity_suppression_key(),
+                         "unknown_key_field");
+
+  EntitySuppressionEntry entry = CreateTestPassportEntry();
+  sync_pb::AutofillEntitySuppressionSpecifics specifics =
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", entry, base::Time::Now(), base_specifics);
+
+  EXPECT_EQ(specifics.guid(), "test-guid-1234");
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
+  EXPECT_THAT(specifics.entity_suppression_key(),
+              HasUnknownField("unknown_key_field"));
+}
+
 // Tests that `EntityData` is correctly created from specifics.
 TEST(EntitySuppressionSyncUtilTest, CreateEntityData) {
   EntitySuppressionEntry entry = CreateTestPassportEntry();
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry("test-guid-1234", entry);
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", entry, base::Time::Now(), /*base_specifics=*/{});
 
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromEntitySuppressionSpecifics(specifics);
@@ -83,7 +109,8 @@ TEST(EntitySuppressionSyncUtilTest,
   EntitySuppressionEntry entry = CreateTestPassportEntry();
 
   std::unique_ptr<syncer::EntityData> entity_data =
-      CreateEntityDataFromEntitySuppressionEntry("test-guid-1234", entry);
+      CreateEntityDataFromEntitySuppressionEntry(
+          "test-guid-1234", entry, base::Time::Now(), /*base_specifics=*/{});
 
   ASSERT_NE(entity_data, nullptr);
   EXPECT_EQ(entity_data->name, "test-guid-1234");
@@ -95,7 +122,9 @@ TEST(EntitySuppressionSyncUtilTest,
 // Tests that specifics with an empty GUID are considered invalid.
 TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsEmptyGuid) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry("", CreateTestPassportEntry());
+      CreateSpecificsFromEntitySuppressionEntry("", CreateTestPassportEntry(),
+                                                base::Time::Now(),
+                                                /*base_specifics=*/{});
 
   EXPECT_FALSE(AreEntitySuppressionSpecificsValid(specifics));
 }
@@ -112,8 +141,9 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsMissingKey) {
 // Tests that specifics with an unknown entity type name are considered invalid.
 TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownEntityType) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry("test-guid-1234",
-                                                CreateTestPassportEntry());
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", CreateTestPassportEntry(), base::Time::Now(),
+          /*base_specifics=*/{});
   specifics.mutable_entity_suppression_key()->set_entity_type_name(
       "unknown_entity_type");
 
@@ -124,8 +154,9 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownEntityType) {
 // invalid.
 TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownAttributeType) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry("test-guid-1234",
-                                                CreateTestPassportEntry());
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", CreateTestPassportEntry(), base::Time::Now(),
+          /*base_specifics=*/{});
   specifics.mutable_entity_suppression_key()->mutable_attributes(0)->set_name(
       "unknown_attribute");
 
@@ -136,8 +167,9 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownAttributeType) {
 // invalid.
 TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsInvalidHashSize) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry("test-guid-1234",
-                                                CreateTestPassportEntry());
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", CreateTestPassportEntry(), base::Time::Now(),
+          /*base_specifics=*/{});
   specifics.mutable_entity_suppression_key()
       ->mutable_attributes(0)
       ->set_value_hash("short_hash");
@@ -148,8 +180,9 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsInvalidHashSize) {
 // Tests that specifics with duplicate attribute types are considered invalid.
 TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsDuplicateAttributes) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
-      CreateSpecificsFromEntitySuppressionEntry("test-guid-1234",
-                                                CreateTestPassportEntry());
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", CreateTestPassportEntry(), base::Time::Now(),
+          /*base_specifics=*/{});
   sync_pb::EntitySuppressionKey::Attribute* dup_attr =
       specifics.mutable_entity_suppression_key()->add_attributes();
   dup_attr->set_name(specifics.entity_suppression_key().attributes(0).name());
@@ -166,6 +199,21 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsEmptyAttributes) {
   specifics.mutable_entity_suppression_key()->set_entity_type_name("passport");
 
   EXPECT_FALSE(AreEntitySuppressionSpecificsValid(specifics));
+}
+
+// Tests that `TrimAutofillEntitySuppressionSpecificsDataForCaching` clears all
+// supported fields.
+TEST(EntitySuppressionSyncUtilTest,
+     TrimAutofillEntitySuppressionSpecificsDataForCaching) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics =
+      CreateSpecificsFromEntitySuppressionEntry(
+          "test-guid-1234", CreateTestPassportEntry(), base::Time::Now(),
+          /*base_specifics=*/{});
+  specifics.set_schema_version(1);
+
+  EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(specifics)
+                .ByteSizeLong(),
+            0u);
 }
 
 }  // namespace
