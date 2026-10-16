@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/values.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -58,6 +59,10 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
           registry_receiver);
 
+  // Serializes all open windows, tab groups, tabs, and saved tab groups into a
+  // structured dictionary snapshot for the workspace sub-agent.
+  base::DictValue BuildWorkspaceSnapshot();
+
   // ai_overlay_dialog::mojom::AiOverlayTools:
   // Only the platform-agnostic tools are implemented here; the rest are
   // implemented by the platform subclasses.
@@ -89,6 +94,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   void SelectOption(const blink::DOMNodeIdType& dom_node_id,
                     const std::string& value,
                     SelectOptionCallback callback) override;
+  // Returns a dictionary `base::Value` containing a snapshot of open browser
+  // windows, tab groups, tabs, and saved tab groups.
+  void GetWorkspaceSnapshot(GetWorkspaceSnapshotCallback callback) override;
 
   // ai_overlay_dialog::mojom::AiOverlayToolRegistry:
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;
@@ -149,6 +157,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   content::WeakDocumentPtr annotation_document_;
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
   base::CancelableTaskTracker task_tracker_;
+
+  base::WeakPtrFactory<AiOverlayTools> weak_factory_{this};
 };
 
 }  // namespace ttc

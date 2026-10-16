@@ -112,14 +112,15 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src 'self' wss://generativelanguage.googleapis.com "
-      "https://*.google.com;");
+      "https://generativelanguage.googleapis.com https://*.google.com;");
 #else
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       "media-src 'self' chrome-untrusted://resources data: blob:;");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
-      "connect-src 'self' wss://generativelanguage.googleapis.com;");
+      "connect-src 'self' wss://generativelanguage.googleapis.com "
+      "https://generativelanguage.googleapis.com;");
 #endif
 
   GURL ttc_bundle_url =
@@ -129,7 +130,8 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
     static constexpr std::string_view kCommonMediaSrc =
         "media-src 'self' chrome-untrusted://resources data: blob:";
     static constexpr std::string_view kCommonConnectSrc =
-        "connect-src 'self' wss://generativelanguage.googleapis.com";
+        "connect-src 'self' wss://generativelanguage.googleapis.com "
+        "https://generativelanguage.googleapis.com";
 
     // Sources that depend on where the bundle is served from. In dev mode it
     // may come from an arbitrary local web server, so allow any http(s)/ws(s)
@@ -165,6 +167,7 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
                     features::kAiOverlayDialogUseMes.Get());
   html_source->AddBoolean("enablePageTools",
                           features::kAiOverlayDialogPageTools.Get());
+  html_source->AddBoolean("enableNext", features::kAiOverlayDialogNext.Get());
   html_source->AddBoolean("aiOverlayDisableNavigationContext",
                           base::FeatureList::IsEnabled(
                               features::kAiOverlayDisableNavigationContext));

@@ -562,6 +562,11 @@ BASE_FEATURE_PARAM(bool,
                    &kAiOverlayDialog,
                    "enable_page_tools",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kAiOverlayDialogNext,
+                   &kAiOverlayDialog,
+                   "enable_next",
+                   false);
 BASE_FEATURE(kAiOverlayDisableNavigationContext,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

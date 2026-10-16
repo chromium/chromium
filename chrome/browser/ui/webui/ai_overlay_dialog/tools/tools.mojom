@@ -5,6 +5,7 @@
 module ai_overlay_dialog.mojom;
 
 import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "url/mojom/url.mojom";
 
@@ -167,6 +168,12 @@ interface AiOverlayTools {
   // @NON_BLOCKING
   // Closes the Gemini side panel in Chrome if it is currently open.
   CloseGeminiPanel() => result<mojo_base.mojom.Empty, string>;
+
+  // @NON_BLOCKING
+  // Returns a snapshot of the user's open browser windows, tab groups, open
+  // tabs (including page topic summaries, memory usage, idle time, and unsaved
+  // state), and saved tab groups.
+  GetWorkspaceSnapshot() => result<mojo_base.mojom.Value, string>;
 };
 
 // Infrastructure interface for tool manifest discovery.

@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -94,6 +96,11 @@ class FakePage : public ai_overlay_dialog::mojom::Page {
 
 class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
  public:
+  AiOverlayToolsBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(features::kAiOverlayDialog,
+                                                     {{"enable_next", "true"}});
+  }
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
@@ -180,6 +187,7 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   FakePage fake_page_;
   std::unique_ptr<AiOverlayDialogPageHandler> page_handler_;
   std::unique_ptr<PageContextMonitor> page_context_monitor_;
@@ -886,6 +894,69 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SelectOptionSuccess) {
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ("opt2",
             content::EvalJs(contents, "document.getElementById('test_select').value"));
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ManageWorkspaceMultipleTabs) {
+  // Setup multiple diverse tabs in the window.
+  AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?cookies"),
+                  "Chocolate Chip Cookies");
+  AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?quantum"),
+                  "Quantum Mechanics");
+  AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?sourdough"),
+                  "Sourdough Bread");
+
+  int initial_tab_count = browser()->GetTabStripModel()->count();
+  EXPECT_GE(initial_tab_count, 3);
+
+  // Verify that BuildWorkspaceSnapshot serializes all windows and open tabs.
+  base::DictValue snapshot = tools()->BuildWorkspaceSnapshot();
+
+  const base::ListValue* windows = snapshot.FindList("windows");
+  ASSERT_TRUE(windows);
+  ASSERT_FALSE(windows->empty());
+  EXPECT_TRUE(snapshot.FindList("saved_tab_groups"));
+
+  const base::DictValue& first_window = (*windows)[0].GetDict();
+  EXPECT_EQ(first_window.FindInt("tab_count"), initial_tab_count);
+  const base::ListValue* tabs = first_window.FindList("tabs");
+  ASSERT_TRUE(tabs);
+  EXPECT_EQ(static_cast<int>(tabs->size()), initial_tab_count);
+
+  bool found_cookies = false;
+  bool found_quantum = false;
+  bool found_sourdough = false;
+  for (const base::Value& tab_val : *tabs) {
+    ASSERT_TRUE(tab_val.is_dict());
+    const base::DictValue& tab_dict = tab_val.GetDict();
+    EXPECT_TRUE(tab_dict.FindInt("tab_id").has_value());
+    EXPECT_TRUE(tab_dict.FindInt("memory_mb").has_value());
+    EXPECT_TRUE(tab_dict.FindInt("last_active_minutes_ago").has_value());
+    EXPECT_TRUE(tab_dict.FindBool("has_unsaved_state").has_value());
+    const std::string* title = tab_dict.FindString("title");
+    ASSERT_TRUE(title);
+    if (*title == "Chocolate Chip Cookies") {
+      found_cookies = true;
+    } else if (*title == "Quantum Mechanics") {
+      found_quantum = true;
+    } else if (*title == "Sourdough Bread") {
+      found_sourdough = true;
+    }
+  }
+  EXPECT_TRUE(found_cookies);
+  EXPECT_TRUE(found_quantum);
+  EXPECT_TRUE(found_sourdough);
+
+  // Invoke GetWorkspaceSnapshot and verify callback completion with snapshot.
+  base::test::TestFuture<base::expected<base::Value, std::string>> future;
+  tools()->GetWorkspaceSnapshot(future.GetCallback());
+
+  const auto& result = future.Get();
+  ASSERT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+  ASSERT_TRUE(result.value().is_dict());
+  const base::ListValue* result_windows =
+      result.value().GetDict().FindList("windows");
+  ASSERT_TRUE(result_windows);
+  EXPECT_FALSE(result_windows->empty());
 }
 }  // namespace
 }  // namespace ttc

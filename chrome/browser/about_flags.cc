@@ -3974,11 +3974,14 @@ const FeatureEntry::FeatureParam kAiOverlayDialog_PageTools[] = {
 const FeatureEntry::FeatureParam kAiOverlayDialog_MesAndPageTools[] = {
     {"use_mes", "true"},
     {"enable_page_tools", "true"}};
+const FeatureEntry::FeatureParam kAiOverlayDialog_Next[] = {
+    {"enable_next", "true"}};
 
 const FeatureEntry::FeatureVariation kAiOverlayDialogVariations[] = {
     {"with MES", kAiOverlayDialog_Mes, nullptr},
     {"with Page Tools", kAiOverlayDialog_PageTools, nullptr},
-    {"with MES and Page Tools", kAiOverlayDialog_MesAndPageTools, nullptr}};
+    {"with MES and Page Tools", kAiOverlayDialog_MesAndPageTools, nullptr},
+    {"Next", kAiOverlayDialog_Next, nullptr}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
