@@ -572,6 +572,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
     ":chrome_test_java_helper",
     ":chrome_test_java_org.chromium.chrome.browser.tabmodel",
     "//chrome/browser/ntp_customization:java",
+    "//chrome/browser/settings:settings_in_tab_java",
     "//ui/accessibility:ui_accessibility_test_support_java",
   ]
 }

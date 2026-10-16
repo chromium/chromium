@@ -31,7 +31,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.R;
@@ -51,10 +50,6 @@ import java.util.List;
 
 /** Tests for Search Engine Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-})
 public class SearchEngineSettingsTest {
     private final SettingsTestRule<SearchEngineSettings> mSearchEngineSettingsTestRule =
             new SettingsTestRule<>(SearchEngineSettings.class);
