@@ -121,6 +121,11 @@ BASE_DECLARE_FEATURE(kPageSettledMonitorExcludeAdFrameLoading);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageSettledMonitorSkipAwaitVisualStateForHiddenTabs);
 
+// If enabled, defers the initial contentful paint timeout until WaitForStable()
+// is called.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPaintStabilityDeferInitialPaintTimeout);
+
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
 // prefetch logic.
