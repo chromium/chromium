@@ -221,7 +221,8 @@ class UberClique:
     '''
 
     def Callback(id, structures_by_gender):
-      if id not in self.cliques_:
+      clique_list = self.cliques_.get(id)
+      if not clique_list:
         if debug:
           print("Ignoring translation #%s" % id)
         return
@@ -229,32 +230,37 @@ class UberClique:
       if debug:
         print("Adding translation #%s" % id)
 
-      # We fetch placeholder information from the original message (the XTB file
-      # only contains placeholder names).
-      original_msg = self.BestClique(id).GetMessage()
-
-      for gender, structure in structures_by_gender.items():
-        translation = tclib.Translation(id=id)
-        for is_ph, text in structure:
-          if not is_ph:
-            translation.AppendText(text)
-          else:
-            found_placeholder = False
-            for ph in original_msg.GetPlaceholders():
-              if ph.GetPresentation() == text:
-                translation.AppendPlaceholder(
-                  tclib.Placeholder(
-                    ph.GetPresentation(), ph.GetOriginal(), ph.GetExample()
-                  )
-                )
-                found_placeholder = True
-                break
-            if not found_placeholder:
+      for c in clique_list:
+        if not c.translateable:
+          continue
+        # We fetch placeholder information from the original message (the XTB
+        # file only contains placeholder names).
+        orig_placeholders = {
+          ph.GetPresentation(): ph for ph in c.GetMessage().GetPlaceholders()
+        }
+        for gender, structure in structures_by_gender.items():
+          transl_msg = tclib.Translation(id=id)
+          # The XML parser can split text into multiple chunks. Join adjacent
+          # chunks so that the resulting parts match what AddTranslation()
+          # would produce.
+          pending_text = []
+          for is_ph, text in structure:
+            if not is_ph:
+              pending_text.append(text)
+              continue
+            if pending_text:
+              transl_msg.AppendText(''.join(pending_text))
+              pending_text = []
+            ph = orig_placeholders.get(text)
+            if ph is None:
               raise exception.MismatchingPlaceholders(
                 'Translation for message ID %s had <ph name="%s"/>, no '
                 'match\nin original message' % (id, text)
               )
-        self.FindCliqueAndAddTranslation(translation, lang, gender)
+            transl_msg.AppendPlaceholder(ph)
+          if pending_text:
+            transl_msg.AppendText(''.join(pending_text))
+          c._AddTranslationWithOriginalPlaceholders(transl_msg, lang, gender)
 
     return Callback
 
@@ -524,24 +530,10 @@ class MessageClique:
     original = self.MessageForLanguageAndGender(
       self.source_language, self.source_gender, False
     )
-    if len(original.GetPlaceholders()) != len(translation.GetPlaceholders()):
-      print(
-        "ERROR: '%s/%s' translation of message id %s does not match"
-        % (language, gender, translation.GetId())
-      )
-      assert False
+    self._VerifyPlaceholderCount(original, translation, language, gender)
 
     transl_msg = self._CopyTranslation(translation, original)
-
-    if self.custom_type and not self.custom_type.ValidateAndModify(
-      language, transl_msg
-    ):
-      print(
-        "WARNING: %s/%s translation failed validation: %s"
-        % (language, gender, transl_msg.GetId())
-      )
-
-    self.clique[(language, gender)] = transl_msg
+    self._StoreTranslation(transl_msg, language, gender)
 
   def _CopyTranslation(self, translation, original):
     '''Returns a copy of |translation| that uses the placeholders of
@@ -573,6 +565,39 @@ class MessageClique:
     if pending_text:
       transl_msg.AppendText(''.join(pending_text))
     return transl_msg
+
+  def _AddTranslationWithOriginalPlaceholders(
+    self, transl_msg, language, gender
+  ):
+    '''Like AddTranslation(), but for a translation whose placeholders are
+    already the ones from this clique's source message. This avoids the cost of
+    copying the translation.
+    '''
+    assert self.translateable
+    assert (language, gender) not in self.clique
+    self._VerifyPlaceholderCount(
+      self.GetMessage(), transl_msg, language, gender
+    )
+    self._StoreTranslation(transl_msg, language, gender)
+
+  def _VerifyPlaceholderCount(self, original, translation, language, gender):
+    if len(original.GetPlaceholders()) != len(translation.GetPlaceholders()):
+      print(
+        "ERROR: '%s/%s' translation of message id %s does not match"
+        % (language, gender, translation.GetId())
+      )
+      assert False
+
+  def _StoreTranslation(self, transl_msg, language, gender):
+    if self.custom_type and not self.custom_type.ValidateAndModify(
+      language, transl_msg
+    ):
+      print(
+        "WARNING: %s/%s translation failed validation: %s"
+        % (language, gender, transl_msg.GetId())
+      )
+
+    self.clique[(language, gender)] = transl_msg
 
   def HasTranslation(self, lang, gender):
     return self.clique.get((lang, gender)) is not None

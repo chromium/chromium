@@ -4,9 +4,14 @@
 
 """Miscellaneous node types."""
 
+import gc
+import multiprocessing
+import os
 import os.path
 import re
 import sys
+import threading
+import traceback
 
 from grit import constants
 from grit import exception
@@ -762,10 +767,105 @@ class GritNode(base.Node):
     assert self.output_language
     self.SubstituteMessages(self.GetSubstituter())
 
-    for node in self.ActiveDescendants():
-      if hasattr(node, 'RunPostSubstitutionGatherer'):
+    post_nodes = [
+      node
+      for node in self.ActiveDescendants()
+      if hasattr(node, 'RunPostSubstitutionGatherer') and node.ShouldLoad()
+    ]
+    # Preserve sequential debug log output when --extra-verbose is used.
+    if not debug and len(post_nodes) > 1 and _CanFork():
+      self._RunPostSubstitutionGatherersConcurrently(post_nodes)
+    else:
+      for node in post_nodes:
         with node:
           node.RunPostSubstitutionGatherer(debug=debug)
+
+  def _RunPostSubstitutionGatherersConcurrently(self, post_nodes):
+    """Parses .xtb translation files across worker processes.
+
+    Shards `post_nodes` (where each element is a FileNode for one language's
+    .xtb file) across a fork pool. Workers run the XML parser and filter to
+    message IDs present in this .grd's UberClique, returning lightweight
+    (msg_id, structures) tuples that the parent process then registers into
+    UberClique in deterministic `post_nodes` order.
+    """
+    global _worker_nodes
+    # Benchmarked with generated_resources.grd (81 .xtb files) on a 96-core
+    # machine: Speedups level off after 8 workers (16 was no faster, and 32+
+    # was slower) because the parent's serial processing of the results
+    # dominates.
+    num_workers = min(8, _CpuCount(), len(post_nodes))
+    _worker_nodes = post_nodes
+    gc_enabled = gc.isenabled()
+    try:
+      # Disable cyclic GC during the parallel phase (~2x speedup):
+      # 1. In forked workers, prevents GC sweeps from modifying object headers
+      #    (gc_refs) across the inherited AST, avoiding Copy-On-Write page
+      #    faults.
+      # 2. In the parent process, prevents repeated O(N) Gen-2 GC scans while
+      #    unpickling results and allocating hundreds of thousands of cycle-free
+      #    tclib.Translation objects.
+      gc.disable()
+      with multiprocessing.get_context('fork').Pool(num_workers) as pool:
+        results = pool.map(_ParseXtbWorker, range(len(post_nodes)))
+
+      uber_clique = self.UberClique()
+      # Apply parsed translations in deterministic post_nodes order.
+      for node, matched in zip(post_nodes, results):
+        with node:
+          cb = uber_clique.GenerateXtbParserCallback(node.GetLang())
+          for msg_id, structures in matched:
+            cb(msg_id, structures)
+    finally:
+      _worker_nodes = None
+      # Restore GC state for callers that invoke RunGatherers() multiple times
+      # in the same process (e.g. unit tests or library callers).
+      if gc_enabled:
+        gc.enable()
+
+
+# Passed to forked workers via a module global (indexed by integer) so
+# multiprocessing.Pool does not attempt to pickle FileNode / GritNode ASTs.
+_worker_nodes = None
+
+
+def _CpuCount():
+  # Respect CPU affinity restrictions (e.g. on bots) where available.
+  if hasattr(os, 'sched_getaffinity'):
+    return len(os.sched_getaffinity(0))
+  return os.cpu_count() or 1
+
+
+def _CanFork():
+  return (
+    # Requires 'fork' so worker processes inherit _worker_nodes (and the rest
+    # of the parsed GritNode AST) via Copy-On-Write without pickling.
+    hasattr(os, 'fork')
+    # No benefit to spawning worker processes on a single-core machine.
+    and _CpuCount() > 1
+    # multiprocessing.Pool raises an AssertionError if created inside a
+    # daemonic process (e.g., when running under parallel unit test runners).
+    and not multiprocessing.current_process().daemon
+    # Forking a process that has other threads running is unsafe (they might
+    # be holding locks), so stick to a single process when used as a library.
+    and threading.active_count() == 1
+    # Allow test suites and debugging workflows to force single-process
+    # execution.
+    and os.environ.get('GRIT_DISABLE_MULTIPROCESSING') != '1'
+  )
+
+
+def _ParseXtbWorker(index):
+  node = _worker_nodes[index]
+  try:
+    return node.ParseXtb()
+  except Exception:
+    # Pool.map() re-raises exceptions in the parent process, but some (e.g.
+    # xml.sax.SAXParseException) cannot be pickled. Raise one that can be.
+    raise RuntimeError(
+      'Exception during parsing of %s:\n%s'
+      % (node.GetInputPath(), traceback.format_exc())
+    ) from None
 
 
 class IdentifierNode(base.Node):

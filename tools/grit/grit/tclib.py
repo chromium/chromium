@@ -145,7 +145,9 @@ class BaseMessage:
     return self.description
 
   def SetDescription(self, description):
-    self.description = _FOLD_WHITESPACE.sub(' ', description)
+    self.description = (
+      _FOLD_WHITESPACE.sub(' ', description) if description else ''
+    )
 
   def GetMeaning(self):
     return self.meaning

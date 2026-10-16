@@ -33,6 +33,9 @@ class FileNode(base.Node):
   def DisableLoading(self):
     self.should_load_ = False
 
+  def ShouldLoad(self):
+    return self.should_load_
+
   def MandatoryAttributes(self):
     return ['path', 'lang']
 
@@ -40,23 +43,42 @@ class FileNode(base.Node):
     if not self.should_load_:
       return
 
+    self._ParseXtb(
+      self.UberClique().GenerateXtbParserCallback(
+        self.attrs['lang'], debug=debug
+      )
+    )
+
+  def ParseXtb(self):
+    if not self.should_load_:
+      return []
+
+    clique_ids = self.UberClique().cliques_
+    matched = []
+
+    def Callback(msg_id, structures):
+      if msg_id in clique_ids:
+        matched.append((msg_id, structures))
+
+    self._ParseXtb(Callback)
+    return matched
+
+  def _ParseXtb(self, callback):
     root = self.GetRoot()
     defs = getattr(root, 'defines', {})
     target_platform = getattr(root, 'target_platform', '')
 
-    xtb_file = open(self.ToRealPath(self.GetInputPath()), 'rb')
-    try:
-      lang = xtb_reader.Parse(
-        xtb_file,
-        self.UberClique().GenerateXtbParserCallback(
-          self.attrs['lang'], debug=debug
-        ),
-        defs=defs,
-        target_platform=target_platform,
-      )
-    except:
-      print("Exception during parsing of %s" % self.GetInputPath())
-      raise
+    with open(self.ToRealPath(self.GetInputPath()), 'rb') as xtb_file:
+      try:
+        lang = xtb_reader.Parse(
+          xtb_file,
+          callback,
+          defs=defs,
+          target_platform=target_platform,
+        )
+      except Exception:
+        print("Exception during parsing of %s" % self.GetInputPath())
+        raise
     # Translation console uses non-standard language codes 'iw' and 'no' for
     # Hebrew and Norwegian Bokmal instead of 'he' and 'nb' used in Chrome.
     # Note that some Chrome's .grd still use 'no' instead of 'nb', but 'nb' is

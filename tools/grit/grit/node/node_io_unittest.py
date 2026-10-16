@@ -7,7 +7,9 @@
 
 import os
 import sys
+import tempfile
 import unittest
+from unittest import mock
 import io
 
 if __name__ == '__main__':
@@ -75,6 +77,84 @@ class FileNodeUnittest(unittest.TestCase):
     grd.SetOutputLanguage('en')
     grd.RunGatherers()
     self.VerifyCliquesContainEnglishAndFrenchAndNothingElse(_GetAllCliques(grd))
+
+  @unittest.skipUnless(hasattr(os, 'fork'), 'Requires os.fork()')
+  def testLoadTranslationsConcurrently(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
+        <translations>
+          <file path="generated_resources_fr.xtb" lang="fr" />
+          <file path="generated_resources_iw.xtb" lang="iw" />
+          <file path="generated_resources_no.xtb" lang="no" />
+        </translations>
+        <release seq="3">
+          <messages>
+            <message name="ID_HELLO">Hello!</message>
+            <message name="ID_HELLO_USER">Hello <ph name="USERNAME">%s<ex>Joi</ex></ph></message>
+          </messages>
+        </release>
+      </grit>'''
+
+    def LoadTranslations(concurrently):
+      grd = grd_reader.Parse(
+        io.StringIO(xml), util.PathFromRoot('grit/testdata')
+      )
+      grd.SetOutputLanguage('en')
+      with (
+        mock.patch.object(misc, '_CanFork', return_value=concurrently),
+        mock.patch.object(
+          misc.GritNode,
+          '_RunPostSubstitutionGatherersConcurrently',
+          autospec=True,
+          side_effect=misc.GritNode._RunPostSubstitutionGatherersConcurrently,
+        ) as concurrent_mock,
+      ):
+        grd.RunGatherers()
+      self.assertEqual(concurrently, concurrent_mock.called)
+      return [
+        {
+          key: (msg.GetPresentableContent(), msg.GetRealContent())
+          for key, msg in clique.clique.items()
+        }
+        for clique in _GetAllCliques(grd)
+      ]
+
+    expected = LoadTranslations(concurrently=False)
+    self.assertEqual(expected, LoadTranslations(concurrently=True))
+    self.assertEqual(2, len(expected))
+    for translations in expected:
+      self.assertEqual(
+        {('en', constants.DEFAULT_GENDER), ('fr', constants.DEFAULT_GENDER)},
+        set(translations.keys()),
+      )
+
+  @unittest.skipUnless(hasattr(os, 'fork'), 'Requires os.fork()')
+  def testLoadTranslationsConcurrentlyWithParseError(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
+        <translations>
+          <file path="good_fr.xtb" lang="fr" />
+          <file path="bad_de.xtb" lang="de" />
+        </translations>
+        <release seq="3">
+          <messages>
+            <message name="ID_HELLO">Hello!</message>
+          </messages>
+        </release>
+      </grit>'''
+    with tempfile.TemporaryDirectory() as tmp_dir:
+      with open(os.path.join(tmp_dir, 'good_fr.xtb'), 'w') as f:
+        f.write('<translationbundle lang="fr"></translationbundle>')
+      with open(os.path.join(tmp_dir, 'bad_de.xtb'), 'w') as f:
+        f.write('<translationbundle lang="de"><translation id="1">')
+      grd = grd_reader.Parse(io.StringIO(xml), tmp_dir)
+      grd.SetOutputLanguage('en')
+      with (
+        mock.patch.object(misc, '_CanFork', return_value=True),
+        mock.patch('sys.stdout', new_callable=io.StringIO),
+      ):
+        with self.assertRaisesRegex(RuntimeError, 'bad_de.xtb'):
+          grd.RunGatherers()
 
   def testIffyness(self):
     grd = grd_reader.Parse(
