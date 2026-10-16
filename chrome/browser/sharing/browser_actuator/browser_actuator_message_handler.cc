@@ -79,8 +79,24 @@ void BrowserActuatorMessageHandler::OnMessage(
                   break;
                 }
                 case browser_actuator::PayloadType::kExperimentalTriggering: {
-                  // TODO(crbug.com/538161953): Handle experimental triggering
-                  // messages.
+                  if (!base::FeatureList::IsEnabled(
+                          browser_actuator::
+                              kEnableBrowserActuatorForGlicExperimentalTriggering)) {
+                    break;
+                  }
+                  components_sharing_message::GlicExperimentalTriggering
+                      triggering;
+                  if (triggering.ParseFromString(
+                          typed_payload.proto_payload().value())) {
+                    session->OnMessage(
+                        browser_actuator::PayloadType::kExperimentalTriggering,
+                        triggering);
+                  } else {
+                    DLOG(WARNING)
+                        << "Failed to parse GlicExperimentalTriggering payload"
+                        << " session_id: " << session_id
+                        << " payload_type: " << typed_payload.payload_type();
+                  }
                   break;
                 }
                 case browser_actuator::PayloadType::kActuation:
@@ -95,58 +111,10 @@ void BrowserActuatorMessageHandler::OnMessage(
       }
       break;
     }
-    case components_sharing_message::SharingMessage::
-        kGlicExperimentalTriggering: {
-      CHECK(base::FeatureList::IsEnabled(
-          browser_actuator::
-              kEnableBrowserActuatorForGlicExperimentalTriggering));
-      HandleGlicExperimentalTriggering(message.glic_experimental_triggering());
-      break;
-    }
     default:
       // Other payloads are not handled by this handler.
       break;
   }
 
   std::move(done_callback).Run(nullptr);
-}
-
-void BrowserActuatorMessageHandler::HandleGlicExperimentalTriggering(
-    const components_sharing_message::GlicExperimentalTriggering& triggering) {
-  if (!triggering.has_request()) {
-    return;
-  }
-
-  const auto& request = triggering.request();
-  // For GlicExperimentalTriggering, the first message can be either an opt-in
-  // or a trigger actuation message. Ignore other types.
-  if (!request.has_device_opt_in_request() &&
-      !request.has_trigger_actuation_request()) {
-    return;
-  }
-
-  // For legacy experimental triggering proto, context_id will serve as
-  // session_id.
-  const std::string& session_id = triggering.context_id();
-  if (session_id.empty()) {
-    // Ignore messages without a session ID.
-    return;
-  }
-
-  if (!profile_) {
-    return;
-  }
-  browser_actuator::BrowserActuatorService* service =
-      browser_actuator::BrowserActuatorServiceFactory::GetForProfile(profile_);
-  if (!service || !service->IsInitialized()) {
-    return;
-  }
-  browser_actuator::TransportSession* session =
-      service->GetOrCreateSession(session_id);
-  if (!session) {
-    return;
-  }
-
-  session->OnMessage(browser_actuator::PayloadType::kExperimentalTriggering,
-                     triggering);
 }

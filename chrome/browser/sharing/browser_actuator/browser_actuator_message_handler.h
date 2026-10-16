@@ -10,10 +10,6 @@
 
 class Profile;
 
-namespace components_sharing_message {
-class GlicExperimentalTriggering;
-}  // namespace components_sharing_message
-
 // Handler for incoming initial SharingMessages for BrowserActuator service.
 // Processes initial opt-in or trigger actuation messages to set up a
 // TransportChannel and TransportSession.
@@ -30,9 +26,6 @@ class BrowserActuatorMessageHandler : public SharingMessageHandler {
                  DoneCallback done_callback) override;
 
  private:
-  void HandleGlicExperimentalTriggering(
-      const components_sharing_message::GlicExperimentalTriggering& triggering);
-
   const raw_ptr<Profile> profile_;
 };
 

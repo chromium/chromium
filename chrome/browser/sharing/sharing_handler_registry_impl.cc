@@ -41,7 +41,7 @@ bool IsBrowserActuatorForGlicEnabled() {
 }
 
 std::set<components_sharing_message::SharingMessage::PayloadCase>
-GetBrowserActuatorPayloads(Profile* profile) {
+GetBrowserActuatorPayloads() {
   std::set<components_sharing_message::SharingMessage::PayloadCase> payloads;
   if (!base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator)) {
     return payloads;
@@ -50,15 +50,6 @@ GetBrowserActuatorPayloads(Profile* profile) {
   // Generic transport messages always go to BrowserActuatorMessageHandler.
   payloads.insert(
       components_sharing_message::SharingMessage::kActuatorDownstreamMessage);
-
-  // Route kGlicExperimentalTriggering based on whether BrowserActuator is
-  // taking over handling for it.
-  if (IsBrowserActuatorForGlicEnabled() &&
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
-                                                         /*create=*/true)) {
-    payloads.insert(components_sharing_message::SharingMessage::
-                        kGlicExperimentalTriggering);
-  }
 
   return payloads;
 }
@@ -128,7 +119,7 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
   }
 
   std::set<components_sharing_message::SharingMessage::PayloadCase>
-      browser_actuator_payloads = GetBrowserActuatorPayloads(profile);
+      browser_actuator_payloads = GetBrowserActuatorPayloads();
   if (!browser_actuator_payloads.empty()) {
     AddSharingHandler(std::make_unique<BrowserActuatorMessageHandler>(profile),
                       browser_actuator_payloads);

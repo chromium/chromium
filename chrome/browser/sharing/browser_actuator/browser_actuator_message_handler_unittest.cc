@@ -87,74 +87,6 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
   std::unique_ptr<BrowserActuatorMessageHandler> handler_;
 };
 
-TEST_F(BrowserActuatorMessageHandlerTest, HandlesInitialSharingMessage) {
-  components_sharing_message::SharingMessage message;
-  auto* triggering = message.mutable_glic_experimental_triggering();
-  triggering->set_context_id("test_context_123");
-  triggering->set_glic_experimental_triggering_version(1);
-  message.mutable_server_channel_configuration();
-  triggering->mutable_request()->mutable_device_opt_in_request();
-
-  EXPECT_CALL(*mock_service_, GetOrCreateSession("test_context_123"));
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      done_future;
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
-  EXPECT_TRUE(done_future.Wait());
-  EXPECT_EQ(done_future.Get(), nullptr);
-}
-
-TEST_F(BrowserActuatorMessageHandlerTest, HandlesTriggerActuationMessage) {
-  components_sharing_message::SharingMessage message;
-  auto* triggering = message.mutable_glic_experimental_triggering();
-  triggering->set_context_id("test_context_123");
-  triggering->set_glic_experimental_triggering_version(1);
-  triggering->mutable_request()->mutable_trigger_actuation_request();
-
-  EXPECT_CALL(*mock_service_, GetOrCreateSession("test_context_123"));
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      done_future;
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
-  EXPECT_TRUE(done_future.Wait());
-  EXPECT_EQ(done_future.Get(), nullptr);
-}
-
-TEST_F(BrowserActuatorMessageHandlerTest, IgnoresUnsupportedMessage) {
-  components_sharing_message::SharingMessage message;
-  auto* triggering = message.mutable_glic_experimental_triggering();
-  triggering->set_context_id("test_context_123");
-  triggering->set_glic_experimental_triggering_version(1);
-  triggering->mutable_request()->mutable_stop_actuation_request();
-
-  EXPECT_CALL(*mock_service_, GetOrCreateSession(testing::_)).Times(0);
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      done_future;
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
-  EXPECT_TRUE(done_future.Wait());
-  EXPECT_EQ(done_future.Get(), nullptr);
-}
-
-TEST_F(BrowserActuatorMessageHandlerTest, IgnoresMessageWithNoRequest) {
-  components_sharing_message::SharingMessage message;
-  auto* triggering = message.mutable_glic_experimental_triggering();
-  triggering->set_context_id("test_context_123");
-  triggering->set_glic_experimental_triggering_version(1);
-
-  EXPECT_CALL(*mock_service_, GetOrCreateSession(testing::_)).Times(0);
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      done_future;
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
-  EXPECT_TRUE(done_future.Wait());
-  EXPECT_EQ(done_future.Get(), nullptr);
-}
-
 class MockTransportSession : public browser_actuator::TransportSession {
  public:
   MOCK_METHOD(std::string_view, GetSessionId, (), (const, override));
@@ -212,6 +144,44 @@ TEST_F(BrowserActuatorMessageHandlerTest,
           static_cast<browser_actuator::TransportSession*>(&mock_session)));
   EXPECT_CALL(mock_session,
               OnMessage(browser_actuator::PayloadType::kControl, testing::_));
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_EQ(done_future.Get(), nullptr);
+}
+
+TEST_F(BrowserActuatorMessageHandlerTest,
+       HandlesActuatorDownstreamMessageWithExperimentalTriggeringPayload) {
+  components_sharing_message::SharingMessage message;
+  browser_actuator::ActuatorDownstreamMessage* bundled =
+      message.mutable_actuator_downstream_message();
+  bundled->set_session_id("bundled_session_123");
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("test_context_123");
+  triggering.set_glic_experimental_triggering_version(1);
+  triggering.mutable_request()->mutable_trigger_actuation_request();
+
+  auto* typed_payload = bundled->add_typed_payloads();
+  typed_payload->set_payload_type(
+      browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  typed_payload->mutable_proto_payload()->set_value(
+      triggering.SerializeAsString());
+
+  MockTransportSession mock_session;
+  EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"))
+      .WillOnce(testing::Return(
+          static_cast<browser_actuator::TransportSession*>(&mock_session)));
+  EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
+      .WillRepeatedly(testing::Return(
+          static_cast<browser_actuator::TransportSession*>(&mock_session)));
+  EXPECT_CALL(mock_session,
+              OnMessage(browser_actuator::PayloadType::kExperimentalTriggering,
+                        testing::_));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -343,9 +313,6 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
     handler_ = std::make_unique<BrowserActuatorMessageHandler>(profile_.get());
     handler_registry_.SetSharingHandler(
         components_sharing_message::SharingMessage::kActuatorDownstreamMessage,
-        handler_.get());
-    handler_registry_.SetSharingHandler(
-        components_sharing_message::SharingMessage::kGlicExperimentalTriggering,
         handler_.get());
     fcm_handler_ = std::make_unique<SharingFCMHandler>(
         /*gcm_driver=*/nullptr, &device_info_tracker_,
@@ -516,10 +483,23 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       service, &triggering_factory));
 
   components_sharing_message::SharingMessage sharing_msg;
-  auto* triggering = sharing_msg.mutable_glic_experimental_triggering();
-  triggering->set_context_id("glic-fcm-session-1");
-  triggering->set_glic_experimental_triggering_version(1);
-  triggering->mutable_request()->mutable_trigger_actuation_request();
+  auto* bundled = sharing_msg.mutable_actuator_downstream_message();
+  bundled->set_session_id("glic-fcm-session-1");
+  bundled->set_sequence_number(1);
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("glic-fcm-session-1");
+  triggering.set_glic_experimental_triggering_version(1);
+  triggering.mutable_request()->mutable_trigger_actuation_request();
+
+  auto* typed = bundled->add_typed_payloads();
+  typed->set_payload_type(
+      browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  typed->mutable_proto_payload()->set_type_url(
+      std::string(browser_actuator::ExpectedTypeUrl(
+          browser_actuator::PayloadType::kExperimentalTriggering)));
+  typed->mutable_proto_payload()->set_value(triggering.SerializeAsString());
 
   gcm::IncomingMessage fcm_msg;
   fcm_msg.message_id = "0:1563805165426489%0bb84dcff9fd7ece";
