@@ -91,7 +91,6 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
-#include "chrome/browser/updater/updater.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -102,7 +101,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "components/activity_reporter/activity_reporter.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
@@ -139,7 +137,6 @@
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
-#include "components/update_client/net/network_chromium.h"
 #include "components/update_client/update_query_params.h"
 #include "components/variations/service/variations_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
@@ -251,6 +248,12 @@ void OnLocalStatePrefsLoaded();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/exit_type_service.h"
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/updater/updater.h"
+#include "components/activity_reporter/activity_reporter.h"
+#include "components/update_client/net/network_chromium.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/first_run/upgrade_util.h"
@@ -1442,6 +1445,7 @@ void BrowserProcessImpl::StartAutoupdateTimer() {
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
 activity_reporter::ActivityReporter* BrowserProcessImpl::activity_reporter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!activity_reporter_) {
@@ -1468,6 +1472,7 @@ activity_reporter::ActivityReporter* BrowserProcessImpl::activity_reporter() {
   }
   return activity_reporter_.get();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 component_updater::ComponentUpdateService*
 BrowserProcessImpl::component_updater() {

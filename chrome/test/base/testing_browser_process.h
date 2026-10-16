@@ -22,7 +22,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/buildflags.h"
-#include "components/activity_reporter/activity_reporter.h"
 #include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -42,6 +41,12 @@ class SystemNotificationHelper;
 class TestingBrowserProcessPlatformPart;
 class TestingPrefServiceSimple;
 class TestingProfileManager;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+namespace activity_reporter {
+class ActivityReporter;
+}  // namespace activity_reporter
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 class ExtensionsBrowserClient;
@@ -178,7 +183,9 @@ class TestingBrowserProcess
   void StartAutoupdateTimer() override {}
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
   activity_reporter::ActivityReporter* activity_reporter() override;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   component_updater::ComponentUpdateService* component_updater() override;
 #if BUILDFLAG(IS_CHROMEOS)
   MediaFileSystemRegistry* media_file_system_registry() override;
@@ -363,7 +370,9 @@ class TestingBrowserProcess
       resource_coordinator_parts_;
 
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
+#if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;

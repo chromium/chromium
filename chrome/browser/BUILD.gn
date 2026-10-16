@@ -225,7 +225,6 @@ source_set("browser_process_impl") {
     ":browser_process",
     "//base",
     "//chrome/common:buildflags",
-    "//components/activity_reporter",
     "//components/metrics_services_manager",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
@@ -1282,7 +1281,6 @@ source_set("core") {
     "//chrome/common:version_header",
     "//chrome/common/compose:mojo_bindings",
     "//chrome/services/speech/buildflags",
-    "//components/activity_reporter",
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/application_locale_storage",
@@ -1617,6 +1615,11 @@ source_set("core") {
   if (!is_android && !is_chromeos) {
     sources += [ "platform_util.cc" ]
     deps += [ "//chrome/browser/default_browser" ]
+  }
+
+  # Activity reporting must never be built into ChromeOS.
+  if (!is_chromeos) {
+    deps += [ "//components/activity_reporter" ]
   }
 
   if (enable_background_mode) {

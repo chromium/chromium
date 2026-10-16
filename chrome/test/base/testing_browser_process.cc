@@ -36,7 +36,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/activity_reporter/activity_reporter.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
@@ -118,6 +117,9 @@
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "components/activity_reporter/activity_reporter.h"
+
 namespace {
 
 class TestActivityReporter : public activity_reporter::ActivityReporter {
@@ -129,6 +131,7 @@ class TestActivityReporter : public activity_reporter::ActivityReporter {
 };
 
 }  // namespace
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // static
 TestingBrowserProcess* TestingBrowserProcess::GetGlobal() {
@@ -602,6 +605,7 @@ DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
   return download_request_limiter_.get();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 activity_reporter::ActivityReporter*
 TestingBrowserProcess::activity_reporter() {
   if (!activity_reporter_) {
@@ -609,6 +613,7 @@ TestingBrowserProcess::activity_reporter() {
   }
   return activity_reporter_.get();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 component_updater::ComponentUpdateService*
 TestingBrowserProcess::component_updater() {

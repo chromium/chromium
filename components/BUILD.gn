@@ -184,7 +184,6 @@ test("components_unittests") {
   deps = [
     "//base",
     "//components/account_settings:unit_tests",
-    "//components/activity_reporter:unit_tests",
     "//components/actor/core:unit_tests",
     "//components/actor/transport:unit_tests",
     "//components/affiliations/core/browser:unit_tests",
@@ -412,6 +411,11 @@ test("components_unittests") {
     "//components/webdata_services:unit_tests",
     "//components/webui/flags:unit_tests",
   ]
+
+  # Activity reporting must never be built into ChromeOS.
+  if (!is_chromeos) {
+    deps += [ "//components/activity_reporter:unit_tests" ]
+  }
 
   if (enable_supervised_users) {
     deps += [

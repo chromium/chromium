@@ -305,7 +305,6 @@ source_set("impl") {
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/upgrade_detector",
-    "//components/activity_reporter",
     "//components/crash/core/app",
     "//components/metrics:component_metrics",
     "//components/metrics/demographics",
@@ -329,6 +328,11 @@ source_set("impl") {
 
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]
+  }
+
+  # Activity reporting must never be built into ChromeOS.
+  if (!is_chromeos) {
+    deps += [ "//components/activity_reporter" ]
   }
 
   if (is_android) {

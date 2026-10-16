@@ -413,7 +413,6 @@ source_set("testing_browser_process") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/upgrade_detector",
     "//chrome/common:buildflags",
-    "//components/activity_reporter",
     "//components/signin/core/browser",
     "//extensions/buildflags",
     "//media:media_buildflags",
@@ -437,7 +436,6 @@ source_set("testing_browser_process_impl") {
     "//chrome/browser",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/common:buildflags",
-    "//components/activity_reporter",
     "//components/signin/core/browser",
     "//extensions/buildflags",
     "//media:media_buildflags",
@@ -475,6 +473,9 @@ source_set("testing_browser_process_impl") {
     "//services/device/public/cpp/geolocation:buildflags",
     "//services/network:test_support",
   ]
+  if (!is_chromeos) {
+    deps += [ "//components/activity_reporter" ]
+  }
   if (os_level_geolocation_permission_supported) {
     deps += [
       "//services/device/public/cpp:device_features",

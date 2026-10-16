@@ -26,7 +26,6 @@
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/buildflags.h"
-#include "components/activity_reporter/activity_reporter.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -57,6 +56,12 @@ class SecureOriginPrefsObserver;
 class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
 class StartupData;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+namespace activity_reporter {
+class ActivityReporter;
+}  // namespace activity_reporter
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace speech {
 class SpeechRecognitionSmallExpertModelInstaller;
@@ -219,7 +224,9 @@ class BrowserProcessImpl : public BrowserProcess,
   void StartAutoupdateTimer() override;
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
   activity_reporter::ActivityReporter* activity_reporter() override;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   component_updater::ComponentUpdateService* component_updater() override;
 #if BUILDFLAG(IS_CHROMEOS)
   MediaFileSystemRegistry* media_file_system_registry() override;
@@ -447,7 +454,9 @@ class BrowserProcessImpl : public BrowserProcess,
   void RestartBackgroundInstance();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
+#if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // component updater is normally not used under ChromeOS due
   // to concerns over integrity of data shared between profiles,

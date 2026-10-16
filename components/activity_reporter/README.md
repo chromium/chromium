@@ -12,6 +12,11 @@ de-identified and privacy-preserving way.
 updater, to better isolate functionality. It may be disabled by the
 `report_activity=false` GN arg.
 
+`activity_reporter` is never built on ChromeOS. Its `BUILD.gn` asserts
+`!is_chromeos`, and `BrowserProcess::activity_reporter()` and its callers in
+`//chrome` are compiled out with `!is_chromeos` / `!BUILDFLAG(IS_CHROMEOS)`, so
+that activity reporting cannot be accidentally enabled there.
+
 The [update protocol documentation](//docs/updater/protocol_4.md) describes the
 transmitted information and deduplication algorithm in more detail.
 

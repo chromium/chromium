@@ -88,9 +88,11 @@ namespace variations {
 class VariationsService;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace activity_reporter {
 class ActivityReporter;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace component_updater {
 class ComponentUpdateService;
@@ -289,7 +291,10 @@ class BrowserProcess {
   virtual void StartAutoupdateTimer() = 0;
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Activity reporting is never built into ChromeOS.
   virtual activity_reporter::ActivityReporter* activity_reporter() = 0;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   virtual component_updater::ComponentUpdateService* component_updater() = 0;
 

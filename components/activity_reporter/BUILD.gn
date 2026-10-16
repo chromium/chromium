@@ -7,6 +7,10 @@ import("//build/config/chrome_build.gni")
 import("//components/activity_reporter/buildflags.gni")
 import("//testing/test.gni")
 
+# Activity reporting must never be built into ChromeOS. Any dependency on this
+# component from a ChromeOS build is an error.
+assert(!is_chromeos, "//components/activity_reporter is not built on ChromeOS")
+
 use_activity_reporter_internal_constants =
     is_internal_chrome_branded && is_official_build
 
