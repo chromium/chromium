@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <string>
 #include <string_view>
+#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -27,6 +28,9 @@
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/search_override_stack.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -667,6 +671,95 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "ExplicitChoice" : "KeepOrBack";
                          });
+
+class SearchOverriddenParamsProvidersOffTheRecordBrowserTest
+    : public SettingsOverriddenParamsProvidersBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  SearchOverriddenParamsProvidersOffTheRecordBrowserTest() {
+    feature_list_.InitWithFeatureStates(
+        {{extensions_features::kSearchEngineExplicitChoiceDialog,
+          IsExplicitChoiceDialog()},
+         {enterprise_isolated_mode::kEnableEnterpriseIsolatedMode,
+          IsIsolatedMode()}});
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    SettingsOverriddenParamsProvidersBrowserTest::
+        SetUpBrowserContextKeyedServices(context);
+    if (IsIsolatedMode()) {
+      Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+          enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+          static_cast<int>(
+              enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+    }
+  }
+
+  bool IsExplicitChoiceDialog() const { return std::get<0>(GetParam()); }
+  bool IsIsolatedMode() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    SearchOverriddenParamsProvidersOffTheRecordBrowserTest,
+    GetExtensionControllingSearch_MultipleSearchProvidingExtensions) {
+  // Installed first (older), so it becomes the backup ("secondary") extension
+  // once `primary_extension` is installed after it.
+  const extensions::Extension* secondary_extension =
+      AddExtensionControllingSearch();
+  ASSERT_TRUE(secondary_extension);
+
+  // Installed second (newer), so it becomes the active ("primary") extension
+  // controlling search.
+  extensions::TestExtensionDir primary_extension_dir;
+  primary_extension_dir.WriteManifest(CreateSearchOverrideManifest(
+      "Another Search Override", "other", "other.example"));
+  const extensions::Extension* primary_extension =
+      InstallExtensionWithPermissionsGranted(
+          primary_extension_dir.UnpackedPath(), 1);
+  ASSERT_TRUE(primary_extension);
+
+  content::WebContents* off_the_record_web_contents =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(off_the_record_web_contents);
+  Profile* off_the_record_profile = Profile::FromBrowserContext(
+      off_the_record_web_contents->GetBrowserContext());
+  EXPECT_EQ(IsIsolatedMode(),
+            off_the_record_profile->IsEnterpriseIsolatedModeProfile());
+  EXPECT_EQ(!IsIsolatedMode(), off_the_record_profile->IsIncognitoProfile());
+
+  // Even though neither extension is enabled in Incognito/OTR, search
+  // overrides apply from the regular profile (TemplateURLService is redirected
+  // to the original profile in OTR profiles), so `secondary_extension` is
+  // still used as the backup search provider in the OTR profile.
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(off_the_record_web_contents);
+  ASSERT_TRUE(params);
+  EXPECT_EQ(primary_extension->id(), params->controlling_extension_id);
+  if (IsExplicitChoiceDialog()) {
+    ASSERT_TRUE(params->content.previous_setting);
+    EXPECT_EQ(u"example.com", params->content.previous_setting->text);
+    EXPECT_TRUE(params->content.previous_setting->image.IsVectorIcon());
+    ASSERT_TRUE(params->content.new_setting);
+    EXPECT_EQ(u"other.example", params->content.new_setting->text);
+  } else {
+    EXPECT_EQ(u"Did you mean to change your search provider?",
+              params->content.dialog_title);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SearchOverriddenParamsProvidersOffTheRecordBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "ExplicitChoice" : "KeepOrBack", "_",
+           std::get<1>(info.param) ? "IsolatedMode" : "Incognito"});
+    });
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

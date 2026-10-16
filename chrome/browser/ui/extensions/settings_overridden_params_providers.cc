@@ -190,11 +190,14 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
     std::string primary_ext_id =
         extension_prefs_value_map->GetExtensionControllingPref(search_pref_key);
 
+    // Search overrides are registered in the regular profile
+    // (TemplateURLService is redirected to the original profile in OTR
+    // profiles), so always query the regular profile's effective pref value.
     const base::Value* secondary_pref =
         extension_prefs_value_map->GetEffectivePrefValue(
-            search_pref_key, profile->IsPrimaryOTRProfileWithRegularParent(),
-            /* from_incognito= */ nullptr,
-            /* ignore_extension_id= */ primary_ext_id);
+            search_pref_key, /*incognito=*/false,
+            /*from_incognito=*/nullptr,
+            /*ignore_extension_id=*/primary_ext_id);
 
     if (secondary_pref) {
       std::unique_ptr<TemplateURLData> url_data =

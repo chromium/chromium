@@ -470,6 +470,8 @@ source_set("browser_tests") {
       "//chrome/common/extensions",
       "//chrome/common/extensions/api",
       "//chrome/test:test_support_ui",
+      "//components/enterprise/isolated_mode",
+      "//components/prefs",
       "//components/proxy_config",
       "//components/search_engines",
       "//components/search_engines:test_support",
