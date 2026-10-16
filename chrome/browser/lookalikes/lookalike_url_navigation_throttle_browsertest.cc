@@ -1051,6 +1051,19 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   test_helper()->CheckNoLookalikeUkm();
 }
 
+// Tests that navigations to non-HTTP(S) URLs, which can't be lookalikes, are
+// not deferred until the engaged sites list is updated.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       NonHttpNavigationNotDeferredForEngagedSites) {
+  base::HistogramTester histograms;
+  // Advance clock to make the engaged sites list stale.
+  test_clock()->Advance(base::Hours(1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
+  histograms.ExpectTotalCount(
+      "NavigationSuggestion.UpdateEngagedSitesDeferTime", 0);
+}
+
 // TODO(crbug.com/40146482): Enable test when MacOS flake is fixed.
 // TODO(crbug.com/40706320): Enable test when Win/Linux flake is fixed.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -48,6 +49,12 @@ using lookalikes::LookalikeActionType;
 using lookalikes::LookalikeUrlMatchType;
 
 namespace {
+
+// When enabled, navigations where neither the first nor the last URL of the
+// redirect chain is HTTP(S) (e.g. the New Tab Page) don't wait for the engaged
+// sites list to be loaded, since they can't trigger lookalike warnings.
+BASE_FEATURE(kLookalikeSkipEngagedSitesWaitForNonHttp,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 typedef content::NavigationThrottle::ThrottleCheckResult ThrottleCheckResult;
 
@@ -246,6 +253,18 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
             interstitial_params.referrer),
         /*navigation_handle_callback=*/{});
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+
+  // Lookalike checks only apply to HTTP(S) URLs (see
+  // LookalikeUrlService::CheckUrlForLookalikes()), and PerformChecks() only
+  // checks the first and last URLs of the redirect chain. If neither is
+  // HTTP(S), the navigation can't trigger a warning, so proceed without waiting
+  // for the engaged sites list to be loaded. This avoids deferring e.g. the
+  // New Tab Page navigation at browser startup.
+  if (base::FeatureList::IsEnabled(kLookalikeSkipEngagedSitesWaitForNonHttp) &&
+      !handle->GetRedirectChain()[0].SchemeIsHTTPOrHTTPS() &&
+      !handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+    return content::NavigationThrottle::PROCEED;
   }
 
   LookalikeUrlService* service =
