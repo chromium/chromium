@@ -1,0 +1,174 @@
+agentic_review {
+  capability_groups {
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/capitalize-gn-when-referring-to-build-tool.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?COMMIT_MSG"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-duplicate-urls-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-redundant-this-cl-phrasing-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-unverified-platform-doc-claims-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/cite-specific-style-guides-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/describe-reland-reason-in-commit-message.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-binary-size-impact-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-exceptions-and-overrides-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-external-tool-workarounds-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-manual-verification-steps-in-commit-message.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-ratcheting-rollout-plan-in-migration-commit-message.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/explain-cross-platform-rollout-in-commit-message.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/explain-domain-concepts-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/explain-hypothesis-and-rationale-in-speculative-fix-commit-m.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/explain-optimization-motivation-and-profiling-in-commit-mess.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/highlight-bug-fixes-in-refactoring-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/include-full-urls-for-external-issue-references-in-commit-me.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/include-screenshot-or-ux-mock-for-ui-changes.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/match-roll-log-url-to-rolled-revisions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/motivate-precursor-apis-and-link-follow-up-cl.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/prefix-commit-message-summary-with-subsystem.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/qualify-invariant-violations-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/refer-to-planned-changes-as-follow-up-cl-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/replace-tool-boilerplate-with-accurate-commit-description.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/state-regression-test-reproduces-bug-in-commit-message.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-accurate-symbol-names-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-chromium-vocabulary-types-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-current-feature-flag-names-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-lowercase-cpu-architecture-names-in-commit-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/verify-document-and-experiment-links-in-commit-messages.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?DEPS"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-parent-of-transitive-dependencies-in-manifests.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-cipd-version-tags-in-deps.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?OWNERS"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/reference-component-owners-via-file-directive.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?PRESUBMIT[^/]*\\.py"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/account-for-git-footers-normalization-in-presubmit.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/combine-multiple-repo-scans-in-presubmit-checks.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/exclude-symbol-definition-files-from-presubmit-reference-ban.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/include-exception-examples-in-presubmit-error-messages.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?README\\.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/structure-component-landing-pages-progressively.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:gn|gni)"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-component-imports-in-build-configs.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-leaky-public-deps-in-gn-targets.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-unbuilt-or-unreferenced-build-targets.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/clean-up-platform-packaging-deps-on-target-removal.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/conditionally-append-buildflag-targets-in-gn-lists.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/conditionally-include-large-assets-in-gn-templates.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/consolidate-duplicate-gn-conditionals.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-cross-toolchain-binary-copies-in-gn.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-gn-declare-args-build-arguments.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/enforce-unsupported-gn-build-configurations.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/forward-unmodified-invoker-variables-in-gn-templates.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/omit-subsumed-flags-in-gn-conditions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/place-subsystem-vector-icons-in-subsystem-targets.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/prefer-positive-boolean-names-in-gn.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/preserve-subsystem-qualifiers-in-target-names.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/reuse-existing-test-support-targets.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-package-wildcard-visibility-for-gn-template-deps.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:gn|gni)"
+    content_patterns: "\\b(?:@SuppressWarnings|errorprone_args)\\b"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/prefer-localized-errorprone-suppressions.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:gn|gni)"
+    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
+    rules: "agents/knowledge_base/rules/general/suffix-custom-vector-icons-with-custom.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:grd|grdp)"
+    rules: "agents/knowledge_base/rules/general/avoid-modifying-descriptions-on-existing-grd-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-grd-strings-for-developer-ui.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-including-large-string-bundles-for-few-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-mid-word-line-breaks-in-grit-descriptions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-narrow-domain-prefixes-for-shared-ui-string-ids.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-transient-qualifiers-in-resource-ids.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/clarify-conflicting-values-in-policy-warning-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/disambiguate-new-ui-strings-instead-of-renaming-existing.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/distinguish-specific-context-in-grd-descriptions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/do-not-hyphenate-phrasal-verbs-in-ui-action-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/enable-android-ui-tooltips-with-java-formatter-data.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/format-grit-message-body-on-new-line.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/generalize-multistage-error-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/group-grd-strings-by-surface-with-section-comments.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/guard-branded-strings-in-grit-with-google-chrome-expr.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/include-space-between-numeric-placeholders-and-units.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/maintain-consistent-phrasing-across-sibling-ui-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/mark-prototype-strings-not-translateable.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/match-illustration-accessibility-labels-to-feature.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/omit-static-qualifier-on-parameterized-string-ids.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/omit-titlecase-prefix-from-sentencecase-grit-descriptions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/omit-trailing-period-in-single-sentence-ui-descriptions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/place-feature-ui-strings-in-dedicated-grdp-files.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/provide-realistic-sample-values-in-translation-placeholder-e.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/require-ux-and-product-approval-for-ui-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/reuse-existing-grd-message-strings.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/split-grd-strings-and-screenshots-into-separate-cl.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/sync-grd-platform-guards-and-descriptions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-sentence-case-for-non-branded-feature-names.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-short-product-name-in-ui-copy.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-xml-entities-for-grit-message-newlines.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:grd|grdp)"
+    content_patterns: "\\b(?:UTF8|UTF16|ASCII|UnicodeString|icu4x|Locale)\\w*\\b"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-asymmetric-icu-plurals-and-simplify-nounless-counts.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:grd|grdp)"
+    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/suffix-tooltip-string-ids-with-tooltip.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-official-product-branding-in-ui-strings.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.icon"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/omit-drawing-instruction-comments-in-vector-icons.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/preview-vector-icon-definitions.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-duplicate-inline-urls-in-markdown-with-reference-links.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/format-code-identifiers-in-backticks-in-markdown.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/keep-public-documentation-vendor-neutral.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/link-new-docs-in-readme-or-index.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-ascii-quotes-in-markdown-documentation.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/write-documentation-authoritatively-without-hedging.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.proto"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-count-or-sentinel-entries-in-protobuf-enums.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/document-protobuf-fields-and-population-conditions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/name-protobuf-fields-after-semantic-concepts.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/pair-anomaly-reasons-with-severity-metrics-in-protos.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/reserve-or-retain-removed-protobuf-tags-and-enums.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/reserve-zeroth-protobuf-enum-value-for-unspecified.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/reuse-existing-protobuf-messages.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/specify-units-in-protobuf-field-names-or-comments.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.py"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/account-for-quoted-commas-when-parsing-macro-arguments.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/avoid-multi-clause-python-comprehensions.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/parse-crossbench-test-options-via-argument-parser.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/when-checking-for-identifiers-or-parameter-names-in-source-t.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.sql"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/prefer-group-by-aggregation-over-correlated-subqueries.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/prefer-inner-join-when-matches-guaranteed.md"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/use-explicit-on-for-aliased-sql-joins.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?installer/linux/.*"
+    rules: "agents/knowledge_base/rules/general/docs_l10n_and_configs/declare-installer-dependencies-when-unbundling-linux-tools.md"
+  }
+}
