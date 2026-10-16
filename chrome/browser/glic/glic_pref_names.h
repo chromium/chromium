@@ -210,10 +210,20 @@ inline constexpr char kGlicGeminiEnterpriseSettings[] =
 inline constexpr char kGlicPartitionNeedsCookieSync[] =
     "glic.partition_needs_cookie_sync";
 
-// Boolean pref that tracks if the Glic local storage keys have been copied from
-// the Glic partition to the main partition.
+// Deprecated pref that tracked if the Glic local storage keys were copied from
+// the Glic partition to the main partition. Replaced by
+// `kGlicLocalStorageCopiedToPrefs`.
+// TODO(b/573595701): Remove after a few milestones.
 inline constexpr char kGlicLocalStorageCopiedToMainPartition[] =
     "glic.local_storage_copied_to_main_partition";
+
+// Boolean pref that tracks if the Glic local storage keys have been copied from
+// the Glic partition to prefs.
+inline constexpr char kGlicLocalStorageCopiedToPrefs[] =
+    "glic.local_storage_copied_to_prefs";
+
+// Dict pref that stores key-value pairs for the Glic web client's storage.
+inline constexpr char kGlicClientDataStorage[] = "glic.client_data_storage";
 
 // Boolean pref that tracks if the Glic profile was previously ineligible.
 inline constexpr char kGlicPreviouslyNotAllowed[] =

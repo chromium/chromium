@@ -63,6 +63,7 @@ import type {                            //
              GetPinCandidatesOptions,    //
              GlicBrowserHost,            //
              GlicBrowserHostMetrics,     //
+             GlicClientStorage,          //
              GlicHostRegistry,           //
              GlicWebClient,              //
              ImageBytesResult,           //
@@ -232,6 +233,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   isBrowserOpenValue = ObservableValueImpl.withNoValue<boolean>();
   private metrics: GlicBrowserHostMetricsImpl;
+  private clientStorage: GlicClientStorageImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   private cachedUserProfile?: Promise<UserProfileInfo>;
   private enableCachedGetUserProfileInfo?: boolean;
@@ -274,6 +276,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.getTabFaviconByIdObservableSet =
         new TabFaviconObservableSet(this.handler);
     this.metrics = new GlicBrowserHostMetricsImpl(this.handler);
+    this.clientStorage = new GlicClientStorageImpl(this.handler);
 
     const proxy = createDelegationProxy(this as GlicBrowserHostImpl, [
       this.actorClient,
@@ -389,6 +392,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     }
     this.actorClient.actOnWebCapabilityValue.assignAndSignal(state.canActOnWeb);
     this.onboardingCompleted.assignAndSignal(state.onboardingCompleted);
+    if (state.enableClientStorage) {
+      this.clientStorage.initialize(state.clientStorage);
+    } else {
+      this.getClientStorage = undefined;
+    }
 
     // Set the method to undefined since it's gated behind a mojo
     // RuntimeFeature. Calling a such a method when the feature is disabled
@@ -666,6 +674,14 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   notifyActorTaskListRowClicked(taskId: number): void {
     this.actorClient.actorTaskListRowClickedSubject.next(taskId);
+  }
+
+  notifyClientStorageItemChanged(key: string, value: string|null): void {
+    this.clientStorage.onRemoteItemChanged(key, value);
+  }
+
+  notifyClientStorageCleared(): void {
+    this.clientStorage.onRemoteCleared();
   }
 
   // GlicBrowserHost implementation.
@@ -1025,6 +1041,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     return this.metrics;
   }
 
+  getClientStorage?(): GlicClientStorage {
+    return this.clientStorage;
+  }
+
   getGeicClient(): GeicBrowserHost {
     return this.geicClient;
   }
@@ -1242,6 +1262,106 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
   }
 }
 
+export interface ClientStorageHandler {
+  setClientStorageItem(key: string, value: string|null): Promise<unknown>;
+  clearClientStorage(): Promise<unknown>;
+}
+
+export class GlicClientStorageImpl implements GlicClientStorage {
+  private storage = new Map<string, string>();
+  // While `GlicWebClientHandler` already suppresses echo notifications on the
+  // originating handler, `pendingClears` and `pendingKeyMutations` guard
+  // against stale in-flight notifications from other writers arriving before
+  // the browser processes this client's mutation (at the tradeoff of
+  // potentially ignoring a concurrent remote mutation that occurs before the
+  // `WebClientHandler` reply resolves across the separate Mojo pipe).
+  private pendingClears = 0;
+  private pendingKeyMutations =
+      new Map<string, {count: number, latestValue: string|null}>();
+
+  constructor(private handler: ClientStorageHandler) {}
+
+  initialize(initialStorage: {[key: string]: string}): void {
+    this.storage.clear();
+    for (const [k, v] of Object.entries(initialStorage)) {
+      this.storage.set(k, v);
+    }
+  }
+
+  onRemoteItemChanged(key: string, value: string|null): void {
+    if (this.pendingClears > 0) {
+      return;
+    }
+    const pending = this.pendingKeyMutations.get(key);
+    if (pending && pending.count > 0) {
+      return;
+    }
+    if (value !== null) {
+      this.storage.set(key, value);
+    } else {
+      this.storage.delete(key);
+    }
+  }
+
+  onRemoteCleared(): void {
+    this.storage.clear();
+    for (const [k, pending] of this.pendingKeyMutations.entries()) {
+      if (pending.count > 0 && pending.latestValue !== null) {
+        this.storage.set(k, pending.latestValue);
+      }
+    }
+  }
+
+  get length(): number {
+    return this.storage.size;
+  }
+
+  key(index: number): string|null {
+    if (index < 0 || index >= this.storage.size) {
+      return null;
+    }
+    return Array.from(this.storage.keys())[index] ?? null;
+  }
+
+  getItem(key: string): string|null {
+    return this.storage.get(key) ?? null;
+  }
+
+  setItem(key: string, value: string): void {
+    this.storage.set(key, value);
+    this.enqueueKeyMutation(key, value);
+  }
+
+  removeItem(key: string): void {
+    this.storage.delete(key);
+    this.enqueueKeyMutation(key, null);
+  }
+
+  clear(): void {
+    this.storage.clear();
+    this.pendingKeyMutations.clear();
+    this.pendingClears++;
+    this.handler.clearClientStorage().finally(() => {
+      this.pendingClears = Math.max(0, this.pendingClears - 1);
+    });
+  }
+
+  private enqueueKeyMutation(key: string, value: string|null): void {
+    const existing = this.pendingKeyMutations.get(key);
+    const entry = existing ?? {count: 0, latestValue: value};
+    entry.count++;
+    entry.latestValue = value;
+    if (!existing) {
+      this.pendingKeyMutations.set(key, entry);
+    }
+    this.handler.setClientStorageItem(key, value).finally(() => {
+      entry.count--;
+      if (entry.count <= 0 && this.pendingKeyMutations.get(key) === entry) {
+        this.pendingKeyMutations.delete(key);
+      }
+    });
+  }
+}
 
 export class CaptureRegionObservable extends
     ObservableValueImpl<CaptureRegionResult> implements

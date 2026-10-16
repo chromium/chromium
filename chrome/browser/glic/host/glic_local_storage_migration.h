@@ -11,13 +11,16 @@ class BrowserContext;
 
 namespace glic {
 
+class GlicClientDataStorage;
+
 // Performs a one-time migration of specified Glic local storage keys
 // (BARD_EMBED_CHAT_STORAGE_KEY_V2 and WEB_EMBEDDED_CHROME_CAPABILITIES_STORAGE)
-// from the Glic storage partition to the default/main storage partition.
+// from the Glic storage partition to `client_data_storage`.
 // The migration is skipped if disabled by flags, or already completed.
 // TODO(b/534807813): We should defer loading the web client until after this
 // migration is complete, otherwise it will race.
-void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context);
+void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context,
+                                  GlicClientDataStorage* client_data_storage);
 
 }  // namespace glic
 

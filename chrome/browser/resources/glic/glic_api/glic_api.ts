@@ -1395,6 +1395,43 @@ export declare interface GlicBrowserHost {
    */
   processCounterAbuseVerdict?
       (tabId: string, verdict: CounterAbuseVerdict): void;
+
+  /**
+   * Returns an object providing synchronous persistent key-value storage for
+   * the web client, backed by Chrome preferences.
+   */
+  getClientStorage?(): GlicClientStorage;
+}
+
+/**
+ * Provides synchronous key-value storage backed by Chrome preferences,
+ * with an API equivalent to the standard Web Storage `Storage` interface.
+ */
+export declare interface GlicClientStorage {
+  /** Returns the number of key/value pairs currently present in storage. */
+  readonly length: number;
+  /**
+   * Returns the name of the nth key in storage, or null if `index` is
+   * less than 0 or greater than or equal to `length`.
+   */
+  key(index: number): string|null;
+  /**
+   * Returns the current value associated with the given `key`, or null if the
+   * given `key` does not exist.
+   */
+  getItem(key: string): string|null;
+  /**
+   * Sets the value of the pair identified by `key` to `value`, creating a new
+   * key/value pair if none existed for `key` previously.
+   */
+  setItem(key: string, value: string): void;
+  /**
+   * Removes the key/value pair with the given `key`, if a key/value pair with
+   * the given `key` exists.
+   */
+  removeItem(key: string): void;
+  /** Removes all key/value pairs, if there are any. */
+  clear(): void;
 }
 
 /** Information about a conversation. */

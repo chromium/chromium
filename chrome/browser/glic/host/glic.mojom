@@ -313,6 +313,10 @@ struct WebClientInitialState {
   bool enable_gmail_otp_confirmation;
   // Whether file upload is allowed by the enterprise policy.
   FileUploadPolicyState file_upload_policy_state;
+  // Whether features::kGlicClientDataStorage is enabled.
+  bool enable_client_storage;
+  // Initial key-value pairs for the prefs-backed client data storage.
+  map<string, string> client_storage;
 };
 
 // @generate glic_api
@@ -1469,6 +1473,16 @@ interface WebClientHandler {
   // Creates the Gemini Enterprise handler.
   CreateGeminiEnterpriseHandler(
       pending_receiver<GeminiEnterpriseHandler> receiver);
+
+  // Sets or deletes a key in the prefs-backed client data storage.
+  // If `value` is null, the key is removed. Replies once the browser has
+  // updated the authoritative in-memory storage and scheduled a pref write.
+  SetClientStorageItem(string key, string? value) => ();
+
+  // Clears all items in the prefs-backed client data storage. Replies once the
+  // browser has cleared the authoritative in-memory storage and scheduled a
+  // pref write.
+  ClearClientStorage() => ();
 };
 
 // Accesses zero state suggestions from the web client.
@@ -2036,6 +2050,13 @@ interface WebClient {
 
   // Invokes Glic with specific options. Expects a return to signal completion.
   Invoke(InvokeOptions options) => ();
+
+  // Informs the client that an entry in the prefs-backed client data storage
+  // has been set or removed (when `value` is null).
+  NotifyClientStorageItemChanged(string key, string? value);
+
+  // Informs the client that the prefs-backed client data storage was cleared.
+  NotifyClientStorageCleared();
 };
 
 // @generate glic_api

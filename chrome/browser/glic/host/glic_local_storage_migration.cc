@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/host/glic_local_storage_migration.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -17,7 +19,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -38,78 +42,110 @@ namespace glic {
 
 namespace {
 
-// Checks whether a DOMStorage key matches a target ASCII string.
-//
 // Background on Blink LocalStorage encoding:
 // In `third_party/blink/renderer/modules/storage/cached_storage_area.cc`
-// (under `FormatOption::kLocalStorageDetectFormat`), Blink serializes ASCII/
-// Latin-1 LocalStorage keys by allocating a vector of `input.length() + 1`
-// bytes. It writes a 1-byte header (`format[0] = StorageFormat::Latin1`, which
-// is 0x01) at index 0, and copies the ASCII character bytes into `payload`
-// (index 1..end).
+// (under `FormatOption::kLocalStorageDetectFormat`), Blink serializes
+// LocalStorage keys and values with a 1-byte format prefix:
+// - 0x00 (StorageFormat::UTF16): payload is UTF-16 code units (`char16_t`).
+// - 0x01 (StorageFormat::Latin1): payload is Latin-1 characters (0x00..0xFF).
 //
 // We can't use that code directly here, so we reproduce the logic. This is
 // temporary migration code, and can be deleted in a short time horizon, which
 // at least limits the cost of the duplication.
+enum class DomStorageFormat : uint8_t {
+  kUTF16 = 0,
+  kLatin1 = 1,
+};
+
 bool DOMStorageKeyMatchesASCII(base::span<const uint8_t> key_bytes,
                                std::string_view ascii_key) {
   if (key_bytes == base::as_byte_span(ascii_key)) {
     return true;
   }
   if (key_bytes.size() == ascii_key.size() + 1 &&
+      key_bytes[0] == static_cast<uint8_t>(DomStorageFormat::kLatin1) &&
       key_bytes.subspan(1u) == base::as_byte_span(ascii_key)) {
     return true;
   }
   return false;
 }
 
-bool IsKeyToCopy(const std::vector<uint8_t>& key_bytes) {
+std::optional<std::string_view> GetMatchingTargetKey(
+    base::span<const uint8_t> key_bytes) {
   constexpr std::string_view kKeys[] = {
       "BARD_EMBED_CHAT_STORAGE_KEY_V2",
       "WEB_EMBEDDED_CHROME_CAPABILITIES_STORAGE",
   };
   for (std::string_view target_key : kKeys) {
     if (DOMStorageKeyMatchesASCII(key_bytes, target_key)) {
-      return true;
+      return target_key;
     }
   }
-  return false;
+  return std::nullopt;
+}
+
+// Previously, when migrating from the glic partition to the main partition's
+// LocalStorage (`blink::mojom::StorageArea`), raw `kv->value` bytes could be
+// copied directly from one `StorageArea` to another without decoding. Because
+// we now migrate into a JSON-backed dictionary pref
+// (`prefs::kGlicClientDataStorage`), we must decode the Blink DOMStorage
+// format prefix (0x00 UTF-16 or 0x01 Latin-1) and convert the payload into a
+// valid UTF-8 `std::string`.
+std::optional<std::string> DecodeDOMStorageValue(
+    base::span<const uint8_t> value_bytes) {
+  if (value_bytes.empty()) {
+    return std::string();
+  }
+  auto [format_byte, payload] = value_bytes.split_at<1u>();
+  switch (static_cast<DomStorageFormat>(format_byte[0])) {
+    case DomStorageFormat::kUTF16: {
+      if (payload.size() % sizeof(char16_t) != 0) {
+        return std::nullopt;
+      }
+      std::u16string u16_str(payload.size() / sizeof(char16_t), u'\0');
+      base::as_writable_byte_span(u16_str).copy_from(payload);
+      std::string utf8_str;
+      if (!base::UTF16ToUTF8(u16_str.data(), u16_str.size(), &utf8_str)) {
+        return std::nullopt;
+      }
+      return utf8_str;
+    }
+    case DomStorageFormat::kLatin1: {
+      std::u16string u16_str(payload.begin(), payload.end());
+      return base::UTF16ToUTF8(u16_str);
+    }
+  }
+  return std::nullopt;
 }
 
 class GlicLocalStorageMigrator {
  public:
   static void Run(Profile* profile,
+                  GlicClientDataStorage* client_data_storage,
                   content::StoragePartition* source_partition,
-                  content::StoragePartition* target_partition,
                   const blink::StorageKey& storage_key) {
-    new GlicLocalStorageMigrator(profile, source_partition, target_partition,
+    new GlicLocalStorageMigrator(profile, client_data_storage, source_partition,
                                  storage_key);
   }
 
  private:
   GlicLocalStorageMigrator(Profile* profile,
+                           GlicClientDataStorage* client_data_storage,
                            content::StoragePartition* source_partition,
-                           content::StoragePartition* target_partition,
                            const blink::StorageKey& storage_key)
-      : profile_(profile->GetWeakPtr()) {
+      : profile_(profile->GetWeakPtr()),
+        client_data_storage_(client_data_storage->GetWeakPtr()) {
     storage::mojom::LocalStorageControl* source_control =
         source_partition->GetLocalStorageControl();
-    storage::mojom::LocalStorageControl* target_control =
-        target_partition->GetLocalStorageControl();
-    if (!source_control || !target_control) {
+    if (!source_control) {
       Finish(/*success=*/false);
       return;
     }
 
     source_control->BindStorageArea(storage_key,
                                     source_area_.BindNewPipeAndPassReceiver());
-    target_control->BindStorageArea(storage_key,
-                                    target_area_.BindNewPipeAndPassReceiver());
 
     source_area_.set_disconnect_handler(
-        base::BindOnce(&GlicLocalStorageMigrator::Finish,
-                       weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
-    target_area_.set_disconnect_handler(
         base::BindOnce(&GlicLocalStorageMigrator::Finish,
                        weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
 
@@ -122,39 +158,29 @@ class GlicLocalStorageMigrator {
   ~GlicLocalStorageMigrator() = default;
 
   void OnGetAll(std::vector<blink::mojom::KeyValuePtr> data) {
-    std::vector<blink::mojom::KeyValuePtr> to_copy;
-    for (auto& kv : data) {
-      if (IsKeyToCopy(kv->key)) {
-        to_copy.push_back(std::move(kv));
-      }
-    }
-
-    if (to_copy.empty()) {
-      // Deletes this.
-      Finish(/*success=*/true);
-      return;
-    }
-
-    pending_puts_ = to_copy.size();
-    for (auto& kv : to_copy) {
-      target_area_->Put(kv->key, kv->value, std::nullopt, /*source=*/nullptr,
-                        base::BindOnce(&GlicLocalStorageMigrator::OnPut,
-                                       weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
-
-  void OnPut(bool success) {
-    if (!success) {
-      // Deletes this.
+    if (!profile_ || !client_data_storage_) {
       Finish(/*success=*/false);
       return;
     }
-    CHECK_GT(pending_puts_, 0u);
-    --pending_puts_;
-    if (pending_puts_ == 0) {
-      // Deletes this.
-      Finish(/*success=*/true);
+
+    for (const auto& kv : data) {
+      std::optional<std::string_view> target_key =
+          GetMatchingTargetKey(kv->key);
+      if (!target_key) {
+        continue;
+      }
+      // Do not overwrite keys that have already been set in storage.
+      if (client_data_storage_->Contains(*target_key)) {
+        continue;
+      }
+      if (std::optional<std::string> decoded_value =
+              DecodeDOMStorageValue(kv->value)) {
+        client_data_storage_->SetItem(*target_key, std::move(*decoded_value));
+      }
     }
+
+    // Deletes this.
+    Finish(/*success=*/true);
   }
 
   void Finish(bool success) {
@@ -163,32 +189,31 @@ class GlicLocalStorageMigrator {
     }
     finished_ = true;
     if (success && profile_) {
-      profile_->GetPrefs()->SetBoolean(
-          prefs::kGlicLocalStorageCopiedToMainPartition, true);
+      profile_->GetPrefs()->SetBoolean(prefs::kGlicLocalStorageCopiedToPrefs,
+                                       true);
     }
     delete this;
   }
 
   bool finished_ = false;
   base::WeakPtr<Profile> profile_;
+  base::WeakPtr<GlicClientDataStorage> client_data_storage_;
   mojo::Remote<blink::mojom::StorageArea> source_area_;
-  mojo::Remote<blink::mojom::StorageArea> target_area_;
-  std::vector<std::string_view> target_keys_present_;
-  size_t pending_puts_ = 0;
   base::WeakPtrFactory<GlicLocalStorageMigrator> weak_ptr_factory_{this};
 };
 
 }  // namespace
 
-void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context) {
+void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context,
+                                  GlicClientDataStorage* client_data_storage) {
   if (!features::IsGlicNoWebviewEnabled() ||
+      !base::FeatureList::IsEnabled(features::kGlicClientDataStorage) ||
       !GlicEnabling::IsEnabledByGlobalCriteria()) {
     return;
   }
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile || profile->IsOffTheRecord() ||
-      profile->GetPrefs()->GetBoolean(
-          prefs::kGlicLocalStorageCopiedToMainPartition)) {
+  if (!profile || profile->IsOffTheRecord() || !client_data_storage ||
+      profile->GetPrefs()->GetBoolean(prefs::kGlicLocalStorageCopiedToPrefs)) {
     return;
   }
 
@@ -198,18 +223,15 @@ void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context) {
           /*can_create=*/false);
   if (!source_partition) {
     // No glic partition, nothing to copy.
-    profile->GetPrefs()->SetBoolean(
-        prefs::kGlicLocalStorageCopiedToMainPartition, true);
+    profile->GetPrefs()->SetBoolean(prefs::kGlicLocalStorageCopiedToPrefs,
+                                    true);
     return;
   }
-
-  content::StoragePartition* target_partition =
-      browser_context->GetDefaultStoragePartition();
 
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFirstParty(GetGuestOrigin(profile));
 
-  GlicLocalStorageMigrator::Run(profile, source_partition, target_partition,
+  GlicLocalStorageMigrator::Run(profile, client_data_storage, source_partition,
                                 storage_key);
 }
 

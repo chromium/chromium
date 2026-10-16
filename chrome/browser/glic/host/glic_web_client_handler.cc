@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
+#include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
@@ -372,6 +374,7 @@ class GlicWebClientHandler
       public BrowserAttachObserver,
       public ActiveStateCalculator::Observer,
       public BrowserIsOpenCalculator::Observer,
+      public GlicClientDataStorage::Observer,
       public GlicWebClientResponsivenessMonitor::Delegate {
  public:
   explicit GlicWebClientHandler(
@@ -532,6 +535,10 @@ class GlicWebClientHandler
         prefs::kGlicZoomLevel,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(features::kGlicClientDataStorage)) {
+      client_storage_observation_.Observe(
+          &glic_service_->client_data_storage());
+    }
     web_actuation_pref_subscription_ =
         glic_service_->enabling().RegisterOnUserEnabledActuationOnWebChanged(
             base::BindRepeating(
@@ -1033,6 +1040,34 @@ class GlicWebClientHandler
       mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) override {
     host().instance_delegate().CreateGeminiEnterpriseHandler(
         std::move(receiver));
+  }
+
+  void SetClientStorageItem(const std::string& key,
+                            const std::optional<std::string>& value,
+                            SetClientStorageItemCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSetClientStorageItem);
+    if (base::FeatureList::IsEnabled(features::kGlicClientDataStorage)) {
+      // Suppress `OnClientStorageItemChanged()` on this handler while mutating
+      // storage so we don't send a redundant `NotifyClientStorageItemChanged`
+      // back to the client that originated the write. Other open Glic instances
+      // still receive the notification.
+      base::AutoReset<bool> ignore(&ignore_client_storage_pref_change_, true);
+      glic_service_->client_data_storage().SetItem(key, value);
+    }
+    std::move(callback).Run();
+  }
+
+  void ClearClientStorage(ClearClientStorageCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kClearClientStorage);
+    if (base::FeatureList::IsEnabled(features::kGlicClientDataStorage)) {
+      // Suppress `OnClientStorageCleared()` on this handler while clearing
+      // storage so we don't send a redundant `NotifyClientStorageCleared` back
+      // to the client that originated the clear. Other open Glic instances
+      // still receive the notification.
+      base::AutoReset<bool> ignore(&ignore_client_storage_pref_change_, true);
+      glic_service_->client_data_storage().Clear();
+    }
+    std::move(callback).Run();
   }
 
   void ActivateTab(int32_t tab_id) override {
@@ -1764,6 +1799,7 @@ class GlicWebClientHandler
     pinned_tab_data_changed_subscription_ = {};
     web_actuation_pref_subscription_ = {};
     consent_subscription_ = {};
+    client_storage_observation_.Reset();
     browser_attach_observation_.reset();
   }
 
@@ -1829,6 +1865,21 @@ class GlicWebClientHandler
       web_client_->NotifyZoomLevelChanged(GetZoomFactor(pref_service_));
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
+    }
+  }
+
+  // GlicClientDataStorage::Observer implementation.
+  void OnClientStorageItemChanged(
+      const std::string& key,
+      const std::optional<std::string>& value) override {
+    if (!ignore_client_storage_pref_change_) {
+      web_client_->NotifyClientStorageItemChanged(key, value);
+    }
+  }
+
+  void OnClientStorageCleared() override {
+    if (!ignore_client_storage_pref_change_) {
+      web_client_->NotifyClientStorageCleared();
     }
   }
 
@@ -1898,6 +1949,9 @@ class GlicWebClientHandler
   base::CallbackListSubscription act_on_web_capability_changed_subscription_;
   base::CallbackListSubscription web_actuation_pref_subscription_;
   base::CallbackListSubscription consent_subscription_;
+  base::ScopedObservation<GlicClientDataStorage,
+                          GlicClientDataStorage::Observer>
+      client_storage_observation_{this};
   base::CallbackListSubscription panel_state_subscription_;
   mojo::Receiver<mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
@@ -1913,6 +1967,7 @@ class GlicWebClientHandler
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
   bool floating_panel_can_attach_ = false;
+  bool ignore_client_storage_pref_change_ = false;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicToolsHolder> ai_overlay_tools_;
 #endif

@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_client_data_storage.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_guest_observer.h"
 #include "chrome/browser/glic/host/glic_ui.h"
@@ -987,6 +988,13 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
       base::FeatureList::IsEnabled(features::kGlicActorAutofillOneTimePassword);
   state->file_upload_policy_state =
       glic::prefs::GetFileUploadAllowedCapability(profile->GetPrefs());
+
+  state->enable_client_storage =
+      features::IsGlicNoWebviewEnabled() &&
+      base::FeatureList::IsEnabled(features::kGlicClientDataStorage);
+  if (state->enable_client_storage && glic_service) {
+    state->client_storage = glic_service->client_data_storage().GetAll();
+  }
 }
 
 double GetZoomFactor(PrefService* pref_service) {

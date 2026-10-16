@@ -59,6 +59,7 @@ class GlicMetrics;
 class GlicProfileManager;
 class GlicProviderSpec;
 class GlicShareImageHandler;
+class GlicClientDataStorage;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
@@ -264,6 +265,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   GlicTabFaviconObserver& tab_favicon_observer() {
     return *tab_favicon_observer_;
   }
+  GlicClientDataStorage& client_data_storage() { return *client_data_storage_; }
 
   using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
   base::CallbackListSubscription AddActOnWebCapabilityChangedCallback(
@@ -312,6 +314,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicProviderSpec> provider_spec_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicExperimentalOptInController> opt_in_controller_;
+  std::unique_ptr<GlicClientDataStorage> client_data_storage_;
   // Is a GlicInstanceCoordinatorImpl.
   std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
   std::unique_ptr<LegacyGlicActivityManager> legacy_activity_manager_;

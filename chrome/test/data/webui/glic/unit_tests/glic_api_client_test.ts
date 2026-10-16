@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/client/glic_api_client.js';
+import type {ClientStorageHandler} from '//webui-test/glic/glic_api_impl/client/glic_api_client.js';
 import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -352,4 +354,215 @@ suite('TabObservableSet', () => {
             obs1, reSubscribedObs,
             'Should have received a fresh observable instance');
       });
+});
+
+interface PendingSetCall {
+  key: string;
+  value: string|null;
+  resolve: () => void;
+}
+
+class FakeClientStorageHandler implements ClientStorageHandler {
+  setCalls: PendingSetCall[] = [];
+  clearCalls: Array<{resolve: () => void}> = [];
+
+  setClientStorageItem(key: string, value: string|null): Promise<void> {
+    const {promise, resolve} = Promise.withResolvers<void>();
+    this.setCalls.push({key, value, resolve});
+    return promise;
+  }
+
+  clearClientStorage(): Promise<void> {
+    const {promise, resolve} = Promise.withResolvers<void>();
+    this.clearCalls.push({resolve});
+    return promise;
+  }
+}
+
+suite('GlicClientStorageImpl', () => {
+  test('basic synchronous operations', () => {
+    const handler = new FakeClientStorageHandler();
+    const storage = new GlicClientStorageImpl(handler);
+
+    storage.initialize({a: '1', b: '2'});
+    assertEquals(storage.length, 2);
+    assertEquals(storage.getItem('a'), '1');
+    assertEquals(storage.getItem('b'), '2');
+    assertEquals(storage.getItem('missing'), null);
+    assertEquals(storage.key(0), 'a');
+    assertEquals(storage.key(1), 'b');
+    assertEquals(storage.key(-1), null);
+    assertEquals(storage.key(2), null);
+
+    storage.setItem('c', '3');
+    assertEquals(storage.length, 3);
+    assertEquals(storage.getItem('c'), '3');
+    assertEquals(handler.setCalls.length, 1);
+    assertEquals(handler.setCalls[0]!.key, 'c');
+    assertEquals(handler.setCalls[0]!.value, '3');
+
+    storage.removeItem('a');
+    assertEquals(storage.length, 2);
+    assertEquals(storage.getItem('a'), null);
+    assertEquals(handler.setCalls.length, 2);
+    assertEquals(handler.setCalls[1]!.key, 'a');
+    assertEquals(handler.setCalls[1]!.value, null);
+
+    storage.clear();
+    assertEquals(storage.length, 0);
+    assertEquals(handler.clearCalls.length, 1);
+  });
+
+  test('remote updates apply when no local mutations are pending', () => {
+    const handler = new FakeClientStorageHandler();
+    const storage = new GlicClientStorageImpl(handler);
+    storage.initialize({k1: 'v1', k2: 'v2'});
+
+    storage.onRemoteItemChanged('k1', 'v1_remote');
+    assertEquals(storage.getItem('k1'), 'v1_remote');
+
+    storage.onRemoteItemChanged('k3', 'v3_remote');
+    assertEquals(storage.getItem('k3'), 'v3_remote');
+
+    storage.onRemoteItemChanged('k2', null);
+    assertEquals(storage.getItem('k2'), null);
+
+    storage.onRemoteCleared();
+    assertEquals(storage.length, 0);
+  });
+
+  test(
+      'ignores remote item changes for key with in-flight mutation',
+      async () => {
+        const handler = new FakeClientStorageHandler();
+        const storage = new GlicClientStorageImpl(handler);
+        storage.initialize({k1: 'initial', k2: 'initial2'});
+
+        storage.setItem('k1', 'local_v1');
+        assertEquals(handler.setCalls.length, 1);
+
+        // Racing remote update for k1 should be ignored while RPC is in flight.
+        storage.onRemoteItemChanged('k1', 'stale_remote');
+        assertEquals(storage.getItem('k1'), 'local_v1');
+        storage.onRemoteItemChanged('k1', null);
+        assertEquals(storage.getItem('k1'), 'local_v1');
+
+        // Remote update for a different key k2 should still be applied.
+        storage.onRemoteItemChanged('k2', 'remote_v2');
+        assertEquals(storage.getItem('k2'), 'remote_v2');
+
+        // Resolve the in-flight setClientStorageItem RPC.
+        handler.setCalls[0]!.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        // Subsequent remote updates for k1 should now apply.
+        storage.onRemoteItemChanged('k1', 'fresh_remote');
+        assertEquals(storage.getItem('k1'), 'fresh_remote');
+      });
+
+  test('overlapping mutations on the same key wait for all RPCs', async () => {
+    const handler = new FakeClientStorageHandler();
+    const storage = new GlicClientStorageImpl(handler);
+
+    storage.setItem('k1', 'v1');
+    storage.setItem('k1', 'v2');
+    assertEquals(handler.setCalls.length, 2);
+
+    // Resolve first RPC while second is still in flight.
+    handler.setCalls[0]!.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Remote update must still be ignored until the second RPC finishes.
+    storage.onRemoteItemChanged('k1', 'stale_after_first');
+    assertEquals(storage.getItem('k1'), 'v2');
+
+    // Resolve second RPC.
+    handler.setCalls[1]!.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Remote update now applies.
+    storage.onRemoteItemChanged('k1', 'v3_remote');
+    assertEquals(storage.getItem('k1'), 'v3_remote');
+  });
+
+  test('ignores remote item changes while clear is in flight', async () => {
+    const handler = new FakeClientStorageHandler();
+    const storage = new GlicClientStorageImpl(handler);
+    storage.initialize({k1: 'v1'});
+
+    storage.clear();
+    assertEquals(handler.clearCalls.length, 1);
+
+    // Stale remote item change arriving before clear is acknowledged is
+    // ignored.
+    storage.onRemoteItemChanged('k1', 'stale_remote');
+    assertEquals(storage.length, 0);
+
+    handler.clearCalls[0]!.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Remote item change after clear resolves is applied.
+    storage.onRemoteItemChanged('k1', 'post_clear_remote');
+    assertEquals(storage.getItem('k1'), 'post_clear_remote');
+  });
+
+  test('onRemoteCleared preserves unacknowledged local mutations', async () => {
+    const handler = new FakeClientStorageHandler();
+    const storage = new GlicClientStorageImpl(handler);
+    storage.initialize({committed: 'old', deletedPending: 'old2'});
+
+    storage.setItem('pendingSet', 'new_val');
+    storage.removeItem('deletedPending');
+
+    // Remote clear arrives while pendingSet and deletedPending RPCs are in
+    // flight.
+    storage.onRemoteCleared();
+
+    // Committed key is cleared, pendingSet is preserved, deletedPending stays
+    // absent.
+    assertEquals(storage.getItem('committed'), null);
+    assertEquals(storage.getItem('pendingSet'), 'new_val');
+    assertEquals(storage.getItem('deletedPending'), null);
+    assertEquals(storage.length, 1);
+
+    handler.setCalls[0]!.resolve();
+    handler.setCalls[1]!.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+
+  test('setItem then clear then setItem handles RPC completions', async () => {
+    const handler = new FakeClientStorageHandler();
+    const storage = new GlicClientStorageImpl(handler);
+
+    storage.setItem('k1', 'before_clear');
+    storage.clear();
+    storage.setItem('k1', 'after_clear');
+    assertEquals(handler.setCalls.length, 2);
+    assertEquals(handler.clearCalls.length, 1);
+
+    // First setItem (from before clear) resolves; it must not remove the
+    // post-clear pending entry for k1.
+    handler.setCalls[0]!.resolve();
+    handler.clearCalls[0]!.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Second setItem is still in flight, so racing remote update is
+    // ignored.
+    storage.onRemoteItemChanged('k1', 'stale_remote');
+    assertEquals(storage.getItem('k1'), 'after_clear');
+
+    // Resolve second setItem; now remote updates apply.
+    handler.setCalls[1]!.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    storage.onRemoteItemChanged('k1', 'final_remote');
+    assertEquals(storage.getItem('k1'), 'final_remote');
+  });
 });

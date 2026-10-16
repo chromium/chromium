@@ -437,6 +437,8 @@ source_set("impl") {
     "host/context/glic_tab_favicon_observer.cc",
     "host/context/glic_tab_favicon_observer.h",
     "host/glic_annotation_manager.cc",
+    "host/glic_client_data_storage.cc",
+    "host/glic_client_data_storage.h",
     "host/glic_cookie_synchronizer.cc",
     "host/glic_cookie_synchronizer.h",
     "host/glic_guest_actionable_mark_observer.cc",

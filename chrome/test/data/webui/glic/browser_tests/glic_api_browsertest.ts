@@ -2921,6 +2921,51 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testHibernateAllOnMemoryPressure() {}
+
+  async testClientStorage() {
+    if (!this.testParams) {
+      assertUndefined(this.host.getClientStorage);
+      return;
+    }
+    assertDefined(this.host.getClientStorage);
+    const storage = this.host.getClientStorage();
+    assertDefined(storage);
+
+    // 1. Verify initial state populated before opening Glic.
+    assertEquals(1, storage.length);
+    assertEquals('initial_val', storage.getItem('initial_key'));
+    assertEquals('initial_key', storage.key(0));
+    assertEquals(null, storage.key(1));
+    assertEquals(null, storage.key(-1));
+    assertEquals(null, storage.getItem('missing'));
+
+    // 2. Test synchronous local mutations (setItem, removeItem).
+    storage.setItem('k1', 'v1');
+    storage.setItem('k2', 'v2');
+    assertEquals(3, storage.length);
+    assertEquals('v1', storage.getItem('k1'));
+    assertEquals('v2', storage.getItem('k2'));
+
+    storage.removeItem('initial_key');
+    assertEquals(2, storage.length);
+    assertEquals(null, storage.getItem('initial_key'));
+
+    // Let C++ verify prefs::kGlicClientDataStorage and mutate it externally.
+    await this.advanceToNextStep();
+
+    // 3. Wait for NotifyClientStorageChanged from C++ pref update.
+    await runUntil(() => storage.getItem('external_key') === 'ext_val');
+    assertEquals('v1_updated', storage.getItem('k1'));
+    assertEquals('v2', storage.getItem('k2'));
+    assertEquals(3, storage.length);
+
+    // 4. Test clear().
+    storage.clear();
+    assertEquals(0, storage.length);
+    assertEquals(null, storage.getItem('k1'));
+    assertEquals(null, storage.getItem('k2'));
+    assertEquals(null, storage.getItem('external_key'));
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {
