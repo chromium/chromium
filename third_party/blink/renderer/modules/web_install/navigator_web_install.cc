@@ -222,8 +222,8 @@ bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
 
   if (!navigator->DomWindow()) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotFoundError,
-        "The object is no longer associated to a document.");
+        DOMExceptionCode::kInvalidStateError,
+        "The object is no longer associated with a document.");
     return false;
   }
 

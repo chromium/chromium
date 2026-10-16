@@ -65,6 +65,8 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
 
   void WaitForManifestCall() { EXPECT_TRUE(manifest_called_.Wait()); }
 
+  bool manifest_called() const { return manifest_called_.IsReady(); }
+
   const mojom::blink::ManifestInstallOptions* manifest_options() const {
     return manifest_options_.get();
   }
@@ -262,6 +264,22 @@ TEST_F(NavigatorWebInstallTest, BlockedWithoutUserActivation) {
   EXPECT_EQ(DOMExceptionCode::kNotAllowedError,
             exception_state.CodeAs<DOMExceptionCode>());
   EXPECT_TRUE(promise.IsEmpty());
+}
+
+TEST_F(NavigatorWebInstallTest, DetachedNavigator) {
+  ScriptState* script_state = GetScriptState();
+  Navigator* navigator = GetNavigator();
+  GetFrame().Detach(FrameDetachType::kRemove);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise =
+      NavigatorWebInstall::install(script_state, *navigator, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            exception_state.CodeAs<DOMExceptionCode>());
+  EXPECT_TRUE(promise.IsEmpty());
+  EXPECT_FALSE(mock_service().manifest_called());
 }
 
 TEST_F(NavigatorWebInstallTest, InstallFromManifest_Success) {
@@ -614,6 +632,24 @@ TEST_F(NavigatorWebInstallTest,
   EXPECT_EQ(DOMExceptionCode::kNotAllowedError,
             exception_state.CodeAs<DOMExceptionCode>());
   EXPECT_TRUE(promise.IsEmpty());
+}
+
+TEST_F(NavigatorWebInstallTest, InstallFromManifest_DetachedNavigator) {
+  ScriptState* script_state = GetScriptState();
+  Navigator* navigator = GetNavigator();
+  GetFrame().Detach(FrameDetachType::kRemove);
+  auto* params = MakeGarbageCollected<InstallParams>();
+  params->setManifest("https://example.com/manifest.json");
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise = NavigatorWebInstall::install(script_state, *navigator, params,
+                                              exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            exception_state.CodeAs<DOMExceptionCode>());
+  EXPECT_TRUE(promise.IsEmpty());
+  EXPECT_FALSE(mock_service().manifest_called());
 }
 
 TEST_F(NavigatorWebInstallTest, InstallFromManifest_BlockedInSandbox) {
