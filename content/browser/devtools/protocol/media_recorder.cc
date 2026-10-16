@@ -29,6 +29,7 @@
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace content::protocol {
 

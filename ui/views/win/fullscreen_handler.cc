@@ -11,6 +11,8 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/screen_win_display.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/views/win/scoped_fullscreen_visibility.h"
 
 namespace views {

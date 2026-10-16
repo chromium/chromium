@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 

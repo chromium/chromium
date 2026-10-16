@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 

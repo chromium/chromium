@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"

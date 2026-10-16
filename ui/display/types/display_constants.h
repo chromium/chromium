@@ -8,11 +8,14 @@
 #include <stdint.h>
 
 #include <array>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "ui/display/types/display_types_export.h"
-#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 

@@ -9,6 +9,7 @@
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace input {
 
