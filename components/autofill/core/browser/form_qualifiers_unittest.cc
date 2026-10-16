@@ -82,6 +82,11 @@ class FormShouldBeParsedTest : public FormStructureShouldTest {
 
   ~FormShouldBeParsedTest() override = default;
 
+  void SetUrl(GURL url) {
+    form_.set_url(url);
+    form_structure_ = nullptr;
+  }
+
   void SetAction(GURL action) {
     form_.set_action(action);
     form_structure_ = nullptr;
@@ -145,7 +150,8 @@ TEST_F(FormShouldBeParsedTest, FalseIfOnlySelectField) {
   EXPECT_TRUE(ShouldBeParsed(form_structure(), {.min_required_fields = 2}));
 }
 
-// Single-field forms whose action is a search URL should not be parsed.
+// Forms with at most one focusable non-select field whose action (or URL if
+// action is empty) is a search URL should not be parsed.
 TEST_F(FormShouldBeParsedTest, FalseIfSearchForm) {
   AddTextField();
   EXPECT_TRUE(ShouldBeParsed(form_structure()));
@@ -157,14 +163,35 @@ TEST_F(FormShouldBeParsedTest, FalseIfSearchForm) {
   EXPECT_FALSE(ShouldBeParsed(form_structure()));
   EXPECT_FALSE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
 
+  // Unowned forms have an empty `action` and fall back to the form's `url`.
+  SetAction(GURL());
+  SetUrl(GURL("http://google.com/search?q=hello"));
+  EXPECT_FALSE(ShouldBeParsed(form_structure()));
+  SetUrl(GURL("http://www.foo.com/"));
+
   // Single-field forms where "search" is only in the host should be parsed.
   SetAction(GURL("http://search.com/?q=hello"));
   EXPECT_TRUE(ShouldBeParsed(form_structure()));
   EXPECT_TRUE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
 
-  // Multi-field forms with a search URL in the action are not considered
-  // search forms and should be parsed.
+  // Adding non-focusable or select fields does not make a search form eligible
+  // for parsing.
   SetAction(GURL("http://google.com/search?q=hello"));
+  {
+    FormFieldData unfocusable_field;
+    unfocusable_field.set_form_control_type(FormControlType::kInputText);
+    unfocusable_field.set_is_focusable(false);
+    AddField(unfocusable_field);
+  }
+  {
+    FormFieldData select_field;
+    select_field.set_form_control_type(FormControlType::kSelectOne);
+    AddField(select_field);
+  }
+  EXPECT_FALSE(ShouldBeParsed(form_structure()));
+
+  // Forms with at least two focusable non-select fields are not considered
+  // search forms and should be parsed.
   AddTextField();
   EXPECT_TRUE(ShouldBeParsed(form_structure()));
 }
