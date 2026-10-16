@@ -710,12 +710,6 @@ error-page {
   opacity: 0;
 }
 
-:host([is-initial-frame-load_]:not([is-shown-in-tab_])) #composebox,
-:host([is-initial-frame-load_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
-  visibility: hidden;
-  pointer-events: none;
-}
-
 @keyframes zero-state-header-text {
   from {
     opacity: 0;

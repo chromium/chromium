@@ -160,6 +160,10 @@
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
       0;
   min-height: var(--composebox-min-height);
+  transition:
+    max-height var(--expand-duration) var(--emphasized-curve),
+    min-height var(--expand-duration) var(--emphasized-curve),
+    opacity var(--fade-duration) ease-in-out;
 }
 
 :host(:not([input-enabled])) #composebox::part(composebox) {
@@ -585,7 +589,7 @@
 :host([energy-effect-enabled_]) #composebox[submit-enabled]::part(submit) {
   opacity: 1;
   transform: scale(1);
-  visibility: visible;
+  visibility: inherit;
   transition:
     opacity 100ms linear,
     transform 100ms cubic-bezier(0.4, 0, 1, 1),
