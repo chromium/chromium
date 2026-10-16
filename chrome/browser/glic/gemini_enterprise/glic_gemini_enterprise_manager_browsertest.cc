@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -160,6 +161,7 @@ class GlicGeminiEnterpriseManagerCustomGuestUrlBrowserTest
     command_line->AppendSwitchASCII(
         geic::kGeicGuestURLSwitch,
         "https://localhost.corp.google.com:10443/side-panel");
+    command_line->AppendSwitch(::switches::kGlicDev);
   }
 };
 

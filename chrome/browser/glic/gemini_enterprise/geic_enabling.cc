@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/url_util.h"
@@ -49,12 +50,15 @@ struct LatchedGeicConfig : public base::SupportsUserData::Data {
 // URL here as well so that all guest URL sources (`--geic-guest-url` switch,
 // policy pref, and `features::kGeicGuestURL` Finch param) and direct pref
 // writes in tests are checked before the origin is granted Glic Mojo API
-// access.
+// access. Note that `IsAllowedGeminiEnterpriseHost` checks production hosts
+// and the `features::kGeicGuestURL` Finch host, while `--glic-dev` is accepted
+// in `IsValidGuestUrl`.
 bool IsValidGuestUrl(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }
-  if (url.SchemeIsHTTPOrHTTPS() && net::IsLocalhost(url)) {
+  if (url.SchemeIsHTTPOrHTTPS() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev)) {
     return true;
   }
   return url.SchemeIs(url::kHttpsScheme) && IsAllowedGeminiEnterpriseHost(url);

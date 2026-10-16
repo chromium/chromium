@@ -31,11 +31,11 @@
       {
         "note": "Valid policy settings (url with port)",
         "policies": {
-          "GeminiEnterpriseUrl": "https://localhost.corp.google.com:10443/side-panel"
+          "GeminiEnterpriseUrl": "https://business.gemini.google:10443/side-panel"
         },
         "prefs": {
           "glic.gemini_enterprise_url": {
-            "value": "https://localhost.corp.google.com:10443/side-panel",
+            "value": "https://business.gemini.google:10443/side-panel",
             "location": "user_profile"
           }
         }

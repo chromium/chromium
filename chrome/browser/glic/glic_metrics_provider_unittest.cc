@@ -214,7 +214,7 @@ TEST_F(GlicMetricsProviderTest,
   Profile* default_profile =
       profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
   default_profile->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl,
-                                         "http://localhost:8080/geic");
+                                         "https://business.gemini.google/side-panel");
 
   GlicMetricsProvider provider;
   provider.ProvideCurrentSessionData(nullptr);
@@ -245,7 +245,7 @@ TEST_F(GlicMetricsProviderTest,
 
   // Configure profile2 as GeminiEnterprise and invoke Glic there.
   profile2()->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl,
-                                    "http://localhost:8080/geic");
+                                    "https://business.gemini.google/side-panel");
   const base::Time t1 = base::Time::Now();
   profile2()->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime, t1);
 

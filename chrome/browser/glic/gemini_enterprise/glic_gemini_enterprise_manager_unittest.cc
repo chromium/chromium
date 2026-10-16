@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -139,9 +140,12 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
 }
 
 TEST_F(GlicGeminiEnterpriseManagerUnitTest, AllowsConfiguredGuestOrigin) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       geic::kGeicGuestURLSwitch,
       "https://localhost.corp.google.com:10443/side-panel");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kGlicDev);
   TestingProfile custom_profile;
   GlicGeminiEnterpriseManager manager(&custom_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
@@ -294,6 +298,8 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       geic::kGeicGuestURLSwitch,
       "https://localhost.corp.google.com:10443/side-panel");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kGlicDev);
   TestingProfile custom_profile;
   GlicGeminiEnterpriseManager manager(&custom_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> remote;

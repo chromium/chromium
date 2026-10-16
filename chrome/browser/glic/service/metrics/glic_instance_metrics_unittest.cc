@@ -1704,7 +1704,8 @@ class GlicInstanceMetricsGeicTest : public GlicInstanceMetricsTest {
  protected:
   GlicInstanceMetricsGeicTest() {
     geic_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGeic, {{"geic-guest-url", "http://localhost"}});
+        features::kGeic,
+        {{"geic-guest-url", "https://business.gemini.google/side-panel"}});
   }
 
   void SetUp() override {
@@ -1861,7 +1862,8 @@ class GlicInstanceProviderMetricsTest
   GlicInstanceProviderMetricsTest() {
     if (GetParam() == GlicProvider::kGeminiEnterprise) {
       feature_list_.InitAndEnableFeatureWithParameters(
-          features::kGeic, {{"geic-guest-url", "http://localhost"}});
+          features::kGeic,
+          {{"geic-guest-url", "https://business.gemini.google/side-panel"}});
     } else {
       feature_list_.InitAndDisableFeature(features::kGeic);
     }

@@ -20,6 +20,7 @@ source_set("geic_enabling") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
     "//components/prefs",
     "//content/public/browser",
     "//net",
@@ -35,7 +36,11 @@ source_set("url_allowlist") {
     "geic_url_allowlist.h",
   ]
 
-  deps = [ "//url" ]
+  deps = [
+    "//base",
+    "//chrome/browser/glic/public:features",
+    "//url",
+  ]
 }
 
 source_set("gemini_enterprise") {

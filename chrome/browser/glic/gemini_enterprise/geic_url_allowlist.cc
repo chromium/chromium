@@ -6,15 +6,33 @@
 
 #include <string_view>
 
+#include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/glic/public/features.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace geic {
 
 bool IsAllowedGeminiEnterpriseHost(const GURL& url) {
-  const std::string_view host = url.host();
-  return host == "business.gemini.google" || host == "gemini.google.com" ||
-         url.DomainIs("cloud.google.com") || url.DomainIs("cloud.google") ||
-         url.DomainIs("corp.google.com");
+  if (url.DomainIs("gemini.google") || url.DomainIs("gemini.google.com")) {
+    return true;
+  }
+
+  static constexpr auto kAllowedCloudHosts =
+      base::MakeFixedFlatSet<std::string_view>({
+          "enterprise.gemini.cloud.google",
+          "enterprise.gemini.cloud.google.com",
+          "gemini.cloud.google",
+          "vertexaisearch.cloud.google",
+          "vertexaisearch.cloud.google.com",
+      });
+  if (kAllowedCloudHosts.contains(url.host())) {
+    return true;
+  }
+
+  const GURL finch_url(features::kGeicGuestURL.Get());
+  return finch_url.is_valid() && finch_url.SchemeIs(url::kHttpsScheme) &&
+         url.host() == finch_url.host();
 }
 
 }  // namespace geic

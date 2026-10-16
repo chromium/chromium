@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic {
@@ -24,6 +25,7 @@ class GlicGeicApiBrowserTest : public GlicApiBrowserTest {
     GlicApiBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
                                     GetGuestURL().spec());
+    command_line->AppendSwitch(::switches::kGlicDev);
   }
 
  private:
