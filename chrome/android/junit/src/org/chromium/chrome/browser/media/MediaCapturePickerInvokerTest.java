@@ -64,6 +64,7 @@ public class MediaCapturePickerInvokerTest {
         private Intent mIntent;
         private Tab mTab;
         private boolean mShouldShareAudio;
+        private WebContents mStartedWebContents;
         private WebContents mStoppedWebContents;
 
         @Override
@@ -82,8 +83,21 @@ public class MediaCapturePickerInvokerTest {
         }
 
         @Override
+        public void startAppContentMediaProjection(WebContents webContents, ActivityResult result) {
+            mStartedWebContents = webContents;
+            // Mirror the real implementation: starting the projection consumes the pending
+            // selection, after which getPickedTab()/shouldShareAudio() are no longer valid.
+            mTab = null;
+            mShouldShareAudio = false;
+        }
+
+        @Override
         public void stopAppContentMediaProjection(WebContents webContents) {
             mStoppedWebContents = webContents;
+        }
+
+        private WebContents getStartedWebContents() {
+            return mStartedWebContents;
         }
 
         private WebContents getStoppedWebContents() {
@@ -157,12 +171,14 @@ public class MediaCapturePickerInvokerTest {
         mPickerDelegate.setIntent(new Intent());
         mPickerDelegate.setPickedTab(tab);
         mPickerDelegate.setShouldShareAudio(true);
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         pendingDelegate()
                 .onPicked(
                         CaptureAction.CAPTURE_WINDOW,
                         new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
+        assertEquals(params.webContents, mPickerDelegate.getStartedWebContents());
         verify(mDelegate).onPickTab(mTabWebContents, true);
     }
 
@@ -174,12 +190,14 @@ public class MediaCapturePickerInvokerTest {
         mPickerDelegate.setIntent(new Intent());
         mPickerDelegate.setPickedTab(tab);
         mPickerDelegate.setShouldShareAudio(false);
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         pendingDelegate()
                 .onPicked(
                         CaptureAction.CAPTURE_WINDOW,
                         new ActivityResult(Activity.RESULT_OK, new Intent()));
         verify(tab).loadIfNeeded(/* forceBackingSize= */ true);
+        assertEquals(params.webContents, mPickerDelegate.getStartedWebContents());
         verify(mDelegate).onPickTab(mTabWebContents, false);
     }
 

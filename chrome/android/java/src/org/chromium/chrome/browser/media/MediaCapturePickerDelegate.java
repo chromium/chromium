@@ -40,7 +40,9 @@ public interface MediaCapturePickerDelegate {
 
     /**
      * Returns whether the user requested audio sharing in the picker. This is only valid if {@link
-     * #getPickedTab()} returns non-null.
+     * #getPickedTab()} returns non-null, and must be called before {@link
+     * #startAppContentMediaProjection(WebContents, ActivityResult)}, which consumes the pending
+     * selection.
      *
      * @return True if audio sharing was requested.
      */

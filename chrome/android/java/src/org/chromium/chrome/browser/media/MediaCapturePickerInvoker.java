@@ -107,6 +107,11 @@ public class MediaCapturePickerInvoker {
                 WebContents pickedTabwebContents = tab.getWebContents();
                 assert pickedTabwebContents != null;
 
+                // Read the user's audio choice before startAppContentMediaProjection().
+                // TODO(crbug.com/574286713): remove the ordering dependency between
+                // getPickedTab(), shouldShareAudio() and startAppContentMediaProjection().
+                final boolean shouldShareAudio = impl.shouldShareAudio();
+
                 // Bring tab and its window to front. This is necessary for tabs belonging to a
                 // minimized window, or sharing will not be able to start.
                 // TODO(crbug.com/454192534): reconsider this behavior when the android system bug
@@ -115,8 +120,11 @@ public class MediaCapturePickerInvoker {
 
                 impl.startAppContentMediaProjection(webContents, result);
 
-                Log.d(TAG, "PickerInvoker: call delegate.onPickTab");
-                delegate.onPickTab(pickedTabwebContents, impl.shouldShareAudio());
+                Log.d(
+                        TAG,
+                        "PickerInvoker: call delegate.onPickTab, shareAudio=%b",
+                        shouldShareAudio);
+                delegate.onPickTab(pickedTabwebContents, shouldShareAudio);
                 MediaCapturePickerManager.recordResult(
                         MediaCapturePickerManager.Result.TAB_SELECTED);
             } else {
