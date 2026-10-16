@@ -2652,6 +2652,7 @@ test("content_unittests") {
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
     "../browser/cpu_performance/cpu_performance_unittest.cc",
+    "../browser/cross_origin_storage/cross_origin_storage_registry_unittest.cc",
     "../browser/declarative_performance_observer/declarative_performance_observer_store_unittest.cc",
     "../browser/declarative_performance_observer/declarative_performance_observer_unittest.cc",
     "../browser/device_posture/device_posture_provider_impl_unittest.cc",
