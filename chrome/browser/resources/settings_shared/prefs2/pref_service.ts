@@ -10,8 +10,19 @@ import {PrefsBrowserProxy} from './prefs_browser_proxy.js';
 
 type PrefObject<T> = chrome.settingsPrivate.PrefObject<T>;
 
+function getSyntheticPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'synthetic.settings.dummy_pref',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'default',
+    },
+  ];
+}
+
 export class PrefService {
   private cache_: Map<string, PrefObject<unknown>> = new Map();
+  private syntheticPrefs_: Set<string> = new Set();
 
   private initializedPromise_: Promise<void>;
   private isInitialized_ = false;
@@ -39,11 +50,46 @@ export class PrefService {
       this.cache_.set(pref.key, pref);
     }
     this.isInitialized_ = true;
+    this.registerSyntheticPrefs_(getSyntheticPrefs());
     this.browserProxy_.onPrefsChanged.addListener(this.boundOnPrefsChanged_);
   }
 
   whenInitialized(): Promise<void> {
     return this.initializedPromise_;
+  }
+
+  /**
+   * Registers synthetic (frontend-only) prefs in the local cache. Should not
+   * be used for real (backend-backed) prefs.
+   */
+  private registerSyntheticPrefs_(prefs: chrome.settingsPrivate.PrefObject[]) {
+    for (const pref of prefs) {
+      assert(
+          pref.key.startsWith('synthetic.'),
+          `Synthetic pref key '${pref.key}' must start with 'synthetic.'`);
+      assert(
+          !this.cache_.has(pref.key),
+          `registerSyntheticPrefs_ called for already existing pref '${
+              pref.key}'`);
+      this.syntheticPrefs_.add(pref.key);
+      this.cache_.set(pref.key, structuredClone(pref));
+    }
+  }
+
+  /**
+   * Updates a synthetic (frontend-only) pref and notifies observers. Should be
+   * used when `setPrefValue`, `setPrefDictEntry`, etc. are not sufficient (for
+   * example, when modifying `enforcement` or `controlledBy`).
+   */
+  setSyntheticPref<T>(pref: PrefObject<T>) {
+    assert(
+        this.isInitialized_,
+        `setSyntheticPref called before PrefService initialized, for pref '${
+            pref.key}'`);
+    assert(
+        this.syntheticPrefs_.has(pref.key),
+        `setSyntheticPref called for non-synthetic pref '${pref.key}'`);
+    this.onPrefsChanged_([structuredClone(pref)]);
   }
 
   async setPrefValue<T>(key: string, value: T): Promise<boolean> {
@@ -64,6 +110,10 @@ export class PrefService {
     this.queueAndDispatch_([
       new CustomEvent(pref.key, {detail: structuredClone(pref)}),
     ]);
+
+    if (this.syntheticPrefs_.has(key)) {
+      return Promise.resolve(true);
+    }
 
     // Step2: Propagate change to backend.
     const success = await this.browserProxy_.setPref(key, value);
@@ -136,6 +186,9 @@ export class PrefService {
    * stays up to date.
    */
   async refreshPrefFromBackend(key: string) {
+    assert(
+        !this.syntheticPrefs_.has(key),
+        `refreshPrefFromBackend called for synthetic pref '${key}'`);
     const pref = await this.browserProxy_.getPref(key);
     this.onPrefsChanged_([pref]);
   }
