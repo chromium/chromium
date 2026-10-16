@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.StripMenuAction;
@@ -162,6 +163,7 @@ public class TabStripContextMenuCoordinator {
                         .withTitleRes(R.string.menu_new_tab)
                         .withMenuId(R.id.new_tab_menu_id)
                         .withIsIncognito(isIncognito)
+                        .withShortcutText(KeyboardShortcuts.getShortcutText(R.id.new_tab_menu_id))
                         .build());
         // Add "Reopen closed tab/tabs/group" option.
         @RecentlyClosedEntryType
@@ -176,8 +178,10 @@ public class TabStripContextMenuCoordinator {
                 new ListItemBuilder()
                         .withTitleRes(titleRes)
                         .withMenuId(R.id.reopen_closed_entry)
-                        .withIsIncognito(false)
+                        .withIsIncognito(isIncognito)
                         .withEnabled(recentlyClosedEntryType != RecentlyClosedEntryType.NONE)
+                        .withShortcutText(
+                                KeyboardShortcuts.getShortcutText(R.id.reopen_closed_entry))
                         .build());
         // Add "Bookmark all tabs" option.
         if (!isIncognito) {
@@ -187,6 +191,8 @@ public class TabStripContextMenuCoordinator {
                             .withMenuId(R.id.bookmark_all_tabs)
                             .withIsIncognito(false)
                             .withEnabled(mTabModel.getCount() > 1)
+                            .withShortcutText(
+                                    KeyboardShortcuts.getShortcutText(R.id.bookmark_all_tabs))
                             .build());
         }
         // Add "Name window" option.
@@ -268,6 +274,7 @@ public class TabStripContextMenuCoordinator {
                             .withTitleRes(R.string.menu_task_manager)
                             .withMenuId(R.id.task_manager)
                             .withIsIncognito(isIncognito)
+                            .withShortcutText(KeyboardShortcuts.getShortcutText(R.id.task_manager))
                             .build());
         }
     }

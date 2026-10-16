@@ -169,6 +169,29 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
+    public void testShortcutTextAppearance() {
+        int customStyleId = 123;
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID, customStyleId)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID);
+        Assert.assertEquals(customStyleId, Shadows.shadowOf(mShortcutView).getTextAppearanceId());
+
+        // Verify resetting when Resources.ID_NULL.
+        PropertyModel resetModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID, Resources.ID_NULL)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                resetModel, mListItemView, ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID);
+        Assert.assertEquals(
+                R.style.TextAppearance_ListMenuItem_Shortcut,
+                Shadows.shadowOf(mShortcutView).getTextAppearanceId());
+    }
+
+    @Test
     public void testVerticalPadding() {
         int verticalPadding = 24;
         int paddingStart = 16;

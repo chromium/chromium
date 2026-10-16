@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.ChromeCommandIds;
+import org.chromium.chrome.browser.KeyboardShortcuts;
+import org.chromium.chrome.browser.KeyboardShortcutsJni;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -100,6 +104,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private TaskManager mTaskManager;
+    @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
 
     private Activity mActivity;
     private TabStripContextMenuCoordinator mCoordinator;
@@ -694,6 +699,55 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Verify.
         verify(mTaskManager).launch(ContextUtils.getApplicationContext());
         assertFalse(mMenuWindow.isShowing());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS,
+        ChromeFeatureList.TASK_MANAGER_CLANK
+    })
+    public void showMenu_verifyShortcutTextPopulatedWhenEnabled() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        KeyboardShortcutsJni.setInstanceForTesting(mKeyboardShortcutsJniMock);
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(anyInt())).thenReturn("");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.NEW_TAB))
+                .thenReturn("Ctrl+T");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.RESTORE_TAB))
+                .thenReturn("Ctrl+Shift+T");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(
+                        ChromeCommandIds.BOOKMARK_ALL_TABS))
+                .thenReturn("Ctrl+Shift+D");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(
+                        ChromeCommandIds.TASK_MANAGER_SHORTCUT))
+                .thenReturn("Ctrl+Esc");
+
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Baseline (4) + Divider (1) + Task Manager (1) = 6 items.
+        verifyMenuState(/* expectedNumItems= */ 6);
+        assertEquals("Ctrl+T", getItemModelAtPosition(0).get(ListMenuItemProperties.SHORTCUT_TEXT));
+        assertEquals(
+                "Ctrl+Shift+T",
+                getItemModelAtPosition(1).get(ListMenuItemProperties.SHORTCUT_TEXT));
+        assertEquals(
+                "Ctrl+Shift+D",
+                getItemModelAtPosition(2).get(ListMenuItemProperties.SHORTCUT_TEXT));
+        assertNull(getItemModelAtPosition(3).get(ListMenuItemProperties.SHORTCUT_TEXT));
+        assertEquals(
+                "Ctrl+Esc", getItemModelAtPosition(5).get(ListMenuItemProperties.SHORTCUT_TEXT));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void showMenu_verifyShortcutTextNullWhenDisabled() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        verifyMenuState(/* expectedNumItems= */ 4);
+        for (int i = 0; i < 4; i++) {
+            assertNull(getItemModelAtPosition(i).get(ListMenuItemProperties.SHORTCUT_TEXT));
+        }
     }
 
     private void verifyMenuState(int expectedNumItems) {

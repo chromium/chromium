@@ -234,6 +234,16 @@ public class ListMenuItemViewBinder {
                     subtitleView.setTextAppearance(subtitleTextAppearanceId);
                 }
             }
+        } else if (propertyKey == ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID) {
+            int shortcutTextAppearanceId =
+                    model.get(ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID);
+            if (shortcutView != null) {
+                if (shortcutTextAppearanceId == Resources.ID_NULL) {
+                    shortcutView.setTextAppearance(R.style.TextAppearance_ListMenuItem_Shortcut);
+                } else {
+                    shortcutView.setTextAppearance(shortcutTextAppearanceId);
+                }
+            }
         } else if (propertyKey == ListMenuItemProperties.VERTICAL_PADDING) {
             // When unset in the model, model.get() defaults to 0. On recycled views, this
             // resets any custom padding from a previous item back to 0. This works because

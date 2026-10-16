@@ -100,6 +100,10 @@ public class ListMenuItemProperties {
     public static final ReadableIntPropertyKey SUBTITLE_TEXT_APPEARANCE_ID =
             new ReadableIntPropertyKey();
 
+    /** The {@link StyleRes} ID for the shortcut text appearance of the menu item. */
+    public static final ReadableIntPropertyKey SHORTCUT_TEXT_APPEARANCE_ID =
+            new ReadableIntPropertyKey();
+
     /** The vertical padding in pixels to apply to the menu item view. */
     public static final ReadableIntPropertyKey VERTICAL_PADDING = new ReadableIntPropertyKey();
 
@@ -156,6 +160,7 @@ public class ListMenuItemProperties {
         ICON_TINT_COLOR_STATE_LIST_ID,
         TEXT_APPEARANCE_ID,
         SUBTITLE_TEXT_APPEARANCE_ID,
+        SHORTCUT_TEXT_APPEARANCE_ID,
         VERTICAL_PADDING,
         IS_TEXT_ELLIPSIZED_AT_END,
         KEEP_START_ICON_SPACING_WHEN_HIDDEN,

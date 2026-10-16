@@ -361,6 +361,11 @@ public class ListItemBuilder {
                             ? mTextAppearanceStyle
                             : R.style
                                     .TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light);
+            if (!hasSubmenu) {
+                builder.with(
+                        ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID,
+                        R.style.TextAppearance_TextMedium_Secondary_Baseline_Light);
+            }
             if (mShouldTintIcon) {
                 builder.with(
                         ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,

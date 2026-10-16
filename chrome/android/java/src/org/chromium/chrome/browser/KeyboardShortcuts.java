@@ -1369,9 +1369,13 @@ public class KeyboardShortcuts {
                             : ChromeCommandIds.NEW_INCOGNITO_WINDOW;
         } else if (menuItemId == R.id.new_tab_menu_id) {
             commandId = ChromeCommandIds.NEW_TAB;
+        } else if (menuItemId == R.id.reopen_closed_entry) {
+            commandId = ChromeCommandIds.RESTORE_TAB;
         } else if (menuItemId == R.id.bookmark_this_page_id
                 || menuItemId == R.id.bookmark_this_page_menu_id) {
             commandId = ChromeCommandIds.BOOKMARK_THIS_TAB;
+        } else if (menuItemId == R.id.bookmark_all_tabs) {
+            commandId = ChromeCommandIds.BOOKMARK_ALL_TABS;
         } else if (menuItemId == R.id.print_id) {
             commandId = ChromeCommandIds.PRINT;
         } else if (menuItemId == R.id.offline_page_id || menuItemId == R.id.download_page_id) {

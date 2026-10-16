@@ -140,6 +140,9 @@ public class ListItemBuilderUnitTest {
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         assertEquals(
+                R.style.TextAppearance_TextMedium_Secondary_Baseline_Light,
+                model.get(ListMenuItemProperties.SHORTCUT_TEXT_APPEARANCE_ID));
+        assertEquals(
                 R.color.default_icon_color_light_tint_list,
                 model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
     }
