@@ -65,27 +65,37 @@ void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
                   "ServerJournalEventBeforeClockSync", {});
   }
 
+  uint64_t track_uuid;
+  switch (event.track) {
+    case ServerJournalEvent::Track::kUnspecified:
+    case ServerJournalEvent::Track::kMain:
+      track_uuid = actor::MakeTtcBackendTrackUUID(task_id_);
+      break;
+    case ServerJournalEvent::Track::kTurn:
+      track_uuid = actor::MakeTtcCurrentTurnTrackUUID(task_id_);
+      break;
+  }
+
   switch (event.type) {
     case ServerJournalEvent::Type::kInstant:
-      journal_->Log(GURL(), task_id_, actor::MakeTtcBackendTrackUUID(task_id_),
-                    timestamp, event.name, std::move(details_builder).Build());
+      journal_->Log(GURL(), task_id_, track_uuid, timestamp, event.name,
+                    std::move(details_builder).Build());
       break;
     case ServerJournalEvent::Type::kAsyncBegin:
       // If there is a matching ID, make sure it terminates before the new
       // event is created.
       pending_server_async_events_.erase(event.async_event_id);
       pending_server_async_events_[event.async_event_id] =
-          journal_->CreatePendingAsyncEntry(
-              GURL(), task_id_, actor::MakeTtcBackendTrackUUID(task_id_),
-              timestamp, event.name, std::move(details_builder).Build());
+          journal_->CreatePendingAsyncEntry(GURL(), task_id_, track_uuid,
+                                            timestamp, event.name,
+                                            std::move(details_builder).Build());
       break;
     case ServerJournalEvent::Type::kAsyncEnd: {
       auto it = pending_server_async_events_.find(event.async_event_id);
       if (it == pending_server_async_events_.end()) {
         details_builder.Add("event_name", event.name)
             .Add("async_event_id", event.async_event_id);
-        journal_->Log(GURL(), task_id_,
-                      actor::MakeTtcBackendTrackUUID(task_id_), timestamp,
+        journal_->Log(GURL(), task_id_, track_uuid, timestamp,
                       "UnmatchedAsyncEnd", std::move(details_builder).Build());
         break;
       }
@@ -111,8 +121,7 @@ void SessionJournal::HandleServerJournalEvent(const ServerJournalEvent& event) {
           (client_receive_time - event.sync_timestamp) / 2;
       server_clock_delta_ = client_midpoint - event.timestamp;
       details_builder.Add("clock_delta", server_clock_delta_);
-      journal_->Log(GURL(), task_id_, actor::MakeTtcBackendTrackUUID(task_id_),
-                    client_midpoint,
+      journal_->Log(GURL(), task_id_, track_uuid, client_midpoint,
                     event.name.empty() ? "ClockSync" : event.name,
                     std::move(details_builder).Build());
       break;

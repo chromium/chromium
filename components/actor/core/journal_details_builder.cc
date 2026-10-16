@@ -61,6 +61,9 @@ std::string TrackToString(uint64_t track_uuid, TaskId task_id) {
   if (MakeTtcBackendTrackUUID(task_id) == track_uuid) {
     return "TtcBackend";
   }
+  if (MakeTtcCurrentTurnTrackUUID(task_id) == track_uuid) {
+    return "TtcCurrentTurn";
+  }
   if (IsGlicExperimentalTriggeringTrack(track_uuid)) {
     return "GlicExperimentalTriggering";
   }

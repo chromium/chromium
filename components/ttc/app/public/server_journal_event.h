@@ -24,6 +24,12 @@ struct ServerJournalEvent {
     kClockSync,
   };
 
+  enum class Track {
+    kUnspecified,
+    kMain,
+    kTurn,
+  };
+
   struct Details {
     std::string key;
     std::string value;
@@ -42,6 +48,7 @@ struct ServerJournalEvent {
   std::vector<Details> details;
   int32_t async_event_id = 0;
   base::Time sync_timestamp;
+  Track track = Track::kUnspecified;
 };
 
 }  // namespace ttc

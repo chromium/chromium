@@ -94,6 +94,19 @@ ServerJournalEvent::Type ToServerJournalEventType(
   }
 }
 
+ServerJournalEvent::Track ToServerJournalEventTrack(
+    optimization_guide::proto::JournalEvent_Track track) {
+  switch (track) {
+    case optimization_guide::proto::JournalEvent::TRACK_MAIN:
+      return ServerJournalEvent::Track::kMain;
+    case optimization_guide::proto::JournalEvent::TRACK_TURN:
+      return ServerJournalEvent::Track::kTurn;
+    case optimization_guide::proto::JournalEvent::TRACK_UNSPECIFIED:
+    default:
+      return ServerJournalEvent::Track::kUnspecified;
+  }
+}
+
 base::Time ToTime(const optimization_guide::proto::Timestamp& proto_timestamp) {
   return base::Time::UnixEpoch() + base::Seconds(proto_timestamp.seconds()) +
          base::Nanoseconds(proto_timestamp.nanos());
@@ -115,6 +128,7 @@ ServerJournalEvent ToServerJournalEvent(
   if (proto_event.has_sync_timestamp()) {
     event.sync_timestamp = ToTime(proto_event.sync_timestamp());
   }
+  event.track = ToServerJournalEventTrack(proto_event.track());
   return event;
 }
 

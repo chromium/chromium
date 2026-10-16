@@ -101,6 +101,12 @@ inline uint64_t MakeTtcBackendTrackUUID(TaskId task_id) {
   return kTtcBackendTrack + task_id.value();
 }
 
+// A specific TTC current turn track for a task.
+inline uint64_t MakeTtcCurrentTurnTrackUUID(TaskId task_id) {
+  constexpr uint64_t kTtcCurrentTurnTrack = 0xda00000500000000LL;
+  return kTtcCurrentTurnTrack + task_id.value();
+}
+
 // A specific Glic Experimental Triggering track for a context ID.
 inline uint64_t MakeGlicExperimentalTriggeringTrackUUID(
     std::string_view context_id) {
