@@ -1068,20 +1068,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
     raster_interface->Flush();
 
-    std::optional<gpu::SyncToken> external_sync_token =
+    std::optional<gpu::SyncToken> sync_token =
         GetDrawingBuffer()->CopyToPlatformSharedImage(
             raster_interface, client_si, client_si->creation_sync_token(),
             kBackBuffer);
-    if (!external_sync_token) {
+    if (!sync_token) {
       return nullptr;
-    }
-    gpu::SyncToken sync_token = external_sync_token.value();
-    if (!shared_context_wrapper->ContextProvider().IsContextLost()) {
-      auto post_write_access = client_si->BeginRasterAccess(
-          raster_interface, sync_token, /*readonly=*/true);
-      sync_token =
-          gpu::RasterScopedAccess::EndAccess(std::move(post_write_access));
-      client_si->UpdateDestructionSyncToken(sync_token);
     }
     if (shared_context_wrapper->ContextProvider().IsContextLost()) {
       return nullptr;
@@ -1097,7 +1089,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
         client_si);
 
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-        std::move(client_si), sync_token, GetAlphaType(),
+        std::move(client_si), sync_token.value(), GetAlphaType(),
         drawing_buffer_tone_mapping_hdr_metadata_,
         std::move(shared_context_wrapper), base::PlatformThread::CurrentRef(),
         ThreadScheduler::Current()->CleanupTaskRunner(),
