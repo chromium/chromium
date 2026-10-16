@@ -1082,7 +1082,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertNotNull(productIcon);
 
         TextView title = mView.getContentView().findViewById(R.id.title);
-        assertThat(title.getText(), is("Pay with Pix without switching apps"));
+        assertThat(title.getText(), is("Pay with Pix without switching apps next time"));
 
         TextView valuePropMessage1 =
                 mView.getContentView().findViewById(R.id.prompt_b_value_prop_message_1);

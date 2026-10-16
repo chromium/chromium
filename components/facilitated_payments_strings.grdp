@@ -126,7 +126,7 @@
 
   <!-- Pix account linking prompt strings -->
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_TITLE" desc="Title for the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
-    Pay with Pix without switching apps
+    Pay with Pix without switching apps next time
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_VALUE_PROP_MESSAGE_1" desc="First value prop message in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
     Pay without copying and pasting Pix code. <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>See how it works<ph name="END_LINK1">&lt;/link1&gt;</ph>
