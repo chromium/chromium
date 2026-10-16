@@ -401,17 +401,17 @@ class DisplayLockStyleScope {
   bool did_update_children_ = false;
 };
 
-ScrollDirectionPhysical GetPhysicalDirectionForCommand(
+mojom::blink::ScrollDirectionPhysical GetPhysicalDirectionForCommand(
     CommandEventType command,
     const ComputedStyle& style) {
   if (command == CommandEventType::kPageUp) {
-    return kScrollUp;
+    return mojom::blink::ScrollDirectionPhysical::kUp;
   } else if (command == CommandEventType::kPageDown) {
-    return kScrollDown;
+    return mojom::blink::ScrollDirectionPhysical::kDown;
   } else if (command == CommandEventType::kPageLeft) {
-    return kScrollLeft;
+    return mojom::blink::ScrollDirectionPhysical::kLeft;
   } else if (command == CommandEventType::kPageRight) {
-    return kScrollRight;
+    return mojom::blink::ScrollDirectionPhysical::kRight;
   } else {
     LogicalToPhysical<bool> mapping(
         style.GetWritingDirection(),
@@ -421,13 +421,13 @@ ScrollDirectionPhysical GetPhysicalDirectionForCommand(
         command == CommandEventType::kPageBlockEnd);
 
     if (mapping.Top()) {
-      return kScrollUp;
+      return mojom::blink::ScrollDirectionPhysical::kUp;
     } else if (mapping.Bottom()) {
-      return kScrollDown;
+      return mojom::blink::ScrollDirectionPhysical::kDown;
     } else if (mapping.Left()) {
-      return kScrollLeft;
+      return mojom::blink::ScrollDirectionPhysical::kLeft;
     } else if (mapping.Right()) {
-      return kScrollRight;
+      return mojom::blink::ScrollDirectionPhysical::kRight;
     }
   }
   NOTREACHED();
@@ -3289,7 +3289,7 @@ bool Element::HandleScrollByPageCommand(CommandEventType command) {
     return false;
   }
 
-  ScrollDirectionPhysical physical_direction =
+  mojom::blink::ScrollDirectionPhysical physical_direction =
       GetPhysicalDirectionForCommand(command, box->Style());
 
   return scrollable_area->ScrollByPageWithSnap(physical_direction);

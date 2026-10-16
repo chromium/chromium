@@ -376,7 +376,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // to find the appropriate snap position. This ensures consistent behavior
   // across all paging operations (clicking scrollbar track, page down, space
   // bar, ::scroll-button). Returns true if the scroll was performed.
-  bool ScrollByPageWithSnap(ScrollDirectionPhysical direction,
+  bool ScrollByPageWithSnap(mojom::blink::ScrollDirectionPhysical direction,
                             mojom::blink::ScrollBehavior scroll_behavior =
                                 mojom::blink::ScrollBehavior::kAuto);
 

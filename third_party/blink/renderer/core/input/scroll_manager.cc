@@ -109,12 +109,12 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
     Node* cur_node = cur_box->GetNode();
 
     if (cur_node) {
-      ScrollDirectionPhysical physical_direction =
+      mojom::blink::ScrollDirectionPhysical physical_direction =
           ToPhysicalDirection(direction, cur_box->IsHorizontalWritingMode(),
                               cur_box->Style().IsFlippedBlocksWritingMode());
       bool is_vertical =
-          physical_direction == ScrollDirectionPhysical::kScrollUp ||
-          physical_direction == ScrollDirectionPhysical::kScrollDown;
+          physical_direction == mojom::blink::ScrollDirectionPhysical::kUp ||
+          physical_direction == mojom::blink::ScrollDirectionPhysical::kDown;
       ScrollbarOrientation orientation =
           is_vertical ? ScrollbarOrientation::kVerticalScrollbar
                       : ScrollbarOrientation::kHorizontalScrollbar;
@@ -227,7 +227,7 @@ LogicalScrollResult ScrollManager::LogicalScroll(
     auto* box = To<LayoutBox>(scroll_chain_node->GetLayoutObject());
     DCHECK(box);
 
-    ScrollDirectionPhysical physical_direction =
+    mojom::blink::ScrollDirectionPhysical physical_direction =
         ToPhysicalDirection(direction, box->IsHorizontalWritingMode(),
                             box->Style().IsFlippedBlocksWritingMode());
 

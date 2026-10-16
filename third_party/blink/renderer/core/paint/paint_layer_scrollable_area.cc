@@ -1030,7 +1030,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
 }
 
 bool PaintLayerScrollableArea::ScrollByPageWithSnap(
-    ScrollDirectionPhysical direction,
+    mojom::blink::ScrollDirectionPhysical direction,
     mojom::blink::ScrollBehavior scroll_behavior) {
   gfx::Vector2dF displacement = ToScrollDelta(direction, 1);
   displacement.Scale(

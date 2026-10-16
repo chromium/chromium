@@ -15,3 +15,11 @@ enum ScrollDirection {
   kScrollInlineDirectionBackward,
   kScrollInlineDirectionForward,
 };
+
+// A physical scroll direction, independent of writing mode.
+enum ScrollDirectionPhysical {
+  kUp,
+  kDown,
+  kLeft,
+  kRight,
+};

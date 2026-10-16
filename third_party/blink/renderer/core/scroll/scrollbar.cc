@@ -279,17 +279,18 @@ void Scrollbar::StopTimerIfNeeded() {
   scroll_timer_.Stop();
 }
 
-ScrollDirectionPhysical Scrollbar::PressedPartScrollDirectionPhysical() {
+mojom::blink::ScrollDirectionPhysical
+Scrollbar::PressedPartScrollDirectionPhysical() {
   if (orientation_ == kHorizontalScrollbar) {
     if (pressed_part_ == kBackButtonStartPart ||
         pressed_part_ == kBackButtonEndPart || pressed_part_ == kBackTrackPart)
-      return kScrollLeft;
-    return kScrollRight;
+      return mojom::blink::ScrollDirectionPhysical::kLeft;
+    return mojom::blink::ScrollDirectionPhysical::kRight;
   } else {
     if (pressed_part_ == kBackButtonStartPart ||
         pressed_part_ == kBackButtonEndPart || pressed_part_ == kBackTrackPart)
-      return kScrollUp;
-    return kScrollDown;
+      return mojom::blink::ScrollDirectionPhysical::kUp;
+    return mojom::blink::ScrollDirectionPhysical::kDown;
   }
 }
 

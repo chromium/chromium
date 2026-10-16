@@ -115,11 +115,14 @@ PaintLayerScrollableArea* ScrollableAreaForScroller(const LayoutBox& scroller) {
              : scroller.GetScrollableArea();
 }
 
-std::optional<ScrollDirectionPhysical> ScrollDirectionForButton(
+std::optional<mojom::blink::ScrollDirectionPhysical> ScrollDirectionForButton(
     PseudoId pseudo_id,
     WritingDirectionMode writing_direction) {
-  const PhysicalToLogical<ScrollDirectionPhysical> directions(
-      writing_direction, kScrollUp, kScrollRight, kScrollDown, kScrollLeft);
+  const PhysicalToLogical<mojom::blink::ScrollDirectionPhysical> directions(
+      writing_direction, mojom::blink::ScrollDirectionPhysical::kUp,
+      mojom::blink::ScrollDirectionPhysical::kRight,
+      mojom::blink::ScrollDirectionPhysical::kDown,
+      mojom::blink::ScrollDirectionPhysical::kLeft);
   switch (pseudo_id) {
     case kPseudoIdScrollButtonInlineStart:
       return directions.InlineStart();
@@ -136,7 +139,7 @@ std::optional<ScrollDirectionPhysical> ScrollDirectionForButton(
 
 ScrollOffset CalculateSnappedScrollPosition(
     const ScrollableArea* scrollable_area,
-    ScrollDirectionPhysical direction) {
+    mojom::blink::ScrollDirectionPhysical direction) {
   gfx::PointF current_position = scrollable_area->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       scrollable_area->PageScrollSnapStrategy(direction);
@@ -251,13 +254,13 @@ bool ScrollButtonPseudoElement::CalculateEnabledState() const {
   const ScrollOffset target_position =
       CalculateSnappedScrollPosition(scrollable_area, *direction);
   switch (*direction) {
-    case kScrollUp:
+    case mojom::blink::ScrollDirectionPhysical::kUp:
       return target_position.y() < current_position.y();
-    case kScrollDown:
+    case mojom::blink::ScrollDirectionPhysical::kDown:
       return target_position.y() > current_position.y();
-    case kScrollLeft:
+    case mojom::blink::ScrollDirectionPhysical::kLeft:
       return target_position.x() < current_position.x();
-    case kScrollRight:
+    case mojom::blink::ScrollDirectionPhysical::kRight:
       return target_position.x() > current_position.x();
   }
   return enabled_;

@@ -200,11 +200,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                           bool scrolled_x,
                           bool scrolled_y,
                           cc::ScrollSourceType source_type);
-  bool SnapForDirection(ScrollDirectionPhysical direction);
-  bool SnapForPageScroll(ScrollDirectionPhysical direction);
-  bool SnapForDocumentScroll(ScrollDirectionPhysical direction);
+  bool SnapForDirection(mojom::blink::ScrollDirectionPhysical direction);
+  bool SnapForPageScroll(mojom::blink::ScrollDirectionPhysical direction);
+  bool SnapForDocumentScroll(mojom::blink::ScrollDirectionPhysical direction);
   std::unique_ptr<cc::SnapSelectionStrategy> PageScrollSnapStrategy(
-      ScrollDirectionPhysical direction) const;
+      mojom::blink::ScrollDirectionPhysical direction) const;
   void SnapAfterLayout();
 
   // Tries to find a target snap position. If found, returns the target
@@ -655,7 +655,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
 
   ScrollbarOrientation ScrollbarOrientationFromDirection(
-      ScrollDirectionPhysical) const;
+      mojom::blink::ScrollDirectionPhysical) const;
 
   // Needed to let the animators call scrollOffsetChanged.
   friend class ScrollAnimatorCompositorCoordinator;

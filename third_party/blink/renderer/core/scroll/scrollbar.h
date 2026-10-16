@@ -255,7 +255,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   void InjectScrollGesture(WebInputEvent::Type type,
                            ScrollOffset delta,
                            ui::ScrollGranularity granularity);
-  ScrollDirectionPhysical PressedPartScrollDirectionPhysical();
+  mojom::blink::ScrollDirectionPhysical PressedPartScrollDirectionPhysical();
   ui::ScrollGranularity PressedPartScrollGranularity();
 
   Member<ScrollableArea> scrollable_area_;

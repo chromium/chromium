@@ -41,13 +41,6 @@ namespace blink {
 // information.
 using ScrollOffset = gfx::Vector2dF;
 
-enum ScrollDirectionPhysical {
-  kScrollUp,
-  kScrollDown,
-  kScrollLeft,
-  kScrollRight
-};
-
 // An explicit scroll is one that was requested by the user or the webpage.
 // An implicit scroll is a side effect of a layout change.
 inline bool IsExplicitScrollType(mojom::blink::ScrollType scroll_type) {
@@ -58,7 +51,7 @@ inline bool IsExplicitScrollType(mojom::blink::ScrollType scroll_type) {
 
 // Convert logical scroll direction to physical. Physical scroll directions are
 // unaffected.
-inline ScrollDirectionPhysical ToPhysicalDirection(
+inline mojom::blink::ScrollDirectionPhysical ToPhysicalDirection(
     mojom::blink::ScrollDirection direction,
     bool is_vertical,
     bool is_flipped) {
@@ -66,68 +59,68 @@ inline ScrollDirectionPhysical ToPhysicalDirection(
     case mojom::blink::ScrollDirection::kScrollBlockDirectionBackward: {
       if (is_vertical) {
         if (!is_flipped)
-          return kScrollUp;
-        return kScrollDown;
+          return mojom::blink::ScrollDirectionPhysical::kUp;
+        return mojom::blink::ScrollDirectionPhysical::kDown;
       }
       if (!is_flipped)
-        return kScrollLeft;
-      return kScrollRight;
+        return mojom::blink::ScrollDirectionPhysical::kLeft;
+      return mojom::blink::ScrollDirectionPhysical::kRight;
     }
     case mojom::blink::ScrollDirection::kScrollBlockDirectionForward: {
       if (is_vertical) {
         if (!is_flipped)
-          return kScrollDown;
-        return kScrollUp;
+          return mojom::blink::ScrollDirectionPhysical::kDown;
+        return mojom::blink::ScrollDirectionPhysical::kUp;
       }
       if (!is_flipped)
-        return kScrollRight;
-      return kScrollLeft;
+        return mojom::blink::ScrollDirectionPhysical::kRight;
+      return mojom::blink::ScrollDirectionPhysical::kLeft;
     }
     case mojom::blink::ScrollDirection::kScrollInlineDirectionBackward: {
       if (is_vertical) {
         if (!is_flipped)
-          return kScrollLeft;
-        return kScrollRight;
+          return mojom::blink::ScrollDirectionPhysical::kLeft;
+        return mojom::blink::ScrollDirectionPhysical::kRight;
       }
       if (!is_flipped)
-        return kScrollUp;
-      return kScrollDown;
+        return mojom::blink::ScrollDirectionPhysical::kUp;
+      return mojom::blink::ScrollDirectionPhysical::kDown;
     }
     case mojom::blink::ScrollDirection::kScrollInlineDirectionForward: {
       if (is_vertical) {
         if (!is_flipped)
-          return kScrollRight;
-        return kScrollLeft;
+          return mojom::blink::ScrollDirectionPhysical::kRight;
+        return mojom::blink::ScrollDirectionPhysical::kLeft;
       }
       if (!is_flipped)
-        return kScrollDown;
-      return kScrollUp;
+        return mojom::blink::ScrollDirectionPhysical::kDown;
+      return mojom::blink::ScrollDirectionPhysical::kUp;
     }
     // Direction is already physical
     case mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode:
-      return kScrollUp;
+      return mojom::blink::ScrollDirectionPhysical::kUp;
     case mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode:
-      return kScrollDown;
+      return mojom::blink::ScrollDirectionPhysical::kDown;
     case mojom::blink::ScrollDirection::kScrollLeftIgnoringWritingMode:
-      return kScrollLeft;
+      return mojom::blink::ScrollDirectionPhysical::kLeft;
     case mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode:
-      return kScrollRight;
+      return mojom::blink::ScrollDirectionPhysical::kRight;
     default:
       NOTREACHED();
   }
-  return kScrollUp;
+  return mojom::blink::ScrollDirectionPhysical::kUp;
 }
 
 inline mojom::blink::ScrollDirection ToScrollDirection(
-    ScrollDirectionPhysical direction) {
+    mojom::blink::ScrollDirectionPhysical direction) {
   switch (direction) {
-    case kScrollUp:
+    case mojom::blink::ScrollDirectionPhysical::kUp:
       return mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
-    case kScrollDown:
+    case mojom::blink::ScrollDirectionPhysical::kDown:
       return mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
-    case kScrollLeft:
+    case mojom::blink::ScrollDirectionPhysical::kLeft:
       return mojom::blink::ScrollDirection::kScrollLeftIgnoringWritingMode;
-    case kScrollRight:
+    case mojom::blink::ScrollDirectionPhysical::kRight:
       return mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode;
     default:
       NOTREACHED();
@@ -203,12 +196,17 @@ inline ScrollOffset ToScrollDelta(ScrollbarOrientation orientation,
                                              : ScrollOffset(0.0f, delta);
 }
 
-inline ScrollOffset ToScrollDelta(ScrollDirectionPhysical dir, float delta) {
-  if (dir == kScrollUp || dir == kScrollLeft)
+inline ScrollOffset ToScrollDelta(mojom::blink::ScrollDirectionPhysical dir,
+                                  float delta) {
+  if (dir == mojom::blink::ScrollDirectionPhysical::kUp ||
+      dir == mojom::blink::ScrollDirectionPhysical::kLeft) {
     delta = -delta;
+  }
 
-  return (dir == kScrollLeft || dir == kScrollRight) ? ScrollOffset(delta, 0)
-                                                     : ScrollOffset(0, delta);
+  return (dir == mojom::blink::ScrollDirectionPhysical::kLeft ||
+          dir == mojom::blink::ScrollDirectionPhysical::kRight)
+             ? ScrollOffset(delta, 0)
+             : ScrollOffset(0, delta);
 }
 
 // ScrollableArea supports storing scroll offsets with subpixel precision;
