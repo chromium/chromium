@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/device_signals_disclaimer_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -198,6 +199,11 @@
 
 namespace {
 
+using ::device_signals_disclaimer_test::GetSelectors;
+using ::device_signals_disclaimer_test::ManagedUserProfileNoticeSelectors;
+using ::device_signals_disclaimer_test::WaitForAndClickCancelButton;
+using ::device_signals_disclaimer_test::WaitForAndClickLearnMoreLink;
+using ::device_signals_disclaimer_test::WaitForAndClickProceedButton;
 using signin::constants::kNoHostedDomainFound;
 using testing::_;
 using testing::Eq;
@@ -4254,48 +4260,24 @@ class ProfilePickerDeviceSignalsDisclaimerBrowserTest
     return managed_profile_path_;
   }
 
-  void ClickDisclaimerButton(const std::string& button_id) {
+  const ManagedUserProfileNoticeSelectors& selectors() const {
+    return GetSelectors(/*use_refreshed_ui=*/false);
+  }
+
+  void ClickDisclaimerProceedButton() {
     content::WebContents* wc = web_contents();
     ASSERT_TRUE(wc);
-    content::WaitForLoadStop(wc);
-    std::string script = base::StringPrintf(R"(
-      new Promise((resolve) => {
-        const interval = setInterval(() => {
-          const button = document.querySelector('managed-user-profile-notice-app')
-                             ?.shadowRoot?.querySelector('#%s');
-          if (button && !button.hidden) {
-            clearInterval(interval);
-            button.click();
-            resolve(true);
-          }
-        }, 50);
-      });
-    )",
-                                            button_id.c_str());
-    std::ignore = content::ExecJs(wc, script);
+    std::ignore = WaitForAndClickProceedButton(wc, selectors());
+  }
+
+  void ClickDisclaimerCancelButton() {
+    content::WebContents* wc = web_contents();
+    ASSERT_TRUE(wc);
+    std::ignore = WaitForAndClickCancelButton(wc, selectors());
   }
 
   ::testing::AssertionResult ClickLearnMoreLink() {
-    content::WebContents* wc = web_contents();
-    if (!wc) {
-      return ::testing::AssertionFailure() << "WebContents is null";
-    }
-    content::WaitForLoadStop(wc);
-    std::string script = R"(
-      new Promise((resolve) => {
-        const interval = setInterval(() => {
-          const link = document.querySelector('managed-user-profile-notice-app')
-                           ?.shadowRoot?.querySelector('signals-disclaimer')
-                           ?.shadowRoot?.querySelector('#learnMoreLink');
-          if (link && !link.hidden) {
-            clearInterval(interval);
-            link.click();
-            resolve(true);
-          }
-        }, 50);
-      });
-    )";
-    return content::ExecJs(wc, script);
+    return WaitForAndClickLearnMoreLink(web_contents(), selectors());
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -4321,7 +4303,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
   WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
-  ClickDisclaimerButton("proceed-button");
+  ClickDisclaimerProceedButton();
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   EXPECT_EQ(new_browser->GetProfile()->GetPath(), managed_profile_path());
@@ -4347,7 +4329,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
   WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
-  ClickDisclaimerButton("cancel-button");
+  ClickDisclaimerCancelButton();
 
   WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
   EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -4376,7 +4358,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
   WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
-  ClickDisclaimerButton("cancel-button");
+  ClickDisclaimerCancelButton();
 
   WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
   EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -4456,7 +4438,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/true);
 
   WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
-  ClickDisclaimerButton("proceed-button");
+  ClickDisclaimerProceedButton();
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   WaitForBrowserUrl(GURL("chrome://settings/manageProfile"),
@@ -4490,7 +4472,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
   WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
-  ClickDisclaimerButton("proceed-button");
+  ClickDisclaimerProceedButton();
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
   EXPECT_EQ(new_browser->GetProfile()->GetPath(), managed_profile_path());

@@ -4,7 +4,6 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/profiles/device_signals_disclaimer_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -57,63 +57,16 @@
 
 namespace {
 
-struct ManagedUserProfileNoticeSelectors {
-  std::string_view app;
-  std::string_view disclaimer;
-  std::string_view proceed_button;
-  std::string_view cancel_button;
-};
-
-const ManagedUserProfileNoticeSelectors& GetSelectors(bool use_refreshed_ui) {
-  static constexpr ManagedUserProfileNoticeSelectors kLegacySelectors = {
-      .app = "managed-user-profile-notice-app",
-      .disclaimer = "signals-disclaimer",
-      .proceed_button = "#proceed-button",
-      .cancel_button = "#cancel-button",
-  };
-
-  static constexpr ManagedUserProfileNoticeSelectors kRefreshedSelectors = {
-      .app = "managed-user-profile-notice-app-refresh",
-      .disclaimer = "signals-disclaimer-refresh",
-      .proceed_button = "#proceedButton",
-      .cancel_button = "#cancelButton",
-  };
-
-  return use_refreshed_ui ? kRefreshedSelectors : kLegacySelectors;
-}
+using ::device_signals_disclaimer_test::GetSelectors;
+using ::device_signals_disclaimer_test::ManagedUserProfileNoticeSelectors;
+using ::device_signals_disclaimer_test::WaitForAndClickCancelButton;
+using ::device_signals_disclaimer_test::WaitForAndClickLearnMoreLink;
+using ::device_signals_disclaimer_test::WaitForAndClickProceedButton;
+using ::device_signals_disclaimer_test::WaitForWebContentsLoaded;
 
 std::string RefreshedUiParamToTestSuffix(
     const testing::TestParamInfo<bool>& info) {
   return info.param ? "Refreshed" : "Legacy";
-}
-
-testing::AssertionResult WaitForAndClickButton(
-    content::WebContents* web_contents,
-    std::string_view app,
-    std::string_view button,
-    bool log_on_failure = false) {
-  content::WaitForLoadStop(web_contents);
-  std::string script = content::JsReplace(R"(
-    new Promise((resolve) => {
-      const interval = setInterval(() => {
-        const button =
-            document.querySelector($1)?.shadowRoot?.querySelector($2);
-        if (button && !button.hidden) {
-          clearInterval(interval);
-          button.click();
-          resolve(true);
-        }
-      }, 50);
-    });
-  )",
-                                          app, button);
-
-  testing::AssertionResult result = content::ExecJs(web_contents, script);
-  if (!result && log_on_failure) {
-    LOG(ERROR) << "WaitForAndClickButton failed for " << app << " -> " << button
-               << ": " << result.message();
-  }
-  return result;
 }
 
 struct SignalsDisclaimerPixelTestParam {
@@ -146,61 +99,6 @@ GetSignalsDisclaimerPixelTestParams() {
         return params;
       }());
   return *kParams;
-}
-
-testing::AssertionResult WaitForAndClickLearnMoreLink(
-    content::WebContents* web_contents,
-    const ManagedUserProfileNoticeSelectors& selectors) {
-  content::WaitForLoadStop(web_contents);
-  std::string script = content::JsReplace(R"(
-    new Promise((resolve) => {
-      const interval = setInterval(() => {
-        const link = document.querySelector($1)
-                         ?.shadowRoot?.querySelector($2)
-                         ?.shadowRoot?.querySelector('#learnMoreLink');
-        if (link && !link.hidden) {
-          clearInterval(interval);
-          link.click();
-          resolve(true);
-        }
-      }, 50);
-    });
-  )",
-                                          selectors.app, selectors.disclaimer);
-
-  testing::AssertionResult result = content::ExecJs(web_contents, script);
-  if (!result) {
-    LOG(ERROR) << "WaitForAndClickLearnMoreLink failed: " << result.message();
-  }
-  return result;
-}
-
-void WaitForWebContentsLoaded(
-    content::WebContents* web_contents,
-    const ManagedUserProfileNoticeSelectors& selectors) {
-  CHECK(web_contents);
-  content::WaitForLoadStop(web_contents);
-  content::WaitForCopyableViewInWebContents(web_contents);
-
-  std::string script = content::JsReplace(R"(
-    new Promise((resolve) => {
-      const interval = setInterval(() => {
-        const app = document.querySelector($1);
-        if (app && app.shadowRoot) {
-          const disclaimer = app.shadowRoot.querySelector($2);
-          if (disclaimer && disclaimer.shadowRoot) {
-            clearInterval(interval);
-            Promise.all([
-              app.updateComplete,
-              disclaimer.updateComplete
-            ]).then(() => resolve(true));
-          }
-        }
-      }, 50);
-    });
-  )",
-                                          selectors.app, selectors.disclaimer);
-  ASSERT_TRUE(content::EvalJs(web_contents, script).is_ok());
 }
 
 }  // namespace
@@ -243,8 +141,8 @@ class DeviceSignalsDisclaimerModalPixelTest
     content::WebContents* web_contents =
         SigninViewController::From(browser())
             ->GetModalDialogWebContentsForTesting();
-    WaitForWebContentsLoaded(web_contents,
-                             GetSelectors(GetParam().use_refreshed_ui));
+    ASSERT_TRUE(WaitForWebContentsLoaded(
+        web_contents, GetSelectors(GetParam().use_refreshed_ui)));
   }
 
  private:
@@ -349,8 +247,8 @@ class DeviceSignalsDisclaimerProfilePickerPixelTest
     profile_picker_view_tracker_.SetView(view);
     view->ShowAndWait(GetParam().pixel_test_param.window_size);
 
-    WaitForWebContentsLoaded(view->active_contents(),
-                             GetSelectors(GetParam().use_refreshed_ui));
+    ASSERT_TRUE(WaitForWebContentsLoaded(
+        view->active_contents(), GetSelectors(GetParam().use_refreshed_ui)));
   }
 
   bool VerifyUi() override {
@@ -439,9 +337,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerInteractiveTest, ClickProceed) {
   std::ignore = widget_waiter.WaitIfNeededAndGet();
   content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
   ASSERT_TRUE(dialog_contents);
-  ASSERT_TRUE(WaitForAndClickButton(dialog_contents, selectors().app,
-                                    selectors().proceed_button,
-                                    /*log_on_failure=*/true));
+  ASSERT_TRUE(WaitForAndClickProceedButton(dialog_contents, selectors()));
 
   EXPECT_EQ(result_future.Get(),
             signin::DeviceSignalsDisclaimerResult::kAccepted);
@@ -463,9 +359,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerInteractiveTest, ClickCancel) {
   std::ignore = widget_waiter.WaitIfNeededAndGet();
   content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
   ASSERT_TRUE(dialog_contents);
-  ASSERT_TRUE(WaitForAndClickButton(dialog_contents, selectors().app,
-                                    selectors().cancel_button,
-                                    /*log_on_failure=*/true));
+  ASSERT_TRUE(WaitForAndClickCancelButton(dialog_contents, selectors()));
 
   EXPECT_EQ(result_future.Get(),
             signin::DeviceSignalsDisclaimerResult::kCanceled);
@@ -562,8 +456,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
 
   // Click proceed.
-  std::ignore = WaitForAndClickButton(dialog_contents, selectors().app,
-                                      selectors().proceed_button);
+  std::ignore = WaitForAndClickProceedButton(dialog_contents, selectors());
 
   // Verify the dialog closed and the preference is true.
   destroyed_waiter.Wait();
@@ -590,8 +483,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Click cancel.
   // The result can be an error since the browser will get destroyed upon
   // clicking.
-  std::ignore = WaitForAndClickButton(dialog_contents, selectors().app,
-                                      selectors().cancel_button);
+  std::ignore = WaitForAndClickCancelButton(dialog_contents, selectors());
 
   // Wait for all browsers to close and for the profile picker to be shown.
   browsers_closed_waiter.Wait();
@@ -668,8 +560,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   views::test::WidgetDestroyedWaiter destroyed_waiter2(new_widget);
 
   // Click proceed on the first window.
-  std::ignore = WaitForAndClickButton(dialog_contents1, selectors().app,
-                                      selectors().proceed_button);
+  std::ignore = WaitForAndClickProceedButton(dialog_contents1, selectors());
 
   // Verify both dialogs closed and the preference is true.
   destroyed_waiter1.Wait();
@@ -707,8 +598,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Click cancel on the first window.
   // Ignoring the result of ExecJS because the browser teardown can cause it to
   // fail.
-  std::ignore = WaitForAndClickButton(dialog_contents1, selectors().app,
-                                      selectors().cancel_button);
+  std::ignore = WaitForAndClickCancelButton(dialog_contents1, selectors());
 
   // Wait for all browsers to close and for the profile picker to be shown.
   waiter.Wait();
@@ -751,8 +641,7 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   views::test::WidgetDestroyedWaiter destroyed_waiter2(new_widget);
 
   // Click proceed on the second window.
-  std::ignore = WaitForAndClickButton(dialog_contents2, selectors().app,
-                                      selectors().proceed_button);
+  std::ignore = WaitForAndClickProceedButton(dialog_contents2, selectors());
 
   // Verify the second dialog closed and the preference is true.
   destroyed_waiter2.Wait();
