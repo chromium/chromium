@@ -13,6 +13,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -25,6 +26,16 @@ class Profile;
 namespace actor {
 class ToolRequest;
 }  // namespace actor
+
+namespace content {
+class Page;
+}  // namespace content
+
+namespace page_content_annotations {
+struct FetchPageContextErrorDetails;
+struct FetchPageContextResult;
+class PageContextFetcher;
+}  // namespace page_content_annotations
 
 namespace ttc {
 
@@ -66,6 +77,15 @@ class ToolController {
   void SetText(const base::DictValue& arguments, ToolResponseCallback callback);
   void SelectOption(const base::DictValue& arguments,
                     ToolResponseCallback callback);
+  void GetScreenshot(ToolResponseCallback callback);
+  void OnGetScreenshotUrlChecked(base::WeakPtr<content::Page> page,
+                                 ToolResponseCallback callback,
+                                 bool is_url_supported);
+  void OnGetScreenshotFetched(
+      ToolResponseCallback callback,
+      base::expected<
+          std::unique_ptr<page_content_annotations::FetchPageContextResult>,
+          page_content_annotations::FetchPageContextErrorDetails> result);
 
   // TODO(crbug.com/470475787): The actor tools backing these haven't been
   // ported to Android yet (see `skip_android_unmigrated_actor_files` in
@@ -102,6 +122,10 @@ class ToolController {
 
   // Owns this object.
   const raw_ref<SessionControllerImpl> session_controller_;
+
+  bool is_capturing_screenshot_ = false;
+  std::unique_ptr<page_content_annotations::PageContextFetcher>
+      screenshot_fetcher_;
 
   base::WeakPtrFactory<ToolController> weak_factory_{this};
 };
