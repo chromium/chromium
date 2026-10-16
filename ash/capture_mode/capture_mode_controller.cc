@@ -1142,7 +1142,8 @@ CaptureModeController::GetCurrentCaptureFolder() const {
             /*is_default_downloads_folder=*/policy_path.path ==
                 default_downloads_folder};
   }
-  // Otherwise use user chosen custom one, if present.
+  // Otherwise use user chosen custom one, if present, or the one recommended
+  // by admin.
   if (pref_service &&
       !pref_service->GetBoolean(kUsesDefaultCapturePathPrefName)) {
     const auto custom_path =
@@ -1152,13 +1153,12 @@ CaptureModeController::GetCurrentCaptureFolder() const {
               /*is_default_downloads_folder=*/custom_path ==
                   default_downloads_folder};
     }
-  }
-  // Otherwise use the recommended by admin.
-  if (policy_path.enforcement ==
-      CaptureModeDelegate::CapturePathEnforcement::kRecommended) {
-    return {policy_path.path,
-            /*is_default_downloads_folder=*/policy_path.path ==
-                default_downloads_folder};
+    if (policy_path.enforcement ==
+        CaptureModeDelegate::CapturePathEnforcement::kRecommended) {
+      return {policy_path.path,
+              /*is_default_downloads_folder=*/policy_path.path ==
+                  default_downloads_folder};
+    }
   }
 
   // By default - downloads folder.

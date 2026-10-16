@@ -7449,6 +7449,51 @@ TEST_P(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
   EXPECT_TRUE(test_api->GetSelectFolderMenuItem()->GetEnabled());
 }
 
+// Tests that a folder recommended by policy can be overridden by selecting the
+// default Downloads folder in the settings menu, and switched back.
+TEST_P(CaptureModeSettingsTest,
+       OverrideFolderRecommendedByPolicyWithDownloads) {
+  auto* controller = StartImageRegionCapture();
+
+  const base::FilePath custom_folder(
+      CreateCustomFolderInUserDownloadsPath("test"));
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_policy_capture_path(
+      {custom_folder,
+       CaptureModeDelegate::CapturePathEnforcement::kRecommended});
+
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  CaptureModeSettingsTestApi test_api;
+  WaitForSettingsMenuToBeRefreshed();
+
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  ASSERT_TRUE(save_to_menu_group);
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+
+  // Clicking the "Downloads" option should override the recommended policy
+  // folder without clearing the custom folder option from the menu.
+  ClickOnView(test_api.GetDefaultDownloadsOption(), event_generator);
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, default_downloads_folder);
+  EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+  EXPECT_EQ(custom_folder, controller->GetCustomCaptureFolder());
+
+  // Clicking on the recommended folder option should switch back to using it.
+  ClickOnView(test_api.GetCustomFolderOptionIfAny(), event_generator);
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, custom_folder);
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+}
+
 // Tests the folder selection settings when it's enforced by policy.
 TEST_P(CaptureModeSettingsTest, FolderSetByPolicy) {
   auto* controller = StartImageRegionCapture();
