@@ -206,6 +206,7 @@ void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
 }
 
 void ChromePluginPlaceholder::OnDestruct() {
+  PluginPlaceholderBase::OnDestruct();
   self_.Clear();
 }
 

@@ -80,6 +80,14 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
 
   blink::WebLocalFrame* main_frame() { return web_view_helper_.main_frame(); }
 
+  // Severs the link to `delegate_`. Must be called by the Delegate when it is
+  // going away before this plugin has been destroyed: the plugin can outlive
+  // the delegate's RenderFrame (e.g. while its WebPluginContainerImpl is
+  // persisted across a layout tree reattach and still reachable from script),
+  // and its queued LoadHTML/geometry tasks must never call back into a
+  // destroyed delegate.
+  void DetachDelegate();
+
   const blink::WebString& old_title() const { return old_title_; }
 
   // When loading a plugin document (i.e. a full page plugin not embedded in

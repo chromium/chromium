@@ -66,6 +66,7 @@ gin::ObjectTemplateBuilder PDFPluginPlaceholder::GetObjectTemplateBuilder(
 }
 
 void PDFPluginPlaceholder::OnDestruct() {
+  PluginPlaceholderBase::OnDestruct();
   self_.Clear();
 }
 
