@@ -133,12 +133,7 @@ void SharingSyncPreference::ClearFCMRegistration() {
 void SharingSyncPreference::SetLocalSharingInfo(
     syncer::DeviceInfo::SharingInfo sharing_info) {
   auto* device_info = local_device_info_provider_->GetLocalDeviceInfo();
-  if (!device_info) {
-    return;
-  }
-
-  // Update prefs::kSharingLocalSharingInfo to cache value locally.
-  if (device_info->sharing_info() == sharing_info) {
+  if (device_info && device_info->sharing_info() == sharing_info) {
     return;
   }
 
@@ -164,14 +159,13 @@ void SharingSyncPreference::SetLocalSharingInfo(
 
 void SharingSyncPreference::ClearLocalSharingInfo() {
   auto* device_info = local_device_info_provider_->GetLocalDeviceInfo();
-  if (!device_info) {
-    return;
-  }
+  const bool had_sharing_info =
+      device_info && device_info->sharing_info().has_value();
 
   // Update prefs::kSharingLocalSharingInfo to clear local cache.
   prefs_->ClearPref(prefs::kSharingLocalSharingInfo);
 
-  if (device_info->sharing_info()) {
+  if (had_sharing_info) {
     device_info_sync_service_->RefreshLocalDeviceInfo();
   }
 }
