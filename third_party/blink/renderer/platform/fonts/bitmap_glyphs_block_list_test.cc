@@ -25,9 +25,8 @@ static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
   ASSERT_TRUE(simple_font_data);
   const FontPlatformData& font_platform_data = simple_font_data->PlatformData();
   ASSERT_TRUE(font_platform_data.Typeface());
-  ASSERT_EQ(block_listed_expected,
-            BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(
-                *font_platform_data.Typeface()));
+  ASSERT_EQ(block_listed_expected, ShouldAvoidEmbeddedBitmapsForTypeface(
+                                       *font_platform_data.Typeface()));
 }
 
 TEST_F(BlockListBitmapGlyphsTest, Simsun) {

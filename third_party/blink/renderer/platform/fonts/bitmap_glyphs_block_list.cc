@@ -19,8 +19,7 @@ constexpr const char* kBitmapGlyphsBlockList[] = {"Calibri", "Courier New"};
 
 }  // namespace
 
-bool BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(
-    const SkTypeface& typeface) {
+bool ShouldAvoidEmbeddedBitmapsForTypeface(const SkTypeface& typeface) {
   SkString font_family_name;
   typeface.getFamilyName(&font_family_name);
   return font_family_name.equals(kBitmapGlyphsBlockList[0]) ||
