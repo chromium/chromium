@@ -109,6 +109,10 @@
 @media (prefers-color-scheme: dark) {
   :host([energy-effect-enabled_]) {
     --color-composebox-file-chip-background: rgba(78, 80, 89, 1);
+    --color-composebox-scrim-background: rgba(16, 18, 24, 1);
+    --color-drag-placeholder-font: rgba(230, 232, 240, 1);
+    --color-dragging-opaque-frost-backup_: rgba(44, 45, 53, 1);
+    --color-search-animated-glow-background: rgba(31, 31, 31, 1);
   }
 }
 

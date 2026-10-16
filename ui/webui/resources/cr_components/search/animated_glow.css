@@ -207,12 +207,6 @@
       .gradient::before {
     --gradient-spin-expand-peak-opacity_: 0.3;
   }
-  :host([entrypoint-name='ContextualTasks']) {
-    --color-composebox-scrim-background: rgba(16, 18, 24, 1);
-    --color-drag-placeholder-font:  rgba(230, 232, 240, 1);
-    --color-dragging-opaque-frost-backup_: rgba(44, 45, 53, 1);
-    --color-search-animated-glow-background:  rgba(31, 31, 31, 1);
-  }
 }
 
 :host([entrypoint-name='Omnibox'][animation-state='expanding']) .background,
