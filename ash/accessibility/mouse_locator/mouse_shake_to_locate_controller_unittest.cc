@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
@@ -92,6 +93,21 @@ TEST_F(MouseShakeToLocateControllerTest, ShakeEnlargesThenRestoresCursor) {
   // move re-anchors and the second sets the initial stroke direction).
   Shake(11);
   EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+}
+
+// Each shake that enlarges the cursor is recorded once, not once per reversal.
+TEST_F(MouseShakeToLocateControllerTest, RecordsCursorEnlargedUserAction) {
+  constexpr char kAction[] = "Accessibility.CrosCursorShakeToLocate.Enlarged";
+  base::UserActionTester user_action_tester;
+
+  Shake(9);
+  EXPECT_EQ(user_action_tester.GetActionCount(kAction), 0);
+
+  Shake(1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kAction), 1);
+
+  Shake(5);
+  EXPECT_EQ(user_action_tester.GetActionCount(kAction), 1);
 }
 
 TEST_F(MouseShakeToLocateControllerTest, ContinuedShakeKeepsCursorEnlarged) {

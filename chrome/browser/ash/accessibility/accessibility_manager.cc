@@ -1988,6 +1988,13 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
       base::UmaHistogramSparse("Accessibility.CrosCursorColor.Value", color);
     }
 
+    if (::features::IsAccessibilityShakeToLocateEnabled()) {
+      bool shake_to_locate_enabled =
+          prefs->GetBoolean(prefs::kAccessibilityShakeToLocateEnabled);
+      base::UmaHistogramBoolean("Accessibility.CrosCursorShakeToLocate",
+                                shake_to_locate_enabled);
+    }
+
     bool color_correction_enabled = IsColorCorrectionEnabled();
     base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",
                               color_correction_enabled);

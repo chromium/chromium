@@ -1687,6 +1687,9 @@ recorded in the same way, even if they fit the naming pattern. -->
         summary="Bounce Keys, which ignores quickly repeated presses of the
                  same keyboard key."/>
     <variant name="CursorColor" summary="colorize the cursor"/>
+    <variant name="CursorShakeToLocate"
+        summary="Shake to Locate Cursor, which enlarges the mouse cursor
+                 while the mouse is shaken."/>
     <variant name="FlashNotifications"
         summary="flash the screen for notifications"/>
     <variant name="MonoAudio.Enabled" summary="MonoAudio"/>

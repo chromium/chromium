@@ -2280,6 +2280,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accessibility.CrosCursorShakeToLocate.Enlarged">
+  <owner>jackgeng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <owner>ash/accessibility/OWNERS</owner>
+  <description>
+    A Chrome OS user shook the mouse and Shake to Locate Cursor enlarged the
+    cursor. Only recorded when the setting is enabled.
+  </description>
+</action>
+
 <action name="Accessibility.CrosSelectToSpeak.CancelSpeech">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>

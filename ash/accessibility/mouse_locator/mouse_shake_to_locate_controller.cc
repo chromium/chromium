@@ -14,6 +14,8 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
@@ -196,6 +198,8 @@ void MouseShakeToLocateController::OnMouseShakeStarted(
       base::BindOnce(&MouseShakeToLocateController::OnShrinkAnimationEnded,
                      base::Unretained(this)));
   effect_state_ = EffectState::kEnlarged;
+  base::RecordAction(base::UserMetricsAction(
+      "Accessibility.CrosCursorShakeToLocate.Enlarged"));
 }
 
 void MouseShakeToLocateController::OnMouseShakeEnded() {
