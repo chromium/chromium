@@ -945,17 +945,6 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // the drawing buffer being smaller than the canvas size.
   // See https://crbug.com/845742.
   gfx::Size size = GetDrawingBuffer()->Size();
-  // We are grabbing a snapshot that is generally not for compositing, so use a
-  // custom resource provider to specify only the minimal required set of
-  // usages, resulting in as lightweight a backing of the created SharedImage
-  // as possible. This SharedImage will be the destination of a copy of the
-  // drawing buffer's contents made via the raster interface. It also may be
-  // read back via the raster interface. In addition, we tag the SharedImage
-  // with display usage since there are uncommon paths which may use this
-  // snapshot for compositing.
-  auto shared_image_usages = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
@@ -984,16 +973,16 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       format = viz::SinglePlaneFormat::kRGBA_8888;
     }
 
-    // These SharedImages are both read and written by the raster interface
-    // (both occur, for example, when copying canvas resources between
-    // canvases). Additionally, these SharedImages can be put into
-    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-    // GL textures by WebGL (via
-    // AcceleratedStaticBitmapImage::CopyToTexture()).
-    shared_image_usages = shared_image_usages |
-                          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                          gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    // This SharedImage will be the destination of a copy of the drawing
+    // buffer's contents made via the raster interface. It may subsequently be
+    // read via the raster interface, copied into a GL texture by WebGL (via
+    // AcceleratedStaticBitmapImage::CopyToTexture()), or used for display
+    // compositing.
+    gpu::SharedImageUsageSet shared_image_usages =
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
     if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
       shared_image_usages |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
