@@ -1229,6 +1229,12 @@ inline constexpr char kIOSTrustedVaultNotificationDescription[] =
     "When enabled and when the trusted vault key is missing, the provisional "
     "notification will be delivered.";
 
+inline constexpr char kIOSUnifiedManualFallbackSheetName[] =
+    "Unified Manual Fallback Sheet";
+inline constexpr char kIOSUnifiedManualFallbackSheetDescription[] =
+    "Enables the unified manual fallback bottom sheet with a single entry "
+    "point, all Autofill entity categories, and entity detail views on iOS.";
+
 inline constexpr char kIOSWebContextMenuNewTitleName[] =
     "Use the new title for the Web context menu";
 inline constexpr char kIOSWebContextMenuNewTitleDescription[] =

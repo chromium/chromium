@@ -3010,6 +3010,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kMigrateToSigninReauthCoordinatorDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kMigrateToSigninReauthCoordinator)},
+    {"ios-unified-manual-fallback-sheet",
+     flag_descriptions::kIOSUnifiedManualFallbackSheetName,
+     flag_descriptions::kIOSUnifiedManualFallbackSheetDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSUnifiedManualFallbackSheet)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

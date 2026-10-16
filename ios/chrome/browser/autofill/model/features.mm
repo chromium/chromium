@@ -25,3 +25,5 @@ BASE_FEATURE(kFormInputAccessoryPassThroughTouches,
 
 BASE_FEATURE(kAutofillAiAsyncReauthAvailability,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSUnifiedManualFallbackSheet, base::FEATURE_DISABLED_BY_DEFAULT);
