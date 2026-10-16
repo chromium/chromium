@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -158,6 +159,7 @@ source_set("unit_tests") {
     ":push_messaging",
     "//base",
     "//base/test:test_support",
+    "//build/config/linux/dbus:buildflags",
     "//chrome/browser:global_features",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/gcm",
@@ -174,6 +176,9 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (is_linux && use_dbus) {
+    deps += [ "//components/dbus" ]
+  }
 }
 
 proto_library("budget_proto") {
