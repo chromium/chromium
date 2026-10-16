@@ -1,4 +1,5 @@
 {
+  "inherits":[{"path":"internal/agents/teams/webapps/agents/agents.json"}],
   "entries": [
     {
       "path": "components/webapps/_agents/agents"

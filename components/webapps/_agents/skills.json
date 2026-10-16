@@ -2,6 +2,9 @@
   "inherits": [
     {
       "path": "components/webapps/_agents/_harness/skills.json"
+    },
+    {
+      "path":"internal/agents/teams/webapps/agents/skills.json"
     }
   ],
   "entries": [
