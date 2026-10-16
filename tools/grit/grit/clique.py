@@ -531,11 +531,7 @@ class MessageClique:
       )
       assert False
 
-    transl_msg = tclib.Translation(
-      id=self.GetId(),
-      text=translation.GetPresentableContent(),
-      placeholders=original.GetPlaceholders(),
-    )
+    transl_msg = self._CopyTranslation(translation, original)
 
     if self.custom_type and not self.custom_type.ValidateAndModify(
       language, transl_msg
@@ -546,6 +542,37 @@ class MessageClique:
       )
 
     self.clique[(language, gender)] = transl_msg
+
+  def _CopyTranslation(self, translation, original):
+    '''Returns a copy of |translation| that uses the placeholders of
+    |original|.
+
+    Copies the translation's parts rather than re-parsing its presentable
+    content, since re-parsing would turn any text that happens to match a
+    placeholder name (e.g. the word "URL") into a placeholder.
+    '''
+    transl_msg = tclib.Translation(id=self.GetId())
+    original_placeholders = {
+      ph.GetPresentation(): ph for ph in original.GetPlaceholders()
+    }
+    pending_text = []
+    for part in translation.GetContent():
+      if isinstance(part, str):
+        pending_text.append(part)
+        continue
+      if pending_text:
+        transl_msg.AppendText(''.join(pending_text))
+        pending_text = []
+      ph = original_placeholders.get(part.GetPresentation())
+      if ph is None:
+        raise exception.MismatchingPlaceholders(
+          'Translation for message ID %s had <ph name="%s"/>, no '
+          'match\nin original message' % (self.GetId(), part.GetPresentation())
+        )
+      transl_msg.AppendPlaceholder(ph)
+    if pending_text:
+      transl_msg.AppendText(''.join(pending_text))
+    return transl_msg
 
   def HasTranslation(self, lang, gender):
     return self.clique.get((lang, gender)) is not None

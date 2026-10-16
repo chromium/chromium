@@ -14,6 +14,7 @@ if __name__ == '__main__':
 import re
 import unittest
 
+from io import BytesIO
 from io import StringIO
 
 from grit import clique
@@ -23,6 +24,7 @@ from grit import grd_reader
 from grit import pseudo
 from grit import tclib
 from grit import util
+from grit import xtb_reader
 
 
 class MessageCliqueUnittest(unittest.TestCase):
@@ -237,6 +239,29 @@ class MessageCliqueUnittest(unittest.TestCase):
       .GetRealContent()
       == 'Bonjour %s'
     )
+
+  def testTranslationTextMatchingPlaceholderName(self):
+    # Text within a translation that happens to match a placeholder's name
+    # (e.g. "URL") should remain text.
+    message = tclib.Message(
+      text='Bookmark for URL',
+      placeholders=[tclib.Placeholder('URL', '$1', 'https://example.com')],
+    )
+    factory = clique.UberClique()
+    c = factory.MakeClique(message)
+
+    xtb = f'''<?xml version="1.0" ?>
+      <!DOCTYPE translationbundle>
+      <translationbundle lang="fr">
+        <translation id="{message.GetId()}">Signet pour URL <ph name="URL" /></translation>
+      </translationbundle>'''
+    xtb_reader.Parse(
+      BytesIO(xtb.encode('utf-8')), factory.GenerateXtbParserCallback('fr')
+    )
+
+    translation = c.MessageForLanguageAndGender('fr', constants.DEFAULT_GENDER)
+    self.assertEqual('Signet pour URL $1', translation.GetRealContent())
+    self.assertEqual(1, len(translation.GetPlaceholders()))
 
   def testMissingTranslations(self):
     messages = [
