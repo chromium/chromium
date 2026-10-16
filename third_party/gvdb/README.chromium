@@ -2,9 +2,9 @@ Name: gvdb
 URL: https://gitlab.gnome.org/GNOME/gvdb
 Version: N/A
 Revision: c6f2359cc1d00f16e0a0e2527fa0bc1882b8b5ab
-Update Mechanism: Manual (https://crbug.com/503546519)
+Update Mechanism: Autoroll
 License: LGPL-2.1
-License File: LICENSE
+License File: src/COPYING
 Shipped: no
 Security Critical: no
 
@@ -14,7 +14,10 @@ values in a way that is extremely efficient for lookups.
 
 This is only used in tests.
 
-This dependency needs to be rolled in-sync with third_party/mutter.
+Upstream doesn't make releases, so this is rolled to upstream main by an
+autoroller, with a cooldown. glib and mutter both build against this copy
+(upstream pins a gvdb revision in their subprojects/gvdb.wrap). If a roll
+breaks them, update BUILD.gn or hold the roll until glib catches up.
 
 Local Modifications:
 None.

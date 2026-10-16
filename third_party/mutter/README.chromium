@@ -2,9 +2,9 @@ Name: mutter
 URL: https://gitlab.gnome.org/GNOME/mutter
 Version: 51.1
 Revision: 9134e3a5869ce232bf95b77519005865747ba603
-Update Mechanism: Manual (https://crbug.com/503546519)
+Update Mechanism: Autoroll
 License: GPL-2.0
-License File: LICENSE
+License File: src/COPYING
 Shipped: no
 Security Critical: no
 
@@ -29,10 +29,11 @@ that need the host are checked in, under include/: config.h (from meson's host
 configuration checks, as a template whose version is filled in at build time
 from src/meson.build) and meta-default-modes.h (whose generator runs the
 host's /usr/bin/cvt, from the xcvt package, to calculate VESA CVT display
-mode timings). Point releases therefore only need a DEPS update.
+mode timings).
 
-When updating to a new major version, update the Revision above with the new
-commit hash, and perform the following steps:
+This is updated by an autoroller that tracks upstream release tags. Point
+releases only need a DEPS update. New major versions need manual work, so the
+roll will fail; take over the roll CL and:
 1. Update BUILD.gn to match the upstream meson.build files: sources, and the
    inputs and arguments of the glib_mkenums, glib_genmarshal and gdbus_codegen
    targets.

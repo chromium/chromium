@@ -2,7 +2,7 @@ Name: glib
 URL: https://gitlab.gnome.org/GNOME/glib
 Version: 2.90.1
 Revision: e05063ccc6c8f222465a1080927f4c14349f3de6
-Update Mechanism: Manual (https://crbug.com/503546519)
+Update Mechanism: Autoroll
 License: LGPL-2.1
 License File: LICENSE
 Shipped: no
@@ -24,8 +24,14 @@ glibconfig.h are checked in as templates with the version-dependent values
 replaced by placeholders, which are filled in at build time from
 src/meson.build, so they don't change when glib is rolled.
 
-When updating to a new version, update the Revision above with the new commit hash,
-and perform the following steps:
+LICENSE is the standard text of the LGPL 2.1, which glib is licensed under
+(LGPL-2.1-or-later). It is checked in instead of using src/COPYING, which has
+the same terms but is reformatted such that Chromium's license checker doesn't
+recognize it. It doesn't need to be updated when glib is rolled.
+
+This is updated by an autoroller that tracks stable (even minor) upstream
+release tags. Point releases only need a DEPS update. If a roll fails, e.g. for
+a new minor version, take over the roll CL and:
 1. Add any new sources and generated-code inputs from the upstream meson.build
    files to BUILD.gn.
 2. If upstream changed its configuration checks, run on_update.sh and check in
