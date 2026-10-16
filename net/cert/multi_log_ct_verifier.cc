@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_objects_extractor.h"
@@ -57,7 +56,6 @@ MultiLogCTVerifier::~MultiLogCTVerifier() = default;
 
 void MultiLogCTVerifier::Verify(
     X509Certificate* cert,
-    std::string_view stapled_ocsp_response,
     std::string_view sct_list_from_tls_extension,
     base::Time current_time,
     SignedCertificateTimestampAndStatusList* output_scts,
@@ -81,29 +79,16 @@ void MultiLogCTVerifier::Verify(
     }
   }
 
-  std::string sct_list_from_ocsp;
-  if (!stapled_ocsp_response.empty() && !cert->intermediate_buffers().empty() &&
-      !base::FeatureList::IsEnabled(
-          features::kCertificateTransparencyIgnoreOcspScts)) {
-    ct::ExtractSCTListFromOCSPResponse(
-        cert->intermediate_buffers().front().get(), cert->serial_number(),
-        stapled_ocsp_response, &sct_list_from_ocsp);
-  }
-
   // Log to Net Log, after extracting SCTs but before possibly failing on
   // X.509 entry creation.
-  net_log.AddEvent(
-      NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED, [&] {
-        return NetLogRawSignedCertificateTimestampParams(
-            embedded_scts, sct_list_from_ocsp, sct_list_from_tls_extension);
-      });
+  net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED,
+                   [&] {
+                     return NetLogRawSignedCertificateTimestampParams(
+                         embedded_scts, sct_list_from_tls_extension);
+                   });
 
   ct::SignedEntryData x509_entry;
   if (ct::GetX509SignedEntry(cert->cert_buffer(), &x509_entry)) {
-    VerifySCTs(sct_list_from_ocsp, x509_entry,
-               ct::SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
-               current_time, cert, output_scts);
-
     VerifySCTs(sct_list_from_tls_extension, x509_entry,
                ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                current_time, cert, output_scts);

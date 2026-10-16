@@ -577,7 +577,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       cert_for_ct_verify = X509Certificate::CreateFromBuffer(
           bssl::UpRef(path->certs[0]->cert_buffer()), std::move(intermediates));
       ct_verifier_->Verify(cert_for_ct_verify.get(),
-                           stapled_leaf_ocsp_response_,
                            sct_list_from_tls_extension_, current_time_,
                            &delegate_data->scts, *net_log_);
     }

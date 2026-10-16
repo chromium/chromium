@@ -833,7 +833,6 @@ EVENT_TYPE(SSL_CERTIFICATES_RECEIVED)
 // The following parameters are attached to the event:
 // {
 //    "embedded_scts": Base64-encoded SignedCertificateTimestampList,
-//    "scts_from_ocsp_response": Base64-encoded SignedCertificateTimestampList,
 //    "scts_from_tls_extension": Base64-encoded SignedCertificateTimestampList,
 // }
 //

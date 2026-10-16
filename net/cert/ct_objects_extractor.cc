@@ -4,8 +4,6 @@
 
 #include "net/cert/ct_objects_extractor.h"
 
-#include <string.h>
-
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -13,9 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
-#include "crypto/obsolete/sha1.h"
 #include "crypto/openssl_util.h"
-#include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/x509_util.h"
@@ -24,39 +20,7 @@
 
 namespace net::ct {
 
-std::string Sha1ForOCSP(std::string_view data) {
-  return std::string(base::as_string_view(crypto::obsolete::Sha1::Hash(data)));
-}
-
 namespace {
-
-// The wire form of the OID 1.3.6.1.4.1.11129.2.4.5 - OCSP SingleExtension for
-// X.509v3 Certificate Transparency Signed Certificate Timestamp List, see
-// Section 3.3 of RFC6962.
-const uint8_t kOCSPExtensionOid[] = {0x2B, 0x06, 0x01, 0x04, 0x01,
-                                     0xD6, 0x79, 0x02, 0x04, 0x05};
-
-// The wire form of the OID 1.3.6.1.5.5.7.48.1.1. See RFC 6960.
-const uint8_t kOCSPBasicResponseOid[] = {0x2b, 0x06, 0x01, 0x05, 0x05,
-                                         0x07, 0x30, 0x01, 0x01};
-
-// The wire form of the OID 1.3.14.3.2.26.
-const uint8_t kSHA1Oid[] = {0x2b, 0x0e, 0x03, 0x02, 0x1a};
-
-// The wire form of the OID 2.16.840.1.101.3.4.2.1.
-const uint8_t kSHA256Oid[] = {0x60, 0x86, 0x48, 0x01, 0x65,
-                              0x03, 0x04, 0x02, 0x01};
-
-base::span<const uint8_t> SpanFromCBS(const CBS& cbs) {
-  return bssl::Span<const uint8_t>(cbs);
-}
-
-bool StringEqualToCBS(const std::string& value1, const CBS* value2) {
-  if (CBS_len(value2) != value1.size())
-    return false;
-  return UNSAFE_TODO(
-             memcmp(value1.data(), CBS_data(value2), CBS_len(value2))) == 0;
-}
 
 bool SkipElements(CBS* cbs, int count) {
   for (int i = 0; i < count; i++) {
@@ -176,77 +140,6 @@ bool ParseSCTListFromExtensions(const CBS& extensions,
   return true;
 }
 
-// Finds the SingleResponse in |responses| which matches |issuer| and
-// |cert_serial_number|. On success, returns true and sets
-// |*out_single_response| to the body of the SingleResponse starting at the
-// |certStatus| field.
-bool FindMatchingSingleResponse(CBS* responses,
-                                const CRYPTO_BUFFER* issuer,
-                                base::span<const uint8_t> cert_serial_number,
-                                CBS* out_single_response) {
-  std::string_view issuer_spki;
-  if (!asn1::ExtractSPKIFromDERCert(
-          x509_util::CryptoBufferAsStringPiece(issuer), &issuer_spki))
-    return false;
-
-  // In OCSP, only the key itself is under hash.
-  std::string_view issuer_spk;
-  if (!asn1::ExtractSubjectPublicKeyFromSPKI(issuer_spki, &issuer_spk))
-    return false;
-
-  // ExtractSubjectPublicKeyFromSPKI does not remove the initial octet encoding
-  // the number of unused bits in the ASN.1 BIT STRING so we do it here. For
-  // public keys, the bitstring is in practice always byte-aligned.
-  if (issuer_spk.empty() || issuer_spk[0] != 0)
-    return false;
-  issuer_spk.remove_prefix(1);
-
-  // TODO(ekasper): add SHA-384 to crypto/sha2.h and here if it proves
-  // necessary.
-  // TODO(ekasper): only compute the hashes on demand.
-  std::string issuer_key_sha256_hash = crypto::SHA256HashString(issuer_spk);
-  std::string issuer_key_sha1_hash = Sha1ForOCSP(issuer_spk);
-
-  while (CBS_len(responses) > 0) {
-    CBS single_response, cert_id;
-    if (!CBS_get_asn1(responses, &single_response, CBS_ASN1_SEQUENCE) ||
-        !CBS_get_asn1(&single_response, &cert_id, CBS_ASN1_SEQUENCE)) {
-      return false;
-    }
-
-    CBS hash_algorithm, hash, serial_number, issuer_name_hash, issuer_key_hash;
-    if (!CBS_get_asn1(&cert_id, &hash_algorithm, CBS_ASN1_SEQUENCE) ||
-        !CBS_get_asn1(&hash_algorithm, &hash, CBS_ASN1_OBJECT) ||
-        !CBS_get_asn1(&cert_id, &issuer_name_hash, CBS_ASN1_OCTETSTRING) ||
-        !CBS_get_asn1(&cert_id, &issuer_key_hash, CBS_ASN1_OCTETSTRING) ||
-        !CBS_get_asn1(&cert_id, &serial_number, CBS_ASN1_INTEGER) ||
-        CBS_len(&cert_id) != 0) {
-      return false;
-    }
-
-    // Check the serial number matches.
-    if (cert_serial_number != SpanFromCBS(serial_number)) {
-      continue;
-    }
-
-    // Check if the issuer_key_hash matches.
-    // TODO(ekasper): also use the issuer name hash in matching.
-    if (CBS_mem_equal(&hash, kSHA1Oid, sizeof(kSHA1Oid))) {
-      if (StringEqualToCBS(issuer_key_sha1_hash, &issuer_key_hash)) {
-        *out_single_response = single_response;
-        return true;
-      }
-    } else if (CBS_mem_equal(&hash, kSHA256Oid, sizeof(kSHA256Oid))) {
-      if (StringEqualToCBS(issuer_key_sha256_hash, &issuer_key_hash)) {
-        *out_single_response = single_response;
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 }  // namespace
 
 bool ExtractEmbeddedSCTList(const CRYPTO_BUFFER* cert, std::string* sct_list) {
@@ -353,82 +246,6 @@ bool GetX509SignedEntry(const CRYPTO_BUFFER* leaf, SignedEntryData* result) {
   result->leaf_certificate =
       std::string(x509_util::CryptoBufferAsStringPiece(leaf));
   return true;
-}
-
-bool ExtractSCTListFromOCSPResponse(
-    const CRYPTO_BUFFER* issuer,
-    base::span<const uint8_t> cert_serial_number,
-    std::string_view ocsp_response,
-    std::string* sct_list) {
-  // The input is an bssl::OCSPResponse. See RFC2560, section 4.2.1. The SCT
-  // list is in the extensions field of the SingleResponse which matches the
-  // input certificate.
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(ocsp_response.data()),
-           ocsp_response.size());
-
-  // Parse down to the ResponseBytes. The ResponseBytes is optional, but if it's
-  // missing, this can't include an SCT list.
-  CBS sequence, tagged_response_bytes, response_bytes, response_type, response;
-  if (!CBS_get_asn1(&cbs, &sequence, CBS_ASN1_SEQUENCE) || CBS_len(&cbs) != 0 ||
-      !SkipElements(&sequence, 1 /* responseStatus */) ||
-      !CBS_get_asn1(&sequence, &tagged_response_bytes,
-                    CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0) ||
-      CBS_len(&sequence) != 0 ||
-      !CBS_get_asn1(&tagged_response_bytes, &response_bytes,
-                    CBS_ASN1_SEQUENCE) ||
-      CBS_len(&tagged_response_bytes) != 0 ||
-      !CBS_get_asn1(&response_bytes, &response_type, CBS_ASN1_OBJECT) ||
-      !CBS_get_asn1(&response_bytes, &response, CBS_ASN1_OCTETSTRING) ||
-      CBS_len(&response_bytes) != 0) {
-    return false;
-  }
-
-  // The only relevant ResponseType is id-pkix-ocsp-basic.
-  if (!CBS_mem_equal(&response_type, kOCSPBasicResponseOid,
-                     sizeof(kOCSPBasicResponseOid))) {
-    return false;
-  }
-
-  // Parse the ResponseData out of the BasicOCSPResponse. Ignore the rest.
-  constexpr unsigned kVersionTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0;
-  CBS basic_response, response_data, responses;
-  if (!CBS_get_asn1(&response, &basic_response, CBS_ASN1_SEQUENCE) ||
-      CBS_len(&response) != 0 ||
-      !CBS_get_asn1(&basic_response, &response_data, CBS_ASN1_SEQUENCE)) {
-    return false;
-  }
-
-  // Extract the list of SingleResponses from the ResponseData.
-  if (!SkipOptionalElement(&response_data, kVersionTag) ||
-      !SkipElements(&response_data, 2 /* responderID, producedAt */) ||
-      !CBS_get_asn1(&response_data, &responses, CBS_ASN1_SEQUENCE)) {
-    return false;
-  }
-
-  CBS single_response;
-  if (!FindMatchingSingleResponse(&responses, issuer, cert_serial_number,
-                                  &single_response)) {
-    return false;
-  }
-
-  // Parse the extensions out of the SingleResponse.
-  constexpr unsigned kNextUpdateTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0;
-  constexpr unsigned kSingleExtensionsTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 1;
-  CBS extensions_wrap, extensions;
-  if (!SkipElements(&single_response, 2 /* certStatus, thisUpdate */) ||
-      !SkipOptionalElement(&single_response, kNextUpdateTag) ||
-      !CBS_get_asn1(&single_response, &extensions_wrap, kSingleExtensionsTag) ||
-      !CBS_get_asn1(&extensions_wrap, &extensions, CBS_ASN1_SEQUENCE) ||
-      CBS_len(&extensions_wrap) != 0) {
-    return false;
-  }
-
-  return ParseSCTListFromExtensions(extensions, kOCSPExtensionOid,
-                                    sizeof(kOCSPExtensionOid), sct_list);
 }
 
 }  // namespace net::ct

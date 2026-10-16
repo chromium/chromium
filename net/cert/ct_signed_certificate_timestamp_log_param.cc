@@ -82,12 +82,10 @@ base::DictValue NetLogSignedCertificateTimestampParams(
 
 base::DictValue NetLogRawSignedCertificateTimestampParams(
     std::string_view embedded_scts,
-    std::string_view sct_list_from_ocsp,
     std::string_view sct_list_from_tls_extension) {
   base::DictValue dict;
 
   SetBinaryData("embedded_scts", embedded_scts, dict);
-  SetBinaryData("scts_from_ocsp_response", sct_list_from_ocsp, dict);
   SetBinaryData("scts_from_tls_extension", sct_list_from_tls_extension, dict);
 
   return dict;

@@ -25,7 +25,6 @@ base::DictValue NetLogSignedCertificateTimestampParams(
 // in net/log/net_log_event_type_list.h
 base::DictValue NetLogRawSignedCertificateTimestampParams(
     std::string_view embedded_scts,
-    std::string_view sct_list_from_ocsp,
     std::string_view sct_list_from_tls_extension);
 
 }  // namespace net

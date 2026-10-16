@@ -3492,7 +3492,7 @@ Called by update_net_trust_anchors.py.-->
 <enum name="SCTOrigin">
   <int value="0" label="SCT_EMBEDDED"/>
   <int value="1" label="SCT_FROM_TLS_EXTENSION"/>
-  <int value="2" label="SCT_FROM_OCSP_RESPONSE"/>
+  <int value="2" label="(Obsolete) SCT_FROM_OCSP_RESPONSE"/>
 </enum>
 
 <!-- LINT.IfChange(SecureDnsModeDetails) -->

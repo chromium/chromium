@@ -56,7 +56,6 @@ class NET_EXPORT DoNothingCTVerifier : public CTVerifier {
   ~DoNothingCTVerifier() override;
 
   void Verify(X509Certificate* cert,
-              std::string_view stapled_ocsp_response,
               std::string_view sct_list_from_tls_extension,
               base::Time current_time,
               SignedCertificateTimestampAndStatusList* output_scts,
