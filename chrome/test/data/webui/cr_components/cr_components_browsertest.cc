@@ -203,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ReflowLayouts) {
           "runMochaSuite('Reflow Layouts');");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, WidthContainer) {
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ContainerWidth) {
   RunTest("cr_components/most_visited_test.js",
-          "runMochaSuite('WidthContainer');");
+          "runMochaSuite('ContainerWidth');");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, LoggingAndUpdates) {

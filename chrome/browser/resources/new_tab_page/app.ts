@@ -355,7 +355,7 @@ export class AppElement extends AppElementBase {
        */
       enableThreadsRail_: {type: Boolean},
 
-      rhsWrapper_: {type: Object},
+      rhsWidth_: {type: Number},
 
       // =======================================================================
       // Private properties
@@ -502,7 +502,7 @@ export class AppElement extends AppElementBase {
   protected contextMenuAnimationLimitingEnabled_: boolean =
       loadTimeData.getBoolean('contextMenuAnimationLimitingEnabled');
   protected accessor searchboxCallbackRouter_: SearchboxPageCallbackRouter;
-  protected accessor rhsWrapper_: HTMLElement|null = null;
+  protected accessor rhsWidth_: number|null = null;
 
   private voiceSearchActivatedByKeyboard_: boolean = false;
   private accessor selectedCustomizeDialogPage_: string|null = null;
@@ -825,8 +825,6 @@ export class AppElement extends AppElementBase {
           {fixed: true});
     }
 
-    this.rhsWrapper_ = this.$.rhsWrapper;
-
     if (this.enableThreadsRail_) {
       this.observeRhsWrapperWidth_();
     }
@@ -960,9 +958,10 @@ export class AppElement extends AppElementBase {
 
   private observeRhsWrapperWidth_() {
     if (!this.rhsWrapperResizeObserver_) {
-      this.rhsWrapperResizeObserver_ = new ResizeObserver(entries => {
-        this.realboxCanShowSecondarySide = entries[0]!.contentRect.width >=
-            REALBOX_SECONDARY_SIDE_MIN_WIDTH_PX;
+      this.rhsWrapperResizeObserver_ = new ResizeObserver(() => {
+        this.rhsWidth_ = this.$.rhsWrapper.clientWidth;
+        this.realboxCanShowSecondarySide =
+            this.rhsWidth_ >= REALBOX_SECONDARY_SIDE_MIN_WIDTH_PX;
       });
     }
     this.rhsWrapperResizeObserver_.observe(this.$.rhsWrapper);

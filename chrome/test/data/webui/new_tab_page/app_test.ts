@@ -3821,18 +3821,20 @@ suite('NewTabPageAppTest', () => {
 
     test('shortcuts use the window width when feature disabled', async () => {
       await setThreadsRailEnabled(false);
+      await setRhsWrapperWidth(700);
 
       const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
       assertTrue(!!mostVisited);
-      assertEquals(null, mostVisited.widthContainer);
+      assertEquals(null, mostVisited.containerWidth);
     });
 
     test('shortcuts use the RHS width when feature enabled', async () => {
       await setThreadsRailEnabled(true);
+      await setRhsWrapperWidth(700);
 
       const mostVisited = app.shadowRoot.querySelector('cr-most-visited');
       assertTrue(!!mostVisited);
-      assertEquals($$(app, '#rhsWrapper'), mostVisited.widthContainer);
+      assertEquals(700, mostVisited.containerWidth);
     });
 
     test(
@@ -3905,18 +3907,20 @@ suite('NewTabPageAppTest', () => {
 
       test('modules use the window width when feature disabled', async () => {
         await setThreadsRailEnabled(false);
+        await setRhsWrapperWidth(700);
 
         const modules = app.shadowRoot.querySelector('ntp-modules');
         assertTrue(!!modules);
-        assertEquals(null, modules.widthContainer);
+        assertEquals(null, modules.containerWidth);
       });
 
       test('modules use the RHS width when feature enabled', async () => {
         await setThreadsRailEnabled(true);
+        await setRhsWrapperWidth(700);
 
         const modules = app.shadowRoot.querySelector('ntp-modules');
         assertTrue(!!modules);
-        assertEquals($$(app, '#rhsWrapper'), modules.widthContainer);
+        assertEquals(700, modules.containerWidth);
       });
     });
   });

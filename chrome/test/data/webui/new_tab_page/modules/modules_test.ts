@@ -30,6 +30,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
+      enableThreadsRail: false,
       modulesMaxColumnCount: MAX_COLUMN_COUNT,
       multipleLoadedModulesMaxModuleInstanceCount: NO_MAX_INSTANCE_COUNT,
     });
@@ -47,8 +48,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
   async function createModulesElement(
       modules: Module[], enabled: boolean, width: number,
-      disabledModuleIds: string[] = [],
-      widthContainer: HTMLElement|null = null): Promise<ModulesElement> {
+      disabledModuleIds: string[] = []): Promise<ModulesElement> {
     if (!enabled) {
       assertTrue(
           modules.length === 0,
@@ -63,7 +63,6 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
     moduleRegistry.setResultFor('initializeModulesHavingIds', modulesPromise);
     const element = new ModulesElement();
-    element.widthContainer = widthContainer;
     document.body.style.width = `${width}px`;
     document.body.appendChild(element);
     await modulesPromise;
@@ -690,7 +689,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
         });
   });
 
-  suite('WidthContainer', () => {
+  suite('ContainerWidth', () => {
     // 360px (medium) * 1 + 48px (margin) * 2
     const NARROW_LAYOUT: Scenario = {
       width: 456,
@@ -704,17 +703,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       rows: [[NARROW_WIDTH, NARROW_WIDTH, NARROW_WIDTH]],
     };
 
-    let container: HTMLElement;
     let modulesElement: ModulesElement;
     let windowProxy: TestMock<WindowProxy>;
-
-    // Waits for the ResizeObserver to report and for the resulting re-render.
-    async function waitForResize() {
-      for (let i = 0; i < 2; i++) {
-        await new Promise(resolve => requestAnimationFrame(resolve));
-      }
-      await microtasksFinished();
-    }
 
     function assertLayout(scenario: Scenario) {
       assertContainerLayout(
@@ -724,6 +714,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
     }
 
     setup(async () => {
+      loadTimeData.overrideValues({enableThreadsRail: true});
       windowProxy = installMock(WindowProxy);
       windowProxy.setResultMapperFor(
           'matchMedia', (query: string) => new FakeMediaQueryList(query));
@@ -733,17 +724,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
         data: [{id: fooDescriptor.id, name: fooDescriptor.id}],
       });
 
-      container = document.createElement('div');
-      container.style.width = `${NARROW_LAYOUT.width}px`;
-      document.body.appendChild(container);
-
       modulesElement = await createModulesElement(
           [{
             descriptor: fooDescriptor,
             elements: Array(3).fill(0).map(_ => createElement()),
           }],
-          true, SAMPLE_SCREEN_WIDTH, /*disabledModuleIds=*/[], container);
-      await waitForResize();
+          true, SAMPLE_SCREEN_WIDTH);
     });
 
     teardown(() => {
@@ -751,10 +737,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
     });
 
     test('layout follows the container width', async () => {
+      modulesElement.containerWidth = NARROW_LAYOUT.width;
+      await microtasksFinished();
       assertLayout(NARROW_LAYOUT);
 
-      container.style.width = `${WIDE_LAYOUT.width}px`;
-      await waitForResize();
+      modulesElement.containerWidth = WIDE_LAYOUT.width;
+      await microtasksFinished();
       assertLayout(WIDE_LAYOUT);
     });
 
