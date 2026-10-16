@@ -5,11 +5,24 @@
 import type {BackgroundImage, FuseboxAction, Theme} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertLE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export const NONE_ANIMATION: string = 'none 0s ease 0s 1 normal none running';
+
+/**
+ * Tolerance, in px, for comparing layout-derived values such as
+ * getBoundingClientRect() and computed sizes. Android hardware rounds subpixel
+ * layout positions, so values there can be slightly off. Elsewhere the values
+ * are exact, so comparisons stay exact.
+ */
+// <if expr="is_android">
+export const LAYOUT_TOLERANCE_PX: number = 0.1;
+// </if>
+// <if expr="not is_android">
+export const LAYOUT_TOLERANCE_PX: number = 0;
+// </if>
 
 export function keydown(element: HTMLElement, key: string) {
   keyDownOn(element, 0, [], key);
@@ -193,8 +206,8 @@ export function queryShadowPath(
 }
 
 /**
- * Asserts that multiple DOM elements share an identical center coordinate
- * along the specified axis ('x' or 'y').
+ * Asserts that multiple DOM elements share the same center coordinate along
+ * the specified axis ('x' or 'y'), within `tolerance` pixels.
  *
  * @param root The root element from which to resolve selector paths.
  * @param elements A map of human-readable element names to either resolved
@@ -205,11 +218,12 @@ export function queryShadowPath(
  *       elements arranged vertically in a column are aligned).
  *     - 'y' compares the y values of the elements' center (i.e. confirms that
  *       elements arranged horizontally in a row are aligned).
+ * @param tolerance Maximum allowed difference between the centers, in px.
  */
 export function assertCenterAligned(
     root: Element|null|undefined,
     elements: Record<string, Element|string|string[]|Coordinate|null|undefined>,
-    axis: 'x'|'y'): void {
+    axis: 'x'|'y', tolerance: number = LAYOUT_TOLERANCE_PX): void {
   const centers: Record<string, number> = {};
   const missingElements: string[] = [];
 
@@ -240,19 +254,15 @@ export function assertCenterAligned(
       `Expected all elements to exist, but missing: ${
           missingElements.join(', ')}`);
 
-  const uniqueValues = new Set(Object.values(centers));
-  if (uniqueValues.size !== 1) {
-    const details = Object.entries(centers)
-                        .map(([name, val]) => `  - ${name}: ${val}px`)
-                        .join('\n');
-    assertEquals(
-        1, uniqueValues.size,
-        `Elements are not ${
-            axis === 'y' ? 'vertically' :
-                           'horizontally'} center-aligned (distinct ${
-            axis.toUpperCase()} values: [${
-            Array.from(uniqueValues).join(', ')}]):\n${details}`);
-  }
+  const values = Object.values(centers);
+  const details = Object.entries(centers)
+                      .map(([name, val]) => `  - ${name}: ${val}px`)
+                      .join('\n');
+  assertLE(
+      Math.max(...values) - Math.min(...values), tolerance,
+      `Elements are not ${
+          axis === 'y' ? 'vertically' :
+                         'horizontally'} center-aligned:\n${details}`);
 }
 
 export interface EffectiveBorderRadii {
