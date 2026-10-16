@@ -91,14 +91,16 @@ if (toolchain_has_rust) {
   ]
   stdlib_test_files -= removed_rust_stdlib_libs
 
-  config("stdlib_dependent_libs") {
-    # TODO(crbug.com/40264561): These should really be `libs`, however that
-    # breaks. Normally, we specify lib files with the `.lib` suffix but
-    # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
-    # instead.
-    #
-    # Omitting the `.lib` suffix breaks linking as well, when clang drives
-    # the linking step of a C++ EXE that depends on Rust.
+  # Libraries needed when linking the Rust standard library.
+  #
+  # `libs` set on a target (rather than in a config) propagate to dependents
+  # only until the nearest shared library or executable.  This means that the
+  # libraries are linked only into the binaries that contain Rust code.
+  #
+  # On Windows, the `.lib` suffix is required when Clang drives the linking.
+  # When `rustc` drives the linking, then `rustc_wrapper.py` removes the
+  # suffix from the `-l<name>.lib` arguments (because `rustc` adds it).
+  source_set("stdlib_dependent_libs") {
     if (is_win) {
       # The libc crate tries to link in the Windows CRT, but we specify the CRT
       # library ourselves in //build/config/win:dynamic_crt and
@@ -107,25 +109,20 @@ if (toolchain_has_rust) {
       #
       # As such, we have disabled all #[link] directives from the libc crate,
       # and we need to add any non-CRT libs here.
-      ldflags = [ "legacy_stdio_definitions.lib" ]
+      libs = [ "legacy_stdio_definitions.lib" ]
     }
+    visibility = [ ":*" ]
   }
 
-  config("stdlib_public_dependent_libs") {
-    # TODO(crbug.com/40264561): These should really be `libs`, however that
-    # breaks. Normally, we specify lib files with the `.lib` suffix but
-    # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
-    # instead.
-    #
-    # Omitting the `.lib` suffix breaks linking as well, when clang drives
-    # the linking step of a C++ EXE that depends on Rust.
+  # See the comment above `stdlib_dependent_libs`.
+  source_set("stdlib_public_dependent_libs") {
     if (is_win) {
       # These libs provide functions that are used by the stdlib. Rust crates
       # will try to link them in with #[link] directives. However these don't
       # get propagated to the linker if Rust isn't driving the linking (a C++
       # target that depends on a Rust rlib). So these need to be specified
       # explicitly.
-      ldflags = [
+      libs = [
         "advapi32.lib",
         "bcrypt.lib",
         "kernel32.lib",
@@ -171,6 +168,7 @@ if (toolchain_has_rust) {
         "fdio",
       ]
     }
+    visibility = [ ":*" ]
   }
 
   # Construct sysroots for rustc invocations to better control what libraries
@@ -243,12 +241,11 @@ if (toolchain_has_rust) {
                  "toolchain_has_rust=false. Usually this would mean" +
                  "a NaCl target is depending on Rust, as there's no Rust " +
                  "toolchain targetting NaCl.")
-      all_dependent_configs = [
-        ":stdlib_public_dependent_libs",
-        ":local_stdlib_sysroot",
+      all_dependent_configs = [ ":local_stdlib_sysroot" ]
+      deps = [
         ":stdlib_dependent_libs",
+        ":stdlib_public_dependent_libs",
       ]
-      deps = []
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
@@ -403,8 +400,10 @@ if (toolchain_has_rust) {
     }
 
     group("std") {
-      all_dependent_configs = [ ":stdlib_public_dependent_libs" ]
-      deps = [ ":prebuilt_stdlib_libs" ]
+      deps = [
+        ":prebuilt_stdlib_libs",
+        ":stdlib_public_dependent_libs",
+      ]
     }
 
     # `stdlib_test_files` are already included in `all_stdlibs_to_copy` and
