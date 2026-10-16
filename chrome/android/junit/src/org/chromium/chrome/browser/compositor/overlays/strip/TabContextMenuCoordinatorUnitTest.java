@@ -80,6 +80,9 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeCommandIds;
+import org.chromium.chrome.browser.KeyboardShortcuts;
+import org.chromium.chrome.browser.KeyboardShortcutsJni;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -321,6 +324,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
     @Mock private ExtensionTabContextMenuBridge.Native mExtensionTabContextMenuBridgeJniMock;
+    @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
     @Mock private MenuModelBridge mMenuModelBridge;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
@@ -3862,6 +3866,31 @@ public class TabContextMenuCoordinatorUnitTest {
                 /* listViewTouchTracker= */ null);
 
         verify(mGlicKeyedService).unshareTabs(anyList());
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void testShortcutText_populatedWhenEnabled() {
+        KeyboardShortcutsJni.setInstanceForTesting(mKeyboardShortcutsJniMock);
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(anyInt())).thenReturn("");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.CLOSE_TAB))
+                .thenReturn("Ctrl+W");
+        addSingleTab();
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        ListItem closeItem = findItemByMenuId(modelList, R.id.close_tab);
+        assertNotNull(closeItem);
+        assertEquals("Ctrl+W", closeItem.model.get(ListMenuItemProperties.SHORTCUT_TEXT));
+
+        // Verify that an item without a keyboard shortcut (also built via buildListItem) does not
+        // set SHORTCUT_TEXT.
+        ListItem shareItem = findItemByMenuId(modelList, R.id.share_tab);
+        assertNotNull(shareItem);
+        assertNull(shareItem.model.get(ListMenuItemProperties.SHORTCUT_TEXT));
     }
 
     /** Enables the Glic feature and injects a mock {@link GlicKeyedService} for testing. */

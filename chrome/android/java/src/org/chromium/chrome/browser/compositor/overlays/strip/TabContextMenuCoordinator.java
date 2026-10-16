@@ -28,6 +28,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
@@ -803,6 +804,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .withTitleRes(titleRes)
                 .withMenuId(menuId)
                 .withIsIncognito(isIncognito)
+                .withShortcutText(KeyboardShortcuts.getShortcutText(menuId))
                 .build();
     }
 

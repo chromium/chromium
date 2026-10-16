@@ -1369,6 +1369,8 @@ public class KeyboardShortcuts {
                             : ChromeCommandIds.NEW_INCOGNITO_WINDOW;
         } else if (menuItemId == R.id.new_tab_menu_id) {
             commandId = ChromeCommandIds.NEW_TAB;
+        } else if (menuItemId == R.id.close_tab) {
+            commandId = ChromeCommandIds.CLOSE_TAB;
         } else if (menuItemId == R.id.reopen_closed_entry) {
             commandId = ChromeCommandIds.RESTORE_TAB;
         } else if (menuItemId == R.id.bookmark_this_page_id

@@ -14,6 +14,7 @@ public final class ChromeCommandIds {
     public static final int NEW_WINDOW = IDC_NEW_WINDOW;
     public static final int NEW_INCOGNITO_WINDOW = IDC_NEW_INCOGNITO_WINDOW;
     public static final int NEW_TAB = IDC_NEW_TAB;
+    public static final int CLOSE_TAB = IDC_CLOSE_TAB;
     public static final int RESTORE_TAB = IDC_RESTORE_TAB;
     public static final int BOOKMARK_THIS_TAB = IDC_BOOKMARK_THIS_TAB;
     public static final int BOOKMARK_ALL_TABS = IDC_BOOKMARK_ALL_TABS;
