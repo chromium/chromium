@@ -138,7 +138,6 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -2922,8 +2921,10 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
     return;
   }
 
-  // Show Read Anything option if it's not already open in the side panel.
-  if (IsNormalBrowser() && !IsReadAnythingEntryShowing(GetBrowser())) {
+  // Show Read Anything option if it's not already open.
+  if (IsNormalBrowser() &&
+      !read_anything::ReadAnythingEntryPointController::IsUIShowing(
+          GetBrowser())) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                                     IDS_CONTENT_CONTEXT_READING_MODE);
 

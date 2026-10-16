@@ -614,6 +614,41 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ContextMenuHidesReadingModeItemWhileOpenInSidePanel) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  content::WebContents* web_contents = tab->GetContents();
+  // The context menu offers Reading Mode for selected text.
+  auto has_reading_mode_item = [&]() {
+    content::ContextMenuParams params;
+    params.selection_text = u"selection text";
+    params.page_url = web_contents->GetVisibleURL();
+    TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(),
+                                   params);
+    menu.Init();
+    return menu.IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE);
+  };
+
+  EXPECT_TRUE(has_reading_mode_item());
+
+  // Open Reading Mode in the side panel.
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  EXPECT_FALSE(has_reading_mode_item());
+
+  // The item comes back as soon as the side panel starts closing, without
+  // waiting for its closing animation.
+  controller->CloseSidePanelUI(ReadAnythingCloseReason::kClosedByUser);
+  EXPECT_TRUE(has_reading_mode_item());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowImmersiveUI_SetsPresentationState) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
