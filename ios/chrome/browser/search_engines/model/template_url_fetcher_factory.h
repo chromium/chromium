@@ -5,26 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_FETCHER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_FETCHER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class TemplateURLFetcher;
+#include "components/search_engines/template_url_fetcher.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 // Singleton that owns all TemplateURLFetchers and associates them with
 // Profile.
-class TemplateURLFetcherFactory : public ProfileKeyedServiceFactoryIOS {
+class TemplateURLFetcherFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TemplateURLFetcherFactory,
+                                                TemplateURLFetcher> {
  public:
-  static TemplateURLFetcher* GetForProfile(ProfileIOS* profile);
-  static TemplateURLFetcherFactory* GetInstance();
+  explicit TemplateURLFetcherFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<TemplateURLFetcherFactory>;
-
-  TemplateURLFetcherFactory();
-  ~TemplateURLFetcherFactory() override;
-
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };

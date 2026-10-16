@@ -7,7 +7,6 @@
 #import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url_service.h"
@@ -61,28 +60,17 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-TemplateURLService* TemplateURLServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<TemplateURLService>(
-      profile, /*create=*/true);
-}
-
-// static
-TemplateURLServiceFactory* TemplateURLServiceFactory::GetInstance() {
-  static base::NoDestructor<TemplateURLServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 TemplateURLServiceFactory::TestingFactory
 TemplateURLServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildTemplateURLService);
 }
 
-TemplateURLServiceFactory::TemplateURLServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("TemplateURLService",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+TemplateURLServiceFactory::TemplateURLServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "TemplateURLService",
+          ProfileSelection::kRedirectedInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
   DependsOn(ios::SearchEngineChoiceServiceFactory::GetInstance());
@@ -90,8 +78,6 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
   DependsOn(ios::RegionalCapabilitiesServiceFactory::GetInstance());
   DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
 }
-
-TemplateURLServiceFactory::~TemplateURLServiceFactory() {}
 
 void TemplateURLServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

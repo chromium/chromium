@@ -7,30 +7,23 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 // Singleton that owns all TemplateURLServices and associates them with
 // Profile.
-class TemplateURLServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class TemplateURLServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TemplateURLServiceFactory,
+                                                TemplateURLService> {
  public:
-  static TemplateURLService* GetForProfile(ProfileIOS* profile);
-  static TemplateURLServiceFactory* GetInstance();
+  explicit TemplateURLServiceFactory(PassKey key);
 
   // Returns the default factory used to build TemplateURLServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<TemplateURLServiceFactory>;
-
-  TemplateURLServiceFactory();
-  ~TemplateURLServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

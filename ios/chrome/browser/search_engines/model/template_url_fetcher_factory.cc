@@ -10,26 +10,13 @@
 
 namespace ios {
 
-// static
-TemplateURLFetcher* TemplateURLFetcherFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<TemplateURLFetcher>(
-      profile, /*create=*/true);
-}
-
-// static
-TemplateURLFetcherFactory* TemplateURLFetcherFactory::GetInstance() {
-  static base::NoDestructor<TemplateURLFetcherFactory> instance;
-  return instance.get();
-}
-
-TemplateURLFetcherFactory::TemplateURLFetcherFactory()
-    : ProfileKeyedServiceFactoryIOS("TemplateURLFetcher",
-                                    ProfileSelection::kRedirectedInIncognito) {
+TemplateURLFetcherFactory::TemplateURLFetcherFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "TemplateURLFetcher",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
-
-TemplateURLFetcherFactory::~TemplateURLFetcherFactory() = default;
 
 std::unique_ptr<KeyedService>
 TemplateURLFetcherFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
