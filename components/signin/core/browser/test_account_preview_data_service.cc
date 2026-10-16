@@ -33,6 +33,18 @@ void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
   std::move(callback).Run(preference_);
 }
 
+#if BUILDFLAG(IS_IOS)
+void TestAccountPreviewDataService::GetPreferredAccountForFRESignin(
+    base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+        callback) {
+  if (defer_preferred_account_requests_) {
+    pending_preferred_account_requests_.push_back(std::move(callback));
+    return;
+  }
+  std::move(callback).Run(preferred_account_for_signin_);
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 void TestAccountPreviewDataService::UpdateExternalAppAccount(
     const std::optional<std::string>& email) {}
@@ -44,5 +56,17 @@ void TestAccountPreviewDataService::TriggerCallback(
     std::move(pending_callback_).Run(std::move(pref));
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+void TestAccountPreviewDataService::RunPendingPreferredAccountRequests(
+    std::optional<AccountPreviewPreference> preference) {
+  preferred_account_for_signin_ = std::move(preference);
+  std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>
+      callbacks = std::exchange(pending_preferred_account_requests_, {});
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(preferred_account_for_signin_);
+  }
+}
+#endif
 
 }  // namespace signin

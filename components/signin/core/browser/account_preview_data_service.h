@@ -103,6 +103,30 @@ class AccountPreviewDataService : public KeyedService {
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) = 0;
 
+#if BUILDFLAG(IS_IOS)
+  // Asynchronous version of `GetPreferredAccountForSignin()` for the First Run
+  // Experience (FRE), which returns the stored preferred account immediately if
+  // available, or triggers a fetch and waits for the preferred account
+  // computation to complete.
+  // Note: This method is currently FRE-specific (for metrics and feature flag
+  // gating), but is ready to be easily reused for other callers if needed.
+  //
+  // `callback` is run once, with the value of `GetPreferredAccountForSignin()`
+  // at the time it runs:
+  // - immediately (synchronously), if `GetPreferredAccountForSignin()` already
+  //   has a value (or if the triggered fetch is immediately canceled, e.g. when
+  //   rate-limited or no accounts exist),
+  // - asynchronously, once the triggered preferred account fetch and
+  //   computation complete (or are canceled).
+  //
+  // `callback` is run with `std::nullopt` if
+  // `kEnableAccountPreviewPreferredAccountFRE` is disabled, if sign-in is
+  // disallowed, or when the service shuts down.
+  virtual void GetPreferredAccountForFRESignin(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback) = 0;
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   // Updates the account currently used by the external 1P app. A null/empty
   // value means that no account is signed-in in the app.

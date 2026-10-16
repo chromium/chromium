@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
@@ -32,6 +33,11 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
+#if BUILDFLAG(IS_IOS)
+  void GetPreferredAccountForFRESignin(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback) override;
+#endif
 #if BUILDFLAG(IS_ANDROID)
   void UpdateExternalAppAccount(
       const std::optional<std::string>& email) override;
@@ -63,6 +69,22 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
     return std::move(pending_callback_);
   }
 
+#if BUILDFLAG(IS_IOS)
+  // If `set_defer_preferred_account_requests(true)` is set,
+  // `GetPreferredAccountForFRESignin()` stores the callbacks instead of
+  // immediately invoking them with `preferred_account_for_signin_`, which
+  // simulates an ongoing preferred account computation.
+  void set_defer_preferred_account_requests(bool defer) {
+    defer_preferred_account_requests_ = defer;
+  }
+
+  // Updates `preferred_account_for_signin_` to `preference` and runs the
+  // callbacks stored by `GetPreferredAccountForFRESignin()`, which
+  // simulates the completion of the preferred account computation.
+  void RunPendingPreferredAccountRequests(
+      std::optional<AccountPreviewPreference> preference);
+#endif
+
  private:
   bool defer_callbacks_ = false;
   std::optional<AccountPreviewPreference> preference_;
@@ -70,6 +92,11 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   std::optional<AccountPreviewPreference> preferred_account_for_switching_;
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
       pending_callback_;
+#if BUILDFLAG(IS_IOS)
+  bool defer_preferred_account_requests_ = false;
+  std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>
+      pending_preferred_account_requests_;
+#endif
 };
 
 }  // namespace signin

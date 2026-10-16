@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -55,7 +56,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     kExternalAppAccountUpdated = 4,
     kPrimaryAccountSet = 5,
     kPrimaryAccountCleared = 6,
-    kMaxValue = kPrimaryAccountCleared,
+    kPreferredAccountMissingForFRE = 7,
+    kMaxValue = kPreferredAccountMissingForFRE,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
 
@@ -85,6 +87,11 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
+#if BUILDFLAG(IS_IOS)
+  void GetPreferredAccountForFRESignin(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback) override;
+#endif
 
   // Retrieves the cached preview data. Exposed specifically for testing.
   // Note: This may not be available if the browser restarted and no fetch has
@@ -138,6 +145,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       const std::vector<CoreAccountInfo>& accounts) const;
   void RecordAccountsUsedForLastFetch();
   void OnAllFetchesCompleted(bool should_reset_periodic_timer);
+  void OnAllAccountsFetchCanceled();
+  void FinalizeAllAccountsFetch();
   void OnSigninAllowedPrefChanged();
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
@@ -227,6 +236,13 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
+
+#if BUILDFLAG(IS_IOS)
+  // Requests originating from `GetPreferredAccountForSigninWhenReady()` that
+  // wait for the preferred account computation to complete.
+  std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>
+      pending_preferred_account_requests_;
+#endif
 
   base::WeakPtrFactory<AccountPreviewDataServiceImpl> weak_ptr_factory_{this};
 };
