@@ -266,6 +266,8 @@ void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
   ttf_autofill_state_ = TouchToFillAutofillState::kNavigatingAway;
   switch (*shown_notice_) {
     case NoticeType::kPersonalContext:
+      // Opening the settings counts as an acknowledgement of the notice.
+      OnPersonalContextNoticeAcknowledged();
       if (content::WebContents* web_contents =
               static_cast<ContentAutofillClient&>(manager_->client())
                   .web_contents()) {

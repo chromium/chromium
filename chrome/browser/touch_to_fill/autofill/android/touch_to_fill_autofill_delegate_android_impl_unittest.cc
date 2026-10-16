@@ -193,6 +193,31 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
                   ->is_ambient_autofill_notice_acknowledged());
 }
 
+// Verifies that opening the settings from the personal context notice counts as
+// an acknowledgement of the notice.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       OnSettingsLinkClickedAcknowledgesPersonalContextNotice) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  autofill_client()
+      .GetPersonalContextFirstRunService()
+      ->set_should_show_ambient_autofill_notice(true);
+  EXPECT_CALL(autofill_client(), ShowAmbientAutofillNotice)
+      .WillOnce(Return(true));
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
+  delegate().OnSettingsLinkClicked();
+  EXPECT_TRUE(autofill_client()
+                  .GetPersonalContextFirstRunService()
+                  ->is_ambient_autofill_notice_acknowledged());
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+}
+
 // Verifies that acknowledging does nothing if no notice has been shown.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        OnNoticeAcknowledgedWithoutShownNoticeDoesNothing) {
