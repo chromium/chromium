@@ -422,6 +422,10 @@ void ContextualTasksSidePanelCoordinator::Show(
                  omnibox::ChromeAimEntryPoint::
                      DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP) {
     entry_source = ContextualTasksPanelController::EntrySource::kAskGoogle;
+  } else if (entry_point == omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON) {
+    entry_source =
+        ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton;
   } else if (transition_from_tab) {
     entry_source =
         ContextualTasksPanelController::EntrySource::kAiModeLinkClick;
@@ -1097,6 +1101,16 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
         base::UmaHistogramLongTimes(
             "ContextualTasks.Session.Duration.AioToCobr", duration);
         it->second->open_time_ticks = base::TimeTicks();
+      } else if (it->second->entry_source ==
+                     ContextualTasksPanelController::EntrySource::
+                         kEphemeralToolbarButton &&
+                 !it->second->open_time_ticks.is_null()) {
+        base::TimeDelta duration =
+            base::TimeTicks::Now() - it->second->open_time_ticks;
+        base::UmaHistogramLongTimes(
+            "ContextualTasks.Session.Duration.EphemeralToolbarButton",
+            duration);
+        it->second->open_time_ticks = base::TimeTicks();
       }
       MaybeDetachWebContents(web_contents);
       it = task_id_to_web_contents_cache_.erase(it);
@@ -1698,6 +1712,11 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
             RecordUserActionAndHistogram(
                 "ContextualTasks.SidePanel.UserAction.Close.AskGoogle");
             break;
+          case EntrySource::kEphemeralToolbarButton:
+            RecordUserActionAndHistogram(
+                "ContextualTasks.SidePanel.UserAction.Close."
+                "EphemeralToolbarButton");
+            break;
           default:
             RecordUserActionAndHistogram(
                 "ContextualTasks.SidePanel.UserAction.Close.Other");
@@ -1758,14 +1777,23 @@ void ContextualTasksSidePanelCoordinator::RecordSessionEndMetrics() {
   in_cobrowsing_session_ = false;
 
   for (auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
-    if (cache_item &&
-        cache_item->entry_source ==
-            ContextualTasksPanelController::EntrySource::kAioToCobr &&
-        !cache_item->open_time_ticks.is_null()) {
+    if (!cache_item || cache_item->open_time_ticks.is_null()) {
+      continue;
+    }
+    if (cache_item->entry_source ==
+        ContextualTasksPanelController::EntrySource::kAioToCobr) {
       base::TimeDelta duration =
           base::TimeTicks::Now() - cache_item->open_time_ticks;
       base::UmaHistogramLongTimes("ContextualTasks.Session.Duration.AioToCobr",
                                   duration);
+      cache_item->open_time_ticks = base::TimeTicks();
+    } else if (cache_item->entry_source ==
+               ContextualTasksPanelController::EntrySource::
+                   kEphemeralToolbarButton) {
+      base::TimeDelta duration =
+          base::TimeTicks::Now() - cache_item->open_time_ticks;
+      base::UmaHistogramLongTimes(
+          "ContextualTasks.Session.Duration.EphemeralToolbarButton", duration);
       cache_item->open_time_ticks = base::TimeTicks();
     }
   }

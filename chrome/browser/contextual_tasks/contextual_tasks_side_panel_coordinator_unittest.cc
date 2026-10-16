@@ -377,6 +377,13 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
       false,
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
 
+  EXPECT_EQ(
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton,
+      coordinator_->GetActiveEntrySource());
+
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+
   EXPECT_EQ(ContextualTasksPanelController::EntrySource::kOther,
             coordinator_->GetActiveEntrySource());
 
@@ -856,7 +863,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   // non-Lens/non-composebox entry point.
   coordinator_->Show(
       /*transition_from_tab=*/false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 
   // Call Close() programmatically (simulating framework close).
   coordinator_->Close();
@@ -883,8 +890,13 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                    "ContextualTasks.SidePanel.UserAction.Close.AioToCobr"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close."
+                   "EphemeralToolbarButton"));
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Session.Duration.AioToCobr", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -1044,6 +1056,98 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Session.Duration.AioToCobr", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_EphemeralToolbarButton) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
+
+  coordinator_->Close();
+
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close."
+                   "EphemeralToolbarButton"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.EphemeralToolbarButton", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 1);
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AioToCobr"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AskGoogle"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       DestructorLogsMetrics_EphemeralToolbarButton) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
+
+  mock_panel_host_ = nullptr;
+  coordinator_.reset();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CleanUpUnusedWebContentsLogsMetrics_EphemeralToolbarButton) {
+  base::HistogramTester histogram_tester;
+  ClearCacheForTesting();
+
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillRepeatedly(Return(std::vector<SessionID>{}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillRepeatedly(Return(std::nullopt));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/false);
+  SetCacheItemEntrySourceForTesting(
+      task_id,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton,
+      base::TimeTicks::Now());
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
+
+  CleanUpUnusedWebContents();
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 1);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,

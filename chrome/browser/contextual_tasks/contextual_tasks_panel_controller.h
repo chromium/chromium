@@ -83,7 +83,8 @@ class ContextualTasksPanelController {
     kAiModeLinkClick = 2,
     kAioToCobr = 3,
     kAskGoogle = 4,
-    kMaxValue = kAskGoogle,
+    kEphemeralToolbarButton = 5,
+    kMaxValue = kEphemeralToolbarButton,
   };
 
   // Returns the entry source of the currently active panel.
