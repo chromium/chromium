@@ -1074,6 +1074,15 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return SemanticColorUtils.getDefaultTextColorSecondary(context);
     }
 
+    /**
+     * Returns the favicon for the given tab, or null if unavailable.
+     *
+     * @param tab The tab to retrieve the favicon for.
+     */
+    public @Nullable Bitmap getTabFavicon(Tab tab) {
+        return getFaviconBitmapForTab(tab);
+    }
+
     public static @Nullable Bitmap getFaviconBitmapForTab(Tab tab) {
         if (sTabFaviconFactory == null) return null;
         return sTabFaviconFactory.apply(tab);

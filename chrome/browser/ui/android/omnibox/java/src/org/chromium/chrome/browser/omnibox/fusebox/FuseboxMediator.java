@@ -762,7 +762,7 @@ import java.util.function.Supplier;
                     () -> onAddCurrentTab(currentTab));
             mModel.set(
                     FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON,
-                    OmniboxResourceProvider.getFaviconBitmapForTab(currentTab));
+                    mResourceProvider.getTabFavicon(currentTab));
         } else {
             mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
         }
@@ -797,7 +797,7 @@ import java.util.function.Supplier;
         List<PopupButtonData> buttons = new ArrayList<>();
         for (int i = 0; i < eligibleTabs.size(); i++) {
             Tab tab = eligibleTabs.get(i);
-            Bitmap favicon = OmniboxResourceProvider.getFaviconBitmapForTab(tab);
+            Bitmap favicon = mResourceProvider.getTabFavicon(tab);
 
             buttons.add(
                     new PopupButtonData.Builder()
