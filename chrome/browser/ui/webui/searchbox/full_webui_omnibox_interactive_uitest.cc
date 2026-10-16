@@ -3560,6 +3560,38 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                                    "el => el.aimButtonVisible_", true)));
 }
 
+// Opening a New Tab Page while the Full WebUI omnibox popup is open and
+// focused with the AIM button showing must never tell the page to hide the AIM
+// button, even transiently. A transient hide shows up as the button flickering
+// on new tab creation (regression test for b/563370558).
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonNotHiddenTransientlyOnNewTab) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)),
+      // Record every visibility value the browser sends from here on.
+      InAnyContext(ExecuteJsAt(kPopupWebView, kPopupSearchbox, R"(el => {
+        window.aimVisibilityHistory = [];
+        el.searchboxCallbackRouter_.setAimButtonVisible.addListener(
+            visible => window.aimVisibilityHistory.push(visible));
+      })")),
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)),
+      InAnyContext(CheckJsResultAt(
+          kPopupWebView, kPopupSearchbox,
+          "() => window.aimVisibilityHistory.length > 0 && "
+          "window.aimVisibilityHistory.every(visible => visible)",
+          true)));
+}
+
 // Disabling "Show AI mode" preference should immediately hide the AIM
 // entrypoint button in the Full WebUI omnibox popup without needing to
 // defocus/refocus.
