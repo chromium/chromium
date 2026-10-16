@@ -1197,6 +1197,12 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, NoViewOrSurface) {
       /*paint_preview_options=*/std::nullopt,
       /*screenshot_collection_options=*/std::nullopt));
 
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kNoViewOrSurface);
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kNoViewOrSurface, 1);
 }
@@ -1206,6 +1212,12 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, CopyFromSurfaceError) {
   CallReceivedViewportBitmap(
       base::unexpected(content::CopyFromSurfaceError::kUnknown));
 
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kCopyFromSurfaceError);
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kCopyFromSurfaceError,
                                 1);
@@ -1215,6 +1227,12 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, PaintPreviewError) {
   base::HistogramTester histograms;
   CallReceivedViewportBitmapOrError(base::unexpected("paint preview failed"));
 
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kPaintPreviewError);
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kPaintPreviewError, 1);
 }
@@ -1223,6 +1241,12 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, Timeout) {
   base::HistogramTester histograms;
   CallOnScreenshotTimeout();
 
+  ASSERT_TRUE(future_.IsReady());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kTimeout);
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kTimeout, 1);
 }
@@ -1236,6 +1260,9 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, Success) {
 
   CallReceivedViewportBitmapOrError(base::ok(&bitmap));
   ASSERT_TRUE(future_.Wait());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value()->screenshot_result.has_value());
 
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kSuccess, 1);
@@ -1258,6 +1285,11 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, RedactionError) {
   CallReceivedViewportBitmapOrError(base::ok(&unallocated_bitmap),
                                     tracked_rects);
   ASSERT_TRUE(future_.Wait());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kRedactionError);
 
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kRedactionError, 1);
@@ -1270,6 +1302,11 @@ TEST_F(PageContextFetcherScreenshotMetricsTest, EncodingError) {
   SkBitmap empty_bitmap;
   CallReceivedViewportBitmapOrError(base::ok(&empty_bitmap));
   ASSERT_TRUE(future_.Wait());
+  FetchPageContextResultCallbackArg result = future_.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value()->screenshot_result.has_value());
+  EXPECT_EQ(result.value()->screenshot_result.error().status,
+            ScreenshotCaptureStatus::kEncodingError);
 
   histograms.ExpectUniqueSample(kScreenshotCaptureStatusHistogram,
                                 ScreenshotCaptureStatus::kEncodingError, 1);

@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.AIPageContent.ExtractionStatus"
+<histogram name="OptimizationGuide.AIPageContent.ExtractionStatus2"
     enum="AIPageContentExtractionStatus" expires_after="2027-04-09">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>

@@ -1465,7 +1465,7 @@ void BrowserWebContentsDelegate::GetAIPageContent(
       base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
                          -> base::expected<std::string, std::string> {
         if (!result.has_value()) {
-          return base::unexpected(result.error());
+          return base::unexpected(result.error().message);
         }
         return base::ok(result->proto.SerializeAsString());
       }).Then(std::move(callback)));

@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data_test_api.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -493,7 +495,11 @@ TEST_F(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
-      ->SimulateResponse(base::unexpected("Failure"));
+      ->SimulateResponse(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Failure"}));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedCapturingPageContent",

@@ -33,6 +33,7 @@ source_set("content") {
   ]
 
   public_deps = [
+    ":metrics",
     "//base",
     "//components/content_extraction/content/browser",
     "//components/feature_engagement/public",
@@ -53,7 +54,6 @@ source_set("content") {
   ]
 
   deps = [
-    ":metrics",
     "//components/continuous_search/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/optimization_guide/core:page_content",

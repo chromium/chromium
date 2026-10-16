@@ -25,6 +25,7 @@
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -94,6 +95,14 @@ struct PageContentResultWithEndTime
   base::TimeTicks end_time;
 };
 
+struct ScreenshotError {
+  ScreenshotCaptureStatus status = ScreenshotCaptureStatus::kUnknown;
+  std::string message;
+
+  friend bool operator==(const ScreenshotError&,
+                         const ScreenshotError&) = default;
+};
+
 struct FetchPageContextResult {
   FetchPageContextResult();
   FetchPageContextResult(const FetchPageContextResult&) = delete;
@@ -101,10 +110,11 @@ struct FetchPageContextResult {
   FetchPageContextResult(FetchPageContextResult&&);
   FetchPageContextResult& operator=(FetchPageContextResult&&);
   ~FetchPageContextResult();
-  base::expected<ScreenshotResult, std::string> screenshot_result;
+  base::expected<ScreenshotResult, ScreenshotError> screenshot_result;
   std::optional<InnerTextResultWithTruncation> inner_text_result;
   std::optional<PdfResult> pdf_result;
-  base::expected<PageContentResultWithEndTime, std::string>
+  base::expected<PageContentResultWithEndTime,
+                 optimization_guide::AIPageContentError>
       annotated_page_content_result;
   std::optional<optimization_guide::proto::ScreenshotInfo> screenshot_info;
 };
@@ -285,8 +295,6 @@ class PageContextFetcher : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override;
 
   void OnScreenshotTimeout();
-
-  struct ScreenshotError;
 
   void ReceivedEncodedScreenshot(
       base::expected<std::pair<std::vector<uint8_t>, SkBitmap>, ScreenshotError>

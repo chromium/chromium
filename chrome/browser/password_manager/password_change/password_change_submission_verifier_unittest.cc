@@ -18,6 +18,7 @@
 #include "chrome/browser/password_manager/password_change/fake_annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -263,7 +264,11 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
-      ->SimulateResponse(base::unexpected("APC Capture Failed"));
+      ->SimulateResponse(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "APC Capture Failed"}));
 
   EXPECT_EQ(completion_future.Get(), SubmissionResult::kFailure);
   histogram_tester.ExpectUniqueSample(

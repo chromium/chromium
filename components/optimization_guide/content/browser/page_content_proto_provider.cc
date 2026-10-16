@@ -462,11 +462,14 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
     base::UmaHistogramEnumeration(
         kAIPageContentExtractionStatusHistogram,
         AIPageContentExtractionStatus::kMainFrameTimeout);
-    std::move(done_callback).Run(base::unexpected("Timeout in Main Frame"));
+    std::move(done_callback)
+        .Run(base::unexpected(AIPageContentError{
+            AIPageContentExtractionStatus::kMainFrameTimeout,
+            "Timeout in Main Frame"}));
     return;
   }
 
-  if (base::expected<void, ProtoConversionError> result =
+  if (base::expected<void, AIPageContentError> result =
           optimization_guide::ConvertAIPageContentToProto(
               std::move(main_frame_options), main_frame_token,
               *timeout_helper->raw_page_content_map(),
@@ -475,8 +478,7 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
       !result.has_value()) {
     base::UmaHistogramEnumeration(kAIPageContentExtractionStatusHistogram,
                                   result.error().status);
-    std::move(done_callback)
-        .Run(base::unexpected(std::move(result.error().message)));
+    std::move(done_callback).Run(base::unexpected(std::move(result.error())));
     return;
   }
 
@@ -591,7 +593,10 @@ void GetAIPageContent(content::WebContents* web_contents,
     base::UmaHistogramEnumeration(
         kAIPageContentExtractionStatusHistogram,
         AIPageContentExtractionStatus::kMainFrameNotLive);
-    std::move(done_callback).Run(base::unexpected("Main frame not live"));
+    std::move(done_callback)
+        .Run(base::unexpected(AIPageContentError{
+            AIPageContentExtractionStatus::kMainFrameNotLive,
+            "Main frame not live"}));
     return;
   }
 

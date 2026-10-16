@@ -42,7 +42,7 @@ inline constexpr char kPdfTextExtractionStatusHistogram[] =
 inline constexpr char kPdfContentsRequestedHistogram[] =
     "Glic.TabContext.PdfContentsRequested";
 inline constexpr char kScreenshotCaptureStatusHistogram[] =
-    "Glic.PageContextFetcher.GetEncodedScreenshot.Status";
+    "Glic.PageContextFetcher.GetEncodedScreenshot.Status2";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -91,21 +91,23 @@ enum class PdfRequestStates {
 
 // LINT.IfChange(ScreenshotCaptureStatus)
 enum class ScreenshotCaptureStatus {
+  // Screenshot capture was not requested or status is unknown.
+  kUnknown = 0,
   // Screenshot was captured, optionally redacted, and encoded successfully.
-  kSuccess = 0,
+  kSuccess = 1,
   // `RenderWidgetHostView` was null or surface was not available for copy.
-  kNoViewOrSurface = 1,
+  kNoViewOrSurface = 2,
   // `RenderWidgetHostView::CopyFromSurface` failed.
-  kCopyFromSurfaceError = 2,
+  kCopyFromSurfaceError = 3,
   // Paint preview screenshot service was unavailable, redaction params failed,
   // or `PageContentScreenshotService::RequestScreenshot` returned an error.
-  kPaintPreviewError = 3,
+  kPaintPreviewError = 4,
   // Screenshot capture timed out before receiving the bitmap.
-  kTimeout = 4,
+  kTimeout = 5,
   // Client-side redaction failed on the worker thread.
-  kRedactionError = 5,
+  kRedactionError = 6,
   // Image codec failed to encode the screenshot bitmap.
-  kEncodingError = 6,
+  kEncodingError = 7,
   kMaxValue = kEncodingError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ScreenshotCaptureStatus)

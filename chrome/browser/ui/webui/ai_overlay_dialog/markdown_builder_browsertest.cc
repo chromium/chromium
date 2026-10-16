@@ -40,7 +40,7 @@ class MarkdownBuilderBrowserTest : public InProcessBrowserTest {
         future.GetCallback());
 
     auto result = future.Take();
-    EXPECT_TRUE(result.has_value()) << result.error();
+    EXPECT_TRUE(result.has_value()) << result.error().message;
     if (!result.has_value()) {
       return "";
     }

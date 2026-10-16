@@ -103,12 +103,8 @@ std::optional<PageContent> TakePageContent(FetchPageContextResult result) {
     // The `FetchPageContextResult` cannot contain both AnnotatedPageContent
     // and PDF text at the same time.
     CHECK(!ContainsPDFText(result));
-    base::expected<PageContentResultWithEndTime, std::string>
-        annotated_page_content_result =
-            std::move(result.annotated_page_content_result);
-
     return base::MakeRefCounted<RefCountedAnnotatedPageContent>(
-        std::move(annotated_page_content_result->proto));
+        std::move(result.annotated_page_content_result->proto));
   }
 
   // Neither APC nor PDF text is available.

@@ -162,8 +162,11 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
           .Then(future.GetCallback()));
   EXPECT_TRUE(future.Wait());
 
-  controller->OnEligibilityChecked(false,
-                                   base::unexpected("Uninitialized APC"));
+  controller->OnEligibilityChecked(
+      false, base::unexpected(optimization_guide::AIPageContentError{
+                 optimization_guide::AIPageContentExtractionStatus::
+                     kMainFrameNotLive,
+                 "Uninitialized APC"}));
 
   EXPECT_FALSE(controller->GetCurrentPageContextEligibility());
 }

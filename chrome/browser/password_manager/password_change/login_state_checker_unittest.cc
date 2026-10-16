@@ -11,6 +11,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/password_manager/password_change/fake_annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -506,7 +508,11 @@ TEST_F(LoginStateCheckerTest, EmitsHistogramOnCaptureFailure) {
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
 
   static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
-      ->SimulateResponse(base::unexpected("Capture failed"));
+      ->SimulateResponse(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Capture failed"}));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedCapturingPageContent",

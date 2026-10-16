@@ -354,11 +354,6 @@ std::optional<std::vector<uint8_t>> EncodeScreenshot(
   return encoded;
 }
 
-struct PageContextFetcher::ScreenshotError {
-  ScreenshotCaptureStatus status;
-  std::string message;
-};
-
 PageContextFetcher::PageContextFetcher(
     GetScreenshotServiceCallback get_screenshot_service_callback,
     std::unique_ptr<FetchPageProgressListener> progress_listener,
@@ -827,11 +822,12 @@ void PageContextFetcher::ReceivedEncodedScreenshot(
   } else {
     RecordScreenshotCaptureStatus(screenshot_data.error().status);
     pending_result_->screenshot_result =
-        base::unexpected(screenshot_data.error().message);
+        base::unexpected(std::move(screenshot_data.error()));
     base::UmaHistogramTimes(
         "Glic.PageContextFetcher.GetEncodedScreenshot.Failure", elapsed);
     if (progress_listener_) {
-      progress_listener_->EndScreenshot(screenshot_data.error().message);
+      progress_listener_->EndScreenshot(
+          pending_result_->screenshot_result.error().message);
     }
   }
   if (pending_result_->screenshot_result.has_value()) {
@@ -878,7 +874,7 @@ void PageContextFetcher::ReceivedAnnotatedPageContent(
       progress_listener_->EndAPC(std::nullopt);
     } else {
       progress_listener_->EndAPC(
-          absl::StrFormat("Failed: %s", content.error()));
+          absl::StrFormat("Failed: %s", content.error().message));
     }
   }
 
@@ -1122,8 +1118,12 @@ const base::FeatureParam<base::TimeDelta> kScreenshotTimeoutBrowserAllowance{
     base::Milliseconds(500)};
 
 FetchPageContextResult::FetchPageContextResult()
-    : screenshot_result(base::unexpected("Uninitialized")),
-      annotated_page_content_result(base::unexpected("Uninitialized")) {}
+    : screenshot_result(base::unexpected(
+          ScreenshotError{ScreenshotCaptureStatus::kUnknown, "Uninitialized"})),
+      annotated_page_content_result(base::unexpected(
+          optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::kUnknown,
+              "Uninitialized"})) {}
 
 FetchPageContextResult::FetchPageContextResult(FetchPageContextResult&&) =
     default;

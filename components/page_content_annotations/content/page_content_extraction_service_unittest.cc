@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "content/public/test/test_renderer_host.h"

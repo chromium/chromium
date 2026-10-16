@@ -1832,7 +1832,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.PageContextFetcher.GetEncodedScreenshot.Status"
+<histogram name="Glic.PageContextFetcher.GetEncodedScreenshot.Status2"
     enum="ScreenshotCaptureStatus" expires_after="2027-04-09">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>

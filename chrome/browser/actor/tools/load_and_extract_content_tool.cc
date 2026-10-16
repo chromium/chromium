@@ -541,7 +541,10 @@ void LoadAndExtractContentTool::OnGotAIPageContent(
   } else {
     journal().Log(GURL::EmptyGURL(), task_id(),
                   "LoadAndExtractContentTool::OnGotAIPageContentFailed",
-                  JournalDetailsBuilder().Add("url_index", index).Build());
+                  JournalDetailsBuilder()
+                      .Add("url_index", index)
+                      .AddError(result_or_error.error().message)
+                      .Build());
     tab_observation.set_annotated_page_content_result(
         TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
     result_code = PerTabResultCode::kLoadAndExtractContentExtractionFailed;

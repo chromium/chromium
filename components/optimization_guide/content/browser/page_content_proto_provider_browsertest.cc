@@ -3174,7 +3174,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   GetAIPageContent(web_contents(), GetAIPageContentOptions(),
                    future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_FALSE(future.Get().has_value());
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error().status,
+            AIPageContentExtractionStatus::kMainFrameNotLive);
   histogram_tester.ExpectBucketCount(
       kAIPageContentExtractionStatusHistogram,
       AIPageContentExtractionStatus::kMainFrameNotLive, 1);

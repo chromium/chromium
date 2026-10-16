@@ -133,18 +133,10 @@ void ComputeContentNodeMetrics(
     const optimization_guide::proto::ContentNode& content_node,
     ContentNodeMetrics* metrics);
 
-struct ProtoConversionError {
-  AIPageContentExtractionStatus status;
-  std::string message;
-
-  friend bool operator==(const ProtoConversionError&,
-                         const ProtoConversionError&) = default;
-};
-
 // Converts the mojom data structure for AIPageContent to its equivalent proto
 // mapping. If conversion fails, the returned base::expected contains the
 // extraction status and a descriptive error message.
-base::expected<void, ProtoConversionError> ConvertAIPageContentToProto(
+base::expected<void, AIPageContentError> ConvertAIPageContentToProto(
     blink::mojom::AIPageContentOptionsPtr main_frame_options,
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,

@@ -83,9 +83,21 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureRetriesOnFailure) {
       CreateCapturer(completion_future.GetCallback());
 
   EXPECT_CALL(mock_get_page_content_, Run)
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")))
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 2")))
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 3")))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 1"})))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 2"})))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 3"})))
       .WillOnce([&](auto, optimization_guide::OnAIPageContentDone callback) {
         optimization_guide::AIPageContentResult page_content_result;
         page_content_result.proto.mutable_root_node()
@@ -109,10 +121,26 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureFailsAfterMaxRetries) {
       CreateCapturer(completion_future.GetCallback());
 
   EXPECT_CALL(mock_get_page_content_, Run)
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 1")))
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 2")))
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 3")))
-      .WillOnce(RunOnceCallback<1>(base::unexpected("Error 4")));
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 1"})))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 2"})))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 3"})))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(optimization_guide::AIPageContentError{
+              optimization_guide::AIPageContentExtractionStatus::
+                  kMainFrameNotLive,
+              "Error 4"})));
 
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
   capturer->DidStopLoading();

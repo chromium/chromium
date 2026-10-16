@@ -28,6 +28,7 @@
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -525,14 +526,15 @@ void ExperimentalAiDataGetApcSnapshotFunction::OnSnapshotFetched(
   // If extraction fails, reject the image rather than risk exposing sensitive
   // content.
   if (!snapshot.annotated_page_content_result.has_value()) {
-    Respond(
-        Error(base::StrCat({kApcExtractionErrorPrefix,
-                            snapshot.annotated_page_content_result.error()})));
+    Respond(Error(base::StrCat(
+        {kApcExtractionErrorPrefix,
+         snapshot.annotated_page_content_result.error().message})));
     return;
   }
   if (capture_screenshot && !snapshot.screenshot_result.has_value()) {
-    Respond(Error(base::StrCat(
-        {kScreenshotCaptureErrorPrefix, snapshot.screenshot_result.error()})));
+    Respond(Error(
+        base::StrCat({kScreenshotCaptureErrorPrefix,
+                      snapshot.screenshot_result.error().message})));
     return;
   }
 

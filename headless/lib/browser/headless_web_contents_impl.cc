@@ -154,7 +154,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
           // Preserve the provider's error so DevTools callers can diagnose the
           // extraction failure.
           if (!result.has_value()) {
-            return base::unexpected(result.error());
+            return base::unexpected(result.error().message);
           }
           return base::ok(result->proto.SerializeAsString());
         }).Then(std::move(callback)));

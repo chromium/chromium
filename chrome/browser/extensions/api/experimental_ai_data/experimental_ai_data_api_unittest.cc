@@ -18,6 +18,9 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fake_local_frame.h"
@@ -57,8 +60,8 @@ class TestGetApcSnapshotFunction
   blink::mojom::AIPageContentOptionsPtr apc_options;
   std::optional<page_content_annotations::ScreenshotOptions> screenshot_options;
   std::optional<ScreenshotAccessError> screenshot_access_error;
-  std::string apc_error;
-  std::string screenshot_error;
+  std::optional<optimization_guide::AIPageContentError> apc_error;
+  std::optional<page_content_annotations::ScreenshotError> screenshot_error;
   std::string context_error;
   base::OnceClosure before_fetch;
   base::OnceClosure after_fetch;
@@ -103,19 +106,19 @@ class TestGetApcSnapshotFunction
 
     auto snapshot =
         std::make_unique<page_content_annotations::FetchPageContextResult>();
-    if (apc_error.empty()) {
+    if (!apc_error) {
       optimization_guide::AIPageContentResult apc;
       apc.proto.mutable_root_node();
       snapshot->annotated_page_content_result.emplace(std::move(apc));
     } else {
-      snapshot->annotated_page_content_result = base::unexpected(apc_error);
+      snapshot->annotated_page_content_result = base::unexpected(*apc_error);
     }
     if (screenshot_options) {
-      if (screenshot_error.empty()) {
+      if (!screenshot_error) {
         snapshot->screenshot_result.emplace(gfx::Size(1, 1));
         snapshot->screenshot_result->screenshot_data = {'p', 'n', 'g'};
       } else {
-        snapshot->screenshot_result = base::unexpected(screenshot_error);
+        snapshot->screenshot_result = base::unexpected(*screenshot_error);
       }
     }
     if (before_fetch) {
@@ -409,7 +412,10 @@ TEST_F(ExperimentalAiDataApcTest,
                            R"([7, {"type": "apc_and_screenshot"}])"}) {
     SCOPED_TRACE(args);
     auto function = CreateFunction();
-    function->apc_error = "renderer disconnected";
+    function->apc_error = optimization_guide::AIPageContentError{
+        optimization_guide::AIPageContentExtractionStatus::
+            kMainFrameEmptyOrDisconnectedRendererResponse,
+        "renderer disconnected"};
     EXPECT_EQ("Failed to extract APC: renderer disconnected",
               RunError(function.get(), args));
   }
@@ -417,7 +423,9 @@ TEST_F(ExperimentalAiDataApcTest,
 
 TEST_F(ExperimentalAiDataApcTest, ReportsScreenshotFailure) {
   auto function = CreateFunction();
-  function->screenshot_error = "ScreenshotTimeout";
+  function->screenshot_error = page_content_annotations::ScreenshotError{
+      page_content_annotations::ScreenshotCaptureStatus::kTimeout,
+      "ScreenshotTimeout"};
   EXPECT_EQ("Failed to capture tab: ScreenshotTimeout",
             RunError(function.get(), R"([7, {"type": "screenshot"}])"));
 }
