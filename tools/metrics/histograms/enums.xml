@@ -12035,6 +12035,8 @@ from previous Chrome versions.
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
+  <int value="-891570256"
+      label="WebHidOnDesktopAndroidServiceWorkers:disabled"/>
   <int value="-891163701"
       label="enable-account-preview-preferred-account:disabled"/>
   <int value="-890843885" label="ComposeboxDriveContextMenuOption:disabled"/>
@@ -20245,6 +20247,7 @@ from previous Chrome versions.
   <int value="1584425198" label="NtpModules:enabled"/>
   <int value="1584536816" label="LimitAltTabToActiveDesk:enabled"/>
   <int value="1585240105" label="QuickDeleteForAndroid:disabled"/>
+  <int value="1585281212" label="WebHidOnDesktopAndroidServiceWorkers:enabled"/>
   <int value="1586022426" label="AutofillCreditCardAssist:enabled"/>
   <int value="1586251544" label="VoiceButtonInTopToolbar:disabled"/>
   <int value="1586476635" label="LargeFaviconFromGoogle:enabled"/>

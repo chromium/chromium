@@ -6777,6 +6777,12 @@ inline constexpr char kUseWebUiNtpAndroidName[] = "Use WebUI NTP on Android";
 inline constexpr char kUseWebUiNtpAndroidDescription[] =
     "When enabled, use the WebUI NTP instead of the native NTP on Android.";
 
+inline constexpr char kWebHidOnDesktopAndroidServiceWorkersName[] =
+    "WebHID on Desktop Android for extension service workers";
+inline constexpr char kWebHidOnDesktopAndroidServiceWorkersDescription[] =
+    "Enables WebHID API support for extension service workers on Desktop "
+    "Android.";
+
 inline constexpr char kWebUiAndroidThemingName[] = "WebUI Android theming";
 inline constexpr char kWebUiAndroidThemingDescription[] =
     "When enabled, use Android theming on WebUI pages.";

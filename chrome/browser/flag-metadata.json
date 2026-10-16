@@ -10349,6 +10349,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "web-hid-on-desktop-android-service-workers",
+    "owners": [ "alvinji@chromium.org", "robpitkin@google.com", "deviceapi-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "web-identity-digital-credentials",
     "owners": ["mamir@chromium.org", "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 160
