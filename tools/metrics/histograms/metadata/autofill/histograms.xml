@@ -2483,6 +2483,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.Ai.Suppression{EntityGranularity}.PersonalContext{Profile}"
+    enum="Boolean" expires_after="2027-02-14">
+  <owner>taminob@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, at form submission or abandonment, for each unique ambient
+    (Personal Context) Autofill AI suggestion shown on the form, whether the
+    user suppressed that suggestion, i.e. removed it via the suggestion's
+    context menu.
+
+    {EntityGranularity}
+
+    {Profile}
+  </summary>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Aggregated across all entity types."/>
+  </token>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
+<histogram
     name="Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction"
     units="ms" expires_after="2027-03-07">
   <owner>vizcay@google.com</owner>

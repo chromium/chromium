@@ -24,11 +24,13 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
@@ -101,12 +103,17 @@ void LogKeyMetric(std::string_view key_metric_name,
 
 AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
     : ukm_logger_(client),
-      profile_metrics_service_(
-          CHECK_DEREF(client->GetProfileMetricsService())) {}
+      profile_metrics_service_(CHECK_DEREF(client->GetProfileMetricsService())),
+      entity_suppression_manager_(client->GetEntitySuppressionManager()) {}
 AutofillAiLogger::~AutofillAiLogger() {
   for (const auto& [form_id, states] : form_states_) {
     if (!submitted_forms_.contains(form_id)) {
       RecordFunnelMetrics(states, /*submission_state=*/false);
+    }
+  }
+  for (const auto& [form_id, entities] : personal_context_entities_shown_) {
+    if (!submitted_forms_.contains(form_id)) {
+      RecordPersonalContextSuppressionMetrics(form_id);
     }
   }
 }
@@ -146,6 +153,11 @@ void AutofillAiLogger::OnSuggestionsShown(
     ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_type,
                               record_type,
                               AutofillAiUkmLogger::EventType::kSuggestionShown);
+  }
+  for (const EntityInstance* const entity : entities_suggested) {
+    if (entity->record_type() == EntityInstance::RecordType::kPersonalContext) {
+      personal_context_entities_shown_[form.global_id()].insert(*entity);
+    }
   }
 }
 
@@ -245,6 +257,7 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
     }
   }
   RecordFunnelMetrics(funnel_states, submission_state);
+  RecordPersonalContextSuppressionMetrics(form.global_id());
   RecordNumberOfFieldsFilled(form, funnel_states, opt_in_status);
 }
 
@@ -372,6 +385,26 @@ void AutofillAiLogger::RecordKeyMetricsForState(
     LogKeyMetric("FillingCorrectness", entity_type, record_type,
                  !funnel_state.edited_autofilled_field,
                  *profile_metrics_service_);
+  }
+}
+
+void AutofillAiLogger::RecordPersonalContextSuppressionMetrics(
+    FormGlobalId form_id) const {
+  const base::flat_set<EntityInstance, EntityInstance::CompareByGuid>*
+      entities = base::FindOrNull(personal_context_entities_shown_, form_id);
+  if (!entities || !entity_suppression_manager_) {
+    return;
+  }
+  for (const EntityInstance& entity : *entities) {
+    const bool is_suppressed =
+        entity_suppression_manager_->IsSuppressed(entity);
+    profile_metrics_service_->UmaHistogramBoolean(
+        base::StrCat({"Autofill.Ai.Suppression.",
+                      EntityTypeToMetricsString(entity.type()),
+                      ".PersonalContext"}),
+        is_suppressed);
+    profile_metrics_service_->UmaHistogramBoolean(
+        "Autofill.Ai.Suppression.PersonalContext", is_suppressed);
   }
 }
 

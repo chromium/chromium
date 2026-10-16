@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -108,6 +109,10 @@ class MockAutofillClient : public TestAutofillClient {
 
   MOCK_METHOD(optimization_guide::ModelQualityLogsUploaderService*,
               GetMqlsUploadService,
+              (),
+              (override));
+  MOCK_METHOD(EntitySuppressionManager*,
+              GetEntitySuppressionManager,
               (),
               (override));
 };
@@ -901,6 +906,126 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_PerRecordType) {
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense.PersonalContext",
       0);
+}
+
+class AutofillAiPersonalContextSuppressionTest : public BaseAutofillAiTest {
+ public:
+  AutofillAiPersonalContextSuppressionTest() {
+    ON_CALL(autofill_client(), GetEntitySuppressionManager)
+        .WillByDefault(Return(&suppression_manager_));
+
+    // Recreate `AutofillAiManager` instance because its `AutofillAiLogger`
+    // member caches the current `EntitySuppressionManager` of `AutofillClient`
+    // upon construction.
+    RecreateManager();
+  }
+
+  ~AutofillAiPersonalContextSuppressionTest() override {
+    // `suppression_manager_` is a member of this fixture and would be destroyed
+    // before `manager_` of the base fixture without this explicit reset.
+    // `AutofillAiLogger` caches a pointer to `suppression_manager_` and may
+    // dereference it in its destructor. In production, the
+    // `EntitySuppressionManager` is a keyed service that outlives the logger.
+    manager_ptr().reset();
+  }
+
+  // Shows two personal context passports and one personal context driver's
+  // license on a form fillable by both entity types and suppresses the first
+  // passport. Returns the form.
+  std::unique_ptr<FormStructure> ShowPersonalContextEntitiesAndSuppressOne() {
+    std::unique_ptr<FormStructure> passport_form = CreatePassportForm();
+    std::unique_ptr<FormStructure> drivers_license_form =
+        CreateDriversLicenseForm();
+    std::unique_ptr<FormStructure> form =
+        CreateMergedForm({passport_form.get(), drivers_license_form.get()});
+    EntityInstance passport1 =
+        test::MaskEntityInstance(test::GetPassportEntityInstanceWithRandomGuid(
+            {.number = u"AA1111111",
+             .record_type = EntityInstance::RecordType::kPersonalContext}));
+    EntityInstance passport2 =
+        test::MaskEntityInstance(test::GetPassportEntityInstanceWithRandomGuid(
+            {.number = u"BB2222222",
+             .record_type = EntityInstance::RecordType::kPersonalContext}));
+    EntityInstance drivers_license = test::MaskEntityInstance(
+        test::GetDriversLicenseEntityInstanceWithRandomGuid(
+            {.record_type = EntityInstance::RecordType::kPersonalContext}));
+    AddOrUpdateEntityInstance(passport1);
+    AddOrUpdateEntityInstance(passport2);
+    AddOrUpdateEntityInstance(drivers_license);
+    manager().OnFormSeen(*form);
+    manager().OnAutofillAiSuggestionsShown(
+        *form, *form->field(0),
+        {GetSuggestion(passport1), GetSuggestion(passport2),
+         GetSuggestion(drivers_license)},
+        /*ukm_source_id=*/{}, /*update_suggestions_callback=*/{});
+    suppression_manager_.SuppressEntity(passport1);
+    return form;
+  }
+
+ private:
+  InMemoryEntitySuppressionManager suppression_manager_;
+};
+
+// Tests that, at form submission, one suppression sample is emitted per unique
+// personal context entity shown, with the value indicating whether it was
+// suppressed.
+TEST_F(AutofillAiPersonalContextSuppressionTest, Submitted) {
+  std::unique_ptr<FormStructure> form =
+      ShowPersonalContextEntitiesAndSuppressOne();
+
+  base::HistogramTester histogram_tester;
+  manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.Suppression.Passport.PersonalContext"),
+              BucketsAre(Bucket(false, 1), Bucket(true, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.Suppression.DriversLicense.PersonalContext"),
+              BucketsAre(Bucket(false, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.Suppression.PersonalContext"),
+      BucketsAre(Bucket(false, 2), Bucket(true, 1)));
+}
+
+// Tests that the suppression samples are also emitted for abandoned forms.
+TEST_F(AutofillAiPersonalContextSuppressionTest, Abandoned) {
+  std::unique_ptr<FormStructure> form =
+      ShowPersonalContextEntitiesAndSuppressOne();
+
+  base::HistogramTester histogram_tester;
+  // Regression test for crbug.com/574445214: the logger is destroyed while the
+  // client is being destroyed, at which point the client must not be queried
+  // for keyed services anymore (enforced by `CHECK`).
+  EXPECT_CALL(autofill_client(), GetEntitySuppressionManager).Times(0);
+  manager_ptr().reset();
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.Suppression.Passport.PersonalContext"),
+              BucketsAre(Bucket(false, 1), Bucket(true, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Ai.Suppression.DriversLicense.PersonalContext"),
+              BucketsAre(Bucket(false, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Ai.Suppression.PersonalContext"),
+      BucketsAre(Bucket(false, 2), Bucket(true, 1)));
+}
+
+// Tests that no suppression samples are emitted if no personal context
+// suggestions were shown, even if the form is submitted.
+TEST_F(AutofillAiPersonalContextSuppressionTest, NoneShown) {
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  AddOrUpdateEntityInstance(passport);
+  manager().OnFormSeen(*form);
+  manager().OnAutofillAiSuggestionsShown(
+      *form, *form->field(0), {GetSuggestion(passport)},
+      /*ukm_source_id=*/{}, /*update_suggestions_callback=*/{});
+
+  base::HistogramTester histogram_tester;
+  manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.Suppression.Passport.PersonalContext", 0);
+  histogram_tester.ExpectTotalCount("Autofill.Ai.Suppression.PersonalContext",
+                                    0);
 }
 
 class AutofillAiPromptMetricsTest
