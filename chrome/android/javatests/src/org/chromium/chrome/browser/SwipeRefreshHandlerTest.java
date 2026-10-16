@@ -5,14 +5,11 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.inOrder;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -23,7 +20,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,15 +29,16 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
-import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout.OnRefreshListener;
-import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout.OnResetListener;
 import org.chromium.ui.OverscrollAction;
+import org.chromium.ui.OverscrollActivationStatus;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -50,7 +47,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @DisableLeakChecks("crbug.com/527130930")
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SwipeRefreshHandlerTest {
     private static final int ACCESSIBILITY_SWIPE_REFRESH_STRING_ID =
             R.string.accessibility_swipe_refresh;
@@ -64,18 +60,11 @@ public class SwipeRefreshHandlerTest {
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
-    private OnRefreshListener mOnRefreshListener;
-    private OnResetListener mOnResetListener;
+    private ContentView mContentView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private final SwipeRefreshHandler.SwipeRefreshLayoutCreator mSwipeRefreshLayoutCreator =
             context -> {
-                mSwipeRefreshLayout = mock();
-                doAnswer((invocation) -> mOnRefreshListener = invocation.getArgument(0))
-                        .when(mSwipeRefreshLayout)
-                        .setOnRefreshListener(any());
-                doAnswer((invocation) -> mOnResetListener = invocation.getArgument(0))
-                        .when(mSwipeRefreshLayout)
-                        .setOnResetListener(any());
+                mSwipeRefreshLayout = new SwipeRefreshLayout(context);
                 return mSwipeRefreshLayout;
             };
 
@@ -88,9 +77,20 @@ public class SwipeRefreshHandlerTest {
 
     @Before
     public void setup() {
-        when(mTab.getContext()).thenReturn(activityTestRule.getActivity());
+        Activity activity = activityTestRule.getActivity();
+        when(mTab.getContext()).thenReturn(activity);
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
-        when(mTab.getContentView()).thenReturn(mock());
+        // Attached to the window so that the refresh animation runs.
+        mContentView =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ContentView contentView =
+                                    ContentView.createContentView(
+                                            activity, /* webContents= */ null);
+                            activity.setContentView(contentView);
+                            return contentView;
+                        });
+        when(mTab.getContentView()).thenReturn(mContentView);
     }
 
     @Test
@@ -100,17 +100,14 @@ public class SwipeRefreshHandlerTest {
         handler.initWebContents(mock()); // Needed to enable the overscroll refresh handler.
         triggerRefresh(handler);
 
-        InOrder orderVerifier = inOrder(mSwipeRefreshLayout);
-        orderVerifier
-                .verify(mSwipeRefreshLayout, times(1))
-                .setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        orderVerifier
-                .verify(mSwipeRefreshLayout, times(1))
-                .setContentDescription(sAccessibilitySwipeRefreshString);
+        assertEquals(
+                View.ACCESSIBILITY_LIVE_REGION_POLITE,
+                mSwipeRefreshLayout.getAccessibilityLiveRegion());
+        assertEquals(sAccessibilitySwipeRefreshString, mSwipeRefreshLayout.getContentDescription());
 
         reset(handler);
 
-        orderVerifier.verify(mSwipeRefreshLayout, times(1)).setContentDescription(null);
+        assertNull(mSwipeRefreshLayout.getContentDescription());
     }
 
     @Test
@@ -122,17 +119,15 @@ public class SwipeRefreshHandlerTest {
 
         var firstSwipeRefreshLayout = mSwipeRefreshLayout;
 
-        InOrder orderVerifier = inOrder(firstSwipeRefreshLayout);
-        orderVerifier
-                .verify(firstSwipeRefreshLayout, times(1))
-                .setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        orderVerifier
-                .verify(firstSwipeRefreshLayout, times(1))
-                .setContentDescription(sAccessibilitySwipeRefreshString);
+        assertEquals(
+                View.ACCESSIBILITY_LIVE_REGION_POLITE,
+                firstSwipeRefreshLayout.getAccessibilityLiveRegion());
+        assertEquals(
+                sAccessibilitySwipeRefreshString, firstSwipeRefreshLayout.getContentDescription());
 
         reset(handler);
 
-        orderVerifier.verify(mSwipeRefreshLayout, times(1)).setContentDescription(null);
+        assertNull(firstSwipeRefreshLayout.getContentDescription());
 
         triggerRefresh(handler);
 
@@ -142,9 +137,8 @@ public class SwipeRefreshHandlerTest {
         // swipe refresh layout if we already have one.
         assertEquals(firstSwipeRefreshLayout, secondSwipeRefreshLayout);
 
-        orderVerifier
-                .verify(firstSwipeRefreshLayout, times(1))
-                .setContentDescription(sAccessibilitySwipeRefreshString);
+        assertEquals(
+                sAccessibilitySwipeRefreshString, firstSwipeRefreshLayout.getContentDescription());
     }
 
     @Test
@@ -155,29 +149,33 @@ public class SwipeRefreshHandlerTest {
         handler.setSideUiWidthsForTesting(100, 200);
         triggerRefresh(handler);
 
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(100, 200);
+        // The spinner is centered between the side UIs.
+        View spinner = mSwipeRefreshLayout.getChildAt(0);
+        int width = mSwipeRefreshLayout.getWidth();
+        assertEquals((100 + width - 200) / 2f, (spinner.getLeft() + spinner.getRight()) / 2f, 1f);
     }
 
     /**
-     * Triggers a refresh. We need to do this through the handler so that the SwipeRefreshLayout is
-     * initialized.
+     * Triggers a refresh through the handler and waits for the refresh listener to run.
      *
      * @param handler The {@link SwipeRefreshHandler} to use.
      */
     private void triggerRefresh(SwipeRefreshHandler handler) {
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        handler.start(
-                                OverscrollAction.PULL_TO_REFRESH,
-                                // The left/right swipe direction is arbitrary for an action type of
-                                // PULL_TO_REFRESH.
-                                BackGestureEventSwipeEdge.LEFT));
-        // # of pixels (of reasonably small value) which a finger moves across per one motion event.
-        final float distancePx = 6.0f;
-        for (int numPullSteps = 0; numPullSteps < 10; numPullSteps++) {
-            ThreadUtils.runOnUiThreadBlocking(() -> handler.pull(0, distancePx));
-        }
-        if (mOnRefreshListener != null) mOnRefreshListener.onRefresh();
+                () -> {
+                    handler.start(
+                            OverscrollAction.PULL_TO_REFRESH,
+                            // The left/right swipe direction is arbitrary for an action type of
+                            // PULL_TO_REFRESH.
+                            BackGestureEventSwipeEdge.LEFT);
+                    // Pull far enough for the release to start a refresh.
+                    for (int numPullSteps = 0; numPullSteps < 10; numPullSteps++) {
+                        handler.pull(0, 1000);
+                    }
+                    handler.release(OverscrollActivationStatus.ALLOW_ACTIVATION);
+                });
+        // The refresh listener sets the content description when the refresh animation ends.
+        CriteriaHelper.pollUiThread(() -> mSwipeRefreshLayout.getContentDescription() != null);
     }
 
     /**
@@ -187,6 +185,5 @@ public class SwipeRefreshHandlerTest {
      */
     private void reset(SwipeRefreshHandler handler) {
         ThreadUtils.runOnUiThreadBlocking(handler::reset);
-        if (mOnResetListener != null) mOnResetListener.onReset();
     }
 }

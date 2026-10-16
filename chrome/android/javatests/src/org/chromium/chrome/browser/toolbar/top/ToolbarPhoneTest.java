@@ -118,7 +118,6 @@ import org.chromium.ui.test.util.ViewUtils;
 @Restriction(DeviceFormFactor.PHONE)
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarPhoneTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -190,7 +189,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     public void testDrawTabSwitcherAnimation_menuButtonDrawn() {
-        mMenuButton = Mockito.spy(mToolbar.findViewById(R.id.menu_button_wrapper));
+        mMenuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
         mToolbar.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
         doReturn(mMenuButton).when(mMenuButtonCoordinator).getMenuButton();
         doReturn(true).when(mMenuButtonCoordinator).isVisible();
@@ -236,48 +235,56 @@ public class ToolbarPhoneTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_ntp() {
-        ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
+        mPage.openNewTabFast();
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
 
-        doReturn(true).when(toolbarSpy).isLocationBarShownInNtp();
-        doReturn(false).when(toolbarSpy).urlHasFocus();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+                    assertTrue(mToolbar.isLocationBarShownInNtp());
+                    assertFalse(mToolbar.urlHasFocus());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
+                    mToolbar.updateButtonVisibility();
 
-        verify(mockBackButtonCoordinator).setVisibility(false);
+                    verify(mockBackButtonCoordinator).setVisibility(false);
+                });
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_regularPage() {
-        ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
 
-        doReturn(false).when(toolbarSpy).isLocationBarShownInNtp();
-        doReturn(false).when(toolbarSpy).urlHasFocus();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+                    assertFalse(mToolbar.isLocationBarShownInNtp());
+                    assertFalse(mToolbar.urlHasFocus());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
+                    mToolbar.updateButtonVisibility();
 
-        verify(mockBackButtonCoordinator).setVisibility(true);
+                    verify(mockBackButtonCoordinator).setVisibility(true);
+                });
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_focused() {
-        ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
-        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
 
-        doReturn(false).when(toolbarSpy).isLocationBarShownInNtp();
-        doReturn(true).when(toolbarSpy).urlHasFocus();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.onUrlFocusChange(true);
+                    mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+                    assertFalse(mToolbar.isLocationBarShownInNtp());
+                    assertTrue(mToolbar.urlHasFocus());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
+                    mToolbar.updateButtonVisibility();
 
-        verify(mockBackButtonCoordinator).setVisibility(false);
+                    verify(mockBackButtonCoordinator).setVisibility(false);
+                });
     }
 
     @Test

@@ -82,7 +82,6 @@ import java.util.List;
 @EnableFeatures({
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardAccessoryChipViewRenderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -107,11 +106,11 @@ public class KeyboardAccessoryChipViewRenderTest {
 
     private final TestProfile mProfile = TestProfile.createRegular();
 
-    @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
     @Mock private AutofillImageFetcher mMockImageFetcher;
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
     @Mock private PersonalDataManager mMockPersonalDataManager;
 
+    private KeyboardAccessoryView mKeyboardAccessoryView;
     private final boolean mUseRtlLayout;
     private ViewGroup mContentView;
     private KeyboardAccessoryViewBinder.UiConfiguration mUiConfiguration;
@@ -153,6 +152,8 @@ public class KeyboardAccessoryChipViewRenderTest {
                                     contentView,
                                     new LayoutParams(
                                             LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                            mKeyboardAccessoryView =
+                                    new KeyboardAccessoryView(activity, /* attrs= */ null);
                             return contentView;
                         });
         mUiConfiguration =
