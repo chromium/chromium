@@ -120,6 +120,12 @@ TEST_F(UrlIndexTest, TryInsert) {
   KURL url("http://foo.bar.com");
   scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   scoped_refptr<UrlData> c = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> invalid_entry =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> mismatched_origin =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> mismatched_opaque =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   EXPECT_NE(a, c);
   EXPECT_FALSE(a->Valid());
   base::Time now = base::Time::Now();
@@ -151,6 +157,7 @@ TEST_F(UrlIndexTest, TryInsert) {
   b->set_range_supported();
   b->set_valid_until(valid_until);
   b->set_last_modified(last_modified);
+  b->SetDataOrigin(url, /*is_cors_cross_origin=*/false);
   EXPECT_TRUE(b->Valid());
 
   EXPECT_EQ(b, url_index_->TryInsert(b));
@@ -159,11 +166,38 @@ TEST_F(UrlIndexTest, TryInsert) {
   c->set_range_supported();
   c->set_valid_until(valid_until);
   c->set_last_modified(last_modified);
+  c->SetDataOrigin(url, /*is_cors_cross_origin=*/false);
   EXPECT_TRUE(c->Valid());
 
   // B is still valid, so it should be preferred over C.
   EXPECT_EQ(b, url_index_->TryInsert(c));
   EXPECT_EQ(b, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
+
+  // If a new entry is not valid, TryInsert should return it rather than the
+  // existing indexed entry.
+  EXPECT_FALSE(invalid_entry->Valid());
+  EXPECT_EQ(invalid_entry, url_index_->TryInsert(invalid_entry));
+
+  // If a new valid entry has a mismatched data origin, MergeFrom fails and
+  // TryInsert should return the new entry rather than the incompatible indexed
+  // entry.
+  mismatched_origin->set_range_supported();
+  mismatched_origin->set_valid_until(valid_until);
+  mismatched_origin->set_last_modified(last_modified);
+  mismatched_origin->SetDataOrigin(KURL(), /*is_cors_cross_origin=*/false);
+  EXPECT_TRUE(mismatched_origin->Valid());
+  EXPECT_EQ(mismatched_origin, url_index_->TryInsert(mismatched_origin));
+
+  // If a new valid entry has a mismatched CORS cross-origin taint state,
+  // MergeFrom fails and TryInsert should return the new entry rather than
+  // tainting the indexed non-opaque entry.
+  mismatched_opaque->set_range_supported();
+  mismatched_opaque->set_valid_until(valid_until);
+  mismatched_opaque->set_last_modified(last_modified);
+  mismatched_opaque->SetDataOrigin(url, /*is_cors_cross_origin=*/true);
+  EXPECT_TRUE(mismatched_opaque->Valid());
+  EXPECT_EQ(mismatched_opaque, url_index_->TryInsert(mismatched_opaque));
+  EXPECT_FALSE(b->is_cors_cross_origin());
 }
 
 TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
@@ -183,15 +217,18 @@ TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
                                            security_origin_));
 }
 
-TEST_F(UrlIndexTest, ValidateDataOrigin) {
+TEST_F(UrlIndexTest, CanAcceptDataFrom) {
   KURL url("http://foo.bar.com");
   KURL data_url;
   scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
-  EXPECT_TRUE(a->ValidateDataOrigin(data_url));
+  EXPECT_TRUE(a->CanAcceptDataFrom(data_url, /*is_cors_cross_origin=*/false));
+  EXPECT_TRUE(a->CanAcceptDataFrom(url, /*is_cors_cross_origin=*/true));
 
-  // First call assigns the data origin, second call will assert them are the
-  // same.
-  EXPECT_TRUE(a->ValidateDataOrigin(data_url));
+  // Setting the data origin pins both the origin and opacity.
+  a->SetDataOrigin(data_url, /*is_cors_cross_origin=*/false);
+  EXPECT_TRUE(a->CanAcceptDataFrom(data_url, /*is_cors_cross_origin=*/false));
+  EXPECT_FALSE(a->CanAcceptDataFrom(url, /*is_cors_cross_origin=*/false));
+  EXPECT_FALSE(a->CanAcceptDataFrom(data_url, /*is_cors_cross_origin=*/true));
 }
 
 TEST_F(UrlIndexTest, DestructionWithOrphanedUrlData) {
@@ -221,7 +258,7 @@ TEST_F(UrlIndexTest, RedirectToPreservesCrossOrigin) {
   EXPECT_FALSE(a->is_cors_cross_origin());
   EXPECT_FALSE(b->is_cors_cross_origin());
 
-  a->set_is_cors_cross_origin(true);
+  a->SetDataOrigin(url1, /*is_cors_cross_origin=*/true);
   a->RedirectTo(b);
 
   EXPECT_TRUE(a->is_cors_cross_origin());
@@ -276,7 +313,7 @@ TEST_F(UrlIndexTest, SecurityOriginIsolation) {
                                                   UrlData::kNormal, origin1);
   a->Use();
   a->set_range_supported();
-  a->set_is_cors_cross_origin(false);
+  a->SetDataOrigin(url, /*is_cors_cross_origin=*/false);
   EXPECT_TRUE(a->Valid());
   EXPECT_EQ(a, url_index_->TryInsert(a));
 
@@ -293,7 +330,7 @@ TEST_F(UrlIndexTest, SecurityOriginIsolation) {
   // Inserting `b` does not merge into or overwrite `a`.
   b->Use();
   b->set_range_supported();
-  b->set_is_cors_cross_origin(true);
+  b->SetDataOrigin(url, /*is_cors_cross_origin=*/true);
   EXPECT_TRUE(b->Valid());
   EXPECT_EQ(b, url_index_->TryInsert(b));
   EXPECT_EQ(a, url_index_->GetByUrl(url, UrlData::CORS_ANONYMOUS,

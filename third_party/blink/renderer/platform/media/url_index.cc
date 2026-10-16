@@ -111,28 +111,31 @@ void UrlData::set_valid_until(base::Time valid_until) {
   valid_until_ = valid_until;
 }
 
-void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
+bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // We're merging from another UrlData that refers to the *same*
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
   CHECK(security_origin_->IsSameOriginWith(other->security_origin_.get()));
-  if (ValidateDataOrigin(other->data_origin_.value_or(KURL()))) {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    valid_until_ = std::max(valid_until_, other->valid_until_);
-    // set_length() will not override the length if already known.
-    set_length(other->length_);
-    cacheable_ |= other->cacheable_;
-    cache_lookup_mode_ = other->cache_lookup_mode_;
-    range_supported_ |= other->range_supported_;
-    if (last_modified_.is_null()) {
-      last_modified_ = other->last_modified_;
-    }
-    bytes_read_from_cache_ += other->bytes_read_from_cache_;
-    // is_cors_corss_origin_ will not relax from true to false.
-    set_is_cors_cross_origin(other->is_cors_cross_origin_);
-    has_access_control_ |= other->has_access_control_;
-    multibuffer()->MergeFrom(other->multibuffer());
+  const KURL other_origin = other->data_origin_.value_or(KURL());
+  if (!CanAcceptDataFrom(other_origin, other->is_cors_cross_origin_)) {
+    return false;
   }
+  SetDataOrigin(other_origin, other->is_cors_cross_origin_);
+
+  valid_until_ = std::max(valid_until_, other->valid_until_);
+  // set_length() will not override the length if already known.
+  set_length(other->length_);
+  cacheable_ |= other->cacheable_;
+  cache_lookup_mode_ = other->cache_lookup_mode_;
+  range_supported_ |= other->range_supported_;
+  if (last_modified_.is_null()) {
+    last_modified_ = other->last_modified_;
+  }
+  bytes_read_from_cache_ += other->bytes_read_from_cache_;
+  has_access_control_ |= other->has_access_control_;
+  multibuffer()->MergeFrom(other->multibuffer());
+  return true;
 }
 
 void UrlData::set_cacheable(bool cacheable) {
@@ -189,6 +192,12 @@ void UrlData::Fail() {
   }
 }
 
+void UrlData::CrossOriginFail() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  set_is_cors_cross_origin(true);
+  Fail();
+}
+
 void UrlData::OnRedirect(RedirectCB cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   redirect_callbacks_.push_back(std::move(cb));
@@ -199,24 +208,41 @@ void UrlData::Use() {
   last_used_ = base::Time::Now();
 }
 
-bool UrlData::ValidateDataOrigin(const KURL& origin) {
+bool UrlData::CanAcceptDataFrom(const KURL& origin,
+                                bool is_cors_cross_origin) const {
   if (!data_origin_) {
-    data_origin_ = origin;
     return true;
+  }
+
+  // Mixing non-opaque and opaque responses on a resource that has already
+  // received a response is not allowed, as consumers may have already checked
+  // origin tainting based on the earlier response.
+  if (is_cors_cross_origin_ != is_cors_cross_origin &&
+      base::FeatureList::IsEnabled(media::kDisallowMixedOpaqueMediaResponses)) {
+    return false;
   }
 
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
     // If both origins are null return true, otherwise
     // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
-    if (data_origin_->IsNull() && origin.IsNull()) {
-      return true;
+    if (!data_origin_->IsNull() || !origin.IsNull()) {
+      if (!SecurityOrigin::AreSameOrigin(data_origin_.value(), origin)) {
+        return false;
+      }
     }
-    return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_.value(),
-                                                         origin);
   }
 
-  // The actual cors checks is done in the net layer.
   return true;
+}
+
+void UrlData::SetDataOrigin(const KURL& origin, bool is_cors_cross_origin) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(CanAcceptDataFrom(origin, is_cors_cross_origin));
+  if (!data_origin_) {
+    data_origin_ = origin;
+  }
+  // The actual cors checks are done in the net layer.
+  set_is_cors_cross_origin(is_cors_cross_origin);
 }
 
 void UrlData::OnEmpty() {
@@ -378,13 +404,15 @@ scoped_refptr<UrlData> UrlIndex::TryInsert(
     return url_data;
   }
 
-  if (url_data->Valid()) {
-    if ((!iter->value->Valid() ||
-         url_data->CachedSize() > iter->value->CachedSize())) {
-      iter->value = url_data;
-    } else {
-      iter->value->MergeFrom(url_data);
-    }
+  if (!url_data->Valid()) {
+    return url_data;
+  }
+
+  if (!iter->value->Valid() ||
+      url_data->CachedSize() > iter->value->CachedSize()) {
+    iter->value = url_data;
+  } else if (!iter->value->MergeFrom(url_data)) {
+    return url_data;
   }
   return iter->value;
 }

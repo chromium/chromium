@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "media/base/media_switches.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
@@ -278,6 +277,33 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     redirects_to_ = KURL();
   }
 
+  // Get the response URL since it can differ from the request URL when a
+  // service worker provided the response. Normally we would just use
+  // ResponseUrl(), but ResourceMultiBufferDataProvider disallows mixing
+  // constructed responses (new Response()) and native server responses, even if
+  // they have the same response URL.
+  KURL response_url;
+  if (!response.WasFetchedViaServiceWorker() ||
+      response.HasUrlListViaServiceWorker()) {
+    response_url = response.ResponseUrl();
+  }
+
+  // This test is vital for security! Ensure that both the original UrlData and
+  // any redirect destination UrlData are compatible with the response's origin
+  // and opacity before mutating metadata on `destination_url_data`, inserting
+  // into `UrlIndex`, or merging data across a redirect. We get the response
+  // type here because aborting the loader may change it.
+  const bool is_cors_cross_origin =
+      network::cors::IsCorsCrossOriginResponseType(response.GetType());
+  if (!old_url_data->CanAcceptDataFrom(response_url, is_cors_cross_origin) ||
+      !destination_url_data->CanAcceptDataFrom(response_url,
+                                               is_cors_cross_origin)) {
+    active_loader_.reset();
+    url_data_->Fail();
+    return;  // "this" may be deleted now.
+  }
+  destination_url_data->SetDataOrigin(response_url, is_cors_cross_origin);
+
   base::Time last_modified;
   if (base::Time::FromString(
           response.HttpHeaderField("Last-Modified").Utf8().data(),
@@ -299,20 +325,13 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   int64_t content_length = response.ExpectedContentLength();
   bool end_of_file = false;
   bool do_fail = false;
-  // We get the response type here because aborting the loader may change it.
-  const bool is_cors_cross_origin =
-      network::cors::IsCorsCrossOriginResponseType(response.GetType());
   bytes_to_discard_ = 0;
 
-  // Mixing non-opaque and opaque responses on a resource that has already
-  // received a response is not allowed, as consumers may have already checked
-  // origin tainting based on the earlier response.
-  if (old_url_data->data_origin().has_value() &&
-      old_url_data->is_cors_cross_origin() != is_cors_cross_origin &&
-      base::FeatureList::IsEnabled(media::kDisallowMixedOpaqueMediaResponses)) {
-    active_loader_.reset();
-    do_fail = true;
-  } else if (destination_url_data->url().ProtocolIsInHttpFamily()) {
+  // We make a strong assumption that when we reach here we have either
+  // received a response from HTTP/HTTPS protocol or the request was
+  // successful (in particular range request). So we only verify the partial
+  // response for HTTP and HTTPS protocol.
+  if (destination_url_data->url().ProtocolIsInHttpFamily()) {
     bool partial_response = (response.HttpStatusCode() == kHttpPartialContent);
     bool ok_response = (response.HttpStatusCode() == kHttpOK);
 
@@ -360,10 +379,9 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   if (!do_fail) {
     destination_url_data =
         url_data_->url_index()->TryInsert(destination_url_data);
+    CHECK(destination_url_data->CanAcceptDataFrom(response_url,
+                                                  is_cors_cross_origin));
   }
-
-  // This is vital for security!
-  destination_url_data->set_is_cors_cross_origin(is_cors_cross_origin);
 
   // Only used for metrics.
   {
@@ -402,28 +420,12 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     if (!weak_this) {
       return;  // "this" may be deleted now.
     }
+    CHECK(destination_url_data->CanAcceptDataFrom(response_url,
+                                                  is_cors_cross_origin));
   }
 
   if (do_fail) {
     destination_url_data->Fail();
-    return;  // "this" may be deleted now.
-  }
-
-  // Get the response URL since it can differ from the request URL when a
-  // service worker provided the response. Normally we would just use
-  // ResponseUrl(), but ResourceMultiBufferDataProvider disallows mixing
-  // constructed responses (new Response()) and native server responses, even if
-  // they have the same response URL.
-  KURL response_url;
-  if (!response.WasFetchedViaServiceWorker() ||
-      response.HasUrlListViaServiceWorker()) {
-    response_url = response.ResponseUrl();
-  }
-
-  // This test is vital for security!
-  if (!url_data_->ValidateDataOrigin(response_url)) {
-    active_loader_.reset();
-    url_data_->Fail();
     return;  // "this" may be deleted now.
   }
 
@@ -542,8 +544,7 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
   if (error.reason() == net::ERR_BLOCKED_BY_ORB ||
       error.reason() == net::ERR_BLOCKED_BY_RESPONSE ||
       error.is_web_security_violation()) {
-    url_data_->set_is_cors_cross_origin(true);
-    url_data_->Fail();
+    url_data_->CrossOriginFail();
     return;  // "this" may be deleted now.
   }
 
