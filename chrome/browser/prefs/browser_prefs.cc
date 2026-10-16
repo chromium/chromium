@@ -609,9 +609,6 @@ constexpr char kGaiaCookieLastListAccountsData[] =
 constexpr char kLensOverlayEduActionChipShownCount[] =
     "lens.edu_action_chip.shown_count";
 
-constexpr char kRendererCodeIntegrityEnabledNeedsDeletion[] =
-    "renderer_code_integrity_enabled";
-
 // Deprecated 10/2025.
 constexpr char kSessionRestoreTurnOffFromRestartInfoBarTimesShown[] =
     "browser.session_restore_turn_off_from_restart_infobar_times_shown";
@@ -1163,10 +1160,6 @@ inline constexpr char kTabSearchUsed[] = "tab_search.used";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 09/2025.
-  registry->RegisterBooleanPref(kRendererCodeIntegrityEnabledNeedsDeletion,
-                                false);
-
   // Deprecated 11/2025.
   registry->RegisterStringPref(kFpfRulesetContent, std::string());
   registry->RegisterIntegerPref(kFpfRulesetFormat, 0);
@@ -2587,9 +2580,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
-
-  // Added 09/2025
-  local_state->ClearPref(kRendererCodeIntegrityEnabledNeedsDeletion);
 
   // Added 10/2025
 #if !BUILDFLAG(IS_ANDROID)
