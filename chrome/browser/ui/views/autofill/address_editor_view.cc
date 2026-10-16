@@ -211,7 +211,7 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
       break;
     }
     case EditorField::ControlType::COMBOBOX: {
-      DCHECK_EQ(field.type, ADDRESS_HOME_COUNTRY);
+      CHECK_EQ(field.type, ADDRESS_HOME_COUNTRY, base::NotFatalUntil::M162);
       std::unique_ptr<views::Combobox> combobox =
           CreateCountryCombobox(field.label);
       // |combobox| will now be owned by |row|.

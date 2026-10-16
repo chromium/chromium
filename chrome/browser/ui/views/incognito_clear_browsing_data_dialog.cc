@@ -29,8 +29,9 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
     : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       dialog_type_(type),
       incognito_profile_(incognito_profile) {
-  DCHECK(incognito_profile_);
-  DCHECK(incognito_profile_->IsPrimaryOTRProfileWithRegularParent());
+  CHECK(incognito_profile_, base::NotFatalUntil::M162);
+  CHECK(incognito_profile_->IsPrimaryOTRProfileWithRegularParent(),
+        base::NotFatalUntil::M162);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
 

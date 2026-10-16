@@ -128,7 +128,7 @@ void CastDialogCoordinator::Show(
     MediaRouterDialogActivationLocation activation_location,
     actions::ActionItem* action_item,
     AfterShownCallback after_shown_callback) {
-  DCHECK(!start_time.is_null());
+  CHECK(!start_time.is_null(), base::NotFatalUntil::M162);
   // Hide the previous dialog instance if it exists, since there can only be one
   // instance at a time.
   Hide();

@@ -53,7 +53,7 @@ void BookmarkMenuController::RunMenuAt(BookmarkBarView* bookmark_bar) {
   bookmark_bar_ = bookmark_bar;
   views::MenuButton* menu_button =
       bookmark_bar_->GetMenuButtonForFolder(folder_);
-  DCHECK(menu_button);
+  CHECK(menu_button, base::NotFatalUntil::M162);
   views::MenuAnchorPosition anchor;
   bookmark_bar_->GetAnchorPositionForButton(menu_button, &anchor);
   gfx::Point screen_loc;

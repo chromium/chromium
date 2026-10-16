@@ -72,7 +72,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(l10n_util::GetStringFUTF16(message_id, origin_identity_name,
                                             formatted_path, &offsets));
-  DCHECK_GE(offsets.size(), 2u);
+  CHECK_GE(offsets.size(), 2u, base::NotFatalUntil::M162);
 
   label->SetTextContext(text_context);
   label->SetDefaultTextStyle(show_emphasis ? views::style::STYLE_SECONDARY

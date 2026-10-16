@@ -737,8 +737,8 @@ StatusBubbleViews::~StatusBubbleViews() {
 
 void StatusBubbleViews::InitPopup() {
   if (!popup_) {
-    DCHECK(!view_);
-    DCHECK(!expand_view_);
+    CHECK(!view_, base::NotFatalUntil::M162);
+    CHECK(!expand_view_, base::NotFatalUntil::M162);
     popup_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params(
@@ -971,7 +971,7 @@ void StatusBubbleViews::MouseMovedAt(const gfx::Point& location,
 }
 
 void StatusBubbleViews::AvoidMouse(const gfx::Point& location) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M162);
   // Get the position of the frame.
   gfx::Point top_left;
   views::View::ConvertPointToScreen(base_view_, &top_left);

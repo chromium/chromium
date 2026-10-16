@@ -20,8 +20,8 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
     BrowserWindowInterface* browser,
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) {
-  DCHECK(bounds);
-  DCHECK(show_state);
+  CHECK(bounds, base::NotFatalUntil::M162);
+  CHECK(show_state, base::NotFatalUntil::M162);
   WindowSizerLinux sizer(std::move(state_provider), browser);
   // Pre-populate the window state with our default.
   *show_state = GetWindowDefaultShowState(browser);

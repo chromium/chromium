@@ -41,7 +41,7 @@ views::Widget* RelaunchRecommendedBubbleView::ShowBubble(
     BrowserWindowInterface* browser,
     base::Time detection_time,
     base::RepeatingClosure on_accept) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
 
   // Anchor the popup to the browser's app menu.
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);

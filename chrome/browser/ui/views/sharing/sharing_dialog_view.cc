@@ -64,12 +64,12 @@ bool ShouldShowOrigin(const SharingDialogData& data,
 }
 
 std::u16string PrepareHelpTextWithoutOrigin(const SharingDialogData& data) {
-  DCHECK_NE(0, data.help_text_id);
+  CHECK_NE(0, data.help_text_id, base::NotFatalUntil::M162);
   return l10n_util::GetStringUTF16(data.help_text_id);
 }
 
 std::u16string PrepareHelpTextWithOrigin(const SharingDialogData& data) {
-  DCHECK_NE(0, data.help_text_origin_id);
+  CHECK_NE(0, data.help_text_origin_id, base::NotFatalUntil::M162);
   std::u16string origin = url_formatter::FormatOriginForSecurityDisplay(
       *data.initiating_origin,
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
@@ -78,8 +78,8 @@ std::u16string PrepareHelpTextWithOrigin(const SharingDialogData& data) {
 }
 
 std::unique_ptr<views::View> CreateOriginView(const SharingDialogData& data) {
-  DCHECK(data.initiating_origin);
-  DCHECK_NE(0, data.origin_text_id);
+  CHECK(data.initiating_origin, base::NotFatalUntil::M162);
+  CHECK_NE(0, data.origin_text_id, base::NotFatalUntil::M162);
   auto label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
           data.origin_text_id,
@@ -183,14 +183,14 @@ SharingDialogType SharingDialogView::GetDialogType() const {
 }
 
 void SharingDialogView::DeviceButtonPressed(size_t index) {
-  DCHECK_LT(index, data_.devices.size());
+  CHECK_LT(index, data_.devices.size(), base::NotFatalUntil::M162);
   LogSharingSelectedIndex(data_.prefix, kSharingUiDialog, index);
   std::move(data_.device_callback).Run(data_.devices[index]);
   CloseBubble();
 }
 
 void SharingDialogView::AppButtonPressed(size_t index) {
-  DCHECK_LT(index, data_.apps.size());
+  CHECK_LT(index, data_.apps.size(), base::NotFatalUntil::M162);
   LogSharingSelectedIndex(data_.prefix, kSharingUiDialog, index,
                           SharingIndexType::kApp);
   std::move(data_.app_callback).Run(data_.apps[index]);
@@ -298,7 +298,7 @@ void SharingDialogView::InitListView() {
       max_list_height +=
           button_list->children()[i]->GetHeightForWidth(bubble_width);
     }
-    DCHECK_GT(max_list_height, 0);
+    CHECK_GT(max_list_height, 0, base::NotFatalUntil::M162);
 
     auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
     scroll_view->ClipHeightTo(0, max_list_height);

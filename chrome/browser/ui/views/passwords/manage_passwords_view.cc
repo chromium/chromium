@@ -119,8 +119,9 @@ void ManagePasswordsView::AddedToWidget() {
 
 bool ManagePasswordsView::Accept() {
   // Accept button is only visible in the details page.
-  DCHECK(password_details_view_);
-  DCHECK(controller_.get_details_bubble_credential().has_value());
+  CHECK(password_details_view_, base::NotFatalUntil::M162);
+  CHECK(controller_.get_details_bubble_credential().has_value(),
+        base::NotFatalUntil::M162);
   password_manager::PasswordForm updated_form =
       controller_.get_details_bubble_credential().value();
   std::optional<std::u16string> updated_username =
@@ -143,7 +144,8 @@ bool ManagePasswordsView::Accept() {
 
 bool ManagePasswordsView::Cancel() {
   // Cancel button is only visible in the details page.
-  DCHECK(controller_.get_details_bubble_credential().has_value());
+  CHECK(controller_.get_details_bubble_credential().has_value(),
+        base::NotFatalUntil::M162);
   SwitchToReadingMode();
   // Return false such that the bubble doesn't get closed upon clicking the
   // button.
@@ -175,7 +177,8 @@ ManagePasswordsView::CreatePasswordListView() {
 
 std::unique_ptr<ManagePasswordsDetailsView>
 ManagePasswordsView::CreatePasswordDetailsView() {
-  DCHECK(controller_.get_details_bubble_credential().has_value());
+  CHECK(controller_.get_details_bubble_credential().has_value(),
+        base::NotFatalUntil::M162);
   return std::make_unique<ManagePasswordsDetailsView>(
       controller_.get_details_bubble_credential().value(),
       /*allow_empty_username_edit=*/controller_.bubble_mode() ==

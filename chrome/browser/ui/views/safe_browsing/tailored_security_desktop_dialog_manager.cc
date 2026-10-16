@@ -146,7 +146,7 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
 
   // `window` should always be non-null unless this is called before
   // CreateBrowserWindow().
-  DCHECK(browser->GetWindow());
+  CHECK(browser->GetWindow(), base::NotFatalUntil::M162);
 
   if (close_dialog_callback_) {
     std::move(close_dialog_callback_).Run();
@@ -192,7 +192,7 @@ void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
 
   // `window` should always be non-null unless this is called before
   // CreateBrowserWindow().
-  DCHECK(browser->GetWindow());
+  CHECK(browser->GetWindow(), base::NotFatalUntil::M162);
 
   if (close_dialog_callback_) {
     std::move(close_dialog_callback_).Run();

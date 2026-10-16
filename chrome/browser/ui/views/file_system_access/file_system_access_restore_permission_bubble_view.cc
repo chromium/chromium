@@ -134,8 +134,9 @@ FileSystemAccessRestorePermissionBubbleView::CreateAndShow(
     const FileSystemAccessPermissionRequestManager::RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction)> callback,
     content::WebContents* web_contents) {
-  DCHECK(request.request_type == FileSystemAccessPermissionRequestManager::
-                                     RequestType::kRestorePermissions);
+  CHECK(request.request_type == FileSystemAccessPermissionRequestManager::
+                                    RequestType::kRestorePermissions,
+        base::NotFatalUntil::M162);
 
   auto* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);

@@ -313,7 +313,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
           DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL),
       /*resize=*/true, this);
 
-  DCHECK(!password_label_);
+  CHECK(!password_label_, base::NotFatalUntil::M162);
   password_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY_MONOSPACED));

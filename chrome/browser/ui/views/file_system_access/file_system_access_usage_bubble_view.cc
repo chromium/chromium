@@ -68,7 +68,7 @@ int ComputeHeadingMessageFromUsage(
       usage.readable_directories.empty()) {
     // Only writable files.
     if (usage.readable_files.empty()) {
-      DCHECK(!usage.writable_files.empty());
+      CHECK(!usage.writable_files.empty(), base::NotFatalUntil::M162);
       if (usage.writable_files.size() == 1) {
         *embedded_path = usage.writable_files.front();
         return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_WRITABLE_FILE_TEXT;
@@ -78,7 +78,7 @@ int ComputeHeadingMessageFromUsage(
 
     // Only readable files.
     if (usage.writable_files.empty()) {
-      DCHECK(!usage.readable_files.empty());
+      CHECK(!usage.readable_files.empty(), base::NotFatalUntil::M162);
       if (usage.readable_files.size() == 1) {
         *embedded_path = usage.readable_files.front();
         return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_READABLE_FILE_TEXT;
@@ -91,7 +91,7 @@ int ComputeHeadingMessageFromUsage(
   if (usage.writable_files.empty() && usage.readable_files.empty()) {
     // Only writable directories.
     if (usage.readable_directories.empty()) {
-      DCHECK(!usage.writable_directories.empty());
+      CHECK(!usage.writable_directories.empty(), base::NotFatalUntil::M162);
       if (usage.writable_directories.size() == 1) {
         *embedded_path = usage.writable_directories.front();
         return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_WRITABLE_DIRECTORY_TEXT;
@@ -101,7 +101,7 @@ int ComputeHeadingMessageFromUsage(
 
     // Only readable directories.
     if (usage.writable_directories.empty()) {
-      DCHECK(!usage.readable_directories.empty());
+      CHECK(!usage.readable_directories.empty(), base::NotFatalUntil::M162);
       if (usage.readable_directories.size() == 1) {
         *embedded_path = usage.readable_directories.front();
         return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_READABLE_DIRECTORY_TEXT;
@@ -112,15 +112,15 @@ int ComputeHeadingMessageFromUsage(
 
   // Only readable files and directories.
   if (usage.writable_files.empty() && usage.writable_directories.empty()) {
-    DCHECK(!usage.readable_files.empty());
-    DCHECK(!usage.readable_directories.empty());
+    CHECK(!usage.readable_files.empty(), base::NotFatalUntil::M162);
+    CHECK(!usage.readable_directories.empty(), base::NotFatalUntil::M162);
     return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_READABLE_FILES_AND_DIRECTORIES_TEXT;
   }
 
   // Only writable files and directories.
   if (usage.readable_files.empty() && usage.readable_directories.empty()) {
-    DCHECK(!usage.writable_files.empty());
-    DCHECK(!usage.writable_directories.empty());
+    CHECK(!usage.writable_files.empty(), base::NotFatalUntil::M162);
+    CHECK(!usage.writable_directories.empty(), base::NotFatalUntil::M162);
     return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_WRITABLE_FILES_AND_DIRECTORIES_TEXT;
   }
 

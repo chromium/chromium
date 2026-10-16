@@ -229,7 +229,7 @@ InfoBarView::~InfoBarView() {
   // We should have closed any open menus in PlatformSpecificHide(), then
   // subclasses' RunMenu() functions should have prevented opening any new ones
   // once we became unowned.
-  DCHECK(!menu_runner_.get());
+  CHECK(!menu_runner_.get(), base::NotFatalUntil::M162);
 }
 
 void InfoBarView::RecalculateLayoutBalancing() {

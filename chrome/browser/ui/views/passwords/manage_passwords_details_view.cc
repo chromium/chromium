@@ -385,7 +385,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
     const password_manager::PasswordForm& form,
     raw_ptr<views::Textfield>* textfield,
     raw_ptr<views::Label>* error_label) {
-  DCHECK(form.username_value.empty());
+  CHECK(form.username_value.empty(), base::NotFatalUntil::M162);
   const auto* const layout_provider = ChromeLayoutProvider::Get();
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
@@ -712,8 +712,8 @@ ManagePasswordsDetailsView::GetUserEnteredPasswordNoteValue() const {
 }
 
 void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
-  DCHECK(read_username_row_);
-  DCHECK(edit_username_row_);
+  CHECK(read_username_row_, base::NotFatalUntil::M162);
+  CHECK(edit_username_row_, base::NotFatalUntil::M162);
   read_username_row_->SetVisible(false);
   edit_username_row_->SetVisible(true);
   // The "Manage passwords" button should not be visible in the editor mode.
@@ -727,7 +727,7 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
                                    .bottom()));
 
   switched_to_edit_mode_callback_.Run();
-  DCHECK(username_textfield_);
+  CHECK(username_textfield_, base::NotFatalUntil::M162);
   username_textfield_->RequestFocus();
   on_activity_callback_.Run();
   LogUserInteractionsInPasswordManagementBubble(
@@ -748,7 +748,7 @@ void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
                                    .bottom()));
 
   switched_to_edit_mode_callback_.Run();
-  DCHECK(note_textarea_);
+  CHECK(note_textarea_, base::NotFatalUntil::M162);
   on_activity_callback_.Run();
   note_textarea_->RequestFocus();
   LogUserInteractionsInPasswordManagementBubble(

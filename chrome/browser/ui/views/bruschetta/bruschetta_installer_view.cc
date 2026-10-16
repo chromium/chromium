@@ -117,7 +117,7 @@ std::u16string GetDetailedErrorMessage(
 void BruschettaInstallerView::Show(Profile* profile,
                                    PrefService& local_state,
                                    const guest_os::GuestId& guest_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (bruschetta::GetInstallableConfigs(profile).empty()) {
     LOG(ERROR)
         << "Bruschetta has no installable configs, not running the installer.";
@@ -253,7 +253,8 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
     }
   }
 
-  DCHECK(radio_button_container_->children().size() > 0);
+  CHECK(radio_button_container_->children().size() > 0,
+        base::NotFatalUntil::M162);
   static_cast<views::RadioButton*>(radio_button_container_->children()[0])
       ->SetChecked(true);
 
@@ -289,8 +290,9 @@ BruschettaInstallerView::~BruschettaInstallerView() {
 }
 
 bool BruschettaInstallerView::Accept() {
-  DCHECK(state_ == State::kConfirmInstall || state_ == State::kFailed ||
-         state_ == State::kFailedCleanup);
+  CHECK(state_ == State::kConfirmInstall || state_ == State::kFailed ||
+            state_ == State::kFailedCleanup,
+        base::NotFatalUntil::M162);
 
   if (state_ == State::kConfirmInstall) {
     std::optional<std::string> selected_config;
@@ -341,8 +343,8 @@ void BruschettaInstallerView::StartInstallation() {
 void BruschettaInstallerView::StateChanged(InstallerState new_state) {
   VLOG(2) << "State changed: " << static_cast<int>(installing_state_) << " -> "
           << static_cast<int>(new_state);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::kInstalling);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK_EQ(state_, State::kInstalling, base::NotFatalUntil::M162);
   installing_state_ = new_state;
   OnStateUpdated();
 }
@@ -461,7 +463,8 @@ std::u16string BruschettaInstallerView::GetCurrentDialogButtonLabel(
               ? IDS_BRUSCHETTA_INSTALLER_INSTALL_BUTTON
               : IDS_APP_CANCEL);
     case State::kInstalling:
-      DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
+      CHECK_EQ(button, ui::mojom::DialogButton::kCancel,
+               base::NotFatalUntil::M162);
       return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
     case State::kCleaningUp:
       return {};

@@ -196,7 +196,8 @@ std::u16string CreateChromeApplicationShortcutView::GetWindowTitle() const {
 }
 
 void CreateChromeApplicationShortcutView::OnDialogAccepted() {
-  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  CHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk),
+        base::NotFatalUntil::M162);
 
   if (!close_callback_.is_null()) {
     std::move(close_callback_).Run(/*success=*/shortcut_info_ != nullptr);

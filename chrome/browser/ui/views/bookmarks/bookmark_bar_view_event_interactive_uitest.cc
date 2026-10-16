@@ -680,7 +680,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
 
   void OnWidgetDestroying(views::Widget* widget) override {
     if (widget == window()) {
-      DCHECK(bookmark_bar_observation_.IsObserving());
+      CHECK(bookmark_bar_observation_.IsObserving(), base::NotFatalUntil::M162);
       bookmark_bar_observation_.Reset();
     }
   }
@@ -916,7 +916,7 @@ class BookmarkContextMenuNotificationObserver {
       const BookmarkContextMenuNotificationObserver&) = delete;
 
   void ScheduleCallback() {
-    DCHECK(!task_.is_null());
+    CHECK(!task_.is_null(), base::NotFatalUntil::M162);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(task_));
   }

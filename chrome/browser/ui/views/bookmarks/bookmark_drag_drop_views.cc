@@ -263,7 +263,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                             const ui::ImageModel& icon) {
     // This function should not be called a second time, even if the icon
     // changes repeatedly.
-    DCHECK(!icon_loaded_);
+    CHECK(!icon_loaded_, base::NotFatalUntil::M162);
     icon_loaded_ = true;
 
     auto weak_this = GetWeakPtr();
@@ -311,7 +311,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
     const ui::ImageModel& image =
         ui::ImageModel::FromImage(model_->GetFavicon(node));
-    DCHECK(node->is_favicon_loaded());
+    CHECK(node->is_favicon_loaded(), base::NotFatalUntil::M162);
 
     OnBookmarkIconLoaded(node, image);
   }
@@ -358,13 +358,13 @@ void DoDragImpl(std::unique_ptr<ui::OSExchangeData> drag_data,
 void DragBookmarksImpl(Profile* profile,
                        const BookmarkDragParams& params,
                        DoBookmarkDragCallback do_drag_callback) {
-  DCHECK(!params.nodes.empty());
+  CHECK(!params.nodes.empty(), base::NotFatalUntil::M162);
   static base::NoDestructor<base::WeakPtr<BookmarkDragHelper>> g_drag_helper;
   if (*g_drag_helper) {
     delete g_drag_helper->get();
   }
 
-  DCHECK(!*g_drag_helper);
+  CHECK(!*g_drag_helper, base::NotFatalUntil::M162);
 
   // Cleaned up in
   // BookmarkDragHelper::BookmarkIconLoaded()/BookmarkModelBeingDeleted(), or

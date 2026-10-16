@@ -87,7 +87,7 @@ ui::ImageModel GetFaviconForNode(BookmarkModel* model,
   }
 
   // Only URL nodes reach here. Folders would have returned empty above.
-  DCHECK(node->is_url());
+  CHECK(node->is_url(), base::NotFatalUntil::M162);
   if (favicon::ShouldThemifyFavicon(node->url())) {
     gfx::ImageSkia favicon_skia = *image.ToImageSkia();
     return ui::ImageModel::FromImageGenerator(
@@ -121,7 +121,7 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
         index_to_drop_at_(index_to_drop_at),
         bookmark_service_(BookmarkMergedSurfaceServiceFactory::GetForProfile(
             browser->GetProfile())) {
-    DCHECK(drop_data_.is_valid());
+    CHECK(drop_data_.is_valid(), base::NotFatalUntil::M162);
     CHECK(bookmark_service_);
     bookmark_merged_service_observation_.Observe(bookmark_service_);
   }
@@ -348,7 +348,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
     return;
   }
 
-  DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
+  CHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end(),
+        base::NotFatalUntil::M162);
 
   bookmarks::OpenAllBookmarksContext context =
       bookmarks::OpenAllBookmarksContext::kNone;
@@ -460,7 +461,7 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
     const ui::DropTargetEvent& event,
     views::MenuDelegate::DropPosition* position) {
   // Should only get here if we have drop data.
-  DCHECK(drop_data_.is_valid());
+  CHECK(drop_data_.is_valid(), base::NotFatalUntil::M162);
 
   if (IsInvalidDragOrDropCommand(item->GetCommand())) {
     return ui::mojom::DragOperation::kNone;
@@ -677,7 +678,7 @@ void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
 void BookmarkMenuDelegate::WillRemoveBookmarks(
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         bookmarks) {
-  DCHECK(!is_mutating_model_);
+  CHECK(!is_mutating_model_, base::NotFatalUntil::M162);
   is_mutating_model_ = true;  // Set to false in DidRemoveBookmarks().
 
   // Remove the observer so that when the remove happens we don't prematurely
@@ -703,7 +704,7 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
   // to support different parents, but this would need to prune any nodes whose
   // parent has been removed. As all nodes currently have the same parent, there
   // is the DCHECK.
-  DCHECK_LE(changed_parent_menus.size(), 1U);
+  CHECK_LE(changed_parent_menus.size(), 1U, base::NotFatalUntil::M162);
 
   for (MenuItemView* changed_parent_menu : changed_parent_menus) {
     changed_parent_menu->ChildrenChanged();
@@ -794,7 +795,7 @@ void BookmarkMenuDelegate::DidRemoveBookmarks() {
   // Balances remove in WillRemoveBookmarksImpl.
   bookmark_merged_service_observation_.Observe(
       GetBookmarkMergedSurfaceService());
-  DCHECK(is_mutating_model_);
+  CHECK(is_mutating_model_, base::NotFatalUntil::M162);
 
   std::vector<raw_ref<MenuItemView>> updated_menus =
       GetAndUpdateStaleMenuArtifacts();
@@ -982,7 +983,8 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkParentFolder& folder,
                                      MenuItemView* menu) {
   const BookmarkMergedSurfaceService* service =
       GetBookmarkMergedSurfaceService();
-  DCHECK_LE(start_child_index, service->GetChildrenCount(folder));
+  CHECK_LE(start_child_index, service->GetChildrenCount(folder),
+           base::NotFatalUntil::M162);
   if (folder.as_permanent_folder() ==
       BookmarkParentFolder::PermanentFolderType::kOtherNode) {
     BuildOtherNodeMenuHeader(menu);

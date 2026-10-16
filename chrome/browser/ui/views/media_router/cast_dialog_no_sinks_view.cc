@@ -102,7 +102,7 @@ class HoverButtonHandCursor : public HoverButton
   }
 
   void OnWidgetDestroyed(views::Widget* widget) override {
-    DCHECK(observation_.IsObservingSource(widget));
+    CHECK(observation_.IsObservingSource(widget), base::NotFatalUntil::M162);
     observation_.Reset();
     bubble_ = nullptr;
   }

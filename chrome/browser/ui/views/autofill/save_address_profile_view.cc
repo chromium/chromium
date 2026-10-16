@@ -291,7 +291,7 @@ void SaveAddressProfileView::AlignIcons() {
   int label_line_height = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
   for (views::ImageView* icon_view : address_section_icons_) {
-    DCHECK(icon_view);
+    CHECK(icon_view, base::NotFatalUntil::M162);
     // Set views::kMarginsKey for flex layout to center the icon vertically with
     // the text in front of it. Label line height are guaranteed to be bigger
     // than kIconSize.

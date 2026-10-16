@@ -70,7 +70,7 @@ SavedTabGroupBar::SavedTabGroupBar(BrowserWindowInterface* browser,
       tab_group_service_(tab_group_service),
       browser_(browser) {
   CHECK(tab_group_service_);
-  DCHECK(browser_);
+  CHECK(browser_, base::NotFatalUntil::M162);
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
@@ -518,7 +518,8 @@ views::View* SavedTabGroupBar::GetButton(const base::Uuid& guid) {
 
 void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
                                                const ui::Event& event) {
-  DCHECK(tab_group_service_ && tab_group_service_->GetGroup(id).has_value());
+  CHECK(tab_group_service_ && tab_group_service_->GetGroup(id).has_value(),
+        base::NotFatalUntil::M162);
   chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->GetProfile());
   const std::optional<SavedTabGroup> group = tab_group_service_->GetGroup(id);
 

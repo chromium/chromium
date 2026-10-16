@@ -75,7 +75,7 @@ void BackgroundBorderAdderImageSource::Draw(gfx::Canvas* canvas) {
   bounds.Inset(half_thickness);
   // Draw the background
   if (add_background_) {
-    DCHECK(background_color_);
+    CHECK(background_color_, base::NotFatalUntil::M162);
     cc::PaintFlags background_flags;
     background_flags.setStyle(cc::PaintFlags::kFill_Style);
     background_flags.setAntiAlias(true);
@@ -141,7 +141,7 @@ gfx::ImageSkia ImageWithBadge::GetMainImage() const {
   if (main_image_skia_) {
     return main_image_skia_.value();
   }
-  DCHECK(main_vector_icon_);
+  CHECK(main_vector_icon_, base::NotFatalUntil::M162);
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
 }

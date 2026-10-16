@@ -141,7 +141,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
       DevToolsWindow* devtools_window =
           DevToolsWindow::AsDevToolsWindow(browser_);
-      DCHECK(devtools_window);
+      CHECK(devtools_window, base::NotFatalUntil::M162);
       devtools_window->OpenURLFromInspectedTab(params);
     } else {
       browser_->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -200,7 +200,7 @@ gfx::Size HatsNextWebDialog::CalculatePreferredSize(
 }
 
 void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_EQ(profile, otr_profile_);
+  CHECK_EQ(profile, otr_profile_, base::NotFatalUntil::M162);
   otr_profile_ = nullptr;
 }
 
@@ -218,7 +218,7 @@ void HatsNextWebDialog::OnSurveyLoaded() {
   // Record that the survey was shown, and display the widget.
   auto* service =
       HatsServiceFactory::GetForProfile(browser_->GetProfile(), false);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M162);
   service->RecordSurveyAsShown(trigger_id_);
   received_survey_loaded_ = true;
   ShowWidget();
@@ -394,7 +394,7 @@ HatsNextWebDialog::HatsNextWebDialog(
                             ->GetContents()
                             ->GetPrimaryMainFrame()
                             ->GetPageUkmSourceId()) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
 
@@ -432,14 +432,14 @@ HatsNextWebDialog::~HatsNextWebDialog() {
 #if IS_ANDROID
   NOTIMPLEMENTED();  // This class is for desktop only. Enforce assumption.
 #endif
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (otr_profile_) {
     otr_profile_->RemoveObserver(this);
     ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
   HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
       HatsServiceFactory::GetForProfile(browser_->GetProfile(), false));
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M162);
   service->HatsNextDialogClosed();
 
   // Explicitly clear the delegate to ensure it is not invalid between now and

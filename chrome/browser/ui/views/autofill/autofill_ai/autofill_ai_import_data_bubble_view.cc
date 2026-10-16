@@ -42,7 +42,7 @@ namespace {
 
 AutofillClient::AutofillAiBubbleResult GetAutofillAiBubbleResultFromWidget(
     const views::Widget* widget) {
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   if (!widget->IsClosed()) {
     return AutofillClient::AutofillAiBubbleResult::kUnknown;
   }

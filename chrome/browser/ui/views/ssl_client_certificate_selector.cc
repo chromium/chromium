@@ -158,7 +158,7 @@ void SSLClientCertificateSelector::OnCancel() {
 }
 
 base::OnceClosure SSLClientCertificateSelector::GetCancellationCallback() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return base::BindOnce(&SSLClientCertificateSelector::OnCancel,
                         weak_factory_.GetWeakPtr());
 }
@@ -168,7 +168,7 @@ base::OnceClosure ShowSSLClientCertificateSelector(
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!GetShowSSLClientCertificateSelectorTestingHook().is_null()) {
     return GetShowSSLClientCertificateSelectorTestingHook().Run(
@@ -201,6 +201,6 @@ base::OnceClosure ShowSSLClientCertificateSelector(
 
 void SetShowSSLClientCertificateSelectorHookForTest(
     ShowSSLClientCertificateSelectorTestingHook hook) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   GetShowSSLClientCertificateSelectorTestingHook() = std::move(hook);
 }

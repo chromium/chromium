@@ -125,7 +125,7 @@ views::Widget* MediaDialogView::ShowDialog(
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M162);
   // Hide the previous instance if it exists, since there can only be one dialog
   // instance at a time.
   HideDialog();

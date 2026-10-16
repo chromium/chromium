@@ -47,7 +47,7 @@ int JsOptimizationsInfoBarDelegate::GetButtons() const {
 
 std::u16string JsOptimizationsInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  DCHECK_EQ(BUTTON_OK, button);
+  CHECK_EQ(BUTTON_OK, button, base::NotFatalUntil::M162);
   return l10n_util::GetStringUTF16(IDS_JS_OPTIMIZATION_SITE_RELOAD_BUTTON);
 }
 

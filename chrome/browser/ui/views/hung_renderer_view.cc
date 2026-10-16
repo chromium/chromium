@@ -82,12 +82,12 @@ void HungPagesTableModel::InitForWebContents(
     WebContents* contents,
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
-  DCHECK(contents);
-  DCHECK(render_widget_host);
-  DCHECK(!hang_monitor_restarter.is_null());
+  CHECK(contents, base::NotFatalUntil::M162);
+  CHECK(render_widget_host, base::NotFatalUntil::M162);
+  CHECK(!hang_monitor_restarter.is_null(), base::NotFatalUntil::M162);
 
-  DCHECK(!render_widget_host_);
-  DCHECK(tab_observers_.empty());
+  CHECK(!render_widget_host_, base::NotFatalUntil::M162);
+  CHECK(tab_observers_.empty(), base::NotFatalUntil::M162);
 
   render_widget_host_ = render_widget_host;
   hang_monitor_restarter_ = std::move(hang_monitor_restarter);
@@ -133,13 +133,13 @@ size_t HungPagesTableModel::RowCount() const {
 }
 
 std::u16string HungPagesTableModel::GetText(size_t row, int column_id) const {
-  DCHECK(row < RowCount());
+  CHECK(row < RowCount(), base::NotFatalUntil::M162);
   return GetHungWebContentsTitle(tab_observers_[row]->web_contents(),
                                  render_widget_host_->GetProcess());
 }
 
 ui::ImageModel HungPagesTableModel::GetIcon(size_t row) const {
-  DCHECK(row < RowCount());
+  CHECK(row < RowCount(), base::NotFatalUntil::M162);
   return ui::ImageModel::FromImage(
       favicon::ContentFaviconDriver::FromWebContents(
           tab_observers_[row]->web_contents())
@@ -166,7 +166,8 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observation_.IsObservingSource(render_widget_host_.get()));
+  CHECK(widget_observation_.IsObservingSource(render_widget_host_.get()),
+        base::NotFatalUntil::M162);
   widget_observation_.Reset();
   render_widget_host_ = nullptr;
 
@@ -183,7 +184,7 @@ void HungPagesTableModel::TabDestroyed(WebContentsObserverImpl* tab) {
       break;
     }
   }
-  DCHECK(index < tab_observers_.size());
+  CHECK(index < tab_observers_.size(), base::NotFatalUntil::M162);
   tab_observers_.erase(tab_observers_.begin() + index);
   if (observer_) {
     observer_->OnItemsRemoved(index, 1);
@@ -378,7 +379,7 @@ HungRendererDialogView::GetInstanceForWebContentsForTests(
 void HungRendererDialogView::ShowDialog(
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
-  DCHECK(GetWidget());
+  CHECK(GetWidget(), base::NotFatalUntil::M162);
 
   hung_pages_table_model_->InitForWebContents(
       web_contents_, render_widget_host, std::move(hang_monitor_restarter));

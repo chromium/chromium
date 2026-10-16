@@ -128,9 +128,11 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(webui_bubble_manager_->GetBubbleWidget(), widget);
-  DCHECK(bubble_widget_observation_.IsObservingSource(
-      webui_bubble_manager_->GetBubbleWidget()));
+  CHECK_EQ(webui_bubble_manager_->GetBubbleWidget(), widget,
+           base::NotFatalUntil::M162);
+  CHECK(bubble_widget_observation_.IsObservingSource(
+            webui_bubble_manager_->GetBubbleWidget()),
+        base::NotFatalUntil::M162);
   bubble_widget_observation_.Reset();
   pressed_lock_.reset();
 
@@ -143,7 +145,7 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
   CHECK_EQ(widget, webui_bubble_manager_->GetBubbleWidget());
   // There should only ever be a single bubble widget active for the
   // TabSearchBubbleHost.
-  DCHECK(!bubble_widget_observation_.IsObserving());
+  CHECK(!bubble_widget_observation_.IsObserving(), base::NotFatalUntil::M162);
   bubble_widget_observation_.Observe(widget);
   widget_open_timer_.Reset(widget);
 

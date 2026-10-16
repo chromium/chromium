@@ -79,7 +79,7 @@ ChromeViewsDelegate::ChromeViewsDelegate() {
 }
 
 ChromeViewsDelegate::~ChromeViewsDelegate() {
-  DCHECK_EQ(0u, ref_count_);
+  CHECK_EQ(0u, ref_count_, base::NotFatalUntil::M162);
 }
 
 void ChromeViewsDelegate::SaveWindowPlacement(
@@ -122,7 +122,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
     return false;
   }
 
-  DCHECK(prefs->FindPreference(window_name));
+  CHECK(prefs->FindPreference(window_name), base::NotFatalUntil::M162);
   const base::DictValue& dictionary = prefs->GetDict(window_name);
   std::optional<int> left = dictionary.FindInt("left");
   std::optional<int> top = dictionary.FindInt("top");
@@ -163,7 +163,7 @@ void ChromeViewsDelegate::AddRef() {
   // way, we pick up any new profiles that have become loaded since the last
   // call to AddRef().
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M162);
   for (Profile* profile : profile_manager->GetLoadedProfiles()) {
     profile_keep_alives_[profile] = std::make_unique<ScopedProfileKeepAlive>(
         profile, ProfileKeepAliveOrigin::kChromeViewsDelegate);
@@ -173,7 +173,7 @@ void ChromeViewsDelegate::AddRef() {
 }
 
 void ChromeViewsDelegate::ReleaseRef() {
-  DCHECK_NE(0u, ref_count_);
+  CHECK_NE(0u, ref_count_, base::NotFatalUntil::M162);
 
   if (--ref_count_ == 0u) {
     keep_alive_.reset();

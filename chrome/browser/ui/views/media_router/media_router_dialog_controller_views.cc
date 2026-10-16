@@ -189,7 +189,8 @@ void MediaRouterDialogControllerViews::Reset() {
 
 void MediaRouterDialogControllerViews::OnWidgetDestroying(
     views::Widget* widget) {
-  DCHECK(scoped_widget_observations_.IsObservingSource(widget));
+  CHECK(scoped_widget_observations_.IsObservingSource(widget),
+        base::NotFatalUntil::M162);
   if (ui_) {
     ui_->LogMediaSinkStatus();
   }
@@ -217,7 +218,7 @@ MediaRouterDialogControllerViews::MediaRouterDialogControllerViews(
           *web_contents),
       MediaRouterDialogController(web_contents),
       media_router_ui_service_(GetMediaRouterUIService(web_contents)) {
-  DCHECK(media_router_ui_service_);
+  CHECK(media_router_ui_service_, base::NotFatalUntil::M162);
   media_router_ui_service_->AddObserver(this);
 }
 

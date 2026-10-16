@@ -62,8 +62,8 @@ CredentialsItemView::CredentialsItemView(
   image_view_->SetCanProcessEventsWithinSubtree(false);
   gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
       IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE);
-  DCHECK(image.Width() >= kAvatarImageSize &&
-         image.Height() >= kAvatarImageSize);
+  CHECK(image.Width() >= kAvatarImageSize && image.Height() >= kAvatarImageSize,
+        base::NotFatalUntil::M162);
   UpdateAvatar(image.AsImageSkia());
   if (form->icon_url.is_valid()) {
     // Fetch the actual avatar.

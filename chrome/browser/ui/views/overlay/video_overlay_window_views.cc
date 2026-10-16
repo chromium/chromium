@@ -281,7 +281,7 @@ class OverlayWindowFrameView : public views::FrameView {
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const View* target,
                          const gfx::Rect& rect) const override {
-    DCHECK_EQ(target, this);
+    CHECK_EQ(target, this, base::NotFatalUntil::M162);
     return false;
   }
 
@@ -1827,7 +1827,7 @@ gfx::Rect VideoOverlayWindowViews::GetBounds() {
 }
 
 void VideoOverlayWindowViews::UpdateNaturalSize(const gfx::Size& natural_size) {
-  DCHECK(!natural_size.IsEmpty());
+  CHECK(!natural_size.IsEmpty(), base::NotFatalUntil::M162);
   natural_size_ = natural_size;
   SetAspectRatio(gfx::SizeF(natural_size_));
 
@@ -2344,7 +2344,7 @@ const viz::FrameSinkId* VideoOverlayWindowViews::GetCurrentFrameSinkId() const {
 
 void VideoOverlayWindowViews::MaybeUnregisterFrameSinkHierarchy() {
   if (has_registered_frame_sink_hierarchy_) {
-    DCHECK(GetCurrentFrameSinkId());
+    CHECK(GetCurrentFrameSinkId(), base::NotFatalUntil::M162);
     GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
     has_registered_frame_sink_hierarchy_ = false;
   }
@@ -2475,8 +2475,9 @@ bool VideoOverlayWindowViews::AreTitleAndScrimVisible() const {
 
   // If no animation is active, check the opacity of the layers. They should
   // also be in sync.
-  DCHECK_EQ(GetTitleView()->layer()->opacity(),
-            GetControlsTopScrimView()->layer()->opacity());
+  CHECK_EQ(GetTitleView()->layer()->opacity(),
+           GetControlsTopScrimView()->layer()->opacity(),
+           base::NotFatalUntil::M162);
   return GetTitleView()->layer()->opacity() > 0;
 }
 

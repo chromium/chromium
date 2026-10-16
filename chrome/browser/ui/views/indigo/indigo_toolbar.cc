@@ -695,7 +695,7 @@ void IndigoToolbar::Show(views::View* parent_view) {
   }
 
   if (owned_view_) {
-    DCHECK(parent_view->children().empty());
+    CHECK(parent_view->children().empty(), base::NotFatalUntil::M162);
     parent_view->AddChildView(std::move(owned_view_));
     parent_view->InvalidateLayout();
   } else {
@@ -738,7 +738,7 @@ void IndigoToolbar::TabWillBecomeHidden() {
 
 void IndigoToolbar::TabDidBecomeVisible(views::View* parent_view) {
   if (owned_view_) {
-    DCHECK(parent_view->children().empty());
+    CHECK(parent_view->children().empty(), base::NotFatalUntil::M162);
     parent_view->AddChildView(std::move(owned_view_));
     parent_view->InvalidateLayout();
     StartAutoCompactTimerIfNeeded(kInitialAutoCompactDelay);

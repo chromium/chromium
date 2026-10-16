@@ -102,7 +102,7 @@ std::unique_ptr<AutofillBubbleBase> ShowEditAddressProfileDialogView(
 EditAddressProfileView::EditAddressProfileView(
     EditAddressProfileDialogController* controller)
     : controller_(controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
 
   // TODO(crbug.com/338254375): Remove the following line once this is the
   // default state for widgets.
@@ -140,7 +140,7 @@ EditAddressProfileView::~EditAddressProfileView() = default;
 
 void EditAddressProfileView::ShowForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   auto address_editor_controller = std::make_unique<AddressEditorController>(
       controller_->GetProfileToEdit(),
       PersonalDataManagerFactory::GetForBrowserContext(

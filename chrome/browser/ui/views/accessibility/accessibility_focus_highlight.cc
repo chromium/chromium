@@ -86,7 +86,7 @@ bool AccessibilityFocusHighlight::no_fade_for_testing_ = false;
 AccessibilityFocusHighlight::AccessibilityFocusHighlight(
     BrowserView* browser_view)
     : browser_view_(browser_view) {
-  DCHECK(browser_view);
+  CHECK(browser_view, base::NotFatalUntil::M162);
 
   // Listen for preference changes.
   profile_pref_registrar_.Init(
@@ -155,7 +155,7 @@ SkColor AccessibilityFocusHighlight::GetHighlightColor() {
 void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
   // Find the layer of our owning BrowserView.
   views::Widget* widget = browser_view_->GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   ui::Layer* root_layer = widget->GetLayer();
 
   // Create the layer if needed.
@@ -394,8 +394,8 @@ void AccessibilityFocusHighlight::OnAnimationStep(base::TimeTicks timestamp) {
 
 void AccessibilityFocusHighlight::OnCompositingShuttingDown(
     ui::Compositor* compositor) {
-  DCHECK(compositor);
-  DCHECK_EQ(compositor, compositor_);
+  CHECK(compositor, base::NotFatalUntil::M162);
+  CHECK_EQ(compositor, compositor_, base::NotFatalUntil::M162);
   if (compositor == compositor_) {
     compositor->RemoveAnimationObserver(this);
     compositor_ = nullptr;

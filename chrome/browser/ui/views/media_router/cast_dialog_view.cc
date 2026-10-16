@@ -56,7 +56,7 @@ CastDialogView::CastDialogView(
       profile_(profile),
       metrics_(start_time, activation_location, profile),
       action_item_(action_item) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

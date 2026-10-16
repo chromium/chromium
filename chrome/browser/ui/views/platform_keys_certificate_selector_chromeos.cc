@@ -62,7 +62,7 @@ PlatformKeysCertificateSelector::PlatformKeysCertificateSelector(
                           web_contents),
       extension_name_(extension_name),
       callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M162);
   SetCancelCallback(base::BindOnce(
       [](PlatformKeysCertificateSelector* dialog) {
         std::move(dialog->callback_).Run(nullptr);
@@ -94,7 +94,7 @@ void PlatformKeysCertificateSelector::Init() {
 
 void PlatformKeysCertificateSelector::AcceptCertificate(
     std::unique_ptr<net::ClientCertIdentity> identity) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M162);
   std::move(callback_).Run(base::WrapRefCounted(identity->certificate()));
 }
 

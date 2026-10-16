@@ -38,7 +38,7 @@ AlternateNavInfoBarView::AlternateNavInfoBarView(
   auto* delegate_ptr = GetDelegate();
   size_t offset;
   std::u16string message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
-  DCHECK_NE(std::u16string::npos, offset);
+  CHECK_NE(std::u16string::npos, offset, base::NotFatalUntil::M162);
   label_1_text_ = message_text.substr(0, offset);
 
   label_1_ = content_container()->AddChildView(CreateLabel(label_1_text_));

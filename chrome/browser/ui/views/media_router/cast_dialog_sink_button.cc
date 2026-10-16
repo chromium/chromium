@@ -173,7 +173,7 @@ void CastDialogSinkButton::UpdateTitleTextStyle() {
 }
 
 void CastDialogSinkButton::RequestFocus() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Prevent recursive calls to RequestFocus() while the widget is being
   // shown and is not yet active. See crbug.com/155642655.

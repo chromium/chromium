@@ -28,7 +28,7 @@ namespace media_router {
 MediaRemotingDialogCoordinatorViews::MediaRemotingDialogCoordinatorViews(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 }
 
 MediaRemotingDialogCoordinatorViews::~MediaRemotingDialogCoordinatorViews() =
@@ -36,7 +36,7 @@ MediaRemotingDialogCoordinatorViews::~MediaRemotingDialogCoordinatorViews() =
 
 bool MediaRemotingDialogCoordinatorViews::Show(
     PermissionCallback permission_callback) {
-  DCHECK(permission_callback);
+  CHECK(permission_callback, base::NotFatalUntil::M162);
 
   Hide();  // Close the previous dialog if it is still showing.
 
@@ -83,7 +83,7 @@ MediaRemotingDialogView::MediaRemotingDialogView(
       pref_service_(pref_service),
       action_controller_(action_controller),
       permission_callback_(std::move(callback)) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M162);
   SetShowCloseButton(true);
   SetTitle(IDS_MEDIA_ROUTER_REMOTING_DIALOG_TITLE);
   SetButtonLabel(ui::mojom::DialogButton::kOk,
@@ -125,8 +125,8 @@ void MediaRemotingDialogView::Init() {
 }
 
 void MediaRemotingDialogView::ReportPermission(bool allowed) {
-  DCHECK(remember_choice_checkbox_);
-  DCHECK(permission_callback_);
+  CHECK(remember_choice_checkbox_, base::NotFatalUntil::M162);
+  CHECK(permission_callback_, base::NotFatalUntil::M162);
   if (remember_choice_checkbox_->GetChecked()) {
     pref_service_->SetBoolean(prefs::kMediaRouterMediaRemotingEnabled, allowed);
   }

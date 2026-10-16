@@ -38,7 +38,7 @@ RelaunchNotificationControllerPlatformImpl::
 
 RelaunchNotificationControllerPlatformImpl::
     ~RelaunchNotificationControllerPlatformImpl() {
-  DCHECK(!widget_);
+  CHECK(!widget_, base::NotFatalUntil::M162);
   CHECK(!WidgetObserver::IsInObserverList());
 }
 
@@ -76,7 +76,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
-    DCHECK(!on_visible_);
+    CHECK(!on_visible_, base::NotFatalUntil::M162);
     ShowRequiredNotification(browser, deadline,
                              is_notification_style_ap_required);
     return;
@@ -135,7 +135,7 @@ bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
 
 void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(
     views::Widget* widget) {
-  DCHECK_EQ(widget, widget_);
+  CHECK_EQ(widget, widget_, base::NotFatalUntil::M162);
   widget->RemoveObserver(this);
   widget_ = nullptr;
 }
@@ -151,7 +151,7 @@ void RelaunchNotificationControllerPlatformImpl::OnBrowserActivated(
 
   base::Time new_deadline =
       has_shown_ ? last_relaunch_deadline_ : std::move(on_visible_).Run();
-  DCHECK(!new_deadline.is_null());
+  CHECK(!new_deadline.is_null(), base::NotFatalUntil::M162);
 
   on_visible_.Reset();
   last_relaunch_deadline_ = base::Time();

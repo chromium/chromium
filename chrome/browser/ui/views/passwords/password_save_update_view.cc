@@ -301,9 +301,10 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
               : PasswordBubbleControllerBase::DisplayReason::kUserAction),
       is_update_bubble_(controller_.state() ==
                         password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
-  DCHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
-         controller_.state() ==
-             password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
+  CHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
+            controller_.state() ==
+                password_manager::ui::PENDING_PASSWORD_UPDATE_STATE,
+        base::NotFatalUntil::M162);
 
   const password_manager::PasswordForm& password_form =
       controller_.pending_password();
@@ -799,7 +800,7 @@ void PasswordSaveUpdateView::OnContentChanged() {
 }
 
 void PasswordSaveUpdateView::UpdateFootnote() {
-  DCHECK(GetBubbleFrameView());
+  CHECK(GetBubbleFrameView(), base::NotFatalUntil::M162);
   GetBubbleFrameView()->SetFootnoteView(CreateFooterView());
 }
 

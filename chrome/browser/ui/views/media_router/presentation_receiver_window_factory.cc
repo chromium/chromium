@@ -16,8 +16,8 @@
 PresentationReceiverWindow* PresentationReceiverWindow::Create(
     PresentationReceiverWindowDelegate* delegate,
     const gfx::Rect& bounds) {
-  DCHECK(delegate);
-  DCHECK(delegate->web_contents());
+  CHECK(delegate, base::NotFatalUntil::M162);
+  CHECK(delegate->web_contents(), base::NotFatalUntil::M162);
   auto* frame = new PresentationReceiverWindowFrame(Profile::FromBrowserContext(
       delegate->web_contents()->GetBrowserContext()));
   auto view = std::make_unique<PresentationReceiverWindowView>(frame, delegate);

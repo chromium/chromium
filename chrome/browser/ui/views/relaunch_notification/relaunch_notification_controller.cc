@@ -162,7 +162,8 @@ void RelaunchNotificationController::HandleCurrentStyle() {
   } else {
     switch (ReadPreference()) {
       case RelaunchNotificationSetting::kChromeMenuOnly:
-        DCHECK_EQ(notification_style, NotificationStyle::kNone);
+        CHECK_EQ(notification_style, NotificationStyle::kNone,
+                 base::NotFatalUntil::M162);
         break;
       case RelaunchNotificationSetting::kRecommendedBubble:
         notification_style = NotificationStyle::kRecommended;
@@ -231,7 +232,8 @@ void RelaunchNotificationController::StartObservingAPStatus() {
 void RelaunchNotificationController::ShowRelaunchNotification(
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level,
     base::Time high_deadline) {
-  DCHECK_NE(last_notification_style_, NotificationStyle::kNone);
+  CHECK_NE(last_notification_style_, NotificationStyle::kNone,
+           base::NotFatalUntil::M162);
 
   if (last_notification_style_ == NotificationStyle::kRecommended) {
     // Show the dialog if there has been a level change.
@@ -255,7 +257,8 @@ void RelaunchNotificationController::ShowRelaunchNotification(
 }
 
 void RelaunchNotificationController::CloseRelaunchNotification() {
-  DCHECK_NE(last_notification_style_, NotificationStyle::kNone);
+  CHECK_NE(last_notification_style_, NotificationStyle::kNone,
+           base::NotFatalUntil::M162);
 
   // Nothing needs to be closed if the annoyance level is none, very low, or
   // critical.
@@ -275,7 +278,8 @@ void RelaunchNotificationController::CloseRelaunchNotification() {
 void RelaunchNotificationController::HandleRelaunchRequiredState(
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level,
     base::Time high_deadline) {
-  DCHECK_EQ(last_notification_style_, NotificationStyle::kRequired);
+  CHECK_EQ(last_notification_style_, NotificationStyle::kRequired,
+           base::NotFatalUntil::M162);
   const base::Time now = clock_->Now();
 
   // Make no changes if the level has not changed, the new deadline is not in
@@ -287,7 +291,7 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
   // make it earlier than a previous GRACE.
   if (level == last_level_ && timer_.IsRunning()) {
     const base::Time& desired_run_time = timer_.desired_run_time();
-    DCHECK(!desired_run_time.is_null());
+    CHECK(!desired_run_time.is_null(), base::NotFatalUntil::M162);
     if (high_deadline <= now &&
         desired_run_time - now <= kRelaunchGracePeriod) {
       return;
@@ -321,8 +325,8 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
 }
 
 base::Time RelaunchNotificationController::IncreaseRelaunchDeadlineOnShow() {
-  DCHECK(timer_.IsRunning());
-  DCHECK(!timer_.desired_run_time().is_null());
+  CHECK(timer_.IsRunning(), base::NotFatalUntil::M162);
+  CHECK(!timer_.desired_run_time().is_null(), base::NotFatalUntil::M162);
   base::Time relaunch_deadline = timer_.desired_run_time();
 
   // Push the dealdine back if needed so that the user has at least the grace
@@ -336,8 +340,9 @@ base::Time RelaunchNotificationController::IncreaseRelaunchDeadlineOnShow() {
 }
 
 void RelaunchNotificationController::StartReshowTimer() {
-  DCHECK_EQ(last_notification_style_, NotificationStyle::kRecommended);
-  DCHECK(!last_relaunch_notification_time_.is_null());
+  CHECK_EQ(last_notification_style_, NotificationStyle::kRecommended,
+           base::NotFatalUntil::M162);
+  CHECK(!last_relaunch_notification_time_.is_null(), base::NotFatalUntil::M162);
   // Use the delta between the elevated and high annoyance levels as the
   // reshow period.
   const auto reshow_period = upgrade_detector_->GetAnnoyanceLevelDeadline(
@@ -352,7 +357,8 @@ void RelaunchNotificationController::StartReshowTimer() {
 }
 
 void RelaunchNotificationController::OnReshowRelaunchRecommended() {
-  DCHECK_EQ(last_notification_style_, NotificationStyle::kRecommended);
+  CHECK_EQ(last_notification_style_, NotificationStyle::kRecommended,
+           base::NotFatalUntil::M162);
   NotifyRelaunchRecommended(true);
   StartReshowTimer();
 }
@@ -370,8 +376,8 @@ void RelaunchNotificationController::DoNotifyRelaunchRecommended(
 }
 
 void RelaunchNotificationController::NotifyRelaunchRequired() {
-  DCHECK(timer_.IsRunning());
-  DCHECK(!timer_.desired_run_time().is_null());
+  CHECK(timer_.IsRunning(), base::NotFatalUntil::M162);
+  CHECK(!timer_.desired_run_time().is_null(), base::NotFatalUntil::M162);
   DoNotifyRelaunchRequired(
       notification_style_overridden_for_advanced_protection_,
       timer_.desired_run_time(),

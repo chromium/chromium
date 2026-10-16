@@ -182,7 +182,8 @@ std::u16string BluetoothDeviceCredentialsView::GetWindowTitle() const {
 }
 
 void BluetoothDeviceCredentialsView::OnDialogAccepted() {
-  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  CHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk),
+        base::NotFatalUntil::M162);
 
   std::u16string trimmed_input;
   base::TrimWhitespace(passkey_text_->GetText(), base::TRIM_ALL,
@@ -197,7 +198,7 @@ void BluetoothDeviceCredentialsView::OnDialogAccepted() {
 void BluetoothDeviceCredentialsView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  DCHECK_EQ(sender, passkey_text_);
+  CHECK_EQ(sender, passkey_text_, base::NotFatalUntil::M162);
   SetButtonEnabled(ui::mojom::DialogButton::kOk,
                    IsInputTextValid(new_contents));
   DialogModelChanged();

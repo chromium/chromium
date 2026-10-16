@@ -17,7 +17,7 @@ namespace autofill {
 void ShowDeleteAddressProfileDialogView(
     content::WebContents* web_contents,
     base::WeakPtr<DeleteAddressProfileDialogController> controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
 
   auto dialog_model =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())

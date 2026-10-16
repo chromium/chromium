@@ -124,7 +124,7 @@ void InfoBarContainerView::Layout(PassKey) {
     child->SetBounds(0, top + add_separator_height, width(), height);
     return child->bounds().bottom();
   };
-  DCHECK_EQ(content_shadow_, children().back());
+  CHECK_EQ(content_shadow_, children().back(), base::NotFatalUntil::M162);
   const int top = std::accumulate(children().begin(),
                                   std::prev(children().end()), 0, set_bounds);
 
@@ -155,7 +155,7 @@ gfx::Size InfoBarContainerView::CalculatePreferredSize(
   // desirable.  On the other hand, it also means the browser doesn't know the
   // shadow is there and could lay out something atop it or size the window too
   // small for it; but these are unlikely.
-  DCHECK_EQ(content_shadow_, children().back());
+  CHECK_EQ(content_shadow_, children().back(), base::NotFatalUntil::M162);
   return std::accumulate(children().cbegin(), std::prev(children().cend()),
                          gfx::Size(), enlarge_size);
 }

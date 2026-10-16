@@ -711,7 +711,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kAndroidMessages: {
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);
-      DCHECK_NE(icon_id, 0);
+      CHECK_NE(icon_id, 0, base::NotFatalUntil::M162);
       return ImageModelFromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
     }
@@ -893,7 +893,7 @@ void AddSuggestionContentToView(
   }
 
   // If there are three rows in total, add extra padding to avoid cramming.
-  DCHECK_LE(subtext_views.size(), 2u);
+  CHECK_LE(subtext_views.size(), 2u, base::NotFatalUntil::M162);
   int vertical_padding = 0;
   const int left_padding = content_view.GetInsideBorderInsets().left();
   int right_padding = left_padding;

@@ -126,7 +126,7 @@ class GlicButton : public GlicBaseShim<T>,
           animation_done_callback_(std::move(animation_done_callback)) {}
 
     void Start(WidthState old_state, WidthState new_state) {
-      DCHECK(old_state != new_state);
+      CHECK(old_state != new_state, base::NotFatalUntil::M162);
 
       const bool to_or_from_nudge =
           old_state == WidthState::kNudge || new_state == WidthState::kNudge;

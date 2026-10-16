@@ -295,7 +295,7 @@ void STGTabsMenuModel::OnFaviconDataAvailable(
   }
 
   const std::optional<size_t> index_in_menu = GetIndexOfCommandId(command_id);
-  DCHECK(index_in_menu.has_value());
+  CHECK(index_in_menu.has_value(), base::NotFatalUntil::M162);
   SetIcon(index_in_menu.value(), ui::ImageModel::FromImage(image_result.image));
 
   ui::MenuModelDelegate* delegate = menu_model_delegate();
