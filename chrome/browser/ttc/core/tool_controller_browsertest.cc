@@ -13,12 +13,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -42,6 +45,8 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -56,11 +61,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/actor/core/safety_list_manager.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -70,6 +78,8 @@
 #include "components/translate/core/common/translate_switches.h"
 #include "components/ttc/app/public/tool_types.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -80,8 +90,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -109,6 +121,12 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "components/test/data");
     ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                    "{}");
+    TtcCoreBrowserTestBase::TearDownOnMainThread();
   }
 };
 
@@ -1414,6 +1432,331 @@ IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
   EXPECT_EQ(0, EvalInt("window.scrollY"));
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+
+  const std::string* mime_type = response.GetResult().FindString("mime_type");
+  ASSERT_TRUE(mime_type);
+  EXPECT_EQ(*mime_type, "image/jpeg");
+
+  const std::string* image_b64 = response.GetResult().FindString("image_b64");
+  ASSERT_TRUE(image_b64);
+  EXPECT_FALSE(image_b64->empty());
+
+  std::optional<std::vector<uint8_t>> decoded_bytes =
+      base::Base64Decode(*image_b64);
+  ASSERT_TRUE(decoded_bytes.has_value());
+  ASSERT_FALSE(decoded_bytes->empty());
+
+  // TODO(b/438825957): Also verify the captured pixels once CopyFromSurface
+  // screenshot output is reliable in browser tests; it currently reads back
+  // black on Linux and Windows bots.
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(*decoded_bytes);
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_GT(bitmap.width(), 0);
+  EXPECT_GT(bitmap.height(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotNoActiveTab) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  Profile* test_profile = profile();
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      test_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser());
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
+
+  SetBrowser(CreateBrowser(test_profile));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotDisallowedUrl) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotBlockedBySafetyList) {
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(), R"({
+    "navigation_blocked": [
+      { "from": "*", "to": "[*.]blocked.example.com" }
+    ]
+  })");
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("blocked.example.com",
+                                                     "/title1.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotThrottledWhenConcurrent) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+
+  ToolRequest first_request;
+  first_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(first_request),
+                                      first_future.GetCallback());
+
+  ToolRequest second_request;
+  second_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(second_request),
+                                      second_future.GetCallback());
+
+  ToolResponse second_response = second_future.Take();
+  EXPECT_TOOL_ERROR(
+      second_response,
+      actor::mojom::ActionResultCode::kScreenshotCaptureThrottled);
+
+  ToolResponse first_response = first_future.Take();
+  EXPECT_TRUE(first_response.Ok());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotTabClosedDuringUrlCheck) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  Profile* test_profile = profile();
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      test_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  base::WaitableEvent allow_safety_check;
+  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting(
+          [&allow_safety_check]() -> std::optional<std::string> {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+            allow_safety_check.Wait();
+            return "{}";
+          }));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  CloseBrowserSynchronously(browser());
+
+  allow_safety_check.Signal();
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
+
+  SetBrowser(CreateBrowser(test_profile));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotNavigatedAwayDuringUrlCheck) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  base::WaitableEvent allow_safety_check;
+  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting(
+          [&allow_safety_check]() -> std::optional<std::string> {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+            allow_safety_check.Wait();
+            return "{}";
+          }));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title2.html")));
+
+  allow_safety_check.Signal();
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kScreenshotCaptureFailed);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotCrashedTab) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  base::WaitableEvent allow_safety_check;
+  actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting(
+          [&allow_safety_check]() -> std::optional<std::string> {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+            allow_safety_check.Wait();
+            return "{}";
+          }));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  // Use `CrashTab()` (`RESULT_CODE_KILLED`) rather than `Shutdown(0)`: on
+  // Windows a zero exit code counts as a normal exit, so `IsCrashed()` would
+  // stay false.
+  content::CrashTab(web_contents());
+  ASSERT_TRUE(web_contents()->IsCrashed());
+
+  allow_safety_check.Signal();
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kRendererCrashed);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotPageChangedDuringCapture) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  content::TestNavigationManager nav_manager(web_contents(), target_url);
+
+  content::NavigationController::LoadURLParams params(target_url);
+  web_contents()->GetController().LoadURLWithParams(params);
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  nav_manager.ResumeNavigation();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(
+      response, actor::mojom::ActionResultCode::kScreenshotCapturePageChanged);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       GetScreenshotTabClosedDuringCapture) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  // Open a background tab so closing the first does not close the browser
+  // window.
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title2.html"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(tab_strip->count(), 2);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  // Close the active tab while screenshot capture is in flight.
+  tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -1458,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor_service->tool_registry().GetToolsByIds(kExpectedToolIds);
   ASSERT_EQ(expected_tools.size(), kExpectedToolIds.size());
 
-  constexpr size_t kNumLegacyTools = 4;
+  constexpr size_t kNumLegacyTools = 5;
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
   ASSERT_EQ(tools.size(), expected_tools.size() + kNumLegacyTools);
 
@@ -1596,6 +1939,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
                                   .Append("granularity")
                                   .Append("direction")
                                   .Append("node_id"));
+
+  const ToolDefinition& get_screenshot = tools[expected_tools.size() + 4];
+  EXPECT_EQ(get_screenshot.name, "get_screenshot");
+  EXPECT_FALSE(get_screenshot.description.empty());
+  EXPECT_EQ(get_screenshot.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(get_screenshot.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+  EXPECT_TRUE(get_screenshot.parameters_json_schema.empty());
 }
 
 // The session's actor task is started with the session and stopped when it
