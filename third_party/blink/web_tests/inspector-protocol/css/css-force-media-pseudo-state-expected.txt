@@ -1,0 +1,6 @@
+Test CSS.forcePseudoState method for :buffering and :stalled
+Not forced: rgb(255, 0, 0)
+Forced [buffering]: rgb(0, 128, 0)
+Forced [stalled]: rgb(0, 0, 255)
+Forced [buffering, stalled]: rgb(128, 0, 128)
+

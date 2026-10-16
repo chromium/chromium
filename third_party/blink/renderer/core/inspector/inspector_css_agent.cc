@@ -372,6 +372,8 @@ enum ForcePseudoClassFlags {
   kPseudoLink = 1 << 23,
   kPseudoOpen = 1 << 24,
   kPseudoTargetCurrent = 1 << 25,
+  kPseudoBuffering = 1 << 26,
+  kPseudoStalled = 1 << 27,
 };
 
 static unsigned ComputePseudoClassMask(
@@ -403,6 +405,8 @@ static unsigned ComputePseudoClassMask(
   DEFINE_STATIC_LOCAL(String, autofill, ("autofill"));
   DEFINE_STATIC_LOCAL(String, link, ("link"));
   DEFINE_STATIC_LOCAL(String, open, ("open"));
+  DEFINE_STATIC_LOCAL(String, buffering, ("buffering"));
+  DEFINE_STATIC_LOCAL(String, stalled, ("stalled"));
 
   if (!pseudo_class_array || pseudo_class_array->empty())
     return kPseudoNone;
@@ -461,6 +465,10 @@ static unsigned ComputePseudoClassMask(
       result |= kPseudoLink;
     } else if (pseudo_class == open) {
       result |= kPseudoOpen;
+    } else if (pseudo_class == buffering) {
+      result |= kPseudoBuffering;
+    } else if (pseudo_class == stalled) {
+      result |= kPseudoStalled;
     }
   }
   return result;
@@ -1219,6 +1227,12 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
       break;
     case CSSSelector::kPseudoOpen:
       force = forced_pseudo_state & kPseudoOpen;
+      break;
+    case CSSSelector::kPseudoBuffering:
+      force = forced_pseudo_state & kPseudoBuffering;
+      break;
+    case CSSSelector::kPseudoStalled:
+      force = forced_pseudo_state & kPseudoStalled;
       break;
     default:
       break;

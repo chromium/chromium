@@ -3064,11 +3064,21 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoBuffering: {
       DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoBuffering,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return true;
+      }
       auto* media_element = DynamicTo<HTMLMediaElement>(element);
       return media_element && media_element->MatchesBufferingPseudo();
     }
     case CSSSelector::kPseudoStalled: {
       DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoStalled,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return true;
+      }
       auto* media_element = DynamicTo<HTMLMediaElement>(element);
       return media_element && media_element->MatchesStalledPseudo();
     }
