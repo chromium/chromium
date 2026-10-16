@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//components/unified_consent",
     "//components/user_prefs",
     "//components/variations/service",
+    "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

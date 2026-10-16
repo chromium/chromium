@@ -498,6 +498,9 @@ BASE_FEATURE(kSafeBrowsingDeleteUnusedStores, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSafeBrowsingNoProtectionSuppressWarnings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -599,6 +602,7 @@ base::ListValue GetFeatureStatusList() {
       &kReportNotificationContentDetectionData,
       &kSafeBrowsingDeleteUnusedStores,
       &kSafeBrowsingNoProtectionSuppressWarnings,
+      &kSafeBrowsingSkipRealTimeLookupIfOffline,
       &kSafeBrowsingWaitForDnsForRealTimeLookup,
       &kShowManualNotificationRevocationsSafetyHub,
       &kShowUrlsInV5GetHashLookupsWebUI,

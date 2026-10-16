@@ -30,6 +30,7 @@
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/variations/service/variations_service.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -2212,6 +2213,73 @@ TEST_F(RealTimeUrlLookupServiceTest, TestVerdictCacheBypass) {
       base::SequencedTaskRunner::GetCurrentDefault(), SessionID::InvalidValue(),
       std::nullopt, false);
   response_callback.Wait();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_SkipWhenOffline) {
+  base::HistogramTester histogram_tester;
+  EnableRealTimeUrlLookup({kSafeBrowsingSkipRealTimeLookupIfOffline}, {});
+  net::test::ScopedMockNetworkChangeNotifier notifier;
+  notifier.mock_network_change_notifier()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(0);
+
+  WaitableMockRTLookupResponseCallback response_callback;
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _));
+  rt_service()->StartLookup(GURL(kTestUrl), response_callback.Get(),
+                            base::SequencedTaskRunner::GetCurrentDefault(),
+                            SessionID::InvalidValue(), std::nullopt);
+  response_callback.Wait();
+  histogram_tester.ExpectTotalCount("SafeBrowsing.RT.Network.Result.Offline",
+                                    0);
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestStartLookup_DoNotSkipWhenOfflineAndFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  EnableRealTimeUrlLookup({}, {kSafeBrowsingSkipRealTimeLookupIfOffline});
+  net::test::ScopedMockNetworkChangeNotifier notifier;
+  notifier.mock_network_change_notifier()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+  SetUpFailureResponse(net::HTTP_OK, net::ERR_NAME_NOT_RESOLVED);
+
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(1);
+
+  WaitableMockRTLookupResponseCallback response_callback;
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _));
+  rt_service()->StartLookup(GURL(kTestUrl), response_callback.Get(),
+                            base::SequencedTaskRunner::GetCurrentDefault(),
+                            SessionID::InvalidValue(), std::nullopt);
+  response_callback.Wait();
+
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.RT.Network.Result.Offline",
+                                      net::ERR_NAME_NOT_RESOLVED, 1);
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestSendSampledRequest_SkipWhenOffline) {
+  base::HistogramTester histogram_tester;
+  EnableRealTimeUrlLookup({kSafeBrowsingSkipRealTimeLookupIfOffline}, {});
+  net::test::ScopedMockNetworkChangeNotifier notifier;
+  notifier.mock_network_change_notifier()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(0);
+
+  rt_service()->SendSampledRequest(
+      GURL(kTestUrl), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.RT.Request.Concurrent", 0);
 }
 
 }  // namespace safe_browsing
