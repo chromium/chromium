@@ -61,7 +61,7 @@ class JavaScriptContentWorld {
                                       ScriptMessageReplyHandler reply_handler);
 
   // The features which have already been configured for `content_world_`.
-  std::set<const JavaScriptFeature*> features_;
+  std::set<raw_ptr<const JavaScriptFeature, DanglingUntriaged>> features_;
 
   // The associated browser state for configuring injected scripts and
   // communication.

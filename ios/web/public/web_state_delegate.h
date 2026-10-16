@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/blink_buildflags.h"
 #import "ios/web/public/navigation/form_warning_type.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -200,7 +201,7 @@ class WebStateDelegate {
   void Detach(WebState* source);
 
   // The WebStates for which `this` is currently a delegate.
-  std::set<WebState*> attached_states_;
+  std::set<raw_ptr<WebState>> attached_states_;
 };
 
 }  // namespace web

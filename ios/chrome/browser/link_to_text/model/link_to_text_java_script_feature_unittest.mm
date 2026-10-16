@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 
 #import "base/gtest_prod_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/timer/elapsed_timer.h"
 #import "base/values.h"
@@ -70,8 +71,8 @@ class DisarmedFeature : public LinkToTextJavaScriptFeature {
   }
 
  private:
-  std::set<web::WebFrame*> invoked_;
-  std::map<web::WebFrame*, base::Value*> response_map_;
+  std::set<raw_ptr<web::WebFrame>> invoked_;
+  std::map<raw_ptr<web::WebFrame>, raw_ptr<base::Value>> response_map_;
 };
 }  // namespace
 
@@ -135,8 +136,8 @@ class LinkToTextJavaScriptFeatureTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   base::ScopedMockElapsedTimersForTest timer_;
-  DisarmedFeature feature_;
   web::FakeWebState web_state_;
+  DisarmedFeature feature_;
 };
 
 TEST_F(LinkToTextJavaScriptFeatureTest, ShouldAttemptIframeGeneration) {
