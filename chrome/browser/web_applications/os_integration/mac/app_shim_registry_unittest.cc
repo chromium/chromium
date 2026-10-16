@@ -644,4 +644,33 @@ TEST_F(AppShimRegistryTest, CdHashKnownAnswers) {
   EXPECT_EQ(*app_hmac, "Do/4zxXTbETfH7WtoKyq+ffhSfgFt1M61QNE/YLB+bk=");
 }
 
+TEST_F(AppShimRegistryTest, NotificationPermissionStatus) {
+  using PermissionStatus = AppShimRegistry::NotificationPermissionStatus;
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  base::FilePath profile_path("/x/y/z/Profile A");
+
+  EXPECT_EQ(PermissionStatus::kNotDetermined,
+            registry_->GetNotificationPermissionStatusForApp(app_id));
+
+  // Saving permission status for an uninstalled app should be a no-op.
+  registry_->SaveNotificationPermissionStatusForApp(app_id,
+                                                    PermissionStatus::kGranted);
+  EXPECT_EQ(PermissionStatus::kNotDetermined,
+            registry_->GetNotificationPermissionStatusForApp(app_id));
+
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+  EXPECT_EQ(PermissionStatus::kNotDetermined,
+            registry_->GetNotificationPermissionStatusForApp(app_id));
+
+  // Every status round-trips through the registry unchanged.
+  for (PermissionStatus status :
+       {PermissionStatus::kPromptPending, PermissionStatus::kImplicitlyDenied,
+        PermissionStatus::kGranted, PermissionStatus::kExplicitlyDenied,
+        PermissionStatus::kImplicitlyDenied,
+        PermissionStatus::kNotDetermined}) {
+    registry_->SaveNotificationPermissionStatusForApp(app_id, status);
+    EXPECT_EQ(status, registry_->GetNotificationPermissionStatusForApp(app_id));
+  }
+}
+
 }  // namespace

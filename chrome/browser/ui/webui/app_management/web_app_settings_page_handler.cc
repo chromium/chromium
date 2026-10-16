@@ -308,9 +308,9 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
         AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(app->id);
     app->show_system_notifications_settings_link =
         system_permission_status !=
-            mac_notifications::mojom::PermissionStatus::kGranted &&
+            AppShimRegistry::NotificationPermissionStatus::kGranted &&
         system_permission_status !=
-            mac_notifications::mojom::PermissionStatus::kNotDetermined;
+            AppShimRegistry::NotificationPermissionStatus::kNotDetermined;
   }
 #endif
 

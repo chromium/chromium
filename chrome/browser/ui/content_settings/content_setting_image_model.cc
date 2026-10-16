@@ -1438,16 +1438,21 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
         content_settings
             ->notifications_was_denied_because_of_system_permission();
 
-    const mac_notifications::mojom::PermissionStatus system_permission_status =
-        AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(*app_id);
+    const AppShimRegistry::NotificationPermissionStatus
+        system_permission_status =
+            AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
+                *app_id);
 
     // If the system level permission for this app is currently "denied", and
     // either the chrome level permission was granted (and notifications have
     // been attempted to be used in this page) or the chrome level permission
     // just switched from "ask" to "blocked", show the indicator icon.
     if ((was_denied_because_of_system_permission || is_allowed) &&
-        system_permission_status ==
-            mac_notifications::mojom::PermissionStatus::kDenied) {
+        (system_permission_status ==
+             AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied ||
+         system_permission_status ==
+             AppShimRegistry::NotificationPermissionStatus::
+                 kExplicitlyDenied)) {
       SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/true);
       // If the chrome level permission was just auto-denied, also popup the
       // bubble.

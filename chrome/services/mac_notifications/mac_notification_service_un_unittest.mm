@@ -1199,22 +1199,37 @@ TEST_F(MacNotificationServiceUNTest,
       &mock_handler};
 
   mojom::PermissionStatus status = mojom::PermissionStatus::kNotDetermined;
-  base::RunLoop loop;
   auto service = std::make_unique<MacNotificationServiceUN>(
       handler_receiver.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting([&](mojom::PermissionStatus new_status) {
+        EXPECT_NE(new_status, mojom::PermissionStatus::kPromptPending);
         status = new_status;
-        loop.Quit();
       }),
       mock_notification_center);
-  loop.Run();
-  EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
 
-  base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
-  service->RequestPermission(permission_result.GetCallback());
-  EXPECT_EQ(permission_result.Get(),
-            mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
-  EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+  // Call `RequestPermission` immediately while the initial
+  // `SynchronizePermissionStatus` reply from the constructor is still pending
+  // on the task runner (so the sync reply arrives while
+  // `pending_permission_requests_` is non-empty and before the
+  // `RequestPermission` settings callback). `kPromptPending` should not be
+  // reported.
+  {
+    base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
+    service->RequestPermission(permission_result.GetCallback());
+    EXPECT_EQ(permission_result.Get(),
+              mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
+    EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+  }
+
+  // Calling `RequestPermission` again after the status is already synchronized
+  // should also not report `kPromptPending`.
+  {
+    base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
+    service->RequestPermission(permission_result.GetCallback());
+    EXPECT_EQ(permission_result.Get(),
+              mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
+    EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+  }
 }
 
 TEST_F(MacNotificationServiceUNTest,

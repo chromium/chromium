@@ -1710,9 +1710,43 @@ void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
 
 void AppShimManager::OnNotificationPermissionStatusChanged(
     AppShimHost* host,
+    std::optional<mac_notifications::mojom::PermissionStatus> previous_status,
     mac_notifications::mojom::PermissionStatus status) {
+  using PermissionStatus = mac_notifications::mojom::PermissionStatus;
+  using RegistryStatus = AppShimRegistry::NotificationPermissionStatus;
+  RegistryStatus registry_status;
+  switch (status) {
+    case PermissionStatus::kNotDetermined:
+      registry_status = RegistryStatus::kNotDetermined;
+      break;
+    case PermissionStatus::kPromptPending:
+      registry_status = RegistryStatus::kPromptPending;
+      break;
+    case PermissionStatus::kDenied: {
+      // A denial is explicit if the user denied a permission prompt that was
+      // pending earlier in the current shim session, or if it follows a
+      // previous grant (i.e. the user turned off notifications in macOS System
+      // Settings). Explicit denials are preserved across subsequent status
+      // reports, such as when the shim is relaunched. A prompt that was still
+      // pending when the shim quit results in an implicit denial, since
+      // `previous_status` is reset when the shim reconnects.
+      const RegistryStatus old_registry_status =
+          AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
+              host->GetAppId());
+      const bool is_explicit =
+          previous_status == PermissionStatus::kPromptPending ||
+          old_registry_status == RegistryStatus::kGranted ||
+          old_registry_status == RegistryStatus::kExplicitlyDenied;
+      registry_status = is_explicit ? RegistryStatus::kExplicitlyDenied
+                                    : RegistryStatus::kImplicitlyDenied;
+      break;
+    }
+    case PermissionStatus::kGranted:
+      registry_status = RegistryStatus::kGranted;
+      break;
+  }
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      host->GetAppId(), status);
+      host->GetAppId(), registry_status);
 }
 
 void AppShimManager::OnProfileAdded(Profile* profile) {

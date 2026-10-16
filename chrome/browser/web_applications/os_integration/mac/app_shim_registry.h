@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
-#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 namespace os_crypt_async {
 class Encryptor;
@@ -81,6 +80,28 @@ class AppShimRegistry {
     kUnexpectedSize = 4,
     kVerificationFailed = 5,
     kMaxValue = kVerificationFailed,
+  };
+
+  // The last known system level notification permission status for an app.
+  // This enum is persisted to disk. Do not delete or re-order entries. New
+  // entries should only be added at the end.
+  enum class NotificationPermissionStatus {
+    // A permission prompt has never been shown for this application.
+    kNotDetermined = 1,
+    // A permission prompt is currently showing.
+    kPromptPending = 2,
+    // Permission is denied at the OS level without an observed explicit denial
+    // from the permission prompt or revocation from a previously granted state
+    // (e.g. the permission prompt was ignored or the application quit with a
+    // pending permission prompt).
+    kImplicitlyDenied = 3,
+    // A permission prompt has been accepted.
+    kGranted = 4,
+    // Permission was explicitly denied by the user, either by denying the
+    // permission prompt or by turning off notifications for this app in macOS
+    // System Settings after previously granting permission.
+    kExplicitlyDenied = 5,
+    kMaxValue = kExplicitlyDenied,
   };
 
   AppShimRegistry(const AppShimRegistry& other) = delete;
@@ -181,12 +202,12 @@ class AppShimRegistry {
   // the given app have been detected.
   void SaveNotificationPermissionStatusForApp(
       const std::string& app_id,
-      mac_notifications::mojom::PermissionStatus status);
+      NotificationPermissionStatus status);
 
   // Gets the last known system level notification permission status for the
   // given app. Returns kNotDetermined if no value has been stored.
-  mac_notifications::mojom::PermissionStatus
-  GetNotificationPermissionStatusForApp(const std::string& app_id);
+  NotificationPermissionStatus GetNotificationPermissionStatusForApp(
+      const std::string& app_id);
 
   // Register a callback to be called any time data associated with an app
   // changes. The callback is passed the app_id of the changed app.
@@ -240,13 +261,13 @@ class AppShimRegistry {
   // |last_active_profiles| only if they are non-nullptr. If
   // |installed_profiles| is non-nullptr and empty, remove the entry for
   // |app_id|.
-  void SetAppInfo(const std::string& app_id,
-                  const std::set<base::FilePath>* installed_profiles,
-                  const std::set<base::FilePath>* last_active_profiles,
-                  const std::map<base::FilePath, HandlerInfo>* handlers,
-                  const std::string* cd_hash_hmac_base64,
-                  const mac_notifications::mojom::PermissionStatus*
-                      notification_permission_status);
+  void SetAppInfo(
+      const std::string& app_id,
+      const std::set<base::FilePath>* installed_profiles,
+      const std::set<base::FilePath>* last_active_profiles,
+      const std::map<base::FilePath, HandlerInfo>* handlers,
+      const std::string* cd_hash_hmac_base64,
+      const NotificationPermissionStatus* notification_permission_status);
 
  private:
   void DoSaveCdHashForApp(const std::string& app_id,

@@ -246,9 +246,9 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
             AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
                 *app_id);
         if (system_permission_status ==
-                mac_notifications::mojom::PermissionStatus::kGranted ||
+                AppShimRegistry::NotificationPermissionStatus::kGranted ||
             system_permission_status ==
-                mac_notifications::mojom::PermissionStatus::kNotDetermined) {
+                AppShimRegistry::NotificationPermissionStatus::kNotDetermined) {
           return false;
         }
         *text_id = IDS_PAGE_INFO_NOTIFICATIONS_SYSTEM_SETTINGS_DESCRIPTION;

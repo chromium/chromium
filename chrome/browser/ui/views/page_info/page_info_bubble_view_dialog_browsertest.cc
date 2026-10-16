@@ -918,7 +918,8 @@ class PageInfoBubbleViewWebAppBrowserTest
 #if BUILDFLAG(IS_MAC)
     if (name == "NotificationSystemPermissionDenied") {
       AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-          app_id_, mac_notifications::mojom::PermissionStatus::kDenied);
+          app_id_,
+          AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied);
 
       HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
           ->SetContentSettingDefaultScope(

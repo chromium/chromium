@@ -2488,6 +2488,7 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
 
 TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
   using PermissionStatus = mac_notifications::mojom::PermissionStatus;
+  using RegistryStatus = AppShimRegistry::NotificationPermissionStatus;
   scoped_feature_list_.InitWithFeatures(
       {features::kAppShimNotificationAttribution,
        features::kUseAdHocSigningForWebAppShims},
@@ -2504,7 +2505,7 @@ TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
   manager_->OnAppActivated(&profile_a_, kTestAppIdA);
 
   // Initial cached status should be "not determined".
-  EXPECT_EQ(PermissionStatus::kNotDetermined,
+  EXPECT_EQ(RegistryStatus::kNotDetermined,
             AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
                 kTestAppIdA));
 
@@ -2514,12 +2515,68 @@ TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
       AppShimRegistry::Get()->RegisterAppChangedCallback(
           app_changed.GetRepeatingCallback());
 
-  for (auto status :
-       {PermissionStatus::kGranted, PermissionStatus::kNotDetermined,
-        PermissionStatus::kPromptPending, PermissionStatus::kDenied}) {
-    host_aa_->NotificationPermissionStatusChanged(status);
+  auto relaunch_shim = [&]() {
+    if (host_aa_) {
+      manager_->OnShimProcessDisconnected(host_aa_.get());
+    }
+    host_aa_unique_ = std::make_unique<TestHost>(profile_path_a_, kTestAppIdA,
+                                                 manager_.get());
+    host_aa_ = host_aa_unique_->GetWeakPtr();
+    manager_->SetHostForCreate(std::move(host_aa_unique_));
+    EXPECT_CALL(*delegate_,
+                DoLaunchShim(&profile_a_, kTestAppIdA,
+                             web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                             web_app::ShimLaunchMode::kNormal));
+    manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+    app_changed.Clear();
+  };
+
+  struct TestCase {
+    bool relaunch_shim;
+    PermissionStatus status;
+    RegistryStatus expected_registry_status;
+  };
+  const TestCase kTestCases[] = {
+      // Denied without a previous grant or prompt is implicit.
+      {/*relaunch_shim=*/false, PermissionStatus::kDenied,
+       RegistryStatus::kImplicitlyDenied},
+      {/*relaunch_shim=*/false, PermissionStatus::kGranted,
+       RegistryStatus::kGranted},
+      // Denied after a previous grant while the shim is running (revoked in
+      // macOS System Settings) is explicit.
+      {/*relaunch_shim=*/false, PermissionStatus::kDenied,
+       RegistryStatus::kExplicitlyDenied},
+      {/*relaunch_shim=*/false, PermissionStatus::kGranted,
+       RegistryStatus::kGranted},
+      // Denied after a previous grant when the shim relaunches (revoked in
+      // macOS System Settings while the shim was not running) is also explicit.
+      {/*relaunch_shim=*/true, PermissionStatus::kDenied,
+       RegistryStatus::kExplicitlyDenied},
+      // Explicit denials are preserved if denied is reported again after the
+      // shim relaunches.
+      {/*relaunch_shim=*/true, PermissionStatus::kDenied,
+       RegistryStatus::kExplicitlyDenied},
+      {/*relaunch_shim=*/false, PermissionStatus::kNotDetermined,
+       RegistryStatus::kNotDetermined},
+      {/*relaunch_shim=*/false, PermissionStatus::kPromptPending,
+       RegistryStatus::kPromptPending},
+      // If the shim quits while a prompt is pending and reports denied upon
+      // relaunch, the denial is implicit.
+      {/*relaunch_shim=*/true, PermissionStatus::kDenied,
+       RegistryStatus::kImplicitlyDenied},
+      {/*relaunch_shim=*/false, PermissionStatus::kPromptPending,
+       RegistryStatus::kPromptPending},
+      // Denying the permission prompt while the shim is running is explicit.
+      {/*relaunch_shim=*/false, PermissionStatus::kDenied,
+       RegistryStatus::kExplicitlyDenied},
+  };
+  for (const auto& test_case : kTestCases) {
+    if (test_case.relaunch_shim) {
+      relaunch_shim();
+    }
+    host_aa_->NotificationPermissionStatusChanged(test_case.status);
     EXPECT_EQ(kTestAppIdA, app_changed.Take());
-    EXPECT_EQ(status,
+    EXPECT_EQ(test_case.expected_registry_status,
               AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
                   kTestAppIdA));
   }

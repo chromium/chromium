@@ -301,7 +301,9 @@ void AppShimHost::ApplicationWillTerminate() {
 
 void AppShimHost::NotificationPermissionStatusChanged(
     mac_notifications::mojom::PermissionStatus status) {
-  client_->OnNotificationPermissionStatusChanged(this, status);
+  client_->OnNotificationPermissionStatusChanged(
+      this, last_notification_permission_status_, status);
+  last_notification_permission_status_ = status;
 }
 
 base::FilePath AppShimHost::GetProfilePath() const {

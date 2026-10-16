@@ -724,7 +724,7 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
 
   // Same, but the system level permission has previously been denied.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, mac_notifications::mojom::PermissionStatus::kDenied);
+      app_id, AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied);
   content_setting_image_model->Update(web_contents());
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
@@ -744,7 +744,7 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
 
   // Granting system permission should remove the indicator.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, mac_notifications::mojom::PermissionStatus::kGranted);
+      app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
   content_setting_image_model->Update(web_contents());
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
@@ -784,7 +784,7 @@ TEST_F(ContentSettingImageModelTest,
   // If the app requests notification permission while the system permission was
   // denied, the notification should show and the bubble should auto open.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, mac_notifications::mojom::PermissionStatus::kDenied);
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
   content_settings->SetNotificationsWasDeniedBecauseOfSystemPermission();
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());

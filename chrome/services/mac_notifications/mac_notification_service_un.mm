@@ -529,7 +529,6 @@ void MacNotificationServiceUN::RequestPermission(
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
-    service->OnGotAuthorizationStatus(status);
     switch (status) {
       case UNAuthorizationStatusDenied:
         service->ReportRequestPermissionResult(
@@ -554,6 +553,7 @@ void MacNotificationServiceUN::RequestPermission(
 void MacNotificationServiceUN::ReportRequestPermissionResult(
     mojom::RequestPermissionResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_permission_prompt_pending_ = false;
   LogUNNotificationRequestPermissionResult(result);
   std::vector<RequestPermissionCallback> callbacks = std::exchange(
       pending_permission_requests_, std::vector<RequestPermissionCallback>());
@@ -577,6 +577,10 @@ void MacNotificationServiceUN::ReportRequestPermissionResult(
 }
 
 void MacNotificationServiceUN::DoRequestPermission() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_permission_prompt_pending_ = true;
+  OnGotAuthorizationStatus(UNAuthorizationStatusNotDetermined);
+
   __block auto block_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&MacNotificationServiceUN::ReportRequestPermissionResult,
                      weak_factory_.GetWeakPtr()));
@@ -773,7 +777,7 @@ void MacNotificationServiceUN::OnGotAuthorizationStatus(
       break;
   }
   if (mojo_status != mojom::PermissionStatus::kGranted &&
-      !pending_permission_requests_.empty()) {
+      is_permission_prompt_pending_) {
     mojo_status = mojom::PermissionStatus::kPromptPending;
   }
   if (mojo_status == last_permission_status_) {

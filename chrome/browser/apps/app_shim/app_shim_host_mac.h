@@ -92,9 +92,13 @@ class AppShimHost : public chrome::mojom::AppShimHost,
     virtual void OnShimWillTerminate(AppShimHost* host) = 0;
 
     // Invoked by the shim host when a change to the system level notification
-    // permission status has been detected.
+    // permission status has been detected. `previous_status` is the status
+    // previously reported by this shim host, or nullopt if this is the first
+    // status reported since the shim connected.
     virtual void OnNotificationPermissionStatusChanged(
         AppShimHost* host,
+        std::optional<mac_notifications::mojom::PermissionStatus>
+            previous_status,
         mac_notifications::mojom::PermissionStatus status) = 0;
   };
 
@@ -244,6 +248,12 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // Used to distinguish between success on first try vs success after recreate
   // for metrics.
   bool shim_recreated_ = false;
+
+  // Last permission status for the shim sent to
+  // `OnNotificationPermissionStatusChanged()`. This is `std::nullopt` if the
+  // shim hasn't reported a status yet.
+  std::optional<mac_notifications::mojom::PermissionStatus>
+      last_notification_permission_status_;
 
   // This weak factory is used for launch callbacks only.
   base::WeakPtrFactory<AppShimHost> launch_weak_factory_;

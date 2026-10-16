@@ -212,6 +212,7 @@ class AppShimHostTest : public testing::Test,
   void OnShimWillTerminate(AppShimHost* host) override {}
   void OnNotificationPermissionStatusChanged(
       AppShimHost* host,
+      std::optional<mac_notifications::mojom::PermissionStatus> previous_status,
       mac_notifications::mojom::PermissionStatus status) override {}
 
   chrome::mojom::AppShimLaunchResult launch_result_ =

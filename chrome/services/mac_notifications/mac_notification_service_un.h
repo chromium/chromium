@@ -138,6 +138,11 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   std::vector<RequestPermissionCallback> pending_permission_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // True while an OS notification permission prompt is being requested via
+  // `DoRequestPermission()`.
+  bool is_permission_prompt_pending_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
   // Callback to be called any time the system level permission status changes.
   base::RepeatingCallback<void(mojom::PermissionStatus)>
       permission_status_changed_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
