@@ -44,7 +44,7 @@ class SessionRestorationWebStateListObserver final
   bool is_web_state_list_dirty() const { return is_web_state_list_dirty_; }
 
   // Returns the set of all dirty WebStates stored in the WebStateList.
-  const std::set<web::WebState*> dirty_web_states() const {
+  const std::set<raw_ptr<web::WebState>>& dirty_web_states() const {
     return dirty_web_states_;
   }
 
@@ -121,7 +121,7 @@ class SessionRestorationWebStateListObserver final
       web_state_observations_{this};
 
   bool is_web_state_list_dirty_ = false;
-  std::set<web::WebState*> dirty_web_states_;
+  std::set<raw_ptr<web::WebState>> dirty_web_states_;
   std::set<web::WebStateID> detached_web_states_;
   std::set<web::WebStateID> inserted_web_states_;
   std::set<web::WebStateID> expected_web_states_;

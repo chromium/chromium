@@ -40,10 +40,12 @@ class TestBrowserListObserver : public BrowserListObserver {
   }
   // The set of regular browsers that were in the browser list when the last
   // observed event occurred.
-  std::set<Browser*> GetLastBrowsers() { return last_browsers_; }
+  const std::set<raw_ptr<Browser>>& GetLastBrowsers() const {
+    return last_browsers_;
+  }
   // The set of incognito browsers that were in the browser list when the last
   // observed event occurred.
-  std::set<Browser*> GetLastIncognitoBrowsers() {
+  const std::set<raw_ptr<Browser>>& GetLastIncognitoBrowsers() const {
     return last_incognito_browsers_;
   }
 
@@ -60,8 +62,8 @@ class TestBrowserListObserver : public BrowserListObserver {
   raw_ptr<Browser, DanglingUntriaged> last_removed_browser_ = nullptr;
   raw_ptr<Browser, DanglingUntriaged> last_added_incognito_browser_ = nullptr;
   raw_ptr<Browser, DanglingUntriaged> last_removed_incognito_browser_ = nullptr;
-  std::set<Browser*> last_browsers_;
-  std::set<Browser*> last_incognito_browsers_;
+  std::set<raw_ptr<Browser>> last_browsers_;
+  std::set<raw_ptr<Browser>> last_incognito_browsers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_TEST_TEST_BROWSER_LIST_OBSERVER_H_

@@ -7,6 +7,7 @@
 
 #import <set>
 
+#include "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/download/download_task_observer.h"
 
@@ -48,7 +49,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   bool did_close_web_state_without_user_action = false;
   // Keeps track of observed tasks to remove observer when
   // UnopenedDownloadsTracker is destructed.
-  std::set<web::DownloadTask*> observed_tasks_;
+  std::set<raw_ptr<web::DownloadTask>> observed_tasks_;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_UNOPENED_DOWNLOADS_TRACKER_H_

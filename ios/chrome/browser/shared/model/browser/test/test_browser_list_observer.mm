@@ -7,6 +7,19 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 
+namespace {
+
+std::set<raw_ptr<Browser>> BrowsersOfType(const BrowserList* browser_list,
+                                          BrowserList::BrowserType type) {
+  std::set<raw_ptr<Browser>> browsers;
+  for (Browser* browser : browser_list->BrowsersOfType(type)) {
+    browsers.insert(browser);
+  }
+  return browsers;
+}
+
+}  // namespace
+
 TestBrowserListObserver::TestBrowserListObserver() = default;
 
 TestBrowserListObserver::~TestBrowserListObserver() = default;
@@ -17,12 +30,12 @@ void TestBrowserListObserver::OnBrowserAdded(const BrowserList* browser_list,
   if (browser->type() == Browser::Type::kRegular ||
       browser->type() == Browser::Type::kInactive) {
     last_added_browser_ = browser;
-    last_browsers_ = browser_list->BrowsersOfType(
-        BrowserList::BrowserType::kRegularAndInactive);
+    last_browsers_ = BrowsersOfType(
+        browser_list, BrowserList::BrowserType::kRegularAndInactive);
   } else {
     last_added_incognito_browser_ = browser;
     last_incognito_browsers_ =
-        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito);
+        BrowsersOfType(browser_list, BrowserList::BrowserType::kIncognito);
   }
 }
 
@@ -32,12 +45,12 @@ void TestBrowserListObserver::OnBrowserRemoved(const BrowserList* browser_list,
   if (browser->type() == Browser::Type::kRegular ||
       browser->type() == Browser::Type::kInactive) {
     last_removed_browser_ = browser;
-    last_browsers_ = browser_list->BrowsersOfType(
-        BrowserList::BrowserType::kRegularAndInactive);
+    last_browsers_ = BrowsersOfType(
+        browser_list, BrowserList::BrowserType::kRegularAndInactive);
   } else {
     last_removed_incognito_browser_ = browser;
     last_incognito_browsers_ =
-        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito);
+        BrowsersOfType(browser_list, BrowserList::BrowserType::kIncognito);
   }
 }
 

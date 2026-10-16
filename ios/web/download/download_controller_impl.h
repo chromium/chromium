@@ -65,7 +65,7 @@ class DownloadControllerImpl : public DownloadController,
 
   // Set of tasks which are currently alive.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::set<DownloadTask*> alive_tasks_;
+  std::set<raw_ptr<DownloadTask>> alive_tasks_;
   raw_ptr<DownloadControllerDelegate> delegate_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);

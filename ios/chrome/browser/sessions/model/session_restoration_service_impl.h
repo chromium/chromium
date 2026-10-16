@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -109,7 +110,7 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
 
   // Set of WebStateLists that are considered dirty and whose state needs to
   // be (at least partially) saved to storage in `SaveDirtySessions()`.
-  std::set<WebStateList*> dirty_web_state_lists_;
+  std::set<raw_ptr<WebStateList>> dirty_web_state_lists_;
 
   // Used to enforce that the identifier are not shared between Browser.
   std::set<std::string> identifiers_;
