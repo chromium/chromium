@@ -7,30 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace invalidation {
-class ProfileInvalidationProvider;
-}
+#import "components/invalidation/profile_invalidation_provider.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // A BrowserContextKeyedServiceFactory to construct InvalidationServices wrapped
 // in ProfileInvalidationProviders.
 class IOSChromeProfileInvalidationProviderFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeProfileInvalidationProviderFactory,
+          invalidation::ProfileInvalidationProvider> {
  public:
-  static invalidation::ProfileInvalidationProvider* GetForProfile(
-      ProfileIOS* profile);
-  static IOSChromeProfileInvalidationProviderFactory* GetInstance();
+  explicit IOSChromeProfileInvalidationProviderFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSChromeProfileInvalidationProviderFactory>;
-
-  IOSChromeProfileInvalidationProviderFactory();
-  ~IOSChromeProfileInvalidationProviderFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

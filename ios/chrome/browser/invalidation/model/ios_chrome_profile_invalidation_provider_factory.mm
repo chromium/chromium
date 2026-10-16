@@ -9,7 +9,6 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/no_destructor.h"
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/invalidation/profile_invalidation_provider.h"
@@ -20,32 +19,13 @@
 
 using invalidation::ProfileInvalidationProvider;
 
-// static
-invalidation::ProfileInvalidationProvider*
-IOSChromeProfileInvalidationProviderFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<invalidation::ProfileInvalidationProvider>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSChromeProfileInvalidationProviderFactory*
-IOSChromeProfileInvalidationProviderFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeProfileInvalidationProviderFactory>
-      instance;
-  return instance.get();
-}
-
 IOSChromeProfileInvalidationProviderFactory::
-    IOSChromeProfileInvalidationProviderFactory()
-    : ProfileKeyedServiceFactoryIOS("InvalidationService") {
+    IOSChromeProfileInvalidationProviderFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "InvalidationService") {
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
 }
-
-IOSChromeProfileInvalidationProviderFactory::
-    ~IOSChromeProfileInvalidationProviderFactory() {}
 
 std::unique_ptr<KeyedService>
 IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
