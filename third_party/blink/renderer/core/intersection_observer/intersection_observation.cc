@@ -197,6 +197,9 @@ IntersectionObservation::GetIntersectionGeometryFlags(
   if (compute_flags.Has(kScrollAndVisibilityOnly)) {
     geometry_flags.Put(IntersectionGeometry::kScrollAndVisibilityOnly);
   }
+  if (compute_flags.Has(kStaleGeometry)) {
+    geometry_flags.Put(IntersectionGeometry::kStaleGeometry);
+  }
   return geometry_flags;
 }
 

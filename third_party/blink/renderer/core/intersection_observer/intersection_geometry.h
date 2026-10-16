@@ -73,7 +73,8 @@ class CORE_EXPORT IntersectionGeometry {
     kScrollAndVisibilityOnly,
     // This flag is to expose extra information of occluded state.
     kShouldExposeOccluderNodeId,
-    kConstructorFlagLast = kShouldExposeOccluderNodeId,
+    kStaleGeometry,
+    kConstructorFlagLast = kStaleGeometry,
 
     // These flags will be computed
     kShouldUseCachedRects,

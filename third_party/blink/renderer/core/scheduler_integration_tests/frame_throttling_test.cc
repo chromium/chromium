@@ -319,12 +319,16 @@ TEST_P(FrameThrottlingTest,
   // Force |child_frame_view| to do an intersection observation.
   child_frame_view->SetIntersectionObservationState(LocalFrameView::kRequired);
 
-  // Though |root_frame_view| is throttled, the descendant (|child_frame_view|)
-  // should still be updated which resets the intersection observation state.
+  // The child frame will process intersection observations at the end of
+  // CompositeFrame(), which will reset its state to kNotNeeded. The child
+  // frame will then inherit the parent frame's throttled state, and when a
+  // frame first becomes throttled its state is advanced to kDesired, so
+  // that it has a chance to generate "not intersecting" notifications for
+  // its content.
   CompositeFrame();
   EXPECT_EQ(LocalFrameView::kNotNeeded,
             root_frame_view->GetIntersectionObservationStateForTesting());
-  EXPECT_EQ(LocalFrameView::kNotNeeded,
+  EXPECT_EQ(LocalFrameView::kDesired,
             child_frame_view->GetIntersectionObservationStateForTesting());
 }
 

@@ -4987,6 +4987,7 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     }
   }
 
+  SetIntersectionObservationState(kDesired);
   if (!CanThrottleRendering()) {
     // Start ticking animation frames again if necessary.
     if (GetPage())
@@ -5074,8 +5075,19 @@ LocalFrameView::GetIntersectionObservationFlags(
     flags.Put(IntersectionObservation::kReportImplicitRootBounds);
   }
 
-  if (!target_frame.IsLocalRoot() && !target_frame.OwnerLayoutObject())
+  if (!target_frame.IsLocalRoot() && !target_frame.OwnerLayoutObject()) {
     flags.Put(IntersectionObservation::kAncestorFrameIsDetachedFromLayout);
+  }
+
+  // If this is true, then we skipped lifecycle update work and we should not
+  // try to do any geometry computation, but should still queue degenerate
+  // "not intersecting" notifications for any observations that were previously
+  // intersecting.
+  if (RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled() &&
+      intersection_observation_state_ != kRequired && CanThrottleRendering()) {
+    flags.Put(IntersectionObservation::kStaleGeometry);
+  }
 
   // Observers with explicit roots only need to be checked on the same frame,
   // since in this case target and root must be in the same document.

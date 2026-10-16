@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -2812,6 +2814,7 @@ TEST_F(IntersectionObserverTest, DelayedAndNonDelayedIntersections) {
 }
 
 TEST_F(IntersectionObserverTest, IntersectionWithMarginInThrottledFrame) {
+  ScopedStaleIntersectionGeometryForThrottledFramesForTest scoped_feature(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
@@ -2822,6 +2825,9 @@ TEST_F(IntersectionObserverTest, IntersectionWithMarginInThrottledFrame) {
   )HTML");
   iframe_resource.Complete("<div id='target'>Hello, world!</div>");
   Compositor().BeginFrame();
+
+  uint32_t expected_call_count = 0;
+  uint32_t expected_entry_count = 0;
 
   Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
                                   ->GetFrame()
@@ -2840,8 +2846,8 @@ TEST_F(IntersectionObserverTest, IntersectionWithMarginInThrottledFrame) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
-  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_EQ(observer_delegate->CallCount(), ++expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), ++expected_entry_count);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
 
   // Move the iframe out of view, but the target is still in the margin.
@@ -2849,42 +2855,95 @@ TEST_F(IntersectionObserverTest, IntersectionWithMarginInThrottledFrame) {
                                                    "600px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
+  // The iframe was not throttled during BeginFrame so the iframe updated its
+  // rendering and we did not send a "not intersecting" notification due to
+  // throttling.
   EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
 
-  // Move the iframe further down, to move the target out of the margin.
+  // The iframe is now throttled and will not update its rendering on the next
+  // BeginFrame. It should queue a "not intersecting" notification if
+  // StaleIntersectionGeometryForThrottledFrames is enabled.
+  if (RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
+  iframe_document->View()->ScheduleAnimation();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_EQ(!RuntimeEnabledFeatures::
+                StaleIntersectionGeometryForThrottledFramesEnabled(),
+            observer_delegate->LastEntry()->isIntersecting());
+
+  // Move the iframe outside the margin. If we have not already, we should
+  // generate a "not intersecting" notification now.
   GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
                                                    "1000px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
+  if (!RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
   EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 2);
-  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
 
-  // Move the iframe up, still out of view, but the target will be in the
-  // margin.
+  // Move the iframe into the margin but still outside the viewport. We should
+  // report it as intersecting if StaleIntersectionGeometryForThrottledFrames
+  // is disabled.
   GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
                                                    "600px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
+  if (!RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
   EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 3);
-  EXPECT_EQ(observer_delegate->EntryCount(), 3);
-  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_EQ(!RuntimeEnabledFeatures::
+                StaleIntersectionGeometryForThrottledFramesEnabled(),
+            observer_delegate->LastEntry()->isIntersecting());
 
-  // Move the iframe down a bit. Though the target may still in the margin,
-  // the iframe's view is marked needing layout somehow, and we will create a
-  // degenerate "not intersecting" notification.
+  // Move the iframe into the viewport.
   GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
-                                                   "610px");
-  iframe_document->View()->SetNeedsLayout();
+                                                   "500px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 4);
-  EXPECT_EQ(observer_delegate->EntryCount(), 4);
-  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  // Despite being in the viewport, the iframe was throttled during BeginFrame
+  // so it will not queue an "intersecting" notification on this pass if
+  // StaleIntersectionGeometryForThrottledFrames is enabled.
+  EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_EQ(!RuntimeEnabledFeatures::
+                StaleIntersectionGeometryForThrottledFramesEnabled(),
+            observer_delegate->LastEntry()->isIntersecting());
+
+  // On the next update the iframe will not be throttled and we should issue an
+  // "intersecting" notification if StaleIntersectionGeometryForThrottledFrames
+  // is enabled.
+  iframe_document->View()->ScheduleAnimation();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  if (RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
+  EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
 }
 
 TEST_F(IntersectionObserverTest,
@@ -2899,6 +2958,9 @@ TEST_F(IntersectionObserverTest,
   )HTML");
   iframe_resource.Complete("<div id='target'>Hello, world!</div>");
   Compositor().BeginFrame();
+
+  uint32_t expected_call_count = 0;
+  uint32_t expected_entry_count = 0;
 
   Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
                                   ->GetFrame()
@@ -2921,8 +2983,8 @@ TEST_F(IntersectionObserverTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_FALSE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
-  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_EQ(observer_delegate->CallCount(), ++expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), ++expected_entry_count);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
   EXPECT_FALSE(observation->HasPendingUpdateForTesting());
 
@@ -2931,12 +2993,23 @@ TEST_F(IntersectionObserverTest,
                                                    "600px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
+  // Because the notification delay has not elapsed, the observation is
+  // scheduled for a delayed update and the iframe becomes throttled at the end
+  // of BeginFrame.
   EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
   EXPECT_TRUE(observation->HasPendingUpdateForTesting());
   EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
+  // When the delay expires, the iframe is throttled and will not update its
+  // rendering on the next BeginFrame. It should queue a "not intersecting"
+  // notification if StaleIntersectionGeometryForThrottledFrames is enabled.
+  if (RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
   task_environment().FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(observation->HasPendingUpdateForTesting());
   EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
@@ -2944,19 +3017,23 @@ TEST_F(IntersectionObserverTest,
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  // `target` is still in the intersection margin.
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_EQ(!RuntimeEnabledFeatures::
+                StaleIntersectionGeometryForThrottledFramesEnabled(),
+            observer_delegate->LastEntry()->isIntersecting());
   EXPECT_FALSE(observation->HasPendingUpdateForTesting());
   EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
-  // Move the iframe further down, to move the target out of the margin.
+  // Move the iframe outside the margin. If we have not already, we should
+  // generate a "not intersecting" notification after the delay.
   GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
                                                    "1000px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
   EXPECT_TRUE(observation->HasPendingUpdateForTesting());
   EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
@@ -2967,22 +3044,28 @@ TEST_F(IntersectionObserverTest,
   EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
+  if (!RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
   EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 2);
-  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
   EXPECT_FALSE(observation->HasPendingUpdateForTesting());
   EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 
-  // Move the iframe up, still out of view, but the target will be in the
-  // margin.
+  // Move the iframe into the margin but still outside the viewport. We should
+  // report it as intersecting after the delay if
+  // StaleIntersectionGeometryForThrottledFrames is disabled.
   GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
                                                    "600px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
   EXPECT_TRUE(observation->HasPendingUpdateForTesting());
   EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
@@ -2993,39 +3076,142 @@ TEST_F(IntersectionObserverTest,
   EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
+  if (!RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
   EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 3);
-  EXPECT_EQ(observer_delegate->EntryCount(), 3);
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_EQ(!RuntimeEnabledFeatures::
+                StaleIntersectionGeometryForThrottledFramesEnabled(),
+            observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
+
+  // Move the iframe into the viewport.
+  GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
+                                                   "500px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  // Despite being in the viewport, the delayed observation is rescheduled and
+  // the iframe was throttled during BeginFrame, so no notification is queued on
+  // this pass.
+  EXPECT_FALSE(iframe_view->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
+  EXPECT_EQ(!RuntimeEnabledFeatures::
+                StaleIntersectionGeometryForThrottledFramesEnabled(),
+            observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
+
+  // When the delay expires, the iframe is no longer throttled and we should
+  // issue an "intersecting" notification if
+  // StaleIntersectionGeometryForThrottledFrames is enabled.
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
+  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
+  EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  if (RuntimeEnabledFeatures::
+          StaleIntersectionGeometryForThrottledFramesEnabled()) {
+    expected_call_count++;
+    expected_entry_count++;
+  }
+  EXPECT_FALSE(iframe_view->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), expected_call_count);
+  EXPECT_EQ(observer_delegate->EntryCount(), expected_entry_count);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
   EXPECT_FALSE(observation->HasPendingUpdateForTesting());
   EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
+}
 
-  // Move the iframe down again and mark the iframe's view needs layout.
-  GetElementById("iframe")->SetInlineStyleProperty(CSSPropertyID::kTop,
-                                                   "1000px");
-  iframe_view->SetNeedsLayout();
+// Regression test for https://crbug.com/570703733.
+TEST_F(IntersectionObserverTest, DirtySlotAssignmentInThrottledFrame) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe id="iframe" src="iframe.html" sandbox style="position: absolute">
+    </iframe>
+  )HTML");
+  iframe_resource.Complete(R"HTML(
+    <div id="kick">Kick</div>
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <div id="target">Hello, world!</div>
+      <div id="wrap">
+        <div style="overflow: scroll; width: 50px; height: 50px">
+          <div style="anchor-name: --a; width: 10px; height: 10px"></div>
+          <div style="position: absolute; position-anchor: --a"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
+                                  ->GetFrame()
+                                  ->GetDocument();
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(*iframe_document);
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.root = iframe_document, .thresholds = {0}});
+  Element* target = iframe_document->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  observer->observe(target);
+
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 3);
-  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
-  EXPECT_TRUE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
-  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
 
-  task_environment().FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(observation->HasPendingUpdateForTesting());
-  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
-  EXPECT_TRUE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
+  // Move the iframe out of view so that it becomes render-throttled.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "1000px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(iframe_view->IsHiddenForThrottling());
-  EXPECT_EQ(observer_delegate->CallCount(), 4);
-  EXPECT_EQ(observer_delegate->EntryCount(), 4);
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+
+  Element* host = iframe_document->getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+  ShadowRoot* shadow_root = host->OpenShadowRoot();
+  ASSERT_TRUE(shadow_root);
+  EXPECT_FALSE(shadow_root->NeedsSlotAssignmentRecalc());
+
+  // Remove `#kick` to set IntersectionObservationState::kDesired on the
+  // throttled frame, and change `#wrap`'s slot attribute so that slot
+  // assignment is dirty when ComputeIntersections runs.
+  Element* kick = iframe_document->getElementById(AtomicString("kick"));
+  ASSERT_TRUE(kick);
+  kick->remove();
+  Element* wrap = iframe_document->getElementById(AtomicString("wrap"));
+  ASSERT_TRUE(wrap);
+  wrap->setAttribute(html_names::kSlotAttr, AtomicString("x"));
+  EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  // Computing intersections in a throttled frame must not force slot
+  // assignment recalculation during post-lifecycle steps.
+  EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_FALSE(observation->HasPendingUpdateForTesting());
-  EXPECT_FALSE(root_frame_view->HasScheduledDelayedIntersectionForTesting());
-  EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 }
 
 TEST_F(IntersectionObserverTest, RootMarginPercentOverflow) {

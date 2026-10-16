@@ -269,6 +269,9 @@ IntersectionGeometry::IntersectionGeometry(
     CachedRects* cached_rects,
     std::optional<HitNodeCb> hit_node_cb)
     : flags_(flags), hit_node_cb_(std::move(hit_node_cb)) {
+  if (flags_.Has(kStaleGeometry)) {
+    return;
+  }
   flags_.RetainAll(
       Flags::FromRange(kConstructorFlagFirst, kConstructorFlagLast));
   // Only one of root_margin or target_margin can be specified.

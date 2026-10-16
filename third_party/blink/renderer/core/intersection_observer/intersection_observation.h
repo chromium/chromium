@@ -63,7 +63,10 @@ class CORE_EXPORT IntersectionObservation final
     kScrollAndVisibilityOnly,
     // Remove outdated entries from IntersectionObserverController.
     kUpdateTracking,
-    kMaxValue = kUpdateTracking,
+    // Document geometry is stale due to throttling and we should issue a "not
+    // intersecting" notification if we were previously intersecting.
+    kStaleGeometry,
+    kMaxValue = kStaleGeometry
   };
   // Allow using the enum values under IntersectionObservation::.
   using enum ComputeFlag;
