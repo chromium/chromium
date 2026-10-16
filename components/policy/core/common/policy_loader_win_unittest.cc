@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>
 #include <functional>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -33,6 +34,7 @@
 #include "components/policy/core/common/configuration_policy_provider_test.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -413,6 +415,49 @@ class PolicyLoaderWinTest : public PolicyTestBase {
                            kTestPolicyKey);
     PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
     return loaded.Equals(expected);
+  }
+
+  // Writes the sensitive HomepageLocation policy and the non-sensitive
+  // ShowHomeButton policy.
+  void InstallSensitiveAndNonSensitivePolicies() {
+    RegKey hklm_key(HKEY_LOCAL_MACHINE, kTestPolicyKey, KEY_ALL_ACCESS);
+    ASSERT_TRUE(hklm_key.Valid());
+    hklm_key.WriteValue(base::UTF8ToWide(key::kHomepageLocation).c_str(),
+                        L"https://example.com");
+    hklm_key.WriteValue(base::UTF8ToWide(key::kShowHomeButton).c_str(), 1);
+  }
+
+  // Returns the HomepageLocation value from `policy_map`, or an empty string
+  // if it is unset or ignored.
+  std::string GetHomepageLocation(const PolicyMap& policy_map) {
+    const base::Value* value =
+        policy_map.GetValue(key::kHomepageLocation, base::Value::Type::STRING);
+    return value ? value->GetString() : std::string();
+  }
+
+  // Gets any existing PolicyMap::Entry, even if marked 'ignored'.
+  const PolicyMap::Entry* GetRawPolicyEntry(const PolicyMap& policy_map,
+                                            const std::string& key) {
+    for (const auto& it : policy_map) {
+      if (it.first == key) {
+        return &it.second;
+      }
+    }
+    return nullptr;
+  }
+
+  // Writes an ExtensionInstallForcelist with one ID-only entry, one entry
+  // with an off-store update URL and one entry with the CWS update URL.
+  void InstallExtensionInstallForcelist() {
+    std::wstring list_key_path =
+        std::wstring(kTestPolicyKey) + L"\\" +
+        base::UTF8ToWide(key::kExtensionInstallForcelist);
+    RegKey list_key(HKEY_LOCAL_MACHINE, list_key_path.c_str(), KEY_ALL_ACCESS);
+    ASSERT_TRUE(list_key.Valid());
+    list_key.WriteValue(L"1", L"extension0");
+    list_key.WriteValue(L"2", L"extension1;https://example.com");
+    list_key.WriteValue(
+        L"3", L"extension2;https://clients2.google.com/service/update2/crx");
   }
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
@@ -823,6 +868,143 @@ TEST_F(PolicyLoaderWinTest, LoadPoliciesCaseInsensitively) {
            POLICY_SOURCE_PLATFORM, base::Value("test_value"), nullptr);
 
   EXPECT_TRUE(Matches(expected));
+}
+
+TEST_F(PolicyLoaderWinTest, SensitivePoliciesFilteredWhenNotManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallSensitiveAndNonSensitivePolicies());
+
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+  const PolicyMap& actual_map = loaded.Get(chrome_ns);
+
+  // The sensitive policy is loaded, but marked as ignored.
+  EXPECT_EQ(nullptr, actual_map.Get(key::kHomepageLocation));
+  const PolicyMap::Entry* sensitive_entry =
+      GetRawPolicyEntry(actual_map, key::kHomepageLocation);
+  ASSERT_TRUE(sensitive_entry);
+  EXPECT_TRUE(sensitive_entry->ignored());
+
+  const base::Value* show_home_value =
+      actual_map.GetValue(key::kShowHomeButton, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(show_home_value);
+  EXPECT_TRUE(show_home_value->GetBool());
+}
+
+TEST_F(PolicyLoaderWinTest, SensitivePoliciesHonoredWhenDomainJoined) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallSensitiveAndNonSensitivePolicies());
+
+  base::win::ScopedDomainStateForTesting scoped_domain(true);
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+  const PolicyMap& actual_map = loaded.Get(chrome_ns);
+
+  EXPECT_EQ("https://example.com", GetHomepageLocation(actual_map));
+
+  const base::Value* show_home_value =
+      actual_map.GetValue(key::kShowHomeButton, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(show_home_value);
+  EXPECT_TRUE(show_home_value->GetBool());
+}
+
+// The MDM status provider reads a cached pref that isn't available in unit
+// tests, so the CLOUD authority is set through the management service.
+TEST_F(PolicyLoaderWinTest, SensitivePoliciesHonoredWhenCloudManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallSensitiveAndNonSensitivePolicies());
+
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      PlatformManagementService::GetInstance(),
+      EnterpriseManagementAuthority::CLOUD);
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+
+  EXPECT_EQ("https://example.com", GetHomepageLocation(loaded.Get(chrome_ns)));
+}
+
+TEST_F(PolicyLoaderWinTest,
+       OffStoreExtensionInstallForcelistBlockedWhenNotManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallExtensionInstallForcelist());
+
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+  const base::Value* list_value = loaded.Get(chrome_ns).GetValue(
+      key::kExtensionInstallForcelist, base::Value::Type::LIST);
+  ASSERT_TRUE(list_value);
+  ASSERT_EQ(3u, list_value->GetList().size());
+  EXPECT_EQ("extension0", list_value->GetList()[0].GetString());
+  EXPECT_EQ("[BLOCKED]extension1;https://example.com",
+            list_value->GetList()[1].GetString());
+  EXPECT_EQ("extension2;https://clients2.google.com/service/update2/crx",
+            list_value->GetList()[2].GetString());
+}
+
+TEST_F(PolicyLoaderWinTest,
+       OffStoreExtensionInstallForcelistHonoredWhenDomainJoined) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallExtensionInstallForcelist());
+
+  base::win::ScopedDomainStateForTesting scoped_domain(true);
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+  const base::Value* list_value = loaded.Get(chrome_ns).GetValue(
+      key::kExtensionInstallForcelist, base::Value::Type::LIST);
+  ASSERT_TRUE(list_value);
+  ASSERT_EQ(3u, list_value->GetList().size());
+  EXPECT_EQ("extension0", list_value->GetList()[0].GetString());
+  EXPECT_EQ("extension1;https://example.com",
+            list_value->GetList()[1].GetString());
+  EXPECT_EQ("extension2;https://clients2.google.com/service/update2/crx",
+            list_value->GetList()[2].GetString());
+}
+
+TEST_F(PolicyLoaderWinTest, ReloadPicksUpManagementStateChanges) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallSensitiveAndNonSensitivePolicies());
+
+  AsyncPolicyProvider provider(
+      &schema_registry_,
+      std::make_unique<PolicyLoaderWin>(
+          task_environment_.GetMainThreadTaskRunner(),
+          PlatformManagementService::GetInstance(), kTestPolicyKey));
+  provider.Init(&schema_registry_);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ("", GetHomepageLocation(provider.policies().Get(chrome_ns)));
+
+  // The device joins a domain.
+  {
+    base::win::ScopedDomainStateForTesting scoped_domain(true);
+    provider.RefreshPolicies(PolicyFetchReason::kTest);
+    task_environment_.RunUntilIdle();
+
+    EXPECT_EQ("https://example.com",
+              GetHomepageLocation(provider.policies().Get(chrome_ns)));
+  }
+
+  // The device leaves the domain: `scoped_domain` restored the initial state.
+  provider.RefreshPolicies(PolicyFetchReason::kTest);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ("", GetHomepageLocation(provider.policies().Get(chrome_ns)));
+
+  provider.Shutdown();
 }
 
 }  // namespace policy
