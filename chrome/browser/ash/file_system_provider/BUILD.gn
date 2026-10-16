@@ -7,8 +7,6 @@ assert(is_chromeos)
 static_library("file_system_provider") {
   sources = [
     "abort_callback.h",
-    "cloud_file_info.cc",
-    "cloud_file_info.h",
     "extension_provider.cc",
     "extension_provider.h",
     "icon_set.cc",

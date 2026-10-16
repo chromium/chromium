@@ -106,7 +106,7 @@ TEST(ScopedFileOpenerTest, CloseAfterOpening) {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(file_system.has_open_callback());
     file_system.open_callback().Run(123, base::File::FILE_OK,
-                                    /*cloud_file_info=*/nullptr);
+                                    /*metadata=*/nullptr);
   }
 
   ASSERT_EQ(1u, log.size());
@@ -128,7 +128,7 @@ TEST(ScopedFileOpenerTest, CloseAfterAborting) {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(file_system.has_open_callback());
     file_system.open_callback().Run(0, base::File::FILE_ERROR_ABORT,
-                                    /*cloud_file_info=*/nullptr);
+                                    /*metadata=*/nullptr);
   }
 
   ASSERT_EQ(1u, log.size());

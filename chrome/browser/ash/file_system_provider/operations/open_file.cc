@@ -11,20 +11,12 @@ namespace ash::file_system_provider::operations {
 
 namespace {
 
-// Extracts out the `cloud_file_info` and `size` from the `OpenFile` success
-// params. Currently only the downstream `CloudFileSystem` cares about the
-// `cloud_file_info` and `size` so only extract that information in (if it
-// exists).
+// Extracts out the `size` from the `OpenFile` success params.
 std::unique_ptr<EntryMetadata> GetEntryMetadataFromParams(
     const extensions::api::file_system_provider_internal::
         OpenFileRequestedSuccess::Params* params) {
   std::unique_ptr<EntryMetadata> metadata = std::make_unique<EntryMetadata>();
   if (params && params->metadata.has_value()) {
-    if (params->metadata->cloud_file_info.has_value() &&
-        params->metadata->cloud_file_info->version_tag.has_value()) {
-      metadata->cloud_file_info = std::make_unique<CloudFileInfo>(
-          params->metadata->cloud_file_info->version_tag.value());
-    }
     if (params->metadata->size.has_value()) {
       metadata->size = std::make_unique<int64_t>(
           static_cast<int64_t>(*params->metadata->size));
@@ -95,7 +87,7 @@ void OpenFile::OnError(/*request_id=*/int,
                        base::File::Error error) {
   CHECK(callback_, base::NotFatalUntil::M160);
   std::move(callback_).Run(/*file_handle=*/0, error,
-                           /*cloud_file_info=*/nullptr);
+                           /*metadata=*/nullptr);
 }
 
 }  // namespace ash::file_system_provider::operations

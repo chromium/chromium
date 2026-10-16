@@ -121,7 +121,7 @@ class ScopedFileOpener::Runner
       return;
 
     std::move(open_callback_)
-        .Run(file_handle, result, /*cloud_file_info=*/nullptr);
+        .Run(file_handle, result, /*metadata=*/nullptr);
   }
 
   base::WeakPtr<ProvidedFileSystemInterface> file_system_;

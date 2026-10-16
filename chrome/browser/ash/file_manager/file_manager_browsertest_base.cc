@@ -101,7 +101,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -2021,7 +2020,7 @@ class FileSystemProviderTestVolume : public TestVolume {
     fake_file_system->AddEntry(base::FilePath(entry.target_path), folder,
                                entry.name_text, file_contents.length(),
                                entry.last_modified_time, entry.mime_type,
-                               /*cloud_file_info=*/nullptr, file_contents);
+                               file_contents);
   }
 
  private:

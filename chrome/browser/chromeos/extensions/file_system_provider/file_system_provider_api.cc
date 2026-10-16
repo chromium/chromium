@@ -98,25 +98,11 @@ storage::WatcherManager::ChangeType ParseChangeType(
   NOTREACHED();
 }
 
-std::unique_ptr<ash::file_system_provider::CloudFileInfo> ParseCloudFileInfo(
-    const std::optional<api::file_system_provider::CloudFileInfo>&
-        cloud_file_info) {
-  if (!cloud_file_info.has_value()) {
-    return nullptr;
-  }
-  if (!cloud_file_info->version_tag.has_value()) {
-    return nullptr;
-  }
-  return std::make_unique<ash::file_system_provider::CloudFileInfo>(
-      cloud_file_info->version_tag.value());
-}
-
 ash::file_system_provider::ProvidedFileSystemObserver::Change ParseChange(
     const api::file_system_provider::Change& change) {
   return ash::file_system_provider::ProvidedFileSystemObserver::Change(
       base::FilePath::FromUTF8Unsafe(change.entry_path),
-      ParseChangeType(change.change_type),
-      ParseCloudFileInfo(change.cloud_file_info));
+      ParseChangeType(change.change_type));
 }
 
 std::unique_ptr<ash::file_system_provider::ProvidedFileSystemObserver::Changes>

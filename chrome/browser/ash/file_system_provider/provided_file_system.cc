@@ -354,7 +354,7 @@ AbortCallback ProvidedFileSystem::OpenFile(const base::FilePath& file_path,
   if (!request_id) {
     std::move(split_callback.second)
         .Run(/*file_handle=*/0, base::File::FILE_ERROR_SECURITY,
-             /*cloud_file_info=*/nullptr);
+             /*metadata=*/nullptr);
     return AbortCallback();
   }
 

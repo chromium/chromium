@@ -8,11 +8,8 @@ namespace ash::file_system_provider {
 
 ProvidedFileSystemObserver::Change::Change(
     base::FilePath entry_path,
-    storage::WatcherManager::ChangeType change_type,
-    std::unique_ptr<CloudFileInfo> cloud_file_info)
-    : entry_path(entry_path),
-      change_type(change_type),
-      cloud_file_info(std::move(cloud_file_info)) {}
+    storage::WatcherManager::ChangeType change_type)
+    : entry_path(entry_path), change_type(change_type) {}
 
 ProvidedFileSystemObserver::Change::Change(Change&&) = default;
 
