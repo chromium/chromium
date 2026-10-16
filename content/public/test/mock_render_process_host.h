@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/observer_list.h"
+#include "base/process/process.h"
 #include "build/build_config.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -378,6 +379,9 @@ class MockRenderProcessHost : public RenderProcessHost {
   mojo::PendingReceiver<blink::mojom::IDBFactory> idb_factory_receiver_;
   std::string unresponsive_document_javascript_call_stack_;
   blink::LocalFrameToken unresponsive_document_token_;
+  // Returned by GetProcess(), which hands out references.
+  const base::Process null_process_;
+  const base::Process current_process_ = base::Process::Current();
   base::WeakPtrFactory<MockRenderProcessHost> weak_ptr_factory_{this};
 };
 

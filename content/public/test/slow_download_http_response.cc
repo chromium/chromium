@@ -4,6 +4,9 @@
 
 #include "content/public/test/slow_download_http_response.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -20,8 +23,13 @@ const char SlowDownloadHttpResponse::kUnknownSizeUrl[] =
     "/download-unknown-size";
 const char SlowDownloadHttpResponse::kKnownSizeUrl[] = "/download-known-size";
 
-// static
-base::OnceClosure g_finish_last_request;
+namespace {
+
+// Finishes the most recent slow download. Owned; a raw pointer so it has no
+// exit-time destructor.
+base::OnceClosure* g_finish_last_request = nullptr;
+
+}  // namespace
 
 // static
 std::unique_ptr<net::test_server::HttpResponse>
@@ -29,8 +37,12 @@ SlowDownloadHttpResponse::HandleSlowDownloadRequest(
     const net::test_server::HttpRequest& request) {
   if (request.relative_url ==
       SlowDownloadHttpResponse::kFinishSlowResponseUrl) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(g_finish_last_request));
+    std::unique_ptr<base::OnceClosure> finish(
+        std::exchange(g_finish_last_request, nullptr));
+    if (finish) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(*finish));
+    }
     return std::make_unique<net::test_server::BasicHttpResponse>();
   }
 
@@ -46,7 +58,9 @@ SlowDownloadHttpResponse::HandleSlowDownloadRequest(
         std::move(start_response).Run();
         // If there's an active slow download request already, we clobber the
         // finish closure so it will never be finished.
-        g_finish_last_request = std::move(finish_response);
+        delete g_finish_last_request;
+        g_finish_last_request =
+            new base::OnceClosure(std::move(finish_response));
       }));
 }
 

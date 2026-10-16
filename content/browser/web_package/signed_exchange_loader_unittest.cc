@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -159,7 +160,8 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
   base::RunLoop run_loop;
   raw_producer->Write(
       std::make_unique<mojo::StringDataSource>(
-          MockSignedExchangeHandler::kMockSxgPrefix + "Hello, world!",
+          base::StrCat(
+              {MockSignedExchangeHandler::kMockSxgPrefix, "Hello, world!"}),
           mojo::StringDataSource::AsyncWritingMode::
               STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION),
       base::BindOnce([](std::unique_ptr<mojo::DataPipeProducer> producer,

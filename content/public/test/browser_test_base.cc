@@ -168,11 +168,14 @@ bool g_instance_already_created = false;
 // See http://crbug.com/141302.
 int g_browser_process_pid;
 
-// A shutdown function set on signal callback registration.
-base::OnceCallback<void(int)> ShutdownHandler;
+// The test to notify from SignalHandler(), set on signal callback
+// registration.
+BrowserTestBase* g_signal_test = nullptr;
 
 void SignalHandler(int signal) {
-  std::move(ShutdownHandler).Run(signal);
+  if (BrowserTestBase* test = std::exchange(g_signal_test, nullptr)) {
+    test->SignalRunTestOnMainThread(signal);
+  }
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableInProcessStackTraces) &&
@@ -229,8 +232,7 @@ std::string GetDefaultTraceBasename(TraceBasenameType type) {
   // stream the results (to avoid losing them if test crashes).
   // - the second time, if test execution finishes normally, to calculate the
   // resulting name of the file, including test result.
-  static std::string random_seed =
-      base::NumberToString(base::RandIntInclusive(1e7, 1e8 - 1));
+  static const int random_seed = base::RandIntInclusive(1e7, 1e8 - 1);
   std::string status;
   if (type == TraceBasenameType::kWithTestStatus) {
     if (test_info) {
@@ -242,8 +244,8 @@ std::string GetDefaultTraceBasename(TraceBasenameType type) {
     // In order to be able to stream the test to the file,
     status = "NOT_FINISHED";
   }
-  return "trace_test_" + test_suite_name + "_" + test_name + "_" + random_seed +
-         "_" + status;
+  return "trace_test_" + test_suite_name + "_" + test_name + "_" +
+         base::NumberToString(random_seed) + "_" + status;
 }
 
 // See SetInitialWebContents comment for more information.
@@ -952,6 +954,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
   absl::Cleanup restore_signal_handlers = [&old_sigsegv_action,
                                            &old_sigterm_action] {
+    g_signal_test = nullptr;
     if (old_sigsegv_action) {
       sigaction(SIGSEGV, &*old_sigsegv_action, nullptr);
     }
@@ -960,8 +963,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     }
   };
 
-  ShutdownHandler = base::BindOnce(&BrowserTestBase::SignalRunTestOnMainThread,
-                                   base::Unretained(this));
+  g_signal_test = this;
 #endif  // BUILDFLAG(IS_POSIX)
 
   {

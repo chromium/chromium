@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_PACKAGE_MOCK_SIGNED_EXCHANGE_HANDLER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -61,7 +62,7 @@ class MockSignedExchangeHandler final : public SignedExchangeHandler {
   // CBOR/binary encoding).  Ensuring that tests more closely mimic real
   // behavior seems desirable, even if in the long-term SXG might avoid
   // `no-cors` mode (see https://crbug.com/1316660).
-  inline static const std::string kMockSxgPrefix = "MOCK-SXG-PREFIX: ";
+  static constexpr std::string_view kMockSxgPrefix = "MOCK-SXG-PREFIX: ";
 
  private:
   const net::SHA256HashValue header_integrity_;

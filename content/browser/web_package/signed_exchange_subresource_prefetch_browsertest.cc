@@ -11,6 +11,7 @@
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -94,7 +95,7 @@ PrefetchBrowserTestBase::ResponseEntry CreateSignedExchangeResponseEntry(
   // We mock the SignedExchangeHandler, so just return the content as
   // "application/signed-exchange;v=b3".
   return PrefetchBrowserTestBase::ResponseEntry(
-      MockSignedExchangeHandler::kMockSxgPrefix + content,
+      base::StrCat({MockSignedExchangeHandler::kMockSxgPrefix, content}),
       "application/signed-exchange;v=b3", headers);
 }
 
