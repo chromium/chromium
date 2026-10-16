@@ -114,45 +114,4 @@ TEST_F(AssistantAIMMetricsRecorderTest, CloseUndoRestoresState) {
       AssistantAimStateTransition::kRestoredWithUndo, 1);
 }
 
-// Tests that tapping the close button logs `kCloseButtonTapped` without
-// marking positive engagement, whereas non-close header and menu actions mark
-// positive engagement.
-TEST_F(AssistantAIMMetricsRecorderTest,
-       HeaderActionsRecordMetricsAndEngagement) {
-  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
-
-  [recorder_ recordHeaderAction:AssistantAimHeaderAction::kCloseButtonTapped];
-  [recorder_ recordSessionEnded];
-
-  histogram_tester_.ExpectUniqueSample(
-      kAssistantAimHeaderActionHistogram,
-      AssistantAimHeaderAction::kCloseButtonTapped, 1);
-  histogram_tester_.ExpectUniqueSample(
-      kAssistantAimSessionHadEngagementHistogram, false, 1);
-
-  // Start a second session and exercise non-close header actions.
-  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
-  [recorder_ recordHeaderAction:AssistantAimHeaderAction::kThreadHistoryTapped];
-  [recorder_ recordHeaderAction:AssistantAimHeaderAction::kMyActivityTapped];
-  [recorder_ recordHeaderAction:AssistantAimHeaderAction::kHelpTapped];
-  [recorder_ recordHeaderAction:AssistantAimHeaderAction::kNewThreadTapped];
-  [recorder_ recordSessionEnded];
-
-  histogram_tester_.ExpectBucketCount(
-      kAssistantAimHeaderActionHistogram,
-      AssistantAimHeaderAction::kThreadHistoryTapped, 1);
-  histogram_tester_.ExpectBucketCount(
-      kAssistantAimHeaderActionHistogram,
-      AssistantAimHeaderAction::kMyActivityTapped, 1);
-  histogram_tester_.ExpectBucketCount(kAssistantAimHeaderActionHistogram,
-                                      AssistantAimHeaderAction::kHelpTapped, 1);
-  histogram_tester_.ExpectBucketCount(
-      kAssistantAimHeaderActionHistogram,
-      AssistantAimHeaderAction::kNewThreadTapped, 1);
-  histogram_tester_.ExpectBucketCount(
-      kAssistantAimSessionHadEngagementHistogram, true, 1);
-}
-
 }  // namespace

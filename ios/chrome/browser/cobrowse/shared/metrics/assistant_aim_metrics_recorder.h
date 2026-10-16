@@ -28,9 +28,6 @@ enum class AssistantContainerDetent : NSInteger;
 // `didUndo`
 - (void)recordClosedSnackbarResolvedWithUndo:(BOOL)didUndo;
 
-// Records a header button or overflow menu `action`.
-- (void)recordHeaderAction:(AssistantAimHeaderAction)action;
-
 // Finalizes and flushes all session-level metrics when the session ends.
 - (void)recordSessionEnded;
 
