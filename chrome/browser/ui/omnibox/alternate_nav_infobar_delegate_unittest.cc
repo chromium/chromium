@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -58,20 +56,7 @@ TEST_F(AlternateNavInfoBarDelegateTest, BasicProperties) {
   EXPECT_EQ(GURL("https://youtube.com/"), delegate->GetLinkURL());
 }
 
-TEST_F(AlternateNavInfoBarDelegateTest, LinkTextFlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInfoBarInlineLinks);
-
-  auto* delegate = CreateDelegate();
-  ASSERT_TRUE(delegate);
-
-  EXPECT_EQ(u"https://youtube.com/", delegate->GetLinkText());
-}
-
-TEST_F(AlternateNavInfoBarDelegateTest, LinkTextFlagOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInfoBarInlineLinks);
-
+TEST_F(AlternateNavInfoBarDelegateTest, LinkText) {
   auto* delegate = CreateDelegate();
   ASSERT_TRUE(delegate);
 
@@ -79,9 +64,6 @@ TEST_F(AlternateNavInfoBarDelegateTest, LinkTextFlagOn) {
 }
 
 TEST_F(AlternateNavInfoBarDelegateTest, ConfirmInfoBarDelegateOverrides) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInfoBarInlineLinks);
-
   auto* delegate = CreateDelegate();
   ASSERT_TRUE(delegate);
 

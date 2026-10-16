@@ -15,7 +15,6 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -61,10 +60,7 @@ const gfx::VectorIcon& AlternateNavInfoBarDelegate::GetVectorIcon() const {
 }
 
 std::u16string AlternateNavInfoBarDelegate::GetLinkText() const {
-  if (base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
-    return std::u16string();
-  }
-  return base::UTF8ToUTF16(destination_url_.spec());
+  return std::u16string();
 }
 
 GURL AlternateNavInfoBarDelegate::GetLinkURL() const {

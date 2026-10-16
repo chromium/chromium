@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_custom_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
@@ -31,8 +30,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kExtraButtonElementId);
 // static
 std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  if (!delegate->GetMessageTextTemplate().empty() &&
-      base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
+  if (!delegate->GetMessageTextTemplate().empty()) {
     return std::make_unique<ConfirmInfoBarWithStyledLabel>(std::move(delegate));
   }
   return std::make_unique<ConfirmInfoBarWithNormalLabel>(std::move(delegate));

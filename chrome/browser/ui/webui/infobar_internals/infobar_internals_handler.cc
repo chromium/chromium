@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_blocked_migration_infobar_delegate.h"
@@ -268,11 +267,9 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
                        const std::string& label = "Trigger") {
     add_entry_with_actions(type, name, description, {{action, label}});
   };
-  if (base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
-    add_entry(InfoBarType::kAlternateNav, "Alternate Nav",
-              "The Alternate Nav infobar is shown when a user searches for a "
-              "term they may have meant to navigate to.");
-  }
+  add_entry(InfoBarType::kAlternateNav, "Alternate Nav",
+            "The Alternate Nav infobar is shown when a user searches for a "
+            "term they may have meant to navigate to.");
   add_entry_with_actions(
       InfoBarType::kAutomation, "Automation",
       "The Automation infobar warns users when Chrome is controlled by "

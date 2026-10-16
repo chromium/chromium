@@ -11,8 +11,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_custom_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
@@ -170,10 +168,7 @@ class ConfirmInfoBarTest : public views::ViewsTestBase {
     layout_provider_ = std::make_unique<ChromeLayoutProvider>();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   views::Label* CreateNormalLabelInfoBarAndGetLabel() {
-    feature_list_.InitAndDisableFeature(features::kInfoBarInlineLinks);
     auto delegate = std::make_unique<FakeConfirmInfoBarDelegate>();
     infobar_ = ConfirmInfoBar::Create(std::move(delegate));
     auto* standard_infobar =
@@ -182,7 +177,6 @@ class ConfirmInfoBarTest : public views::ViewsTestBase {
   }
 
   views::StyledLabel* CreateStyledLabelInfoBarAndGetLabel() {
-    feature_list_.InitAndEnableFeature(features::kInfoBarInlineLinks);
     std::vector<MessageSubstitution> substitutions;
     substitutions.emplace_back(u"link", true, std::nullopt);
     substitutions.emplace_back(u"text", false, std::nullopt);
@@ -386,7 +380,6 @@ TEST_F(ConfirmInfoBarWithInlineLinksTest,
   auto delegate = std::make_unique<InlineSubstitutionTestDelegate>(
       u"Message with $1", std::move(substitutions), &clicked_index);
 
-  feature_list_.InitAndEnableFeature(features::kInfoBarInlineLinks);
   auto* infobar = static_cast<ConfirmInfoBarWithStyledLabel*>(
       manager.AddInfoBar(ConfirmInfoBar::Create(std::move(delegate))));
 

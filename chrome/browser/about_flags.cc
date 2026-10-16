@@ -13594,10 +13594,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableAiCardRecommendation)},
 
-    {"infobar-inline-links", flag_descriptions::kInfoBarInlineLinksName,
-     flag_descriptions::kInfoBarInlineLinksDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kInfoBarInlineLinks)},
-
     {"autofill-enable-bnpl-affirm-internationalization",
      flag_descriptions::kAutofillEnableBnplAffirmInternationalizationName,
      flag_descriptions::
