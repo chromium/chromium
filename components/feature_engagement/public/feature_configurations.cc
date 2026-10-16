@@ -747,6 +747,29 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAndroidBottomBarEducation.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+
+    // IPH is always available at start-up.
+    config.availability = kAlwaysAvailable;
+
+    // IPH only shows if no other IPH has shown this session.
+    config.session_rate = Comparator(EQUAL, 0);
+
+    // Showing this IPH does not block other IPHs from showing this session.
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+
+    // IPH only shows once per 360 days.
+    config.trigger = EventConfig("android_bottom_bar_education_trigger",
+                                 Comparator(EQUAL, 0), 360, 360);
+
+    // IPH will not show if the user has completed the flow previously.
+    config.used = EventConfig("android_bottom_bar_education_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHAndroidBottomBarPromoDialog.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

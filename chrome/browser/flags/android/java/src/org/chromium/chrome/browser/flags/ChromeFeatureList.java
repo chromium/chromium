@@ -2000,6 +2000,10 @@ public abstract class ChromeFeatureList {
     // the resulting enablement is read pre-native while the toolbar layout is inflated.
     public static final BooleanCachedFeatureParam sAndroidBottomBarDefaultUserEnabled =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "default_user_enabled", true);
+    public static final BooleanCachedFeatureParam sAndroidBottomBarEducationEnabled =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_enabled", false);
+    public static final BooleanCachedFeatureParam sAndroidBottomBarEducationGeminiFocused =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_gemini_focused", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_app_menu_in_toolbar", false);
     // Whether the Address bar and Homepage settings rows are moved from MainSettings into
@@ -2390,6 +2394,8 @@ public abstract class ChromeFeatureList {
                     sAndroidAppRatingPromptBypassChecks,
                     sAndroidBottomBarAlwaysUseFilledGlicIcon,
                     sAndroidBottomBarDefaultUserEnabled,
+                    sAndroidBottomBarEducationEnabled,
+                    sAndroidBottomBarEducationGeminiFocused,
                     sAndroidBottomBarHeightDp,
                     sAndroidBottomBarKeepAppMenuInToolbar,
                     sAndroidBottomBarMoveToolbarSettingsToAppearance,
