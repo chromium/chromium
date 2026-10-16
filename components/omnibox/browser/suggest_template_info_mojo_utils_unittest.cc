@@ -255,5 +255,22 @@ TEST(SuggestTemplateInfoMojoUtilsTest, KeepsClassificationOffsets) {
   }
 }
 
+TEST(SuggestTemplateInfoMojoUtilsTest, UsesServerStyle) {
+  // Matches without a server-provided style have an unspecified style.
+  {
+    AutocompleteMatch match;
+    EXPECT_EQ(CreateSuggestTemplateInfo(match)->style,
+              mojom::SuggestStyle::kUnspecified);
+  }
+  {
+    AutocompleteMatch match;
+    omnibox::SuggestTemplateInfo suggest_template;
+    suggest_template.set_style(omnibox::SuggestTemplateInfo::RICH_IMAGE);
+    match.suggest_template = suggest_template;
+    EXPECT_EQ(CreateSuggestTemplateInfo(match)->style,
+              mojom::SuggestStyle::kRichImage);
+  }
+}
+
 }  // namespace
 }  // namespace suggest_template_info

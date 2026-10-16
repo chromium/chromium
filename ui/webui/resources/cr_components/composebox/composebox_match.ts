@@ -9,8 +9,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {computeImageUrl} from './common.js';
@@ -140,7 +139,7 @@ export class ComposeboxMatchElement extends CrLitElement {
   // kAnnotated), add a case here and define any variant-specific CSS overrides
   // in composebox_match.css.
   private computeSuggestStyle_(): string {
-    switch (this.match.suggestStyle) {
+    switch (this.match.suggestTemplate.style) {
       case SuggestStyle.kRichImage:
         return (this.richImageSuggestionsEnabled &&
                 Boolean(this.match.suggestTemplate.image?.url)) ?

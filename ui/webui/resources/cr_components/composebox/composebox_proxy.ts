@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote} from './composebox.mojom-webui.js';
 
@@ -31,7 +31,6 @@ export function createAutocompleteMatch(
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,
-    suggestStyle: SuggestStyle.kUnspecified,
     suggestTemplate: {
       primaryText: {text: '', fragments: [], a11yText: null},
       primaryTextClass: [{offset: 0, style: 0}],
@@ -39,6 +38,7 @@ export function createAutocompleteMatch(
       secondaryTextClass: [{offset: 0, style: 0}],
       secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
       image: null,
+      style: SuggestStyle.kUnspecified,
     },
     urlEmphasis: null,
     ...config,
