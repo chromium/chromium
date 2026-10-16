@@ -307,11 +307,26 @@ const CSSValue* PositionVisibility::ParseSingleValue(
       if (id == CSSValueID::kAnchorVisible) {
         context.Count(WebFeature::kCSSValuePositionVisibilityAnchorVisible);
       } else {
-        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorsVisible);
         if (singular_enabled) {
+          if (const Document* document = context.GetDocument();
+              document && context.IsUseCounterRecordingEnabled() &&
+              !document->IsUseCounted(
+                  WebFeature::kCSSValuePositionVisibilityAnchorsVisible)) {
+            document->AddConsoleMessage(
+                MakeGarbageCollected<ConsoleMessage>(
+                    mojom::blink::ConsoleMessageSource::kDeprecation,
+                    mojom::blink::ConsoleMessageLevel::kWarning,
+                    "The `position-visibility: anchors-visible` value has been "
+                    "deprecated. Please use the singular `anchor-visible` "
+                    "instead. See "
+                    "https://chromestatus.com/feature/5136123851571200 for "
+                    "more information."),
+                /*discard_duplicates=*/true);
+          }
           anchor_visible =
               CSSIdentifierValue::Create(CSSValueID::kAnchorVisible);
         }
+        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorsVisible);
       }
     } else if (!no_overflow && id == CSSValueID::kNoOverflow) {
       no_overflow =

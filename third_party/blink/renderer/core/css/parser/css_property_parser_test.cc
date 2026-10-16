@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -479,6 +481,7 @@ class CSSPropertyUseCounterTest : public ::testing::Test {
   }
 
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
+  Page& GetPage() { return dummy_page_holder_->GetPage(); }
 
  private:
   test::TaskEnvironment task_environment_;
@@ -617,6 +620,33 @@ TEST_F(CSSPropertyUseCounterTest, CSSLightDark) {
 
   ParseProperty(CSSPropertyID::kBackgroundColor, "light-dark(green, lime)");
   EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest,
+       PositionVisibilityAnchorsVisibleDeprecationWarning) {
+  ConsoleMessageStorage& storage = GetPage().GetConsoleMessageStorage();
+  EXPECT_EQ(storage.size(), 0u);
+
+  ParseProperty(CSSPropertyID::kPositionVisibility, "anchor-visible");
+  EXPECT_TRUE(IsCounted(WebFeature::kCSSValuePositionVisibilityAnchorVisible));
+  EXPECT_FALSE(
+      IsCounted(WebFeature::kCSSValuePositionVisibilityAnchorsVisible));
+  EXPECT_EQ(storage.size(), 0u);
+
+  ParseProperty(CSSPropertyID::kPositionVisibility, "anchors-visible");
+  EXPECT_TRUE(IsCounted(WebFeature::kCSSValuePositionVisibilityAnchorsVisible));
+  ASSERT_EQ(storage.size(), 1u);
+  EXPECT_EQ(storage.at(0)->Message(),
+            "The `position-visibility: anchors-visible` value has been "
+            "deprecated. Please use the singular `anchor-visible` instead. See "
+            "https://chromestatus.com/feature/5136123851571200 for more "
+            "information.");
+
+  // Subsequent uses should not emit additional console warnings.
+  ParseProperty(CSSPropertyID::kPositionVisibility, "anchors-visible");
+  ParseProperty(CSSPropertyID::kPositionVisibility,
+                "anchors-visible no-overflow");
+  EXPECT_EQ(storage.size(), 1u);
 }
 
 void TestImageSetParsing(const String& testValue,
