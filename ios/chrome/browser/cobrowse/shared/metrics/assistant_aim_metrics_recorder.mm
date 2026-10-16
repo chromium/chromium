@@ -52,6 +52,8 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   int _linksClickedCount;
   // Whether the sheet was minimized due to a link click and is awaiting return.
   BOOL _awaitingReturnFromLinkClick;
+  // Number of follow-up queries submitted during the active session.
+  int _followupsSubmittedCount;
 }
 
 #pragma mark - Public
@@ -127,6 +129,16 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   base::UmaHistogramBoolean(kAssistantAimLinkClickedHistogram, true);
 }
 
+- (void)recordFollowupSubmittedWithAttachment:(BOOL)hasAttachment {
+  if (!_sessionActive) {
+    return;
+  }
+  _followupsSubmittedCount++;
+  _hasPositiveEngagement = YES;
+  base::UmaHistogramBoolean(kAssistantAimFollowupHadAttachmentHistogram,
+                            hasAttachment);
+}
+
 - (void)recordSessionEnded {
   if (!_sessionActive) {
     return;
@@ -144,6 +156,8 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
     _awaitingReturnFromLinkClick = NO;
   }
 
+  base::UmaHistogramCounts100(kAssistantAimFollowupsPerSessionHistogram,
+                              _followupsSubmittedCount);
   base::UmaHistogramCounts100(kAssistantAimLinksClickedPerSessionHistogram,
                               _linksClickedCount);
   base::UmaHistogramBoolean(kAssistantAimSessionHadLinkClickHistogram,
@@ -165,6 +179,7 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   _closedByButton = NO;
   _linksClickedCount = 0;
   _awaitingReturnFromLinkClick = NO;
+  _followupsSubmittedCount = 0;
 }
 
 // Logs engagement boolean, active visible time, and immediate dismissal.

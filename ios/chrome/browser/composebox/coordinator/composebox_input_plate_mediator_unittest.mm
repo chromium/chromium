@@ -40,6 +40,7 @@
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_client.h"
 #import "components/version_info/channel.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_event.h"
@@ -77,6 +78,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "url/gurl.h"
 
@@ -2631,6 +2634,48 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   EXPECT_EQ(consumer.items.count, 0U);
   EXPECT_TRUE(fake_loader.prepareLoadCalled);
+}
+
+// Tests that `sendAIMFollowup:` records a follow-up submission on the
+// assistant metrics recorder.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       SendAIMFollowupRecordsFollowupSubmitted) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ForwardSearchboxConfig();
+  id assistant_recorder = OCMClassMock([AssistantAIMMetricsRecorder class]);
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+  mediator.assistantMetricsRecorder = assistant_recorder;
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  OCMExpect([assistant_recorder recordFollowupSubmittedWithAttachment:NO]);
+  EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_)).Times(1);
+  [mediator sendAIMFollowup:@"test followup without attachment"];
+
+  raw_mock_session->GetUploadedContextTokensForTesting().push_back(
+      base::UnguessableToken::Create());
+  OCMExpect([assistant_recorder recordFollowupSubmittedWithAttachment:YES]);
+  EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_)).Times(1);
+  [mediator sendAIMFollowup:@"test followup with attachment"];
+
+  EXPECT_OCMOCK_VERIFY(assistant_recorder);
 }
 
 }  // namespace

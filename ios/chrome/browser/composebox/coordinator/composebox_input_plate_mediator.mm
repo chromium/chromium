@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_query_contextualizer_delegate_bridge.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
@@ -1688,6 +1689,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   request_info->query_start_time = base::Time::Now();
   request_info->file_tokens =
       _contextualSearchSession->GetUploadedContextTokens();
+  BOOL hasAttachment = !request_info->file_tokens.empty();
 
   request_info->active_tool = inputState->active_tool;
   request_info->active_model = inputState->active_model;
@@ -1697,6 +1699,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
           std::move(request_info));
 
   [self.URLLoader prepareLoadWithClientToAimMessage:message];
+  [self.assistantMetricsRecorder
+      recordFollowupSubmittedWithAttachment:hasAttachment];
   [self clearNonTabItems];
 }
 

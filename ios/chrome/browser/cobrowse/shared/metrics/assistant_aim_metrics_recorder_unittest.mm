@@ -214,4 +214,40 @@ TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedWithoutReturn) {
       kAssistantAimSessionHadLinkClickHistogram, true, 1);
 }
 
+// Tests that submitting follow-up queries increments the per-session follow-up
+// count, records whether each follow-up had an attachment, marks positive
+// engagement at session end, and resets `_followupsSubmittedCount` when a new
+// session starts.
+TEST_F(AssistantAIMMetricsRecorderTest, FollowupSubmissionsPerSession) {
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kAskAboutCurrentPage];
+
+  [recorder_ recordFollowupSubmittedWithAttachment:YES];
+  [recorder_ recordFollowupSubmittedWithAttachment:NO];
+  [recorder_ recordFollowupSubmittedWithAttachment:NO];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimFollowupHadAttachmentHistogram, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimFollowupHadAttachmentHistogram, false, 2);
+  histogram_tester_.ExpectTotalCount(
+      kAssistantAimFollowupHadAttachmentHistogram, 3);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimFollowupsPerSessionHistogram, 3, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimSessionHadEngagementHistogram, true, 1);
+
+  // Starting a new session should reset `_followupsSubmittedCount`.
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kAskAboutCurrentPage];
+  [recorder_ recordFollowupSubmittedWithAttachment:YES];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectBucketCount(kAssistantAimFollowupsPerSessionHistogram,
+                                      1, 1);
+  histogram_tester_.ExpectTotalCount(kAssistantAimFollowupsPerSessionHistogram,
+                                     2);
+}
+
 }  // namespace

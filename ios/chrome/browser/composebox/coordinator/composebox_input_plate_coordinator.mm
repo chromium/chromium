@@ -263,6 +263,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _mediator.metricsRecorder = _metricsRecorder;
+  _mediator.assistantMetricsRecorder = _focusParams.assistantMetricsRecorder;
 
   _viewController.mutator = _mediator;
   // Mediator is the voice search delegate to load queries in composebox.

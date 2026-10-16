@@ -98,6 +98,7 @@ source_set("input_plate") {
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/cobrowse/model:factory",
+    "//ios/chrome/browser/cobrowse/shared/metrics",
     "//ios/chrome/browser/cobrowse/shared/metrics:metrics_constants",
     "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/menu/coordinator",
@@ -371,6 +372,7 @@ source_set("unit_tests") {
     "//components/variations:test_support",
     "//components/version_info:channel",
     "//ios/chrome/browser/cobrowse/model:factory",
+    "//ios/chrome/browser/cobrowse/shared/metrics",
     "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public",
@@ -391,6 +393,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
     "//url",
   ]

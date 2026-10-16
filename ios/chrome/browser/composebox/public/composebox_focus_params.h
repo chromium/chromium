@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/web/public/web_state_id.h"
 
+@class AssistantAIMMetricsRecorder;
 @class ComposeboxAttachmentSelection;
 
 // Parameters used to focus and initialize the composebox with specific state.
@@ -49,6 +50,10 @@
 
 // The optional shared metrics recorder.
 @property(nonatomic, strong) ComposeboxMetricsRecorder* metricsRecorder;
+
+// The optional metrics recorder for the Assistant AIM bottom sheet session.
+@property(nonatomic, strong)
+    AssistantAIMMetricsRecorder* assistantMetricsRecorder;
 
 /// The initial model option to force the composebox into.
 @property(nonatomic, assign) ComposeboxModelOption initialModelOption;

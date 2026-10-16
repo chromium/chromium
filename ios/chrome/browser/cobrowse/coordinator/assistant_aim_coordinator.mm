@@ -198,6 +198,7 @@ class AssistantAIMUIStateProvider
                            isNTP:NO];
   ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kCobrowse];
+  focusParams.assistantMetricsRecorder = _metricsRecorder;
   _inputPlateCoordinator = [[ComposeboxInputPlateCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
