@@ -344,6 +344,9 @@
       <message name="IDS_PDF_INK2_ANNOTATION_UNDONE" desc="The confirmation announcement read by screen readers when an annotation action is undone." is_accessibility_with_no_ui="true">
         Annotation undone
       </message>
+      <message name="IDS_PDF_INK2_SIGNATURE" desc="The button label for entering 'signature mode' in the PDF viewer, which allows for adding signature stamps to the document.">
+        Add signature
+      </message>
       <message name="IDS_PDF_INK2_TEXT_ANNOTATION" desc="The button label for entering 'text annotation mode' in the PDF viewer, which allows for adding and editing text annotations.">
         Add text annotations
       </message>

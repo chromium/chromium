@@ -71,14 +71,13 @@ import {AnnotationMode} from '../constants.js';
             aria-label="$i18n{ink2Draw}"
             title="$i18n{ink2Draw}"></cr-icon-button>
         ${this.pdfSignaturesEnabled_ ? html`
-          <!-- TODO(crbug.com/573058977): add a translated string for the label -->
           <cr-icon-button id="signature" iron-icon="pdf-ink:signature"
               class="annotate-button ${this.getActive_(AnnotationMode.SIGNATURE)}"
               @click="${this.onSignatureClick_}"
               ?disabled="${!this.annotationAvailable}"
               aria-pressed="${this.getAriaPressed_(AnnotationMode.SIGNATURE)}"
-              aria-label="Add signature"
-              title="Add signature">
+              aria-label="$i18n{ink2Signature}"
+              title="$i18n{ink2Signature}">
           </cr-icon-button>
         ` : ''}
         <span class="vertical-separator"></span>
