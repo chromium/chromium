@@ -546,7 +546,7 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   }
 
-  if (!presentation_history_.Valid() || IsSwapChainYuvFormatForced()) {
+  if (!presentation_history_.Valid()) {
     // Prefer P010 swapchain when playing P010 SDR content on SDR system with
     // P010 MPO supported.
     return sdr_yuv_overlay_format;

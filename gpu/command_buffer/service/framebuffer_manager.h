@@ -124,9 +124,6 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   // bound when calling this.
   void DoUnbindGLAttachmentsForWorkaround(GLenum target);
 
-  // Re-attaches all current attachments for recreateFbo workaround.
-  void ReattachAttachments(GLenum framebuffer_target);
-
   // Binds |attachment| at |attachment_point| on the framebuffer currently
   // bound at |target|, or detaches whatever is at |attachment_point| if
   // |attachment| is null. Only modifies driver-side state.
@@ -264,7 +261,6 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
 
  private:
   friend class FramebufferManager;
-  void set_service_id(GLuint id) { service_id_ = id; }
   friend class base::RefCounted<Framebuffer>;
 
   ~Framebuffer();
@@ -385,9 +381,6 @@ class GPU_GLES2_EXPORT FramebufferManager {
 
   // Gets a client id for a given service id.
   bool GetClientId(GLuint service_id, GLuint* client_id) const;
-
-  // Recreates the service ID for a framebuffer (allocates new, deletes old).
-  void RecreateFramebufferServiceId(Framebuffer* framebuffer);
 
   void MarkAttachmentsAsCleared(
     Framebuffer* framebuffer,

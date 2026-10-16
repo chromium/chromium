@@ -247,13 +247,6 @@ VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesInternal(
                                                         &profiles);
   }
 
-  if (gpu_workarounds.disable_accelerated_av1_encode) {
-    std::erase_if(profiles, [](const auto& vea_profile) {
-      return vea_profile.profile >= AV1PROFILE_PROFILE_MAIN &&
-             vea_profile.profile <= AV1PROFILE_PROFILE_PRO;
-    });
-  }
-
   if (gpu_workarounds.disable_accelerated_vp8_encode) {
     std::erase_if(profiles, [](const auto& vea_profile) {
       return vea_profile.profile == VP8PROFILE_ANY;

@@ -37,8 +37,6 @@ bool g_supports_hardware_overlays = false;
 bool g_supports_vp_auto_hdr = false;
 // Whether the DecodeSwapChain is disabled or not.
 bool g_disable_decode_swap_chain = false;
-// Whether to force the nv12 overlay support.
-bool g_force_nv12_overlay_support = false;
 // Whether software overlays have been disabled.
 bool g_disable_sw_overlays = false;
 
@@ -371,13 +369,6 @@ void UpdateOverlaySupport() {
       &overlay_format_used_hdr, &nv12_overlay_support_flags,
       &yuy2_overlay_support_flags, &bgra8_overlay_support_flags,
       &rgb10a2_overlay_support_flags, &p010_overlay_support_flags);
-
-  if (g_force_nv12_overlay_support) {
-    supports_overlays = true;
-    supports_hardware_overlays = true;
-    nv12_overlay_support_flags = DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
-    overlay_format_used = DXGI_FORMAT_NV12;
-  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDirectCompositionVideoSwapChainFormat)) {
@@ -1188,7 +1179,6 @@ void SetDirectCompositionOverlayWorkarounds(
   g_disable_decode_swap_chain = workarounds.disable_decode_swap_chain;
   g_enable_bgra8_overlays_with_yuv_overlay_support =
       workarounds.enable_bgra8_overlays_with_yuv_overlay_support;
-  g_force_nv12_overlay_support = workarounds.force_nv12_overlay_support;
   g_force_rgb10a2_overlay_support = workarounds.force_rgb10a2_overlay_support;
   g_check_ycbcr_studio_g22_left_p709_for_nv12_support =
       workarounds.check_ycbcr_studio_g22_left_p709_for_nv12_support;
@@ -1196,10 +1186,6 @@ void SetDirectCompositionOverlayWorkarounds(
   if (workarounds.disable_dcomp_texture) {
     g_direct_composition_texture_supported = false;
   }
-}
-
-bool IsSwapChainYuvFormatForced() {
-  return g_force_nv12_overlay_support;
 }
 
 void SetDirectCompositionMonitorInfoForTesting(

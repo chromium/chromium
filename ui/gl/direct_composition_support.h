@@ -166,10 +166,6 @@ struct DirectCompositionOverlayWorkarounds {
   // overlays to be used when YUV overlays are supported on Intel GPUs.
   bool enable_bgra8_overlays_with_yuv_overlay_support = false;
 
-  // Forces to enable NV12 overlay support regardless of the query results from
-  // IDXGIOutput3::CheckOverlaySupport().
-  bool force_nv12_overlay_support = false;
-
   // Forces to enable RGBA101010A2 overlay support regardless of the query
   // results from IDXGIOutput3::CheckOverlaySupport().
   bool force_rgb10a2_overlay_support = false;
@@ -189,10 +185,6 @@ struct DirectCompositionOverlayWorkarounds {
 };
 GL_EXPORT void SetDirectCompositionOverlayWorkarounds(
     const DirectCompositionOverlayWorkarounds& workarounds);
-
-// Returns true if the swap chain format is forced to be a YUV format via a GPU
-// workaround flag.
-GL_EXPORT bool IsSwapChainYuvFormatForced();
 
 // Returns monitor size.
 GL_EXPORT gfx::Size GetDirectCompositionPrimaryMonitorSize();
