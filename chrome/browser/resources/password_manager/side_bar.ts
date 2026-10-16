@@ -41,7 +41,6 @@ enum PasswordCheckReferrer {
   COUNT = 8,
 }
 // LINT.ThenChange(
-//   //chrome/browser/resources/settings/autofill_page/passwords/password_manager_proxy.ts:PasswordCheckReferrer,
 //   //components/password_manager/core/browser/ui/password_check_referrer.h:PasswordCheckReferrer,
 //   //tools/metrics/histograms/metadata/password/enums.xml:PasswordCheckReferrer
 // )
