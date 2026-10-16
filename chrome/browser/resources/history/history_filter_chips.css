@@ -63,3 +63,10 @@
       var(--cr-fallback-color-on-tonal-container));
   padding-inline-start: 28px;
 }
+
+#clearAllButton {
+  --cr-button-border: none;
+  --cr-button-height: var(--cr-chip-height, 28px);
+  font-size: var(--cr-chip-font-size, 12px);
+  min-width: auto;
+}

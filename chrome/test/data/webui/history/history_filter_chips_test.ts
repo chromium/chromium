@@ -445,4 +445,86 @@ suite('HistoryFilterChipsTest', function() {
       assertTrue(isVisible(icon));
     });
   });
+
+  test('ClearAllButton', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: true,
+    });
+    element.showActorFilter = true;
+    element.showDeviceFilter = true;
+    element.devices = [
+      {name: 'Device 1', isLocalDevice: true, ids: ['id1', 'id2']},
+      {name: 'Device 2', isLocalDevice: false, ids: ['id3']},
+    ];
+    await microtasksFinished();
+
+    const actorSelect =
+        element.shadowRoot.querySelector<HTMLSelectElement>('#actorSelect');
+    const deviceFilterChip =
+        element.shadowRoot.querySelector<HTMLSelectElement>(
+            '#deviceFilterChip');
+    assertTrue(!!actorSelect);
+    assertTrue(!!deviceFilterChip);
+    assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+
+    // Selecting an actor filter shows the clear all button.
+    actorSelect.value = 'user';
+    actorSelect.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
+
+    // Selecting a device keeps the clear all button visible.
+    deviceFilterChip.value = '0';
+    deviceFilterChip.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
+
+    // Deselecting one filter while another is still active keeps the clear all
+    // button visible.
+    actorSelect.value = 'all';
+    actorSelect.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
+
+    // Deselecting the last active filter hides the clear all button.
+    deviceFilterChip.value = '-1';
+    deviceFilterChip.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+
+    // Clicking the clear all button resets all active filters and hides the
+    // button.
+    actorSelect.value = 'user';
+    actorSelect.dispatchEvent(new Event('change'));
+    deviceFilterChip.value = '0';
+    deviceFilterChip.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+
+    const clearAllButton =
+        element.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
+    assertTrue(!!clearAllButton);
+
+    let eventDetail: {
+      userVisits: boolean,
+      actorVisits: boolean,
+      clientIds: string[],
+    }|undefined;
+    element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                 eventDetail = e.detail;
+                                               }) as EventListener);
+
+    clearAllButton.click();
+    await microtasksFinished();
+
+    assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+    assertEquals('all', actorSelect.value);
+    assertTrue(actorSelect.options[0]!.selected);
+    assertEquals('-1', deviceFilterChip.value);
+    assertTrue(deviceFilterChip.options[0]!.selected);
+
+    assertTrue(!!eventDetail);
+    assertTrue(eventDetail.userVisits);
+    assertTrue(eventDetail.actorVisits);
+    assertDeepEquals([], eventDetail.clientIds);
+  });
 });

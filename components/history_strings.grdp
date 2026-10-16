@@ -149,6 +149,9 @@
   <message name="IDS_HISTORY_SOURCE_FILTER_CHIP_USER" desc="This string is found on a chip that filters the history results when the user selects it; it sits next to its opposite filter: 'Auto browse' (browsing activity from an auto browse task). It is at the top of the Chrome history page, where users can see their browsing history. This text is a noun and is short for the longer phrase 'Browsing history that YOU performed.' The tone should be short and telegraphic.">
     You
   </message>
+  <message name="IDS_HISTORY_RESET_FILTERS" desc="Text used in the button to reset all applied history filters." >
+    Clear all
+  </message>
   <message name="IDS_HISTORY_CLOSE_AND_RETURN_TO_PREFIX" desc="Text for the back-to-opener menu item. Format: Close and go back to &quot;[tab title]&quot;.">
     Close and go back to "<ph name="TAB_TITLE">$1</ph>"
   </message>

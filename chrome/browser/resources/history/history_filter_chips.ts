@@ -6,6 +6,7 @@
 import './internal/icons.html.js';
 // </if>
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -65,6 +66,13 @@ export class HistoryFilterChipsElement extends CrLitElement {
         this.clientIds.every((id, index) => id === device.ids[index]);
   }
 
+  protected hasActiveFilter_(): boolean {
+    const hasActiveActorDropdownFilter =
+        this.showActorFilterDropDownVersion_() &&
+        (this.isUserSelected() || this.isActorSelected());
+    return hasActiveActorDropdownFilter || this.clientIds.length > 0;
+  }
+
   protected onActorSelectChange_(e: Event) {
     const value = (e.target as HTMLSelectElement).value;
     if (value === 'user') {
@@ -87,6 +95,14 @@ export class HistoryFilterChipsElement extends CrLitElement {
     const index = Number(select.value);
     const device = index >= 0 ? this.devices[index] : undefined;
     this.clientIds = device ? device.ids : [];
+    this.fireChange_(this.userVisits, this.actorVisits);
+  }
+
+  protected onClearAllClick_() {
+    this.userVisits = true;
+    this.actorVisits = true;
+    this.clientIds = [];
+
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 

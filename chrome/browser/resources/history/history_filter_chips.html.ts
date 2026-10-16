@@ -17,13 +17,13 @@ export function getHtml(this: HistoryFilterChipsElement) {
         <select id="actorSelect" class="md-select"
             @change="${this.onActorSelectChange_}">
           <option value="all"
-              ?selected="${!this.isUserSelected() && !this.isActorSelected()}">
+              .selected="${!this.isUserSelected() && !this.isActorSelected()}">
             $i18n{sourceFilterAllActors}
           </option>
-          <option value="user" ?selected="${this.isUserSelected()}">
+          <option value="user" .selected="${this.isUserSelected()}">
             $i18n{sourceFilterChipUser}
           </option>
-          <option value="actor" ?selected="${this.isActorSelected()}">
+          <option value="actor" .selected="${this.isActorSelected()}">
             $i18n{sourceFilterChipActor}
           </option>
         </select>
@@ -56,6 +56,11 @@ export function getHtml(this: HistoryFilterChipsElement) {
           `)}
         </select>
       </div>
+    ` : ''}
+    ${this.hasActiveFilter_() ? html`
+      <cr-button id="clearAllButton" @click="${this.onClearAllClick_}">
+        $i18n{resetFilters}
+      </cr-button>
     ` : ''}
   </div>
 </div>

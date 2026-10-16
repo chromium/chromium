@@ -73,6 +73,7 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},
       {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
+      {"resetFilters", IDS_HISTORY_RESET_FILTERS},
       {"reviewGeminiActivity", IDS_HISTORY_REVIEW_GEMINI_ACTIVITY},
       {"geminiKeyBrowsingActionsTitle",
        IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE},
