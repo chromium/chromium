@@ -64,9 +64,6 @@ public final class ProductionSupportedFlagList {
      * updating the "LoginCustomFlags" field in tools/metrics/histograms/enums.xml.
      */
     public static final Flag[] sFlagList = {
-        Flag.baseFeature(
-                "webviewprewarmdictionaryonpreconnect",
-                "Auto-generated flag for webviewprewarmdictionaryonpreconnect."),
         Flag.commandLine(
                 AwSwitches.HIGHLIGHT_ALL_WEBVIEWS,
                 "Highlight the contents (including web contents) of all WebViews with a yellow "
@@ -1529,12 +1526,18 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_RELAX_DATA_DIR_LOCKING,
                 "Allow WebView initialization to continue in the case where an old instance of"
                         + " the same app process is stuck holding the lock."),
-        Flag.baseFeature("useicu4xnormalizer", "Auto-generated flag for useicu4xnormalizer."),
-        Flag.baseFeature("AwMetricsLogTrimming", "Auto-generated flag for AwMetricsLogTrimming."),
+        Flag.baseFeature(
+                "UseIcu4xNormalizer", "Enables using the ICU4X normalizer instead of ICU4C."),
+        Flag.baseFeature(
+                "AwMetricsLogTrimming",
+                "Controls WebView-specific trimming thresholds for metrics logs."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH,
                 "Enables exposing additional MathML information in"
                         + " AccessibilityNodeInfoCompat.MathInfoCompat to screen readers."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PREWARM_DICTIONARY_ON_PRECONNECT,
+                "When enabled, preconnect requests trigger compression dictionary prewarming."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
