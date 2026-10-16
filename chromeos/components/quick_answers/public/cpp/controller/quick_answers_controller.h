@@ -24,8 +24,6 @@ enum class QuickAnswersVisibility {
   kQuickAnswersVisible = 2,
   // User Consent UI is visible.
   kUserConsentVisible = 3,
-  // Rich Answers UI is visible.
-  kRichAnswersVisible = 4,
 };
 
 // A controller to manage Quick Answers UI. This controller manages the

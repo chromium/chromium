@@ -295,17 +295,6 @@ QuickAnswersClient* QuickAnswersControllerImpl::GetClient() const {
 void QuickAnswersControllerImpl::DismissQuickAnswers(
     QuickAnswersExitPoint exit_point) {
   switch (visibility_) {
-    case QuickAnswersVisibility::kRichAnswersVisible: {
-      // For the rich-answers view, ignore dismissal by context-menu related
-      // actions as they should only affect the companion quick-answers views.
-      if (exit_point == QuickAnswersExitPoint::kContextMenuDismiss ||
-          exit_point == QuickAnswersExitPoint::kContextMenuClick) {
-        return;
-      }
-      quick_answers_ui_controller_->CloseRichAnswersView();
-      visibility_ = QuickAnswersVisibility::kClosed;
-      return;
-    }
     case QuickAnswersVisibility::kUserConsentVisible: {
       // TODO(b/340628526): Replace IsShowingUserConsentView condition and
       // visibility_ write with CHECK.

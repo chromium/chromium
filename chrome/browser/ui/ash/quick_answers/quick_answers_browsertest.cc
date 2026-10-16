@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/ui/ash/quick_answers/test/mock_quick_answers_client.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/magic_boost_user_consent_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -42,10 +40,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -56,17 +51,12 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/views/accessibility/ax_update_notifier.h"
-#include "ui/views/accessibility/ax_update_observer.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -102,31 +92,10 @@ constexpr char kSubsenseSampleSentenceText[] =
     "their status remains indefinite";
 constexpr char kSubsenseSynonymText[] = "vague";
 
-// Translation result.
-constexpr char16_t kSourceText[] = u"prodotto";
-constexpr char16_t kTranslatedText[] = u"product";
-
-// Unit conversion result.
-constexpr char16_t kSourceValueText[] = u"20";
-constexpr char16_t kSourceUnitText[] = u"feet";
-constexpr char kConversionSourceText[] = "20 feet";
-constexpr char kConversionResultText[] = "6.667 yards";
-constexpr char kConversionCategoryText[] = "Length";
-constexpr double kConversionSourceAmount = 20;
-constexpr char kSourceRuleUnitText[] = "Foot";
-constexpr double kSourceRuleTermA = 0.3048;
-constexpr char kDestRuleUnitText[] = "Yard";
-constexpr double kDestRuleTermA = 0.9144;
-constexpr char kAlternativeDestRuleUnitText[] = "Inch";
-constexpr double kAlternativeDestRuleTermA = 0.0254;
-
 constexpr int kFakeImageWidth = 300;
 constexpr int kFakeImageHeight = 300;
 
 constexpr int kAnimationCompletionPollingInterval = 50;  // milliseconds
-
-constexpr int kQuickAnswersResultTypeIconSizeDip = 12;
-constexpr int kRichAnswersResultTypeIconSizeDip = 16;
 
 gfx::Image CreateFakeImage() {
   SkBitmap bitmap;
@@ -205,93 +174,6 @@ std::unique_ptr<QuickAnswersSession> CreateQuickAnswerDefinitionResponse() {
       std::make_unique<StructuredResult>();
   quick_answers_session->structured_result->definition_result =
       std::move(definition_result);
-
-  return quick_answers_session;
-}
-
-// Simulate a valid QuickAnswer translation response.
-std::unique_ptr<QuickAnswersSession> CreateQuickAnswerTranslationResponse() {
-  std::unique_ptr<quick_answers::QuickAnswer> quick_answer =
-      std::make_unique<quick_answers::QuickAnswer>();
-  quick_answer->result_type = ResultType::kTranslationResult;
-  quick_answer->title.push_back(
-      std::make_unique<quick_answers::QuickAnswerText>(
-          l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
-                                    kSourceText, u"Italian")));
-  quick_answer->first_answer_row.push_back(
-      std::make_unique<quick_answers::QuickAnswerResultText>(
-          base::UTF16ToUTF8(kTranslatedText)));
-
-  std::unique_ptr<TranslationResult> translation_result =
-      std::make_unique<TranslationResult>();
-  translation_result->text_to_translate = base::UTF16ToUTF8(kSourceText);
-  translation_result->translated_text = base::UTF16ToUTF8(kTranslatedText);
-  translation_result->target_locale = "en";
-  translation_result->source_locale = "it";
-
-  std::unique_ptr<QuickAnswersSession> quick_answers_session =
-      std::make_unique<QuickAnswersSession>();
-  quick_answers_session->quick_answer = std::move(quick_answer);
-  quick_answers_session->structured_result =
-      std::make_unique<StructuredResult>();
-  quick_answers_session->structured_result->translation_result =
-      std::move(translation_result);
-
-  return quick_answers_session;
-}
-
-// Simulate a valid QuickAnswer unit conversion response.
-std::unique_ptr<QuickAnswersSession> CreateQuickAnswerUnitConversionResponse() {
-  std::unique_ptr<quick_answers::QuickAnswer> quick_answer =
-      std::make_unique<quick_answers::QuickAnswer>();
-  quick_answer->result_type = ResultType::kUnitConversionResult;
-  quick_answer->title.push_back(
-      std::make_unique<quick_answers::QuickAnswerText>(
-          l10n_util::GetStringFUTF8(
-              IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT, kSourceValueText,
-              kSourceUnitText)));
-  quick_answer->first_answer_row.push_back(
-      std::make_unique<quick_answers::QuickAnswerResultText>(
-          kConversionResultText));
-
-  std::unique_ptr<UnitConversionResult> unit_conversion_result =
-      std::make_unique<UnitConversionResult>();
-  unit_conversion_result->source_text = kConversionSourceText;
-  unit_conversion_result->result_text = kConversionResultText;
-  unit_conversion_result->category = kConversionCategoryText;
-  unit_conversion_result->source_amount = kConversionSourceAmount;
-
-  std::optional<ConversionRule> source_rule = ConversionRule::Create(
-      kConversionCategoryText, kSourceRuleUnitText, kSourceRuleTermA,
-      /*term_b=*/std::nullopt, /*term_c=*/std::nullopt);
-  std::optional<ConversionRule> dest_rule = ConversionRule::Create(
-      kConversionCategoryText, kDestRuleUnitText, kDestRuleTermA,
-      /*term_b=*/std::nullopt, /*term_c=*/std::nullopt);
-  std::optional<UnitConversion> unit_conversion =
-      UnitConversion::Create(source_rule.value(), dest_rule.value());
-  unit_conversion_result->source_to_dest_unit_conversion =
-      unit_conversion.value();
-
-  std::vector<UnitConversion> alternative_unit_conversions_list;
-  std::optional<ConversionRule> alternative_dest_rule = ConversionRule::Create(
-      kConversionCategoryText, kAlternativeDestRuleUnitText,
-      kAlternativeDestRuleTermA, /*term_b=*/std::nullopt,
-      /*term_c=*/std::nullopt);
-  std::optional<UnitConversion> alternative_unit_conversion =
-      UnitConversion::Create(source_rule.value(),
-                             alternative_dest_rule.value());
-  alternative_unit_conversions_list.push_back(
-      alternative_unit_conversion.value());
-  unit_conversion_result->alternative_unit_conversions_list =
-      alternative_unit_conversions_list;
-
-  std::unique_ptr<QuickAnswersSession> quick_answers_session =
-      std::make_unique<QuickAnswersSession>();
-  quick_answers_session->quick_answer = std::move(quick_answer);
-  quick_answers_session->structured_result =
-      std::make_unique<StructuredResult>();
-  quick_answers_session->structured_result->unit_conversion_result =
-      std::move(unit_conversion_result);
 
   return quick_answers_session;
 }
@@ -850,205 +732,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          QuickAnswersBrowserTest,
                          testing::Bool(),
                          &QuickAnswersBrowserTest::GetTestVariantName);
-
-class RichAnswersBrowserTest : public QuickAnswersBrowserTest {
- protected:
-  void SetUpOnMainThread() override {
-    QuickAnswersBrowserTestBase::SetUpOnMainThread();
-    SetQuickAnswersEnabled(true);
-
-    event_generator_.emplace(ash::Shell::GetPrimaryRootWindow());
-  }
-
-  // Trigger the Rich Answers widget by clicking on |quick_answers_view_widget|,
-  // and wait until it appears.
-  views::Widget* ShowRichAnswersWidget(
-      views::Widget* quick_answers_view_widget) {
-    views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
-        views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
-    event_generator_->MoveMouseTo(
-        quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
-    event_generator_->ClickLeftButton();
-
-    views::Widget* rich_answers_view_widget =
-        rich_answers_view_widget_waiter.WaitIfNeededAndGet();
-
-    return rich_answers_view_widget;
-  }
-
-  std::optional<ui::test::EventGenerator> event_generator_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      chromeos::features::kQuickAnswersRichCard};
-};
-
-IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
-                       RichAnswersNotTriggeredOnInvalidResult) {
-  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
-
-  // Click on the Quick Answers widget. This should *not* trigger the
-  // Rich Answers widget since no valid QuickAnswer result is provided.
-  views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
-      views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
-  event_generator_->MoveMouseTo(
-      quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
-  event_generator_->ClickLeftButton();
-
-  // Check that all quick answers views are closed.
-  EXPECT_TRUE(quick_answers_view_widget->IsClosed());
-  EXPECT_TRUE(controller()->GetQuickAnswersVisibility() ==
-              QuickAnswersVisibility::kClosed);
-}
-
-IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
-                       RichAnswersTriggeredAndDismissedOnValidResult) {
-  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
-
-  // Simulate having received a valid QuickAnswer response.
-  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      CreateQuickAnswerTranslationResponse());
-
-  views::Widget* rich_answers_view_widget =
-      ShowRichAnswersWidget(quick_answers_view_widget);
-  ASSERT_TRUE(rich_answers_view_widget != nullptr);
-
-  // Check that the quick answers view closes when the rich answers view shows.
-  EXPECT_TRUE(quick_answers_view_widget->IsClosed());
-  EXPECT_TRUE(controller()->GetQuickAnswersVisibility() ==
-              QuickAnswersVisibility::kRichAnswersVisible);
-
-  // Click outside the rich answers view window bounds to dismiss it.
-  gfx::Rect rich_answers_bounds =
-      rich_answers_view_widget->GetWindowBoundsInScreen();
-  event_generator_->MoveMouseTo(
-      gfx::Point(rich_answers_bounds.x() / 2, rich_answers_bounds.y() / 2));
-  event_generator_->ClickLeftButton();
-
-  // Check that the rich answers view is dismissed.
-  EXPECT_TRUE(rich_answers_view_widget->IsClosed());
-  EXPECT_TRUE(controller()->GetQuickAnswersVisibility() ==
-              QuickAnswersVisibility::kClosed);
-}
-
-IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
-                       DefinitionResultCardContentsCorrectlyShown) {
-  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
-
-  // Simulate having received a valid QuickAnswer definition response.
-  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      CreateQuickAnswerDefinitionResponse());
-
-  // Check that the shown result type icon on the QuickAnswersView
-  // correctly corresponds to the definition result type.
-  ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? omnibox::kBookIcon
-                                        : omnibox::kAnswerDictionaryOldIcon,
-      ui::kColorSysBaseContainerElevated,
-      /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-
-  views::Widget* rich_answers_view_widget =
-      ShowRichAnswersWidget(quick_answers_view_widget);
-
-  // Check that the shown result type icon on the RichAnswersView
-  // correctly corresponds to the definition result type.
-  RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
-      rich_answers_view_widget->GetContentsView());
-  expected_image_model = ui::ImageModel::FromVectorIcon(
-      chromeos::kDictionaryIcon, ui::kColorSysBaseContainerElevated,
-      /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
-              expected_image_model);
-
-  // TODO(b/326370198): Add checks for other card contents.
-}
-
-IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
-                       TranslationResultCardContentsCorrectlyShown) {
-  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
-
-  // Simulate having received a valid QuickAnswer translation response.
-  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      CreateQuickAnswerTranslationResponse());
-
-  // Check that the shown result type icon on the QuickAnswersView
-  // correctly corresponds to the translation result type.
-  ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? omnibox::kTranslateIcon
-                                        : omnibox::kAnswerTranslationOldIcon,
-      ui::kColorSysBaseContainerElevated,
-      /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-
-  views::Widget* rich_answers_view_widget =
-      ShowRichAnswersWidget(quick_answers_view_widget);
-
-  // Check that the shown result type icon on the RichAnswersView
-  // correctly corresponds to the translation result type.
-  RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
-      rich_answers_view_widget->GetContentsView());
-  expected_image_model = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? omnibox::kTranslateIcon
-                                        : omnibox::kAnswerTranslationOldIcon,
-      ui::kColorSysBaseContainerElevated,
-      /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
-              expected_image_model);
-
-  // TODO(b/326370198): Add checks for other card contents.
-}
-
-IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
-                       UnitConversionResultCardContentsCorrectlyShown) {
-  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
-
-  // Simulate having received a valid QuickAnswer unit conversion response.
-  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      CreateQuickAnswerUnitConversionResponse());
-
-  // Check that the shown result type icon on the QuickAnswersView
-  // correctly corresponds to the unit conversion result type.
-  ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? omnibox::kEqualIcon
-                                        : omnibox::kAnswerCalculatorOldIcon,
-      ui::kColorSysBaseContainerElevated,
-      /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-
-  views::Widget* rich_answers_view_widget =
-      ShowRichAnswersWidget(quick_answers_view_widget);
-
-  // Check that the shown result type icon on the RichAnswersView
-  // correctly corresponds to the unit conversion result type.
-  RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
-      rich_answers_view_widget->GetContentsView());
-  expected_image_model = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? omnibox::kEqualIcon
-                                        : omnibox::kAnswerCalculatorOldIcon,
-      ui::kColorSysBaseContainerElevated,
-      /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
-              expected_image_model);
-
-  // TODO(b/326370198): Add checks for other card contents.
-}
-
-IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest, AccessibleProperties) {
-  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
-  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      CreateQuickAnswerUnitConversionResponse());
-  RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
-      ShowRichAnswersWidget(quick_answers_view_widget)->GetContentsView());
-  ui::AXNodeData data;
-
-  ASSERT_TRUE(rich_answers_view);
-  rich_answers_view->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
-  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
-            l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         RichAnswersBrowserTest,
-                         testing::Bool(),
-                         &RichAnswersBrowserTest::GetTestVariantName);
 
 }  // namespace quick_answers

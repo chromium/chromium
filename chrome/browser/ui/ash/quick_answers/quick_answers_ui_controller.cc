@@ -21,10 +21,6 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/magic_boost_user_consent_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_util.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_definition_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_translation_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_unit_conversion_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -33,7 +29,6 @@
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -46,7 +41,6 @@
 
 namespace {
 
-using quick_answers::QuickAnswer;
 using quick_answers::QuickAnswersExitPoint;
 
 constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
@@ -136,36 +130,9 @@ void QuickAnswersUiController::CreateQuickAnswersViewInternal(
   quick_answers_view_.SetView(view);
 }
 
-void QuickAnswersUiController::CreateRichAnswersView() {
-  CHECK(controller_->quick_answer());
-
-  views::UniqueWidgetPtr widget = quick_answers::RichAnswersView::CreateWidget(
-      controller_->anchor_bounds(), weak_factory_.GetWeakPtr(),
-      *controller_->quick_answer(), *controller_->structured_result());
-
-  if (!widget) {
-    // If the rich card widget cannot be created, fall-back to open the query
-    // in Google Search.
-    OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
-    controller_->OnQuickAnswersResultClick();
-  }
-
-  rich_answers_widget_ = std::move(widget);
-  rich_answers_widget_->Show();
-  controller_->SetVisibility(QuickAnswersVisibility::kRichAnswersVisible);
-  return;
-}
-
 void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
-
-  // Trigger the corresponding rich card view if the feature is enabled.
-  if (chromeos::features::IsQuickAnswersRichCardEnabled() &&
-      controller_->quick_answer() != nullptr) {
-    CreateRichAnswersView();
-    return;
-  }
 
   OpenWebUrl(quick_answers::GetDetailsUrlForQuery(query_));
 
@@ -185,14 +152,6 @@ bool QuickAnswersUiController::CloseQuickAnswersView() {
   if (controller_->GetQuickAnswersVisibility() ==
       QuickAnswersVisibility::kQuickAnswersVisible) {
     GetReadWriteCardsUiController().RemoveQuickAnswersUi();
-    return true;
-  }
-  return false;
-}
-
-bool QuickAnswersUiController::CloseRichAnswersView() {
-  if (IsShowingRichAnswersView()) {
-    rich_answers_widget_->Close();
     return true;
   }
   return false;
@@ -438,11 +397,6 @@ bool QuickAnswersUiController::IsShowingQuickAnswersView() const {
   }
 
   return false;
-}
-
-bool QuickAnswersUiController::IsShowingRichAnswersView() const {
-  return rich_answers_widget_ && !rich_answers_widget_->IsClosed() &&
-         rich_answers_widget_->GetContentsView();
 }
 
 chromeos::ReadWriteCardsUiController&
