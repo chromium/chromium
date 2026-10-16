@@ -191,7 +191,7 @@ class ModelContext::ToolUnregisterAbortAlgorithm final
         signal_(signal) {}
 
   void Run() override {
-    model_context_->UnregisterImperativeTool(tool_id_);
+    model_context_->UnregisterTool(tool_id_);
     resolver_->Reject(signal_->reason(resolver_->GetScriptState()));
   }
 
@@ -483,42 +483,24 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
   return promise;
 }
 
-void ModelContext::UnregisterImperativeTool(
-    const base::UnguessableToken& tool_id) {
-  // An imperative tool's `AbortSignal` aborts at most once, and nothing else
-  // unregisters imperative tools, so the tool must still be registered.
+void ModelContext::UnregisterTool(const base::UnguessableToken& tool_id) {
+  // The tool must still be registered:
+  //  - An imperative tool's `AbortSignal` aborts at most once, and nothing
+  //    else unregisters imperative tools.
+  //  - A form only holds onto a declarative tool that was successfully
+  //    registered with the `ModelContext` of its document, and unregisters it
+  //    from that same `ModelContext`.
   auto it = tool_map_.find(tool_id);
   CHECK(it != tool_map_.end());
-  CHECK(!it->value->DeclarativeTool());
 
   probe::WebMCPToolRemoved(document_, *it->value);
   tool_map_.erase(it);
   // An inactive document (e.g., one whose frame was removed) has no browser
   // host to notify: its `model_context_host_remote_` is reset when its
-  // execution context is destroyed. This is reachable from script, e.g., by
-  // aborting a tool's `AbortSignal` after the registering document's iframe is
-  // removed.
-  if (document_->IsActive()) {
-    model_context_host_remote_->UnregisterScriptTool(tool_id);
-  }
-}
-
-void ModelContext::UnregisterDeclarativeTool(
-    const base::UnguessableToken& tool_id) {
-  // A form only holds onto a tool that was successfully registered with the
-  // `ModelContext` of its document, and unregisters it from that same
-  // `ModelContext`, so the tool must still be registered.
-  auto it = tool_map_.find(tool_id);
-  CHECK(it != tool_map_.end());
-  CHECK(it->value->DeclarativeTool());
-
-  probe::WebMCPToolRemoved(document_, *it->value);
-  tool_map_.erase(it);
-  // An inactive document (e.g., one whose frame was removed) has no browser
-  // host to notify: its `model_context_host_remote_` is reset when its
-  // execution context is destroyed. This is reachable when a form is removed
-  // from a removed iframe's document, e.g., to be adopted into another
-  // document.
+  // execution context is destroyed. This is reachable, e.g., by aborting an
+  // imperative tool's `AbortSignal` after the registering document's iframe is
+  // removed, or by removing a declarative tool's form from a removed iframe's
+  // document, e.g., to adopt it into another document.
   if (document_->IsActive()) {
     model_context_host_remote_->UnregisterScriptTool(tool_id);
   }

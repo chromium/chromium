@@ -218,9 +218,10 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // the `tools` permissions policy is disabled, or `tool`'s name is invalid or
   // already taken. The caller must not unregister a rejected tool.
   [[nodiscard]] bool RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
-  // Unregisters the declarative tool identified by `tool_id`, which must be
-  // registered.
-  void UnregisterDeclarativeTool(const base::UnguessableToken& tool_id);
+  // Unregisters the tool identified by `tool_id`, which must be registered.
+  // Used for both imperative tools (when their `AbortSignal` aborts) and
+  // declarative tools (when their form stops being a tool).
+  void UnregisterTool(const base::UnguessableToken& tool_id);
   void PauseExecution();
 
   // mojom::blink::ModelContext implementation:
@@ -262,11 +263,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
  private:
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
-
-  // Unregisters the imperative tool identified by `tool_id`. Only called by
-  // the tool's `ToolUnregisterAbortAlgorithm`, which guarantees that the tool
-  // is still registered.
-  void UnregisterImperativeTool(const base::UnguessableToken& tool_id);
 
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               base::UnguessableToken invocation_id,
