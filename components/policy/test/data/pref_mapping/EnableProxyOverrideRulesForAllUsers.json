@@ -1,9 +1,10 @@
 [
   {
     "os": [
-      "linux",
       "win",
-      "mac"
+      "linux",
+      "mac",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "enable_proxy_override_rules_for_users",

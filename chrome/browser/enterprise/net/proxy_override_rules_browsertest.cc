@@ -86,7 +86,8 @@ class ProxyOverrideRulesTestBase : public MixinBasedPlatformBrowserTest {
     return condition;
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
   void SetEnableForAllUsers(bool enable) {
     base::flat_map<std::string, std::optional<base::Value>> policies;
     policies.emplace(policy::key::kEnableProxyOverrideRulesForAllUsers,
@@ -106,7 +107,8 @@ class ProxyOverrideRulesBrowserTest : public ProxyOverrideRulesTestBase {
       : ProxyOverrideRulesTestBase(ManagementContext{
             .is_cloud_user_managed = true,
 // This is required to be able to set the machine policy.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
             .is_cloud_machine_managed = true,
 #endif
             .affiliated = true,
@@ -290,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, FallbackToProxySettings) {
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
 class ProxyOverrideRulesUnaffiliatedBrowserTest
     : public ProxyOverrideRulesTestBase {
  public:
@@ -419,6 +422,7 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnmanagedDeviceBrowserTest,
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise::test

@@ -216,7 +216,8 @@ constexpr TestCase kInvalidTestCases[] = {
         u"Error at ProxyOverrideRules[0].Conditions[0].Host: \"://\" is not a "
         u"valid value.",
     },
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
     {
         R"([
              {
@@ -235,7 +236,8 @@ constexpr TestCase kInvalidTestCases[] = {
         u"This policy value is ignored since the user is not affiliated.",
         /*affiliated=*/false,
     },
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 };
 
 class ProxyOverrideRulesPolicyHandlerTest
@@ -313,7 +315,8 @@ TEST_F(ProxyOverrideRulesPolicyHandlerTest, UnaffiliatedUserPolicyRejected) {
       base::JSONReader::Read(kPolicyValue, base::JSON_ALLOW_TRAILING_COMMAS),
       nullptr);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
   // Scenario 1: Unaffiliated user
   policy_map.SetDeviceAffiliationIds({"device_id"});
   policy_map.SetUserAffiliationIds({"user_id"});

@@ -131,7 +131,8 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRuleProxyFromString) {
   ASSERT_FALSE(ProxyOverrideRuleProxyFromString("123456789").IsValid());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 namespace {
 
 void SetAffiliation(TestingPrefServiceSimple& prefs,
