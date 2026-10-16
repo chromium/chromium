@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -36,6 +37,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/base/resource/resource_bundle_android.h"
+#endif
 
 namespace {
 
@@ -216,11 +221,15 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    ui::LoadPackFileFromApk("assets/browser_tests.pak", /*split_name=*/"");
+#else
     base::FilePath pak_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
     pak_path = pak_path.AppendASCII("browser_tests.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path, ui::kScaleFactorNone);
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

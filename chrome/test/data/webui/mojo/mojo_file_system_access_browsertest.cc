@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -43,6 +44,10 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/base/resource/resource_bundle_android.h"
+#endif
 
 namespace {
 
@@ -175,11 +180,15 @@ class MojoFileSystemAccessBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    ui::LoadPackFileFromApk("assets/browser_tests.pak", /*split_name=*/"");
+#else
     base::FilePath pak_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
     pak_path = pak_path.AppendASCII("browser_tests.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path, ui::kScaleFactorNone);
+#endif
 
     content::SetBrowserClientForTesting(&test_content_browser_client_);
   }

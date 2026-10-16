@@ -36,6 +36,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/base/resource/resource_bundle_android.h"
+#endif
+
 namespace extensions {
 
 namespace OnMessage = api::test::OnMessage;
@@ -417,11 +421,15 @@ class ExtensionWebUIListenersTest : public ExtensionWebUITest {
     ExtensionWebUITest::SetUpOnMainThread();
 
     // Load browser_tests.pak.
+#if BUILDFLAG(IS_ANDROID)
+    ui::LoadPackFileFromApk("assets/browser_tests.pak", /*split_name=*/"");
+#else
     base::FilePath pak_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
     pak_path = pak_path.AppendASCII("browser_tests.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path, ui::kScaleFactorNone);
+#endif
     // Register the chrome://webui-test data source.
     webui::CreateAndAddWebUITestDataSource(profile());
   }
