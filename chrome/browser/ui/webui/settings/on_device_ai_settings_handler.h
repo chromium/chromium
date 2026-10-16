@@ -5,13 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ON_DEVICE_AI_SETTINGS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ON_DEVICE_AI_SETTINGS_HANDLER_H_
 
-#include "base/feature_list.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_member.h"
-
-namespace features {
-BASE_DECLARE_FEATURE(kShowOnDeviceAiSettings);
-}
 
 namespace settings {
 

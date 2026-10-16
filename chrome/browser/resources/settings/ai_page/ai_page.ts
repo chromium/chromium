@@ -64,7 +64,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       showDictationControl_: {type: Boolean},
       historySearchPref_: {type: Object},
       // <if expr="_google_chrome">
-      showOnDeviceAiSettings_: {type: Boolean},
       onDeviceAiPref_: {type: Object},
       // </if>
     };
@@ -91,8 +90,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   protected accessor showDictationControl_: boolean =
       loadTimeData.getBoolean('showDictationControl');
   // <if expr="_google_chrome">
-  protected accessor showOnDeviceAiSettings_: boolean =
-      loadTimeData.getBoolean('showOnDeviceAiSettings');
   protected accessor onDeviceAiPref_:
       chrome.settingsPrivate.PrefObject<boolean> = {
     key: 'settings.on_device_ai_enabled',

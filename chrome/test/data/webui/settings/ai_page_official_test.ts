@@ -7,9 +7,9 @@ import 'chrome://settings/settings.js';
 
 import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
 import {FeatureOptInState, OnDeviceAiBrowserProxyImpl, SettingsAiPageFeaturePrefName} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsAiPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -71,27 +71,20 @@ suite('settings ai page official', function() {
 
     testBrowserProxy = new TestOnDeviceAiBrowserProxy();
     OnDeviceAiBrowserProxyImpl.setInstance(testBrowserProxy);
-    loadTimeData.overrideValues({
-      showOnDeviceAiSettings: false,
-    });
     createPage();
   });
 
-  function queryOnDeviceAiToggle(): SettingsToggleButtonElement|null {
-    // Toggle is conditionally rendered, so retrieve it via `querySelector`.
-    return aiPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+  function getOnDeviceAiToggle(): SettingsToggleButtonElement {
+    const toggle = aiPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#onDeviceAiToggle');
+    assertTrue(!!toggle);
+    return toggle;
   }
 
   test('show onDeviceAi toggle', async function() {
-    loadTimeData.overrideValues({
-      showOnDeviceAiSettings: true,
-    });
-    createPage();
     await microtasksFinished();
 
-    const toggle = queryOnDeviceAiToggle();
-    assertTrue(!!toggle);
+    const toggle = getOnDeviceAiToggle();
     assertTrue(isVisible(toggle));
     assertTrue(toggle.checked);
 
@@ -120,9 +113,6 @@ suite('settings ai page official', function() {
   });
 
   test('onDeviceAi toggle disabled by policy', async function() {
-    loadTimeData.overrideValues({
-      showOnDeviceAiSettings: true,
-    });
     testBrowserProxy.setGetOnDeviceAiEnabledResponse({
       enabled: true,
       allowedByPolicy: false,
@@ -131,8 +121,7 @@ suite('settings ai page official', function() {
     await testBrowserProxy.whenCalled('getOnDeviceAiEnabled');
     await microtasksFinished();
 
-    const toggle = queryOnDeviceAiToggle();
-    assertTrue(!!toggle);
+    const toggle = getOnDeviceAiToggle();
     assertTrue(isVisible(toggle));
     assertTrue(toggle.$.control.disabled);
     assertFalse(toggle.checked);
@@ -143,15 +132,9 @@ suite('settings ai page official', function() {
   });
 
   test('onDeviceAi send feedback', async function() {
-    loadTimeData.overrideValues({
-      showOnDeviceAiSettings: true,
-    });
-    createPage();
     await microtasksFinished();
 
-    const toggle = queryOnDeviceAiToggle();
-    assertTrue(!!toggle);
-
+    const toggle = getOnDeviceAiToggle();
     const section = toggle.closest('settings-section');
     assertTrue(!!section);
 
@@ -161,10 +144,5 @@ suite('settings ai page official', function() {
 
     feedbackButton.click();
     await testBrowserProxy.whenCalled('openFeedbackDialog');
-  });
-
-  test('hide onDeviceAi toggle by default', function() {
-    assertFalse(loadTimeData.getBoolean('showOnDeviceAiSettings'));
-    assertNull(queryOnDeviceAiToggle());
   });
 });

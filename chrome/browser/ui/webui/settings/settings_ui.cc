@@ -667,13 +667,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // On Device AI setting.
+  // The On Device AI setting is always shown on branded builds.
   // TODO(crbug.com/466442880): Grey out toggle based on device capability and
   // enterprise policy.
-  bool show_on_device_ai_settings =
-      base::FeatureList::IsEnabled(features::kShowOnDeviceAiSettings);
-  html_source->AddBoolean("showOnDeviceAiSettings", show_on_device_ai_settings);
-  show_ai_features_section |= show_on_device_ai_settings;
+  show_ai_features_section = true;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Within the AI subpage are separate sections for Glic, for GEIC, and for all
