@@ -153,6 +153,9 @@ void NotificationPlatformBridgeMac::CloseImpl(
   std::string profile_id = GetProfileId(profile);
   bool incognito = profile->IsOffTheRecord();
 
+  // Closing across multiple dispatchers is needed because an updated
+  // notification may move between dispatchers (e.g. between banner and alert,
+  // or between Chrome and a web app if a PWA is installed or uninstalled).
   if (banner_dispatcher_.get() != excluded_dispatcher) {
     banner_dispatcher_->CloseNotificationWithId(
         {notification_id, profile_id, incognito});
@@ -161,6 +164,9 @@ void NotificationPlatformBridgeMac::CloseImpl(
     alert_dispatcher_->CloseNotificationWithId(
         {notification_id, profile_id, incognito});
   }
+  // TODO(crbug.com/574102798): Avoid fanning out to unrelated app dispatchers,
+  // as that can relaunch an unrelated app shim in the background if it had
+  // notifications on screen when it last quit.
   for (auto& [app_id, dispatcher] : app_specific_dispatchers_) {
     if (dispatcher.get() == excluded_dispatcher) {
       continue;

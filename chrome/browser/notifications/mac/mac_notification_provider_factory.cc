@@ -85,3 +85,17 @@ MacNotificationProviderFactory::LaunchProvider() {
   }
   NOTREACHED();
 }
+
+bool MacNotificationProviderFactory::ShouldRetryIndefinitely() const {
+  switch (notification_style_) {
+    case mac_notifications::NotificationStyle::kBanner:
+    case mac_notifications::NotificationStyle::kAlert:
+      return true;
+    case mac_notifications::NotificationStyle::kAppShim:
+      // There is no need to keep restarting an app shim: macOS relaunches it
+      // when the user interacts with one of its notifications, and
+      // Display/Get/Close calls relaunch it on demand.
+      return false;
+  }
+  NOTREACHED();
+}

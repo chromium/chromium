@@ -101,6 +101,11 @@ class NotificationDispatcherMojo
   std::optional<base::TimeTicks> service_first_response_time_;
   base::OneShotTimer service_restart_timer_;
   base::TimeDelta next_service_restart_timer_delay_;
+  // True if the service went away without telling us that it has no displayed
+  // notifications left (e.g. it crashed, timed out, or the user quit the app
+  // shim). In that case notifications may still be on screen, so the service
+  // gets relaunched on demand to query or close them.
+  bool may_have_displayed_notifications_ = false;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_DISPATCHER_MOJO_H_

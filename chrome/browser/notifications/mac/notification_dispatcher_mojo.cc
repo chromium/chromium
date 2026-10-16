@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 #include <vector>
@@ -232,6 +233,7 @@ void NotificationDispatcherMojo::OnServiceResponded() {
 void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     ShutdownType shutdown_type) {
   base::TimeDelta elapsed = base::TimeTicks::Now() - service_start_time_;
+  const bool had_displayed_notifications = !HasNoDisplayedNotifications();
 
   // Log utility process runtime metrics to UMA.
   if (service_) {
@@ -277,7 +279,11 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     next_service_restart_timer_delay_ = kInitialServiceRestartTimerDelay;
   }
 
-  if (shutdown_type == ShutdownType::kUnexpected) {
+  // Once the restart delay has reached its maximum, only keep retrying if the
+  // provider wants indefinite retries.
+  if (shutdown_type == ShutdownType::kUnexpected &&
+      (next_service_restart_timer_delay_ < kMaximumServiceRestartTimerDelay ||
+       provider_factory_->ShouldRetryIndefinitely())) {
     // Calling CheckIfServiceCanBeTerminated() will force a new connection
     // attempt. base::Unretained(this) is safe here because |this| owns
     // |service_restart_timer_|.
@@ -286,14 +292,17 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
         base::BindOnce(
             &NotificationDispatcherMojo::CheckIfServiceCanBeTerminated,
             base::Unretained(this)));
-    if (next_service_restart_timer_delay_ < kMaximumServiceRestartTimerDelay) {
-      next_service_restart_timer_delay_ = next_service_restart_timer_delay_ * 2;
-    }
+    next_service_restart_timer_delay_ =
+        std::min(next_service_restart_timer_delay_ * 2,
+                 kMaximumServiceRestartTimerDelay);
   } else {
     service_restart_timer_.Stop();
   }
 
   service_first_response_time_.reset();
+  may_have_displayed_notifications_ =
+      had_displayed_notifications &&
+      shutdown_type != ShutdownType::kChromeInitiated;
   no_notifications_checker_.Cancel();
   provider_.reset();
   service_.reset();
@@ -301,7 +310,8 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
 }
 
 bool NotificationDispatcherMojo::HasNoDisplayedNotifications() const {
-  return !service_ && !service_restart_timer_.IsRunning();
+  return !service_ && !service_restart_timer_.IsRunning() &&
+         !may_have_displayed_notifications_;
 }
 
 mac_notifications::mojom::MacNotificationService*
