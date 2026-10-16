@@ -4138,12 +4138,13 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   device_ = wgpu::Device::Acquire(reinterpret_cast<WGPUDevice>(wgpuDevice));
 
   // Create a GL Context.
-  // TODO(413078308): Request version 2 vs 3 depending on WebGL version.
   // TODO(413078308): Request a WebGL compatibility context when requesting
   // extensions is supported both for basic functionality and WebGL extensions.
   const auto context_attribs = std::to_array<EGLint>({
+      // WebGL 1.0 is based on OpenGL ES 2.0, WebGL 2.0 on OpenGL ES 3.0.
+      // ANGLE then rejects the ES3-only enums on WebGL 1.0 contexts.
       EGL_CONTEXT_MAJOR_VERSION,
-      IsWebGL() ? 3 : 2,
+      IsWebGL2() ? 3 : 2,
       EGL_CONTEXT_MINOR_VERSION,
       0,
       EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE,
