@@ -23,7 +23,12 @@ TestIdentifier::TestIdentifier() = default;
 
 TestIdentifier::TestIdentifier(const TestIdentifier& other) = default;
 
+TestIdentifier::TestIdentifier(TestIdentifier&& other) noexcept = default;
+
 TestIdentifier& TestIdentifier::operator=(const TestIdentifier& other) =
+    default;
+
+TestIdentifier& TestIdentifier::operator=(TestIdentifier&& other) noexcept =
     default;
 
 std::string FormatFullTestName(std::string_view test_case_name,
@@ -41,6 +46,7 @@ std::vector<TestIdentifier> GetCompiledInTests() {
   testing::UnitTest* const unit_test = testing::UnitTest::GetInstance();
 
   std::vector<TestIdentifier> tests;
+  tests.reserve(static_cast<size_t>(unit_test->total_test_count()));
   for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
     const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
     for (int j = 0; j < test_suite->total_test_count(); ++j) {
@@ -50,7 +56,7 @@ std::vector<TestIdentifier> GetCompiledInTests() {
       test_data.test_name = test_info->name();
       test_data.file = test_info->file();
       test_data.line = test_info->line();
-      tests.push_back(test_data);
+      tests.push_back(std::move(test_data));
     }
   }
   return tests;

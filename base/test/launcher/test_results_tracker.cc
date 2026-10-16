@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -574,14 +576,21 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
   summary_root.Set("global_tags", std::move(global_tags));
 
-  ListValue all_tests;
-  for (const auto& test : all_tests_) {
+  std::vector<std::string_view> sorted_all_tests(all_tests_.begin(),
+                                                 all_tests_.end());
+  std::ranges::sort(sorted_all_tests);
+  ListValue all_tests = ListValue::with_capacity(sorted_all_tests.size());
+  for (std::string_view test : sorted_all_tests) {
     all_tests.Append(test);
   }
   summary_root.Set("all_tests", std::move(all_tests));
 
-  ListValue disabled_tests;
-  for (const auto& disabled_test : disabled_tests_) {
+  std::vector<std::string_view> sorted_disabled_tests(disabled_tests_.begin(),
+                                                      disabled_tests_.end());
+  std::ranges::sort(sorted_disabled_tests);
+  ListValue disabled_tests =
+      ListValue::with_capacity(sorted_disabled_tests.size());
+  for (std::string_view disabled_test : sorted_disabled_tests) {
     disabled_tests.Append(disabled_test);
   }
   summary_root.Set("disabled_tests", std::move(disabled_tests));

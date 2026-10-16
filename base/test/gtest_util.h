@@ -107,7 +107,9 @@ class FilePath;
 struct TestIdentifier {
   TestIdentifier();
   TestIdentifier(const TestIdentifier& other);
+  TestIdentifier(TestIdentifier&& other) noexcept;
   TestIdentifier& operator=(const TestIdentifier& other);
+  TestIdentifier& operator=(TestIdentifier&& other) noexcept;
 
   std::string test_case_name;
   std::string test_name;

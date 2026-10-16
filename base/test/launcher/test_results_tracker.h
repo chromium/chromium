@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/launcher/test_result.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 
@@ -45,6 +46,9 @@ class TestResultsTracker {
 
   // Called when a test iteration is starting.
   void OnTestIterationStarting();
+
+  // Reserves capacity in the set of discovered tests.
+  void ReserveTests(size_t count) { all_tests_.reserve(count); }
 
   // Adds |test_name| to the set of discovered tests (this includes all tests
   // present in the executable, not necessarily run).
@@ -166,16 +170,16 @@ class TestResultsTracker {
   std::set<std::string> global_tags_;
 
   // Set of all test names discovered in the current executable.
-  std::set<std::string> all_tests_;
+  absl::flat_hash_set<std::string> all_tests_;
 
   // CodeLocation for all tests that will be run as a part of this shard.
   std::map<std::string, CodeLocation> test_locations_;
 
   // Name of tests that will run and produce results.
-  std::set<std::string> test_placeholders_;
+  absl::flat_hash_set<std::string> test_placeholders_;
 
   // Set of all disabled tests in the current executable.
-  std::set<std::string> disabled_tests_;
+  absl::flat_hash_set<std::string> disabled_tests_;
 
   // Store test results for each iteration.
   std::vector<PerIterationData> per_iteration_data_;

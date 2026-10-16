@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <random>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
@@ -1009,6 +1010,9 @@ class TestLauncher::TestInfo {
  public:
   TestInfo() = default;
   TestInfo(const TestInfo& other) = default;
+  TestInfo(TestInfo&& other) noexcept = default;
+  TestInfo& operator=(const TestInfo& other) = default;
+  TestInfo& operator=(TestInfo&& other) noexcept = default;
   explicit TestInfo(const TestIdentifier& test_id);
   ~TestInfo() = default;
 
@@ -1047,16 +1051,16 @@ TestLauncher::TestInfo::TestInfo(const TestIdentifier& test_id)
       test_name_(test_id.test_name),
       file_(test_id.file),
       line_(test_id.line),
-      disabled_(false),
-      pre_test_(false) {
-  disabled_ = GetFullName().find(kDisabledTestPrefix) != std::string::npos;
-  pre_test_ = test_name_.find(kPreTestPrefix) != std::string::npos;
-}
+      disabled_(test_case_name_.contains(kDisabledTestPrefix) ||
+                test_name_.contains(kDisabledTestPrefix)),
+      pre_test_(test_name_.contains(kPreTestPrefix)) {}
 
 std::string TestLauncher::TestInfo::GetDisabledStrippedName() const {
   std::string test_name = GetFullName();
-  ReplaceSubstringsAfterOffset(&test_name, 0, kDisabledTestPrefix,
-                               std::string());
+  if (disabled_) {
+    ReplaceSubstringsAfterOffset(&test_name, 0, kDisabledTestPrefix,
+                                 std::string_view());
+  }
   return test_name;
 }
 
@@ -1066,16 +1070,24 @@ std::string TestLauncher::TestInfo::GetFullName() const {
 
 std::string TestLauncher::TestInfo::GetPreName() const {
   std::string name = test_name_;
-  ReplaceSubstringsAfterOffset(&name, 0, kDisabledTestPrefix, std::string());
+  if (disabled_) {
+    ReplaceSubstringsAfterOffset(&name, 0, kDisabledTestPrefix,
+                                 std::string_view());
+  }
   std::string case_name = test_case_name_;
-  ReplaceSubstringsAfterOffset(&case_name, 0, kDisabledTestPrefix,
-                               std::string());
+  if (disabled_) {
+    ReplaceSubstringsAfterOffset(&case_name, 0, kDisabledTestPrefix,
+                                 std::string_view());
+  }
   return FormatFullTestName(case_name, kPreTestPrefix + name);
 }
 
 std::string TestLauncher::TestInfo::GetPrefixStrippedName() const {
   std::string test_name = GetDisabledStrippedName();
-  ReplaceSubstringsAfterOffset(&test_name, 0, kPreTestPrefix, std::string());
+  if (pre_test_) {
+    ReplaceSubstringsAfterOffset(&test_name, 0, kPreTestPrefix,
+                                 std::string_view());
+  }
   return test_name;
 }
 
@@ -1880,6 +1892,7 @@ bool TestLauncher::InitTests() {
   CHECK(!dups_found);
 
   std::vector<std::string> uninstantiated_tests;
+  tests_.reserve(tests.size());
   for (const TestIdentifier& test_id : tests) {
     TestInfo test_info(test_id);
     if (test_id.test_case_name == "GoogleTestVerification") {
@@ -1891,7 +1904,7 @@ bool TestLauncher::InitTests() {
     // TODO(isamsonov): crbug.com/1004417 remove when windows builders
     // stop flaking on MANAUAL_ tests.
     if (launcher_delegate_->ShouldRunTest(test_id)) {
-      tests_.push_back(test_info);
+      tests_.push_back(std::move(test_info));
     }
   }
   if (!uninstantiated_tests.empty()) {
@@ -1951,6 +1964,7 @@ bool TestLauncher::ProcessAndValidateTests() {
   absl::flat_hash_map<std::string, TestInfo> pre_tests;
 
   // Find disabled and pre tests
+  results_tracker_.ReserveTests(tests_.size());
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
     results_tracker_.AddTest(test_name);
@@ -1964,6 +1978,7 @@ bool TestLauncher::ProcessAndValidateTests() {
   }
 
   std::vector<TestInfo> tests_to_run;
+  tests_to_run.reserve(tests_.size());
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
     // If any test has a matching disabled test, fail and log for audit.
@@ -1978,16 +1993,20 @@ bool TestLauncher::ProcessAndValidateTests() {
     }
 
     std::vector<TestInfo> test_sequence;
-    test_sequence.push_back(test_info);
     // Move Pre Tests prior to final test in order.
-    while (pre_tests.contains(test_sequence.back().GetPreName())) {
-      test_sequence.push_back(pre_tests[test_sequence.back().GetPreName()]);
-      pre_tests.erase(test_sequence.back().GetDisabledStrippedName());
+    if (!pre_tests.empty()) {
+      for (auto it = pre_tests.find(test_info.GetPreName());
+           it != pre_tests.end();
+           it = pre_tests.find(test_sequence.back().GetPreName())) {
+        test_sequence.push_back(std::move(it->second));
+        pre_tests.erase(it);
+      }
     }
     // Skip disabled tests unless explicitly requested.
     if (!test_info.disabled() || !skip_disabled_tests_) {
-      tests_to_run.insert(tests_to_run.end(), test_sequence.rbegin(),
-                          test_sequence.rend());
+      tests_to_run.append_range(
+          std::views::as_rvalue(std::views::reverse(test_sequence)));
+      tests_to_run.push_back(test_info);
     }
   }
   tests_ = std::move(tests_to_run);
@@ -2075,7 +2094,10 @@ std::vector<std::string> TestLauncher::CollectTests() {
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
 
-    std::string prefix_stripped_name = test_info.GetPrefixStrippedName();
+    std::string prefix_stripped_name =
+        test_info.disabled() || test_info.pre_test()
+            ? test_info.GetPrefixStrippedName()
+            : test_name;
 
     // Skip the test that doesn't match the filter (if given).
     if (has_at_least_one_positive_filter_) {
@@ -2138,7 +2160,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
       results_tracker_.AddTestPlaceholder(test_name);
     }
 
-    test_names.push_back(test_name);
+    test_names.push_back(std::move(test_name));
   }
 
   // If `kEnforceExactPositiveFilter` is set, all test cases listed in the
