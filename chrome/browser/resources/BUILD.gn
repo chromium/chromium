@@ -52,6 +52,9 @@ group("resources") {
       "contextual_tasks/extension:resources",
       "omnibox_internals/aim_eligibility_extension:resources",
     ]
+    if (enable_webui_ntp) {
+      public_deps += [ "new_tab_page_extension:resources" ]
+    }
   }
 
   if (!is_android) {

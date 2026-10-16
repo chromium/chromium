@@ -553,6 +553,12 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/omnibox_internals/aim_eligibility_extension:resources",
         "//extensions:extensions_resources",
       ]
+      if (enable_webui_ntp) {
+        sources +=
+            [ "$root_gen_dir/chrome/new_tab_page_extension_resources.pak" ]
+        deps +=
+            [ "//chrome/browser/resources/new_tab_page_extension:resources" ]
+      }
     } else if (is_android) {
       sources += [ "$root_gen_dir/chrome/guest_view_shared_resources.pak" ]
       deps += [ "//chrome/browser/resources/guest_view_shared:resources" ]

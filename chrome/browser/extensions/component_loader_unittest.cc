@@ -53,8 +53,14 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -181,6 +187,8 @@ class ComponentLoaderTest : public testing::Test {
   void AddAimEligibilityExtension() {
     component_loader_->AddAimEligibilityExtension();
   }
+
+  void AddNewTabPageExtension() { component_loader_->AddNewTabPageExtension(); }
 
   void VerifyBundledAimEligibilityExtensionLoaded(
       bool expect_prefs_cleared = true) {
@@ -729,5 +737,51 @@ TEST_F(ComponentLoaderTest,
 
   VerifyBundledAimEligibilityExtensionLoaded();
 }
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+// Verifies the NTP component extension is installed when its feature is
+// enabled.
+TEST_F(ComponentLoaderTest, AddNewTabPageExtensionLoadsWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ntp_features::kNtpComponentExtension);
+
+  AddNewTabPageExtension();
+  component_loader_->LoadAll();
+
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kNewTabPageExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->location(), mojom::ManifestLocation::kComponent);
+}
+
+// Verifies the NTP component extension is not installed when its feature is
+// disabled.
+TEST_F(ComponentLoaderTest, AddNewTabPageExtensionSkippedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ntp_features::kNtpComponentExtension);
+
+  AddNewTabPageExtension();
+  component_loader_->LoadAll();
+
+  EXPECT_FALSE(ExtensionRegistry::Get(profile())->GetInstalledExtension(
+      extension_misc::kNewTabPageExtensionId));
+}
+
+// Verifies the extension is on the component extension allowlist, so it loads
+// without `set_ignore_allowlist_for_testing()`.
+TEST_F(ComponentLoaderTest, AddNewTabPageExtensionIsAllowlisted) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ntp_features::kNtpComponentExtension);
+  component_loader_->set_ignore_allowlist_for_testing(false);
+
+  AddNewTabPageExtension();
+  component_loader_->LoadAll();
+
+  EXPECT_TRUE(ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+      extension_misc::kNewTabPageExtensionId));
+}
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 }  // namespace extensions

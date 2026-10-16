@@ -329,6 +329,10 @@ inline constexpr char kIndigoExtensionId[] = "gcgachbpjjonjloecffgdajegokngglh";
 inline constexpr char kAimEligibilityExtensionId[] =
     "kabpfonokkamggpgbldambnmkliehlbh";
 
+// The extension id of the New Tab Page component extension.
+inline constexpr char kNewTabPageExtensionId[] =
+    "hejfefaejbacaldempbfhnjlknekjbja";
+
 // The extension id of the Contextual Tasks component extension.
 inline constexpr char kContextualTasksExtensionId[] =
     "glbjnfimcajjenihimblfaponejbkoph";

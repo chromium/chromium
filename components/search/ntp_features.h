@@ -45,6 +45,7 @@ BASE_DECLARE_FEATURE(kNtpAnimatedCaret);
 BASE_DECLARE_FEATURE(kNtpBackgroundImageErrorDetection);
 BASE_DECLARE_FEATURE(kNtpCalendarModule);
 BASE_DECLARE_FEATURE(kNtpChromeCartModule);
+BASE_DECLARE_FEATURE(kNtpComponentExtension);
 BASE_DECLARE_FEATURE(kNtpCustomizeChromeAutoOpen);
 BASE_DECLARE_FEATURE(kNtpCustomizeWebUiAndroid);
 BASE_DECLARE_FEATURE(kNtpDisableBrowserInitiatedLinks);

@@ -21,6 +21,7 @@ import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(enable_extensions_core)
 assert(enable_supervised_users)
@@ -675,6 +676,13 @@ source_set("extensions") {
   }
   if (enable_spellcheck) {
     deps += [ "//chrome/browser/spellchecker" ]
+  }
+  deps += [ "//ui/webui:buildflags" ]
+  if (enable_webui_ntp) {
+    deps += [
+      "//chrome/browser/resources/new_tab_page_extension:resources",
+      "//components/search",
+    ]
   }
   if (is_android) {
     sources += [
@@ -2161,7 +2169,12 @@ source_set("unit_tests") {
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/display:test_support",
     "//ui/menus",
+    "//ui/webui:buildflags",
   ]
+
+  if (enable_webui_ntp) {
+    deps += [ "//components/search" ]
+  }
 
   if (!is_chromeos) {
     sources += [ "preinstalled_extensions_unittest.cc" ]

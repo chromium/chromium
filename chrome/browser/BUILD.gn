@@ -2858,6 +2858,7 @@ source_set("browser") {
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page:impl",
+      "//chrome/browser/ui/webui/new_tab_page_extension",
       "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
       "//chrome/browser/ui/webui/ntp_microsoft_auth",

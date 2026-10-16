@@ -32,6 +32,12 @@
 #include "extensions/common/extension_id.h"
 #include "pdf/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/grit/new_tab_page_extension_resources_map.h"
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
@@ -123,6 +129,11 @@ ChromeComponentExtensionResourceManager::Data::Data() {
           omnibox::kAimEligibilityComponentExtension)) {
     AddComponentResourceEntries(kAimEligibilityExtensionResources);
   }
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpComponentExtension)) {
+    AddComponentResourceEntries(kNewTabPageExtensionResources);
+  }
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   if (base::FeatureList::IsEnabled(
           extensions_features::kApiContextualTasksPrivate)) {
     AddComponentResourceEntries(kContextualTasksExtensionResources);

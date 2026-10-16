@@ -235,6 +235,8 @@ class ComponentLoader : public KeyedService {
 
   void AddAimEligibilityExtension();
 
+  void AddNewTabPageExtension();
+
   void AddGlicExtension();
 
   void AddContextualTasksExtension();

@@ -21,6 +21,11 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/grit/new_tab_page_extension_resources.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_extension_constants.h"
@@ -39,6 +44,9 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kContextualTasksExtensionId,
       extension_misc::kGlicExtensionId,
       extension_misc::kInAppPaymentsSupportAppId,
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+      extension_misc::kNewTabPageExtensionId,
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
       extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS)
       extension_misc::kAssessmentAssistantExtensionId,
@@ -95,6 +103,9 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON:
     case IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST_JSON:
     case IDR_GLIC_EXTENSION_MANIFEST:
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+    case IDR_NEW_TAB_PAGE_EXTENSION_MANIFEST_JSON:
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST:
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST_MV3:
     case IDR_WEBSTORE_MANIFEST:

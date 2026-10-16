@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 
 class AimEligibilityExtensionBinderProvider;
+class NewTabPageExtensionBinderProvider;
 
 namespace contextual_tasks {
 class ContextualTasksExtensionBinderProvider;
@@ -57,6 +58,13 @@ ExtensionMojoBinderRegistry::~ExtensionMojoBinderRegistry() = default;
 template <>
 void ExtensionMojoBinderRegistry::RegisterProvider(
     base::PassKey<AimEligibilityExtensionBinderProvider>,
+    std::unique_ptr<ExtensionMojoBinderProvider> provider) {
+  RegisterProviderImpl(std::move(provider));
+}
+
+template <>
+void ExtensionMojoBinderRegistry::RegisterProvider(
+    base::PassKey<NewTabPageExtensionBinderProvider>,
     std::unique_ptr<ExtensionMojoBinderProvider> provider) {
   RegisterProviderImpl(std::move(provider));
 }

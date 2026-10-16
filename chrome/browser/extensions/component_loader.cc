@@ -69,6 +69,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_extension_constants.h"
@@ -94,6 +95,11 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/defaults.h"
 #endif
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/grit/new_tab_page_extension_resources.h"
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -559,6 +565,17 @@ void ComponentLoader::AddAimEligibilityExtension() {
       base::FilePath(extension_misc::kAimEligibilityExtensionDirName));
 }
 
+void ComponentLoader::AddNewTabPageExtension() {
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpComponentExtension)) {
+    return;
+  }
+
+  Add(IDR_NEW_TAB_PAGE_EXTENSION_MANIFEST_JSON,
+      base::FilePath(extension_misc::kNewTabPageExtensionDirName));
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+}
+
 void ComponentLoader::AddGlicExtension() {
   if (IsApiGlicPrivateEnabled()) {
     Add(IDR_GLIC_EXTENSION_MANIFEST,
@@ -789,6 +806,7 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
   }
 
   AddAimEligibilityExtension();
+  AddNewTabPageExtension();
   AddGlicExtension();
   AddContextualTasksExtension();
 

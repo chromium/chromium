@@ -1,0 +1,22 @@
+{
+  "name": "New Tab Page",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Experimental New Tab Page.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAykwjZZvD8VmMLl8zD6+aoJ/c3yC3CGNlJwsOVMUrcFYN7PNXcEnbzdYELWakSOUvFONXrg5MLlEYn8JK7R4J6iJTPU8ChySEU2doBXAB1200QcLo6GL+GW13SyzazqbB4FbSVuez9Gu0LIBHwZcoI/a7RG5ffGfm9FSPKRSzb9JRQ5GKywcyGXnM6xEZ0dezHB9aNxt+SiVC5iRU3zLY9gxFIrqCYMPywGrHA1OWpFwiF7VrR8EJD73+5W/m/oiiSou6yPar9yFXhl/38huIxlypsRggptgKMyMvr0/iUO/mmWBxQZIQgtYYb0QRS4QL42u2fvVmmVGolHWESI5c1wIDAQAB",
+  "chrome_url_overrides": {
+    "newtab": "new_tab_page.html"
+  },
+  "permissions": [
+    "favicon",
+    "metricsPrivate"
+  ],
+  "host_permissions": [
+    "chrome://image/*",
+    "chrome://resources/*",
+    "chrome://theme/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' chrome://resources; object-src 'self';"
+  }
+}

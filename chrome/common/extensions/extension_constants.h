@@ -169,6 +169,11 @@ enum AppLaunchBucket {
 inline constexpr base::FilePath::CharType kAimEligibilityExtensionDirName[] =
     FILE_PATH_LITERAL("aim_eligibility_extension");
 
+// The directory name of the New Tab Page component extension,
+// relative to DIR_RESOURCES.
+inline constexpr base::FilePath::CharType kNewTabPageExtensionDirName[] =
+    FILE_PATH_LITERAL("new_tab_page_extension");
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // The extension id of the google tts engine extension to use on-device natural
 // Google voices.

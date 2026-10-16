@@ -573,6 +573,9 @@
 #include "components/contextual_tasks/public/features.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #include "extensions/browser/extensions_browser_client.h"
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/browser/ui/webui/new_tab_page_extension/new_tab_page_extension_bridge_factory.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 #endif
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
@@ -1201,6 +1204,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   AimEligibilityExtensionBridgeFactory::GetInstance();
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  NewTabPageExtensionBridgeFactory::GetInstance();
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   if (base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksRearchitecture)) {
     contextual_tasks::ContextualTasksExtensionBridgeFactory::GetInstance();

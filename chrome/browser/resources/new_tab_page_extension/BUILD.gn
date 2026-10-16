@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
+assert(enable_extensions_core)
+
+# Packages the NTP component extension.
+
+generate_grd("build_grd") {
+  visibility = [ ":*" ]
+  grd_prefix = "new_tab_page_extension"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "manifest.json",
+    "new_tab_page.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  resource_path_prefix = "new_tab_page_extension"
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
+
+  outputs = [
+    "grit/new_tab_page_extension_resources.h",
+    "grit/new_tab_page_extension_resources_map.cc",
+    "grit/new_tab_page_extension_resources_map.h",
+    "new_tab_page_extension_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/chrome"
+}

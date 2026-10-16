@@ -1,0 +1,34 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_EXTENSION_NEW_TAB_PAGE_EXTENSION_BRIDGE_FACTORY_H_
+#define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_EXTENSION_NEW_TAB_PAGE_EXTENSION_BRIDGE_FACTORY_H_
+
+#include <memory>
+
+#include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+
+class NewTabPageExtensionBridge;
+
+// Factory for the `NewTabPageExtensionBridge` KeyedService. The service is
+// only created when `ntp_features::kNtpComponentExtension` is enabled.
+class NewTabPageExtensionBridgeFactory : public ProfileKeyedServiceFactory {
+ public:
+  static NewTabPageExtensionBridge* GetForProfile(Profile* profile);
+  static NewTabPageExtensionBridgeFactory* GetInstance();
+
+ private:
+  friend base::NoDestructor<NewTabPageExtensionBridgeFactory>;
+
+  NewTabPageExtensionBridgeFactory();
+  ~NewTabPageExtensionBridgeFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_EXTENSION_NEW_TAB_PAGE_EXTENSION_BRIDGE_FACTORY_H_
