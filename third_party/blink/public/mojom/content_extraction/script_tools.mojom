@@ -78,6 +78,29 @@ struct ExposedScriptTool {
   url.mojom.Origin origin;
 };
 
+// Lower-level error code produced when executing a tool inside a target
+// Document. Sent from the target renderer to the browser process.
+enum ScriptToolErrorCode {
+  kInvalidToolName,
+  kInvalidInputArguments,
+  kMissingRequiredSubmitButton,
+  kToolInvocationFailed,
+  kToolCancelled,
+};
+
+// Sanitized error code sent from the browser process back to a calling frame
+// invoking `ModelContextHost.ExecuteRemoteScriptTool()`. Maps 1-to-1 to the
+// `DOMException` types thrown by `ModelContext.executeTool()` so that a
+// compromised calling renderer never observes lower-level failure reasons or
+// origin/tool probing distinctions.
+enum ExecuteRemoteScriptToolError {
+  kInvalidStateError,
+  kNotFoundError,
+  kDataError,
+  kOperationError,
+  kAbortError,
+};
+
 // Interface for the renderer to request actions from the browser related to
 // script tools.
 interface ScriptToolHost {
@@ -117,22 +140,14 @@ interface ModelContextHost {
   // that token points to a remote frame whose frame tree node's host has
   // changed since tool registration.
   //
-  // Note that `success` generally
-  // controls whether the caller's Promise resolves or rejects:
-  //   - When the Promise returned by the remote tool resolves, then `success`
-  //     will be true, and the caller's Promise resolves.
-  //   - The same is true in the inverse, for rejection.
-  // ... but note that `success` can be false even before the remote tool's
-  // response is obtained, e.g., if the browser process failed to locate the
-  // tool, or if it was unregistered mid-execution.
-  //
-  // TODO(https://crbug.com/509555636): Consider making `success` more granular
-  // in the error case, perhaps by using `ScriptToolErrorCode`.
+  // If tool execution fails, `error` is set to a `ExecuteRemoteScriptToolError`
+  // corresponding to the `DOMException` that will be exposed to the caller.
   ExecuteRemoteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
                           mojo_base.mojom.UnguessableToken tool_id,
                           blink.mojom.FrameToken tool_owner_frame_token,
                           url.mojom.Origin expected_target_origin,
-                          string input_arguments) => (string? result, bool success);
+                          string input_arguments)
+      => (string? result, ExecuteRemoteScriptToolError? error);
 
   // Cancels a pending execution of a remote script tool.
   CancelRemoteScriptTool(mojo_base.mojom.UnguessableToken invocation_id);
@@ -150,10 +165,11 @@ interface ModelContext {
   // https://crbug.com/508306795 which tracks the task of changing this.
   //
   // Resolution of the JavaScript Promise results in the callback being called
-  // with `success=true`, while rejection results in `success=false`.
+  // with the result and a null error_code, while failure passes a null result
+  // and a non-null error_code.
   ExecuteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
                     mojo_base.mojom.UnguessableToken tool_id, string input_arguments)
-      => (string? result, bool success);
+      => (string? result, ScriptToolErrorCode? error_code);
 
   // Cancels a pending execution of a script tool in this Document.
   CancelScriptTool(mojo_base.mojom.UnguessableToken invocation_id);

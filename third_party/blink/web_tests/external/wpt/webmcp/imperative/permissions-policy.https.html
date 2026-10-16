@@ -169,7 +169,7 @@ promise_test(async t => {
   // Executing the previously retrieved RegisteredTool reference must now reject
   // because the target frame no longer exposes the tool to the caller's origin.
   await promise_rejects_dom(
-      t, 'UnknownError', document.modelContext.executeTool(tool),
+      t, 'NotFoundError', document.modelContext.executeTool(tool),
       'executeTool() should reject when target frame revokes origin exposure');
 }, 'executeTool() rejects when target frame revokes exposedTo permission after getTools()');
 </script>

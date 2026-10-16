@@ -71,9 +71,16 @@ STATIC_ASSERT_ENUM(ScriptToolErrorCode::kToolCancelled,
 
 namespace {
 
-const char kPermissionPolicyNotEnabledError[] =
+const char kPermissionPolicyNotEnabledErrorMessage[] =
     "Access to the feature \"tools\" is disallowed by permissions policy.";
-const char kInactiveDocumentError[] = "The document is not active.";
+const char kInactiveDocumentErrorMessage[] = "The document is not active.";
+const char kTargetFrameNotAccessibleErrorMessage[] =
+    "Target frame is not accessible.";
+const char kNotFoundErrorMessage[] =
+    "The requested tool was not found or is not accessible.";
+const char kDataErrorMessage[] = "Failed to parse tool input arguments.";
+const char kOperationErrorMessage[] = "Tool execution failed.";
+const char kAbortErrorMessage[] = "Tool execution aborted.";
 
 // `input` must be a non-empty, non-null object.
 String ValidateAndStringifyValue(ScriptState* script_state,
@@ -167,36 +174,6 @@ String ComputeScriptToolResult(const Document& document) {
 
   builder.Append("]");
   return builder.ToString();
-}
-
-String GetToolErrorMessage(const ScriptToolError& error) {
-  if (!error.message.empty()) {
-    return error.message;
-  }
-  String conversion;
-  switch (error.code) {
-    case ScriptToolErrorCode::kInvalidToolName:
-      conversion = "Tool was not executed due to invalid name";
-      break;
-    case ScriptToolErrorCode::kInvalidInputArguments:
-      conversion = "Tool was not executed due to invalid input arguments";
-      break;
-    case ScriptToolErrorCode::kMissingRequiredSubmitButton:
-      conversion =
-          "Tool was not executed due to missing required submit button";
-      break;
-    case ScriptToolErrorCode::kToolInvocationFailed:
-      conversion =
-          "Tool was executed but the invocation failed. For example, the "
-          "script function threw an error";
-      break;
-    case ScriptToolErrorCode::kToolCancelled:
-      conversion = "Tool was cancelled";
-      break;
-    default:
-      conversion = "Unknown failure";
-  }
-  return conversion;
 }
 
 }  // namespace
@@ -356,16 +333,16 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           kInactiveDocumentError));
+                                           kInactiveDocumentErrorMessage));
   }
 
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kPermissionPolicyNotEnabledError));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotAllowedError,
+                          kPermissionPolicyNotEnabledErrorMessage));
   }
 
   if (FindToolDataByName(tool->name())) {
@@ -408,7 +385,7 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           kInactiveDocumentError));
+                                           kInactiveDocumentErrorMessage));
   }
 
   // Likewise, that script could have registered a tool with the same name, so
@@ -888,7 +865,7 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
   if (maybe_result.IsNothing()) {
     result = ScriptPromise<IDLAny>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kAbortError, "Failure"));
+                          DOMExceptionCode::kAbortError, kAbortErrorMessage));
   } else {
     result = maybe_result.FromJust();
   }
@@ -1005,10 +982,9 @@ void ModelContext::ExecuteScriptTool(
                   [](ExecuteScriptToolCallback callback,
                      base::expected<String, ScriptToolError> result) {
                     if (result.has_value()) {
-                      std::move(callback).Run(result.value(), true);
+                      std::move(callback).Run(result.value(), std::nullopt);
                     } else {
-                      std::move(callback).Run(
-                          GetToolErrorMessage(result.error()), false);
+                      std::move(callback).Run(String(), result.error().code);
                     }
                   },
                   std::move(callback)));
@@ -1062,16 +1038,16 @@ ScriptPromise<IDLSequence<Tool>> ModelContext::getTools(
     return ScriptPromise<IDLSequence<Tool>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           kInactiveDocumentError));
+                                           kInactiveDocumentErrorMessage));
   }
 
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLSequence<Tool>>::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kPermissionPolicyNotEnabledError));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotAllowedError,
+                          kPermissionPolicyNotEnabledErrorMessage));
   }
 
   Vector<scoped_refptr<const SecurityOrigin>> from_origins;
@@ -1153,16 +1129,16 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
     return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           kInactiveDocumentError));
+                                           kInactiveDocumentErrorMessage));
   }
 
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kPermissionPolicyNotEnabledError));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotAllowedError,
+                          kPermissionPolicyNotEnabledErrorMessage));
   }
 
   KURL expected_url(NullUrl(), tool->origin());
@@ -1210,7 +1186,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
   Frame* target_frame = window ? window->GetFrame() : nullptr;
   if (!target_frame) {
     resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     "Target frame is detached.");
+                                     kTargetFrameNotAccessibleErrorMessage);
     return promise;
   }
   blink::FrameToken frame_token = target_frame->GetFrameToken();
@@ -1262,21 +1238,39 @@ void ModelContext::OnExecuteScriptToolCompleted(
     ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
     std::unique_ptr<ScopedAbortState> abort_state,
     const String& result,
-    bool success) {
+    std::optional<mojom::blink::ExecuteRemoteScriptToolError> error) {
   // For the execution result to have been received from the browser process
   // over mojo, the frame/Document that sent the execution must not be detached,
   // and the same goes for the `resolver` that is tied to those objects.
   CHECK(resolver->GetScriptState() &&
         resolver->GetScriptState()->ContextIsValid());
 
-  // `result` is either the result or the error string, so we can use it
-  // unconditionally below.
-  if (success) {
+  if (!error.has_value()) {
     resolver->Resolve(result);
-  } else {
-    // TODO(https://crbug.com/509555636): Support more granular execution error
-    // reasons.
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError, result);
+    return;
+  }
+
+  switch (*error) {
+    case mojom::blink::ExecuteRemoteScriptToolError::kInvalidStateError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       kTargetFrameNotAccessibleErrorMessage);
+      break;
+    case mojom::blink::ExecuteRemoteScriptToolError::kNotFoundError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                       kNotFoundErrorMessage);
+      break;
+    case mojom::blink::ExecuteRemoteScriptToolError::kDataError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                       kDataErrorMessage);
+      break;
+    case mojom::blink::ExecuteRemoteScriptToolError::kOperationError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       kOperationErrorMessage);
+      break;
+    case mojom::blink::ExecuteRemoteScriptToolError::kAbortError:
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       kAbortErrorMessage);
+      break;
   }
 }
 
@@ -1289,7 +1283,7 @@ ScriptPromise<IDLString> ModelContext::RequestContinuationToken(
     return ScriptPromise<IDLString>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           kInactiveDocumentError));
+                                           kInactiveDocumentErrorMessage));
   }
 
   // The `kTools` permission has already been checked for the execution context
@@ -1324,16 +1318,16 @@ ScriptPromise<IDLUndefined> ModelContext::resumeTool(
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           kInactiveDocumentError));
+                                           kInactiveDocumentErrorMessage));
   }
 
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kPermissionPolicyNotEnabledError));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotAllowedError,
+                          kPermissionPolicyNotEnabledErrorMessage));
   }
 
   std::optional<base::UnguessableToken> token =

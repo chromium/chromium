@@ -66,13 +66,14 @@ class CONTENT_EXPORT ModelContextPageUserData
   // When the browser process calls the `ExecuteScriptTool()` IPC on
   // `blink.mojom.ModelContext` (i.e., `blink::ModelContext`), the callback
   // signifying tool completion in the renderer calls this method. This method
-  // in turn takes the tool response, and forwards it back to the invoking
-  // renderer process, by running the response callback that was added in
-  // `AddPendingScriptToolExecution()` above.
+  // in turn takes `result` and `error` (if tool execution failed), and
+  // forwards them back to the invoking renderer process by running the
+  // response callback that was added in `AddPendingScriptToolExecution()`
+  // above.
   void CompletePendingScriptToolExecution(
       const base::UnguessableToken& invocation_id,
       const std::optional<std::string>& result,
-      bool success);
+      std::optional<blink::mojom::ExecuteRemoteScriptToolError> error);
   // The below "cancellation" methods ensure that a failure to execute a tool to
   // completion is propagated back to the calling renderer under certain
   // circumstances.

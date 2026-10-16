@@ -254,7 +254,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
       ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
       std::unique_ptr<ScopedAbortState> abort_state,
       const String& result,
-      bool success);
+      std::optional<mojom::blink::ExecuteRemoteScriptToolError> error);
 
   void Trace(Visitor*) const override;
 

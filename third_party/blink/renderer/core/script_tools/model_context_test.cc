@@ -125,7 +125,8 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
           expected_target_origin,
       const ::blink::String& input_arguments,
       ExecuteRemoteScriptToolCallback callback) override {
-    std::move(callback).Run(String(), false);
+    std::move(callback).Run(
+        String(), mojom::blink::ExecuteRemoteScriptToolError::kNotFoundError);
   }
   void CancelRemoteScriptTool(
       const base::UnguessableToken& invocation_id) override {}

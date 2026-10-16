@@ -9,20 +9,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-enum class ScriptToolErrorCode {
-  kInvalidToolName,
-  kInvalidInputArguments,
-  kMissingRequiredSubmitButton,
-  kToolInvocationFailed,
-  kToolCancelled,
-};
+using ScriptToolErrorCode = mojom::blink::ScriptToolErrorCode;
 
 struct ScriptToolError {
   ScriptToolErrorCode code;
+  // Only used for DevTools and `WebDocument::ExecuteScriptTool()`.
   String message;
 
   explicit ScriptToolError(ScriptToolErrorCode code, String message = String())

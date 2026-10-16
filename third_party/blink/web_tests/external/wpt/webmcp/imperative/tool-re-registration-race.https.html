@@ -49,7 +49,7 @@ promise_test(async t => {
   assert_equals(stale_tool.description, 'the original tool');
 
   await promise_rejects_dom(
-      t, 'UnknownError', document.modelContext.executeTool(stale_tool, {}),
+      t, 'NotFoundError', document.modelContext.executeTool(stale_tool, {}),
       'Executing a Tool whose underlying tool was unregistered must reject');
 
   assert_false(first_executed,
