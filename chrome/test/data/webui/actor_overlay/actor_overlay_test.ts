@@ -336,24 +336,33 @@ suite('MagicCursor', function() {
     assertTrue(!!magicCursor);
 
     // Verify default style
-    const style = window.getComputedStyle(magicCursor);
+    const style = magicCursor.computedStyleMap();
     assertEquals(
-        style.transitionTimingFunction, 'cubic-bezier(0.6, 0, 0.4, 1)');
-    assertEquals(style.transitionProperty, 'transform');
-    assertEquals(magicCursor.style.transitionDuration, '');
+        'cubic-bezier(0.6, 0, 0.4, 1)',
+        (style.get('transition-timing-function') as CSSStyleValue).toString());
+    assertEquals(
+        'transform',
+        (style.get('transition-property') as CSSKeywordValue).value);
+    assertEquals('', magicCursor.style.transitionDuration);
 
     /* Verify that cursor movements don't modify the transition animation
      * properties. */
     await moveCursorAndWait(100, 100);
     assertEquals(
-        style.transitionTimingFunction, 'cubic-bezier(0.6, 0, 0.4, 1)');
-    assertEquals(style.transitionProperty, 'transform');
+        'cubic-bezier(0.6, 0, 0.4, 1)',
+        (style.get('transition-timing-function') as CSSStyleValue).toString());
+    assertEquals(
+        'transform',
+        (style.get('transition-property') as CSSKeywordValue).value);
 
     await moveCursorAndWait(400, 100);
-    assertEquals(magicCursor.style.transitionDuration, '450ms');
+    assertEquals('450ms', magicCursor.style.transitionDuration);
     assertEquals(
-        style.transitionTimingFunction, 'cubic-bezier(0.6, 0, 0.4, 1)');
-    assertEquals(style.transitionProperty, 'transform');
+        'cubic-bezier(0.6, 0, 0.4, 1)',
+        (style.get('transition-timing-function') as CSSStyleValue).toString());
+    assertEquals(
+        'transform',
+        (style.get('transition-property') as CSSKeywordValue).value);
   });
 
   test('DynamicDurationCalculation', async function() {
@@ -558,11 +567,14 @@ suite('MagicCursor', function() {
     assertTrue(!!magicCursor);
 
     magicCursor.classList.add('clicking');
-    const style = window.getComputedStyle(magicCursor);
+    const style = magicCursor.computedStyleMap();
 
-    assertEquals('0.4s', style.animationDuration);
-    assertEquals('ease-out', style.animationTimingFunction);
-    assertTrue(style.animationName.includes('cursor-click'));
+    assertEquals(0.4, (style.get('animation-duration') as CSSUnitValue).value);
+    assertEquals(
+        'ease-out',
+        (style.get('animation-timing-function') as CSSKeywordValue).value);
+    assertTrue((style.get('animation-name') as CSSKeywordValue)
+                   .value.includes('cursor-click'));
   });
 
   test('CursorImageStructure', function() {
@@ -573,9 +585,13 @@ suite('MagicCursor', function() {
     const cursorImage = magicCursor.querySelector<HTMLElement>('#cursorImage');
     assertTrue(!!cursorImage);
 
-    const style = window.getComputedStyle(cursorImage);
-    assertEquals('transform', style.willChange);
-    assertTrue(style.backgroundImage.includes('magic_cursor.svg'));
+    const style = cursorImage.computedStyleMap();
+    assertEquals('transform', style.get('will-change')?.toString());
+    assertTrue(
+        style.get('background-image')
+            ?.toString()
+            .includes('magic_cursor.svg') ??
+        false);
   });
 
   test('LoadingState_TriggersAfterMoveAndDelay', async function() {
