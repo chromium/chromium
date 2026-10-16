@@ -22,22 +22,26 @@ class MockTabDragContext : public TabDragContext {
               GetContextForNewBrowser,
               (BrowserView * browser_view),
               (const, override));
-  MOCK_METHOD(TabSlotView*,
+  MOCK_METHOD(views::View*,
               GetTabForContents,
               (content::WebContents * contents),
               (override));
   MOCK_METHOD(content::WebContents*,
               GetContentsForTab,
-              (TabSlotView * view),
+              (views::View * view),
               (override));
   MOCK_METHOD(bool,
               IsTabDetachable,
-              (const TabSlotView* view),
+              (const views::View* view),
               (const, override));
-  MOCK_METHOD(TabSlotView*,
+  MOCK_METHOD(views::View*,
               GetTabGroupHeader,
               (const tab_groups::TabGroupId& group),
               (override));
+  MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
+              GetTabGroupForHeader,
+              (const views::View* header_view),
+              (const, override));
   MOCK_METHOD(TabStripModel*, GetTabStripModel, (), (override));
   MOCK_METHOD(TabDragController*, GetDragController, (), (override));
   MOCK_METHOD(void,
@@ -55,7 +59,7 @@ class MockTabDragContext : public TabDragContext {
   MOCK_METHOD(void, DestroyDragController, (), (override));
   MOCK_METHOD(void,
               StartedDragging,
-              (const std::vector<TabSlotView*>& views),
+              (const std::vector<views::View*>& views),
               (override));
   MOCK_METHOD(void, DraggedTabsDetached, (), (override));
   MOCK_METHOD(void, StoppedDragging, (), (override));
@@ -65,8 +69,7 @@ class MockTabDragContext : public TabDragContext {
               (override));
   MOCK_METHOD(bool,
               NotifyCustomEvent,
-              (ui::CustomElementEventType event_type,
-               TabSlotView* tab_slot_view),
+              (ui::CustomElementEventType event_type, views::View* view),
               (override));
 };
 

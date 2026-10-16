@@ -18,7 +18,6 @@
 
 class BrowserView;
 class Tab;
-class TabSlotView;
 class TabStrip;
 class TabStripModel;
 class TabDragController;
@@ -43,7 +42,7 @@ class TabDragPositioningDelegateBase {
   virtual ~TabDragPositioningDelegateBase() = default;
 
   // Called when the TabStrip is changed during a drag session.
-  virtual void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+  virtual void UpdateAnimationTarget(views::View* tab_slot_view,
                                      const gfx::Rect& target_bounds) = 0;
 
   // Returns true if a drag session is currently active.
@@ -73,7 +72,7 @@ class TabDragPositioningDelegate : public TabDragPositioningDelegateBase {
  public:
   ~TabDragPositioningDelegate() override = default;
 
-  virtual TabSlotView* GetTabAt(int index) const = 0;
+  virtual views::View* GetTabAt(int index) const = 0;
 
   // Returns true if a tab is being dragged into this tab strip.
   virtual bool IsActiveDropTarget() const = 0;
@@ -94,23 +93,23 @@ class TabDragPositioningDelegate : public TabDragPositioningDelegateBase {
   // groups.
   virtual int GetInsertionIndexForDraggedBounds(
       const gfx::Rect& dragged_bounds,
-      std::vector<TabSlotView*> dragged_views,
+      std::vector<views::View*> dragged_views,
       int num_dragged_tabs) const = 0;
 
   // Returns the bounds needed for each of the views, relative to a leading
   // coordinate of 0 for the left edge of the first view's bounds.
   virtual std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
-      const std::vector<TabSlotView*>& views) = 0;
+      const std::vector<views::View*>& views) = 0;
 
   // Sets the bounds of `views` to `bounds`.
-  virtual void SetBoundsForDrag(const std::vector<TabSlotView*>& views,
+  virtual void SetBoundsForDrag(const std::vector<views::View*>& views,
                                 const std::vector<gfx::Rect>& bounds) = 0;
 
   // Invoked during drag to layout the views being dragged in `views` at
   // `location`. If `initial_drag` is true, this is the initial layout after the
   // user moved the mouse far enough to trigger a drag.
-  virtual void LayoutDraggedViewsAt(const std::vector<TabSlotView*>& views,
-                                    TabSlotView* source_view,
+  virtual void LayoutDraggedViewsAt(const std::vector<views::View*>& views,
+                                    views::View* source_view,
                                     const gfx::Point& location,
                                     bool initial_drag) = 0;
 
@@ -131,11 +130,13 @@ class TabDragContext : public views::View {
   virtual TabDragContext* GetContextForNewBrowser(
       BrowserView* browser_view) const = 0;
 
-  virtual TabSlotView* GetTabForContents(content::WebContents* contents) = 0;
-  virtual content::WebContents* GetContentsForTab(TabSlotView* view) = 0;
-  virtual bool IsTabDetachable(const TabSlotView* view) const = 0;
-  virtual TabSlotView* GetTabGroupHeader(
+  virtual views::View* GetTabForContents(content::WebContents* contents) = 0;
+  virtual content::WebContents* GetContentsForTab(views::View* view) = 0;
+  virtual bool IsTabDetachable(const views::View* view) const = 0;
+  virtual views::View* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) = 0;
+  virtual std::optional<tab_groups::TabGroupId> GetTabGroupForHeader(
+      const views::View* header_view) const = 0;
   virtual TabStripModel* GetTabStripModel() = 0;
 
   // Returns the tab drag controller owned by this delegate, or null if none.
@@ -160,7 +161,7 @@ class TabDragContext : public views::View {
       base::OnceCallback<void(TabDragController*)> callback) = 0;
 
   // Used by TabDragController when the user starts or stops dragging.
-  virtual void StartedDragging(const std::vector<TabSlotView*>& views) = 0;
+  virtual void StartedDragging(const std::vector<views::View*>& views) = 0;
 
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
@@ -171,7 +172,7 @@ class TabDragContext : public views::View {
   virtual TabDragPositioningDelegate* GetPositioningDelegate() = 0;
 
   virtual bool NotifyCustomEvent(ui::CustomElementEventType event_type,
-                                 TabSlotView* tab_slot_view) = 0;
+                                 views::View* view) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTEXT_H_

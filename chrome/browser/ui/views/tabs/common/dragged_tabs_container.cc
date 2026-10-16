@@ -319,10 +319,10 @@ void DraggedTabsContainer::BuildDragLayout(
       GetSourceViewOffsetFromMouse(*source_dragged_view, session_data));
 
   const auto& target_layout = GetLayoutForDrag();
-  const std::vector<TabSlotView*> attached_views =
+  const std::vector<views::View*> attached_views =
       session_data.attached_views();
 
-  auto add_view_to_layout = [&](TabSlotView* attached_view) {
+  auto add_view_to_layout = [&](views::View* attached_view) {
     auto* dragging_view = GetDragHandler().ViewFromTabSlot(attached_view);
     CHECK(dragging_view);
 

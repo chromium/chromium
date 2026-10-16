@@ -7,10 +7,12 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
+#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "base/time/time.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -19,7 +21,10 @@ namespace content {
 class WebContents;
 }
 
-class TabSlotView;
+namespace views {
+class View;
+}
+
 class TabDragContext;
 
 // Stores the data associated with a group header that is being dragged.
@@ -43,7 +48,7 @@ struct GroupHeaderDragData final {
 
 // Stores the data associated with a single tab that is being dragged.
 struct TabDragData final {
-  TabDragData(TabDragContext* source_context, TabSlotView* view);
+  TabDragData(TabDragContext* source_context, views::View* view);
   TabDragData(const TabDragData&);
   TabDragData& operator=(const TabDragData&);
   ~TabDragData();
@@ -54,13 +59,14 @@ struct TabDragData final {
   // Nullopt if this is a group header.
   std::optional<int> source_model_index;
 
-  TabSlotView::ViewType view_type;
+  // True if this entry represents a tab group header rather than a tab.
+  bool is_group_header = false;
 
   // The WebContents being dragged.
   raw_ptr<content::WebContents> contents = nullptr;
 
   // If attached this is the view in `attached_context_`.
-  raw_ptr<TabSlotView> attached_view = nullptr;
+  raw_ptr<views::View> attached_view = nullptr;
 
   // Is the tab pinned?
   bool pinned = false;
@@ -130,16 +136,15 @@ struct DragSessionData final {
   int num_dragging_tabs() const {
     int num_tabs = 0;
     for (const TabDragData& tab_drag_datum : tab_drag_data_) {
-      if (tab_drag_datum.attached_view->GetTabSlotViewType() ==
-          TabSlotView::ViewType::kTab) {
+      if (!tab_drag_datum.is_group_header) {
         num_tabs++;
       }
     }
     return num_tabs;
   }
 
-  std::vector<TabSlotView*> attached_views() const {
-    std::vector<TabSlotView*> attached_views;
+  std::vector<views::View*> attached_views() const {
+    std::vector<views::View*> attached_views;
     for (const TabDragData& tab_data : tab_drag_data_) {
       if (tab_data.attached_view) {
         attached_views.push_back(tab_data.attached_view);

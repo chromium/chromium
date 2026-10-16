@@ -84,7 +84,7 @@ class FakeTabDragContext : public TabDragPositioningDelegateBase,
   FakeTabDragContext() = default;
   ~FakeTabDragContext() override = default;
 
-  void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+  void UpdateAnimationTarget(views::View* tab_slot_view,
                              const gfx::Rect& target_bounds) override {}
   bool IsDragSessionActive() const override { return drag_session_active_; }
   bool IsAnimatingDragEnd() const override { return false; }

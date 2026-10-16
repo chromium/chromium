@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -24,8 +23,8 @@ constexpr char kDragAmongTabsPresentationTimeHistogram[] =
     "Browser.TabDragging.DragAmongTabsPresentationTime";
 
 int CalculateMouseOffset(const DragSessionData& drag_data_) {
-  std::vector<TabSlotView*> tabs_to_source(drag_data_.attached_views());
-  TabSlotView* source_view = drag_data_.source_view_drag_data()->attached_view;
+  std::vector<views::View*> tabs_to_source(drag_data_.attached_views());
+  views::View* source_view = drag_data_.source_view_drag_data()->attached_view;
   tabs_to_source.erase(
       tabs_to_source.begin() + drag_data_.source_view_index_ + 1,
       tabs_to_source.end());
@@ -70,10 +69,11 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
 
   const gfx::Point dragged_view_point = GetAttachedDragPoint(point_in_screen);
 
-  std::vector<TabSlotView*> views(drag_data_.tab_drag_data_.size());
+  std::vector<views::View*> views(drag_data_.tab_drag_data_.size());
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size(); ++i) {
-    views[i] = drag_data_.tab_drag_data_[i].attached_view.get();
+    views[i] = drag_data_.tab_drag_data_[i].attached_view;
   }
+  views::View* source_view = drag_data_.source_view_drag_data()->attached_view;
 
   bool did_layout = false;
 
@@ -113,8 +113,7 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
       // based on model position. This means we need to invoke
       // LayoutDraggedTabsAt before changing the model.
       drag_position_delegate_->LayoutDraggedViewsAt(
-          views, drag_data_.source_view_drag_data()->attached_view,
-          dragged_view_point, initial_move_);
+          views, source_view, dragged_view_point, initial_move_);
       did_layout = true;
     }
 
@@ -152,8 +151,7 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
 
   if (!did_layout) {
     drag_position_delegate_->LayoutDraggedViewsAt(
-        views, drag_data_.source_view_drag_data()->attached_view,
-        dragged_view_point, initial_move_);
+        views, source_view, dragged_view_point, initial_move_);
   }
 
   // Snap the non-dragged tabs to their ideal bounds now, otherwise those tabs
@@ -204,7 +202,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
 
   // If a group is moved, the drag cannot be inserted into another group.
   for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
-    if (tab_drag_datum.view_type == TabSlotView::ViewType::kTabGroupHeader) {
+    if (tab_drag_datum.is_group_header) {
       return std::nullopt;
     }
   }
@@ -261,7 +259,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   // right of the gap. If the tab is centered in the gap, make the tab
   // ungrouped.
 
-  const TabSlotView* left_most_selected_tab =
+  const views::View* left_most_selected_tab =
       drag_position_delegate_->GetTabAt(selected_unpinned[0]);
 
   const int buffer = left_most_selected_tab->width() / 4;
@@ -273,7 +271,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   const int tab_left_inset = TabStyle::Get()->GetTabOverlap() / 2;
 
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
-    const TabSlotView* const tab =
+    const views::View* const tab =
         drag_position_delegate_->GetTabAt(model_index);
     return ToEnclosingRect(views::View::ConvertRectToTarget(
         tab->parent(), base::to_address(attached_context_),

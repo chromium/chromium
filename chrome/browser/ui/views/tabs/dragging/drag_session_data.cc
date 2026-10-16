@@ -10,13 +10,12 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "ui/views/view.h"
 
 namespace {
-std::optional<int> ViewModelIndex(TabDragContext* context, TabSlotView* view) {
+std::optional<int> ViewModelIndex(TabDragContext* context, views::View* view) {
   content::WebContents* contents = context->GetContentsForTab(view);
   if (!contents) {
     return std::nullopt;
@@ -27,15 +26,19 @@ std::optional<int> ViewModelIndex(TabDragContext* context, TabSlotView* view) {
 }
 }  // namespace
 
-TabDragData::TabDragData(TabDragContext* source_context, TabSlotView* view)
-    : source_model_index(ViewModelIndex(source_context, view)),
-      view_type(view->GetTabSlotViewType()) {
+TabDragData::TabDragData(TabDragContext* source_context, views::View* view)
+    : source_model_index(ViewModelIndex(source_context, view)) {
+  std::optional<tab_groups::TabGroupId> tab_group_id;
   if (source_model_index.has_value()) {
     contents = source_context->GetContentsForTab(view);
     pinned = source_context->GetTabStripModel()->IsTabPinned(
         source_model_index.value());
+    tab_group_id = source_context->GetTabStripModel()->GetTabGroupForTab(
+        source_model_index.value());
+  } else {
+    tab_group_id = source_context->GetTabGroupForHeader(view);
+    is_group_header = tab_group_id.has_value();
   }
-  std::optional<tab_groups::TabGroupId> tab_group_id = view->group();
   if (tab_group_id.has_value()) {
     const TabGroup* group =
         source_context->GetTabStripModel()->group_model()->GetTabGroup(

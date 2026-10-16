@@ -59,14 +59,10 @@ class TabModel;
 }
 class BrowserWindowInterface;
 class EventTracker;
-class Tab;
 class TabDragControllerTest;
 class TabDragContext;
-class TabSlotView;
 class TabStripModel;
-class TabStripScrollSession;
 class WindowFinder;
-class TabStripScrollSession;
 struct DetachedTabCollection;
 struct DetachedTab;
 
@@ -137,8 +133,8 @@ class TabDragController : public views::WidgetObserver,
   // Note: `dragging_views` must be ordered by their position in the source
   // tabstrip (both visually and in the model).
   [[nodiscard]] Liveness Init(TabDragContext* source_context,
-                              TabSlotView* source_view,
-                              const std::vector<TabSlotView*>& dragging_views,
+                              views::View* source_view,
+                              const std::vector<views::View*>& dragging_views,
                               const gfx::Point& offset_from_source_view,
                               ui::ListSelectionModel initial_selection_model,
                               ui::mojom::DragEventSource event_source);
@@ -452,10 +448,10 @@ class TabDragController : public views::WidgetObserver,
   [[nodiscard]] Liveness RunMoveLoop(gfx::Point point_in_screen,
                                      gfx::Vector2d drag_offset);
 
-  // Finds the TabSlotViews within the specified TabDragContext that
+  // Finds the views within the specified TabDragContext that
   // corresponds to the WebContents of the dragged views. Also finds the group
   // header if it is dragging. Returns an empty vector if not attached.
-  std::vector<TabSlotView*> GetViewsMatchingDraggedContents(
+  std::vector<views::View*> GetViewsMatchingDraggedContents(
       TabDragContext* context);
 
   // Does the work for EndDrag(). If we actually started a drag and `how_end` is
@@ -575,7 +571,7 @@ class TabDragController : public views::WidgetObserver,
   void UpdateSelectionModel(TabStripModel* tab_strip_model,
                             ui::ListSelectionModel selection_model);
 
-  void OnContextStartedDragging(const std::vector<TabSlotView*>& views);
+  void OnContextStartedDragging(const std::vector<views::View*>& views);
   void OnContextStoppedDragging();
   void OnContextDraggedTabsDetached();
   void UpdateBrowserViewsForDragEnd();

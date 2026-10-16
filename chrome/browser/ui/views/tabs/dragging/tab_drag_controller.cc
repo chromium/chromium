@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -86,6 +85,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
@@ -445,8 +445,8 @@ TabDragController::~TabDragController() {
 
 TabDragController::Liveness TabDragController::Init(
     TabDragContext* source_context,
-    TabSlotView* source_view,
-    const std::vector<TabSlotView*>& dragging_views,
+    views::View* source_view,
+    const std::vector<views::View*>& dragging_views,
     const gfx::Point& offset_from_source_view,
     ui::ListSelectionModel initial_selection_model,
     ui::mojom::DragEventSource event_source) {
@@ -526,7 +526,7 @@ TabDragController::Liveness TabDragController::Init(
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  for (TabSlotView* dragging_view : dragging_views) {
+  for (views::View* dragging_view : dragging_views) {
     if (!source_context->IsTabDetachable(dragging_view)) {
       ref->detach_behavior_ = DetachBehavior::kNotDetachable;
     }
@@ -539,9 +539,9 @@ TabDragController::Liveness TabDragController::Init(
 
   const TabStripModel* tab_strip_model =
       ref->source_context_->GetTabStripModel();
-  if (source_view->GetTabSlotViewType() ==
-      TabSlotView::ViewType::kTabGroupHeader) {
-    const tab_groups::TabGroupId group_id = source_view->group().value();
+  if (std::optional<tab_groups::TabGroupId> source_header_group_id =
+          source_context->GetTabGroupForHeader(source_view)) {
+    const tab_groups::TabGroupId group_id = *source_header_group_id;
     const std::optional<tab_groups::TabGroupId> active_group_id =
         tab_strip_model->GetActiveTab()->GetGroup();
     gfx::Range group_range =
@@ -556,11 +556,11 @@ TabDragController::Liveness TabDragController::Init(
                                                 active_tab_index_within_group);
   }
 
-  for (TabSlotView* dragging_view : dragging_views) {
+  for (views::View* dragging_view : dragging_views) {
     ref->drag_data_.tab_drag_data_.emplace_back(source_context_, dragging_view);
-    if (dragging_view->GetTabSlotViewType() ==
-        TabSlotView::ViewType::kTabGroupHeader) {
-      ref->drag_data_.dragging_groups.insert(*dragging_view->group());
+    if (std::optional<tab_groups::TabGroupId> header_group_id =
+            source_context_->GetTabGroupForHeader(dragging_view)) {
+      ref->drag_data_.dragging_groups.insert(*header_group_id);
     }
   }
 
@@ -870,7 +870,7 @@ void TabDragController::EndDrag(EndDragReason reason) {
     bool group_dragged = false;
 
     for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
-      if (tab_drag_datum.view_type == TabSlotView::ViewType::kTabGroupHeader) {
+      if (tab_drag_datum.is_group_header) {
         group_dragged = true;
       }
     }
@@ -932,7 +932,10 @@ std::unique_ptr<tabs::TabModel> TabDragController::DetachTabAtForInsertion(
   // We can't move the tab if `contents` was destroyed during the drag, or if
   // this is a group header.
   CHECK(tab_data.contents);
-  tab_data.attached_view->set_detached();
+  if (auto* slot_view =
+          views::AsViewClass<TabSlotView>(tab_data.attached_view)) {
+    slot_view->set_detached();
+  }
   tab_data.attached_view = nullptr;
 
   const int from_idx =
@@ -1629,7 +1632,7 @@ void TabDragController::HideDeferredEmptyBrowsers() {
 }
 
 void TabDragController::AttachImpl() {
-  const std::vector<TabSlotView*> views =
+  const std::vector<views::View*> views =
       GetViewsMatchingDraggedContents(attached_context_);
 
   DCHECK_EQ(views.size(), drag_data_.tab_drag_data_.size());
@@ -1687,7 +1690,10 @@ TabDragController::Detach(ReleaseCapture release_capture) {
     // TODO(tbergquist): Is this the right path for this bit to take? Would it
     // make more sense for the model notification to have this information, and
     // for the tabstrip to use that instead?
-    tab_drag_datum.attached_view->set_detached();
+    if (auto* slot_view =
+            views::AsViewClass<TabSlotView>(tab_drag_datum.attached_view)) {
+      slot_view->set_detached();
+    }
     // Detaching may end up deleting the view, drop references to it.
     tab_drag_datum.attached_view = nullptr;
   }
@@ -2042,18 +2048,18 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
   return Liveness::kAlive;
 }
 
-std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
+std::vector<views::View*> TabDragController::GetViewsMatchingDraggedContents(
     TabDragContext* context) {
   const TabStripModel* const model = context->GetTabStripModel();
-  std::vector<TabSlotView*> views;
+  std::vector<views::View*> views;
   for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
     // TODO(crbug.com/477230662): Ideally, split tabs would also be directly
     // compatible with `TabDragController`, rather than relying on the tab
     // selection model to achieve expected behavior. As is, this is incompatible
     // with the vertical tab strip because the split tabs are contained within
     // a single dedicated `SplitTabView`.
-    if (tab_drag_datum.view_type == TabSlotView::ViewType::kTab) {
-      TabSlotView* tab_view =
+    if (!tab_drag_datum.is_group_header) {
+      views::View* tab_view =
           context->GetTabForContents(tab_drag_datum.contents);
       if (!tab_view) {
         return {};
@@ -2066,7 +2072,7 @@ std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
         return {};
       }
 
-      TabSlotView* header_view =
+      views::View* header_view =
           context->GetTabGroupHeader(tab_drag_datum.tab_group_data->group_id);
       CHECK(header_view);
       views.push_back(header_view);
@@ -2194,7 +2200,10 @@ void TabDragController::RevertDrag() {
 
   if (attached_context_ != source_context_) {
     for (TabDragData& tab_datum : drag_data_.tab_drag_data_) {
-      tab_datum.attached_view->set_detached();
+      if (auto* slot_view =
+              views::AsViewClass<TabSlotView>(tab_datum.attached_view)) {
+        slot_view->set_detached();
+      }
       tab_datum.attached_view = nullptr;
     }
   }
@@ -2203,7 +2212,7 @@ void TabDragController::RevertDrag() {
   // each group or split has multiple entries in `tab_drag_data_`.
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size();) {
     const TabDragData tab_data = drag_data_.tab_drag_data_[i];
-    if (tab_data.view_type == TabSlotView::ViewType::kTabGroupHeader) {
+    if (tab_data.is_group_header) {
       RevertGroupAt(i);
       // Skip all the tabs in the group too.
       i += source_context_->GetTabStripModel()
@@ -2361,7 +2370,7 @@ void TabDragController::RevertGroupAt(size_t drag_index) {
     for (size_t i = drag_index + 1; i < drag_data_.tab_drag_data_.size(); ++i) {
       const TabDragData other_tab = drag_data_.tab_drag_data_[i];
       // Ignore group headers, they don't have model indices to skip over.
-      if (other_tab.view_type != TabSlotView::ViewType::kTab) {
+      if (other_tab.is_group_header) {
         continue;
       }
       // Ignore other tabs in this group, they will get moved along with us
@@ -2488,7 +2497,7 @@ void TabDragController::RevertSplitAt(size_t drag_index) {
         const TabDragData other_tab = drag_data_.tab_drag_data_[i];
 
         // Ignore group headers, they don't have model indices to skip over.
-        if (other_tab.view_type != TabSlotView::ViewType::kTab) {
+        if (other_tab.is_group_header) {
           continue;
         }
 
@@ -2531,8 +2540,7 @@ void TabDragController::CompleteDrag() {
   bool has_pinned = false;
   bool has_unpinned = false;
   for (const auto& data : drag_data_.tab_drag_data_) {
-    if (data.view_type == TabSlotView::ViewType::kTabGroupHeader ||
-        !data.pinned) {
+    if (data.is_group_header || !data.pinned) {
       has_unpinned = true;
     } else if (data.pinned) {
       has_pinned = true;
@@ -3256,7 +3264,7 @@ void TabDragController::UpdateSelectionModel(
 }
 
 void TabDragController::OnContextStartedDragging(
-    const std::vector<TabSlotView*>& views) {
+    const std::vector<views::View*>& views) {
   CHECK(attached_context_);
   const bool dragging_window =
       views.size() ==

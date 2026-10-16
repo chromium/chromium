@@ -3967,7 +3967,7 @@ IN_PROC_BROWSER_TEST_P(VerticalTabsFullscreenDragTest,
       browser_view->tab_strip_view()->GetDragContext();
   content::WebContents* contents =
       browser()->GetTabStripModel()->GetWebContentsAt(0);
-  TabSlotView* tab_view = drag_context->GetTabForContents(contents);
+  views::View* tab_view = drag_context->GetTabForContents(contents);
   ASSERT_TRUE(tab_view);
 
   // FullscreenWaiter uses kNestableTasksAllowed so it works inside
