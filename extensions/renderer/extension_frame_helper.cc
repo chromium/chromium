@@ -397,6 +397,8 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
     return;
   }
 
+  base::WeakPtr<ExtensionFrameHelper> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   base::AutoReset<bool> auto_reset(&is_initializing_main_world_script_context_,
                                    true);
   delayed_main_world_script_initialization_ = false;
@@ -415,6 +417,8 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
       web_frame, document_loader);
   extension_dispatcher_->DidCreateScriptContext(web_frame, context,
                                                 blink::kMainDOMWorldId);
+  // Initializing the script context should never invalidate the frame.
+  CHECK(weak_this);
   // TODO(devlin): Add constants for main world id, no extension group.
 }
 

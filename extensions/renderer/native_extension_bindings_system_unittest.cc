@@ -699,7 +699,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   {
     v8::Context::Scope scope(context_a);
     v8::Local<v8::Object> fake_chrome = v8::Object::New(isolate());
-    EXPECT_EQ(context_a, fake_chrome->GetCreationContextChecked());
+    EXPECT_EQ(context_a, fake_chrome->GetCreationContextChecked(isolate()));
     context_b->Global()
         ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"), fake_chrome)
         .ToChecked();
@@ -712,7 +712,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   {
     v8::Context::Scope scope(context_b);
     v8::Local<v8::Object> fake_chrome = v8::Object::New(isolate());
-    EXPECT_EQ(context_b, fake_chrome->GetCreationContextChecked());
+    EXPECT_EQ(context_b, fake_chrome->GetCreationContextChecked(isolate()));
     context_b->Global()
         ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"), fake_chrome)
         .ToChecked();
@@ -730,6 +730,83 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   }
   // A non-object chrome shouldn't be used.
   check_runtime(false);
+
+  {
+    v8::Context::Scope scope(context_b);
+    context_b->Global()
+        ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"),
+              v8::Undefined(isolate()))
+        .ToChecked();
+  }
+  // If chrome is undefined, a new object should be created and used.
+  check_runtime(true);
+}
+
+// Regression test for crbug.com/560339053.
+// Tests that setting window.chrome or window.browser to an accessor property
+// does not execute script (e.g. getters) when initializing bindings.
+TEST_F(NativeExtensionBindingsSystemUnittest, ChromeGetterIsNotInvoked) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension").Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
+  script_context->set_url(extension->url());
+
+  // First, test setting a getter on `browser` while `chrome` is unmodified.
+  // This verifies that binding initialization reaches and checks `browser`
+  // without invoking its getter.
+  const char kSetBrowserGetterScript[] =
+      R"(var browserGetterCalled = false;
+         Object.defineProperty(globalThis, 'browser', {
+           get() {
+             browserGetterCalled = true;
+             return {};
+           },
+           configurable: true
+         });)";
+  v8::Local<v8::Value> initial_result =
+      V8ValueFromScriptSource(context, kSetBrowserGetterScript);
+  ASSERT_FALSE(initial_result.IsEmpty());
+
+  // Initializing the bindings should not invoke getters on either namespace.
+  // Blink runs with scoped microtasks policy, so ensure binding initialization
+  // succeeds under `kScoped` without triggering microtask scope DCHECKs.
+  isolate()->SetMicrotasksPolicy(v8::MicrotasksPolicy::kScoped);
+  bindings_system()->UpdateBindingsForContext(script_context);
+  isolate()->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);
+
+  v8::Local<v8::Value> browser_getter_called =
+      V8ValueFromScriptSource(context, "browserGetterCalled;");
+  ASSERT_FALSE(browser_getter_called.IsEmpty());
+  EXPECT_FALSE(browser_getter_called->BooleanValue(isolate()));
+
+  // Next, set a getter on `chrome` as well and verify its getter is not
+  // invoked.
+  const char kSetChromeGetterScript[] =
+      R"(var chromeGetterCalled = false;
+         Object.defineProperty(globalThis, 'chrome', {
+           get() {
+             chromeGetterCalled = true;
+             return {};
+           },
+           configurable: true
+         });)";
+  initial_result = V8ValueFromScriptSource(context, kSetChromeGetterScript);
+  ASSERT_FALSE(initial_result.IsEmpty());
+
+  isolate()->SetMicrotasksPolicy(v8::MicrotasksPolicy::kScoped);
+  bindings_system()->UpdateBindingsForContext(script_context);
+  isolate()->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);
+
+  v8::Local<v8::Value> chrome_getter_called =
+      V8ValueFromScriptSource(context, "chromeGetterCalled;");
+  ASSERT_FALSE(chrome_getter_called.IsEmpty());
+  EXPECT_FALSE(chrome_getter_called->BooleanValue(isolate()));
 }
 
 // Tests updating a context's bindings after adding or removing permissions.

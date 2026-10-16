@@ -75,6 +75,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-template.h"
@@ -134,28 +135,55 @@ v8::Local<v8::Object> GetOrCreateGlobalObjectProperty(
   // Ensure that the creation context for any new chrome object is |context|.
   v8::Context::Scope context_scope(context);
 
-  // TODO(devlin): This is a little silly. We expect that this may do the wrong
-  // thing if the window has set some other `object_name` (as in the case of
-  // script doing 'window.object_name = true'), but we don't really handle it.
-  // It could also throw exceptions or have unintended side effects.
-  // On the one hand, anyone writing that code is probably asking for trouble.
-  // On the other, it'd be nice to avoid. I wonder if we can?
+  // Blink uses `kScoped` microtasks policy; instantiate a scope here so that
+  // V8 operations during context initialization do not trip microtask DCHECKs.
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> object_string =
-      gin::StringToSymbol(v8::Isolate::GetCurrent(), object_name);
-  v8::Local<v8::Value> object_value;
-  if (!context->Global()->Get(context, object_string).ToLocal(&object_value)) {
+      gin::StringToSymbol(isolate, object_name);
+
+  // Retrieve the property descriptor rather than using a direct `Get` to avoid
+  // executing any user-defined getters or accessors on the global object.
+  v8::Local<v8::Value> descriptor_value;
+  if (!context->Global()
+           ->GetOwnPropertyDescriptor(context, object_string)
+           .ToLocal(&descriptor_value)) {
+    return v8::Local<v8::Object>();
+  }
+
+  v8::Local<v8::Value> property_value;
+  if (descriptor_value->IsUndefined()) {
+    property_value = v8::Undefined(isolate);
+  } else if (descriptor_value->IsObject()) {
+    v8::Local<v8::Object> descriptor = descriptor_value.As<v8::Object>();
+    v8::Local<v8::String> value_string = gin::StringToSymbol(isolate, "value");
+    v8::Maybe<bool> has_value =
+        descriptor->HasRealNamedProperty(context, value_string);
+    // Only inspect the property value if this is a data descriptor. Accessor
+    // descriptors (with getter/setter) will not have a "value" property, and we
+    // must not invoke user accessors or use them for extension bindings.
+    if (!has_value.IsJust() || !has_value.FromJust()) {
+      return v8::Local<v8::Object>();
+    }
+    if (!descriptor->Get(context, value_string).ToLocal(&property_value)) {
+      return v8::Local<v8::Object>();
+    }
+  } else {
     return v8::Local<v8::Object>();
   }
 
   v8::Local<v8::Object> requested_object;
-  if (object_value->IsUndefined()) {
-    requested_object = v8::Object::New(v8::Isolate::GetCurrent());
+  if (property_value->IsUndefined()) {
+    requested_object = v8::Object::New(isolate);
     v8::Maybe<bool> success = context->Global()->CreateDataProperty(
         context, object_string, requested_object);
-    if (!success.IsJust() || !success.FromJust())
+    if (!success.IsJust() || !success.FromJust()) {
       return v8::Local<v8::Object>();
-  } else if (object_value->IsObject()) {
-    v8::Local<v8::Object> obj = object_value.As<v8::Object>();
+    }
+  } else if (property_value->IsObject()) {
+    v8::Local<v8::Object> obj = property_value.As<v8::Object>();
     // The creation context of the `object_name` property could be different if
     // a different context (such as the parent of an about:blank iframe)
     // assigned it. Since in this case we know that the `object_name` object is
@@ -167,8 +195,9 @@ v8::Local<v8::Object> GetOrCreateGlobalObjectProperty(
     // object we construct, and check if it's present. Unfortunately, we need to
     // a) track down each place we create the object (it's not just in
     // extensions) and also see how much that would break.
-    if (obj->GetCreationContextChecked() == context)
+    if (obj->GetCreationContextChecked(isolate) == context) {
       requested_object = obj;
+    }
   }
 
   return requested_object;
