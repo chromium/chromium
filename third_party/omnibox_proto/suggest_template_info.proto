@@ -22,7 +22,7 @@ import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
-// Next ID: 13
+// Next ID: 14
 message SuggestTemplateInfo {
 // LINT.IfChange(StandardSuggestStyle)
   enum StandardSuggestStyle {
@@ -239,6 +239,10 @@ message SuggestTemplateInfo {
   optional SecondaryTextPlacement secondary_text_placement = 11;
 
   // Whether to wrap the secondary text to the next line. Currently only
-  // supporst wrapping to 2 total lines.
+  // supports wrapping to 2 total lines. Only used for mobile currently.
   optional bool wrap_secondary_text = 12;
+
+  // Whether to wrap the primary text to the next line. Currently only
+  // supports wrapping to 2 total lines. Only used for mobile currently.
+  optional bool wrap_primary_text = 13;
 }

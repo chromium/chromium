@@ -510,6 +510,13 @@ public class AutocompleteMatch {
                 && mSuggestTemplate.getWrapSecondaryText();
     }
 
+    public boolean shouldWrapPrimaryText() {
+        if (mSuggestTemplate != null && mSuggestTemplate.hasWrapPrimaryText()) {
+            return mSuggestTemplate.getWrapPrimaryText();
+        }
+        return isSearchSuggestion();
+    }
+
     /**
      * @return The image data for the image clipbaord suggestion. This data has already been
      *     validated in C++ and is safe to use in the browser process.

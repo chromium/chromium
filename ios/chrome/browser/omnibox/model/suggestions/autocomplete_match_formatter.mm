@@ -139,6 +139,12 @@ UIColor* DimColorIncognito() {
   return icon;
 }
 
+- (BOOL)wrapPrimaryText {
+  return _match.suggest_template &&
+         _match.suggest_template->has_wrap_primary_text() &&
+         _match.suggest_template->wrap_primary_text();
+}
+
 - (BOOL)wrapSecondaryText {
   return _match.suggest_template &&
          _match.suggest_template->has_wrap_secondary_text() &&
@@ -275,6 +281,10 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)isWrapping {
+  if (_match.suggest_template &&
+      _match.suggest_template->has_wrap_primary_text()) {
+    return _match.suggest_template->wrap_primary_text();
+  }
   // Don't allow wrapping on entities, unless it uses a template icon.
   BOOL hasTemplateIcon =
       _match.suggest_template && _match.suggest_template->has_type_icon();
