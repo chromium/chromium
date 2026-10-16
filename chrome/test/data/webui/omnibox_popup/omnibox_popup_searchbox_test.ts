@@ -2496,6 +2496,56 @@ suite('OmniboxPopupSearchboxTest', function() {
      const [, , queryText] = testProxy.handler.getArgs('queryAutocomplete')[0];
      assertEquals('google.com flowers', queryText);
    });
+
+   test(
+       `${name}_UnelidesSelectsFullUrlAndUpdatesUrlEmphasisWhenFocused`,
+       async () => {
+         const displayUrl = 'example.com';
+         const fullUrl = 'https://example.com/';
+         const elidedEmphasis: UrlEmphasis = {
+           deemphasisMode: UrlDeemphasisMode.kAllButHost,
+           textIsUrl: true,
+           schemeRange: {start: 0, end: 0},
+           hostRange: {start: 0, end: 11},
+           schemeStrikeThrough: false,
+           schemeDangerous: false,
+         };
+         const unelidedEmphasis: UrlEmphasis = {
+           deemphasisMode: UrlDeemphasisMode.kAllButHost,
+           textIsUrl: true,
+           schemeRange: {start: 0, end: 5},
+           hostRange: {start: 8, end: 19},
+           schemeStrikeThrough: false,
+           schemeDangerous: false,
+         };
+         callbackRouter.setInputState(createDefaultOmniboxInputState({
+           text: displayUrl,
+           fullUrl: fullUrl,
+           permanentDisplayText: displayUrl,
+           urlEmphasis: elidedEmphasis,
+           unelidedUrlEmphasis: unelidedEmphasis,
+           selection: {start: 0, end: displayUrl.length},
+           userInputInProgress: false,
+           isFocused: true,
+           queryZps: true,
+         }));
+         await microtasksFinished();
+
+         const inputEl = searchbox.getInputElement().inputElement;
+         assertEquals(displayUrl, inputEl.value);
+
+         inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+           ...eventInit,
+           bubbles: true,
+           composed: true,
+         }));
+         await microtasksFinished();
+
+         assertEquals(fullUrl, inputEl.value);
+         assertDeepEquals(unelidedEmphasis, searchbox.$.input.urlEmphasis);
+         assertEquals(0, inputEl.selectionStart);
+         assertEquals(fullUrl.length, inputEl.selectionEnd);
+       });
  });
 
  test('FocusSearch_ClearsPermanentUrlWhenUserInputNotInProgress', async () => {
@@ -5121,26 +5171,6 @@ suite('OmniboxPopupSearchboxTest', function() {
      await microtasksFinished();
 
      // Like Views, the URL stays elided and fully selected.
-     assertEquals(elidedText, input.value);
-     assertEquals(0, input.selectionStart);
-     assertEquals(elidedText.length, input.selectionEnd);
-   });
-
-   test('KeydownDuringMouseDown_CancelsUnelide', async () => {
-     const clientX = clientXForOffset(4);
-     dispatchMouseEvent(input, 'mousedown', clientX);
-     // Cmd/Ctrl+L while the button is held selects all.
-     searchbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
-       key: 'l',
-       ctrlKey: !isMac,
-       metaKey: isMac,
-       bubbles: true,
-       composed: true,
-     }));
-     dispatchMouseEvent(document, 'mouseup', clientX);
-     await microtasksFinished();
-
-     // The release neither collapses the selection nor unelides.
      assertEquals(elidedText, input.value);
      assertEquals(0, input.selectionStart);
      assertEquals(elidedText.length, input.selectionEnd);

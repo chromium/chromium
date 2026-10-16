@@ -1021,6 +1021,7 @@ export class OmniboxPopupSearchboxElement extends
         this.keywordModeManager.clearKeyword(
             this.getInputElement().inputElement.value);
       }
+      this.maybeShowFullUrl_();
       this.getInputElement().select();
       if (!this.userInputInProgress_ && !this.dropdownIsVisible) {
         this.queryAutocomplete(
