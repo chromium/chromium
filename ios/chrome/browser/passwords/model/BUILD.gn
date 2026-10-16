@@ -61,8 +61,6 @@ source_set("model") {
     "password_manager_log_router_factory.h",
     "password_manager_util_ios.cc",
     "password_manager_util_ios.h",
-    "password_native_keystroke_autologin.h",
-    "password_native_keystroke_autologin.mm",
     "password_store_observer_bridge.h",
     "password_store_observer_bridge.mm",
     "password_tab_helper.h",
@@ -160,6 +158,32 @@ source_set("model") {
     ":password_controller_delegate",
     ":store_factory",
   ]
+}
+
+# TODO(crbug.com/571972390): Move this target out of `model/` into a
+# coordinator/UI target since it inspects UIKit responder state.
+source_set("native_keystroke_autologin") {
+  visibility = [
+    ":*",
+    "//ios/chrome/browser/intelligence/actor/tools/model:*",
+    "//ios/chrome/browser/passwords/bottom_sheet/coordinator:*",
+  ]
+  sources = [
+    "password_native_keystroke_autologin.h",
+    "password_native_keystroke_autologin.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/common",
+  ]
+  deps = [
+    "//components/password_manager/ios",
+    "//components/password_manager/ios:features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("password_controller_delegate") {
@@ -263,12 +287,14 @@ source_set("unit_tests") {
     "password_checkup_utils_unittest.mm",
     "password_controller_js_unittest.mm",
     "password_controller_unittest.mm",
+    "password_native_keystroke_autologin_unittest.mm",
     "password_tab_helper_unittest.mm",
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
     ":features",
     ":model",
+    ":native_keystroke_autologin",
     ":password_checkup_metrics",
     "//base",
     "//base/test:test_support",
@@ -290,6 +316,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
+    "//components/password_manager/ios:features",
     "//components/password_manager/ios:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -319,6 +346,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/web/model:web_internal",
