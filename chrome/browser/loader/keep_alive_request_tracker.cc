@@ -55,13 +55,21 @@ ChromeKeepAliveRequestTracker::MaybeCreateTrackers(
   if (!request.keepalive || !request.keepalive_token.has_value()) {
     return {};
   }
+
   std::vector<std::unique_ptr<content::KeepAliveRequestTracker>> trackers;
-  std::unique_ptr<ChromeKeepAliveRequestTracker> chrome_tracker =
-      MaybeCreateKeepAliveRequestTracker(
-          request, ukm_source_id, std::move(is_context_detached_callback));
-  if (chrome_tracker) {
-    trackers.push_back(std::move(chrome_tracker));
+  if (ukm_source_id.has_value() &&
+      base::FeatureList::IsEnabled(
+          page_load_metrics::features::kBeaconLeakageLogging)) {
+    auto category_id = page_load_metrics::GetCategoryIdFromUrl(request.url);
+    if (category_id.has_value()) {
+      RequestType request_type = ComputeRequestType(request);
+      trackers.push_back(base::WrapUnique(new ChromeKeepAliveRequestTracker(
+          request_type, category_id.value(), ukm_source_id.value(),
+          std::move(is_context_detached_callback),
+          request.keepalive_token.value())));
+    }
   }
+
   std::unique_ptr<SearchPrefetchKeepAliveRequestTracker> search_tracker =
       SearchPrefetchKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
           request, browser_context);
@@ -69,36 +77,6 @@ ChromeKeepAliveRequestTracker::MaybeCreateTrackers(
     trackers.push_back(std::move(search_tracker));
   }
   return trackers;
-}
-
-// static
-std::unique_ptr<ChromeKeepAliveRequestTracker>
-ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-    const network::ResourceRequest& request,
-    std::optional<ukm::SourceId> ukm_source_id,
-    IsContextDetachedCallback is_context_detached_callback) {
-  CHECK(request.keepalive && request.keepalive_token.has_value());
-
-  if (!ukm_source_id.has_value()) {
-    return nullptr;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          page_load_metrics::features::kBeaconLeakageLogging)) {
-    return nullptr;
-  }
-
-  auto category_id = page_load_metrics::GetCategoryIdFromUrl(request.url);
-  if (!category_id.has_value()) {
-    return nullptr;
-  }
-
-  ChromeKeepAliveRequestTracker::RequestType request_type =
-      ComputeRequestType(request);
-
-  return base::WrapUnique(new ChromeKeepAliveRequestTracker(
-      request_type, *category_id, *ukm_source_id,
-      std::move(is_context_detached_callback), *request.keepalive_token));
 }
 
 ChromeKeepAliveRequestTracker::ChromeKeepAliveRequestTracker(

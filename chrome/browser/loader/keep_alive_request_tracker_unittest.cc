@@ -4,9 +4,11 @@
 
 #include "chrome/browser/loader/keep_alive_request_tracker.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -77,13 +79,17 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
     return request;
   }
 
-  std::unique_ptr<ChromeKeepAliveRequestTracker> CreateTracker(
+  std::unique_ptr<content::KeepAliveRequestTracker> CreateTracker(
       const network::ResourceRequest& request) const {
-    return ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-        request, GetUkmSourceId(),
+    auto trackers = ChromeKeepAliveRequestTracker::MaybeCreateTrackers(
+        request, GetUkmSourceId(), /*browser_context=*/nullptr,
         /*is_context_detached_callback=*/base::BindRepeating([]() {
           return false;
         }));
+    if (trackers.size() != 1) {
+      return nullptr;
+    }
+    return std::move(trackers[0]);
   }
 
   virtual ukm::SourceId GetUkmSourceId() const {

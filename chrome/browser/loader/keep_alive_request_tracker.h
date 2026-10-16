@@ -34,23 +34,17 @@ class ChromeKeepAliveRequestTracker : public content::KeepAliveRequestTracker {
  public:
   ~ChromeKeepAliveRequestTracker() override;
 
-  static std::vector<std::unique_ptr<content::KeepAliveRequestTracker>>
-  MaybeCreateTrackers(const network::ResourceRequest& request,
-                      std::optional<ukm::SourceId> ukm_source_id,
-                      content::BrowserContext* browser_context,
-                      IsContextDetachedCallback is_context_detached_callback);
-
-  // Returns a tracker instance if `request` is eligible to be tracked.
+  // Returns tracker instances if `request` is eligible to be tracked.
   //
   // `ukm_source_id` is the UKM ID to associate with the events logged by the
   // returned tracker.
   // `is_context_detached_callback` tells if the context of `request` is
   // detached at the time running the callback.
-  static std::unique_ptr<ChromeKeepAliveRequestTracker>
-  MaybeCreateKeepAliveRequestTracker(
-      const network::ResourceRequest& request,
-      std::optional<ukm::SourceId> ukm_source_id,
-      IsContextDetachedCallback is_context_detached_callback);
+  static std::vector<std::unique_ptr<content::KeepAliveRequestTracker>>
+  MaybeCreateTrackers(const network::ResourceRequest& request,
+                      std::optional<ukm::SourceId> ukm_source_id,
+                      content::BrowserContext* browser_context,
+                      IsContextDetachedCallback is_context_detached_callback);
 
  private:
   ChromeKeepAliveRequestTracker(
