@@ -44,8 +44,11 @@ std::string SessionLifecycleToString(TTCSessionLifecycle lifecycle) {
 
 void TtcSessionController::OnConversationInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ != TTCSessionLifecycle::kInitializing) {
+    return;
+  }
   conversation_->SendToolSetUpdate(ttc::GetDefaultToolDefinitions());
-  OnSessionInitialized();
+  SetLifecycle(TTCSessionLifecycle::kLive);
 }
 
 void TtcSessionController::OnConversationClosed() {
@@ -53,11 +56,31 @@ void TtcSessionController::OnConversationClosed() {
 }
 
 void TtcSessionController::OnAudioEnergyUpdated(float energy) {
-  UserAudioLevelDidUpdate(energy);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished || observers_.empty()) {
+    return;
+  }
+  for (TtcSessionControllerObserver& observer : observers_) {
+    observer.OnUserAudioLevelUpdated(this, energy);
+  }
 }
 
 void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
-  FailWithError(error);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished || fatal_error_reported_) {
+    return;
+  }
+  LogSessionError(error);
+  const bool is_fatal = ttc::IsFatal(error);
+  if (is_fatal) {
+    fatal_error_reported_ = true;
+  }
+  for (TtcSessionControllerObserver& observer : observers_) {
+    observer.OnSessionError(this, error);
+  }
+  if (is_fatal) {
+    StopSession();
+  }
 }
 
 #pragma mark - Initializers
@@ -107,14 +130,6 @@ void TtcSessionController::StartSession() {
   conversation_->Start();
 }
 
-void TtcSessionController::OnSessionInitialized() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ != TTCSessionLifecycle::kInitializing) {
-    return;
-  }
-  SetLifecycle(TTCSessionLifecycle::kLive);
-}
-
 void TtcSessionController::StopSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   conversation_->Stop();
@@ -140,36 +155,6 @@ void TtcSessionController::SetLifecycle(TTCSessionLifecycle lifecycle) {
   lifecycle_ = lifecycle;
   for (TtcSessionControllerObserver& observer : observers_) {
     observer.OnSessionLifecycleChanged(this, lifecycle_);
-  }
-}
-
-#pragma mark - Audio & Errors
-
-void TtcSessionController::UserAudioLevelDidUpdate(float audio_level) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ == TTCSessionLifecycle::kFinished || observers_.empty()) {
-    return;
-  }
-  for (TtcSessionControllerObserver& observer : observers_) {
-    observer.OnUserAudioLevelUpdated(this, audio_level);
-  }
-}
-
-void TtcSessionController::FailWithError(ttc::ErrorCode error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ == TTCSessionLifecycle::kFinished || fatal_error_reported_) {
-    return;
-  }
-  LogSessionError(error);
-  const bool is_fatal = ttc::IsFatal(error);
-  if (is_fatal) {
-    fatal_error_reported_ = true;
-  }
-  for (TtcSessionControllerObserver& observer : observers_) {
-    observer.OnSessionError(this, error);
-  }
-  if (is_fatal) {
-    StopSession();
   }
 }
 

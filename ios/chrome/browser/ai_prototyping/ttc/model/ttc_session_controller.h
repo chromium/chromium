@@ -57,24 +57,12 @@ class TtcSessionController : public TtcConversation::Delegate {
   // Starts the session.
   void StartSession();
 
-  // Marks the session as initialized and transitions lifecycle to `kLive`.
-  void OnSessionInitialized();
-
   // Transitions the session lifecycle to `kFinished`.
   void StopSession();
 
   // Stops the session, unregisters background observers, and removes all
   // registered observers.
   void Disconnect();
-
-#pragma mark - Audio & Errors
-
-  // Notifies observers that the user's audio input level has updated.
-  // `audio_level` is normalized in the range [0.0, 1.0].
-  void UserAudioLevelDidUpdate(float audio_level);
-
-  // Notifies observers that a session error occurred.
-  void FailWithError(ttc::ErrorCode error);
 
 #pragma mark - Observers
 

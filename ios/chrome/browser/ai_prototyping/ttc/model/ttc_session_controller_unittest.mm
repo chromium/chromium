@@ -133,8 +133,8 @@ TEST_F(TtcSessionControllerTest, TestInitialLifecycleIsInitializing) {
   controller.Disconnect();
 }
 
-// Tests that `OnSessionInitialized` transitions the lifecycle to `kLive` and
-// notifies observers.
+// Tests that `OnConversationInitialized` transitions the lifecycle to `kLive`
+// and notifies observers.
 TEST_F(TtcSessionControllerTest, TestSessionInitializedTransitionsToLive) {
   TtcSessionController controller;
   FakeTtcSessionControllerObserver observer;
@@ -143,7 +143,7 @@ TEST_F(TtcSessionControllerTest, TestSessionInitializedTransitionsToLive) {
   controller.StartSession();
   EXPECT_EQ(observer.lifecycle_change_count(), 0);
 
-  controller.OnSessionInitialized();
+  controller.OnConversationInitialized();
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
   EXPECT_EQ(observer.lifecycle_change_count(), 1);
   EXPECT_EQ(observer.last_lifecycle(), TTCSessionLifecycle::kLive);
@@ -157,7 +157,7 @@ TEST_F(TtcSessionControllerTest, TestStopSessionTransitionsToFinished) {
   controller.AddObserver(&observer);
 
   controller.StartSession();
-  controller.OnSessionInitialized();
+  controller.OnConversationInitialized();
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
 
   controller.StopSession();
@@ -194,7 +194,7 @@ TEST_F(TtcSessionControllerTest, TestBackgroundNotificationStopsSession) {
   controller.AddObserver(&observer);
 
   controller.StartSession();
-  controller.OnSessionInitialized();
+  controller.OnConversationInitialized();
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
 
   [[NSNotificationCenter defaultCenter]
@@ -207,25 +207,25 @@ TEST_F(TtcSessionControllerTest, TestBackgroundNotificationStopsSession) {
   controller.Disconnect();
 }
 
-// Tests that `UserAudioLevelDidUpdate` forwards the level to observers.
+// Tests that `OnAudioEnergyUpdated` forwards the level to observers.
 TEST_F(TtcSessionControllerTest, TestAudioLevelUpdateForwardedToObserver) {
   TtcSessionController controller;
   FakeTtcSessionControllerObserver observer;
   controller.AddObserver(&observer);
 
-  controller.UserAudioLevelDidUpdate(0.65f);
+  controller.OnAudioEnergyUpdated(0.65f);
   EXPECT_EQ(observer.audio_level_update_count(), 1);
   EXPECT_FLOAT_EQ(observer.last_audio_level(), 0.65f);
   controller.Disconnect();
 }
 
-// Tests that `FailWithError` forwards the error to observers.
-TEST_F(TtcSessionControllerTest, TestFailWithErrorForwardedToObserver) {
+// Tests that `OnConversationError` forwards the error to observers.
+TEST_F(TtcSessionControllerTest, TestOnConversationErrorForwardedToObserver) {
   TtcSessionController controller;
   FakeTtcSessionControllerObserver observer;
   controller.AddObserver(&observer);
 
-  controller.FailWithError(ttc::ErrorCode::kInternalBackendError);
+  controller.OnConversationError(ttc::ErrorCode::kInternalBackendError);
   EXPECT_EQ(observer.error_count(), 1);
   EXPECT_EQ(observer.last_error(), ttc::ErrorCode::kInternalBackendError);
   controller.Disconnect();
@@ -238,8 +238,8 @@ TEST_F(TtcSessionControllerTest, TestRemoveObserverStopsNotifications) {
   controller.AddObserver(&observer);
   controller.RemoveObserver(&observer);
 
-  controller.OnSessionInitialized();
-  controller.UserAudioLevelDidUpdate(0.5f);
+  controller.OnConversationInitialized();
+  controller.OnAudioEnergyUpdated(0.5f);
   EXPECT_EQ(observer.lifecycle_change_count(), 0);
   EXPECT_EQ(observer.audio_level_update_count(), 0);
   controller.Disconnect();
@@ -267,10 +267,10 @@ TEST_F(TtcSessionControllerTest, TestAddObserverNullDoesNotCrash) {
   controller.Disconnect();
 }
 
-// Tests that `OnSessionInitialized` does not resurrect a session that has
+// Tests that `OnConversationInitialized` does not resurrect a session that has
 // already finished.
 TEST_F(TtcSessionControllerTest,
-       TestLateOnSessionInitializedDoesNotResurrectFinishedSession) {
+       TestLateOnConversationInitializedDoesNotResurrectFinishedSession) {
   TtcSessionController controller;
   FakeTtcSessionControllerObserver observer;
   controller.AddObserver(&observer);
@@ -281,7 +281,7 @@ TEST_F(TtcSessionControllerTest,
 
   // Late initialization after session termination must not resurrect to
   // `kLive`.
-  controller.OnSessionInitialized();
+  controller.OnConversationInitialized();
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kFinished);
   EXPECT_EQ(observer.last_lifecycle(), TTCSessionLifecycle::kFinished);
 
@@ -409,7 +409,7 @@ TEST_F(TtcSessionControllerTest, TestConversationDidCloseStopsSession) {
   controller.AddObserver(&observer);
 
   controller.StartSession();
-  controller.OnSessionInitialized();
+  controller.OnConversationInitialized();
   EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
 
   ASSERT_NE(conversation_ptr->delegate(), nullptr);
