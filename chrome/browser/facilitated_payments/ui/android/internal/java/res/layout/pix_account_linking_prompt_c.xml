@@ -35,7 +35,7 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
         android:text="@string/pix_account_linking_prompt_c_title" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/body_text"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -44,7 +44,7 @@ found in the LICENSE file.
         android:layout_marginTop="4dp"
         android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
         android:text="@string/pix_account_linking_prompt_c_body"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
         android:textAlignment="center"
         android:focusable="true" />
 
