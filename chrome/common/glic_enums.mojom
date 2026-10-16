@@ -180,6 +180,8 @@ enum InvocationSource {
   // desktop (when the selection is attached) or the text selection menu on
   // Android.
   [MinVersion=32] kWebContentsContextMenuTextSelection = 48,
+  // Invoked by the actor GeminiPanelTool.
+  [MinVersion=33] kActorTool = 49,
 };
 
 // LINT.ThenChange(//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java:GlicInvocationSource,

@@ -10,6 +10,7 @@
 
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor {
@@ -22,7 +23,8 @@ class PromptGeminiPanelToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "PromptGeminiPanel";
 
-  PromptGeminiPanelToolRequest(ActorSurfaceHandle actor_surface_handle,
+  PromptGeminiPanelToolRequest(glic::InvokeWithAutoSubmitPasskey passkey,
+                               ActorSurfaceHandle actor_surface_handle,
                                std::string prompt);
   ~PromptGeminiPanelToolRequest() override;
   PromptGeminiPanelToolRequest(const PromptGeminiPanelToolRequest&);
@@ -40,6 +42,7 @@ class PromptGeminiPanelToolRequest : public ToolRequest {
   const std::string& prompt() const { return prompt_; }
 
  private:
+  glic::InvokeWithAutoSubmitPasskey auto_submit_passkey_;
   ActorSurfaceHandle actor_surface_handle_;
   std::string prompt_;
 };

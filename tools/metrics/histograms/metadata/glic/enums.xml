@@ -739,6 +739,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="Context menu link"/>
   <int value="47" label="Context menu page"/>
   <int value="48" label="Context menu text selection"/>
+  <int value="49" label="From a actor GeminiPanelTool"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
@@ -1269,6 +1270,10 @@ chromium-metrics-reviews@google.com.
   <int value="194" label="Context menu text selection, attached, audio mode."/>
   <int value="195" label="Context menu text selection, detached, text mode."/>
   <int value="196" label="Context menu text selection, detached, audio mode."/>
+  <int value="197" label="From actor GeminiPanelTool, attached, text mode."/>
+  <int value="198" label="From actor GeminiPanelTool, attached, audio mode."/>
+  <int value="199" label="From actor GeminiPanelTool, detached, text mode."/>
+  <int value="200" label="From actor GeminiPanelTool, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

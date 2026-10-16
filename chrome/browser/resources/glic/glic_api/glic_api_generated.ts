@@ -735,6 +735,8 @@ export enum InvocationSource {
   // desktop (when the selection is attached) or the text selection menu on
   // Android.
   WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION = 48,
+  // Invoked by the actor GeminiPanelTool.
+  ACTOR_TOOL = 49,
 }
 
 // Target for actuation.

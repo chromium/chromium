@@ -49,6 +49,8 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
   EXPECT_EQ("WebContentsContextMenuTextSelection",
             GetInvocationSourceString(
                 mojom::InvocationSource::kWebContentsContextMenuTextSelection));
+  EXPECT_EQ("ActorTool",
+            GetInvocationSourceString(mojom::InvocationSource::kActorTool));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -166,6 +168,12 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
       GetResponseSegmentation(
           /*attached=*/true, mojom::WebClientMode::kText,
           mojom::InvocationSource::kWebContentsContextMenuTextSelection));
+
+  // ActorTool Attached Text
+  EXPECT_EQ(ResponseSegmentation::kActorToolAttachedText,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kActorTool));
 }
 
 }  // namespace

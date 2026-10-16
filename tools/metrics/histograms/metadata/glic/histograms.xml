@@ -168,6 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="GlicInvocationSource">
   <variant name="ActorTaskIcon"/>
+  <variant name="ActorTool"/>
   <variant name="AfterSignIn"/>
   <variant name="AnchoredContextualCue"/>
   <variant name="Autofill"/>
