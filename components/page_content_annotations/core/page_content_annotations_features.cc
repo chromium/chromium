@@ -184,6 +184,9 @@ BASE_FEATURE(kPageSettledMonitorSkipAwaitVisualStateForHiddenTabs,
 BASE_FEATURE(kPaintStabilityDeferInitialPaintTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageStabilityExitStartDelayOnFirstPaint,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(5000);
 }

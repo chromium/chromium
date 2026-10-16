@@ -126,6 +126,11 @@ BASE_DECLARE_FEATURE(kPageSettledMonitorSkipAwaitVisualStateForHiddenTabs);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPaintStabilityDeferInitialPaintTimeout);
 
+// If enabled, exits the page stability observation start delay early on the
+// first contentful paint.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageStabilityExitStartDelayOnFirstPaint);
+
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
 // prefetch logic.

@@ -1195,6 +1195,7 @@ if (use_blink) {
       "//components/page_content_annotations/content/browser",
       "//components/page_content_annotations/content/mojom",
       "//components/page_content_annotations/content/renderer",
+      "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:features",
       "//components/paint_preview/renderer",
       "//components/password_manager/content/browser",

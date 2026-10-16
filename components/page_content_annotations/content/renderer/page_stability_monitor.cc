@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -18,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/page_content_annotations/content/renderer/network_and_main_thread_stability_monitor.h"
 #include "components/page_content_annotations/content/renderer/paint_stability_monitor.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -72,7 +74,14 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
   monitoring_start_delay_ = observation_delay;
 
   if (paint_stability_monitor_) {
-    paint_stability_monitor_->Start();
+    base::OnceClosure first_paint_callback;
+    if (base::FeatureList::IsEnabled(
+            features::kPageStabilityExitStartDelayOnFirstPaint)) {
+      first_paint_callback =
+          base::BindOnce(&PageStabilityMonitor::OnFirstContentfulPaint,
+                         weak_ptr_factory_.GetWeakPtr());
+    }
+    paint_stability_monitor_->Start(std::move(first_paint_callback));
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -282,6 +291,15 @@ PageStabilityMonitor::PostCancelableMoveToStateClosure(State new_state,
       },
       base::SequencedTaskRunner::GetCurrentDefault(),
       MoveToStateClosure(new_state), delay);
+}
+
+void PageStabilityMonitor::OnFirstContentfulPaint() {
+  if (state_ != State::kMonitorStartDelay) {
+    return;
+  }
+
+  start_monitoring_delayed_handle_.CancelTask();
+  MoveToState(State::kWaitForNavigation);
 }
 
 void PageStabilityMonitor::OnPaintStabilityReached() {
