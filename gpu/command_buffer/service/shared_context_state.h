@@ -328,6 +328,7 @@ class GPU_GLES2_EXPORT SharedContextState
   void ScheduleSkiaCleanup();
 
   int32_t GetMaxTextureSize();
+  int32_t GetMaxArrayTextureLayers();
 
 #if BUILDFLAG(IS_WIN)
   // Get the D3D device and command queue used for compositing.
@@ -463,6 +464,7 @@ class GPU_GLES2_EXPORT SharedContextState
       viz_compositor_graphite_cache_controller_;
 
   std::optional<int> max_texture_size_;
+  std::optional<int> max_array_texture_layers_;
   size_t max_resource_cache_bytes_ = 0;
 
   // A SharedContextState is created on, and used from, a single gpu thread

@@ -653,9 +653,12 @@ void HardwareRenderer::DrawAndSwap(
   // Ensure that the context is synced from external and synced back before
   // returning. This is only necessary when using ANGLE to keep its internals
   // synced with the external context
-  ScopedAcquireExternalContext scoped_acquire(
-      output_surface_provider_.shared_context_state().get(),
-      output_surface_provider_.gl_surface().get(), IsUsingANGLEOverGL());
+  std::optional<ScopedAcquireExternalContext> scoped_acquire;
+  if (output_surface_provider_.gl_surface()) {
+    scoped_acquire.emplace(
+        output_surface_provider_.shared_context_state().get(),
+        output_surface_provider_.gl_surface().get(), IsUsingANGLEOverGL());
+  }
 
   viz::FrameTimingDetailsMap timing_details;
 
@@ -696,8 +699,10 @@ void HardwareRenderer::DrawAndSwap(
                  params.clip_right - params.clip_left,
                  params.clip_bottom - params.clip_top);
 
-  output_surface_provider_.gl_surface()->RecalculateClipAndTransform(
-      &viewport, &clip, &transform);
+  if (output_surface_provider_.gl_surface()) {
+    output_surface_provider_.gl_surface()->RecalculateClipAndTransform(
+        &viewport, &clip, &transform);
+  }
 
   // Reset Skia's state if not using ANGLE. For ANGLE, it is in general not
   // necessary as ANGLE will restore GL context state for us as long as Chrome
@@ -720,6 +725,7 @@ void HardwareRenderer::DrawAndSwap(
   auto* overlay_processor = on_viz_->overlay_processor();
   const bool can_use_overlays =
       overlays_params.overlays_mode == OverlaysParams::Mode::Enabled &&
+      output_surface_provider_.gl_surface() &&
       !output_surface_provider_.gl_surface()->IsDrawingToFBO();
   if (can_use_overlays && overlay_processor) {
     DCHECK(overlays_params.get_surface_control);
@@ -735,9 +741,11 @@ void HardwareRenderer::DrawAndSwap(
 
   MergeTransactionIfNeeded(overlays_params.merge_transaction);
 
-  output_surface_provider_.gl_surface()->MaybeDidPresent(
-      gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
-                                0 /* flags */));
+  if (output_surface_provider_.gl_surface()) {
+    output_surface_provider_.gl_surface()->MaybeDidPresent(
+        gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
+                                  0 /* flags */));
+  }
 
   // Implement proper damage tracking, then deliver FrameTimingDetails
   // through the common begin frame path.
@@ -775,6 +783,7 @@ void HardwareRenderer::DrawAndSwap(
   // doing it here would be redundant).
   if (gl::GLSurfaceEGL::GetGLDisplayEGL()
           ->IsANGLEExternalContextAndSurfaceSupported() &&
+      output_surface_provider_.gl_surface() &&
       output_surface_provider_.gl_surface()->IsDrawingToFBO()) {
     DCHECK(output_surface_provider_.shared_context_state());
     output_surface_provider_.shared_context_state()

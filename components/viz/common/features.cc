@@ -414,6 +414,10 @@ BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Do not create GLContext on DrDC thread (and Android WebView render thread) if
+// GL is not used by viz (eg when vulkan is used).
+BASE_FEATURE(kSkipDisabledGLContextOnDrDC, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNoCompositorFrameAcks, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kNumberPendingFramesUntilThrottle{
     &kNoCompositorFrameAcks, "pending_frames", 1};
