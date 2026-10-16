@@ -120,7 +120,10 @@ class Tool {
   AggregatedJournal& journal() { return tool_delegate().GetJournal(); }
   ToolDelegate& tool_delegate() { return *tool_delegate_; }
 
-#if !BUILDFLAG(IS_ANDROID)
+  // Finds the BrowserWindowInterface matching `window_id`, or nullptr if none
+  // exists.
+  BrowserWindowInterface* FindBrowserWindow(SessionID window_id) const;
+
   // Validates that `browser` exists and belongs to the profile returned by
   // `tool_delegate()`.
   // - If `!browser`, returns ActionResult with `kWindowWentAway`.
@@ -130,7 +133,6 @@ class Tool {
   mojom::ActionResultPtr ValidateBrowserWindow(
       const BrowserWindowInterface* browser) const;
   mojom::ActionResultPtr ValidateWindowId(SessionID window_id) const;
-#endif
 
  private:
   TaskId task_id_;

@@ -7,15 +7,13 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/window_open_disposition.h"
@@ -61,7 +59,7 @@ void TabManagementTool::Invoke(ToolCallback callback) {
 
   BrowserWindowInterface* browser_window_interface =
       window_id_.has_value()
-          ? BrowserWindowInterface::FromSessionID(
+          ? FindBrowserWindow(
                 SessionID::FromSerializedValue(window_id_.value()))
           : target_tab_.value().Get()->GetBrowserWindowInterface();
 
@@ -72,23 +70,29 @@ void TabManagementTool::Invoke(ToolCallback callback) {
     return;
   }
 
-  // The observer is removed in the TabStripModelObserver's destructor.
-  browser_window_interface->GetTabStripModel()->AddObserver(this);
+  TabListInterface* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    PostResponseTask(std::move(callback_),
+                     MakeResult(mojom::ActionResultCode::kWindowWentAway));
+    return;
+  }
+
+  tab_list_observation_.Observe(tab_list);
 
   // Watch for the window going away as well so we don't wait indefinitely.
   browser_did_close_subscription_ =
       browser_window_interface->RegisterBrowserDidClose(base::BindRepeating(
           &TabManagementTool::OnBrowserDidClose, base::Unretained(this)));
 
-  // Each of these functions result in a call to `TabStripModelChanged` if they
+  // Each of these functions result in a `TabListInterfaceObserver` call if they
   // complete successfully. Otherwise, they will fire `callback_` early and
   // return.
   switch (action_) {
     case kCreate:
-      CreateTab(browser_window_interface);
+      CreateTab(tab_list);
       break;
     case kActivate:
-      ActivateTab(browser_window_interface);
+      ActivateTab(tab_list);
       break;
     case kClose:
       CloseTab();
@@ -96,17 +100,16 @@ void TabManagementTool::Invoke(ToolCallback callback) {
   }
 }
 
-void TabManagementTool::CreateTab(
-    BrowserWindowInterface* browser_window_interface) {
+void TabManagementTool::CreateTab(TabListInterface* tab_list) {
   CHECK(window_id_.has_value());
   CHECK(create_disposition_.has_value());
   // Open a blank tab.
-  browser_window_interface->OpenGURL(GURL(url::kAboutBlankURL),
-                                     create_disposition_.value());
+  tab_list->OpenTab(
+      GURL(url::kAboutBlankURL), /*index=*/-1,
+      create_disposition_.value() == WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
-void TabManagementTool::ActivateTab(
-    BrowserWindowInterface* browser_window_interface) {
+void TabManagementTool::ActivateTab(TabListInterface* tab_list) {
   CHECK(target_tab_.has_value());
   // The tab might already be activated. In which case, treat that as a
   // successful tool invocation.
@@ -115,11 +118,7 @@ void TabManagementTool::ActivateTab(
     return;
   }
 
-  int target_tab_index =
-      browser_window_interface->GetTabStripModel()->GetIndexOfTab(
-          target_tab_->Get());
-  CHECK(target_tab_index != TabStripModel::kNoTab);
-  browser_window_interface->GetTabStripModel()->ActivateTabAt(target_tab_index);
+  tab_list->ActivateTab(*target_tab_);
 }
 
 void TabManagementTool::CloseTab() {
@@ -177,59 +176,52 @@ ActorSurfaceHandle TabManagementTool::GetTargetActorSurface() const {
                                  : ActorSurfaceHandle::Null();
 }
 
-void TabManagementTool::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!callback_) {
+void TabManagementTool::OnTabAdded(TabListInterface& tab_list,
+                                   tabs::TabInterface* tab,
+                                   int index) {
+  if (!callback_ || action_ != kCreate || !tab) {
     return;
   }
 
-  // Determine if a tab we are waiting for has closed unexpectedly. If so,
-  // return early.
-  if (action_ == kActivate && change.type() == TabStripModelChange::kRemoved) {
-    auto result_it = std::find_if(
-        change.GetRemove()->contents.begin(),
-        change.GetRemove()->contents.end(),
-        [&](const TabStripModelChange::RemovedTab& removed_tab) {
-          return removed_tab.tab->GetHandle() == this->target_tab_.value();
-        });
-    if (result_it != change.GetRemove()->contents.end()) {
-      PostResponseTask(std::move(callback_),
-                       MakeResult(mojom::ActionResultCode::kTabWentAway));
-      return;
-    }
+  target_tab_ = tab->GetHandle();
+  PostResponseTask(std::move(callback_), MakeOkResult());
+}
+
+void TabManagementTool::OnActiveTabChanged(TabListInterface& tab_list,
+                                           tabs::TabInterface* tab) {
+  if (!callback_ || action_ != kActivate || !tab) {
+    return;
   }
 
-  // Handle successful tab creation.
-  if (action_ == kCreate && change.type() == TabStripModelChange::kInserted) {
-    CHECK_GT(change.GetInsert()->contents.size(), 0ul);
-    target_tab_ = change.GetInsert()->contents[0].tab->GetHandle();
+  if (*target_tab_ == tab->GetHandle()) {
     PostResponseTask(std::move(callback_), MakeOkResult());
+  }
+}
+
+void TabManagementTool::OnTabRemoved(TabListInterface& tab_list,
+                                     tabs::TabInterface* tab,
+                                     TabRemovedReason removed_reason) {
+  // This fires once per removed tab, so a single handle comparison covers
+  // every case that matters here: a removal of some other tab (e.g. the user
+  // closing an unrelated tab while we wait for `target_tab_` to close or
+  // activate) is ignored, and `target_tab_` is unset for kCreate until
+  // OnTabAdded() runs, so removals during tab creation are ignored too.
+  if (!callback_ || !tab || !target_tab_.has_value() ||
+      *target_tab_ != tab->GetHandle()) {
     return;
   }
 
-  // Handle successful tab activation.
-  if (action_ == kActivate &&
-      change.type() == TabStripModelChange::kSelectionOnly) {
-    if (selection.active_tab_changed() &&
-        *target_tab_ == selection.new_tab->GetHandle()) {
-      PostResponseTask(std::move(callback_), MakeOkResult());
-    }
+  // The tab we are waiting to activate closed unexpectedly.
+  if (action_ == kActivate) {
+    PostResponseTask(std::move(callback_),
+                     MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
 
-  // Handle successful tab removal.
-  if (action_ == kClose && change.type() == TabStripModelChange::kRemoved) {
-    CHECK_GT(change.GetRemove()->contents.size(), 0ul);
-    TabHandle removed_tab = change.GetRemove()->contents[0].tab->GetHandle();
-    if (*target_tab_ != removed_tab) {
-      // Observing a different tab close, so do nothing.
-      return;
-    }
+  // Handle tab removal when closing a tab.
+  if (action_ == kClose) {
     // Our single tab should have been deleted, rather than moved elsewhere.
-    if (!TabRemoveReasonUtils::WillDeleteTab(
-            change.GetRemove()->contents[0].remove_reason)) {
+    if (!TabRemoveReasonUtils::WillDeleteTab(removed_reason)) {
       PostResponseTask(std::move(callback_),
                        MakeResult(mojom::ActionResultCode::kTabWentAway));
       return;
@@ -238,6 +230,10 @@ void TabManagementTool::OnTabStripModelChanged(
     PostResponseTask(std::move(callback_), MakeOkResult());
     return;
   }
+}
+
+void TabManagementTool::OnTabListDestroyed(TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
 }
 
 void TabManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {

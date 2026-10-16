@@ -12,10 +12,11 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "ui/base/window_open_disposition.h"
 
 class BrowserWindowInterface;
+class TabListInterface;
 
 namespace actor {
 
@@ -23,7 +24,7 @@ class ObservationDelayController;
 
 // A tool to manage the tabs in a browser window, e.g. create, close,
 // activate, etc.
-class TabManagementTool : public Tool, public TabStripModelObserver {
+class TabManagementTool : public Tool, public TabListInterfaceObserver {
  public:
   enum Action { kCreate, kActivate, kClose };
 
@@ -55,14 +56,20 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
                              ToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
-  // TabStripModelObserver
-  void OnTabStripModelChanged(TabStripModel* tab_strip_model,
-                              const TabStripModelChange& change,
-                              const TabStripSelectionChange& selection) final;
+  // TabListInterfaceObserver:
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) final;
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) final;
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
+                    TabRemovedReason removed_reason) final;
+  void OnTabListDestroyed(TabListInterface& tab_list) final;
 
  private:
-  void CreateTab(BrowserWindowInterface* browser_window_interface);
-  void ActivateTab(BrowserWindowInterface* browser_window_interface);
+  void CreateTab(TabListInterface* tab_list);
+  void ActivateTab(TabListInterface* tab_list);
   void CloseTab();
 
   // Called when the browser with `window_id_` has closed.
@@ -85,6 +92,9 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
   // Subscription to the close event for the BrowserWindowInterface
   // corresponding to `window_id_`.
   base::CallbackListSubscription browser_did_close_subscription_;
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
 
   base::WeakPtrFactory<TabManagementTool> weak_ptr_factory_{this};
 };

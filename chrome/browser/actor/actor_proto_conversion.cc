@@ -447,7 +447,6 @@ std::unique_ptr<ToolRequest> CreateNavigateRequest(
                                                GURL(action.url()));
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateCreateTabRequest(
     const CreateTabAction& action) {
   if (!action.has_window_id()) {
@@ -484,6 +483,7 @@ std::unique_ptr<ToolRequest> CreateCloseTabRequest(
   return std::make_unique<CloseTabToolRequest>(actor_surface_handle);
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateCreateWindowRequest(
     const CreateWindowAction& action) {
   return std::make_unique<CreateWindowToolRequest>();
@@ -957,7 +957,6 @@ CreateToolRequest(const optimization_guide::proto::Action& action) {
       const WaitAction& wait_action = action.wait();
       return CreateWaitRequest(wait_action);
     }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kCreateTab: {
       const CreateTabAction& create_tab_action = action.create_tab();
       return CreateCreateTabRequest(create_tab_action);
@@ -970,7 +969,6 @@ CreateToolRequest(const optimization_guide::proto::Action& action) {
       const ActivateTabAction& activate_tab_action = action.activate_tab();
       return CreateActivateTabRequest(activate_tab_action);
     }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kAttemptLogin: {
       const AttemptLoginAction& attempt_login_action = action.attempt_login();
       return CreateAttemptLoginRequest(attempt_login_action);
@@ -1064,6 +1062,8 @@ constexpr auto ToUnknown =
 // Maps each `ToolRequestVariant` alternative to its `ActuationCapability`. The
 // build flags mirror `ToolRequestVariant`, which omits those types on Android.
 constexpr absl::Overload kGetCapabilityFn{
+    ToCapability<ActivateTabToolRequest,
+                 apc::RuleMetadata::CAPABILITY_ACTIVATE_TAB>,
     ToCapability<AttemptLoginToolRequest,
                  apc::RuleMetadata::CAPABILITY_ATTEMPT_LOGIN>,
     ToCapability<AttemptFormFillingToolRequest,
@@ -1071,6 +1071,9 @@ constexpr absl::Overload kGetCapabilityFn{
     ToCapability<AttemptOtpFillingToolRequest,
                  apc::RuleMetadata::CAPABILITY_ATTEMPT_OTP_FILLING>,
     ToCapability<ClickToolRequest, apc::RuleMetadata::CAPABILITY_CLICK>,
+    ToCapability<CloseTabToolRequest, apc::RuleMetadata::CAPABILITY_CLOSE_TAB>,
+    ToCapability<CreateTabToolRequest,
+                 apc::RuleMetadata::CAPABILITY_CREATE_TAB>,
     ToCapability<DragAndReleaseToolRequest,
                  apc::RuleMetadata::CAPABILITY_DRAG_AND_RELEASE>,
     ToCapability<FileUploadToolRequest,
@@ -1096,15 +1099,10 @@ constexpr absl::Overload kGetCapabilityFn{
     ToCapability<TypeToolRequest, apc::RuleMetadata::CAPABILITY_TYPE>,
     ToCapability<WaitToolRequest, apc::RuleMetadata::CAPABILITY_WAIT>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-    ToCapability<ActivateTabToolRequest,
-                 apc::RuleMetadata::CAPABILITY_ACTIVATE_TAB>,
     ToCapability<ActivateWindowToolRequest,
                  apc::RuleMetadata::CAPABILITY_ACTIVATE_WINDOW>,
-    ToCapability<CloseTabToolRequest, apc::RuleMetadata::CAPABILITY_CLOSE_TAB>,
     ToCapability<CloseWindowToolRequest,
                  apc::RuleMetadata::CAPABILITY_CLOSE_WINDOW>,
-    ToCapability<CreateTabToolRequest,
-                 apc::RuleMetadata::CAPABILITY_CREATE_TAB>,
     ToCapability<CreateWindowToolRequest,
                  apc::RuleMetadata::CAPABILITY_CREATE_WINDOW>,
     ToCapability<LoadAndExtractContentToolRequest,

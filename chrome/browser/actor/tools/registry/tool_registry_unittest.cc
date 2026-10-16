@@ -30,6 +30,7 @@
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -43,7 +44,6 @@
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
-#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
 
@@ -260,6 +260,7 @@ TEST(ToolRegistryTest, EnterFullscreenToolDefinition) {
               base::test::DictionaryHasValue("properties",
                                              base::Value(base::DictValue())));
 }
+#endif
 
 TEST(ToolRegistryTest, CreateTabToolDefinition) {
   const std::optional<ToolDefinition> definition =
@@ -282,7 +283,6 @@ TEST(ToolRegistryTest, ActivateTabToolDefinition) {
               HasParamOfType(ActivateTabToolRequest::kTabIdParam, "integer"));
   EXPECT_THAT(*definition, RequiresParam(ActivateTabToolRequest::kTabIdParam));
 }
-#endif
 
 TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
   const std::optional<ToolDefinition> definition =
@@ -297,7 +297,6 @@ TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
               RequiresParam(FindAndHighlightToolRequest::kQueryParam));
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, CloseTabToolDefinition) {
   const std::optional<ToolDefinition> definition =
       CloseTabToolRequest::GetToolDefinition();
@@ -308,7 +307,6 @@ TEST(ToolRegistryTest, CloseTabToolDefinition) {
               base::test::DictionaryHasValue("properties",
                                              base::Value(base::DictValue())));
 }
-#endif
 
 TEST(ToolRegistryTest, FileUploadToolDefinition) {
   const std::optional<ToolDefinition> definition =
@@ -592,6 +590,7 @@ TEST(ToolRegistryTest, GetAllToolsContainsEnterFullscreenTool) {
                                     ToolId::kEnterFullscreen,
                                     &ToolDefinition::id));
 }
+#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsCreateTabTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
@@ -614,7 +613,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsActivateTabTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kActivateTab, &ToolDefinition::id));
 }
-#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsFindAndHighlightTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
@@ -628,7 +626,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsFindAndHighlightTool) {
                                     &ToolDefinition::id));
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, GetAllToolsContainsCloseTabTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -639,7 +636,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsCloseTabTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kCloseTab, &ToolDefinition::id));
 }
-#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsScrollToTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
