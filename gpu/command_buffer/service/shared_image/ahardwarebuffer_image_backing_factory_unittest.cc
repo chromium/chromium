@@ -84,7 +84,8 @@ class AHardwareBufferImageBackingFactoryTest
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType()));
 
     backing_factory_ = std::make_unique<AHardwareBufferImageBackingFactory>(
-        context_state_->feature_info(), gpu_preferences_, context_state_);
+        context_state_->feature_info(), gpu_preferences_,
+        context_state_->vk_context_provider());
   }
 };
 

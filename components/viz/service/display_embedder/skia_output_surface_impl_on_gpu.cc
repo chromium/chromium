@@ -280,13 +280,15 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     return nullptr;
   }
 
-  if (context_state->IsGLInitialized()) {
-    if (!context_state->MakeCurrent(nullptr, true /* need_gl */)) {
-      LOG(ERROR) << "Failed to make current during initialization.";
-      return nullptr;
-    }
-    context_state->set_need_context_state_reset(true);
+  // Even with Vulkan/Dawn compositing, the SharedImageFactory constructor
+  // always initializes a GL-backed SharedImage factory to fall back on.
+  // Creating the GLTextureImageBackingFactory invokes GL API calls, so
+  // we need to ensure there is a current GL context.
+  if (!context_state->MakeCurrent(nullptr, true /* need_gl */)) {
+    LOG(ERROR) << "Failed to make current during initialization.";
+    return nullptr;
   }
+  context_state->set_need_context_state_reset(true);
 
   auto impl_on_gpu = std::make_unique<SkiaOutputSurfaceImplOnGpu>(
       base::PassKey<SkiaOutputSurfaceImplOnGpu>(), deps,

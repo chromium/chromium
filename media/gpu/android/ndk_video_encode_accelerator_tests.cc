@@ -537,7 +537,8 @@ class NdkVideoEncoderAcceleratorTest
 
     backing_factory_ =
         std::make_unique<gpu::AHardwareBufferImageBackingFactory>(
-            context_state_->feature_info(), gpu_preferences, context_state_);
+            context_state_->feature_info(), gpu_preferences,
+            context_state_->vk_context_provider());
 
     auto runner = task_environment_.GetMainThreadTaskRunner();
     auto command_buffer_helper =
