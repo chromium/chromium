@@ -88,8 +88,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setRevision(3)
+                    .setDescription("Side panel container uses a surface container color")
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_TOP_CHROME_SIDE_PANEL)
                     .build();
 

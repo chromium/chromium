@@ -21,6 +21,7 @@
     android:background="@macro/default_bg_color">
 
     <LinearLayout
+        android:id="@+id/side_panel_inner_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

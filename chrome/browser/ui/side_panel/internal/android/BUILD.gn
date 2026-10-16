@@ -78,9 +78,12 @@ source_set("dev") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/side_panel_container_bg_color.xml",
+    "java/res/color/side_panel_container_bg_color.xml",
     "java/res/drawable/side_panel_inner_container_bg.xml",
     "java/res/layout/side_panel_container.xml",
     "java/res/layout/side_panel_dev_feature.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

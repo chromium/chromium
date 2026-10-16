@@ -8,6 +8,6 @@ found in the LICENSE file.
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-  <solid android:color="@macro/default_bg_color" />
+  <solid android:color="@color/side_panel_container_bg_color" />
   <corners android:radius="@dimen/side_panel_corner_radius" />
 </shape>

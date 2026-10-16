@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
@@ -43,6 +46,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -57,6 +61,7 @@ final class SidePanelContainerCoordinatorImpl
     private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
 
     private final FrameLayout mContainerView;
+    private final LinearLayout mInnerContainerView;
     private final SidePanelNativeBridgeSelector mNativeBridgeSelector;
     private final SideUiCoordinator mSideUiCoordinator;
     private final TopControlsStacker mTopControlsStacker;
@@ -111,6 +116,7 @@ final class SidePanelContainerCoordinatorImpl
                 (FrameLayout)
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.side_panel_container, /* root= */ null);
+        mInnerContainerView = mContainerView.findViewById(R.id.side_panel_inner_container);
 
         mNativeBridgeSelector =
                 new SidePanelNativeBridgeSelector(
@@ -632,8 +638,7 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public void onIncognitoStateChanged(boolean isIncognito) {
         ThreadUtils.assertOnUiThread();
-        mContainerView.setBackgroundColor(
-                ChromeColors.getDefaultBgColor(mContainerView.getContext(), isIncognito));
+        updateColors(isIncognito);
     }
 
     /**
@@ -779,6 +784,30 @@ final class SidePanelContainerCoordinatorImpl
             }
         }
         return null;
+    }
+
+    /**
+     * Updates the container's colors for Incognito.
+     *
+     * <p>Incognito always uses the baseline dark colors, regardless of the app theme.
+     */
+    private void updateColors(boolean isIncognito) {
+        Context context = mContainerView.getContext();
+        mContainerView.setBackgroundColor(ChromeColors.getDefaultBgColor(context, isIncognito));
+
+        mInnerContainerView.setBackgroundTintList(
+                isIncognito
+                        ? ColorStateList.valueOf(
+                                context.getColor(R.color.side_panel_container_bg_color_incognito))
+                        : null);
+
+        TextView titleView = mContainerView.findViewById(R.id.side_panel_title);
+        titleView.setTextColor(
+                isIncognito
+                        ? context.getColor(R.color.default_text_color_light)
+                        : SemanticColorUtils.getDefaultTextColor(context));
+        ImageButton closeButton = mContainerView.findViewById(R.id.side_panel_close_button);
+        closeButton.setImageTintList(ChromeColors.getPrimaryIconTint(context, isIncognito));
     }
 
     private void configureHeader(SidePanelContent content) {
