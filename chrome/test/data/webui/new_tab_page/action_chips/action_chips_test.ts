@@ -15,6 +15,8 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import type {SuggestTemplateInfoModifiers} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -33,15 +35,15 @@ suite('NewTabPageActionChipsTest', () => {
     {
       suggestTemplateInfo: {
         typeIcon: IconType.kFavicon,
-        primaryText: {text: 'Example Tab', a11yText: null},
-        secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
-        fuseboxAction: {
-          preselectedTool: ToolMode.kUnspecified,
-          preferredInventory: null,
-          preselectedModel: ModelMode.kUnspecified,
-          queryActionOverride: null,
-          searchboxOverride: null,
-        },
+        primaryText: 'Example Tab',
+        secondaryText: 'Subtitle for recent tab',
+      },
+      fuseboxAction: {
+        preselectedTool: ToolMode.kUnspecified,
+        preferredInventory: null,
+        preselectedModel: ModelMode.kUnspecified,
+        queryActionOverride: null,
+        searchboxOverride: null,
       },
       suggestion: 'Suggestion for recent tab',
       tab: {
@@ -54,15 +56,15 @@ suite('NewTabPageActionChipsTest', () => {
     {
       suggestTemplateInfo: {
         typeIcon: IconType.kBanana,
-        primaryText: {text: 'Nano Banana', a11yText: null},
-        secondaryText: {text: 'Subtitle for image', a11yText: null},
-        fuseboxAction: {
-          preselectedTool: ToolMode.kImageGen,
-          preferredInventory: null,
-          preselectedModel: ModelMode.kUnspecified,
-          queryActionOverride: null,
-          searchboxOverride: null,
-        },
+        primaryText: 'Nano Banana',
+        secondaryText: 'Subtitle for image',
+      },
+      fuseboxAction: {
+        preselectedTool: ToolMode.kImageGen,
+        preferredInventory: null,
+        preselectedModel: ModelMode.kUnspecified,
+        queryActionOverride: null,
+        searchboxOverride: null,
       },
       suggestion: 'Suggestion for image',
       tab: null,
@@ -70,31 +72,29 @@ suite('NewTabPageActionChipsTest', () => {
     {
       suggestTemplateInfo: {
         typeIcon: IconType.kGlobeWithSearchLoop,
-        primaryText: {text: 'Deep Search', a11yText: null},
-        secondaryText: {text: 'Subtitle for deep search', a11yText: null},
-        fuseboxAction: {
-          preselectedTool: ToolMode.kDeepSearch,
-          preferredInventory: null,
-          preselectedModel: ModelMode.kUnspecified,
-          queryActionOverride: null,
-          searchboxOverride: null,
-        },
+        primaryText: 'Deep Search',
+        secondaryText: 'Subtitle for deep search',
+      },
+      fuseboxAction: {
+        preselectedTool: ToolMode.kDeepSearch,
+        preferredInventory: null,
+        preselectedModel: ModelMode.kUnspecified,
+        queryActionOverride: null,
+        searchboxOverride: null,
       },
       suggestion: 'Suggestion for deep search',
       tab: null,
     },
   ];
 
-  // A helper type to make suggestTemplateInfo.fuseboxAction optional for test
-  // definitions.
-  type TestFuseboxAction =
-      Partial<ActionChip['suggestTemplateInfo']['fuseboxAction']>;
-  type TestActionChip = Omit<ActionChip, 'suggestTemplateInfo'>&{
-    suggestTemplateInfo:
-        Omit<ActionChip['suggestTemplateInfo'], 'fuseboxAction'>& {
-          fuseboxAction?: TestFuseboxAction,
-        },
-  };
+  // A helper type for test definitions: the template text can be plain strings
+  // and fuseboxAction is optional and partial.
+  type TestFuseboxAction = Partial<ActionChip['fuseboxAction']>;
+  type TestActionChip =
+      Omit<ActionChip, 'suggestTemplateInfo'|'fuseboxAction'>&{
+        suggestTemplateInfo: SuggestTemplateInfoModifiers,
+        fuseboxAction?: TestFuseboxAction,
+      };
 
   interface InitializeChipsOptions {
     actionChips: TestActionChip[];
@@ -119,16 +119,14 @@ suite('NewTabPageActionChipsTest', () => {
     const actionChips: ActionChip[] = options.actionChips.map(
         chip => ({
           ...chip,
-          suggestTemplateInfo: {
-            ...chip.suggestTemplateInfo,
-            fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?
-                createFuseboxAction({
-                  preselectedTool: ToolMode.kUnspecified,
-                  preselectedModel: ModelMode.kUnspecified,
-                  ...chip.suggestTemplateInfo.fuseboxAction,
-                }) :
-                null,
-          },
+          suggestTemplateInfo:
+              createSuggestTemplateInfo(chip.suggestTemplateInfo),
+          fuseboxAction: chip.fuseboxAction ? createFuseboxAction({
+            preselectedTool: ToolMode.kUnspecified,
+            preselectedModel: ModelMode.kUnspecified,
+            ...chip.fuseboxAction,
+          }) :
+                                              null,
         }));
     handler.setResultMapperFor('startActionChipsRetrieval', () => {
       pageRemote.onActionChipsChanged(actionChips);
@@ -191,8 +189,8 @@ suite('NewTabPageActionChipsTest', () => {
         {
           suggestTemplateInfo: {
             typeIcon: IconType.kFavicon,
-            primaryText: {text: 'Example Tab', a11yText: null},
-            secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
+            primaryText: 'Example Tab',
+            secondaryText: 'Subtitle for recent tab',
           },
           suggestion: 'Suggestion for recent tab',
           tab: fakeTab,
@@ -227,12 +225,12 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: [{
         suggestTemplateInfo: {
           typeIcon: IconType.kFavicon,
-          primaryText: {text: 'Example Tab', a11yText: null},
-          secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
-          fuseboxAction: {
-            preselectedTool: ToolMode.kUnspecified,
-            preferredInventory: null,
-          },
+          primaryText: 'Example Tab',
+          secondaryText: 'Subtitle for recent tab',
+        },
+        fuseboxAction: {
+          preselectedTool: ToolMode.kUnspecified,
+          preferredInventory: null,
         },
         suggestion: 'Suggestion for recent tab',
         tab: {
@@ -254,12 +252,11 @@ suite('NewTabPageActionChipsTest', () => {
         suggestTemplateInfo: {
           typeIcon: IconType.kSubArrowRight,
           // No primary text for deep dive chip
-          primaryText: null,
-          secondaryText: {text: 'Subtitle for deep dive', a11yText: null},
-          fuseboxAction: {
-            preselectedTool: ToolMode.kUnspecified,
-            preferredInventory: null,
-          },
+          secondaryText: 'Subtitle for deep dive',
+        },
+        fuseboxAction: {
+          preselectedTool: ToolMode.kUnspecified,
+          preferredInventory: null,
         },
         suggestion: 'Suggestion for deep dive',
         tab: {
@@ -287,11 +284,11 @@ suite('NewTabPageActionChipsTest', () => {
       {
         suggestTemplateInfo: {
           typeIcon: IconType.kBanana,
-          primaryText: {text: 'Click fulfillment', a11yText: null},
-          secondaryText: {text: '', a11yText: null},
-          fuseboxAction: {
-            queryActionOverride: QueryActionOverride.kDefault,
-          },
+          primaryText: 'Click fulfillment',
+          secondaryText: '',
+        },
+        fuseboxAction: {
+          queryActionOverride: QueryActionOverride.kDefault,
         },
         suggestion: 'click-direct',
         tab: null,
@@ -299,11 +296,11 @@ suite('NewTabPageActionChipsTest', () => {
       {
         suggestTemplateInfo: {
           typeIcon: IconType.kBanana,
-          primaryText: {text: 'Click paste', a11yText: null},
-          secondaryText: {text: '', a11yText: null},
-          fuseboxAction: {
-            queryActionOverride: QueryActionOverride.kPaste,
-          },
+          primaryText: 'Click paste',
+          secondaryText: '',
+        },
+        fuseboxAction: {
+          queryActionOverride: QueryActionOverride.kPaste,
         },
         suggestion: 'click-paste',
         tab: null,
@@ -463,10 +460,10 @@ suite('NewTabPageActionChipsTest', () => {
           actionChips: [{
             suggestTemplateInfo: {
               typeIcon: iconType,
-              primaryText: {text: name, a11yText: null},
-              secondaryText: {text: `Subtitle for ${name}`, a11yText: null},
-              fuseboxAction: expectedFuseboxAction,
+              primaryText: name,
+              secondaryText: `Subtitle for ${name}`,
             },
+            fuseboxAction: expectedFuseboxAction,
             suggestion,
             tab: null,
           }],
@@ -654,13 +651,12 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [{
               suggestTemplateInfo: {
                 typeIcon: IconType.kGlobeWithSearchLoop,
-                primaryText: {text: 'Deep Search', a11yText: null},
-                secondaryText:
-                    {text: 'Subtitle for deep search', a11yText: null},
-                fuseboxAction: {
-                  preselectedTool: ToolMode.kDeepSearch,
-                  preferredInventory: null,
-                },
+                primaryText: 'Deep Search',
+                secondaryText: 'Subtitle for deep search',
+              },
+              fuseboxAction: {
+                preselectedTool: ToolMode.kDeepSearch,
+                preferredInventory: null,
               },
               suggestion: '',
               tab: null,
@@ -685,12 +681,12 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [{
               suggestTemplateInfo: {
                 typeIcon: IconType.kGlobeWithSearchLoop,
-                primaryText: {text: 'Deep Search', a11yText: null},
-                secondaryText: {text: '', a11yText: null},
-                fuseboxAction: {
-                  preselectedTool: ToolMode.kDeepSearch,
-                  preferredInventory: null,
-                },
+                primaryText: 'Deep Search',
+                secondaryText: '',
+              },
+              fuseboxAction: {
+                preselectedTool: ToolMode.kDeepSearch,
+                preferredInventory: null,
               },
               suggestion: '',
               tab: null,
@@ -810,12 +806,12 @@ suite('NewTabPageActionChipsTest', () => {
               {
                 suggestTemplateInfo: {
                   typeIcon: IconType.kBanana,
-                  primaryText: {text: 'Nano Banana', a11yText: null},
-                  secondaryText: {text: 'Subtitle for image', a11yText: null},
-                  fuseboxAction: {
-                    preselectedTool: ToolMode.kImageGen,
-                    preferredInventory: null,
-                  },
+                  primaryText: 'Nano Banana',
+                  secondaryText: 'Subtitle for image',
+                },
+                fuseboxAction: {
+                  preselectedTool: ToolMode.kImageGen,
+                  preferredInventory: null,
                 },
                 suggestion: 'Suggestion for image',
                 tab: null,
@@ -847,12 +843,14 @@ suite('NewTabPageActionChipsTest', () => {
         actionChips: [{
           suggestTemplateInfo: {
             typeIcon: IconType.kFavicon,
-            primaryText: {text: 'Example Tab', a11yText: 'A11y Title'},
-            secondaryText: {text: 'Subtitle', a11yText: 'A11y Subtitle'},
-            fuseboxAction: {
-              preselectedTool: ToolMode.kUnspecified,
-              preferredInventory: null,
-            },
+            primaryText:
+                {text: 'Example Tab', fragments: [], a11yText: 'A11y Title'},
+            secondaryText:
+                {text: 'Subtitle', fragments: [], a11yText: 'A11y Subtitle'},
+          },
+          fuseboxAction: {
+            preselectedTool: ToolMode.kUnspecified,
+            preferredInventory: null,
           },
           suggestion: 'Suggestion',
           tab: null,
@@ -871,12 +869,12 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [{
               suggestTemplateInfo: {
                 typeIcon: IconType.kFavicon,
-                primaryText: {text: 'Example Tab', a11yText: null},
-                secondaryText: {text: 'Subtitle', a11yText: null},
-                fuseboxAction: {
-                  preselectedTool: ToolMode.kUnspecified,
-                  preferredInventory: null,
-                },
+                primaryText: 'Example Tab',
+                secondaryText: 'Subtitle',
+              },
+              fuseboxAction: {
+                preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
               },
               suggestion: 'Suggestion',
               tab: null,
@@ -895,12 +893,16 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [{
               suggestTemplateInfo: {
                 typeIcon: IconType.kFavicon,
-                primaryText: {text: 'Example Tab', a11yText: null},
-                secondaryText: {text: 'Subtitle', a11yText: 'A11y Subtitle'},
-                fuseboxAction: {
-                  preselectedTool: ToolMode.kUnspecified,
-                  preferredInventory: null,
+                primaryText: 'Example Tab',
+                secondaryText: {
+                  text: 'Subtitle',
+                  fragments: [],
+                  a11yText: 'A11y Subtitle',
                 },
+              },
+              fuseboxAction: {
+                preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
               },
               suggestion: 'Suggestion',
               tab: null,
@@ -955,13 +957,12 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [{
               suggestTemplateInfo: {
                 typeIcon: IconType.kFavicon,
-                primaryText: {text: 'Example Tab', a11yText: null},
-                secondaryText:
-                    {text: 'Subtitle for recent tab', a11yText: null},
-                fuseboxAction: {
-                  preselectedTool: ToolMode.kUnspecified,
-                  preferredInventory: null,
-                },
+                primaryText: 'Example Tab',
+                secondaryText: 'Subtitle for recent tab',
+              },
+              fuseboxAction: {
+                preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
               },
               suggestion: 'Suggestion for recent tab',
               tab: null,
@@ -982,12 +983,11 @@ suite('NewTabPageActionChipsTest', () => {
             actionChips: [{
               suggestTemplateInfo: {
                 typeIcon: IconType.kFavicon,
-                primaryText: {text: 'Example Tab', a11yText: null},
-                secondaryText: null,
-                fuseboxAction: {
-                  preselectedTool: ToolMode.kUnspecified,
-                  preferredInventory: null,
-                },
+                primaryText: 'Example Tab',
+              },
+              fuseboxAction: {
+                preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
               },
               suggestion: 'Suggestion for recent tab',
               tab: null,

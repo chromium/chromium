@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {IconType} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
-import {IconType} from '../action_chips.mojom-webui.js';
 import type {ActionChip} from '../action_chips.mojom-webui.js';
 
 import {type ActionChipsElement} from './action_chips.js';
@@ -38,7 +38,7 @@ export function getHtml(this: ActionChipsElement) {
                         ''}
             </div>
             <div class="action-chip-text-container">
-              ${chip.suggestTemplateInfo.primaryText ?
+              ${chip.suggestTemplateInfo.primaryText.text ?
                   html`
                   <span class="chip-title">
                     ${chip.suggestTemplateInfo.primaryText.text}

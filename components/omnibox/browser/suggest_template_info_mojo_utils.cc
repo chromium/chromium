@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -87,6 +88,21 @@ mojom::ImagePtr GetImage(const AutocompleteMatch& match) {
   return mojom::Image::New(match.image_url, match.image_dominant_color);
 }
 
+// Returns the icon from the server-provided SuggestTemplateInfo of `match`, or
+// kIconTypeUnspecified if it has none.
+mojom::IconType GetTypeIcon(const AutocompleteMatch& match) {
+  static_assert(
+      static_cast<int32_t>(omnibox::SuggestTemplateInfo::IconType_MAX) ==
+          static_cast<int32_t>(mojom::IconType::kMaxValue),
+      "IconType enum values must match between the proto and the mojom.");
+  if (!match.suggest_template ||
+      !omnibox::SuggestTemplateInfo::IconType_IsValid(
+          match.suggest_template->type_icon())) {
+    return mojom::IconType::kIconTypeUnspecified;
+  }
+  return static_cast<mojom::IconType>(match.suggest_template->type_icon());
+}
+
 }  // namespace
 
 mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
@@ -114,6 +130,7 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     suggest_template->style =
         static_cast<mojom::SuggestStyle>(match.suggest_template->style());
   }
+  suggest_template->type_icon = GetTypeIcon(match);
   return suggest_template;
 }
 

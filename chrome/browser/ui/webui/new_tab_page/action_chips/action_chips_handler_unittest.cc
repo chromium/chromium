@@ -60,15 +60,13 @@ namespace {
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
 using ::action_chips::mojom::CreateFormattedString;
-using ::action_chips::mojom::FormattedString;
-using ::action_chips::mojom::FormattedStringPtr;
-using ::action_chips::mojom::IconType;
+using ::action_chips::mojom::CreateSuggestTemplateInfo;
 using ::action_chips::mojom::Page;
-using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
 using ::base::Bucket;
 using ::base::BucketsAreArray;
+using ::suggest_template_info::mojom::IconType;
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
@@ -175,10 +173,10 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
   }
   return ActionChip::New(
       fields.suggestion,
-      SuggestTemplateInfo::New(
-          fields.icon_type, CreateFormattedString(fields.primary_text),
-          CreateFormattedString(fields.secondary_text), nullptr),
-      std::move(tab));
+      CreateSuggestTemplateInfo(fields.icon_type,
+                                CreateFormattedString(fields.primary_text),
+                                CreateFormattedString(fields.secondary_text)),
+      /*fusebox_action=*/nullptr, std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
@@ -518,18 +516,18 @@ TEST_F(
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
-          ActionChip::New("suggention1",
-                          SuggestTemplateInfo::New(
-                              IconType::kIconTypeUnspecified,
-                              CreateFormattedString("title1"),
-                              CreateFormattedString("subtitle1"), nullptr),
-                          nullptr),
-          ActionChip::New("suggention2",
-                          SuggestTemplateInfo::New(
-                              IconType::kIconTypeUnspecified,
-                              CreateFormattedString("title2"),
-                              CreateFormattedString("subtitle2"), nullptr),
-                          nullptr))));
+          ActionChip::New(
+              "suggention1",
+              CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
+                                        CreateFormattedString("title1"),
+                                        CreateFormattedString("subtitle1")),
+              /*fusebox_action=*/nullptr, /*tab=*/nullptr),
+          ActionChip::New(
+              "suggention2",
+              CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
+                                        CreateFormattedString("title2"),
+                                        CreateFormattedString("subtitle2")),
+              /*fusebox_action=*/nullptr, /*tab=*/nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();
@@ -569,16 +567,16 @@ TEST_F(ActionChipsHandlerTest,
     return MakeActionChipsVector(
         ActionChip::New(
             "suggestion1",
-            SuggestTemplateInfo::New(
-                IconType::kIconTypeUnspecified, CreateFormattedString("title1"),
-                CreateFormattedString("subtitle1"), nullptr),
-            nullptr),
+            CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
+                                      CreateFormattedString("title1"),
+                                      CreateFormattedString("subtitle1")),
+            /*fusebox_action=*/nullptr, /*tab=*/nullptr),
         ActionChip::New(
             "suggestion2",
-            SuggestTemplateInfo::New(
-                IconType::kIconTypeUnspecified, CreateFormattedString("title2"),
-                CreateFormattedString("subtitle2"), nullptr),
-            nullptr));
+            CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
+                                      CreateFormattedString("title2"),
+                                      CreateFormattedString("subtitle2")),
+            /*fusebox_action=*/nullptr, /*tab=*/nullptr));
   };
 
   // 1. First retrieval.

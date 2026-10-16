@@ -4,7 +4,7 @@
 
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {IconType, SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote} from './composebox.mojom-webui.js';
 
@@ -38,6 +38,7 @@ export function createAutocompleteMatch(
       secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
       image: null,
       style: SuggestStyle.kUnspecified,
+      typeIcon: IconType.kIconTypeUnspecified,
     },
     urlEmphasis: null,
     ...config,

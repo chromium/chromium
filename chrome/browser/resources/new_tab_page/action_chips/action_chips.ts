@@ -13,9 +13,9 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {QueryActionOverride} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {IconType} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
-import {IconType} from '../action_chips.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
@@ -197,7 +197,7 @@ export class ActionChipsElement extends CrLitElement {
   protected onClick_(e: MouseEvent|KeyboardEvent): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const chip = this.actionChips_[index]!;
-    switch (chip.suggestTemplateInfo.fuseboxAction?.preselectedTool) {
+    switch (chip.fuseboxAction?.preselectedTool) {
       case ToolMode.kImageGen:
         this.handler.activateMetricsFunnel('CreateImageChip');
         break;
@@ -274,7 +274,7 @@ export class ActionChipsElement extends CrLitElement {
 
   private onActionChipClick_(chip: ActionChip, e: MouseEvent|KeyboardEvent) {
     recordClick(chip.suggestTemplateInfo.typeIcon);
-    if (chip.suggestTemplateInfo.fuseboxAction?.queryActionOverride ===
+    if (chip.fuseboxAction?.queryActionOverride ===
         QueryActionOverride.kDefault) {
       this.handler.navigateToAim(
           chip.suggestion, (e as MouseEvent).button || 0, {
@@ -300,7 +300,7 @@ export class ActionChipsElement extends CrLitElement {
     this.fire<ActionChipClickDetail>('action-chip-click', {
       suggestion: chip.suggestion,
       files: contextFiles,
-      fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?? undefined,
+      fuseboxAction: chip.fuseboxAction ?? undefined,
     });
   }
 
@@ -310,20 +310,20 @@ export class ActionChipsElement extends CrLitElement {
     }
     const url = new URL(chip.tab.url);
     const domain = url.hostname.replace(/^www\./, '');
-    return `${chip.suggestTemplateInfo.secondaryText?.text ?? ''} - ${domain}`;
+    return `${chip.suggestTemplateInfo.secondaryText.text} - ${domain}`;
   }
 
 
   protected getChipSubtitle_(chip: ActionChip): string {
-    return chip.suggestTemplateInfo.secondaryText?.text ?? '';
+    return chip.suggestTemplateInfo.secondaryText.text;
   }
 
   protected getChipTitle_(chip: ActionChip): string {
     const primaryText = chip.suggestTemplateInfo.primaryText;
     const secondaryText = chip.suggestTemplateInfo.secondaryText;
 
-    const primary = primaryText?.a11yText || primaryText?.text || '';
-    const secondary = secondaryText?.a11yText || secondaryText?.text || '';
+    const primary = primaryText.a11yText || primaryText.text;
+    const secondary = secondaryText.a11yText || secondaryText.text;
 
     if (primary && secondary) {
       return `${primary} ${secondary}`;
