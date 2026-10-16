@@ -41,8 +41,36 @@ found in the LICENSE file.
             android:minHeight="@dimen/min_touch_target_size"
             android:paddingTop="@dimen/settings_item_default_padding"
             android:paddingBottom="@dimen/settings_item_default_padding"
+            app:backgroundStyle="none"
             app:primaryText="@string/on_startup_pref_urls" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+    <!-- Attached to @id/on_startup_radio_group to wrap @id/pref_urls and its accessory startup
+         pages section inside a single contained card item. -->
+    <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
+        android:id="@+id/urls_pref_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/startup_pages_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/radio_button_accessory_view_padding_start"
+            android:paddingEnd="@dimen/radio_button_accessory_view_padding_end"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/startup_pages_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+    </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
 
 </LinearLayout>

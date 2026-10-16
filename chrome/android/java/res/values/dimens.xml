@@ -576,4 +576,7 @@ found in the LICENSE file.
     <dimen name="tab_position_card_active_stroke_radius">7dp</dimen>
     <dimen name="tab_position_card_inactive_stroke_radius">7.5dp</dimen>
     <dimen name="tab_position_card_gap">2dp</dimen>
+
+    <!-- On startup settings. -->
+    <dimen name="on_startup_page_item_vertical_padding">8dp</dimen>
 </resources>

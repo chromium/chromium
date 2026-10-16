@@ -581,6 +581,7 @@ chrome_java_resources = [
   "java/res/layout/share_sheet_content.xml",
   "java/res/layout/share_sheet_item.xml",
   "java/res/layout/shopping_accessory_view_layout.xml",
+  "java/res/layout/startup_page_item.xml",
   "java/res/layout/status_indicator_container.xml",
   "java/res/layout/suggestions_tile_view_condensed.xml",
   "java/res/layout/suspended_tab.xml",
