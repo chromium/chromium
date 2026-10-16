@@ -2,9 +2,9 @@ Name: libdisplay-info
 URL: https://gitlab.freedesktop.org/emersion/libdisplay-info
 Version: 0.4.0
 Revision: c67a3e9bedb05ab61c7443704a1a107e76254595
-Update Mechanism: Manual (https://crbug.com/503546519)
+Update Mechanism: Autoroll
 License: MIT
-License File: LICENSE
+License File: src/LICENSE
 Shipped: no
 Security Critical: no
 
@@ -16,13 +16,15 @@ This is only used in tests.
 Local Modifications:
 None.
 
-When updating to a new version, update the Revision above with the new commit hash,
-and perform the following steps:
+This is updated by an autoroller that tracks upstream release tags. If a roll
+fails because upstream added new source files, add them from the upstream
+meson.build to BUILD.gn.
+
+pnp-id-table.c is generated from hwdata's pnp.ids rather than from
+libdisplay-info, so rolls don't affect it. To refresh it:
 1. Download pnp.ids from the latest hwdata release
    (https://github.com/vcrhonek/hwdata/tags; v0.412 was used last), e.g.
    `curl -L -o /tmp/pnp.ids https://raw.githubusercontent.com/vcrhonek/hwdata/v0.412/pnp.ids`
 2. Run the following script:
    `third_party/libdisplay-info/src/tool/gen-search-table.py /tmp/pnp.ids third_party/libdisplay-info/pnp-id-table.c pnp_id_table`
 3. `sed -i '/Laser Maste/s/$/ \/\/ nocheck/' third_party/libdisplay-info/pnp-id-table.c`
-4. Add any new sources from the upstream meson.build to BUILD.gn.
-5. Check in the generated pnp-id-table.c along with the changes for the update.
