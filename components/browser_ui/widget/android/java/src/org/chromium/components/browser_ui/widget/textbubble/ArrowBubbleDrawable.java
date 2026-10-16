@@ -25,7 +25,13 @@ import org.chromium.components.browser_ui.widget.R;
 
 /** A {@link Drawable} that is a bubble with an arrow pointing out of either the top or bottom. */
 @NullMarked
-class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
+public class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
+    /**
+     * Value for {@link #setCornerRadiusPx(int)} that resets to the default {@code
+     * R.dimen.text_bubble_corner_radius}.
+     */
+    public static final int DEFAULT_CORNER_RADIUS = -1;
+
     private final Rect mCachedBubblePadding = new Rect();
 
     private final int mArrowWidthPx;
@@ -43,6 +49,7 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     private int mArrowXOffsetPx;
     private boolean mArrowOnTop;
     private boolean mShowArrow;
+    private int mCornerRadiusPx = DEFAULT_CORNER_RADIUS;
 
     /**
      * Constructs an {@link ArrowBubbleDrawable} instance.
@@ -77,16 +84,32 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     }
 
     /**
+     * Overrides the default corner radius, or resets to the default {@code
+     * R.dimen.text_bubble_corner_radius} when {@link #DEFAULT_CORNER_RADIUS} is passed. Must not be
+     * used for round bubbles.
+     */
+    public void setCornerRadiusPx(int radiusPx) {
+        assert !mIsRoundBubble : "Corner radius cannot be set on a round bubble.";
+        assert radiusPx >= 0 || radiusPx == DEFAULT_CORNER_RADIUS
+                : "Corner radius must be >= 0 or DEFAULT_CORNER_RADIUS.";
+        if (mCornerRadiusPx == radiusPx) return;
+        mCornerRadiusPx = radiusPx;
+        updateShape(getBounds());
+        invalidateSelf();
+    }
+
+    /**
      * Updates the arrow offset and whether or not it is on top.
-     * @param arrowXOffsetPx The horizontal offset of where the arrow should be in pixels.  This
-     *                       offset is where the center of the arrow will position itself.
-     * @param arrowOnTop     Whether or not the arrow should be on top of the bubble.
+     *
+     * @param arrowXOffsetPx The horizontal offset of where the arrow should be in pixels. This
+     *     offset is where the center of the arrow will position itself.
+     * @param arrowOnTop Whether or not the arrow should be on top of the bubble.
      */
     public void setPositionProperties(int arrowXOffsetPx, boolean arrowOnTop) {
         if (arrowXOffsetPx == mArrowXOffsetPx && arrowOnTop == mArrowOnTop) return;
         mArrowXOffsetPx = arrowXOffsetPx;
         mArrowOnTop = arrowOnTop;
-        onBoundsChange(getBounds());
+        updateShape(getBounds());
         invalidateSelf();
     }
 
@@ -176,13 +199,18 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
         if (bounds == null) return;
+        updateShape(bounds);
+    }
 
+    private void updateShape(Rect bounds) {
         if (mIsRoundBubble) {
             mRadiusPx = bounds.height() / 2;
         } else {
             mRadiusPx =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.text_bubble_corner_radius);
+                    mCornerRadiusPx != DEFAULT_CORNER_RADIUS
+                            ? mCornerRadiusPx
+                            : mContext.getResources()
+                                    .getDimensionPixelSize(R.dimen.text_bubble_corner_radius);
         }
         mBubbleDrawable.setShape(
                 new RoundRectShape(
@@ -237,5 +265,9 @@ class ArrowBubbleDrawable extends Drawable implements Drawable.Callback {
                 padding.right,
                 Math.max(padding.bottom, mArrowOnTop ? 0 : mArrowHeightPx));
         return true;
+    }
+
+    int getRadiusPxForTesting() {
+        return mRadiusPx;
     }
 }
