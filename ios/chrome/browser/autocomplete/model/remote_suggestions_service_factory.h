@@ -5,27 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_REMOTE_SUGGESTIONS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_REMOTE_SUGGESTIONS_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class RemoteSuggestionsService;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all RemoteSuggestionsServices and associates them with
 // ProfileIOS.
-class RemoteSuggestionsServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class RemoteSuggestionsServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<RemoteSuggestionsServiceFactory,
+                                                RemoteSuggestionsService> {
  public:
-  static RemoteSuggestionsService* GetForProfile(ProfileIOS* profile);
-  static RemoteSuggestionsService* GetForProfileIfExists(ProfileIOS* profile);
-  static RemoteSuggestionsServiceFactory* GetInstance();
+  explicit RemoteSuggestionsServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<RemoteSuggestionsServiceFactory>;
-
-  RemoteSuggestionsServiceFactory();
-  ~RemoteSuggestionsServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

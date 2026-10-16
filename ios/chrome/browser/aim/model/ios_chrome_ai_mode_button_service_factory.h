@@ -5,27 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_AIM_MODEL_IOS_CHROME_AI_MODE_BUTTON_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AIM_MODEL_IOS_CHROME_AI_MODE_BUTTON_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/search_engines/ai_mode_button_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class AiModeButtonService;
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all AiModeButtonServices and associates them with
 // ProfileIOS.
 class IOSChromeAiModeButtonServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeAiModeButtonServiceFactory,
+          AiModeButtonService> {
  public:
-  static AiModeButtonService* GetForProfile(ProfileIOS* profile);
-  static IOSChromeAiModeButtonServiceFactory* GetInstance();
+  explicit IOSChromeAiModeButtonServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSChromeAiModeButtonServiceFactory>;
-
-  IOSChromeAiModeButtonServiceFactory();
-  ~IOSChromeAiModeButtonServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

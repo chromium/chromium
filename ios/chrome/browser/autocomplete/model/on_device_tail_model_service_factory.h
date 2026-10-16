@@ -7,30 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #include "components/omnibox/browser/on_device_tail_model_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class KeyedService;
-class ProfileIOS;
-class OnDeviceTailModelService;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // A factory to create a unique `OnDeviceTailModelService` per
 // profile. Has dependency on `OptimizationGuideServiceFactory`.
-class OnDeviceTailModelServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class OnDeviceTailModelServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<OnDeviceTailModelServiceFactory,
+                                                OnDeviceTailModelService> {
  public:
-  // Gets the singleton instance of `OnDeviceTailModelServiceFactory`.
-  static OnDeviceTailModelServiceFactory* GetInstance();
-
-  // Gets the `OnDeviceTailModelService` for the profile.
-  static OnDeviceTailModelService* GetForProfile(ProfileIOS* profile);
+  explicit OnDeviceTailModelServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<OnDeviceTailModelServiceFactory>;
-
-  OnDeviceTailModelServiceFactory();
-  ~OnDeviceTailModelServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   //
   // Returns nullptr if `OptimizationGuideKeyedService` is null.

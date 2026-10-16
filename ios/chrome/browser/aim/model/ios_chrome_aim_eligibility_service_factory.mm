@@ -43,22 +43,10 @@ AimEligibilityService::Configuration CreateConfiguration(
 
 }  // namespace
 
-// static
-AimEligibilityService* IOSChromeAimEligibilityServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<IOSChromeAimEligibilityService>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSChromeAimEligibilityServiceFactory*
-IOSChromeAimEligibilityServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeAimEligibilityServiceFactory> instance;
-  return instance.get();
-}
-
-IOSChromeAimEligibilityServiceFactory::IOSChromeAimEligibilityServiceFactory()
-    : ProfileKeyedServiceFactoryIOS(
+IOSChromeAimEligibilityServiceFactory::IOSChromeAimEligibilityServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "AimEligibilityService",
           IsAIMEligibilityServiceStartWithProfileEnabled()
               ? ServiceCreation::kCreateWithProfile
@@ -70,9 +58,6 @@ IOSChromeAimEligibilityServiceFactory::IOSChromeAimEligibilityServiceFactory()
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-IOSChromeAimEligibilityServiceFactory::
-    ~IOSChromeAimEligibilityServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromeAimEligibilityServiceFactory::BuildServiceInstanceFor(

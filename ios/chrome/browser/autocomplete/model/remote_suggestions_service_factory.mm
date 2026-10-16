@@ -4,30 +4,9 @@
 
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-
-// static
-RemoteSuggestionsService* RemoteSuggestionsServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<RemoteSuggestionsService>(
-      profile, /*create=*/true);
-}
-
-RemoteSuggestionsService*
-RemoteSuggestionsServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<RemoteSuggestionsService>(
-      profile, /*create=*/false);
-}
-
-// static
-RemoteSuggestionsServiceFactory*
-RemoteSuggestionsServiceFactory::GetInstance() {
-  static base::NoDestructor<RemoteSuggestionsServiceFactory> instance;
-  return instance.get();
-}
 
 std::unique_ptr<KeyedService>
 RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
@@ -38,9 +17,8 @@ RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
       profile->GetSharedURLLoaderFactory());
 }
 
-RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("RemoteSuggestionsService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-RemoteSuggestionsServiceFactory::~RemoteSuggestionsServiceFactory() {}
+RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "RemoteSuggestionsService",
+          ProfileSelection::kOwnInstanceInIncognito) {}

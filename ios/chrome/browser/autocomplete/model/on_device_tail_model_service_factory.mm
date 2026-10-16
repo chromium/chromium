@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/browser/on_device_tail_model_service.h"
@@ -15,28 +14,14 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-OnDeviceTailModelServiceFactory*
-OnDeviceTailModelServiceFactory::GetInstance() {
-  static base::NoDestructor<OnDeviceTailModelServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-OnDeviceTailModelService* OnDeviceTailModelServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<OnDeviceTailModelService>(
-      profile, /*create=*/true);
-}
-
-OnDeviceTailModelServiceFactory::OnDeviceTailModelServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("OnDeviceTailModelService",
-                                    ProfileSelection::kOwnInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+OnDeviceTailModelServiceFactory::OnDeviceTailModelServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "OnDeviceTailModelService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
-
-OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceFor(

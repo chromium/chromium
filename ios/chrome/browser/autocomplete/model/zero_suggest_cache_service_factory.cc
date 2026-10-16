@@ -11,23 +11,9 @@
 
 namespace ios {
 
-// static
-ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ZeroSuggestCacheService>(
-      profile, /*create=*/true);
-}
-
-// static
-ZeroSuggestCacheServiceFactory* ZeroSuggestCacheServiceFactory::GetInstance() {
-  static base::NoDestructor<ZeroSuggestCacheServiceFactory> instance;
-  return instance.get();
-}
-
-ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ZeroSuggestCacheService") {}
-
-ZeroSuggestCacheServiceFactory::~ZeroSuggestCacheServiceFactory() = default;
+ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ZeroSuggestCacheService") {}
 
 std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(

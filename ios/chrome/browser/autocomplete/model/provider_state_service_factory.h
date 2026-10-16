@@ -5,29 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_PROVIDER_STATE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_PROVIDER_STATE_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/omnibox/browser/provider_state_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class KeyedService;
-class ProfileIOS;
-struct ProviderStateService;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 // Singleton that owns all ProviderStateServices and associates them with
 // profiles.
-class ProviderStateServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class ProviderStateServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<ProviderStateServiceFactory,
+                                                ProviderStateService> {
  public:
-  static ProviderStateService* GetForProfile(ProfileIOS* profile);
-  static ProviderStateServiceFactory* GetInstance();
+  explicit ProviderStateServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ProviderStateServiceFactory>;
-
-  ProviderStateServiceFactory();
-  ~ProviderStateServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

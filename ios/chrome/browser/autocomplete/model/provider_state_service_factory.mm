@@ -9,23 +9,9 @@
 
 namespace ios {
 
-// static
-ProviderStateService* ProviderStateServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ProviderStateService>(
-      profile, /*create=*/true);
-}
-
-// static
-ProviderStateServiceFactory* ProviderStateServiceFactory::GetInstance() {
-  static base::NoDestructor<ProviderStateServiceFactory> instance;
-  return instance.get();
-}
-
-ProviderStateServiceFactory::ProviderStateServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ProviderStateService") {}
-
-ProviderStateServiceFactory::~ProviderStateServiceFactory() = default;
+ProviderStateServiceFactory::ProviderStateServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ProviderStateService") {}
 
 std::unique_ptr<KeyedService>
 ProviderStateServiceFactory::BuildServiceInstanceFor(

@@ -7,32 +7,24 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class AutocompleteClassifier;
-class ProfileIOS;
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 // Singleton that owns all AutocompleteClassifiers and associates them with
 // profiles.
-class AutocompleteClassifierFactory : public ProfileKeyedServiceFactoryIOS {
+class AutocompleteClassifierFactory
+    : public TypedProfileKeyedServiceFactoryIOS<AutocompleteClassifierFactory,
+                                                AutocompleteClassifier> {
  public:
-  static AutocompleteClassifier* GetForProfile(ProfileIOS* profile);
-  static AutocompleteClassifierFactory* GetInstance();
+  explicit AutocompleteClassifierFactory(PassKey key);
 
   // Returns the default factory used to build AutocompleteClassifiers. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<AutocompleteClassifierFactory>;
-
-  AutocompleteClassifierFactory();
-  ~AutocompleteClassifierFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -5,30 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_SCORING_MODEL_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_SCORING_MODEL_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/omnibox/browser/autocomplete_scoring_model_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class AutocompleteScoringModelService;
-class KeyedService;
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 // A factory to create a unique `AutocompleteScoringModelService` per
 // profile. Has a dependency on `OptimizationGuideServiceFactory`.
 class AutocompleteScoringModelServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          AutocompleteScoringModelServiceFactory,
+          AutocompleteScoringModelService> {
  public:
-  static AutocompleteScoringModelService* GetForProfile(ProfileIOS* profile);
-  static AutocompleteScoringModelServiceFactory* GetInstance();
+  explicit AutocompleteScoringModelServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AutocompleteScoringModelServiceFactory>;
-
-  AutocompleteScoringModelServiceFactory();
-  ~AutocompleteScoringModelServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   // Returns nullptr if `OptimizationGuideKeyedService` is null.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

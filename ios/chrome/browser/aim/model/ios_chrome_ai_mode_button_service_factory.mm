@@ -8,28 +8,14 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-AiModeButtonService* IOSChromeAiModeButtonServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AiModeButtonService>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSChromeAiModeButtonServiceFactory*
-IOSChromeAiModeButtonServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeAiModeButtonServiceFactory> instance;
-  return instance.get();
-}
-
-IOSChromeAiModeButtonServiceFactory::IOSChromeAiModeButtonServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AiModeButtonService",
-                                    ProfileSelection::kRedirectedInIncognito) {
+IOSChromeAiModeButtonServiceFactory::IOSChromeAiModeButtonServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AiModeButtonService",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
-
-IOSChromeAiModeButtonServiceFactory::~IOSChromeAiModeButtonServiceFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 IOSChromeAiModeButtonServiceFactory::BuildServiceInstanceFor(

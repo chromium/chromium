@@ -7,31 +7,24 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class InMemoryURLIndex;
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 // Singleton that owns all InMemoryURLIndex instances and associates them
 // with profiles.
-class InMemoryURLIndexFactory : public ProfileKeyedServiceFactoryIOS {
+class InMemoryURLIndexFactory
+    : public TypedProfileKeyedServiceFactoryIOS<InMemoryURLIndexFactory,
+                                                InMemoryURLIndex> {
  public:
-  static InMemoryURLIndex* GetForProfile(ProfileIOS* profile);
-  static InMemoryURLIndexFactory* GetInstance();
+  explicit InMemoryURLIndexFactory(PassKey key);
 
   // Returns the default factory used to build InMemoryURLIndexes. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<InMemoryURLIndexFactory>;
-
-  InMemoryURLIndexFactory();
-  ~InMemoryURLIndexFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

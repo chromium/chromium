@@ -11,29 +11,15 @@
 
 namespace ios {
 
-// static
-AutocompleteScoringModelServiceFactory*
-AutocompleteScoringModelServiceFactory::GetInstance() {
-  static base::NoDestructor<AutocompleteScoringModelServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-AutocompleteScoringModelService*
-AutocompleteScoringModelServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AutocompleteScoringModelService>(
-      profile, /*create=*/true);
-}
-
-AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AutocompleteScoringModelService",
-                                    ProfileSelection::kOwnInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AutocompleteScoringModelService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
-
-AutocompleteScoringModelServiceFactory::
-    ~AutocompleteScoringModelServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 AutocompleteScoringModelServiceFactory::BuildServiceInstanceFor(
