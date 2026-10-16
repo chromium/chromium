@@ -70,7 +70,7 @@ NextIdleBarrier::~NextIdleBarrier() = default;
 // static
 NextIdleBarrier NextIdleBarrier::CreateNextIdleBarrierWithDelay(
     base::TimeDelta delay) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   NextIdleBarrier result;
   result.data_ = std::make_unique<Data>();
   result.data_->StartTimerForMeasurementAttempt(delay);

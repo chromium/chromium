@@ -45,7 +45,8 @@ bool ShouldShowDefaultBrowserPromptForCurrentVersion() {
       g_browser_process->local_state()->GetString(
           prefs::kBrowserSuppressDefaultBrowserPrompt);
   const base::Version disable_version(disable_version_string);
-  DCHECK(disable_version_string.empty() || disable_version.IsValid());
+  CHECK(disable_version_string.empty() || disable_version.IsValid(),
+        base::NotFatalUntil::M162);
   return !(disable_version.IsValid() &&
            disable_version == version_info::GetVersion());
 }

@@ -29,7 +29,7 @@ std::string ChromeNSSCryptoModuleDelegate::RequestPassword(
     const std::string& slot_name,
     bool retry,
     bool* cancelled) {
-  DCHECK(!event_.IsSignaled());
+  CHECK(!event_.IsSignaled(), base::NotFatalUntil::M162);
   event_.Reset();
 
   if (content::GetUIThreadTaskRunner({})->PostTask(
@@ -49,7 +49,7 @@ std::string ChromeNSSCryptoModuleDelegate::RequestPassword(
 
 void ChromeNSSCryptoModuleDelegate::ShowDialog(const std::string& slot_name,
                                                bool retry) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   ShowCryptoModulePasswordDialog(
       slot_name, retry, reason_, server_.host(),
       nullptr,  // TODO(mattm): Supply parent window.

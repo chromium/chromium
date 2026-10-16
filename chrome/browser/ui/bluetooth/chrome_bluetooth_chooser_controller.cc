@@ -39,7 +39,8 @@ namespace {
 BrowserWindowInterface* GetBrowser() {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
-  DCHECK(browser_displayer.browser_window_interface());
+  CHECK(browser_displayer.browser_window_interface(),
+        base::NotFatalUntil::M162);
   return browser_displayer.browser_window_interface();
 }
 

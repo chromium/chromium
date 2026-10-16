@@ -100,7 +100,7 @@ void HandleSigninCompleteForGcpwLogin(
     base::DictValue signin_result,
     const std::string& additional_mdm_oauth_scopes,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK(!signin_result.empty());
+  CHECK(!signin_result.empty(), base::NotFatalUntil::M162);
   int exit_code = *signin_result.FindInt(credential_provider::kKeyExitCode);
 
   // If there is an error code, write out the signin results directly.
@@ -117,7 +117,8 @@ void HandleSigninCompleteForGcpwLogin(
         *signin_result.FindString(credential_provider::kKeyAccessToken);
     std::string refresh_token =
         *signin_result.FindString(credential_provider::kKeyRefreshToken);
-    DCHECK(!access_token.empty() && !refresh_token.empty());
+    CHECK(!access_token.empty() && !refresh_token.empty(),
+          base::NotFatalUntil::M162);
 
     // Create the fetcher and pass it to the callback so that it can be
     // deleted once it is finished.
@@ -184,7 +185,7 @@ class CredentialProviderWebUIMessageHandler
 
  private:
   base::DictValue ParseArgs(const base::ListValue& args, int* out_exit_code) {
-    DCHECK(out_exit_code);
+    CHECK(out_exit_code, base::NotFatalUntil::M162);
 
     if (args.empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
@@ -343,7 +344,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) override {
     // The WebDialogUI will own and delete this message handler.
-    DCHECK(!handler_);
+    CHECK(!handler_, base::NotFatalUntil::M162);
     handler_ = new CredentialProviderWebUIMessageHandler(
         std::move(signin_callback_), additional_mdm_oauth_scopes);
     handlers->push_back(handler_);
@@ -513,7 +514,7 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
     const base::CommandLine& command_line,
     content::BrowserContext* context,
     HandleGcpwSigninCompleteResult signin_complete_handler) {
-  DCHECK(signin_complete_handler);
+  CHECK(signin_complete_handler, base::NotFatalUntil::M162);
 
   // Open a frameless window whose entire surface displays a gaia sign in web
   // page.

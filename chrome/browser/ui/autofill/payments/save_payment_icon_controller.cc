@@ -21,7 +21,7 @@ SavePaymentIconController* SavePaymentIconController::Get(
   if (command_id == IDC_SAVE_CREDIT_CARD_FOR_PAGE) {
     return SaveCardBubbleControllerImpl::FromWebContents(web_contents);
   }
-  DCHECK_EQ(command_id, IDC_SAVE_IBAN_FOR_PAGE);
+  CHECK_EQ(command_id, IDC_SAVE_IBAN_FOR_PAGE, base::NotFatalUntil::M162);
   return IbanBubbleControllerImpl::FromWebContents(web_contents);
 }
 

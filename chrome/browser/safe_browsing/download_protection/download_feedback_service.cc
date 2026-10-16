@@ -25,11 +25,11 @@ DownloadFeedbackService::DownloadFeedbackService(
     base::TaskRunner* file_task_runner)
     : download_protection_service_(download_protection_service),
       file_task_runner_(file_task_runner) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 DownloadFeedbackService::~DownloadFeedbackService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void DownloadFeedbackService::BeginFeedbackForDownload(
@@ -37,7 +37,7 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
     download::DownloadItem* download,
     const std::string& ping_request,
     const std::string& ping_response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   download->CopyDownload(base::BindOnce(
       &DownloadFeedbackService::BeginFeedbackOrDeleteFile, file_task_runner_,
@@ -66,7 +66,7 @@ void DownloadFeedbackService::BeginFeedbackOrDeleteFile(
 }
 
 void DownloadFeedbackService::StartPendingFeedback() {
-  DCHECK(!active_feedback_.empty());
+  CHECK(!active_feedback_.empty(), base::NotFatalUntil::M162);
   active_feedback_.front()->Start(base::BindOnce(
       &DownloadFeedbackService::FeedbackComplete, base::Unretained(this)));
 }
@@ -76,7 +76,7 @@ void DownloadFeedbackService::BeginFeedback(Profile* profile,
                                             const std::string& ping_response,
                                             const base::FilePath& path,
                                             uint64_t file_size) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   std::unique_ptr<DownloadFeedback> feedback(DownloadFeedback::Create(
       download_protection_service_->GetURLLoaderFactory(profile), path,
       file_size, ping_request, ping_response));
@@ -89,8 +89,8 @@ void DownloadFeedbackService::BeginFeedback(Profile* profile,
 
 void DownloadFeedbackService::FeedbackComplete() {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!active_feedback_.empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!active_feedback_.empty(), base::NotFatalUntil::M162);
   active_feedback_.pop();
   if (!active_feedback_.empty()) {
     StartPendingFeedback();

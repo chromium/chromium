@@ -313,7 +313,7 @@ void ChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(options.show_prompt);
+  CHECK(options.show_prompt, base::NotFatalUntil::M162);
   AutofillSaveCardUiInfo ui_info =
       AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
@@ -346,7 +346,7 @@ void ChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
     SaveCreditCardOptions options,
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(options.show_prompt);
+  CHECK(options.show_prompt, base::NotFatalUntil::M162);
   Profile* profile =
       !web_contents()
           ? nullptr
@@ -469,7 +469,7 @@ void ChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
   VirtualCardEnrollBubbleControllerImpl* controller =
       VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   controller->SetupAndShowBubble(virtual_card_enrollment_fields,
                                  std::move(accept_virtual_card_callback),
                                  std::move(decline_virtual_card_callback));
@@ -637,7 +637,7 @@ void ChromePaymentsAutofillClient::ShowAutofillProgressDialog(
 void ChromePaymentsAutofillClient::CloseAutofillProgressDialog(
     bool show_confirmation_before_closing,
     base::OnceClosure no_interactive_authentication_callback) {
-  DCHECK(autofill_progress_dialog_controller_);
+  CHECK(autofill_progress_dialog_controller_, base::NotFatalUntil::M162);
   autofill_progress_dialog_controller_->DismissDialog(
       show_confirmation_before_closing,
       std::move(no_interactive_authentication_callback));

@@ -41,13 +41,13 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
  public:
   explicit ShowPromoInPageImpl(BrowserWindowInterface* browser, Params params)
       : browser_(browser->GetWeakPtr()), callback_(std::move(params.callback)) {
-    DCHECK(callback_);
-    DCHECK(browser_);
-    DCHECK(!params.bubble_text.empty());
+    CHECK(callback_, base::NotFatalUntil::M162);
+    CHECK(browser_, base::NotFatalUntil::M162);
+    CHECK(!params.bubble_text.empty(), base::NotFatalUntil::M162);
 
     base::TimeDelta timeout =
         params.timeout_override_for_testing.value_or(kShowPromoInPageTimeout);
-    DCHECK(timeout.is_positive());
+    CHECK(timeout.is_positive(), base::NotFatalUntil::M162);
 
     bubble_params_.body_text = params.bubble_text;
     bubble_params_.arrow = params.bubble_arrow;
@@ -115,7 +115,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
                           ->help_bubble_factory_registry();
       help_bubble_ =
           factory.CreateHelpBubble(anchor_element, std::move(bubble_params_));
-      DCHECK(help_bubble_);
+      CHECK(help_bubble_, base::NotFatalUntil::M162);
 
       // Maybe focus the web contents containing the bubble (if it's the main
       // contents).

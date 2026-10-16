@@ -342,7 +342,8 @@ DownloadCheckResult ResponseToDownloadCheckResult(
             dlp_action, rule.action());
 
         if (rule.has_force_save_to_cloud_destination()) {
-          DCHECK(rule.action() == TriggeredRule::FORCE_SAVE_TO_CLOUD);
+          CHECK(rule.action() == TriggeredRule::FORCE_SAVE_TO_CLOUD,
+                base::NotFatalUntil::M162);
           force_save_to_cloud_destination =
               GetHighestPrecedenceForceSaveToCloudDestination(
                   force_save_to_cloud_destination,
@@ -515,7 +516,7 @@ void DeepScanningRequest::Start() {
 }
 
 void DeepScanningRequest::StartSingleFileScan() {
-  DCHECK(!scanning_started_);
+  CHECK(!scanning_started_, base::NotFatalUntil::M162);
   scanning_started_ = true;
   enterprise_connectors::IncrementCrashKey(
       enterprise_connectors::ScanningCrashKey::PENDING_FILE_DOWNLOADS);
@@ -560,7 +561,7 @@ void DeepScanningRequest::StartSingleFileScan() {
 }
 
 void DeepScanningRequest::StartSavePackageScan() {
-  DCHECK(!scanning_started_);
+  CHECK(!scanning_started_, base::NotFatalUntil::M162);
   scanning_started_ = true;
   enterprise_connectors::IncrementCrashKey(
       enterprise_connectors::ScanningCrashKey::PENDING_FILE_DOWNLOADS,
@@ -591,10 +592,10 @@ void DeepScanningRequest::StartSavePackageScan() {
         &DeepScanningRequest::OnGetPackageFileRequestData,
         weak_ptr_factory_.GetWeakPtr(), tmp_path_and_final_path.second,
         file_location, std::move(request)));
-    DCHECK_LT(i, tasks.size());
+    CHECK_LT(i, tasks.size(), base::NotFatalUntil::M162);
     tasks[i++].request = request_raw;
   }
-  DCHECK_EQ(i, tasks.size());
+  CHECK_EQ(i, tasks.size(), base::NotFatalUntil::M162);
 
   // Keep a reference to `file_opening_job` in each task to ensure
   // its lifetime will be longer than the request.
@@ -763,7 +764,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
   LogDeepScanResult(download_result, trigger_,
                     metadata_->IsTopLevelEncryptedArchive());
 
-  DCHECK(file_metadata_.count(current_path));
+  CHECK(file_metadata_.count(current_path), base::NotFatalUntil::M162);
   file_metadata_.at(current_path).scan_response = std::move(response);
   MaybeFinishRequest(download_result);
 }
@@ -808,7 +809,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   // DownloadCheckResult. Can be kept here.
   Profile* profile =
       Profile::FromBrowserContext(metadata_->GetBrowserContext());
-  DCHECK(file_metadata_.count(current_path));
+  CHECK(file_metadata_.count(current_path), base::NotFatalUntil::M162);
   file_metadata_.at(current_path).scan_response = std::move(response);
   if (profile) {
     const auto& file_metadata = file_metadata_.at(current_path);
@@ -1051,7 +1052,7 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
       enterprise_connectors::EventResult::UNKNOWN;
 
   if (!report_callbacks_.empty()) {
-    DCHECK(IsEnterpriseTriggered());
+    CHECK(IsEnterpriseTriggered(), base::NotFatalUntil::M162);
 
     if (ReportOnlyScan()) {
       // The event result in report-only will always match whatever danger

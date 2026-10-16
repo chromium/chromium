@@ -81,7 +81,7 @@ bool ShouldShowBadFlagsSecurityWarnings() {
 
   const auto* pref = local_state->FindPreference(
       prefs::kCommandLineFlagSecurityWarningsEnabled);
-  DCHECK(pref);
+  CHECK(pref, base::NotFatalUntil::M162);
 
   // The warnings can only be disabled by policy. Default to show warnings.
   if (pref->IsManaged()) {

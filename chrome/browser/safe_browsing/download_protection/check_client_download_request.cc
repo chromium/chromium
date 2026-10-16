@@ -111,7 +111,7 @@ CheckClientDownloadRequest::CheckClientDownloadRequest(
       item_(item),
       password_(password.CopyAsOptional()),
       callback_(callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   item_->AddObserver(this);
   DVLOG(2) << "Starting SafeBrowsing download check for: "
            << item_->DebugString(true);
@@ -179,7 +179,7 @@ MayCheckDownloadResult CheckClientDownloadRequest::IsSupportedDownload(
 }
 
 CheckClientDownloadRequest::~CheckClientDownloadRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   item_->RemoveObserver(this);
 }
 
@@ -213,7 +213,7 @@ CheckClientDownloadRequest::GetWeakPtr() {
 
 void CheckClientDownloadRequest::NotifySendRequest(
     const ClientDownloadRequest* request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   service()->client_download_request_callbacks_.Notify(item_, request);
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.DownloadAttribution",
@@ -229,7 +229,7 @@ void CheckClientDownloadRequest::SetDownloadProtectionData(
     const std::string& token,
     const ClientDownloadResponse::Verdict& verdict,
     const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
-  DCHECK(!token.empty());
+  CHECK(!token.empty(), base::NotFatalUntil::M162);
   DownloadProtectionService::SetDownloadProtectionData(item_, token, verdict,
                                                        tailored_verdict);
 }
@@ -326,7 +326,7 @@ void CheckClientDownloadRequest::UploadBinary(
 void CheckClientDownloadRequest::NotifyRequestFinished(
     DownloadCheckResult result,
     DownloadCheckResultReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   weakptr_factory_.InvalidateWeakPtrs();
 
   DVLOG(2) << "SafeBrowsing download verdict for: " << item_->DebugString(true)

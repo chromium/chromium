@@ -50,7 +50,7 @@ PasswordReuseControllerAndroid::~PasswordReuseControllerAndroid() {
 void PasswordReuseControllerAndroid::ShowDialog() {
   dialog_view_ = std::make_unique<PasswordReuseDialogViewAndroid>(this);
 
-  DCHECK(window_android_);
+  CHECK(window_android_, base::NotFatalUntil::M162);
   dialog_view_->Show(window_android_);
 }
 

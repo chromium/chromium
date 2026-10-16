@@ -17,7 +17,7 @@ BrowserTabStripTracker::BrowserTabStripTracker(
     : tab_strip_model_observer_(tab_strip_model_observer),
       delegate_(delegate),
       is_processing_initial_browsers_(false) {
-  DCHECK(tab_strip_model_observer_);
+  CHECK(tab_strip_model_observer_, base::NotFatalUntil::M162);
 }
 
 BrowserTabStripTracker::~BrowserTabStripTracker() {

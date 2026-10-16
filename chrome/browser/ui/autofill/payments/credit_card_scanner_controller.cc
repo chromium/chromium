@@ -33,7 +33,7 @@ class Controller final : public CreditCardScannerViewDelegate {
       : callback_(std::move(callback)) {
     view_ = CreditCardScannerView::Create(weak_ptr_factory_.GetWeakPtr(),
                                           web_contents);
-    DCHECK(view_);
+    CHECK(view_, base::NotFatalUntil::M162);
     if (auto* client = ContentAutofillClient::FromWebContents(web_contents)) {
       user_has_cards = !client->GetPersonalDataManager()
                          .payments_data_manager()

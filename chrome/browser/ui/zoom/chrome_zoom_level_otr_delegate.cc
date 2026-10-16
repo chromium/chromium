@@ -16,8 +16,8 @@ ChromeZoomLevelOTRDelegate::~ChromeZoomLevelOTRDelegate() = default;
 void ChromeZoomLevelOTRDelegate::InitHostZoomMap(
     content::HostZoomMap* host_zoom_map) {
   // This init function must be called only once.
-  DCHECK(!host_zoom_map_);
-  DCHECK(host_zoom_map);
+  CHECK(!host_zoom_map_, base::NotFatalUntil::M162);
+  CHECK(host_zoom_map, base::NotFatalUntil::M162);
   host_zoom_map_ = host_zoom_map;
 
   zoom_subscription_ = host_zoom_map_->AddZoomLevelChangedCallback(

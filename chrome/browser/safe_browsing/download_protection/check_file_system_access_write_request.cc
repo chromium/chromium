@@ -51,7 +51,7 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
           DownloadProtectionService::GetDownloadAttributionUserGestureLimit())),
       metadata_(std::make_unique<FileSystemAccessMetadata>(std::move(item))),
       weak_metadata_(metadata_->GetWeakPtr()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 CheckFileSystemAccessWriteRequest ::~CheckFileSystemAccessWriteRequest() =
@@ -212,7 +212,7 @@ bool CheckFileSystemAccessWriteRequest::ShouldShowScanFailure() const {
 void CheckFileSystemAccessWriteRequest::NotifyRequestFinished(
     DownloadCheckResult result,
     DownloadCheckResultReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   weakptr_factory_.InvalidateWeakPtrs();
 }
 

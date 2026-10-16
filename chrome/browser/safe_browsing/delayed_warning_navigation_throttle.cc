@@ -31,7 +31,8 @@ const char* DelayedWarningNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 DelayedWarningNavigationThrottle::WillProcessResponse() {
-  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));
+  CHECK(base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings),
+        base::NotFatalUntil::M162);
   SafeBrowsingUserInteractionObserver* observer =
       SafeBrowsingUserInteractionObserver::FromWebContents(
           navigation_handle()->GetWebContents());

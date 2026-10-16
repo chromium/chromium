@@ -93,8 +93,9 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string OfferNotificationBubbleControllerImpl::GetOkButtonLabel() const {
-  DCHECK_EQ(offer_.GetOfferType(),
-            AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER);
+  CHECK_EQ(offer_.GetOfferType(),
+           AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
+           base::NotFatalUntil::M162);
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL);
 }
@@ -176,7 +177,7 @@ void OfferNotificationBubbleControllerImpl::SetupOfferNotification(
   was_bubble_shown_ = false;
   offer_ = std::move(offer);
 
-  DCHECK(IsIconVisible());
+  CHECK(IsIconVisible(), base::NotFatalUntil::M162);
 
   if (card) {
     card_ = *card;
@@ -185,7 +186,7 @@ void OfferNotificationBubbleControllerImpl::SetupOfferNotification(
 }
 
 void OfferNotificationBubbleControllerImpl::ReshowBubble() {
-  DCHECK(IsIconVisible());
+  CHECK(IsIconVisible(), base::NotFatalUntil::M162);
   if (bubble_view()) {
     return;
   }
@@ -246,7 +247,7 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
   SetBubbleView(*autofill_bubble_handler->ShowOfferNotificationBubble(
       web_contents(), this, is_user_gesture_));
-  DCHECK(bubble_view());
+  CHECK(bubble_view(), base::NotFatalUntil::M162);
 
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
   // we display the bubble if the the state is kShowingIconAndBubble. Once we

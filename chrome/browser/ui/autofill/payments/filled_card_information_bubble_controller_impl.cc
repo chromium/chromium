@@ -91,7 +91,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
 void FilledCardInformationBubbleControllerImpl::SetupBubbleState(
     FilledCardInformationBubbleOptions options) {
   was_bubble_shown_ = false;
-  DCHECK(options.IsValid());
+  CHECK(options.IsValid(), base::NotFatalUntil::M162);
   options_ = std::move(options);
   is_user_gesture_ = false;
   should_icon_be_visible_ = true;
@@ -428,7 +428,7 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
                      ->GetAutofillBubbleHandler()
                      ->ShowFilledCardInformationBubble(web_contents(), this,
                                                        is_user_gesture_));
-  DCHECK(bubble_view());
+  CHECK(bubble_view(), base::NotFatalUntil::M162);
   bubble_has_been_shown_ = true;
 
   autofill_metrics::LogFilledCardInformationBubbleShown(is_user_gesture_);

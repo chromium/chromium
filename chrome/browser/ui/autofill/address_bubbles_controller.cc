@@ -106,7 +106,8 @@ AddressBubblesController::~AddressBubblesController() {
   // save/update flow. It's either invoked upon user action when accepting
   // or rejecting the flow, or in cases when users ignore it, it's invoked
   // when the web contents are destroyed.
-  DCHECK(address_profile_save_prompt_callback_.is_null());
+  CHECK(address_profile_save_prompt_callback_.is_null(),
+        base::NotFatalUntil::M162);
 }
 
 // static

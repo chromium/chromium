@@ -732,7 +732,7 @@ void SigninViewController::CloseModalSignin() {
     }
   }
 
-  DCHECK(!dialog_);
+  CHECK(!dialog_, base::NotFatalUntil::M162);
 }
 
 void SigninViewController::CloseBubbleSignin() {
@@ -831,10 +831,11 @@ void SigninViewController::ShowDiceSigninTab(
   // Checks that we have right contents, in which the signin page is being
   // loaded. Note that we need to check the original URL, being mindful of
   // possible redirects, but also the navigation hasn't happened yet.
-  DCHECK(active_contents);
-  DCHECK_EQ(
+  CHECK(active_contents, base::NotFatalUntil::M162);
+  CHECK_EQ(
       signin_url,
-      active_contents->GetController().GetVisibleEntry()->GetUserTypedURL());
+      active_contents->GetController().GetVisibleEntry()->GetUserTypedURL(),
+      base::NotFatalUntil::M162);
   DiceTabHelper::CreateForWebContents(active_contents);
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
 
@@ -879,7 +880,8 @@ void SigninViewController::ShowDiceEnableSyncTab(
     email_to_use =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email;
-    DCHECK(email_hint.empty() || gaia::AreEmailsSame(email_hint, email_to_use));
+    CHECK(email_hint.empty() || gaia::AreEmailsSame(email_hint, email_to_use),
+          base::NotFatalUntil::M162);
   }
   ShowDiceSigninTab(reason, access_point, promo_action, email_to_use,
                     chrome::ChromeUINewTabURLAsGURL());
@@ -928,7 +930,7 @@ void SigninViewController::ShowGaiaLogoutTab(
   // LogoutTabHelper deletes itself.
   content::WebContents* logout_tab_contents =
       tab_strip_model_->GetActiveWebContents();
-  DCHECK(logout_tab_contents);
+  CHECK(logout_tab_contents, base::NotFatalUntil::M162);
   LogoutTabHelper::CreateForWebContents(logout_tab_contents);
 }
 
@@ -1093,7 +1095,7 @@ void SigninViewController::ShowSignoutConfirmationPrompt(
 
 content::WebContents*
 SigninViewController::GetModalDialogWebContentsForTesting() {
-  DCHECK(dialog_);
+  CHECK(dialog_, base::NotFatalUntil::M162);
   return dialog_->GetModalDialogWebContentsForTesting();  // IN-TEST
 }
 

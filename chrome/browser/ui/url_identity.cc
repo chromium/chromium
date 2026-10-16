@@ -69,13 +69,13 @@ UrlIdentity CreateDefaultUrlIdentityFromUrl(const GURL& url,
 UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
                                                  const GURL& url,
                                                  const FormatOptions& options) {
-  DCHECK(url.SchemeIs(extensions::kExtensionScheme));
+  CHECK(url.SchemeIs(extensions::kExtensionScheme), base::NotFatalUntil::M162);
 
   DCHECK(profile) << "Profile cannot be null when type is Chrome Extensions.";
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
-  DCHECK(extension_registry);
+  CHECK(extension_registry, base::NotFatalUntil::M162);
 
   const extensions::Extension* extension = nullptr;
   extension = extension_registry->enabled_extensions().GetByID(url.GetHost());
@@ -94,13 +94,13 @@ UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
 UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
                                                 const GURL& url,
                                                 const FormatOptions& options) {
-  DCHECK(url.SchemeIs(webapps::kIsolatedAppScheme));
+  CHECK(url.SchemeIs(webapps::kIsolatedAppScheme), base::NotFatalUntil::M162);
 
   DCHECK(profile) << "Profile cannot be null when type is Isolated Web App.";
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M162);
 
   std::optional<webapps::AppId> app_id =
       provider->registrar_unsafe().FindBestAppWithUrlInScope(
@@ -129,7 +129,7 @@ UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
 UrlIdentity CreateFileIdentityFromUrl(Profile* profile,
                                       const GURL& url,
                                       const FormatOptions& options) {
-  DCHECK(url.SchemeIsFile());
+  CHECK(url.SchemeIsFile(), base::NotFatalUntil::M162);
 
   return UrlIdentity{
       .type = Type::kFile,

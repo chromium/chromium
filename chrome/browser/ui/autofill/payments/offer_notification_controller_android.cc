@@ -32,7 +32,7 @@ OfferNotificationControllerAndroid::~OfferNotificationControllerAndroid() {
 void OfferNotificationControllerAndroid::ShowIfNecessary(
     const AutofillOfferData* offer,
     const CreditCard* card) {
-  DCHECK(offer);
+  CHECK(offer, base::NotFatalUntil::M162);
   if (!card) {
     return;
   }

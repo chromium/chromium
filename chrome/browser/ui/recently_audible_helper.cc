@@ -73,7 +73,7 @@ RecentlyAudibleHelper::RegisterRecentlyAudibleChangedCallback(
 
 void RecentlyAudibleHelper::OnAudioStateChanged(bool audible) {
   // Redundant notifications should never happen.
-  DCHECK(audible != IsCurrentlyAudible());
+  CHECK(audible != IsCurrentlyAudible(), base::NotFatalUntil::M162);
 
   // If audio is stopping remember the time at which it stopped and set a timer
   // to fire the recently audible transition.
@@ -94,8 +94,8 @@ void RecentlyAudibleHelper::OnAudioStateChanged(bool audible) {
 }
 
 void RecentlyAudibleHelper::OnRecentlyAudibleTimerFired() {
-  DCHECK(last_audible_time_ + kRecentlyAudibleTimeout <=
-         tick_clock_->NowTicks());
+  CHECK(last_audible_time_ + kRecentlyAudibleTimeout <= tick_clock_->NowTicks(),
+        base::NotFatalUntil::M162);
   // Notify of the transition to no longer being recently audible.
   callback_list_.Notify(false);
 

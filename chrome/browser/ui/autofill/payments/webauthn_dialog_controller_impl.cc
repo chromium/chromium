@@ -15,7 +15,7 @@ namespace autofill {
 WebauthnDialogControllerImpl::WebauthnDialogControllerImpl(content::Page& page)
     : content::PageUserData<WebauthnDialogControllerImpl>(page) {
   // WebauthnDialogControllerImpl is only for the outermost primary page.
-  DCHECK(page.IsPrimary());
+  CHECK(page.IsPrimary(), base::NotFatalUntil::M162);
 }
 
 WebauthnDialogControllerImpl::~WebauthnDialogControllerImpl() {
@@ -32,7 +32,7 @@ WebauthnDialogControllerImpl::~WebauthnDialogControllerImpl() {
 void WebauthnDialogControllerImpl::ShowOfferDialog(
     payments::PaymentsAutofillClient::WebauthnDialogCallback
         offer_dialog_callback) {
-  DCHECK(!dialog_model_);
+  CHECK(!dialog_model_, base::NotFatalUntil::M162);
 
   callback_ = std::move(offer_dialog_callback);
   dialog_ = WebauthnDialog::CreateAndShow(this, WebauthnDialogState::kOffer);
@@ -42,7 +42,7 @@ void WebauthnDialogControllerImpl::ShowOfferDialog(
 void WebauthnDialogControllerImpl::ShowVerifyPendingDialog(
     payments::PaymentsAutofillClient::WebauthnDialogCallback
         verify_pending_dialog_callback) {
-  DCHECK(!dialog_model_);
+  CHECK(!dialog_model_, base::NotFatalUntil::M162);
 
   callback_ = std::move(verify_pending_dialog_callback);
   dialog_ =
@@ -65,7 +65,8 @@ void WebauthnDialogControllerImpl::UpdateDialog(
   // TODO(crbug.com/40639086): Handle callback resetting for verify pending
   // dialog. Right now this function should only be passed in
   // WebauthnDialogState::kOfferError.
-  DCHECK_EQ(dialog_state, WebauthnDialogState::kOfferError);
+  CHECK_EQ(dialog_state, WebauthnDialogState::kOfferError,
+           base::NotFatalUntil::M162);
   callback_.Reset();
 }
 
@@ -82,7 +83,7 @@ content::WebContents* WebauthnDialogControllerImpl::GetWebContents() {
 void WebauthnDialogControllerImpl::OnOkButtonClicked() {
   // The OK button is available only when the dialog is in
   // WebauthnDialogState::kOffer state.
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
   callback_.Run(WebauthnDialogCallbackType::kOfferAccepted);
   dialog_model_->SetDialogState(WebauthnDialogState::kOfferPending);
 }
@@ -91,11 +92,11 @@ void WebauthnDialogControllerImpl::OnCancelButtonClicked() {
   switch (dialog_model_->dialog_state()) {
     case WebauthnDialogState::kOffer:
     case WebauthnDialogState::kOfferPending:
-      DCHECK(callback_);
+      CHECK(callback_, base::NotFatalUntil::M162);
       callback_.Run(WebauthnDialogCallbackType::kOfferCancelled);
       return;
     case WebauthnDialogState::kVerifyPending:
-      DCHECK(callback_);
+      CHECK(callback_, base::NotFatalUntil::M162);
       callback_.Run(WebauthnDialogCallbackType::kVerificationCancelled);
       return;
     case WebauthnDialogState::kUnknown:

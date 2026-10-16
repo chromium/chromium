@@ -163,7 +163,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
     std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   std::unique_ptr<ContentMetricsHelper> metrics_helper =
       std::make_unique<ContentMetricsHelper>(

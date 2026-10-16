@@ -44,7 +44,7 @@ class ForcedProfileSwitchInterceptionHandle
  public:
   explicit ForcedProfileSwitchInterceptionHandle(
       base::OnceCallback<void(SigninInterceptionResult)> callback) {
-    DCHECK(callback);
+    CHECK(callback, base::NotFatalUntil::M162);
     cancelable_callback_.Reset(std::move(callback));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(cancelable_callback_.callback(),
@@ -69,8 +69,8 @@ class OidcEnterpriseSigninInterceptionHandle
       : browser_(browser ? browser->GetWeakPtr() : nullptr),
         bubble_parameters_(bubble_parameters),
         callback_(std::move(callback)) {
-    DCHECK(browser_);
-    DCHECK(callback_);
+    CHECK(browser_, base::NotFatalUntil::M162);
+    CHECK(callback_, base::NotFatalUntil::M162);
     CHECK(bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC);
     SigninViewController::From(browser_.get())
@@ -152,8 +152,8 @@ class ForcedEnterpriseSigninInterceptionHandle
             WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced),
         show_link_data_option_(bubble_parameters.show_link_data_option),
         callback_(std::move(callback)) {
-    DCHECK(browser_);
-    DCHECK(callback_);
+    CHECK(browser_, base::NotFatalUntil::M162);
+    CHECK(callback_, base::NotFatalUntil::M162);
     SigninViewController::From(browser_.get())
         ->ShowModalManagedUserNoticeDialog(
             std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
@@ -194,7 +194,8 @@ class ForcedEnterpriseSigninInterceptionHandle
         interception_result = SigninInterceptionResult::kAccepted;
         break;
       case signin::SIGNIN_CHOICE_CONTINUE:
-        DCHECK(!profile_creation_required_by_policy_ || show_link_data_option_);
+        CHECK(!profile_creation_required_by_policy_ || show_link_data_option_,
+              base::NotFatalUntil::M162);
         interception_result =
             SigninInterceptionResult::kAcceptedWithExistingProfile;
         break;

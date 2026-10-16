@@ -87,7 +87,7 @@ void ChromeSelectFilePolicy::SelectFileDenied() {
 
 // static
 bool ChromeSelectFilePolicy::FileSelectDialogsAllowed() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M162);
 
   // local_state() can return NULL for tests.
   if (!g_browser_process->local_state()) {

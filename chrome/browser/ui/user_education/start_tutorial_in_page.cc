@@ -24,9 +24,9 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
   explicit StartTutorialInPageImpl(BrowserWindowInterface* browser,
                                    Params params)
       : browser_(browser->GetWeakPtr()), callback_(std::move(params.callback)) {
-    DCHECK(callback_);
-    DCHECK(browser_);
-    DCHECK(params.tutorial_id.has_value());
+    CHECK(callback_, base::NotFatalUntil::M162);
+    CHECK(browser_, base::NotFatalUntil::M162);
+    CHECK(params.tutorial_id.has_value(), base::NotFatalUntil::M162);
     tutorial_id_ = params.tutorial_id.value();
 
     auto* tutorial_service = GetTutorialService();

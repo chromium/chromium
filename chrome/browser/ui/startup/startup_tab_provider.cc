@@ -158,7 +158,8 @@ StartupTabs StartupTabProviderImpl::GetCommandLineTabs(
 
     // `ParseTabFromCommandLineArg()` shouldn't return
     // CommandLineTabsPresent::kUnknown when a profile is provided.
-    DCHECK_NE(parsed_arg.tab_parsed, CommandLineTabsPresent::kUnknown);
+    CHECK_NE(parsed_arg.tab_parsed, CommandLineTabsPresent::kUnknown,
+             base::NotFatalUntil::M162);
 
     if (parsed_arg.tab_parsed == CommandLineTabsPresent::kYes) {
       result.emplace_back(std::move(parsed_arg.tab_url),

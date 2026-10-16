@@ -214,7 +214,8 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
         captive_portal::CaptivePortalTabHelper::FromWebContents(contents) &&
         captive_portal::CaptivePortalTabHelper::FromWebContents(contents)
             ->is_captive_portal_window()) {
-      DCHECK(browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP);
+      CHECK(browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP,
+            base::NotFatalUntil::M162);
       return l10n_util::GetStringFUTF16(
           IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT,
           title.empty() ? CoreTabHelper::GetDefaultTitle() : title);
@@ -279,7 +280,8 @@ void WindowMetadataController::SetWindowUserTitle(
   user_title_ = user_title;
   BrowserWindow::FromBrowser(browser_)->UpdateTitleBar();
   // See comment in Browser::OnTabGroupChanged
-  DCHECK(!IsRelevantToAppSessionService(browser_->GetType()));
+  CHECK(!IsRelevantToAppSessionService(browser_->GetType()),
+        base::NotFatalUntil::M162);
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(browser_->GetProfile());
   if (session_service) {

@@ -105,7 +105,7 @@ CheckClientDownloadRequestBase::~CheckClientDownloadRequestBase() = default;
 
 void CheckClientDownloadRequestBase::Start() {
   DVLOG(2) << "Starting SafeBrowsing download check for: " << source_url_;
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
@@ -134,7 +134,7 @@ void CheckClientDownloadRequestBase::Start() {
 void CheckClientDownloadRequestBase::FinishRequest(
     DownloadCheckResult result,
     DownloadCheckResultReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   auto settings = ShouldUploadBinary(reason);
   if (settings.has_value()) {
@@ -189,7 +189,7 @@ bool CheckClientDownloadRequestBase::IsDownloadManuallyBlocklisted(
 
 void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
     bool is_allowlisted) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // If the download URL is allowlisted on the allowlist, file feature
   // extraction and download ping are skipped.
@@ -410,7 +410,7 @@ void CheckClientDownloadRequestBase::ApplyModificationsAndSendRequest(
 // Start a timeout to cancel the request if it takes too long.
 // This should only be called after we have finished accessing the file.
 void CheckClientDownloadRequestBase::StartTimeout() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   timeout_start_time_ = base::TimeTicks::Now();
   timeout_closure_.Reset(base::BindOnce(
       &CheckClientDownloadRequestBase::FinishRequest, GetWeakPtr(),
@@ -430,7 +430,7 @@ void CheckClientDownloadRequestBase::OnGotAccessToken(
 #endif
 
 void CheckClientDownloadRequestBase::SendRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (IsCancelled()) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_DOWNLOAD_DESTROYED);
     return;
@@ -545,7 +545,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
 
 void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     std::optional<std::string> response_body) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   bool success = loader_->NetError() == net::OK;
   int response_code = 0;
   if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {

@@ -86,7 +86,7 @@ void VirtualCardEnrollBubbleControllerImpl::SetupBubble(
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
-  DCHECK(IsIconVisible());
+  CHECK(IsIconVisible(), base::NotFatalUntil::M162);
 
   if (bubble_view()) {
     return;
@@ -397,7 +397,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
                        ->ShowVirtualCardEnrollBubble(web_contents(), this,
                                                      user_gesture_reprompt));
   }
-  DCHECK(bubble_view());
+  CHECK(bubble_view(), base::NotFatalUntil::M162);
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
   // we display the bubble if the the state is kShowingIconAndBubble. Once we
   // open the bubble here once, we set |bubble_state_| to kShowingIcon to make

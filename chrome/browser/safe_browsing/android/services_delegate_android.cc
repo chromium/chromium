@@ -40,18 +40,18 @@ std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
 ServicesDelegateAndroid::ServicesDelegateAndroid(
     SafeBrowsingServiceImpl* safe_browsing_service)
     : ServicesDelegate(safe_browsing_service, /*services_creator=*/nullptr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ServicesDelegateAndroid::ServicesDelegateAndroid(
     SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator)
     : ServicesDelegate(safe_browsing_service, services_creator) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ServicesDelegateAndroid::~ServicesDelegateAndroid() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 const scoped_refptr<SafeBrowsingDatabaseManager>&
@@ -102,7 +102,7 @@ void ServicesDelegateAndroid::AddDownloadManager(
     content::DownloadManager* download_manager) {}
 
 DownloadProtectionService* ServicesDelegateAndroid::GetDownloadService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return download_service_.get();
 }
 
@@ -117,18 +117,18 @@ void ServicesDelegateAndroid::StopOnUIThread(bool shutdown) {
 }
 
 void ServicesDelegateAndroid::CreateTelemetryService(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   if (profile->IsOffTheRecord())
     return;
 
-  DCHECK(!telemetry_service_);
+  CHECK(!telemetry_service_, base::NotFatalUntil::M162);
   telemetry_service_ = std::make_unique<AndroidTelemetryService>(profile);
 }
 
 void ServicesDelegateAndroid::RemoveTelemetryService(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (telemetry_service_ && telemetry_service_->profile() == profile)
     telemetry_service_.reset();
 }

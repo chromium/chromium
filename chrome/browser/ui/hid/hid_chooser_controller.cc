@@ -98,7 +98,8 @@ HidChooserController::HidChooserController(
       origin_(render_frame_host->GetMainFrame()->GetLastCommittedOrigin()) {
   // The use above of GetMainFrame is safe as content::HidService instances are
   // not created for fenced frames.
-  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+  CHECK(!render_frame_host->IsNestedWithinFencedFrame(),
+        base::NotFatalUntil::M162);
 
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -106,7 +107,7 @@ HidChooserController::HidChooserController(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   chooser_context_ =
       HidChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
-  DCHECK(chooser_context_);
+  CHECK(chooser_context_, base::NotFatalUntil::M162);
 
   chooser_context_->GetHidManager()->GetDevices(base::BindOnce(
       &HidChooserController::OnGotDevices, weak_factory_.GetWeakPtr()));
@@ -141,8 +142,8 @@ size_t HidChooserController::NumOptions() const {
 }
 
 std::u16string HidChooserController::GetOption(size_t index) const {
-  DCHECK_LT(index, items_.size());
-  DCHECK(device_map_.contains(items_[index]));
+  CHECK_LT(index, items_.size(), base::NotFatalUntil::M162);
+  CHECK(device_map_.contains(items_[index]), base::NotFatalUntil::M162);
   const auto& devices = device_map_.find(items_[index])->second;
   auto device = std::ranges::find_if(
       devices, [](const auto& d) { return !d->product_name.empty(); });
@@ -153,15 +154,15 @@ std::u16string HidChooserController::GetOption(size_t index) const {
 }
 
 bool HidChooserController::IsPaired(size_t index) const {
-  DCHECK_LT(index, items_.size());
+  CHECK_LT(index, items_.size(), base::NotFatalUntil::M162);
 
   if (!chooser_context_) {
     return false;
   }
 
-  DCHECK(device_map_.contains(items_[index]));
+  CHECK(device_map_.contains(items_[index]), base::NotFatalUntil::M162);
   const auto& device_infos = device_map_.find(items_[index])->second;
-  DCHECK_GT(device_infos.size(), 0u);
+  CHECK_GT(device_infos.size(), 0u, base::NotFatalUntil::M162);
   for (const auto& device : device_infos) {
     if (!chooser_context_->HasDevicePermission(origin_, *device)) {
       return false;
@@ -172,18 +173,18 @@ bool HidChooserController::IsPaired(size_t index) const {
 }
 
 void HidChooserController::Select(const std::vector<size_t>& indices) {
-  DCHECK_EQ(1u, indices.size());
+  CHECK_EQ(1u, indices.size(), base::NotFatalUntil::M162);
   size_t index = indices[0];
-  DCHECK_LT(index, items_.size());
+  CHECK_LT(index, items_.size(), base::NotFatalUntil::M162);
 
   if (!chooser_context_) {
     std::move(callback_).Run({});
     return;
   }
 
-  DCHECK(device_map_.contains(items_[index]));
+  CHECK(device_map_.contains(items_[index]), base::NotFatalUntil::M162);
   auto& device_infos = device_map_.find(items_[index])->second;
-  DCHECK_GT(device_infos.size(), 0u);
+  CHECK_GT(device_infos.size(), 0u, base::NotFatalUntil::M162);
   std::vector<device::mojom::HidDeviceInfoPtr> devices;
   devices.reserve(device_infos.size());
   bool any_persistent_permission_granted = false;

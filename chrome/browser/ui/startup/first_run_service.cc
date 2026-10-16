@@ -94,7 +94,8 @@ bool FirstRunService::ShouldOpenFirstRun() const {
 
 void FirstRunService::TryMarkFirstRunAlreadyFinished(
     base::OnceClosure callback) {
-  DCHECK(ShouldOpenFirstRun());  // Caller should check.
+  CHECK(ShouldOpenFirstRun(),
+        base::NotFatalUntil::M162);  // Caller should check.
 
   // The method has multiple exit points, this ensures `callback` gets called.
   base::ScopedClosureRunner scoped_closure_runner(std::move(callback));
@@ -196,10 +197,10 @@ void FirstRunService::FinishFirstRun(
 }
 
 void FirstRunService::FinishProfileSetUp(std::u16string profile_name) {
-  DCHECK(IsFirstRunMarkedFinishedInPrefs());
+  CHECK(IsFirstRunMarkedFinishedInPrefs(), base::NotFatalUntil::M162);
 
   profile_name_resolver_.reset();
-  DCHECK(!profile_name.empty());
+  CHECK(!profile_name.empty(), base::NotFatalUntil::M162);
   FinalizeNewProfileSetup(&profile_.get(), profile_name,
                           /*is_default_name=*/false);
 }
@@ -235,7 +236,7 @@ void FirstRunService::FinishFirstRunWithoutResumeTask() {
     return;
   }
 
-  DCHECK(ProfilePicker::IsFirstRunOpen());
+  CHECK(ProfilePicker::IsFirstRunOpen(), base::NotFatalUntil::M162);
   OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus::kAbandonedFlow,
                       ProfilePicker::FirstRunFinishReason::kFinishedFlow);
   ProfilePicker::Hide();

@@ -70,7 +70,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
  public:
   explicit SyncConfirmationClosedObserver(BrowserWindowInterface* browser)
       : browser_(browser) {
-    DCHECK(browser_);
+    CHECK(browser_, base::NotFatalUntil::M162);
     login_ui_service_observation_.Observe(
         LoginUIServiceFactory::GetForProfile(browser_->GetProfile()));
   }

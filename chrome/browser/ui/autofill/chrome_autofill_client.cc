@@ -290,7 +290,7 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
 // static
 void ChromeAutofillClient::CreateForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   if (!FromWebContents(web_contents)) {
     web_contents->SetUserData(
         UserDataKey(),

@@ -166,7 +166,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
   // Look for an existing browser window.
   BrowserWindowInterface* browser = FindBrowserForProfile(profile);
   if (browser) {
-    DCHECK(browser->GetProfile() == profile);
+    CHECK(browser->GetProfile() == profile, base::NotFatalUntil::M162);
     content::WebContents* web_contents =
         browser->GetTabStripModel()->GetWebContentsAt(0);
     if (web_contents && web_contents->GetURL() == gurl) {
@@ -201,7 +201,8 @@ void SettingsWindowManager::ShowChromePageForProfile(
   // operator[] not used because SessionID has no default constructor.
   settings_session_map_.emplace(profile, SessionID::InvalidValue())
       .first->second = browser->GetSessionID();
-  DCHECK(WindowFeatureController::From(browser)->IsTrustedSource());
+  CHECK(WindowFeatureController::From(browser)->IsTrustedSource(),
+        base::NotFatalUntil::M162);
 
   // Configure the created window property.
   auto* window = browser->GetWindow()->GetNativeWindow();
@@ -264,7 +265,7 @@ BrowserWindowInterface* SettingsWindowManager::FindBrowserForProfile(
 
 bool SettingsWindowManager::IsSettingsBrowser(
     BrowserWindowInterface* browser) const {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
 
   Profile* const profile = browser->GetProfile();
   if (!UseDeprecatedSettingsWindow(profile)) {

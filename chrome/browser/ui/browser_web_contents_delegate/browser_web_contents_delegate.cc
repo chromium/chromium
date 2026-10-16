@@ -138,7 +138,7 @@ const extensions::Extension* GetExtensionForOrigin(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           security_origin.GetHost());
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M162);
   return extension;
 #else
   return nullptr;
@@ -532,12 +532,12 @@ content::WebContents* BrowserWebContentsDelegate::OpenURLFromTab(
   TRACE_EVENT1("navigation", "BrowserWebContentsDelegate::OpenURLFromTab",
                "source", source);
 #if DCHECK_IS_ON()
-  DCHECK(params.Valid());
+  CHECK(params.Valid(), base::NotFatalUntil::M162);
 #endif
 
   if ((browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS)) {
     DevToolsWindow* window = DevToolsWindow::AsDevToolsWindow(source);
-    DCHECK(window);
+    CHECK(window, base::NotFatalUntil::M162);
     return window->OpenURLFromTab(source, params,
                                   std::move(navigation_handle_callback));
   }
@@ -648,7 +648,7 @@ void BrowserWebContentsDelegate::VisibleSecurityStateChanged(
     content::WebContents* source) {
   // When the current tab's security state changes, we need to update the URL
   // bar to reflect the new state.
-  DCHECK(source);
+  CHECK(source, base::NotFatalUntil::M162);
   if (browser_->GetTabStripModel()->GetActiveWebContents() == source) {
     window_->UpdateToolbarSecurityState();
 
@@ -1325,7 +1325,7 @@ void BrowserWebContentsDelegate::RegisterProtocolHandler(
   // applied in the WebContentImpl class, so at this point it shouldn't be
   // possible to create an invalid handler.
   // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
-  DCHECK(handler.IsValid());
+  CHECK(handler.IsValid(), base::NotFatalUntil::M162);
 
   custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);

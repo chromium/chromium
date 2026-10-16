@@ -195,14 +195,14 @@ int SadTab::GetCrashedErrorCode() {
 }
 
 void SadTab::RecordFirstPaint() {
-  DCHECK(!recorded_paint_);
+  CHECK(!recorded_paint_, base::NotFatalUntil::M162);
   recorded_paint_ = true;
 
   RecordEvent(show_feedback_button_, ui_metrics::SadTabEvent::DISPLAYED);
 }
 
 void SadTab::PerformAction(SadTab::Action action) {
-  DCHECK(recorded_paint_);
+  CHECK(recorded_paint_, base::NotFatalUntil::M162);
   switch (action) {
     case Action::kButton:
       RecordEvent(show_feedback_button_,

@@ -105,9 +105,11 @@ content::WebContents* AddWebContents(
     NavigateParams::WindowAction window_action,
     bool user_gesture) {
   // No code for this yet.
-  DCHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK);
+  CHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK,
+        base::NotFatalUntil::M162);
   // Can't create a new contents for the current tab - invalid case.
-  DCHECK(disposition != WindowOpenDisposition::CURRENT_TAB);
+  CHECK(disposition != WindowOpenDisposition::CURRENT_TAB,
+        base::NotFatalUntil::M162);
 
   NavigateParams params(browser, std::move(new_contents));
   params.source_contents = source_contents;
@@ -160,7 +162,7 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
   }
 
   TabStripModel* model = nav_params->browser->GetTabStripModel();
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M162);
 
   const int source_index =
       model->GetIndexOfWebContents(nav_params->source_contents);

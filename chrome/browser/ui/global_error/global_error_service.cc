@@ -25,14 +25,14 @@ void GlobalErrorService::RemoveObserver(GlobalErrorObserver* observer) {
 }
 
 void GlobalErrorService::AddGlobalError(std::unique_ptr<GlobalError> error) {
-  DCHECK(error);
+  CHECK(error, base::NotFatalUntil::M162);
   GlobalError* error_ptr = error.get();
   owned_errors_[error_ptr] = std::move(error);
   AddUnownedGlobalError(error_ptr);
 }
 
 void GlobalErrorService::AddUnownedGlobalError(GlobalError* error) {
-  DCHECK(error);
+  CHECK(error, base::NotFatalUntil::M162);
   all_errors_.push_back(error);
   NotifyErrorsChanged();
 }
@@ -46,7 +46,8 @@ std::unique_ptr<GlobalError> GlobalErrorService::RemoveGlobalError(
 }
 
 void GlobalErrorService::RemoveUnownedGlobalError(GlobalError* error) {
-  DCHECK(owned_errors_.find(error) == owned_errors_.end());
+  CHECK(owned_errors_.find(error) == owned_errors_.end(),
+        base::NotFatalUntil::M162);
   all_errors_.erase(std::ranges::find(all_errors_, error));
   GlobalErrorBubbleViewBase* bubble = error->GetBubbleView();
   if (bubble) {

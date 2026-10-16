@@ -77,7 +77,7 @@ std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
 
 const AutofillProfile&
 EditAddressProfileDialogControllerImpl::GetProfileToEdit() const {
-  DCHECK(address_profile_to_edit_);
+  CHECK(address_profile_to_edit_, base::NotFatalUntil::M162);
   return *address_profile_to_edit_;
 }
 

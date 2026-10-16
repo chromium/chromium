@@ -40,7 +40,7 @@ void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurvey(
     SurveyStringData product_specific_string_data,
     SurveyBitsData product_specific_bits_data,
     bool is_tab_closed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // When a tab is closed, TabModelList has not yet updated its active tab state
   // synchronously. Post a task to allow the next tab activation to complete
@@ -65,7 +65,7 @@ void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurveyInternal(
     SurveyStringData product_specific_string_data,
     SurveyBitsData product_specific_bits_data,
     bool is_tab_closed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // On Android, HaTS survey prompt banner is presented as a native UI banner
   // attached to an active WebContents. Because the original interstitial tab

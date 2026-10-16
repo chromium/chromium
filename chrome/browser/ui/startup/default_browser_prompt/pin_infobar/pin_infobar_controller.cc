@@ -211,7 +211,7 @@ void PinInfoBarController::OnInfoBarRemoved(infobars::InfoBar* infobar,
 
 void PinInfoBarController::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
-  DCHECK_EQ(infobar_manager_, manager);
+  CHECK_EQ(infobar_manager_, manager, base::NotFatalUntil::M162);
   infobar_ = nullptr;
   infobar_manager_->RemoveObserver(this);
   infobar_manager_ = nullptr;

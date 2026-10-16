@@ -10,7 +10,7 @@ InterventionInfoBarDelegate::InterventionInfoBarDelegate(
     infobars::InfoBarDelegate::InfoBarIdentifier identifier,
     InterventionDelegate* intervention_delegate)
     : identifier_(identifier), intervention_delegate_(intervention_delegate) {
-  DCHECK(intervention_delegate_);
+  CHECK(intervention_delegate_, base::NotFatalUntil::M162);
 }
 
 InterventionInfoBarDelegate::~InterventionInfoBarDelegate() = default;

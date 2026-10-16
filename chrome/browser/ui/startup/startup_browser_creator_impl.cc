@@ -251,7 +251,7 @@ void StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
     bool restore_tabbed_browser) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   profile_ = profile;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -299,7 +299,7 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     chrome::startup::IsProcessStartup process_startup,
     const StartupTabs& tabs,
     TabOverWrite is_active_tab_overwrite) {
-  DCHECK(!tabs.empty());
+  CHECK(!tabs.empty(), base::NotFatalUntil::M162);
 
   // If we don't yet have a profile, try to use the one we're given from
   // |browser|. While we may not end up actually using |browser| (since it

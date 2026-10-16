@@ -325,7 +325,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetOriginalProfile();
-  DCHECK(!profile->IsGuestSession());
+  CHECK(!profile->IsGuestSession(), base::NotFatalUntil::M162);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

@@ -10,7 +10,7 @@
 
 SigninModalDialog::SigninModalDialog(base::OnceClosure on_close_callback)
     : on_close_callback_(std::move(on_close_callback)) {
-  DCHECK(on_close_callback_);
+  CHECK(on_close_callback_, base::NotFatalUntil::M162);
 }
 
 SigninModalDialog::~SigninModalDialog() {
@@ -19,6 +19,6 @@ SigninModalDialog::~SigninModalDialog() {
 }
 
 void SigninModalDialog::NotifyModalDialogClosed() {
-  DCHECK(on_close_callback_);
+  CHECK(on_close_callback_, base::NotFatalUntil::M162);
   std::move(on_close_callback_).Run();
 }

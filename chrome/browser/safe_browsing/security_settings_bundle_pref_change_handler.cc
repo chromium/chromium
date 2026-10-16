@@ -25,7 +25,7 @@ namespace safe_browsing {
 SecuritySettingsBundlePrefChangeHandler::
     SecuritySettingsBundlePrefChangeHandler(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 }
 SecuritySettingsBundlePrefChangeHandler::
     ~SecuritySettingsBundlePrefChangeHandler() = default;

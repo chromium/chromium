@@ -42,7 +42,7 @@ void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
     const std::string& access_token,
     const std::string& additional_mdm_oauth_scopes,
     FetchCompletionCallback completion_callback) {
-  DCHECK(!completion_callback.is_null());
+  CHECK(!completion_callback.is_null(), base::NotFatalUntil::M162);
   completion_callback_ = std::move(completion_callback);
   GaiaUrls* gaia_urls = GaiaUrls::GetInstance();
 
@@ -64,7 +64,7 @@ void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
 
 void CredentialProviderSigninInfoFetcher::OnGetTokenInfoResponse(
     const base::DictValue& token_info) {
-  DCHECK(token_handle_.empty());
+  CHECK(token_handle_.empty(), base::NotFatalUntil::M162);
   if (const std::string* token_handle = token_info.FindString("token_handle");
       token_handle) {
     token_handle_ = *token_handle;
@@ -75,9 +75,9 @@ void CredentialProviderSigninInfoFetcher::OnGetTokenInfoResponse(
 
 void CredentialProviderSigninInfoFetcher::OnGetUserInfoResponse(
     const base::DictValue& user_info) {
-  DCHECK(!mdm_access_token_.empty());
-  DCHECK(!mdm_id_token_.empty());
-  DCHECK(full_name_.empty());
+  CHECK(!mdm_access_token_.empty(), base::NotFatalUntil::M162);
+  CHECK(!mdm_id_token_.empty(), base::NotFatalUntil::M162);
+  CHECK(full_name_.empty(), base::NotFatalUntil::M162);
   if (const std::string* full_name = user_info.FindString("name"); full_name) {
     full_name_ = *full_name;
   }
@@ -101,9 +101,9 @@ void CredentialProviderSigninInfoFetcher::OnNetworkError(int response_code) {
 
 void CredentialProviderSigninInfoFetcher::OnGetTokenSuccess(
     const TokenResponse& token_response) {
-  DCHECK(mdm_access_token_.empty());
-  DCHECK(mdm_id_token_.empty());
-  DCHECK(full_name_.empty());
+  CHECK(mdm_access_token_.empty(), base::NotFatalUntil::M162);
+  CHECK(mdm_id_token_.empty(), base::NotFatalUntil::M162);
+  CHECK(full_name_.empty(), base::NotFatalUntil::M162);
   mdm_access_token_ = token_response.access_token;
   mdm_id_token_ = token_response.id_token;
 
@@ -133,7 +133,7 @@ void CredentialProviderSigninInfoFetcher::RequestUserInfoFromAccessToken(
 
 void CredentialProviderSigninInfoFetcher::WriteResultsIfFinished(
     bool has_error) {
-  DCHECK(completion_callback_);
+  CHECK(completion_callback_, base::NotFatalUntil::M162);
 
   if (!has_error && (mdm_access_token_.empty() || mdm_id_token_.empty() ||
                      full_name_.empty() || token_handle_.empty())) {

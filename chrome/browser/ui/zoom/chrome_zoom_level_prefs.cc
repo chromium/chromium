@@ -65,11 +65,12 @@ ChromeZoomLevelPrefs::ChromeZoomLevelPrefs(
     : pref_service_(pref_service),
       zoom_event_manager_(zoom_event_manager),
       host_zoom_map_(nullptr) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_, base::NotFatalUntil::M162);
 
-  DCHECK(!partition_path.empty());
-  DCHECK((partition_path == profile_path) ||
-         profile_path.IsParent(partition_path));
+  CHECK(!partition_path.empty(), base::NotFatalUntil::M162);
+  CHECK(
+      (partition_path == profile_path) || profile_path.IsParent(partition_path),
+      base::NotFatalUntil::M162);
   base::FilePath partition_relative_path;
   profile_path.AppendRelativePath(partition_path, &partition_relative_path);
   partition_key_ = GetPartitionKey(partition_relative_path);
@@ -219,8 +220,8 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
 void ChromeZoomLevelPrefs::InitHostZoomMap(
     content::HostZoomMap* host_zoom_map) {
   // This init function must be called only once.
-  DCHECK(!host_zoom_map_);
-  DCHECK(host_zoom_map);
+  CHECK(!host_zoom_map_, base::NotFatalUntil::M162);
+  CHECK(host_zoom_map, base::NotFatalUntil::M162);
   host_zoom_map_ = host_zoom_map;
 
   // Initialize the default zoom level.

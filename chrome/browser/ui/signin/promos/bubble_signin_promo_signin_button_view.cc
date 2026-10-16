@@ -72,7 +72,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     std::u16string button_text,
     std::u16string button_accessibility_text)
     : account_(account) {
-  DCHECK(!account_icon.IsEmpty());
+  CHECK(!account_icon.IsEmpty(), base::NotFatalUntil::M162);
   auto card_title = base::UTF8ToUTF16(account.GetFullName().value_or(""));
 
   bool is_signin_promo = signin::IsSignInPromo(access_point);

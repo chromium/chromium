@@ -138,7 +138,7 @@ AutofillContextMenuManager::AutofillContextMenuManager(
     RenderViewContextMenuBase* delegate,
     ui::SimpleMenuModel* menu_model)
     : menu_model_(menu_model), delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   params_ = delegate_->params();
 }
 

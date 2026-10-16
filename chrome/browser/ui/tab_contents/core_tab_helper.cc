@@ -302,7 +302,7 @@ void CoreTabHelper::SearchByImageImpl(
   TemplateURLService* template_url_service = GetTemplateURLService();
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
-  DCHECK(default_provider);
+  CHECK(default_provider, base::NotFatalUntil::M162);
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
@@ -525,7 +525,7 @@ void CoreTabHelper::DoSearchByImage(
   TemplateURLService* template_url_service = GetTemplateURLService();
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
-  DCHECK(default_provider);
+  CHECK(default_provider, base::NotFatalUntil::M162);
 
   std::string additional_query_params_modified = additional_query_params;
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
@@ -559,10 +559,10 @@ void CoreTabHelper::DoSearchByImage(
 TemplateURLService* CoreTabHelper::GetTemplateURLService() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(template_url_service);
+  CHECK(template_url_service, base::NotFatalUntil::M162);
   return template_url_service;
 }
 
@@ -578,7 +578,7 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
   const std::string& content_type = post_content.first;
   const std::string& post_data = post_content.second;
   if (!post_data.empty()) {
-    DCHECK(!content_type.empty());
+    CHECK(!content_type.empty(), base::NotFatalUntil::M162);
     open_url_params.post_data =
         network::ResourceRequestBody::CreateFromCopyOfBytes(
             base::as_byte_span(post_data));

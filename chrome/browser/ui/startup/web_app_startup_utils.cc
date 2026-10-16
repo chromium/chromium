@@ -154,13 +154,13 @@ class StartupWebAppCreator
       return;
     }
 
-    DCHECK(protocol_url_.is_empty());
+    CHECK(protocol_url_.is_empty(), base::NotFatalUntil::M162);
 
     if (MaybeLaunchFileHandler() == LaunchResult::kHandled) {
       return;
     }
 
-    DCHECK(file_launch_infos_.empty());
+    CHECK(file_launch_infos_.empty(), base::NotFatalUntil::M162);
 
     open_mode_ = OpenMode::kInWindowByAppId;
 
@@ -262,7 +262,7 @@ class StartupWebAppCreator
     }
 
     const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id_);
-    DCHECK(web_app);
+    CHECK(web_app, base::NotFatalUntil::M162);
 
     // `this` will stay alive until `launch_callback` is executed or destroyed.
     auto launch_callback =
@@ -308,7 +308,7 @@ class StartupWebAppCreator
             app_id_, protocol_url_.GetScheme(), approval_state,
             std::move(persist_callback));
       } else {
-        DCHECK(!file_launch_infos_.empty());
+        CHECK(!file_launch_infos_.empty(), base::NotFatalUntil::M162);
         provider_->scheduler().PersistFileHandlersUserChoice(
             app_id_, allowed, std::move(persist_callback));
       }
@@ -397,17 +397,20 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
 
   switch (container) {
     case apps::LaunchContainer::kLaunchContainerWindow:
-      DCHECK(browser->GetType() == BrowserWindowInterface::TYPE_APP);
+      CHECK(browser->GetType() == BrowserWindowInterface::TYPE_APP,
+            base::NotFatalUntil::M162);
       mode = app_open_mode.value_or(OpenMode::kInWindowOther);
       break;
     case apps::LaunchContainer::kLaunchContainerTab:
-      DCHECK(browser->GetType() != BrowserWindowInterface::TYPE_APP);
+      CHECK(browser->GetType() != BrowserWindowInterface::TYPE_APP,
+            base::NotFatalUntil::M162);
       mode = OpenMode::kInTab;
       break;
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
       NOTREACHED();
     case apps::LaunchContainer::kLaunchContainerNone:
-      DCHECK(browser->GetType() != BrowserWindowInterface::TYPE_APP);
+      CHECK(browser->GetType() != BrowserWindowInterface::TYPE_APP,
+            base::NotFatalUntil::M162);
       break;
   }
 
