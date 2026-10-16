@@ -2619,9 +2619,7 @@ test("unit_tests") {
   if (is_android) {
     # Trim data specifically to what is used by unit tests on Android.
     data += [
-      "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
       "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
       "data/android/google.png",
       "data/file_select_helper/",
       "data/offline_pages/",
@@ -2708,7 +2706,6 @@ test("unit_tests") {
     "//chrome/browser/data_sharing:unit_tests",
     "//chrome/browser/device_reauth:unit_tests",
     "//chrome/browser/devtools:unit_tests",
-    "//chrome/browser/diagnostics:unit_tests",
     "//chrome/browser/digital_credentials:unit_tests",
     "//chrome/browser/downgrade:unit_tests",
     "//chrome/browser/download:unit_tests",
@@ -3077,7 +3074,7 @@ test("unit_tests") {
     deps += [
       ":test_support_java",
       ":test_support_jni_headers",
-      "//chrome/android:chrome_apk_paks",
+      "//chrome/android:chrome_apk_pak_assets",
       "//chrome/android:chrome_java",
       "//chrome/android:chrome_jni_headers",
       "//chrome/android:delegate_public_impl_java",
@@ -3194,6 +3191,7 @@ test("unit_tests") {
       "//chrome/browser/device_api:unit_tests",
       "//chrome/browser/device_identity:unit_tests",
       "//chrome/browser/device_notifications:unit_tests",
+      "//chrome/browser/diagnostics:unit_tests",
       "//chrome/browser/dictation:unit_tests",
       "//chrome/browser/feedback/report_unsafe_site:unit_tests",
       "//chrome/browser/first_run:unit_tests",
