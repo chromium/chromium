@@ -4,11 +4,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include <memory>
+#include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "components/webcrypto/algorithms/rsa.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -65,17 +64,17 @@ Status CommonEncryptDecrypt(InitFunc init_func,
   const std::vector<uint8_t>& label =
       algorithm.RsaOaepParams()->OptionalLabel();
 
-  if (label.size()) {
+  if (!label.empty()) {
     // Make a copy of the label, since the ctx takes ownership of it when
     // calling set0_rsa_oaep_label().
-    bssl::UniquePtr<uint8_t> label_copy;
-    label_copy.reset(static_cast<uint8_t*>(OPENSSL_malloc(label.size())));
-    UNSAFE_TODO(memcpy(label_copy.get(), label.data(), label.size()));
-
-    if (1 != EVP_PKEY_CTX_set0_rsa_oaep_label(ctx.get(), label_copy.release(),
-                                              label.size())) {
+    bssl::UniquePtr<uint8_t> label_copy(
+        static_cast<uint8_t*>(OPENSSL_memdup(label.data(), label.size())));
+    if (!label_copy || 1 != EVP_PKEY_CTX_set0_rsa_oaep_label(
+                                ctx.get(), label_copy.get(), label.size())) {
       return Status::OperationError();
     }
+    // The ctx took ownership of the label on success.
+    label_copy.release();
   }
 
   // Determine the maximum length of the output.
