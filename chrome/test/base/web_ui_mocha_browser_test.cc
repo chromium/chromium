@@ -33,6 +33,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/apk_assets.h"
+#include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #else
 #include "chrome/test/base/ui_test_utils.h"
@@ -135,17 +138,19 @@ Profile* WebUIMochaBrowserTest::GetProfileForSetup() {
 
 void WebUIMochaBrowserTest::SetUpOnMainThread() {
   // Load browser_tests.pak.
-  base::FilePath pak_path;
 #if BUILDFLAG(IS_ANDROID)
-  // on Android all pak files are inside the paks folder.
-  ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_path));
-  pak_path = pak_path.Append(FILE_PATH_LITERAL("paks"));
+  base::MemoryMappedFile::Region region;
+  int fd = base::android::OpenApkAsset("assets/browser_tests.pak", &region);
+  ASSERT_GE(fd, 0);
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
+      base::File(fd), region, ui::kScaleFactorNone);
 #else
+  base::FilePath pak_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
-#endif  // BUILDFLAG(IS_ANDROID)
   pak_path = pak_path.AppendASCII("browser_tests.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::kScaleFactorNone);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Register the chrome://webui-test data source.
   Profile* profile = GetProfileForSetup();
