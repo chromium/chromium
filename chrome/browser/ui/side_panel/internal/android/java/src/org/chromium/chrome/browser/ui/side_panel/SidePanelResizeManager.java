@@ -6,24 +6,34 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.function.Supplier;
+
 /**
- * Manages the state of manually resizing the side panel: the width the user committed, and the
- * width proposed by an in-progress drag.
+ * Manages the state of manually resizing the side panel: the width the user committed, the width
+ * proposed by an in-progress drag, and the content pinned at a fixed width during the drag.
  *
- * <p>Keeping the states together keeps them in sync.
+ * <p>Keeping the states together keeps them in sync, e.g. ending a drag always unpins the content.
  */
+// Pinned content is aligned to a physical edge, since Side UI anchor sides are physical.
+@SuppressLint("RtlHardcoded")
 @NullMarked
 /* package */ final class SidePanelResizeManager {
     private final Context mContext;
+    private final Supplier<@Nullable View> mContentViewToPinSupplier;
 
     /**
      * The width (in dp) that the user last committed by resizing the side panel in this window, or
@@ -51,11 +61,22 @@ import org.chromium.ui.base.ViewUtils;
      */
     private @Nullable @Px Integer mLiveResizeWidthPx;
 
+    /** The content {@link View} pinned at a fixed width during a drag, or null if none. */
+    private @Nullable View mPinnedView;
+
+    private @Nullable Integer mPinnedViewOriginalWidth;
+    private @Nullable Integer mPinnedViewOriginalGravity;
+
     /**
      * @param context The context for converting between dp and px.
+     * @param contentViewToPinSupplier Supplies the content {@link View} to keep at a fixed width
+     *     during a drag, or null if the content should follow the container. Called on the first
+     *     frame of each drag. The {@link View}'s parent must be a {@link FrameLayout}.
      */
-    /* package */ SidePanelResizeManager(Context context) {
+    /* package */ SidePanelResizeManager(
+            Context context, Supplier<@Nullable View> contentViewToPinSupplier) {
         mContext = context;
+        mContentViewToPinSupplier = contentViewToPinSupplier;
     }
 
     /**
@@ -73,10 +94,22 @@ import org.chromium.ui.base.ViewUtils;
     /**
      * Records the width proposed by a frame of an in-progress drag.
      *
+     * <p>On the first frame of a drag, pins the supplied content {@link View}, if any, at its
+     * current width. The content is aligned to the inner edge, i.e. the edge being dragged, so it
+     * moves with the resize handle.
+     *
      * @param proposedWidthPx The raw container width proposed by the drag.
+     * @param anchorSide The side of the window that the side panel container is anchored to.
      */
-    /* package */ void updateLiveResizeState(@Px int proposedWidthPx) {
+    /* package */ void updateLiveResizeState(@Px int proposedWidthPx, @AnchorSide int anchorSide) {
+        boolean isFirstLiveFrame = mLiveResizeWidthPx == null;
         mLiveResizeWidthPx = proposedWidthPx;
+        if (!isFirstLiveFrame) return;
+
+        View contentViewToPin = mContentViewToPinSupplier.get();
+        if (contentViewToPin != null) {
+            pin(contentViewToPin, anchorSide == AnchorSide.RIGHT ? Gravity.LEFT : Gravity.RIGHT);
+        }
     }
 
     /**
@@ -93,6 +126,7 @@ import org.chromium.ui.base.ViewUtils;
     /* package */ void commitFinalResizeState(@Px int finalWidthPx, int minWidthDp) {
         if (mLiveResizeWidthPx == null) return;
 
+        // This resizes pinned ThinWebView content's WebContents once, for the committed width.
         clearLiveResizeState();
         mUserCommittedWidthDp =
                 MathUtils.clamp(
@@ -101,8 +135,37 @@ import org.chromium.ui.base.ViewUtils;
                         MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP);
     }
 
-    /** Ends an in-progress drag, if any, without committing it, by dropping its live width. */
+    /**
+     * Ends an in-progress drag, if any, without committing it: drops its live width, and lets
+     * pinned content follow the container again.
+     */
     /* package */ void clearLiveResizeState() {
         mLiveResizeWidthPx = null;
+        unpin();
+    }
+
+    private void pin(View view, int horizontalGravity) {
+        assert mPinnedView == null : "A View is already pinned.";
+
+        var layoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
+        mPinnedViewOriginalWidth = layoutParams.width;
+        mPinnedViewOriginalGravity = layoutParams.gravity;
+        layoutParams.width = view.getWidth();
+        layoutParams.gravity = Gravity.TOP | horizontalGravity;
+        view.setLayoutParams(layoutParams);
+        mPinnedView = view;
+    }
+
+    private void unpin() {
+        if (mPinnedView == null) return;
+        assert mPinnedViewOriginalWidth != null && mPinnedViewOriginalGravity != null;
+
+        var layoutParams = (FrameLayout.LayoutParams) mPinnedView.getLayoutParams();
+        layoutParams.width = mPinnedViewOriginalWidth;
+        layoutParams.gravity = mPinnedViewOriginalGravity;
+        mPinnedView.setLayoutParams(layoutParams);
+        mPinnedView = null;
+        mPinnedViewOriginalWidth = null;
+        mPinnedViewOriginalGravity = null;
     }
 }

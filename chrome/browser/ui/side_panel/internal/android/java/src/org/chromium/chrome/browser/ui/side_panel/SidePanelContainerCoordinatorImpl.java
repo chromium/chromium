@@ -118,7 +118,8 @@ final class SidePanelContainerCoordinatorImpl
         mSideUiCoordinator = sideUiCoordinator;
         mTopControlsStacker = topControlsStacker;
         mIncognitoStateProvider = incognitoStateProvider;
-        mResizeManager = new SidePanelResizeManager(activity);
+        mResizeManager =
+                new SidePanelResizeManager(activity, this::getContentViewToPinDuringResize);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,6 +164,7 @@ final class SidePanelContainerCoordinatorImpl
 
         // TODO(crbug.com/513302000): assert the side panel is currently closed.
 
+        mResizeManager.clearLiveResizeState();
         mCurrentContent = content;
         ViewGroup contentContainer = getContentContainer();
         contentContainer.removeAllViews();
@@ -214,6 +216,7 @@ final class SidePanelContainerCoordinatorImpl
         // TODO(crbug.com/513302000): assert the side panel isn't preparing for auto-restore/close.
 
         assert mCurrentContent != null : "no content to replace";
+        mResizeManager.clearLiveResizeState();
         View oldContentView = mCurrentContent.mView;
         mCurrentContent = newContent;
 
@@ -318,6 +321,9 @@ final class SidePanelContainerCoordinatorImpl
         //
         // (1) memory leaks, and
         // (2) a crash when the content View is added to another container instance.
+        //
+        // For the same reason, restore its layout if a drag left it pinned.
+        mResizeManager.clearLiveResizeState();
         getContentContainer().removeAllViews();
         mCurrentContent = null;
         mNativeBridgeSelector.destroy();
@@ -608,7 +614,7 @@ final class SidePanelContainerCoordinatorImpl
     public void onResizeLive(@Px int proposedWidthPx) {
         log(TAG, "onResizeLive", proposedWidthPx);
         ThreadUtils.assertOnUiThread();
-        mResizeManager.updateLiveResizeState(proposedWidthPx);
+        mResizeManager.updateLiveResizeState(proposedWidthPx, getAnchorSide());
     }
 
     @Override
@@ -709,6 +715,20 @@ final class SidePanelContainerCoordinatorImpl
                         mContainerView.getContext(),
                         mContainerView.getPaddingLeft() + mContainerView.getPaddingRight());
         return horizontalPaddingDp + MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
+    }
+
+    /**
+     * Returns the current content {@link View} if it should keep its width during a drag, or null
+     * if it should follow the container.
+     */
+    private @Nullable View getContentViewToPinDuringResize() {
+        // A drag needs the resize handle, which is only shown while the side panel shows content.
+        assert mCurrentContent != null : "no content to pin";
+
+        // Resizing a ThinWebView resizes its WebContents, which is too expensive to do on every
+        // frame of a drag. Keep such content at its width until the drag is committed.
+        if (findThinWebView(mCurrentContent.mView) == null) return null;
+        return mCurrentContent.mView;
     }
 
     @VisibleForTesting
