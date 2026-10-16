@@ -17,6 +17,9 @@
 namespace actor {
 namespace {
 
+constexpr std::string_view kCreateWindowToolDescription =
+    "Opens a new browser window.";
+
 constexpr std::string_view kEnterFullscreenToolDescription =
     "Enter full screen mode for the active browser window.";
 
@@ -28,6 +31,13 @@ constexpr std::string_view kExitFullscreenToolDescription =
 // CreateWindowToolRequest
 CreateWindowToolRequest::CreateWindowToolRequest() = default;
 CreateWindowToolRequest::~CreateWindowToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> CreateWindowToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kCreateWindow, kModelFacingName,
+                               kCreateWindowToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult CreateWindowToolRequest::CreateTool(
     TaskId task_id,

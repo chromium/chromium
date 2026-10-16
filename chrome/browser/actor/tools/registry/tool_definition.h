@@ -71,7 +71,9 @@ enum class ToolId {
   kRemoveBookmark = 25,
   // Scrolls an element or the main viewport by a page or to its start/end.
   kScrollPage = 26,
-  kMaxValue = kScrollPage,
+  // Opens a new browser window.
+  kCreateWindow = 27,
+  kMaxValue = kCreateWindow,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

@@ -18,9 +18,13 @@ class ToolRequestVisitorFunctor;
 class CreateWindowToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "CreateWindow";
+  static constexpr std::string_view kModelFacingName = "create_window";
 
   CreateWindowToolRequest();
   ~CreateWindowToolRequest() override;
+
+  // Returns the `ToolId::kCreateWindow` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
