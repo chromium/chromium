@@ -127,6 +127,21 @@ MakeAdaptationsMap(const proto::Recipes& recipes) {
       std::move(states));
 }
 
+base::flat_map<std::string, ManifestSolutionFactory::PostprocessedModelState>
+MakePostprocessedModelsMap(const proto::Recipes& recipes) {
+  std::vector<
+      std::pair<std::string, ManifestSolutionFactory::PostprocessedModelState>>
+      states;
+  states.reserve(recipes.postprocessed_models().size());
+  for (const auto& [name, recipe] : recipes.postprocessed_models()) {
+    states.emplace_back(name,
+                        ManifestSolutionFactory::PostprocessedModelState());
+  }
+  return base::flat_map<std::string,
+                        ManifestSolutionFactory::PostprocessedModelState>(
+      std::move(states));
+}
+
 base::flat_map<std::string, ManifestSolutionFactory::SafetyModelState>
 MakeSafetyModelsMap(const proto::Recipes& recipes) {
   std::vector<std::pair<std::string, ManifestSolutionFactory::SafetyModelState>>
@@ -290,6 +305,16 @@ ManifestSolutionFactory::AdaptationState&
 ManifestSolutionFactory::AdaptationState::operator=(AdaptationState&& other) =
     default;
 
+ManifestSolutionFactory::PostprocessedModelState::PostprocessedModelState() =
+    default;
+ManifestSolutionFactory::PostprocessedModelState::~PostprocessedModelState() =
+    default;
+ManifestSolutionFactory::PostprocessedModelState::PostprocessedModelState(
+    PostprocessedModelState&& other) = default;
+ManifestSolutionFactory::PostprocessedModelState&
+ManifestSolutionFactory::PostprocessedModelState::operator=(
+    PostprocessedModelState&& other) = default;
+
 ManifestSolutionFactory::SafetyModelState::SafetyModelState() = default;
 ManifestSolutionFactory::SafetyModelState::~SafetyModelState() = default;
 ManifestSolutionFactory::SafetyModelState::SafetyModelState(
@@ -324,6 +349,7 @@ ManifestSolutionFactory::ManifestSolutionFactory(
       assets_(MakeAssetsMap(manifest_.GetAssets())),
       base_models_(MakeBaseModelsMap(manifest_.GetRecipes())),
       adaptations_(MakeAdaptationsMap(manifest_.GetRecipes())),
+      postprocessed_models_(MakePostprocessedModelsMap(manifest_.GetRecipes())),
       safety_models_(MakeSafetyModelsMap(manifest_.GetRecipes())),
       solutions_(MakeSolutionsMap(manifest_.GetRecipes())),
       on_asset_init_(
@@ -382,6 +408,13 @@ void ManifestSolutionFactory::UnloadAsset(const std::string& asset_id) {
            manifest_.GetRecipes().adaptations()) {
         if (adaptation_recipe.base_model_recipe_id() == model_id) {
           adaptations_.at(adaptation_id).remote_.reset();
+        }
+      }
+      for (const auto& [postprocessed_id, postprocessed_recipe] :
+           manifest_.GetRecipes().postprocessed_models()) {
+        if (postprocessed_recipe.base_model_recipe_id() == model_id ||
+            postprocessed_recipe.postprocessor_model_recipe_id() == model_id) {
+          postprocessed_models_.at(postprocessed_id).remote_.reset();
         }
       }
     }
@@ -680,6 +713,12 @@ ManifestSolutionFactory::CreateSolutionForUseCase(
   if (auto it = manifest_.GetRecipes().adaptations().find(model_recipe_id);
       it != manifest_.GetRecipes().adaptations().end()) {
     base_model_id = it->second.base_model_recipe_id();
+  } else if (auto postprocessed_it =
+                 manifest_.GetRecipes().postprocessed_models().find(
+                     model_recipe_id);
+             postprocessed_it !=
+             manifest_.GetRecipes().postprocessed_models().end()) {
+    base_model_id = postprocessed_it->second.base_model_recipe_id();
   }
 
   if (!base_models_.at(base_model_id).has_caches &&
@@ -738,6 +777,14 @@ ManifestSolutionFactory::GetOrLoadModel(const std::string& model_id) {
     auto& state = it->second;
     if (!state.remote_) {
       LoadAdaptation(model_id, state);
+    }
+    return state.remote_;
+  }
+  if (auto it = postprocessed_models_.find(model_id);
+      it != postprocessed_models_.end()) {
+    auto& state = it->second;
+    if (!state.remote_) {
+      LoadPostProcessor(model_id, state);
     }
     return state.remote_;
   }
@@ -917,6 +964,86 @@ void ManifestSolutionFactory::LoadAdaptation(const std::string& model_id,
   state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
 }
 
+void ManifestSolutionFactory::LoadPostProcessor(
+    const std::string& model_id,
+    PostprocessedModelState& state) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestSolutionFactory::LoadPostProcessor", "model_id",
+              model_id);
+  const auto& recipe =
+      manifest_.GetRecipes().postprocessed_models().at(model_id);
+  const std::string& postprocessor_id = recipe.postprocessor_model_recipe_id();
+  const auto& postprocessor_recipe =
+      manifest_.GetRecipes().base_models().at(postprocessor_id);
+  on_device_model::ModelAssetPaths full_paths =
+      GetModelAssetPaths(postprocessor_recipe);
+  // Only populate `weights` and `cache` so `LoadModelAssets` does not create
+  // or open unused `encoder_cache`, `adapter_cache`, or `program_cache` files.
+  on_device_model::ModelAssetPaths paths;
+  paths.weights = std::move(full_paths.weights);
+  paths.cache = std::move(full_paths.cache);
+
+  LogBaseModelInitialization(postprocessor_id, postprocessor_recipe,
+                             base_models_.at(postprocessor_id));
+
+  // Warm up the base model remote concurrently while loading the postprocessor
+  // assets.
+  // Ideally we should prevent the base model remote from idling out before
+  // `LoadModelAssets` completes.
+  GetOrLoadModel(recipe.base_model_recipe_id());
+  service_client_->AddPendingUsage();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&on_device_model::LoadModelAssets, std::move(paths)),
+      base::BindOnce(
+          [](base::WeakPtr<ManifestSolutionFactory> factory,
+             const std::string& model_id,
+             mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+             on_device_model::ModelAssets assets) {
+            TRACE_EVENT("optimization_guide",
+                        "ManifestSolutionFactory::OnPostProcessorAssetsLoaded",
+                        "model_id", model_id);
+            if (!factory) {
+              CloseAssetsInBackground(std::move(assets));
+              return;
+            }
+            const auto& recipe =
+                factory->manifest_.GetRecipes().postprocessed_models().at(
+                    model_id);
+            const auto& postprocessor_recipe =
+                factory->manifest_.GetRecipes().base_models().at(
+                    recipe.postprocessor_model_recipe_id());
+            if (!factory->assets_
+                     .at(postprocessor_recipe.weights_file().asset_id())
+                     .has_value() ||
+                !factory->postprocessed_models_.at(model_id)
+                     .remote_.is_bound()) {
+              // Handle the case where the model was uninstalled while loading
+              // assets.
+              CloseAssetsInBackground(std::move(assets));
+              factory->service_client_->RemovePendingUsage();
+              return;
+            }
+            auto params =
+                on_device_model::mojom::LoadPostProcessorParams::New();
+            params->weights = std::move(assets.weights.file());
+            if (assets.cache.IsValid()) {
+              params->cache = std::move(assets.cache);
+            }
+            params->max_tokens = postprocessor_recipe.max_tokens();
+            factory->GetOrLoadModel(recipe.base_model_recipe_id())
+                ->LoadPostProcessor(std::move(params), std::move(model),
+                                    base::DoNothing());
+            factory->service_client_->RemovePendingUsage();
+          },
+          weak_ptr_factory_.GetWeakPtr(), model_id,
+          state.remote_.BindNewPipeAndPassReceiver()));
+  state.remote_.set_disconnect_with_reason_handler(
+      base::BindOnce(&ManifestSolutionFactory::OnPostprocessedModelDisconnect,
+                     base::Unretained(this), model_id));
+  state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
+}
+
 void ManifestSolutionFactory::OnBaseModelDisconnect(
     const std::string& model_id,
     uint32_t reason,
@@ -950,6 +1077,30 @@ void ManifestSolutionFactory::OnBaseModelDisconnect(
                        weak_ptr_factory_.GetWeakPtr()),
         delay);
   }
+}
+
+void ManifestSolutionFactory::OnPostprocessedModelDisconnect(
+    const std::string& model_id,
+    uint32_t reason,
+    const std::string& description) {
+  TRACE_EVENT("optimization_guide",
+              "ManifestSolutionFactory::OnPostprocessedModelDisconnect");
+  auto it = postprocessed_models_.find(model_id);
+  CHECK(it != postprocessed_models_.end())
+      << "Postprocessed model disconnect for unknown model id: " << model_id;
+  it->second.remote_.reset();
+  const bool is_idle =
+      reason == static_cast<uint32_t>(
+                    on_device_model::ModelDisconnectReason::kIdleShutdown);
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ModelExecution."
+      "OnDevicePostprocessedModelIdleDisconnect",
+      is_idle);
+  if (is_idle) {
+    return;
+  }
+  LOG(ERROR) << "Postprocessed model disconnected unexpectedly; reason: "
+             << reason << ", description: " << description;
 }
 
 }  // namespace optimization_guide

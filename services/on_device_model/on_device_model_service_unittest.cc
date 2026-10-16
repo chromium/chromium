@@ -167,6 +167,40 @@ class ContextClientWaiter : public mojom::ContextClient {
   std::optional<int> tokens_processed_;
 };
 
+class TestAsrResponder : public mojom::AsrStreamResponder {
+ public:
+  TestAsrResponder() = default;
+  ~TestAsrResponder() override = default;
+
+  mojo::PendingRemote<mojom::AsrStreamResponder> BindRemote() {
+    auto remote = receiver_.BindNewPipeAndPassRemote();
+    receiver_.set_disconnect_handler(disconnect_future_.GetCallback());
+    return remote;
+  }
+
+  void OnResponse(
+      std::vector<mojom::SpeechRecognitionResultPtr> result) override {
+    if (!response_future_.IsReady()) {
+      response_future_.SetValue(std::move(result));
+    }
+  }
+
+  base::test::TestFuture<std::vector<mojom::SpeechRecognitionResultPtr>>&
+  response_future() {
+    return response_future_;
+  }
+
+  base::test::TestFuture<void>& disconnect_future() {
+    return disconnect_future_;
+  }
+
+ private:
+  mojo::Receiver<mojom::AsrStreamResponder> receiver_{this};
+  base::test::TestFuture<std::vector<mojom::SpeechRecognitionResultPtr>>
+      response_future_;
+  base::test::TestFuture<void> disconnect_future_;
+};
+
 class FakeFile {
  public:
   explicit FakeFile(const std::string& content) {
@@ -269,37 +303,13 @@ class OnDeviceModelServiceTest : public testing::Test {
     mojo::Remote<mojom::Session> session;
     model.StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
 
-    base::test::TestFuture<std::vector<mojom::SpeechRecognitionResultPtr>>
-        future;
-    class TestAsrResponder : public mojom::AsrStreamResponder {
-     public:
-      explicit TestAsrResponder(
-          base::OnceCallback<
-              void(std::vector<mojom::SpeechRecognitionResultPtr>)> callback)
-          : callback_(std::move(callback)) {}
-      void OnResponse(
-          std::vector<mojom::SpeechRecognitionResultPtr> result) override {
-        if (callback_) {
-          std::move(callback_).Run(std::move(result));
-        }
-      }
-
-     private:
-      base::OnceCallback<void(std::vector<mojom::SpeechRecognitionResultPtr>)>
-          callback_;
-    };
-
-    TestAsrResponder responder_impl(future.GetCallback());
-    mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
-    mojo::Receiver<mojom::AsrStreamResponder> receiver(
-        &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
-
+    TestAsrResponder responder;
     auto options = mojom::AsrStreamOptions::New();
     options->sample_rate_hz = kDefaultAsrSampleRateHz;
     mojo::Remote<mojom::AsrStreamInput> asr_input;
     session->AsrStream(std::move(options),
                        asr_input.BindNewPipeAndPassReceiver(),
-                       std::move(responder_remote));
+                       responder.BindRemote());
 
     auto audio_data = mojom::AudioData::New();
     audio_data->sample_rate = kDefaultAsrSampleRateHz;
@@ -307,9 +317,8 @@ class OnDeviceModelServiceTest : public testing::Test {
     audio_data->frame_count = 1;
     audio_data->data = {0};
     asr_input->AddAudioChunk(std::move(audio_data));
-    task_environment_.RunUntilIdle();
 
-    auto results = future.Take();
+    auto results = responder.response_future().Take();
     CHECK_EQ(results.size(), 1u);
     return results[0]->transcript;
   }
@@ -447,7 +456,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamIdleTimeout) {
   audio_data->frame_count = 1;
   audio_data->data = {0};
   asr_input->AddAudioChunk(std::move(audio_data));
-  task_environment_.RunUntilIdle();
+  asr_input.FlushForTesting();
 
   task_environment_.FastForwardBy(kDefaultModelIdleTimeout - base::Seconds(1));
   EXPECT_FALSE(model_future.IsReady());
@@ -480,11 +489,11 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamDisconnectDoesNotDisconnectSession) {
   mojo::Remote<mojom::AsrStreamInput> asr_input;
   session->AsrStream(std::move(options), asr_input.BindNewPipeAndPassReceiver(),
                      std::move(responder_remote));
-  task_environment_.RunUntilIdle();
+  asr_input.FlushForTesting();
 
   // Disconnect the ASR stream.
   asr_input.reset();
-  task_environment_.RunUntilIdle();
+  session.FlushForTesting();
 
   // The session remote should remain connected and functional.
   EXPECT_TRUE(session.is_connected());
@@ -501,27 +510,16 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
 
-  class DummyResponder : public mojom::AsrStreamResponder {
-   public:
-    void OnResponse(
-        std::vector<mojom::SpeechRecognitionResultPtr> result) override {}
-  };
-
   // First ASR stream on session.
-  DummyResponder responder_impl1;
-  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote1;
-  mojo::Receiver<mojom::AsrStreamResponder> receiver1(
-      &responder_impl1, responder_remote1.InitWithNewPipeAndPassReceiver());
-  base::test::TestFuture<void> receiver1_disconnect;
-  receiver1.set_disconnect_handler(receiver1_disconnect.GetCallback());
-
+  TestAsrResponder responder1;
   auto options1 = mojom::AsrStreamOptions::New();
   options1->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input1;
   session->AsrStream(std::move(options1),
                      asr_input1.BindNewPipeAndPassReceiver(),
-                     std::move(responder_remote1));
-  task_environment_.RunUntilIdle();
+                     responder1.BindRemote());
+  base::test::TestFuture<void> asr_input1_disconnect;
+  asr_input1.set_disconnect_handler(asr_input1_disconnect.GetCallback());
 
   auto audio_data1 = mojom::AudioData::New();
   audio_data1->sample_rate = kDefaultAsrSampleRateHz;
@@ -529,27 +527,23 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
   audio_data1->frame_count = 1;
   audio_data1->data = {0};
   asr_input1->AddAudioChunk(std::move(audio_data1));
-  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(responder1.response_future().Wait());
 
   // Second ASR stream on the same session replacing the previous stream while
   // the first stream is still open (hot replacement).
-  DummyResponder responder_impl2;
-  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote2;
-  mojo::Receiver<mojom::AsrStreamResponder> receiver2(
-      &responder_impl2, responder_remote2.InitWithNewPipeAndPassReceiver());
-
+  TestAsrResponder responder2;
   auto options2 = mojom::AsrStreamOptions::New();
   options2->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input2;
   session->AsrStream(std::move(options2),
                      asr_input2.BindNewPipeAndPassReceiver(),
-                     std::move(responder_remote2));
-  task_environment_.RunUntilIdle();
+                     responder2.BindRemote());
 
+  EXPECT_TRUE(asr_input1_disconnect.Wait());
+  EXPECT_TRUE(responder1.disconnect_future().Wait());
   EXPECT_TRUE(session.is_connected());
   EXPECT_TRUE(asr_input2.is_connected());
   EXPECT_FALSE(asr_input1.is_connected());
-  EXPECT_TRUE(receiver1_disconnect.IsReady());
 
   auto audio_data2 = mojom::AudioData::New();
   audio_data2->sample_rate = kDefaultAsrSampleRateHz;
@@ -557,7 +551,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamReuseOnExistingSession) {
   audio_data2->frame_count = 1;
   audio_data2->data = {0};
   asr_input2->AddAudioChunk(std::move(audio_data2));
-  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(responder2.response_future().Wait());
   EXPECT_TRUE(session.is_connected());
 }
 
@@ -566,36 +560,12 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamTimestamps) {
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
 
-  base::test::TestFuture<std::vector<mojom::SpeechRecognitionResultPtr>> future;
-  class TimestampResponder : public mojom::AsrStreamResponder {
-   public:
-    explicit TimestampResponder(
-        base::OnceCallback<void(std::vector<mojom::SpeechRecognitionResultPtr>)>
-            callback)
-        : callback_(std::move(callback)) {}
-    void OnResponse(
-        std::vector<mojom::SpeechRecognitionResultPtr> result) override {
-      if (callback_) {
-        std::move(callback_).Run(std::move(result));
-      }
-    }
-
-   private:
-    base::OnceCallback<void(std::vector<mojom::SpeechRecognitionResultPtr>)>
-        callback_;
-  };
-
-  TimestampResponder responder_impl(future.GetCallback());
-  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
-  mojo::Receiver<mojom::AsrStreamResponder> receiver(
-      &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
-
+  TestAsrResponder responder;
   auto options = mojom::AsrStreamOptions::New();
   options->sample_rate_hz = kDefaultAsrSampleRateHz;
   mojo::Remote<mojom::AsrStreamInput> asr_input;
-  session->AsrStream(std::move(options),
-                     asr_input.BindNewPipeAndPassReceiver(),
-                     std::move(responder_remote));
+  session->AsrStream(std::move(options), asr_input.BindNewPipeAndPassReceiver(),
+                     responder.BindRemote());
 
   auto audio_data = mojom::AudioData::New();
   audio_data->sample_rate = kDefaultAsrSampleRateHz;
@@ -604,7 +574,7 @@ TEST_F(OnDeviceModelServiceTest, AsrStreamTimestamps) {
   audio_data->data = {0};
   asr_input->AddAudioChunk(std::move(audio_data));
 
-  auto results = future.Take();
+  auto results = responder.response_future().Take();
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0]->transcript, fake_ml::kFakeAsrTranscript);
   EXPECT_TRUE(results[0]->is_final);

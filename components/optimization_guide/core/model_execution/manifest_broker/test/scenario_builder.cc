@@ -31,6 +31,18 @@ ScenarioBuilder& ScenarioBuilder::AddBaseModel(const std::string& name) {
   return *this;
 }
 
+ScenarioBuilder& ScenarioBuilder::AddBaseModel(
+    const std::string& name,
+    const FakeBaseModelAsset::Content& content) {
+  AddBaseModel(
+      name,
+      BaseModelRecipeArgs(
+          proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+          proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {}, 100),
+      content, "1.0.0.0");
+  return *this;
+}
+
 ScenarioBuilder& ScenarioBuilder::AddBaseModel(const std::string& name,
                                                BaseModelRecipeArgs args) {
   AddBaseModel(name, args,
@@ -91,6 +103,16 @@ ScenarioBuilder& ScenarioBuilder::AddAdaptation(const std::string& name,
               AdaptationRecipe(
                   base_model + "_recipe",
                   FileReference(name + "_asset", "adaptation_weights.bin")));
+  return *this;
+}
+
+ScenarioBuilder& ScenarioBuilder::AddPostprocessedModel(
+    const std::string& name,
+    const std::string& base_model,
+    const std::string& postprocessor_model) {
+  builder.Add(name + "_recipe",
+              PostprocessedModelRecipe(base_model + "_recipe",
+                                       postprocessor_model + "_recipe"));
   return *this;
 }
 

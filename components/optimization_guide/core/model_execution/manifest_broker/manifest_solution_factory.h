@@ -82,6 +82,18 @@ class ManifestSolutionFactory {
     mojo::Remote<on_device_model::mojom::OnDeviceModel> remote_;
   };
 
+  struct PostprocessedModelState {
+    PostprocessedModelState();
+    ~PostprocessedModelState();
+    PostprocessedModelState(const PostprocessedModelState& other) = delete;
+    PostprocessedModelState& operator=(const PostprocessedModelState& other) =
+        delete;
+    PostprocessedModelState(PostprocessedModelState&& other);
+    PostprocessedModelState& operator=(PostprocessedModelState&& other);
+
+    mojo::Remote<on_device_model::mojom::OnDeviceModel> remote_;
+  };
+
   struct SafetyModelState {
     SafetyModelState();
     ~SafetyModelState();
@@ -171,6 +183,8 @@ class ManifestSolutionFactory {
 
   void LoadBaseModel(const std::string& model_id, BaseModelState& state);
   void LoadAdaptation(const std::string& model_id, AdaptationState& state);
+  void LoadPostProcessor(const std::string& model_id,
+                         PostprocessedModelState& state);
 
   mojo::Remote<on_device_model::mojom::TextSafetyModel>&
   GetOrLoadTextSafetyModel(const std::string& model_id);
@@ -179,6 +193,11 @@ class ManifestSolutionFactory {
   void OnBaseModelDisconnect(const std::string& model_id,
                              uint32_t reason,
                              const std::string& description);
+
+  // Called when a postprocessed model disconnects unexpectedly.
+  void OnPostprocessedModelDisconnect(const std::string& model_id,
+                                      uint32_t reason,
+                                      const std::string& description);
 
   on_device_model::ModelAssetPaths GetModelAssetPaths(
       const proto::BaseModelRecipe& recipe) const;
@@ -199,6 +218,7 @@ class ManifestSolutionFactory {
   base::flat_map<std::string, AssetState> assets_;
   base::flat_map<std::string, BaseModelState> base_models_;
   base::flat_map<std::string, AdaptationState> adaptations_;
+  base::flat_map<std::string, PostprocessedModelState> postprocessed_models_;
   base::flat_map<std::string, SafetyModelState> safety_models_;
   base::flat_map<std::string, SolutionState> solutions_;
 

@@ -439,4 +439,35 @@ TEST_F(ManifestSolutionFactoryTest, IdleTimeoutOverride) {
   EXPECT_FALSE(fake_.launcher().is_service_running());
 }
 
+TEST_F(ManifestSolutionFactoryTest, ExecuteModelWithPostprocessor) {
+  base::test::ScopedFeatureList feature_list{kOnDeviceWebSpeechPolisherModel};
+
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A", FakeBaseModelAsset::Content{.weight = 1})
+      .AddBaseModel("polisher", FakeBaseModelAsset::Content{.weight = 2})
+      .AddPostprocessedModel("postprocessed_A", "model_A", "polisher")
+      .AddUnsafeSolution("test", "postprocessed_A")
+      .Finish();
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+
+  proto::ExampleForTestingRequest request;
+  request.set_string_value("hello");
+
+  ResponseHolder response;
+  session->ExecuteModel(request, response.GetStreamingCallback());
+  ASSERT_TRUE(response.GetFinalStatus());
+  EXPECT_EQ(*response.value(),
+            "Base model: 1"
+            "Postprocessor model: 2"
+            "hello max:1024"
+            "TopK: 64, Temp: 1");
+}
+
 }  // namespace optimization_guide

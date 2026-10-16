@@ -298,6 +298,11 @@ void FakeOnDeviceSession::GenerateImpl(
     chunk->text = "Adaptation model: " + model_->data().adaptation_model_weight;
     remote->OnResponse(std::move(chunk));
   }
+  if (!model_->data().postprocessor_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Postprocessor model: " + model_->data().postprocessor_weight;
+    remote->OnResponse(std::move(chunk));
+  }
   if (!model_->data().cache_weight.empty()) {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "Cache weight: " + model_->data().cache_weight;

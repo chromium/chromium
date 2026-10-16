@@ -28,6 +28,8 @@ class ScenarioBuilder final {
 
   ScenarioBuilder& AddBaseModel(const std::string& name);
   ScenarioBuilder& AddBaseModel(const std::string& name,
+                                const FakeBaseModelAsset::Content& content);
+  ScenarioBuilder& AddBaseModel(const std::string& name,
                                 BaseModelRecipeArgs args);
   ScenarioBuilder& AddBaseModel(const std::string& name,
                                 BaseModelRecipeArgs args,
@@ -36,6 +38,10 @@ class ScenarioBuilder final {
   ScenarioBuilder& AddSafetyModel(const std::string& name);
   ScenarioBuilder& AddAdaptation(const std::string& name,
                                  const std::string& base_model);
+  ScenarioBuilder& AddPostprocessedModel(
+      const std::string& name,
+      const std::string& base_model,
+      const std::string& postprocessor_model);
   ScenarioBuilder& AddUnsafeSolution(const std::string& use_case,
                                      const std::string& model);
   ScenarioBuilder& AddUnsafeSolution(const std::string& use_case,
