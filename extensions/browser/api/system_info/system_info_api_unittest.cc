@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -23,6 +24,7 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/api/system_storage.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +41,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
  public:
   struct Broadcast {
     Broadcast(events::HistogramValue histogram_value,
-              base::ListValue args,
+              scoped_refptr<const EventArgs> args,
               bool dispatch_to_off_the_record_profiles)
         : histogram_value(histogram_value),
           args(std::move(args)),
@@ -49,7 +51,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
     ~Broadcast() = default;
 
     events::HistogramValue histogram_value;
-    base::ListValue args;
+    scoped_refptr<const EventArgs> args;
     bool dispatch_to_off_the_record_profiles;
   };
 
@@ -72,7 +74,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
   void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::ListValue args,
+      scoped_refptr<const EventArgs> args,
       bool dispatch_to_off_the_record_profiles) override {
     event_name_to_broadcasts_map_[event_name].emplace_back(
         histogram_value, std::move(args), dispatch_to_off_the_record_profiles);
@@ -272,7 +274,8 @@ class SystemInfoAPITest : public testing::Test {
 
     return broadcasts.back().histogram_value ==
                events::SYSTEM_STORAGE_ON_ATTACHED &&
-           broadcasts.back().args == GetStorageAttachedArgs() &&
+           broadcasts.back().args &&
+           broadcasts.back().args->data == GetStorageAttachedArgs() &&
            !broadcasts.back().dispatch_to_off_the_record_profiles;
   }
 
@@ -300,7 +303,8 @@ class SystemInfoAPITest : public testing::Test {
 
     return broadcasts.back().histogram_value ==
                events::SYSTEM_STORAGE_ON_DETACHED &&
-           broadcasts.back().args == GetStorageDetachedArgs() &&
+           broadcasts.back().args &&
+           broadcasts.back().args->data == GetStorageDetachedArgs() &&
            !broadcasts.back().dispatch_to_off_the_record_profiles;
   }
 

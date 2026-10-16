@@ -12,6 +12,7 @@
 #include "extensions/browser/api/idle/idle_api_constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/idle.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
@@ -52,8 +53,8 @@ DefaultEventDelegate::~DefaultEventDelegate() {
 
 void DefaultEventDelegate::OnStateChanged(const ExtensionId& extension_id,
                                           ui::IdleState new_state) {
-  base::ListValue args;
-  args.Append(IdleManager::CreateIdleValue(new_state));
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(IdleManager::CreateIdleValue(new_state));
   auto event = std::make_unique<Event>(events::IDLE_ON_STATE_CHANGED,
                                        idle::OnStateChanged::kEventName,
                                        std::move(args), context_);

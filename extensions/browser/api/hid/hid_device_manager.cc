@@ -19,12 +19,14 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -290,9 +292,10 @@ void HidDeviceManager::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
     PopulateHidDeviceInfo(&api_device_info, *devices_[new_id]);
 
     if (api_device_info.collections.size() > 0) {
-      auto args(hid::OnDeviceAdded::Create(api_device_info));
+      auto event_args = base::MakeRefCounted<EventArgs>(
+          hid::OnDeviceAdded::Create(api_device_info));
       DispatchEvent(events::HID_ON_DEVICE_ADDED, hid::OnDeviceAdded::kEventName,
-                    std::move(args), *devices_[new_id]);
+                    std::move(event_args), *devices_[new_id]);
     }
   }
 }
@@ -309,9 +312,11 @@ void HidDeviceManager::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
 
   if (event_router_) {
     DCHECK(enumeration_ready_);
-    auto args(hid::OnDeviceRemoved::Create(resource_id));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        hid::OnDeviceRemoved::Create(resource_id));
     DispatchEvent(events::HID_ON_DEVICE_REMOVED,
-                  hid::OnDeviceRemoved::kEventName, std::move(args), *device);
+                  hid::OnDeviceRemoved::kEventName, std::move(event_args),
+                  *device);
   }
 
   // Remove permission entry for ephemeral hid device.
@@ -423,10 +428,10 @@ void HidDeviceManager::OnEnumerationComplete(
 void HidDeviceManager::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue event_args,
+    scoped_refptr<const EventArgs> event_args,
     const device::mojom::HidDeviceInfo& device_info) {
-  std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(event_args)));
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(event_args));
   // The |event->will_dispatch_callback| will be called synchronously, it is
   // safe to pass |device_info| by reference.
   event->will_dispatch_callback =

@@ -19,6 +19,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/test.h"
+#include "extensions/common/event_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -122,21 +123,21 @@ TEST_F(TestStartedAndFinishedEventQueueUnitTest, MultipleEventsFifoDispatch) {
   auto event_source_process =
       std::make_unique<content::MockRenderProcessHost>(browser_context());
 
-  base::ListValue first_started_args;
-  first_started_args.Append("testOne");
+  auto first_started_args = base::MakeRefCounted<EventArgs>();
+  first_started_args->data.Append("testOne");
   queue->EnqueueEvent(api::test::OnTestStarted::kEventName,
                       std::move(first_started_args),
                       event_source_process->GetID());
 
-  base::ListValue second_started_args;
-  second_started_args.Append("testTwo");
+  auto second_started_args = base::MakeRefCounted<EventArgs>();
+  second_started_args->data.Append("testTwo");
   queue->EnqueueEvent(api::test::OnTestStarted::kEventName,
                       std::move(second_started_args),
                       event_source_process->GetID());
 
-  base::ListValue finished_args;
-  finished_args.Append("testOne");
-  finished_args.Append(true);
+  auto finished_args = base::MakeRefCounted<EventArgs>();
+  finished_args->data.Append("testOne");
+  finished_args->data.Append(true);
   queue->EnqueueEvent(api::test::OnTestFinished::kEventName,
                       std::move(finished_args), event_source_process->GetID());
 
@@ -204,8 +205,8 @@ TEST_F(TestStartedAndFinishedEventQueueUnitTest, RemainingEventsRetention) {
   scoped_observation.Observe(event_router);
 
   // Example args for `chrome.test.onTestStarted`.
-  base::ListValue event_args;
-  event_args.Append("myTestName");
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append("myTestName");
 
   // Enqueue a test event from a renderer process.
   auto event_source_process =
@@ -282,8 +283,8 @@ TEST_F(TestStartedAndFinishedEventQueueUnitTest,
                                            same_process_details.extension_id);
 
   // Emit a test started event from `event_source_process`.
-  base::ListValue event_args;
-  event_args.Append("myTestName");
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append("myTestName");
   BroadcastOrQueueTestNotificationForTesting(
       browser_context(), api::test::OnTestStarted::kEventName,
       std::move(event_args), event_source_process->GetID());
@@ -331,8 +332,8 @@ TEST_F(TestStartedAndFinishedEventQueueUnitTest, URLListenerDispatch) {
   auto event_target_process =
       std::make_unique<content::MockRenderProcessHost>(browser_context());
 
-  base::ListValue event_args;
-  event_args.Append("myTestName");
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append("myTestName");
 
   queue->EnqueueEvent(api::test::OnTestStarted::kEventName,
                       std::move(event_args),
@@ -370,8 +371,8 @@ TEST_F(TestStartedAndFinishedEventQueueUnitTest, InvalidProcessFallback) {
   scoped_observation.Observe(event_router);
 
   // Example args for `chrome.test.onTestStarted`.
-  base::ListValue event_args;
-  event_args.Append("myTestName");
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append("myTestName");
 
   // Enqueue a test event with a null `ChildProcessId`.
   queue->EnqueueEvent(api::test::OnTestStarted::kEventName,

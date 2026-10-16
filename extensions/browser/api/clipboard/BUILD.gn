@@ -20,6 +20,7 @@ source_set("clipboard") {
     "//base",
     "//extensions/browser:browser_sources",
     "//extensions/browser/api:extensions_api_client",
+    "//extensions/common",
     "//extensions/common/api",
     "//ui/base/clipboard",
   ]

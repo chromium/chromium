@@ -21,6 +21,7 @@
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/event_args.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -593,11 +594,13 @@ void MediaPerceptionAPIManager::OnDetectionSignal(
   extensions::api::media_perception_private::MediaPerception media_perception =
       extensions::api::media_perception_private::MediaPerceptionProtoToIdl(
           media_perception_proto);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      extensions::api::media_perception_private::OnMediaPerception::Create(
+          media_perception));
   auto event = std::make_unique<Event>(
       events::MEDIA_PERCEPTION_PRIVATE_ON_MEDIA_PERCEPTION,
       extensions::api::media_perception_private::OnMediaPerception::kEventName,
-      extensions::api::media_perception_private::OnMediaPerception::Create(
-          media_perception));
+      std::move(event_args));
   router->BroadcastEvent(std::move(event));
 }
 

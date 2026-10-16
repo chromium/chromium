@@ -9,8 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/values.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -19,6 +20,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
+#include "extensions/common/extension_features.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -34,7 +37,7 @@ EventRouterForwarder::~EventRouterForwarder() = default;
 void EventRouterForwarder::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue event_args,
+    scoped_refptr<const EventArgs> event_args,
     bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -64,18 +67,13 @@ void EventRouterForwarder::BroadcastEventToRenderers(
     }
   }
 
-  // There should always be at least one profile when running as Chromium.
-  // However, some Chromium embedders are known to run without profiles, in
-  // which case there's nothing to dispatch to.
-  if (profiles_to_dispatch_to.size() == 0u)
-    return;
-
   for (Profile* profile_to_dispatch_to : profiles_to_dispatch_to) {
     CallEventRouter(
         profile_to_dispatch_to, histogram_value, event_name,
-        profile_to_dispatch_to != *std::prev(profiles_to_dispatch_to.end())
-            ? event_args.Clone()
-            : std::move(event_args));
+        base::FeatureList::IsEnabled(
+            extensions_features::kShareEventArgsOnDispatch)
+            ? event_args
+            : base::MakeRefCounted<EventArgs>(event_args->data.Clone()));
   }
 }
 
@@ -83,7 +81,7 @@ void EventRouterForwarder::CallEventRouter(
     Profile* profile,
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue event_args) {
+    scoped_refptr<const EventArgs> event_args) {
   auto* event_router = extensions::EventRouter::Get(profile);
   // Extension does not exist for chromeos login.  This needs to be
   // removed once we have an extension service for login screen.

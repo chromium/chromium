@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
@@ -23,6 +24,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/test.h"
+#include "extensions/common/event_args.h"
 
 namespace {
 
@@ -42,7 +44,7 @@ const char kNotTestProcessError[] =
 void BroadcastOrQueueTestNotification(
     content::BrowserContext* browser_context,
     const std::string& event_name,
-    base::ListValue event_details,
+    scoped_refptr<const extensions::EventArgs> event_details,
     content::ChildProcessId source_process_id) {
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(browser_context);
@@ -73,7 +75,7 @@ namespace extensions {
 void BroadcastOrQueueTestNotificationForTesting(
     content::BrowserContext* browser_context,
     const std::string& event_name,
-    base::ListValue event_details,
+    scoped_refptr<const EventArgs> event_details,
     content::ChildProcessId source_process_id) {
   BroadcastOrQueueTestNotification(browser_context, event_name,
                                    std::move(event_details), source_process_id);
@@ -213,7 +215,7 @@ void BrowserContextKeyedAPIFactory<
 }
 
 TestStartedAndFinishedEventQueue::QueuedEvent::QueuedEvent(
-    base::ListValue args,
+    scoped_refptr<const EventArgs> args,
     content::ChildProcessId source_process_id)
     : event_args(std::move(args)), source_process_id(source_process_id) {}
 
@@ -264,7 +266,7 @@ void TestStartedAndFinishedEventQueue::Shutdown() {
 // queue for `event_name`.
 void TestStartedAndFinishedEventQueue::EnqueueEvent(
     const std::string& event_name,
-    base::ListValue event_args,
+    scoped_refptr<const EventArgs> event_args,
     content::ChildProcessId source_process_id) {
   pending_events_[event_name].emplace_back(std::move(event_args),
                                            source_process_id);
@@ -351,10 +353,10 @@ ExtensionFunction::ResponseAction TestNotifyTestStartedFunction::Run() {
       api::test::NotifyTestStarted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::ListValue event_details;
+  auto event_details = base::MakeRefCounted<EventArgs>();
   base::DictValue info;
   info.Set("testName", params->test_name);
-  event_details.Append(std::move(info));
+  event_details->data.Append(std::move(info));
 
   BroadcastOrQueueTestNotification(
       browser_context(), api::test::OnTestStarted::kEventName,
@@ -371,7 +373,7 @@ ExtensionFunction::ResponseAction TestNotifyTestFinishedFunction::Run() {
       api::test::NotifyTestFinished::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::ListValue event_details;
+  auto event_details = base::MakeRefCounted<EventArgs>();
   base::DictValue info;
   info.Set("testName", params->test_name);
   info.Set("result", params->result);
@@ -380,7 +382,7 @@ ExtensionFunction::ResponseAction TestNotifyTestFinishedFunction::Run() {
   if (params->message) {
     info.Set("message", *params->message);
   }
-  event_details.Append(std::move(info));
+  event_details->data.Append(std::move(info));
 
   BroadcastOrQueueTestNotification(
       browser_context(), api::test::OnTestFinished::kEventName,

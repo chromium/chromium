@@ -12,12 +12,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/common/api/hid.h"
+#include "extensions/common/event_args.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -117,7 +119,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::ListValue event_args,
+                     scoped_refptr<const EventArgs> event_args,
                      const device::mojom::HidDeviceInfo& device_info);
 
   base::ThreadChecker thread_checker_;

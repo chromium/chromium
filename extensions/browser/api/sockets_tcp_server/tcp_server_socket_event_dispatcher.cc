@@ -14,6 +14,7 @@
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
@@ -160,10 +161,11 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     sockets_tcp_server::AcceptInfo accept_info;
     accept_info.socket_id = params.socket_id;
     accept_info.client_socket_id = client_socket_id;
-    auto args = sockets_tcp_server::OnAccept::Create(accept_info);
-    std::unique_ptr<Event> event(
-        new Event(events::SOCKETS_TCP_SERVER_ON_ACCEPT,
-                  sockets_tcp_server::OnAccept::kEventName, std::move(args)));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        sockets_tcp_server::OnAccept::Create(accept_info));
+    auto event = std::make_unique<Event>(
+        events::SOCKETS_TCP_SERVER_ON_ACCEPT,
+        sockets_tcp_server::OnAccept::kEventName, std::move(event_args));
     PostEvent(params, std::move(event));
 
     // Post a task to delay the "accept" until the socket is available, as
@@ -178,10 +180,11 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     sockets_tcp_server::AcceptErrorInfo accept_error_info;
     accept_error_info.socket_id = params.socket_id;
     accept_error_info.result_code = result_code;
-    auto args = sockets_tcp_server::OnAcceptError::Create(accept_error_info);
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        sockets_tcp_server::OnAcceptError::Create(accept_error_info));
     auto event = std::make_unique<Event>(
         events::SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR,
-        sockets_tcp_server::OnAcceptError::kEventName, std::move(args));
+        sockets_tcp_server::OnAcceptError::kEventName, std::move(event_args));
     PostEvent(params, std::move(event));
 
     // Since we got an error, the socket is now "paused" until the application

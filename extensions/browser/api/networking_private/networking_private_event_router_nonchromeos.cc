@@ -10,6 +10,7 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate_observer.h"
 #include "extensions/browser/api/networking_private/networking_private_event_router.h"
 #include "extensions/common/api/networking_private.h"
+#include "extensions/common/event_args.h"
 
 namespace extensions {
 
@@ -163,10 +164,12 @@ void NetworkingPrivateEventRouterImpl::OnNetworksChangedEvent(
   if (!event_router) {
     return;
   }
-  auto args(api::networking_private::OnNetworksChanged::Create(network_guids));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnNetworksChanged::Create(network_guids));
   auto netchanged_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_NETWORKS_CHANGED,
-      api::networking_private::OnNetworksChanged::kEventName, std::move(args));
+      api::networking_private::OnNetworksChanged::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(netchanged_event));
 }
 
@@ -176,12 +179,12 @@ void NetworkingPrivateEventRouterImpl::OnNetworkListChangedEvent(
   if (!event_router) {
     return;
   }
-  auto args(
+  auto event_args = base::MakeRefCounted<EventArgs>(
       api::networking_private::OnNetworkListChanged::Create(network_guids));
-  std::unique_ptr<Event> netlistchanged_event(
-      new Event(events::NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED,
-                api::networking_private::OnNetworkListChanged::kEventName,
-                std::move(args)));
+  auto netlistchanged_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED,
+      api::networking_private::OnNetworkListChanged::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(netlistchanged_event));
 }
 
@@ -191,11 +194,12 @@ void NetworkingPrivateEventRouterImpl::OnDeviceStateListChanged() {
     return;
   }
 
-  auto args(api::networking_private::OnDeviceStateListChanged::Create());
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnDeviceStateListChanged::Create());
   auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_DEVICE_STATE_LIST_CHANGED,
       api::networking_private::OnDeviceStateListChanged::kEventName,
-      std::move(args));
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
@@ -207,12 +211,13 @@ void NetworkingPrivateEventRouterImpl::OnPortalDetectionCompleted(
     return;
   }
 
-  auto args(api::networking_private::OnPortalDetectionCompleted::Create(
-      guid, status));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnPortalDetectionCompleted::Create(guid,
+                                                                  status));
   auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_PORTAL_DETECTION_COMPLETED,
       api::networking_private::OnPortalDetectionCompleted::kEventName,
-      std::move(args));
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
@@ -222,11 +227,12 @@ void NetworkingPrivateEventRouterImpl::OnCertificateListsChanged() {
     return;
   }
 
-  auto args(api::networking_private::OnCertificateListsChanged::Create());
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnCertificateListsChanged::Create());
   auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_CERTIFICATE_LISTS_CHANGED,
       api::networking_private::OnCertificateListsChanged::kEventName,
-      std::move(args));
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 

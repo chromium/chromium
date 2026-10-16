@@ -83,6 +83,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "ui/base/page_transition_types.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -595,7 +596,7 @@ ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue args,
+    scoped_refptr<const EventArgs> args,
     bool dispatch_to_off_the_record_profiles) {
   event_router_forwarder_->BroadcastEventToRenderers(
       histogram_value, event_name, std::move(args),

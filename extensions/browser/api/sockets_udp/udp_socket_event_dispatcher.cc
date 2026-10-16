@@ -10,11 +10,13 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/socket/udp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
@@ -140,10 +142,11 @@ void UDPSocketEventDispatcher::ReceiveCallback(
         base::ToVector(io_buffer->first(static_cast<size_t>(bytes_read)));
     receive_info.remote_address = address;
     receive_info.remote_port = port;
-    auto args = sockets_udp::OnReceive::Create(receive_info);
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        sockets_udp::OnReceive::Create(receive_info));
     auto event = std::make_unique<Event>(events::SOCKETS_UDP_ON_RECEIVE,
                                          sockets_udp::OnReceive::kEventName,
-                                         std::move(args));
+                                         std::move(event_args));
     PostEvent(params, std::move(event));
 
     // Post a task to delay the read until the socket is available, as
@@ -163,10 +166,11 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     sockets_udp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    auto args = sockets_udp::OnReceiveError::Create(receive_error_info);
-    std::unique_ptr<Event> event(
-        new Event(events::SOCKETS_UDP_ON_RECEIVE_ERROR,
-                  sockets_udp::OnReceiveError::kEventName, std::move(args)));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        sockets_udp::OnReceiveError::Create(receive_error_info));
+    auto event = std::make_unique<Event>(
+        events::SOCKETS_UDP_ON_RECEIVE_ERROR,
+        sockets_udp::OnReceiveError::kEventName, std::move(event_args));
     PostEvent(params, std::move(event));
 
     // Do not try to access |socket| when we are destroying it.

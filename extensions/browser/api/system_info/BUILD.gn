@@ -23,6 +23,7 @@ source_set("system_info") {
 
   deps = [
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 

@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +43,7 @@ class MockEventRouterForwarder : public EventRouterForwarder {
   void CallEventRouter(Profile* profile,
                        events::HistogramValue histogram_value,
                        const std::string& event_name,
-                       base::ListValue args) override {
+                       scoped_refptr<const EventArgs> args) override {
     CallEventRouter(profile, histogram_value, event_name);
   }
 
@@ -56,7 +57,7 @@ static void BroadcastEventToRenderers(
     const std::string& event_name,
     bool dispatch_to_off_the_record_profiles) {
   event_router->BroadcastEventToRenderers(histogram_value, event_name,
-                                          base::ListValue(),
+                                          base::MakeRefCounted<EventArgs>(),
                                           dispatch_to_off_the_record_profiles);
 }
 

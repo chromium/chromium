@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -44,6 +45,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
@@ -1154,11 +1156,11 @@ void ManagementEventRouter::BroadcastEvent(
   if (!ShouldExposeViaManagementAPI(*extension)) {
     return;
   }
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   if (event_name == management::OnUninstalled::kEventName) {
-    args.Append(extension->id());
+    args->data.Append(extension->id());
   } else {
-    args.Append(
+    args->data.Append(
         CreateExtensionInfo(nullptr, *extension, browser_context_).ToValue());
   }
 

@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth_low_energy.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -408,12 +409,12 @@ class BluetoothLowEnergyEventRouter
       const std::string& event_name,
       const device::BluetoothUUID& uuid,
       const std::string& characteristic_id,
-      base::ListValue args);
+      scoped_refptr<const EventArgs> event_args);
 
   void DispatchEventToExtension(const ExtensionId& extension_id,
                                 events::HistogramValue histogram_value,
                                 const std::string& event_name,
-                                base::ListValue args);
+                                scoped_refptr<const EventArgs> event_args);
 
   // Returns a BluetoothRemoteGattService by its instance ID `instance_id`.
   // Returns

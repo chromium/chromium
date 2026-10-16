@@ -13,7 +13,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -29,6 +31,7 @@
 #include "extensions/common/api/cookies.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/stack_frame.h"
@@ -159,7 +162,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
       !change.cookie.PartitionKey()->IsSerializeable()) {
     return;
   }
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   base::DictValue dict;
   dict.Set(kRemovedKey,
            change.cause != net::CookieChangeCause::INSERTED &&
@@ -215,7 +218,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
   }
   dict.Set(kCauseKey, cause_dict_entry);
 
-  args.Append(std::move(dict));
+  args->data.Append(std::move(dict));
 
   DispatchEvent(context, events::COOKIES_ON_CHANGED,
                 api::cookies::OnChanged::kEventName, std::move(args),
@@ -280,11 +283,12 @@ void CookiesEventRouter::OnConnectionError(
   MaybeStartListening();
 }
 
-void CookiesEventRouter::DispatchEvent(content::BrowserContext* context,
-                                       events::HistogramValue histogram_value,
-                                       const std::string& event_name,
-                                       base::ListValue event_args,
-                                       const GURL& cookie_domain) {
+void CookiesEventRouter::DispatchEvent(
+    content::BrowserContext* context,
+    events::HistogramValue histogram_value,
+    const std::string& event_name,
+    scoped_refptr<const EventArgs> event_args,
+    const GURL& cookie_domain) {
   EventRouter* router = context ? EventRouter::Get(context) : nullptr;
   if (!router) {
     return;

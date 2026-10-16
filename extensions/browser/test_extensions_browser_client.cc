@@ -5,6 +5,7 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/test_runtime_api_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/url_pattern_set.h"
@@ -356,7 +358,7 @@ TestExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void TestExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue args,
+    scoped_refptr<const EventArgs> args,
     bool dispatch_to_off_the_record_profiles) {}
 
 ExtensionCache* TestExtensionsBrowserClient::GetExtensionCache() {

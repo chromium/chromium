@@ -13,6 +13,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/api/bluetooth.h"
 #include "extensions/common/api/bluetooth_private.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -409,11 +411,12 @@ void BluetoothEventRouter::DeviceAddressChanged(
   bluetooth::Device extension_device;
   bluetooth::BluetoothDeviceToApiDevice(*device, &extension_device);
 
-  auto args =
-      bt_private::OnDeviceAddressChanged::Create(extension_device, old_address);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bt_private::OnDeviceAddressChanged::Create(extension_device,
+                                                 old_address));
   auto event = std::make_unique<Event>(
       events::BLUETOOTH_PRIVATE_ON_DEVICE_ADDRESS_CHANGED,
-      bt_private::OnDeviceAddressChanged::kEventName, std::move(args));
+      bt_private::OnDeviceAddressChanged::kEventName, std::move(event_args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 
@@ -449,10 +452,11 @@ void BluetoothEventRouter::DispatchAdapterStateEvent() {
   CHECK(adapter_.get());
   PopulateAdapterState(*adapter_, &state);
 
-  auto args = bluetooth::OnAdapterStateChanged::Create(state);
-  std::unique_ptr<Event> event(
-      new Event(events::BLUETOOTH_ON_ADAPTER_STATE_CHANGED,
-                bluetooth::OnAdapterStateChanged::kEventName, std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bluetooth::OnAdapterStateChanged::Create(state));
+  auto event = std::make_unique<Event>(
+      events::BLUETOOTH_ON_ADAPTER_STATE_CHANGED,
+      bluetooth::OnAdapterStateChanged::kEventName, std::move(event_args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 
@@ -464,9 +468,10 @@ void BluetoothEventRouter::DispatchDeviceEvent(
   CHECK(device);
   bluetooth::BluetoothDeviceToApiDevice(*device, &extension_device);
 
-  auto args = bluetooth::OnDeviceAdded::Create(extension_device);
-  std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bluetooth::OnDeviceAdded::Create(extension_device));
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(event_args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

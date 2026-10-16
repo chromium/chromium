@@ -10,11 +10,13 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 
@@ -155,10 +157,11 @@ void TCPSocketEventDispatcher::ReadCallback(
     receive_info.socket_id = params.socket_id;
     receive_info.data =
         base::ToVector(io_buffer->first(static_cast<size_t>(bytes_read)));
-    auto args = sockets_tcp::OnReceive::Create(receive_info);
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        sockets_tcp::OnReceive::Create(receive_info));
     auto event = std::make_unique<Event>(events::SOCKETS_TCP_ON_RECEIVE,
                                          sockets_tcp::OnReceive::kEventName,
-                                         std::move(args));
+                                         std::move(event_args));
     PostEvent(params, std::move(event));
 
     // Post a task to delay the read until the socket is available, as
@@ -176,10 +179,11 @@ void TCPSocketEventDispatcher::ReadCallback(
     sockets_tcp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    auto args = sockets_tcp::OnReceiveError::Create(receive_error_info);
-    std::unique_ptr<Event> event(
-        new Event(events::SOCKETS_TCP_ON_RECEIVE_ERROR,
-                  sockets_tcp::OnReceiveError::kEventName, std::move(args)));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        sockets_tcp::OnReceiveError::Create(receive_error_info));
+    auto event = std::make_unique<Event>(
+        events::SOCKETS_TCP_ON_RECEIVE_ERROR,
+        sockets_tcp::OnReceiveError::kEventName, std::move(event_args));
     PostEvent(params, std::move(event));
 
     // Do not try to access |socket| when we are destroying it.

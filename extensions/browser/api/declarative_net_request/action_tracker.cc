@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -435,8 +436,8 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
   matched_rule_info_debug.rule = std::move(matched_rule);
   matched_rule_info_debug.request = std::move(request_details);
 
-  base::ListValue args;
-  args.Append(matched_rule_info_debug.ToValue());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(matched_rule_info_debug.ToValue());
 
   auto event = std::make_unique<Event>(
       events::DECLARATIVE_NET_REQUEST_ON_RULE_MATCHED_DEBUG,

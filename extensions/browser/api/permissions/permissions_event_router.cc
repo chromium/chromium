@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "extensions/browser/api/permissions/permissions_api_helpers.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/permissions.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
 
@@ -54,10 +56,10 @@ void PermissionsEventRouter::OnExtensionPermissionsUpdated(
   }
 
   // Trigger the onAdded and onRemoved events in the extension.
-  base::ListValue event_args;
+  auto event_args = base::MakeRefCounted<EventArgs>();
   std::unique_ptr<api::permissions::Permissions> packed_permissions =
       permissions_api_helpers::PackPermissionSet(permissions);
-  event_args.Append(packed_permissions->ToValue());
+  event_args->data.Append(packed_permissions->ToValue());
   auto event = std::make_unique<Event>(histogram_value, event_name,
                                        std::move(event_args), browser_context_);
   // `event_router_` may be null in tests.

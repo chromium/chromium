@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/networking_private.h"
+#include "extensions/common/event_args.h"
 
 using ::ash::DeviceState;
 using ::ash::NetworkHandler;
@@ -194,11 +195,12 @@ void NetworkingPrivateEventRouterImpl::NetworkListChanged() {
     changes.push_back((*iter)->guid());
   }
 
-  auto args(api::networking_private::OnNetworkListChanged::Create(changes));
-  std::unique_ptr<Event> extension_event(
-      new Event(events::NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED,
-                api::networking_private::OnNetworkListChanged::kEventName,
-                std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnNetworkListChanged::Create(changes));
+  auto extension_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED,
+      api::networking_private::OnNetworkListChanged::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
@@ -209,11 +211,12 @@ void NetworkingPrivateEventRouterImpl::DeviceListChanged() {
     return;
   }
 
-  auto args(api::networking_private::OnDeviceStateListChanged::Create());
-  std::unique_ptr<Event> extension_event(
-      new Event(events::NETWORKING_PRIVATE_ON_DEVICE_STATE_LIST_CHANGED,
-                api::networking_private::OnDeviceStateListChanged::kEventName,
-                std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnDeviceStateListChanged::Create());
+  auto extension_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_DEVICE_STATE_LIST_CHANGED,
+      api::networking_private::OnDeviceStateListChanged::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
@@ -229,11 +232,13 @@ void NetworkingPrivateEventRouterImpl::NetworkPropertiesUpdated(
   }
   NET_LOG(EVENT) << "NetworkingPrivate.NetworkPropertiesUpdated: "
                  << NetworkId(network);
-  auto args(api::networking_private::OnNetworksChanged::Create(
-      std::vector<std::string>(1, network->guid())));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnNetworksChanged::Create(
+          std::vector<std::string>(1, network->guid())));
   auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_NETWORKS_CHANGED,
-      api::networking_private::OnNetworksChanged::kEventName, std::move(args));
+      api::networking_private::OnNetworksChanged::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
@@ -274,11 +279,12 @@ void NetworkingPrivateEventRouterImpl::OnCertificatesChanged() {
   }
   NET_LOG(EVENT) << "NetworkingPrivate.OnCertificatesChanged";
 
-  auto args(api::networking_private::OnCertificateListsChanged::Create());
-  std::unique_ptr<Event> extension_event(
-      new Event(events::NETWORKING_PRIVATE_ON_CERTIFICATE_LISTS_CHANGED,
-                api::networking_private::OnCertificateListsChanged::kEventName,
-                std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnCertificateListsChanged::Create());
+  auto extension_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_CERTIFICATE_LISTS_CHANGED,
+      api::networking_private::OnCertificateListsChanged::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
@@ -298,12 +304,13 @@ void NetworkingPrivateEventRouterImpl::PortalStateChanged(
   NET_LOG(EVENT) << "NetworkingPrivate.OnPortalDetectionCompleted: "
                  << (network ? NetworkId(network) : "");
 
-  auto args(api::networking_private::OnPortalDetectionCompleted::Create(
-      guid, GetCaptivePortalStatus(network)));
-  std::unique_ptr<Event> extension_event(
-      new Event(events::NETWORKING_PRIVATE_ON_PORTAL_DETECTION_COMPLETED,
-                api::networking_private::OnPortalDetectionCompleted::kEventName,
-                std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::networking_private::OnPortalDetectionCompleted::Create(
+          guid, GetCaptivePortalStatus(network)));
+  auto extension_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_PORTAL_DETECTION_COMPLETED,
+      api::networking_private::OnPortalDetectionCompleted::kEventName,
+      std::move(event_args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 

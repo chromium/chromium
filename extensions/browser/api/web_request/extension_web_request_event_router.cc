@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -60,6 +61,7 @@
 #include "extensions/common/api/web_request/web_request_constants.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -277,13 +279,12 @@ void SendOnMessageEventOnUI(
     return;
   }
 
-  base::ListValue event_args;
-  event_args.Append(event_details->GetAndClearDict());
+  auto event_args = base::MakeRefCounted<EventArgs>();
+  event_args->data.Append(event_details->GetAndClearDict());
 
   EventRouter* event_router = EventRouter::Get(browser_context);
 
-  mojom::EventFilteringInfoPtr event_filtering_info =
-      mojom::EventFilteringInfo::New();
+  auto event_filtering_info = mojom::EventFilteringInfo::New();
 
   events::HistogramValue histogram_value = events::UNKNOWN;
   std::string event_name;
@@ -326,10 +327,12 @@ void NotifyIgnoredActionsOnUI(
               ignored_action.action_type);
 
     details.action = ignored_action.action_type;
-    auto event = std::make_unique<Event>(
-        events::WEB_REQUEST_ON_ACTION_IGNORED,
-        web_request::OnActionIgnored::kEventName,
-        web_request::OnActionIgnored::Create(details), browser_context);
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        web_request::OnActionIgnored::Create(details));
+    auto event =
+        std::make_unique<Event>(events::WEB_REQUEST_ON_ACTION_IGNORED,
+                                web_request::OnActionIgnored::kEventName,
+                                std::move(event_args), browser_context);
     event_router->DispatchEventToExtension(ignored_action.extension_id,
                                            std::move(event));
   }

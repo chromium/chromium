@@ -30,5 +30,6 @@ source_set("audio") {
     "//chromeos/ash/components/audio",
     "//components/prefs",
     "//content/public/browser",
+    "//extensions/common",
   ]
 }

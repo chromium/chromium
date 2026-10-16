@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/values.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -36,7 +37,7 @@ class EventRouterForwarder
   // Safe to call on any thread.
   void BroadcastEventToRenderers(events::HistogramValue histogram_value,
                                  const std::string& event_name,
-                                 base::ListValue event_args,
+                                 scoped_refptr<const EventArgs> event_args,
                                  bool dispatch_to_off_the_record_profiles);
 
  protected:
@@ -48,7 +49,7 @@ class EventRouterForwarder
   virtual void CallEventRouter(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
-                               base::ListValue event_args);
+                               scoped_refptr<const EventArgs> event_args);
 
  private:
   friend class base::RefCountedThreadSafe<EventRouterForwarder>;

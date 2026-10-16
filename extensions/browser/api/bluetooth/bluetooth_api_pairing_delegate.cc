@@ -14,6 +14,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/bluetooth_private.h"
+#include "extensions/common/event_args.h"
 
 namespace extensions {
 
@@ -101,10 +102,11 @@ void BluetoothApiPairingDelegate::AuthorizePairing(
 
 void BluetoothApiPairingDelegate::DispatchPairingEvent(
     const bt_private::PairingEvent& pairing_event) {
-  auto args = bt_private::OnPairing::Create(pairing_event);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bt_private::OnPairing::Create(pairing_event));
   auto event = std::make_unique<Event>(events::BLUETOOTH_PRIVATE_ON_PAIRING,
                                        bt_private::OnPairing::kEventName,
-                                       std::move(args));
+                                       std::move(event_args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

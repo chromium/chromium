@@ -17,6 +17,7 @@
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -147,10 +148,11 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     serial::ReceiveInfo receive_info;
     receive_info.connection_id = params.connection_id;
     receive_info.data = std::move(data);
-    auto args = serial::OnReceive::Create(receive_info);
-    std::unique_ptr<extensions::Event> event(
-        new extensions::Event(extensions::events::SERIAL_ON_RECEIVE,
-                              serial::OnReceive::kEventName, std::move(args)));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        serial::OnReceive::Create(receive_info));
+    auto event = std::make_unique<extensions::Event>(
+        extensions::events::SERIAL_ON_RECEIVE, serial::OnReceive::kEventName,
+        std::move(event_args));
     DispatchEvent(params, std::move(event));
   }
 
@@ -164,10 +166,11 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     serial::ReceiveErrorInfo error_info;
     error_info.connection_id = params.connection_id;
     error_info.error = error;
-    auto args = serial::OnReceiveError::Create(error_info);
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        serial::OnReceiveError::Create(error_info));
     auto event = std::make_unique<extensions::Event>(
         extensions::events::SERIAL_ON_RECEIVE_ERROR,
-        serial::OnReceiveError::kEventName, std::move(args));
+        serial::OnReceiveError::kEventName, std::move(event_args));
     DispatchEvent(params, std::move(event));
   }
 }

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -30,6 +31,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -311,8 +313,8 @@ bool MimeHandlerViewGuest::PluginDoSave() {
   if (!attached() || !plugin_can_save_)
     return false;
 
-  base::ListValue args;
-  args.Append(stream_->stream_url().spec());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(stream_->stream_url().spec());
 
   auto event =
       std::make_unique<Event>(events::MIME_HANDLER_PRIVATE_SAVE,

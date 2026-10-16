@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/bluetooth_socket.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/io_buffer.h"
 
@@ -217,10 +219,11 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
   receive_info.socket_id = params.socket_id;
   receive_info.data =
       base::ToVector(io_buffer->first(static_cast<size_t>(bytes_read)));
-  auto args = bluetooth_socket::OnReceive::Create(receive_info);
-  std::unique_ptr<Event> event(
-      new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE,
-                bluetooth_socket::OnReceive::kEventName, std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bluetooth_socket::OnReceive::Create(receive_info));
+  auto event = std::make_unique<Event>(events::BLUETOOTH_SOCKET_ON_RECEIVE,
+                                       bluetooth_socket::OnReceive::kEventName,
+                                       std::move(event_args));
   PostEvent(params, std::move(event));
 
   // Post a task to delay the read until the socket is available, as
@@ -251,10 +254,11 @@ void BluetoothSocketEventDispatcher::ReceiveErrorCallback(
   receive_error_info.socket_id = params.socket_id;
   receive_error_info.error_message = error;
   receive_error_info.error = MapReceiveErrorReason(error_reason);
-  auto args = bluetooth_socket::OnReceiveError::Create(receive_error_info);
-  std::unique_ptr<Event> event(
-      new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE_ERROR,
-                bluetooth_socket::OnReceiveError::kEventName, std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bluetooth_socket::OnReceiveError::Create(receive_error_info));
+  auto event = std::make_unique<Event>(
+      events::BLUETOOTH_SOCKET_ON_RECEIVE_ERROR,
+      bluetooth_socket::OnReceiveError::kEventName, std::move(event_args));
   PostEvent(params, std::move(event));
 
   // Since we got an error, the socket is now "paused" until the application
@@ -312,10 +316,11 @@ void BluetoothSocketEventDispatcher::AcceptCallback(
   bluetooth_socket::AcceptInfo accept_info;
   accept_info.socket_id = params.socket_id;
   accept_info.client_socket_id = client_socket_id;
-  auto args = bluetooth_socket::OnAccept::Create(accept_info);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bluetooth_socket::OnAccept::Create(accept_info));
   auto event = std::make_unique<Event>(events::BLUETOOTH_SOCKET_ON_ACCEPT,
                                        bluetooth_socket::OnAccept::kEventName,
-                                       std::move(args));
+                                       std::move(event_args));
   PostEvent(params, std::move(event));
 
   // Post a task to delay the accept until the socket is available, as
@@ -346,10 +351,11 @@ void BluetoothSocketEventDispatcher::AcceptErrorCallback(
   accept_error_info.socket_id = params.socket_id;
   accept_error_info.error_message = error;
   accept_error_info.error = MapAcceptErrorReason(error_reason);
-  auto args = bluetooth_socket::OnAcceptError::Create(accept_error_info);
-  std::unique_ptr<Event> event(
-      new Event(events::BLUETOOTH_SOCKET_ON_ACCEPT_ERROR,
-                bluetooth_socket::OnAcceptError::kEventName, std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bluetooth_socket::OnAcceptError::Create(accept_error_info));
+  auto event = std::make_unique<Event>(
+      events::BLUETOOTH_SOCKET_ON_ACCEPT_ERROR,
+      bluetooth_socket::OnAcceptError::kEventName, std::move(event_args));
   PostEvent(params, std::move(event));
 
   // Since we got an error, the socket is now "paused" until the application

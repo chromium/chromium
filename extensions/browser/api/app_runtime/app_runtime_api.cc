@@ -18,6 +18,7 @@
 #include "extensions/browser/granted_file_entry.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "url/gurl.h"
@@ -34,8 +35,8 @@ void DispatchOnEmbedRequestedEventImpl(
     const ExtensionId& extension_id,
     base::DictValue app_embedding_request_data,
     content::BrowserContext* context) {
-  base::ListValue args;
-  args.Append(std::move(app_embedding_request_data));
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(std::move(app_embedding_request_data));
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_EMBED_REQUESTED,
       app_runtime::OnEmbedRequested::kEventName, std::move(args), context);
@@ -60,8 +61,8 @@ void DispatchOnLaunchedEventImpl(const ExtensionId& extension_id,
   launch_data.Set("isPublicSession",
                   ExtensionsBrowserClient::Get()->IsLoggedInAsPublicAccount());
 
-  base::ListValue args;
-  args.Append(std::move(launch_data));
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(std::move(launch_data));
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
                                        app_runtime::OnLaunched::kEventName,
                                        std::move(args), context);
@@ -190,9 +191,10 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
 void AppRuntimeEventRouter::DispatchOnRestartedEvent(
     BrowserContext* context,
     const Extension* extension) {
+  auto event_args = base::MakeRefCounted<EventArgs>();
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_RESTARTED,
                                        app_runtime::OnRestarted::kEventName,
-                                       base::ListValue(), context);
+                                       std::move(event_args), context);
   EventRouter::Get(context)->DispatchEventToExtension(extension->id(),
                                                       std::move(event));
 }

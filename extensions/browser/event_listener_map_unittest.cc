@@ -93,10 +93,10 @@ class EventListenerMapTest : public ExtensionsTest {
 
   std::unique_ptr<Event> CreateEvent(const std::string& event_name,
                                      const GURL& url) {
-    mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+    auto info = mojom::EventFilteringInfo::New();
     info->url = url;
     return std::make_unique<Event>(
-        events::FOR_TEST, event_name, base::ListValue(), nullptr,
+        events::FOR_TEST, event_name, /*event_args=*/nullptr, nullptr,
         /*restrict_to_context_type=*/std::nullopt, GURL(),
         EventRouter::UserGestureState::kUnknown, std::move(info));
   }
@@ -644,10 +644,10 @@ class StateCheckingDelegate : public EventListenerMap::Delegate {
     // Simulate an event match check during the OnListenerRemoved callback.
     // If the EventFilter is not updated before this callback is fired, it
     // will incorrectly return the removed listener as a match.
-    mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+    auto info = mojom::EventFilteringInfo::New();
     info->url = GURL("http://www.google.com");
-    Event event(events::FOR_TEST, kEvent1Name, base::ListValue(), nullptr,
-                std::nullopt, GURL(), EventRouter::UserGestureState::kUnknown,
+    Event event(events::FOR_TEST, kEvent1Name, nullptr, nullptr, std::nullopt,
+                GURL(), EventRouter::UserGestureState::kUnknown,
                 std::move(info));
     std::set<const EventListener*> targets =
         listeners_->GetEventListeners(event);

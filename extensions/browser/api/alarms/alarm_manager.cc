@@ -28,6 +28,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/api/alarms.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -53,8 +54,8 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
   ~DefaultAlarmDelegate() override {}
 
   void OnAlarm(const ExtensionId& extension_id, const Alarm& alarm) override {
-    base::ListValue args;
-    args.Append(alarm.js_alarm->ToValue());
+    auto args = base::MakeRefCounted<EventArgs>();
+    args->data.Append(alarm.js_alarm->ToValue());
     auto event = std::make_unique<Event>(events::ALARMS_ON_ALARM,
                                          alarms::OnAlarm::kEventName,
                                          std::move(args), browser_context_);

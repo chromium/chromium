@@ -38,6 +38,7 @@ source_set("proxy_api") {
     "//content/public/browser",
     "//extensions/browser:browser_sources",
     "//extensions/buildflags",
+    "//extensions/common",
     "//net",
   ]
 }

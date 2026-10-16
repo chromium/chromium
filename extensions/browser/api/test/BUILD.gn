@@ -25,6 +25,7 @@ source_set("test") {
     "//content/public/browser",
     "//content/public/common",
     "//extensions/browser/api:extensions_api_client",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 }

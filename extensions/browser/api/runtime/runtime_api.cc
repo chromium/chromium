@@ -12,9 +12,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
@@ -45,7 +47,9 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -164,9 +168,10 @@ void DispatchOnStartupEventImpl(
     }
   }
 
+  auto event_args = base::MakeRefCounted<EventArgs>();
   auto event = std::make_unique<Event>(events::RUNTIME_ON_STARTUP,
                                        runtime::OnStartup::kEventName,
-                                       base::ListValue());
+                                       std::move(event_args));
   EventRouter::Get(browser_context)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -612,7 +617,7 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
     return;
   }
 
-  base::ListValue event_args;
+  auto event_args = base::MakeRefCounted<EventArgs>();
   base::DictValue info;
   if (old_version.IsValid()) {
     info.Set(kInstallReason, kInstallReasonUpdate);
@@ -622,7 +627,7 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
   } else {
     info.Set(kInstallReason, kInstallReasonInstall);
   }
-  event_args.Append(std::move(info));
+  event_args->data.Append(std::move(info));
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
   auto event = std::make_unique<Event>(events::RUNTIME_ON_INSTALLED,
@@ -639,17 +644,20 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
           ExtensionsBrowserClient::Get()
               ->GetSharedModuleService(context)
               ->GetDependentExtensions(extension);
+      auto sm_event_args = base::MakeRefCounted<EventArgs>();
+      base::DictValue sm_info;
+      sm_info.Set(kInstallReason, kInstallReasonSharedModuleUpdate);
+      sm_info.Set(kInstallPreviousVersion, old_version.GetString());
+      sm_info.Set(kInstallId, extension_id);
+      sm_event_args->data.Append(std::move(sm_info));
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end(); i++) {
-        base::ListValue sm_event_args;
-        base::DictValue sm_info;
-        sm_info.Set(kInstallReason, kInstallReasonSharedModuleUpdate);
-        sm_info.Set(kInstallPreviousVersion, old_version.GetString());
-        sm_info.Set(kInstallId, extension_id);
-        sm_event_args.Append(std::move(sm_info));
         auto sm_event = std::make_unique<Event>(
             events::RUNTIME_ON_INSTALLED, runtime::OnInstalled::kEventName,
-            std::move(sm_event_args));
+            base::FeatureList::IsEnabled(
+                extensions_features::kShareEventArgsOnDispatch)
+                ? sm_event_args
+                : base::MakeRefCounted<EventArgs>(sm_event_args->data.Clone()));
         event_router->DispatchEventWithLazyListener((*i)->id(),
                                                     std::move(sm_event));
       }
@@ -673,9 +681,9 @@ void RuntimeEventRouter::DispatchOnEnabledEvent(
 
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
-  auto event = std::make_unique<Event>(events::RUNTIME_ON_ENABLED,
-                                       runtime::OnEnabled::kEventName,
-                                       runtime::OnEnabled::Create());
+  auto event = std::make_unique<Event>(
+      events::RUNTIME_ON_ENABLED, runtime::OnEnabled::kEventName,
+      base::MakeRefCounted<EventArgs>(runtime::OnEnabled::Create()));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -753,10 +761,11 @@ void RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
     details.previous_version = *previous_version;
   }
 
-  auto event =
-      std::make_unique<Event>(events::RUNTIME_ON_EXTENSION_LOADED,
-                              runtime::OnExtensionLoaded::kEventName,
-                              api::runtime::OnExtensionLoaded::Create(details));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::runtime::OnExtensionLoaded::Create(details));
+  auto event = std::make_unique<Event>(events::RUNTIME_ON_EXTENSION_LOADED,
+                                       runtime::OnExtensionLoaded::kEventName,
+                                       std::move(event_args));
 
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -771,8 +780,8 @@ void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
     return;
   }
 
-  base::ListValue args;
-  args.Append(manifest->Clone());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(manifest->Clone());
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
   auto event = std::make_unique<Event>(events::RUNTIME_ON_UPDATE_AVAILABLE,
@@ -791,9 +800,10 @@ void RuntimeEventRouter::DispatchOnBrowserUpdateAvailableEvent(
 
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
+  auto event_args = base::MakeRefCounted<EventArgs>();
   auto event = std::make_unique<Event>(
       events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
-      runtime::OnBrowserUpdateAvailable::kEventName, base::ListValue());
+      runtime::OnBrowserUpdateAvailable::kEventName, std::move(event_args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -807,10 +817,11 @@ void RuntimeEventRouter::DispatchOnRestartRequiredEvent(
     return;
   }
 
-  std::unique_ptr<Event> event(
-      new Event(events::RUNTIME_ON_RESTART_REQUIRED,
-                runtime::OnRestartRequired::kEventName,
-                api::runtime::OnRestartRequired::Create(reason)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::runtime::OnRestartRequired::Create(reason));
+  auto event = std::make_unique<Event>(events::RUNTIME_ON_RESTART_REQUIRED,
+                                       runtime::OnRestartRequired::kEventName,
+                                       std::move(event_args));
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
   event_router->DispatchEventToExtension(app_id, std::move(event));

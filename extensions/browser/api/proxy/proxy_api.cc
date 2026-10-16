@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "net/base/net_errors.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -37,7 +39,7 @@ const char kProxyEventOnProxyError[] = "proxy.onProxyError";
 void DispatchEventToContext(void* browser_context_ptr,
                             events::HistogramValue histogram_value,
                             const std::string& event_name,
-                            base::ListValue event_args) {
+                            scoped_refptr<const EventArgs> event_args) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_ptr)) {
     return;
   }
@@ -68,12 +70,12 @@ ProxyEventRouter::ProxyEventRouter() = default;
 ProxyEventRouter::~ProxyEventRouter() = default;
 
 void ProxyEventRouter::OnProxyError(void* browser_context, int error_code) {
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   base::DictValue dict;
   dict.Set(kProxyEventFatalKey, true);
   dict.Set(kProxyEventErrorKey, net::ErrorToString(error_code));
   dict.Set(kProxyEventDetailsKey, std::string());
-  args.Append(base::Value(std::move(dict)));
+  args->data.Append(base::Value(std::move(dict)));
 
   if (browser_context) {
     DispatchEventToContext(browser_context, events::PROXY_ON_PROXY_ERROR,
@@ -88,7 +90,7 @@ void ProxyEventRouter::OnProxyError(void* browser_context, int error_code) {
 void ProxyEventRouter::OnPACScriptError(void* browser_context,
                                         int line_number,
                                         const std::u16string& error) {
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   base::DictValue dict;
   dict.Set(kProxyEventFatalKey, false);
   dict.Set(kProxyEventErrorKey, net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
@@ -98,7 +100,7 @@ void ProxyEventRouter::OnPACScriptError(void* browser_context,
         base::StringPrintf("line: %d: %s", line_number, error_msg.c_str());
   }
   dict.Set(kProxyEventDetailsKey, error_msg);
-  args.Append(base::Value(std::move(dict)));
+  args->data.Append(base::Value(std::move(dict)));
 
   if (browser_context) {
     DispatchEventToContext(browser_context, events::PROXY_ON_PROXY_ERROR,

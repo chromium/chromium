@@ -14,13 +14,14 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/values.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/cookies/cookies_api_delegate.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/browser_context_lifetime_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/cookies.h"
+#include "extensions/common/event_args.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -86,7 +87,7 @@ class CookiesEventRouter : public BrowserContextLifetimeObserver {
   void DispatchEvent(content::BrowserContext* context,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::ListValue event_args,
+                     scoped_refptr<const EventArgs> event_args,
                      const GURL& cookie_domain);
 
   raw_ptr<content::BrowserContext> browser_context_;

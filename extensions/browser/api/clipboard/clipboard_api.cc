@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/event_args.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 
 namespace extensions {
@@ -42,9 +43,10 @@ void ClipboardAPI::OnClipboardDataChanged() {
   EventRouter* router = EventRouter::Get(browser_context_);
   if (router &&
       router->HasEventListener(clipboard::OnClipboardDataChanged::kEventName)) {
+    auto event_args = base::MakeRefCounted<EventArgs>();
     auto event = std::make_unique<Event>(
         events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
-        clipboard::OnClipboardDataChanged::kEventName, base::ListValue());
+        clipboard::OnClipboardDataChanged::kEventName, std::move(event_args));
     router->BroadcastEvent(std::move(event));
   }
 }

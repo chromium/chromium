@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/event_args.h"
 
 namespace base {
 
@@ -122,7 +124,7 @@ class TestSendScriptResultFunction : public TestExtensionFunction {
 void BroadcastOrQueueTestNotificationForTesting(
     content::BrowserContext* browser_context,
     const std::string& event_name,
-    base::ListValue event_details,
+    scoped_refptr<const EventArgs> event_details,
     content::ChildProcessId source_process_id);
 
 // Queues `chrome.test.onTestStarted` and `chrome.test.onTestFinished` events
@@ -146,7 +148,7 @@ class TestStartedAndFinishedEventQueue : public BrowserContextKeyedAPI,
 
   // Enqueues an event for `event_name` from `source_process_id`.
   void EnqueueEvent(const std::string& event_name,
-                    base::ListValue event_args,
+                    scoped_refptr<const EventArgs> event_args,
                     content::ChildProcessId source_process_id);
 
   // KeyedService:
@@ -162,13 +164,13 @@ class TestStartedAndFinishedEventQueue : public BrowserContextKeyedAPI,
   friend class BrowserContextKeyedAPIFactory<TestStartedAndFinishedEventQueue>;
 
   struct QueuedEvent {
-    QueuedEvent(base::ListValue args,
+    QueuedEvent(scoped_refptr<const EventArgs> args,
                 content::ChildProcessId source_process_id);
     QueuedEvent(QueuedEvent&&);
     QueuedEvent& operator=(QueuedEvent&&);
     ~QueuedEvent();
 
-    base::ListValue event_args;
+    scoped_refptr<const EventArgs> event_args;
     content::ChildProcessId source_process_id;
   };
 
