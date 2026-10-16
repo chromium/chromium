@@ -13,6 +13,7 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -141,6 +142,71 @@ TEST_F(TtcPageContextMonitorTest, WaitsForPageLoadedWhenInitiallyLoading) {
 
   // A subsequent failed page load cancels any in-flight extraction.
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
+  EXPECT_FALSE(HasPendingWrapper(monitor));
+}
+
+// Tests that a committed cross-document navigation cancels any in-flight
+// extraction and discards stale responses.
+TEST_F(TtcPageContextMonitorTest, CommittedNavigationCancelsPendingExtraction) {
+  TtcPageContextMonitor monitor(web_state_, &delegate_);
+  ASSERT_TRUE(HasPendingWrapper(monitor));
+
+  // Uncommitted navigation must be ignored.
+  web::FakeNavigationContext uncommitted_nav;
+  uncommitted_nav.SetHasCommitted(false);
+  web_state_.OnNavigationFinished(&uncommitted_nav);
+  EXPECT_TRUE(HasPendingWrapper(monitor));
+
+  // Committed cross-document navigation clears the wrapper.
+  const GURL next_url("https://example.com/next");
+  web_state_.SetCurrentURL(next_url);
+  web::FakeNavigationContext committed_nav;
+  committed_nav.SetHasCommitted(true);
+  committed_nav.SetIsSameDocument(false);
+  web_state_.OnNavigationFinished(&committed_nav);
+
+  EXPECT_FALSE(HasPendingWrapper(monitor));
+
+  // Stale extraction completion for the previous URL must be discarded.
+  const GURL old_url("https://example.com/initial");
+  SimulateExtractionCompleted(monitor, old_url,
+                              MakePageContextResponse(old_url, "Stale"));
+  EXPECT_TRUE(delegate_.fetched_contexts().empty());
+}
+
+// Tests that a committed same-document navigation immediately starts a new
+// extraction without waiting for `PageLoaded`.
+TEST_F(TtcPageContextMonitorTest, SameDocumentNavigationExtractsImmediately) {
+  TtcPageContextMonitor monitor(web_state_, &delegate_);
+  const GURL initial_url("https://example.com/initial");
+  SimulateExtractionCompleted(monitor, initial_url,
+                              MakePageContextResponse(initial_url, "Initial"));
+  ASSERT_FALSE(HasPendingWrapper(monitor));
+  ASSERT_EQ(delegate_.fetched_contexts().size(), 1u);
+
+  const GURL spa_url("https://example.com/initial#section2");
+  web_state_.SetCurrentURL(spa_url);
+
+  web::FakeNavigationContext same_doc_nav;
+  same_doc_nav.SetHasCommitted(true);
+  same_doc_nav.SetIsSameDocument(true);
+  web_state_.OnNavigationFinished(&same_doc_nav);
+
+  EXPECT_TRUE(HasPendingWrapper(monitor));
+
+  SimulateExtractionCompleted(monitor, spa_url,
+                              MakePageContextResponse(spa_url, "SPA Section"));
+  ASSERT_EQ(delegate_.fetched_contexts().size(), 2u);
+  EXPECT_EQ(delegate_.fetched_contexts()[1].url(), spa_url.spec());
+
+  // A failed same-document navigation must not trigger a new extraction.
+  web::FakeNavigationContext failed_same_doc_nav;
+  failed_same_doc_nav.SetHasCommitted(true);
+  failed_same_doc_nav.SetIsSameDocument(true);
+  failed_same_doc_nav.SetError([NSError errorWithDomain:@"test"
+                                                   code:-1
+                                               userInfo:nil]);
+  web_state_.OnNavigationFinished(&failed_same_doc_nav);
   EXPECT_FALSE(HasPendingWrapper(monitor));
 }
 

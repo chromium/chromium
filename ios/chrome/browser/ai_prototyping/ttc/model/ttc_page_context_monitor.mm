@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -34,6 +35,24 @@ void TtcPageContextMonitor::Disconnect() {
 }
 
 #pragma mark - web::WebStateObserver
+
+void TtcPageContextMonitor::DidFinishNavigation(
+    web::WebState* /*web_state*/,
+    web::NavigationContext* navigation_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!navigation_context || !navigation_context->HasCommitted()) {
+    return;
+  }
+
+  // Cancel any in-flight extraction from the previous document.
+  CancelPendingExtraction();
+
+  // Same-document navigations (such as SPA route changes) do not trigger a
+  // subsequent `PageLoaded` callback, so extract fresh page context now.
+  if (navigation_context->IsSameDocument() && !navigation_context->GetError()) {
+    FetchPageContextIfNeeded();
+  }
+}
 
 void TtcPageContextMonitor::PageLoaded(
     web::WebState* /*web_state*/,

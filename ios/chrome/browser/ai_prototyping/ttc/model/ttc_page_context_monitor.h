@@ -15,6 +15,7 @@
 class GURL;
 
 namespace web {
+class NavigationContext;
 class WebState;
 }  // namespace web
 
@@ -54,6 +55,8 @@ class TtcPageContextMonitor : public web::WebStateObserver {
   web::WebState* web_state() const { return web_state_.get(); }
 
   // `web::WebStateObserver` implementation:
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -90,8 +93,8 @@ class TtcPageContextMonitor : public web::WebStateObserver {
   // Active wrapper performing asynchronous APC extraction.
   PageContextWrapper* page_context_wrapper_ = nil;
 
-  // Weak pointer factory invalidated whenever an in-flight extraction is
-  // cancelled.
+  // Weak pointer factory invalidated whenever a navigation or teardown cancels
+  // an in-flight extraction.
   base::WeakPtrFactory<TtcPageContextMonitor> extraction_weak_factory_{this};
 };
 
