@@ -5460,6 +5460,33 @@ TEST_F(PdfAccessibilityTreeTest,
   }
 }
 
+// List items are children of their `kList`, not the page, so band sorting moves
+// the whole list.
+TEST_F(PdfAccessibilityTreeTest, HeuristicSortBlockNodesMovesListAsOneBlock) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // "Closing" is emitted before the list but sits below it.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro", "Closing", "•", "Item 1", "•", "Item 2"},
+      {
+          gfx::RectF(50.0f, 20.0f, 100.0f, 12.0f),   // "Intro"
+          gfx::RectF(50.0f, 200.0f, 100.0f, 12.0f),  // "Closing"
+          gfx::RectF(50.0f, 44.0f, 4.0f, 4.0f),      // Item 1 marker
+          gfx::RectF(60.0f, 40.0f, 50.0f, 12.0f),    // "Item 1"
+          gfx::RectF(50.0f, 57.0f, 4.0f, 4.0f),      // Item 2 marker
+          gfx::RectF(60.0f, 53.0f, 50.0f, 12.0f),    // "Item 2"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro");
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"Item 1", "Item 2"});
+  CheckParagraph(page->GetChildAtIndex(2u), "Closing");
+}
+
 TEST_F(PdfAccessibilityTreeTest,
        HeuristicSortBlockNodesByVerticalBandsDisabled) {
   base::test::ScopedFeatureList feature_list;

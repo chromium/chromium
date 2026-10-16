@@ -1686,11 +1686,12 @@ bool ContinuesBandColumnLtr(base::span<const ui::AXNodeData* const> block_nodes,
 }
 
 // Reorders `block_nodes` and the matching block entries in `page_child_ids`
-// into top-to-bottom reading order. PDF content streams sometimes emit blocks
-// in authoring/layer order (e.g. a footer emitted before body text, or a title
-// emitted last). Sorting all blocks purely by `y` would scramble multi-column
-// layouts where side-by-side column blocks have slightly different top `y`
-// coordinates.
+// into top-to-bottom reading order. Every block must appear in
+// `page_child_ids`, in the same relative order as in `block_nodes`. PDF content
+// streams sometimes emit blocks in authoring/layer order (e.g. a footer emitted
+// before body text, or a title emitted last). Sorting all blocks purely by `y`
+// would scramble multi-column layouts where side-by-side column blocks have
+// slightly different top `y` coordinates.
 //
 // To avoid disrupting columns, blocks are grouped into horizontal bands:
 //   1. Blocks whose vertical intervals [y, bottom] overlap share a band.
@@ -1763,6 +1764,7 @@ void SortBlockNodesByVerticalBands(std::vector<ui::AXNodeData*>& block_nodes,
       ++block_index;
     }
   }
+  CHECK_EQ(block_index, num_blocks);
 
   std::vector<ui::AXNodeData*> sorted_blocks(num_blocks);
   for (size_t i = 0; i < num_blocks; ++i) {
@@ -1822,6 +1824,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   };
 
   ui::AXNodeData* block_node = nullptr;
+  // Blocks that are direct children of the page node, with each `kList` in
+  // place of its `kListItem` blocks.
   std::vector<ui::AXNodeData*> block_nodes;
   ui::AXNodeData* previous_on_line_node = nullptr;
   StaticTextState static_text_state;
@@ -1899,8 +1903,12 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       // enclosing `kList` (which is itself attached to `page_node()`).
       if (!is_list_marker) {
         builder_->page_node()->child_ids.push_back(block_node->id);
+        block_nodes.push_back(block_node);
+      } else if (block_nodes.empty() ||
+                 block_nodes.back() != current_list_node_) {
+        // First item of a new list.
+        block_nodes.push_back(current_list_node_);
       }
-      block_nodes.push_back(block_node);
 
       if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
           current_heading_classifier != HeadingClassifier::kNone) {
@@ -2069,10 +2077,14 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
             })) {
       SortBlockNodesByVerticalBands(block_nodes,
                                     builder_->page_node()->child_ids);
-      block_node = !block_nodes.empty() &&
-                           block_nodes.back()->role != ax::mojom::Role::kFigure
-                       ? block_nodes.back()
-                       : nullptr;
+      // Remaining annotations go in a new paragraph rather than a trailing
+      // figure or list.
+      block_node =
+          !block_nodes.empty() &&
+                  block_nodes.back()->role != ax::mojom::Role::kFigure &&
+                  block_nodes.back()->role != ax::mojom::Role::kList
+              ? block_nodes.back()
+              : nullptr;
     }
     RecordHeaderFooterLocationHistograms(block_nodes, page_properties);
   }
