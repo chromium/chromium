@@ -1681,6 +1681,29 @@
             ]
         }
     ],
+    "AutofillAiWalletPassBranding2026": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_GoogleWallet",
+                    "params": {
+                        "string_variant": "0"
+                    },
+                    "enable_features": [
+                        "AutofillAiWalletPassBranding2026"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiWalletPrivatePasses": [
         {
             "platforms": [
