@@ -153,7 +153,6 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_keep_alive_request_tracker.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.h"
 #include "chrome/browser/preloading/preloading_features.h"
@@ -9815,24 +9814,9 @@ ChromeContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
     content::BrowserContext* browser_context,
     content::KeepAliveRequestTracker::IsContextDetachedCallback
         is_context_detached_callback) {
-  // Do not need to track non-keepalive requests.
-  if (!request.keepalive || !request.keepalive_token.has_value()) {
-    return {};
-  }
-  std::vector<std::unique_ptr<content::KeepAliveRequestTracker>> trackers;
-  std::unique_ptr<ChromeKeepAliveRequestTracker> chrome_tracker =
-      ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-          request, ukm_source_id, is_context_detached_callback);
-  if (chrome_tracker) {
-    trackers.push_back(std::move(chrome_tracker));
-  }
-  std::unique_ptr<SearchPrefetchKeepAliveRequestTracker> search_tracker =
-      SearchPrefetchKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-          request, browser_context);
-  if (search_tracker) {
-    trackers.push_back(std::move(search_tracker));
-  }
-  return trackers;
+  return ChromeKeepAliveRequestTracker::MaybeCreateTrackers(
+      request, ukm_source_id, browser_context,
+      std::move(is_context_detached_callback));
 }
 
 std::optional<std::vector<std::u16string>>
