@@ -20,7 +20,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/utf_offset.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/events/event.h"
 
