@@ -43,10 +43,16 @@ export function getHtml(this: HistoryFilterChipsElement) {
     ${this.showDeviceFilter ? html`
       <div class="filter-chips">
         <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
-        <select id="deviceFilterChip" class="md-select">
-          <option>$i18n{deviceFilterAllDevices}</option>
-          ${this.devices.map(device => html`
-            <option>${device.name}</option>
+        <select id="deviceFilterChip" class="md-select"
+            @change="${this.onDeviceSelectChange_}">
+          <option value="-1" .selected="${this.clientIds.length === 0}">
+            $i18n{deviceFilterAllDevices}
+          </option>
+          ${this.devices.map((device, index) => html`
+            <option value="${index}"
+                .selected="${this.isDeviceSelected_(device)}">
+              ${device.name}
+            </option>
           `)}
         </select>
       </div>

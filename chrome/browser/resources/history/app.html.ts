@@ -75,6 +75,7 @@ export function getHtml(this: HistoryAppElement) {
             .showDeviceFilter="${this.showDeviceFilter_()}"
             .userVisits="${this.includeUserVisits_}"
             .actorVisits="${this.includeActorVisits_}"
+            .clientIds="${this.clientIds_}"
             @filter-changed="${this.onFilterChanged_}">
         </history-filter-chips>
       ` : ''}

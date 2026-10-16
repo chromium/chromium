@@ -179,6 +179,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       devices_: {type: Array},
       includeActorVisits_: {type: Boolean},
       includeUserVisits_: {type: Boolean},
+      clientIds_: {type: Array},
       isGlicWebActuationAvailable_: {type: Boolean},
       isBrowsingHistoryFilterByDeviceEnabled_: {type: Boolean},
     };
@@ -253,6 +254,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor devices_: Device[] = [];
   protected accessor includeActorVisits_: boolean = true;
   protected accessor includeUserVisits_: boolean = true;
+  protected accessor clientIds_: string[] = [];
   protected accessor isGlicWebActuationAvailable_: boolean =
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
   protected accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
@@ -985,15 +987,20 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.historyClustersVisible_ = e.detail.value;
   }
 
-  protected onFilterChanged_(
-      e: CustomEvent<{userVisits: boolean, actorVisits: boolean}>) {
+  protected onFilterChanged_(e: CustomEvent<{
+    userVisits: boolean,
+    actorVisits: boolean,
+    clientIds: string[],
+  }>) {
     this.includeUserVisits_ = e.detail.userVisits;
     this.includeActorVisits_ = e.detail.actorVisits;
+    this.clientIds_ = e.detail.clientIds;
 
     this.fire('change-query', {
       search: this.queryState_.searchTerm,
       includeActorVisits: this.includeActorVisits_,
       includeUserVisits: this.includeUserVisits_,
+      clientIds: this.clientIds_,
     });
   }
 

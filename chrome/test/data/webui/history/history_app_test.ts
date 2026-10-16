@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://history/history.js';
 
-import type {HistoryAppElement} from 'chrome://history/history.js';
+import type {HistoryAppElement, HistoryFilterChipsElement} from 'chrome://history/history.js';
 import {BrowserProxyImpl, CrRouter, historyEmbeddingsBrowserProxyFactory, HistoryEmbeddingsPageHandlerRemote, userEducationProxyFactory} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -656,7 +656,7 @@ suite('HistoryFilterChipsVisibility', function() {
   test('PropagatesFilterChanges', async () => {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
-      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDeviceEnabled: true,
     });
     await createPage();
 
@@ -668,12 +668,14 @@ suite('HistoryFilterChipsVisibility', function() {
       search: string,
       includeUserVisits: boolean,
       includeActorVisits: boolean,
+      clientIds: string[],
     }>>('change-query', element);
 
     filterChips.dispatchEvent(new CustomEvent('filter-changed', {
       detail: {
         userVisits: false,
         actorVisits: true,
+        clientIds: ['device_1', 'device_2'],
       },
       bubbles: true,
       composed: true,
@@ -684,6 +686,7 @@ suite('HistoryFilterChipsVisibility', function() {
     // The query sent to the manager includes the new filters.
     assertFalse(event.detail.includeUserVisits);
     assertTrue(event.detail.includeActorVisits);
+    assertDeepEquals(['device_1', 'device_2'], event.detail.clientIds);
     assertEquals('', event.detail.search);
   });
 
@@ -712,6 +715,45 @@ suite('HistoryFilterChipsVisibility', function() {
     element.$.router.selectedPage = 'history';
     await microtasksFinished();
     assertTrue(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('PreservesFilterChipsStateAfterGroupedView', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: true,
+      isBrowsingHistoryFilterByDeviceEnabled: true,
+    });
+    browserProxy.handler.setResultFor(
+        'getSyncedDevicesForFiltering', Promise.resolve({
+          devices: [
+            {name: 'Device 1', isLocalDevice: true, ids: ['id1']},
+            {name: 'Device 2', isLocalDevice: false, ids: ['id2', 'id3']},
+          ],
+        }));
+    await createPage();
+
+    let filterChips =
+        element.shadowRoot.querySelector<HistoryFilterChipsElement>(
+            '#historyFilterChips');
+    assertTrue(!!filterChips);
+    filterChips.fire('filter-changed', {
+      userVisits: false,
+      actorVisits: true,
+      clientIds: ['id2', 'id3'],
+    });
+    await microtasksFinished();
+
+    element.$.router.selectedPage = 'grouped';
+    await microtasksFinished();
+
+    element.$.router.selectedPage = 'history';
+    await microtasksFinished();
+
+    filterChips = element.shadowRoot.querySelector<HistoryFilterChipsElement>(
+        '#historyFilterChips');
+    assertTrue(!!filterChips);
+    assertFalse(filterChips.userVisits);
+    assertTrue(filterChips.actorVisits);
+    assertDeepEquals(['id2', 'id3'], filterChips.clientIds);
   });
 });
 
