@@ -1461,6 +1461,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Credentials rejected by server"/>
   <int value="2" label="Credentials rejected by client"/>
   <int value="3" label="Credentials missing"/>
+  <int value="4" label="Token binding assertion generation failed"/>
+  <int value="5" label="Token binding assertion rejected by server"/>
 </enum>
 
 <enum name="SigninIOSDeviceRestoreSentinelError">

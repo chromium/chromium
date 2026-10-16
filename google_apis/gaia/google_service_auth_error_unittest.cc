@@ -105,6 +105,38 @@ TEST(GoogleServiceAuthErrorTest, FromInvalidGaiaCredentialsReason) {
             error.ToString());
 }
 
+TEST(GoogleServiceAuthErrorTest,
+     FromInvalidGaiaCredentialsReasonTokenBindingAssertionGenerationFailed) {
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              TOKEN_BINDING_ASSERTION_GENERATION_FAILED);
+  EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error.state());
+  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                TOKEN_BINDING_ASSERTION_GENERATION_FAILED,
+            error.GetInvalidGaiaCredentialsReason());
+  EXPECT_FALSE(error.IsTransientError());
+  EXPECT_TRUE(error.IsPersistentError());
+  EXPECT_EQ("Invalid credentials (token binding assertion generation failed).",
+            error.ToString());
+}
+
+TEST(GoogleServiceAuthErrorTest,
+     FromInvalidGaiaCredentialsReasonTokenBindingAssertionRejectedByServer) {
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER);
+  EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error.state());
+  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER,
+            error.GetInvalidGaiaCredentialsReason());
+  EXPECT_FALSE(error.IsTransientError());
+  EXPECT_TRUE(error.IsPersistentError());
+  EXPECT_EQ("Invalid credentials (token binding assertion rejected by server).",
+            error.ToString());
+}
+
 TEST(GoogleServiceAuthErrorTest, FromScopeLimitedUnrecoverableErrorReason) {
   GoogleServiceAuthError error =
       GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(

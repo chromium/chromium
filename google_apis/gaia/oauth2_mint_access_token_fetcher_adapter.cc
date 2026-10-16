@@ -210,6 +210,31 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(
     const GoogleServiceAuthError& error) {
+  // Gaia only issues a token binding challenge in response to
+  // `kTokenBindingAssertionSentinel` if the refresh token is still valid.
+  // Therefore, if a request carrying a real assertion (or the signature
+  // failure placeholder) is rejected with `CREDENTIALS_REJECTED_BY_SERVER`,
+  // the rejection is attributed to token binding rather than to an invalid
+  // refresh token. This may misclassify the rare case where the refresh token
+  // gets revoked between the challenge and the assertion requests.
+  //
+  // Requests carrying the sentinel itself are not reclassified, because the
+  // server rejects them before any binding check takes place.
+  using Reason = GoogleServiceAuthError::InvalidGaiaCredentialsReason;
+  if (is_refresh_token_bound_ &&
+      binding_key_assertion_ != GaiaConstants::kTokenBindingAssertionSentinel &&
+      error.state() == GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS &&
+      error.GetInvalidGaiaCredentialsReason() ==
+          Reason::CREDENTIALS_REJECTED_BY_SERVER) {
+    CHECK(!binding_key_assertion_.empty());
+    RecordMetricsAndFireError(
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            binding_key_assertion_ ==
+                    GaiaConstants::kTokenBindingAssertionFailedPlaceholder
+                ? Reason::TOKEN_BINDING_ASSERTION_GENERATION_FAILED
+                : Reason::TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER));
+    return;
+  }
   RecordMetricsAndFireError(error);
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnRemoteConsentSuccess(

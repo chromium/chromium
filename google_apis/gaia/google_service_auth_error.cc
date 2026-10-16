@@ -34,6 +34,12 @@ const char* InvalidCredentialsReasonToString(
       return "credentials rejected by client";
     case InvalidGaiaCredentialsReason::CREDENTIALS_MISSING:
       return "credentials missing";
+    case InvalidGaiaCredentialsReason::
+        TOKEN_BINDING_ASSERTION_GENERATION_FAILED:
+      return "token binding assertion generation failed";
+    case InvalidGaiaCredentialsReason::
+        TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER:
+      return "token binding assertion rejected by server";
     case InvalidGaiaCredentialsReason::NUM_REASONS:
       NOTREACHED();
   }

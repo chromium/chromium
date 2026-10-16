@@ -466,6 +466,43 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Failure) {
       kChallengeSentinelHistogramSuffix);
 }
 
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, FailureWithSignedAssertion) {
+  auto fetcher = CreateFetcher();
+  fetcher->SetBindingKeyAssertion(kTestAssertion);
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  EXPECT_CALL(*mock_consumer(),
+              OnGetTokenFailure(
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER)));
+  mock_flow()->SimulateMintTokenFailure(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  VerifyBoundFetchAuthErrorHistograms(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
+      kSignedAssertionHistogramSuffix);
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, FailureWithFailedAssertion) {
+  auto fetcher = CreateFetcher();
+  fetcher->SetBindingKeyAssertion(
+      std::string(GaiaConstants::kTokenBindingAssertionFailedPlaceholder));
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  EXPECT_CALL(*mock_consumer(),
+              OnGetTokenFailure(
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          TOKEN_BINDING_ASSERTION_GENERATION_FAILED)));
+  mock_flow()->SimulateMintTokenFailure(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  VerifyBoundFetchAuthErrorHistograms(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
+      kAssertionFailedHistogramSuffix);
+}
+
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, FailureUnbound) {
   auto fetcher = CreateFetcher(/*is_refresh_token_bound=*/false);
   fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
