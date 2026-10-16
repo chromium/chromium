@@ -260,21 +260,40 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-    sources = [
-      "new_tab_page_handler_browsertest.cc",
-      "webui_ntp_browsertest.cc",
-    ]
-    deps = [
+source_set("browser_tests") {
+  testonly = true
+  visibility = [ "//chrome/test:*" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = [ "webui_ntp_browsertest.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/preloading:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_list",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  # TODO(b:565412419): Enable new_tab_page_handler_browsertest on Android once
+  # the NTP footer and the automatic Customize Chrome promo are implemented
+  # there.
+  if (!is_android) {
+    sources += [ "new_tab_page_handler_browsertest.cc" ]
+    deps += [
       ":impl",
       ":new_tab_page",
-      "//base",
-      "//base/test:test_support",
       "//chrome/browser/new_tab_page",
+      "//chrome/browser/new_tab_page/prefs",
       "//chrome/browser/search_provider_logos",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
@@ -286,13 +305,11 @@ if (!is_android) {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/most_visited",
       "//chrome/browser/ui/webui/customize_buttons",
-      "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education:impl",
+      "//components/prefs",
+      "//components/search",
       "//components/user_education/views",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
   }
-}  # if (!is_android)
+}
