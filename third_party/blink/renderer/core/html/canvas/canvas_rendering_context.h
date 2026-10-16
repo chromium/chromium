@@ -344,6 +344,7 @@ class CORE_EXPORT CanvasRenderingContext
   static CanvasPerformanceMonitor& GetCanvasPerformanceMonitor();
 
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
+  bool did_draw_text_for_testing() const { return did_draw_text_; }
 
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,

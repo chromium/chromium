@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
@@ -76,8 +77,17 @@ TEST(OffscreenCanvasHostTest, TransferToOffscreenThrowsUnknownErrorAsFallback) {
             DOMExceptionCode::kUnknownError);
 }
 
-TEST(OffscreenCanvasRenderingContext2DTest, TransferToOffscreenThrowsInLayers) {
-  test::TaskEnvironment task_environment;
+class OffscreenCanvasRenderingContext2DTest : public testing::Test {
+ protected:
+  void TearDown() override {
+    CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+    testing::Test::TearDown();
+  }
+
+  test::TaskEnvironment task_environment_;
+};
+
+TEST_F(OffscreenCanvasRenderingContext2DTest, TransferToOffscreenThrowsInLayers) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -98,8 +108,7 @@ TEST(OffscreenCanvasRenderingContext2DTest, TransferToOffscreenThrowsInLayers) {
 }
 
 // Checks `convertToBlob` throws an exception if called inside a layer.
-TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerConvertToBlob) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, UnclosedLayerConvertToBlob) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -125,8 +134,7 @@ TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerConvertToBlob) {
 }
 
 // Checks `CreateImageBitmap` throws an exception if called inside a layer.
-TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerCreateImageBitmap) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, UnclosedLayerCreateImageBitmap) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -154,8 +162,7 @@ TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerCreateImageBitmap) {
 }
 
 // Checks `createPattern` throws an exception the source has unclosed layers.
-TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerCreatePattern) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, UnclosedLayerCreatePattern) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -180,8 +187,7 @@ TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerCreatePattern) {
 }
 
 // Checks `drawImage` throws an exception the source has unclosed layers.
-TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerDrawImage) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, UnclosedLayerDrawImage) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -206,8 +212,7 @@ TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerDrawImage) {
 }
 
 // Checks `getImageData` throws an exception if called inside a layer.
-TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerGetImageData) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, UnclosedLayerGetImageData) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -231,8 +236,7 @@ TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerGetImageData) {
 }
 
 // Checks `putImageData` throws an exception if called inside a layer.
-TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerPutImageData) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, UnclosedLayerPutImageData) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -259,9 +263,8 @@ TEST(OffscreenCanvasRenderingContext2DTest, UnclosedLayerPutImageData) {
 }
 
 // Checks `transferToImageBitmap` throws an exception if called inside a layer.
-TEST(OffscreenCanvasRenderingContext2DTest,
-     UnclosedLayerTransferToImageBitmap) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest,
+       UnclosedLayerTransferToImageBitmap) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
@@ -285,8 +288,7 @@ TEST(OffscreenCanvasRenderingContext2DTest,
 }
 
 // Regression test for https://crbug.com/1509382.
-TEST(OffscreenCanvasRenderingContext2DTest, NoCrashOnDocumentShutdown) {
-  test::TaskEnvironment task_environment;
+TEST_F(OffscreenCanvasRenderingContext2DTest, NoCrashOnDocumentShutdown) {
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
                                        /*height=*/10);
@@ -296,11 +298,10 @@ TEST(OffscreenCanvasRenderingContext2DTest, NoCrashOnDocumentShutdown) {
   context->measureText("hello world");
 }
 
-TEST(OffscreenCanvasRenderingContext2DTest, AccessibilityCanvasAnnotation) {
+TEST_F(OffscreenCanvasRenderingContext2DTest, AccessibilityCanvasAnnotation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(::features::kAccessibilityCanvas);
 
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Enable scripts.
@@ -364,6 +365,25 @@ TEST(OffscreenCanvasRenderingContext2DTest, AccessibilityCanvasAnnotation) {
                      offscreen_canvas->height());
   canvas->GetAccessibilityManagerForTesting()->UpdateAnnotation();
   EXPECT_TRUE(canvas->CanvasAnnotation().empty());
+}
+
+TEST_F(OffscreenCanvasRenderingContext2DTest, WillDrawTracksText) {
+  V8TestingScope scope;
+  scope.GetDocument().GetPage()->GetSettings().SetScriptEnabled(true);
+  auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/100,
+                                       /*height=*/100);
+  OffscreenCanvasRenderingContext2D* context = GetContext(scope, host);
+  context->setFont("12px Ahem");
+  EXPECT_FALSE(context->did_draw_text_for_testing());
+
+  // Non-text drawing should not set did_draw_text_.
+  context->fillRect(0, 0, 10, 10);
+  EXPECT_FALSE(context->did_draw_text_for_testing());
+
+  // Text drawing must set did_draw_text_ to true via
+  // CanvasRenderingContext::DidDraw.
+  context->fillText("Hello", 10, 10);
+  EXPECT_TRUE(context->did_draw_text_for_testing());
 }
 
 }  // namespace
