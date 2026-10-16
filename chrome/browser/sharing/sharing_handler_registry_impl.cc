@@ -164,7 +164,7 @@ void SharingHandlerRegistryImpl::RegisterSharingHandler(
     std::unique_ptr<SharingMessageHandler> handler,
     components_sharing_message::SharingMessage::PayloadCase payload_case) {
   DCHECK(handler) << "Received request to add null handler";
-  DCHECK(!GetSharingHandler(payload_case));
+  CHECK(!GetSharingHandler(payload_case), base::NotFatalUntil::M162);
   DCHECK(payload_case !=
          components_sharing_message::SharingMessage::PAYLOAD_NOT_SET)
       << "Incorrect payload type specified for handler";

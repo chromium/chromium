@@ -69,18 +69,18 @@ PwgRasterConverterHelper::PwgRasterConverterHelper(
     const PdfRenderSettings& settings,
     const PwgRasterSettings& bitmap_settings)
     : settings_(settings), bitmap_settings_(bitmap_settings) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 PwgRasterConverterHelper::~PwgRasterConverterHelper() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void PwgRasterConverterHelper::Convert(
     const std::optional<bool>& use_skia,
     const base::RefCountedMemory* data,
     PwgRasterConverter::ResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   callback_ = std::move(callback);
 
@@ -112,7 +112,7 @@ void PwgRasterConverterHelper::Convert(
 void PwgRasterConverterHelper::RunCallback(
     base::ReadOnlySharedMemoryRegion region,
     uint32_t page_count) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (callback_) {
     if (region.IsValid() && page_count > 0) {
       std::move(callback_).Run(std::move(region));
@@ -221,7 +221,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   cloud_devices::printer::ColorTicketItem color_item;
   if (color_item.LoadFrom(ticket) && color_item.IsValid())
     color_value = color_item.value();
-  DCHECK(color_value.IsValid());
+  CHECK(color_value.IsValid(), base::NotFatalUntil::M162);
   bool use_color;
   switch (color_value.type) {
     case cloud_devices::printer::ColorType::STANDARD_MONOCHROME:

@@ -98,8 +98,8 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     return;
   }
 
-  DCHECK(response);
-  DCHECK(response->has_sms_fetch_response());
+  CHECK(response, base::NotFatalUntil::M162);
+  CHECK(response->has_sms_fetch_response(), base::NotFatalUntil::M162);
   if (response->sms_fetch_response().has_failure_type()) {
     std::move(callback).Run(std::nullopt, std::nullopt,
                             static_cast<content::SmsFetchFailureType>(

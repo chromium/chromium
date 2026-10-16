@@ -141,7 +141,8 @@ content::RenderFrameHost* GetFullPagePlugin(content::WebContents* contents) {
         auto* guest_view =
             extensions::MimeHandlerViewGuest::FromRenderFrameHost(rfh);
         if (guest_view && guest_view->is_full_page_plugin()) {
-          DCHECK_EQ(guest_view->GetGuestMainFrame(), rfh);
+          CHECK_EQ(guest_view->GetGuestMainFrame(), rfh,
+                   base::NotFatalUntil::M162);
           full_page_plugin = rfh;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }

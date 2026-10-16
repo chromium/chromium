@@ -102,7 +102,7 @@ RemoteCopyMessageHandler::~RemoteCopyMessageHandler() = default;
 void RemoteCopyMessageHandler::OnMessage(
     components_sharing_message::SharingMessage message,
     DoneCallback done_callback) {
-  DCHECK(message.has_remote_copy_message());
+  CHECK(message.has_remote_copy_message(), base::NotFatalUntil::M162);
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnMessage");
 
   // First cancel any pending async tasks that might otherwise overwrite the

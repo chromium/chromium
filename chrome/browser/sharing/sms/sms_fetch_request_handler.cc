@@ -64,7 +64,7 @@ SmsFetchRequestHandler::~SmsFetchRequestHandler() {
 void SmsFetchRequestHandler::OnMessage(
     components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
-  DCHECK(message.has_sms_fetch_request());
+  CHECK(message.has_sms_fetch_request(), base::NotFatalUntil::M162);
 
   std::optional<SharingTargetDeviceInfo> device =
       device_source_->GetDeviceByGuid(message.sender_guid());
@@ -102,7 +102,8 @@ void SmsFetchRequestHandler::AskUserPermission(
     const std::string& one_time_code,
     const std::string& client_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  DCHECK(origin_list.size() == 1 || origin_list.size() == 2);
+  CHECK(origin_list.size() == 1 || origin_list.size() == 2,
+        base::NotFatalUntil::M162);
 
   std::optional<std::u16string> embedded_origin;
   std::u16string top_origin;
@@ -135,7 +136,7 @@ void SmsFetchRequestHandler::OnConfirm(std::u16string top_origin,
   }
   origins.push_back(std::move(top_origin));
   auto* request = GetRequest(origins);
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M162);
   request->SendSuccessMessage();
 }
 
@@ -147,7 +148,7 @@ void SmsFetchRequestHandler::OnDismiss(std::u16string top_origin,
   }
   origins.push_back(std::move(top_origin));
   auto* request = GetRequest(origins);
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M162);
   request->SendFailureMessage(FailureType::kPromptCancelled);
 }
 
@@ -191,7 +192,7 @@ void SmsFetchRequestHandler::Request::OnReceive(
     const content::SmsFetcher::OriginList& origin_list,
     const std::string& one_time_code,
     content::SmsFetcher::UserConsent consent_requirement) {
-  DCHECK(origin_list_ == origin_list);
+  CHECK(origin_list_ == origin_list, base::NotFatalUntil::M162);
   one_time_code_ = one_time_code;
 
   // Postpones asking for user permission to make sure that the notification is

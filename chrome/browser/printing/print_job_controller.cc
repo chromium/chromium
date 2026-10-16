@@ -32,7 +32,7 @@ void OnPrintSettingsApplied(scoped_refptr<PrintJob> print_job,
                             uint32_t page_count,
                             PrintJob::Source source,
                             const std::string& source_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK_GT(page_count, 0U);
 
   std::u16string title = query->settings().title();
@@ -148,7 +148,7 @@ void PrintJobController::CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
                                         PrintJob::Source source,
                                         const std::string& source_id,
                                         PrintJobCreatedCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   auto print_job =
       base::MakeRefCounted<PrintJob>(g_browser_process->print_job_manager());

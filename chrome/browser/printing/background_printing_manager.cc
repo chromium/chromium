@@ -43,7 +43,7 @@ void BackgroundPrintingManager::Observer::PrimaryMainFrameRenderProcessGone(
 }
 
 BackgroundPrintingManager::BackgroundPrintingManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 BackgroundPrintingManager::~BackgroundPrintingManager() {
@@ -58,8 +58,9 @@ BackgroundPrintingManager::~BackgroundPrintingManager() {
 void BackgroundPrintingManager::OwnPrintPreviewDialog(
     std::unique_ptr<WebContents> preview_dialog) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(PrintPreviewDialogController::IsPrintPreviewURL(
-      preview_dialog->GetVisibleURL()));
+  CHECK(PrintPreviewDialogController::IsPrintPreviewURL(
+            preview_dialog->GetVisibleURL()),
+        base::NotFatalUntil::M162);
   CHECK(!HasPrintPreviewDialog(preview_dialog.get()));
 
   WebContents* raw_preview_dialog = preview_dialog.get();

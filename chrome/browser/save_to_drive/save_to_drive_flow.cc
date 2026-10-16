@@ -79,7 +79,7 @@ SaveToDriveFlow::SaveToDriveFlow(
       content_reader_(std::move(content_reader)),
       account_chooser_(std::move(account_chooser)),
       hats_service_(hats_service) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 SaveToDriveFlow::~SaveToDriveFlow() {
@@ -118,7 +118,7 @@ void SaveToDriveFlow::SetSkipValidateTabForTesting(bool skip_validate_tab) {
 }
 
 void SaveToDriveFlow::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   SaveToDriveProgress progress;
   progress.status = SaveToDriveStatus::kInitiated;
   progress.error_type = SaveToDriveErrorType::kNoError;
@@ -230,7 +230,7 @@ std::string SaveToDriveFlow::GetHatsSurveyTriggerId() {
 }
 
 void SaveToDriveFlow::Stop() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (base::FeatureList::IsEnabled(
           chrome_pdf::features::kPdfSaveToDriveSurvey)) {
     ShowHatsSurveyWithDelay();

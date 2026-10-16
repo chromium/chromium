@@ -55,7 +55,8 @@ SharingUiController::~SharingUiController() = default;
 
 std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
   // We only handle error messages generically.
-  DCHECK_EQ(SharingDialogType::kErrorDialog, dialog_type);
+  CHECK_EQ(SharingDialogType::kErrorDialog, dialog_type,
+           base::NotFatalUntil::M162);
   switch (send_result()) {
     case SharingSendMessageResult::kDeviceNotFound:
     case SharingSendMessageResult::kNetworkError:
@@ -208,7 +209,7 @@ void SharingUiController::CloseDialog() {
   if (dialog_)
     OnDialogClosed(dialog_);
 
-  DCHECK(!dialog_);
+  CHECK(!dialog_, base::NotFatalUntil::M162);
 }
 
 void SharingUiController::ShowNewDialog(SharingDialogData dialog_data) {

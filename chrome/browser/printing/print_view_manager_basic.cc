@@ -123,7 +123,7 @@ bool PrintViewManagerBasic::PrintNowAndroid(
 }
 
 bool PrintViewManagerBasic::InitiatePrint(content::RenderFrameHost* rfh) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (IsCrashed() || !rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
     return false;
   }
@@ -133,7 +133,7 @@ bool PrintViewManagerBasic::InitiatePrint(content::RenderFrameHost* rfh) {
 }
 
 void PrintViewManagerBasic::FinishPrint(content::RenderFrameHost* rfh) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   settings_.reset();
   fd_.reset();
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
@@ -153,9 +153,9 @@ void PrintViewManagerBasic::FinishPrint(content::RenderFrameHost* rfh) {
 
 void PrintViewManagerBasic::SetupScriptedPrintAndroid(
     SetupScriptedPrintAndroidCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   content::RenderFrameHost& rfh = CurrentTargetFrame();
-  DCHECK(rfh.IsRenderFrameLive());
+  CHECK(rfh.IsRenderFrameLive(), base::NotFatalUntil::M162);
   if (!rfh.IsActive() || !web_contents() ||
       !web_contents()->GetTopLevelNativeWindow()) {
     FinishPrint(&rfh);

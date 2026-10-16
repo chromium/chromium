@@ -55,9 +55,9 @@ class PrintPreviewDataStore {
       return;
     }
 
-    DCHECK(data);
+    CHECK(data, base::NotFatalUntil::M162);
 #if DCHECK_IS_ON()
-    DCHECK(IsValidData(index, *data));
+    CHECK(IsValidData(index, *data), base::NotFatalUntil::M162);
 #endif
 
     page_data_map_[index] = std::move(data);

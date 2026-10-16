@@ -628,7 +628,8 @@ std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
 
   // Using DCHECK because this is a slightly expensive check. This should be
   // guaranteed by `ReplaceIllegalCharactersInPath`.
-  DCHECK(base::i18n::IsFilenameLegal(base_name_no_extension.AsUTF16Unsafe()));
+  CHECK(base::i18n::IsFilenameLegal(base_name_no_extension.AsUTF16Unsafe()),
+        base::NotFatalUntil::M162);
 
   base::FilePath filepath =
       desktop_path.Append(base_name_no_extension.AddExtension(".desktop"));
@@ -914,7 +915,7 @@ std::string GetDirectoryFileContents(const std::u16string& title,
 base::FilePath GetMimeTypesRegistrationFilename(
     const base::FilePath& profile_path,
     const webapps::AppId& app_id) {
-  DCHECK(!profile_path.empty() && !app_id.empty());
+  CHECK(!profile_path.empty() && !app_id.empty(), base::NotFatalUntil::M162);
 
   // Use a prefix to clearly group files created by Chrome.
   std::string filename = base::StringPrintf(

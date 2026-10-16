@@ -280,7 +280,8 @@ void StartupData::CreateServicesInternal() {
   mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
       pref_validation_delegate;
   // The preference tracking and protection is not required on Android.
-  DCHECK(!ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking);
+  CHECK(!ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking,
+        base::NotFatalUntil::M162);
 
   prefs_ = ::CreateProfilePrefService(
       pref_registry_, nullptr /* extension_pref_store */,

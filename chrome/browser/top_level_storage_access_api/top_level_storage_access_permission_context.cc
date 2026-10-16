@@ -71,7 +71,7 @@ void TopLevelStorageAccessPermissionContext::DecidePermissionForTesting(
 void TopLevelStorageAccessPermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!base::FeatureList::IsEnabled(
           content_settings::features::kStorageAccessAPIRelatedWebsiteSets)) {
     RecordOutcomeSample(
@@ -219,7 +219,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
     const permissions::PermissionPromptDecision& decision) {
   CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
   CHECK(decision.is_final);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (decision.overall_decision == PermissionDecision::kDeny) {
     CHECK(!persist);
@@ -238,7 +238,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
     bool persist,
     PermissionDecision decision,
     TopLevelStorageAccessRequestOutcome outcome) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   RecordOutcomeSample(outcome);
 

@@ -72,17 +72,17 @@ PrintJobWorker::PrintJobWorker(
     : printing_context_delegate_(std::move(printing_context_delegate)),
       printing_context_(std::move(printing_context)),
       print_job_(print_job) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 PrintJobWorker::~PrintJobWorker() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   Stop();
 }
 
 bool PrintJobWorker::StartPrintingSanityCheck(
     const PrintedDocument* new_document) const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   if (page_number_ != PageNumber::npos()) {
     NOTREACHED();
@@ -101,7 +101,7 @@ bool PrintJobWorker::StartPrintingSanityCheck(
 
 std::u16string PrintJobWorker::GetDocumentName(
     const PrintedDocument* new_document) const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   std::u16string document_name = SimplifyDocumentTitle(document_->name());
   if (document_name.empty()) {
@@ -142,7 +142,7 @@ void PrintJobWorker::StartPrinting(PrintedDocument* new_document) {
 }
 
 void PrintJobWorker::OnDocumentChanged(PrintedDocument* new_document) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   if (page_number_ != PageNumber::npos()) {
     NOTREACHED();
@@ -160,7 +160,7 @@ void PrintJobWorker::PostWaitForPage() {
 }
 
 void PrintJobWorker::OnNewPage() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   if (!document_) {
     return;
@@ -224,7 +224,7 @@ void PrintJobWorker::Cancel() {
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void PrintJobWorker::CleanupAfterContentAnalysisDenial() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DVLOG(1) << "Canceling job due to content analysis";
 }
 #endif
@@ -253,10 +253,10 @@ bool PrintJobWorker::Start() {
 }
 
 void PrintJobWorker::CheckDocumentSpoolingComplete() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(page_number_, PageNumber::npos());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
+  CHECK_EQ(page_number_, PageNumber::npos(), base::NotFatalUntil::M162);
   // PrintJob must own this, because only PrintJob can send notifications.
-  DCHECK(print_job_);
+  CHECK(print_job_, base::NotFatalUntil::M162);
 }
 
 void PrintJobWorker::OnDocumentDone() {
@@ -272,8 +272,8 @@ void PrintJobWorker::OnDocumentDone() {
 }
 
 void PrintJobWorker::FinishDocumentDone(int job_id) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(document_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
+  CHECK(document_, base::NotFatalUntil::M162);
   print_job_->PostTask(
       FROM_HERE, base::BindOnce(&DocDoneNotificationCallback,
                                 base::RetainedRef(print_job_.get()), job_id,
@@ -285,8 +285,8 @@ void PrintJobWorker::FinishDocumentDone(int job_id) {
 
 #if BUILDFLAG(IS_WIN)
 bool PrintJobWorker::SpoolPage(PrintedPage* page) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_NE(page_number_, PageNumber::npos());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
+  CHECK_NE(page_number_, PageNumber::npos(), base::NotFatalUntil::M162);
 
   // Actual printing.
   if (document_->RenderPrintedPage(*page, printing_context_.get()) !=
@@ -296,7 +296,7 @@ bool PrintJobWorker::SpoolPage(PrintedPage* page) {
   }
 
   // Signal everyone that the page is printed.
-  DCHECK(print_job_);
+  CHECK(print_job_, base::NotFatalUntil::M162);
   print_job_->PostTask(FROM_HERE,
                        base::BindOnce(&PrintJob::OnPageDone, print_job_,
                                       base::RetainedRef(page)));
@@ -305,7 +305,7 @@ bool PrintJobWorker::SpoolPage(PrintedPage* page) {
 #endif  // BUILDFLAG(IS_WIN)
 
 bool PrintJobWorker::SpoolDocument() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
   mojom::ResultCode result =
       document_->RenderPrintedDocument(printing_context_.get());
   if (result != mojom::ResultCode::kSuccess) {
@@ -318,8 +318,8 @@ bool PrintJobWorker::SpoolDocument() {
 }
 
 void PrintJobWorker::OnCancel() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(print_job_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
+  CHECK(print_job_, base::NotFatalUntil::M162);
 
   print_job_->PostTask(
       FROM_HERE,
@@ -327,8 +327,8 @@ void PrintJobWorker::OnCancel() {
 }
 
 void PrintJobWorker::OnFailure() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(print_job_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
+  CHECK(print_job_, base::NotFatalUntil::M162);
 
   // We may loose our last reference by broadcasting the FAILED event.
   scoped_refptr<PrintJob> handle(print_job_.get());

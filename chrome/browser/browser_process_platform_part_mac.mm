@@ -64,7 +64,7 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
 
   // AppShimListener can not simply be reset, otherwise destroying the old
   // domain socket will cause the just-created socket to be unlinked.
-  DCHECK(!app_shim_listener_.get());
+  CHECK(!app_shim_listener_.get(), base::NotFatalUntil::M162);
   app_shim_listener_ = new AppShimListener;
 
   // Workaround for https://crbug.com/40155239: This needs to be created at

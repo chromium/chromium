@@ -129,7 +129,7 @@ void PrintJobManager::OnJobDone(PrintJob* print_job) {
     return;
 
   size_t erased = current_jobs_.erase(print_job);
-  DCHECK_EQ(1U, erased);
+  CHECK_EQ(1U, erased, base::NotFatalUntil::M162);
 }
 
 void PrintJobManager::OnFailed(PrintJob* print_job) {

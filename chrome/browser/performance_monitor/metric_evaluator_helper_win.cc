@@ -19,12 +19,12 @@ MetricEvaluatorsHelperWin* g_metric_evaluator_instance = nullptr;
 }  // namespace
 
 MetricEvaluatorsHelperWin::MetricEvaluatorsHelperWin() {
-  DCHECK(!g_metric_evaluator_instance);
+  CHECK(!g_metric_evaluator_instance, base::NotFatalUntil::M162);
   g_metric_evaluator_instance = this;
 }
 
 MetricEvaluatorsHelperWin::~MetricEvaluatorsHelperWin() {
-  DCHECK_EQ(this, g_metric_evaluator_instance);
+  CHECK_EQ(this, g_metric_evaluator_instance, base::NotFatalUntil::M162);
   g_metric_evaluator_instance = nullptr;
 }
 

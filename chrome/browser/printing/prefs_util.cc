@@ -43,7 +43,7 @@ std::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   }
 
   const std::string* name = paper_size_dict.FindString(kPaperSizeName);
-  DCHECK(name);
+  CHECK(name, base::NotFatalUntil::M162);
   return ParsePaperSize(*name);
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)

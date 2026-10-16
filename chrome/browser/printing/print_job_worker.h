@@ -104,7 +104,8 @@ class PrintJobWorker {
 
   // Get the document.  Only to be called from the worker thread.
   PrintedDocument* document() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M162);
     return document_.get();
   }
 

@@ -69,7 +69,7 @@ mojo::Remote<mojom::PdfNupConverter>&
 PdfNupConverterClient::GetPdfNupConverterRemote(int cookie) {
   auto iter = pdf_nup_converter_map_.find(cookie);
   if (iter != pdf_nup_converter_map_.end()) {
-    DCHECK(iter->second.is_bound());
+    CHECK(iter->second.is_bound(), base::NotFatalUntil::M162);
     return iter->second;
   }
 
@@ -81,7 +81,7 @@ PdfNupConverterClient::GetPdfNupConverterRemote(int cookie) {
 
 void PdfNupConverterClient::RemovePdfNupConverterRemote(int cookie) {
   size_t erased = pdf_nup_converter_map_.erase(cookie);
-  DCHECK_EQ(erased, 1u);
+  CHECK_EQ(erased, 1u, base::NotFatalUntil::M162);
 }
 
 mojo::Remote<mojom::PdfNupConverter>

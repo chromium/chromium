@@ -84,7 +84,7 @@ PrintJobWorkerOop::PrintJobWorkerOop(
       print_from_system_dialog_(print_from_system_dialog) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
-  DCHECK(!service_manager_client_id_.has_value());
+  CHECK(!service_manager_client_id_.has_value(), base::NotFatalUntil::M162);
 }
 
 void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
@@ -94,7 +94,7 @@ void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
   // Do browser-side context setup.
   std::u16string document_name = GetDocumentName(new_document);
   bool success = SetupDocument(document_name);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
 
   // Keep another reference to the document just for OOP.  This reference
   // ensures the document object is retained even if the job cancels out and
@@ -128,7 +128,7 @@ void PrintJobWorkerOop::CleanupAfterContentAnalysisDenial() {
 
 void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result,
                                            int job_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error initiating printing via service for document "
                        << document_oop_->cookie() << ": " << result;
@@ -150,7 +150,7 @@ void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result,
 #if BUILDFLAG(IS_WIN)
 void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
                                                mojom::ResultCode result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (result != mojom::ResultCode::kSuccess) {
     // Once an error happens during rendering, there could be multiple calls
     // to here as the queue of sent pages all return back with error.
@@ -186,7 +186,7 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
 #endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorkerOop::OnDidRenderPrintedDocument(mojom::ResultCode result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR)
         << "Error rendering printed document via service for document "
@@ -201,9 +201,10 @@ void PrintJobWorkerOop::OnDidRenderPrintedDocument(mojom::ResultCode result) {
 
 void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
                                           mojom::ResultCode result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_WIN)
-  DCHECK_EQ(pages_printed_count_, document_oop_->expected_page_count());
+  CHECK_EQ(pages_printed_count_, document_oop_->expected_page_count(),
+           base::NotFatalUntil::M162);
 #endif
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error completing printing via service for document "
@@ -226,7 +227,7 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
 
 void PrintJobWorkerOop::OnDidCancel(scoped_refptr<PrintJob> job,
                                     mojom::ResultCode cancel_reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DVLOG(1) << "Cancel completed for printing via service for document "
            << document_oop_->cookie();
 
@@ -250,15 +251,15 @@ void PrintJobWorkerOop::OnDidCancel(scoped_refptr<PrintJob> job,
 
 #if BUILDFLAG(IS_WIN)
 bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK_NE(page_number(), PageNumber::npos());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
+  CHECK_NE(page_number(), PageNumber::npos(), base::NotFatalUntil::M162);
 
 #if !defined(NDEBUG)
-  DCHECK(document()->IsPageInList(*page));
+  CHECK(document()->IsPageInList(*page), base::NotFatalUntil::M162);
 #endif
 
   const MetafilePlayer* metafile = page->metafile();
-  DCHECK(metafile);
+  CHECK(metafile, base::NotFatalUntil::M162);
   base::MappedReadOnlyRegion region_mapping =
       metafile->GetDataAsSharedMemoryRegion();
   if (simulate_spooling_memory_errors_ || !region_mapping.IsValid()) {
@@ -283,7 +284,7 @@ bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
 #endif  // BUILDFLAG(IS_WIN)
 
 bool PrintJobWorkerOop::SpoolDocument() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(task_runner()->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   PrintedDocument::DocumentData document_data = document()->GetDocumentData();
   if (simulate_spooling_memory_errors_ || !document_data.data.IsValid()) {
@@ -336,7 +337,7 @@ void PrintJobWorkerOop::OnFailure() {
 }
 
 void PrintJobWorkerOop::UnregisterServiceManagerClient() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (service_manager_client_id_.has_value()) {
     PrintBackendServiceManager::GetInstance().UnregisterClient(
         service_manager_client_id_.value());
@@ -376,7 +377,7 @@ bool PrintJobWorkerOop::TryRestartPrinting() {
 }
 
 void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // If an error has occurred during rendering in middle of a multi-page job,
   // it could be possible for the `OnDidRenderPrintedPage()` callback of latter
@@ -421,8 +422,8 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
 }
 
 void PrintJobWorkerOop::SendEstablishPrintingContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(ShouldPrintJobOop());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(ShouldPrintJobOop(), base::NotFatalUntil::M162);
 
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
@@ -445,8 +446,8 @@ void PrintJobWorkerOop::SendEstablishPrintingContext() {
 
 void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
                                           const std::u16string& document_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(ShouldPrintJobOop());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(ShouldPrintJobOop(), base::NotFatalUntil::M162);
 
   // The device name is needed repeatedly for each call to the service, cache
   // that for this print job.
@@ -489,7 +490,7 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
     const PrintedPage* page,
     mojom::MetafileDataType page_data_type,
     base::ReadOnlySharedMemoryRegion serialized_page_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Page numbers are 0-based for the printing context.
   const uint32_t page_index = page->page_number() - 1;
@@ -516,7 +517,7 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
 void PrintJobWorkerOop::SendRenderPrintedDocument(
     mojom::MetafileDataType data_type,
     base::ReadOnlySharedMemoryRegion serialized_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   const int32_t document_cookie = document_oop_->cookie();
   VLOG(1) << "Sending document " << document_cookie << " to `" << device_name_
@@ -531,7 +532,7 @@ void PrintJobWorkerOop::SendRenderPrintedDocument(
 }
 
 void PrintJobWorkerOop::SendDocumentDone() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   const int32_t document_cookie = document_oop_->cookie();
   VLOG(1) << "Sending document done for document " << document_cookie;
@@ -547,7 +548,7 @@ void PrintJobWorkerOop::SendDocumentDone() {
 }
 
 void PrintJobWorkerOop::SendCancel(base::OnceClosure on_did_cancel_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   VLOG(1) << "Sending cancel for document " << document_oop_->cookie();
 
   PrintBackendServiceManager& service_mgr =

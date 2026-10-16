@@ -183,14 +183,14 @@ PdfConverterImpl::PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
       use_skia_(use_skia),
       url_(url),
       start_callback_(std::move(start_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(start_callback_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(start_callback_, base::NotFatalUntil::M162);
 
   Initialize(data);
 }
 
 PdfConverterImpl::~PdfConverterImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
@@ -224,8 +224,8 @@ void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
 void PdfConverterImpl::OnPageCount(
     mojo::PendingRemote<mojom::PdfToEmfConverter> converter,
     uint32_t page_count) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!pdf_to_emf_converter_.is_bound());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!pdf_to_emf_converter_.is_bound(), base::NotFatalUntil::M162);
   pdf_to_emf_converter_.Bind(std::move(converter));
   pdf_to_emf_converter_.set_disconnect_handler(base::BindOnce(
       &PdfConverterImpl::OnFailed, weak_ptr_factory_.GetWeakPtr(),
@@ -240,8 +240,8 @@ void PdfConverterImpl::OnPageCount(
 void PdfConverterImpl::GetPage(
     uint32_t page_index,
     PdfConverter::GetPageCallback get_page_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(pdf_to_emf_converter_.is_bound());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(pdf_to_emf_converter_.is_bound(), base::NotFatalUntil::M162);
 
   // Store callback before any OnFailed() call to make it called on failure.
   get_page_callbacks_.push(GetPageCallbackData(page_index, get_page_callback));
@@ -256,7 +256,7 @@ void PdfConverterImpl::GetPage(
 
 void PdfConverterImpl::OnPageDone(base::ReadOnlySharedMemoryRegion emf_region,
                                   float scale_factor) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (get_page_callbacks_.empty())
     return OnFailed("No get_page callbacks.");
@@ -279,14 +279,14 @@ void PdfConverterImpl::OnPageDone(base::ReadOnlySharedMemoryRegion emf_region,
 }
 
 void PdfConverterImpl::Stop() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   // Disconnect interface ptrs so that the printing service process stop.
   pdf_to_emf_converter_factory_.reset();
   pdf_to_emf_converter_.reset();
 }
 
 void PdfConverterImpl::OnFailed(std::string_view error_message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   LOG(ERROR) << "Failed to convert PDF: " << error_message;
   base::WeakPtr<PdfConverterImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
   if (start_callback_) {

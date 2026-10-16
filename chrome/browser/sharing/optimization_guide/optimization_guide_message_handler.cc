@@ -25,8 +25,10 @@ using components_sharing_message::OptimizationGuidePushNotification;
 // static
 std::unique_ptr<OptimizationGuideMessageHandler>
 OptimizationGuideMessageHandler::Create(Profile* profile) {
-  DCHECK(optimization_guide::features::IsOptimizationHintsEnabled());
-  DCHECK(optimization_guide::features::IsPushNotificationsEnabled());
+  CHECK(optimization_guide::features::IsOptimizationHintsEnabled(),
+        base::NotFatalUntil::M162);
+  CHECK(optimization_guide::features::IsPushNotificationsEnabled(),
+        base::NotFatalUntil::M162);
   optimization_guide::PushNotificationManager* push_notification_manager =
       nullptr;
   auto* optimization_guide_service =
@@ -34,7 +36,7 @@ OptimizationGuideMessageHandler::Create(Profile* profile) {
   OptimizationGuideLogger* optimization_guide_logger = nullptr;
   if (optimization_guide_service) {
     auto* hint_manager = optimization_guide_service->GetHintsManager();
-    DCHECK(hint_manager);
+    CHECK(hint_manager, base::NotFatalUntil::M162);
     push_notification_manager = hint_manager->push_notification_manager();
     optimization_guide_logger =
         optimization_guide_service->GetOptimizationGuideLogger();
@@ -55,7 +57,8 @@ OptimizationGuideMessageHandler::~OptimizationGuideMessageHandler() = default;
 void OptimizationGuideMessageHandler::OnMessage(
     components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
-  DCHECK(message.has_optimization_guide_push_notification());
+  CHECK(message.has_optimization_guide_push_notification(),
+        base::NotFatalUntil::M162);
 
   // Parse the payload to HintNotificationPayload.
   const OptimizationGuidePushNotification& notification_proto =

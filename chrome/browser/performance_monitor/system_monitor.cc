@@ -44,25 +44,25 @@ SystemMonitor::SystemMonitor(
           metric_evaluators_helper.release(),
           base::OnTaskRunnerDeleter(blocking_task_runner_)),
       metric_evaluators_metadata_(CreateMetricMetadataArray()) {
-  DCHECK(!g_system_metrics_monitor);
+  CHECK(!g_system_metrics_monitor, base::NotFatalUntil::M162);
   g_system_metrics_monitor = this;
 }
 
 SystemMonitor::~SystemMonitor() {
-  DCHECK_EQ(this, g_system_metrics_monitor);
+  CHECK_EQ(this, g_system_metrics_monitor, base::NotFatalUntil::M162);
   g_system_metrics_monitor = nullptr;
 }
 
 // static
 std::unique_ptr<SystemMonitor> SystemMonitor::Create() {
-  DCHECK(!g_system_metrics_monitor);
+  CHECK(!g_system_metrics_monitor, base::NotFatalUntil::M162);
   return base::WrapUnique(new SystemMonitor(CreateMetricEvaluatorsHelper()));
 }
 
 // static
 std::unique_ptr<SystemMonitor> SystemMonitor::CreateForTesting(
     std::unique_ptr<MetricEvaluatorsHelper> helper) {
-  DCHECK(!g_system_metrics_monitor);
+  CHECK(!g_system_metrics_monitor, base::NotFatalUntil::M162);
   return base::WrapUnique(new SystemMonitor(std::move(helper)));
 }
 
@@ -275,13 +275,13 @@ SystemMonitor::MetricMetadata::MetricMetadata(
 template <typename T>
 void SystemMonitor::MetricEvaluatorImpl<T>::NotifyObserver(
     SystemObserver* observer) {
-  DCHECK(value());
+  CHECK(value(), base::NotFatalUntil::M162);
   (observer->*notify_function_)(value().value());
 }
 
 template <typename T>
 void SystemMonitor::MetricEvaluatorImpl<T>::Evaluate() {
-  DCHECK(evaluate_function_);
+  CHECK(evaluate_function_, base::NotFatalUntil::M162);
   value_ = std::move(evaluate_function_).Run();
 }
 
