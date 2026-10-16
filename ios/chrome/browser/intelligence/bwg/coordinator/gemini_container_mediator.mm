@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -71,6 +72,7 @@ using ios::provider::GeminiViewState;
                                        GeminiContainerUIStateManagerDelegate,
                                        IdentityManagerObserving,
                                        IncognitoStateObserver,
+                                       LensOverlayStateNotifierObserver,
                                        TabGridStateObserving>
 
 // Called when the active `WebState` changes.
@@ -180,6 +182,9 @@ class GeminiContainerMediatorTabHelperObserver
   // Tab grid state observed to minimize the container when entering the tab
   // grid.
   TabGridState* _tabGridState;
+  // Lens overlay state notifier observed to dismiss the container when Lens
+  // Overlay prepares.
+  LensOverlayStateNotifier* _lensOverlayStateNotifier;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -197,6 +202,8 @@ class GeminiContainerMediatorTabHelperObserver
       _webStateList = browser->GetWebStateList();
       _profile = browser->GetProfile();
       _tabGridState = browser->GetSceneState().tabGridState;
+      _lensOverlayStateNotifier =
+          browser->GetSceneState().lensOverlayStateNotifier;
       _incognitoState = browser->GetSceneState().incognitoState;
     }
     _actorService = actorService;
@@ -292,6 +299,7 @@ class GeminiContainerMediatorTabHelperObserver
     _actorService->AddTaskLifecycleObserver(self);
   }
   [_tabGridState addObserver:self];
+  [_lensOverlayStateNotifier addObserver:self];
   [self updateSharedTabsForActiveWebState];
   [self setupInitialUIState];
   [self requestActivePageContextGeneration];
@@ -339,6 +347,8 @@ class GeminiContainerMediatorTabHelperObserver
   _actuationTaskId.reset();
   [_tabGridState removeObserver:self];
   _tabGridState = nil;
+  [_lensOverlayStateNotifier removeObserver:self];
+  _lensOverlayStateNotifier = nil;
 
   self.zeroStateConsumer = nil;
   _startupState = nil;
@@ -794,6 +804,13 @@ class GeminiContainerMediatorTabHelperObserver
 - (void)willEnterTabGrid {
   [self.containerHandler
       animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+}
+
+#pragma mark - LensOverlayStateNotifierObserver
+
+- (void)lensOverlayDidPrepare:
+    (LensOverlayStateNotifier*)lensOverlayStateNotifier {
+  [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
 }
 
 #pragma mark - Private

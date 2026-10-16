@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -1921,6 +1922,29 @@ TEST_F(GeminiContainerMediatorTest, TestNewTabPageInsertedMinimizesContainer) {
   // Switching to an existing `WebState` should not minimize the container.
   browser_->GetWebStateList()->ActivateWebStateAt(0);
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+}
+
+// Tests that preparing the Lens Overlay dismisses the Gemini flow via
+// `geminiHandler` and notifications are ignored after `disconnect`.
+TEST_F(GeminiContainerMediatorTest, TestLensOverlayDismissesContainer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
+
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  [scene_state_.lensOverlayStateNotifier lensOverlayDidPrepare];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+
+  [mediator_ disconnect];
+
+  [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
+  [scene_state_.lensOverlayStateNotifier lensOverlayDidPrepare];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
 
 }  // namespace
