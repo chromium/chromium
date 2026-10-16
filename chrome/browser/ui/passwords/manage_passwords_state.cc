@@ -124,7 +124,7 @@ void ManagePasswordsState::OnRequestCredentials(
 void ManagePasswordsState::OnAutoSignin(
     std::vector<std::unique_ptr<PasswordForm>> local_forms,
     const url::Origin& origin) {
-  DCHECK(!local_forms.empty());
+  CHECK(!local_forms.empty(), base::NotFatalUntil::M162);
   ClearData();
   local_credentials_forms_ = std::move(local_forms);
   origin_ = origin;
@@ -317,7 +317,8 @@ void ManagePasswordsState::ProcessLoginsChanged(
     } else if (change.type() == password_manager::PasswordStoreChange::UPDATE) {
       UpdateFormInVector(changed_form, &local_credentials_forms_);
     } else {
-      DCHECK_EQ(password_manager::PasswordStoreChange::ADD, change.type());
+      CHECK_EQ(password_manager::PasswordStoreChange::ADD, change.type(),
+               base::NotFatalUntil::M162);
       AddForm(changed_form);
     }
   }
@@ -332,8 +333,9 @@ void ManagePasswordsState::ProcessLoginsChanged(
 }
 
 void ManagePasswordsState::ChooseCredential(const PasswordForm* form) {
-  DCHECK_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE, state());
-  DCHECK(!credentials_callback_.is_null());
+  CHECK_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE, state(),
+           base::NotFatalUntil::M162);
+  CHECK(!credentials_callback_.is_null(), base::NotFatalUntil::M162);
 
   std::move(credentials_callback_).Run(form);
 }
@@ -376,7 +378,7 @@ bool ManagePasswordsState::AddForm(const PasswordForm& form) {
 }
 
 void ManagePasswordsState::SetState(password_manager::ui::State state) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M162);
   autofill::LogManager* log_manager = client_->GetCurrentLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(log_manager);

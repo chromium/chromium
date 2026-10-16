@@ -89,7 +89,7 @@ gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
   }
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  DCHECK(!primary_account_info.IsEmpty());
+  CHECK(!primary_account_info.IsEmpty(), base::NotFatalUntil::M162);
 
   gfx::Image account_icon = primary_account_info.GetAvatarImage().value_or(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(

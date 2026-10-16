@@ -319,7 +319,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile_->GetPath());
-    DCHECK(entry);
+    CHECK(entry, base::NotFatalUntil::M162);
     std::u16string gaia_name = entry->GetGAIANameToDisplay();
     if (gaia_name.empty()) {
       gaia_name = entry->GetLocalProfileName();

@@ -297,7 +297,7 @@ IntroUI::~IntroUI() {
 }
 
 void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
-  DCHECK(!callback->is_null());
+  CHECK(!callback->is_null(), base::NotFatalUntil::M162);
   signin_choice_callback_ = std::move(callback);
 
   intro_handler_->ResetIntroButtons();
@@ -307,7 +307,7 @@ void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
 }
 
 void IntroUI::SetDefaultBrowserCallback(DefaultBrowserCallback callback) {
-  DCHECK(!callback->is_null());
+  CHECK(!callback->is_null(), base::NotFatalUntil::M162);
   default_browser_callback_ = std::move(callback);
   intro_handler_->ResetDefaultBrowserButtons();
 }

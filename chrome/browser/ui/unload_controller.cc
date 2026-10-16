@@ -995,7 +995,7 @@ UnloadController::MaybeWarnBeforeClosing(
 UnloadController::DownloadCloseType
 UnloadController::OkToCloseWithInProgressDownloads(
     int* num_downloads_blocking) const {
-  DCHECK(num_downloads_blocking);
+  CHECK(num_downloads_blocking, base::NotFatalUntil::M162);
   *num_downloads_blocking = 0;
 
   // If we're not running a full browser process with a profile manager

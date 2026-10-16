@@ -15,7 +15,7 @@
 
 SigninErrorHandler::SigninErrorHandler(BrowserWindowInterface* browser)
     : browser_(browser) {
-  DCHECK(browser_);
+  CHECK(browser_, base::NotFatalUntil::M162);
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
 }

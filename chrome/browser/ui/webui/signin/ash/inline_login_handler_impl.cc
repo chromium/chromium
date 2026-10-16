@@ -99,7 +99,7 @@ bool IsPrimaryAccountBeingReauthenticated(
 
 std::string GetInlineLoginFlowName(Profile* profile,
                                    const std::optional<std::string>& email) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (profile->IsChild() &&
       !IsPrimaryAccountBeingReauthenticated(profile, email)) {
     // Child user is adding / reauthenticating a secondary account.
@@ -118,8 +118,9 @@ const SkBitmap& GetDefaultAccountIcon() {
 
 base::DictValue GaiaAccountToValue(const ::account_manager::Account& account,
                                    const AccountInfo& account_info) {
-  DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
-  DCHECK(!account_info.IsEmpty());
+  CHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia,
+           base::NotFatalUntil::M162);
+  CHECK(!account_info.IsEmpty(), base::NotFatalUntil::M162);
 
   base::DictValue dict;
   dict.Set(kAccountKeyId, account.key.id());
@@ -135,9 +136,9 @@ base::DictValue GaiaAccountToValue(const ::account_manager::Account& account,
 
 ::account_manager::Account ValueToGaiaAccount(const base::DictValue& dict) {
   const std::string* id = dict.FindString(kAccountKeyId);
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M162);
   const std::string* email = dict.FindString(kAccountKeyEmail);
-  DCHECK(email);
+  CHECK(email, base::NotFatalUntil::M162);
   return ::account_manager::Account{
       ::account_manager::AccountKey{*id, account_manager::AccountType::kGaia},
       *email};

@@ -11,7 +11,7 @@ MediaToolbarButtonController::MediaToolbarButtonController(
     MediaToolbarButtonControllerDelegate* delegate,
     global_media_controls::MediaItemManager* item_manager)
     : delegate_(delegate), item_manager_(item_manager) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   item_manager_->AddObserver(this);
   UpdateToolbarButtonState();
 }

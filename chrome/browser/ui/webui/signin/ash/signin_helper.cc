@@ -78,10 +78,10 @@ SigninHelper::SigninHelper(
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
       gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
-  DCHECK(!signin_scoped_device_id.empty());
+  CHECK(!signin_scoped_device_id.empty(), base::NotFatalUntil::M162);
   CHECK(account_upsertion_finished_callback_);
   CHECK(show_signin_error_);
-  DCHECK(arc_helper_);
+  CHECK(arc_helper_, base::NotFatalUntil::M162);
 
   if (!IsInitialPrimaryAccount()) {
     restriction_fetcher_ =
@@ -215,7 +215,7 @@ void SigninHelper::OnGetSecondaryAccountAllowedInArcPolicy(
     return;
   }
 
-  DCHECK(policy_result);
+  CHECK(policy_result, base::NotFatalUntil::M162);
   arc_helper_->SetIsAvailableInArc(policy_result.value());
 
   UpsertAccount(refresh_token_);

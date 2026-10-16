@@ -249,7 +249,8 @@ bool GetStagingRootDir(base::FilePath* root_dir) {
 // content remains on disk while preserving recent clipboard operations. Must
 // run on the sequence returned by GetClipboardFileTaskRunner().
 void PruneStaleBatchesIn(const base::FilePath& root_dir) {
-  DCHECK(GetClipboardFileTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetClipboardFileTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   const base::Time cutoff_time = base::Time::Now() - base::Hours(1);
   base::FileEnumerator enumerator(root_dir, /*recursive=*/false,
                                   base::FileEnumerator::DIRECTORIES);

@@ -135,7 +135,7 @@ void ProfileCustomizationHandler::HandleDone(const base::ListValue& args) {
   std::u16string profile_name = base::UTF8ToUTF16(args[0].GetString());
 
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
-  DCHECK(!profile_name.empty());
+  CHECK(!profile_name.empty(), base::NotFatalUntil::M162);
 
   const GURL& url = web_ui()->GetWebContents()->GetVisibleURL();
   if (GetProfileCustomizationStyle(url) ==
@@ -167,7 +167,7 @@ void ProfileCustomizationHandler::HandleDeleteProfile(
     const base::ListValue& args) {
   CHECK_EQ(0u, args.size());
 
-  DCHECK(GetProfileEntry()->IsEphemeral());
+  CHECK(GetProfileEntry()->IsEphemeral(), base::NotFatalUntil::M162);
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
   // Since the profile is ephemeral, closing all browser windows triggers the
@@ -184,7 +184,7 @@ void ProfileCustomizationHandler::HandleSetAvatarIcon(
 
 void ProfileCustomizationHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
-  DCHECK(IsJavascriptAllowed());
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M162);
   if (profile_path != profile_->GetPath()) {
     return;
   }
@@ -219,6 +219,6 @@ ProfileAttributesEntry* ProfileCustomizationHandler::GetProfileEntry() const {
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_->GetPath());
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M162);
   return entry;
 }

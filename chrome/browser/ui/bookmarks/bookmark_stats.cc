@@ -27,9 +27,10 @@ bool IsBookmarkBarLocation(BookmarkLaunchLocation location) {
 }
 
 auto GetMetricProfile(const Profile* profile) {
-  DCHECK(profile);
-  DCHECK(profile->IsRegularProfile() ||
-         profile->IsPrimaryOTRProfileWithRegularParent());
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK(profile->IsRegularProfile() ||
+            profile->IsPrimaryOTRProfileWithRegularParent(),
+        base::NotFatalUntil::M162);
   if (profile->IsRegularProfile()) {
     return profile_metrics::BrowserProfileType::kRegular;
   } else if (profile->IsIncognitoProfile()) {
@@ -48,7 +49,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 void RecordAppLaunchForBookmarkBar(Profile* profile, const GURL& url) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)

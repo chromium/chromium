@@ -178,11 +178,11 @@ void InlineLoginDialog::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void InlineLoginDialog::AttachWidgetObserver() {
-  DCHECK(!widget_observation_.IsObserving());
+  CHECK(!widget_observation_.IsObserving(), base::NotFatalUntil::M162);
   gfx::NativeWindow window = dialog_window();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M162);
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   widget_observation_.Observe(widget);
 }
 
@@ -201,7 +201,7 @@ InlineLoginDialog::InlineLoginDialog(
       url_(url),
       add_account_options_(options),
       close_dialog_closure_(std::move(close_dialog_closure)) {
-  DCHECK(!dialog);
+  CHECK(!dialog, base::NotFatalUntil::M162);
   dialog = this;
 }
 
@@ -214,7 +214,7 @@ InlineLoginDialog::~InlineLoginDialog() {
     std::move(close_dialog_closure_).Run();
   }
 
-  DCHECK_EQ(this, dialog);
+  CHECK_EQ(this, dialog, base::NotFatalUntil::M162);
   dialog = nullptr;
 }
 

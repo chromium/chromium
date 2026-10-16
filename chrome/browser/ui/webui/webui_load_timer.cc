@@ -18,7 +18,7 @@ void CallUmaHistogramTimes(const std::string& name, base::TimeDelta duration) {
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
       name, base::Milliseconds(1), base::Seconds(10), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  DCHECK(histogram);
+  CHECK(histogram, base::NotFatalUntil::M162);
   histogram->AddTime(duration);
 }
 
@@ -31,8 +31,8 @@ WebuiLoadTimer::WebuiLoadTimer(
     : content::WebContentsObserver(web_contents),
       document_initial_load_uma_id_(document_initial_load_uma_id),
       document_load_completed_uma_id_(document_load_completed_uma_id) {
-  DCHECK(!document_initial_load_uma_id_.empty());
-  DCHECK(!document_load_completed_uma_id_.empty());
+  CHECK(!document_initial_load_uma_id_.empty(), base::NotFatalUntil::M162);
+  CHECK(!document_load_completed_uma_id_.empty(), base::NotFatalUntil::M162);
 }
 
 WebuiLoadTimer::~WebuiLoadTimer() = default;

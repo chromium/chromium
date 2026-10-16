@@ -60,7 +60,8 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
       context_(std::move(context)),
       request_(request),
       provider_(provider) {
-  DCHECK(!context_ || request == context_->presentation_request());
+  CHECK(!context_ || request == context_->presentation_request(),
+        base::NotFatalUntil::M162);
 
   // We want to observe the content::MediaSession associated with the
   // WebContents, even when the content::MediaSession has never requested audio
@@ -74,7 +75,7 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
     return;
   }
   auto* media_session = GetMediaSession(web_contents);
-  DCHECK(media_session);
+  CHECK(media_session, base::NotFatalUntil::M162);
   media_session->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
 }
 
@@ -99,7 +100,7 @@ void PresentationRequestNotificationItem::MediaSessionImagesChanged(
   }
 
   auto* media_session = GetMediaSession(web_contents);
-  DCHECK(media_session);
+  CHECK(media_session, base::NotFatalUntil::M162);
   media_session::MediaImageManager manager(
       global_media_controls::kMediaItemArtworkMinSize,
       global_media_controls::kMediaItemArtworkDesiredSize);

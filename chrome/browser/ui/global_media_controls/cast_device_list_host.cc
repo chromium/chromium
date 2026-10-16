@@ -136,7 +136,7 @@ void CastDeviceListHost::SelectDevice(const std::string& device_id) {
     // We record stopping casting here even if we are starting casting, because
     // the existing session is being stopped and replaced by a new session.
     if (sink.provider == media_router::mojom::MediaRouteProviderId::DIAL) {
-      DCHECK(sink.route);
+      CHECK(sink.route, base::NotFatalUntil::M162);
       MediaItemUIMetrics::RecordStopCastingMetrics(
           media_router::MediaCastMode::PRESENTATION);
       cast_controller_->StopCasting(sink.route->media_route_id());

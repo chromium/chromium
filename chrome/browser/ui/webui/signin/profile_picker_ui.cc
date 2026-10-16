@@ -64,7 +64,7 @@ bool IsBrowserSigninAllowed() {
   return true;
 #else
   policy::PolicyService* policy_service = g_browser_process->policy_service();
-  DCHECK(policy_service);
+  CHECK(policy_service, base::NotFatalUntil::M162);
   const policy::PolicyMap& policies = policy_service->GetPolicies(
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
 

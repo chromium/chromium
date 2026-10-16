@@ -179,7 +179,7 @@ void TabSearchUI::BeforeBubbleWidgetShowed() {
 void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
 
   // CreatePageHandler() can be called multiple times if reusing the same
   // WebUIController. For eg refreshing the page will create new PageHandler but

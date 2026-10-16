@@ -97,7 +97,7 @@ SyncConfirmationHandler::SyncConfirmationHandler(
       string_to_grd_id_map_(string_to_grd_id_map),
       browser_(browser),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
   if (browser_) {
     browser_close_subscription_ =
         browser_->RegisterBrowserDidClose(base::BindRepeating(
@@ -149,7 +149,7 @@ void SyncConfirmationHandler::HandleConfirm(const base::ListValue& args) {
 
 void SyncConfirmationHandler::HandleGoToSettings(const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
-  DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
+  CHECK(SyncServiceFactory::IsSyncAllowed(profile_), base::NotFatalUntil::M162);
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::CONFIGURE_SYNC_FIRST);
@@ -163,7 +163,7 @@ void SyncConfirmationHandler::HandleUndo(const base::ListValue& args) {
 
 void SyncConfirmationHandler::HandleAccountInfoRequest(
     const base::ListValue& args) {
-  DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
+  CHECK(SyncServiceFactory::IsSyncAllowed(profile_), base::NotFatalUntil::M162);
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
@@ -225,8 +225,10 @@ void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
 
 void SyncConfirmationHandler::OnScreenModeChanged(
     SyncConfirmationScreenMode mode) {
-  DCHECK_NE(mode, SyncConfirmationScreenMode::kPending);
-  DCHECK_NE(mode, SyncConfirmationScreenMode::kUnsupported);
+  CHECK_NE(mode, SyncConfirmationScreenMode::kPending,
+           base::NotFatalUntil::M162);
+  CHECK_NE(mode, SyncConfirmationScreenMode::kUnsupported,
+           base::NotFatalUntil::M162);
   DCHECK(!screen_mode_notified_) << "Must be called only once";
   screen_mode_notified_ = true;
   screen_mode_deadline_.Stop();

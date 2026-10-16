@@ -184,7 +184,7 @@ void ReadIsolatedWebAppFaviconsFromDisk(
     Profile* profile,
     const GURL& page_url,
     favicon_base::FaviconResultsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   auto callback_async = base::BindOnce(
       [](favicon_base::FaviconResultsCallback callback,

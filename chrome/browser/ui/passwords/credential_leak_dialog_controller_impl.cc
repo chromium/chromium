@@ -27,7 +27,7 @@ CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() =
 
 void CredentialLeakDialogControllerImpl::ShowCredentialLeakPrompt(
     std::unique_ptr<CredentialLeakPrompt> dialog) {
-  DCHECK(dialog);
+  CHECK(dialog, base::NotFatalUntil::M162);
   credential_leak_dialog_ = std::move(dialog);
   credential_leak_dialog_->ShowCredentialLeakPrompt();
 }

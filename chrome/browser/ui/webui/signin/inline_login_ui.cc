@@ -221,7 +221,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
 
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   source->AddString("userName", user->GetGivenName());
   source->AddString("accountManagerOsSettingsUrl",
                     chromeos::settings::GetOSSettingsUrl(

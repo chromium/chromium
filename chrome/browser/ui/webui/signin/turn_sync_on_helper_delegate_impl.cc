@@ -96,8 +96,8 @@ TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(
       profile_(browser_->GetProfile()),
       is_sync_promo_(is_sync_promo),
       user_already_signed_in_(user_already_signed_in) {
-  DCHECK(browser);
-  DCHECK(profile_);
+  CHECK(browser, base::NotFatalUntil::M162);
+  CHECK(profile_, base::NotFatalUntil::M162);
   browser_close_subscription_ = browser_->RegisterBrowserDidClose(
       base::BindRepeating(&TurnSyncOnHelperDelegateImpl::OnBrowserDidClose,
                           base::Unretained(this)));
@@ -149,7 +149,7 @@ void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
 void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
   sync_confirmation_callback_ = std::move(callback);
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
@@ -176,7 +176,7 @@ void TurnSyncOnHelperDelegateImpl::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
   browser_ = EnsureBrowser(browser_, profile_);
   SigninViewController::From(browser_)->ShowModalSigninEmailConfirmationDialog(
       previous_email, new_email,
@@ -196,7 +196,7 @@ void TurnSyncOnHelperDelegateImpl::SwitchToProfile(Profile* new_profile) {
 void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   scoped_login_ui_service_observation_.Reset();
-  DCHECK(sync_confirmation_callback_);
+  CHECK(sync_confirmation_callback_, base::NotFatalUntil::M162);
   // Treat closing the ui as an implicit ABORT_SYNC action.
   if (result == LoginUIService::UI_CLOSED) {
     result = LoginUIService::ABORT_SYNC;

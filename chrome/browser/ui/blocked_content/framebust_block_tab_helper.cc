@@ -23,9 +23,11 @@ void FramebustBlockTabHelper::AddBlockedUrl(
   initiator_origins_.push_back(initiator_origin);
   initiator_navigation_states_.push_back(initiator_navigation_state);
   callbacks_.push_back(std::move(click_callback));
-  DCHECK_EQ(blocked_urls_.size(), callbacks_.size());
-  DCHECK_EQ(blocked_urls_.size(), initiator_origins_.size());
-  DCHECK_EQ(blocked_urls_.size(), initiator_navigation_states_.size());
+  CHECK_EQ(blocked_urls_.size(), callbacks_.size(), base::NotFatalUntil::M162);
+  CHECK_EQ(blocked_urls_.size(), initiator_origins_.size(),
+           base::NotFatalUntil::M162);
+  CHECK_EQ(blocked_urls_.size(), initiator_navigation_states_.size(),
+           base::NotFatalUntil::M162);
 
   manager_.NotifyObservers(0 /* id */, blocked_url);
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
@@ -37,7 +39,7 @@ bool FramebustBlockTabHelper::HasBlockedUrls() const {
 
 void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   size_t total_size = blocked_urls_.size();
-  DCHECK_LT(index, total_size);
+  CHECK_LT(index, total_size, base::NotFatalUntil::M162);
   const GURL& url = blocked_urls_[index];
   if (!callbacks_[index].is_null()) {
     std::move(callbacks_[index]).Run(url, index, total_size);

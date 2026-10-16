@@ -225,7 +225,7 @@ ManagePasswordsBubbleController::GetSingleCredentialDetailsModeCredential()
 void ManagePasswordsBubbleController::
     UpdateDetailsBubbleCredentialInPasswordStore(
         password_manager::PasswordForm updated_form) {
-  DCHECK(details_bubble_credential_.has_value());
+  CHECK(details_bubble_credential_.has_value(), base::NotFatalUntil::M162);
   Profile* profile = GetProfile();
   if (!profile) {
     return;
@@ -331,7 +331,7 @@ scoped_refptr<password_manager::PasswordStoreInterface>
 ManagePasswordsBubbleController::PasswordStoreForForm(
     const password_manager::PasswordForm& password_form) const {
   Profile* profile = GetProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return password_form.IsUsingAccountStore()
              ? AccountPasswordStoreFactory::GetForProfile(
                    profile, ServiceAccessType::EXPLICIT_ACCESS)

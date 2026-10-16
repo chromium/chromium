@@ -57,7 +57,7 @@ ChromePopupNavigationDelegate::NavigateWithGesture(
       params_.disposition == WindowOpenDisposition::NEW_POPUP) {
     content::RenderFrameHost* host =
         params_.navigated_or_inserted_contents->GetPrimaryMainFrame();
-    DCHECK(host);
+    CHECK(host, base::NotFatalUntil::M162);
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
     host->GetRemoteAssociatedInterfaces()->GetInterface(&client);
     client->SetWindowFeatures(window_features.Clone());

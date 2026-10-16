@@ -143,7 +143,8 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
 
   // Create a new IsolationInfo with RequestType::kOther since this is sort of
   // a subresource request (so it shouldn't change sites on redirects).
-  DCHECK(!navigation_handle()->GetIsolationInfo().IsEmpty());
+  CHECK(!navigation_handle()->GetIsolationInfo().IsEmpty(),
+        base::NotFatalUntil::M162);
   trusted_params.isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
       *navigation_handle()->GetIsolationInfo().top_frame_origin(),

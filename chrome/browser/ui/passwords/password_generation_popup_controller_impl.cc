@@ -70,7 +70,7 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
 
   void RegisterKeyPressHandler(
       content::RenderWidgetHost::KeyPressEventCallback handler) {
-    DCHECK(callback_.is_null());
+    CHECK(callback_.is_null(), base::NotFatalUntil::M162);
     content::RenderWidgetHostView* view = GetView();
     if (!view) {
       return;

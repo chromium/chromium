@@ -258,7 +258,8 @@ void HandleAccessibilityRequestCallback(
     ui::AXMode initial_process_mode,
     const std::string& path,
     content::WebUIDataSource::GotDataCallback callback) {
-  DCHECK(ShouldHandleAccessibilityRequestCallback(path));
+  CHECK(ShouldHandleAccessibilityRequestCallback(path),
+        base::NotFatalUntil::M162);
 
   auto& browser_accessibility_state =
       *content::BrowserAccessibilityState::GetInstance();
@@ -735,7 +736,7 @@ void AccessibilityUIMessageHandler::OnJavascriptDisallowed() {
 }
 
 void AccessibilityUIMessageHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   web_ui()->RegisterMessageCallback(
       "initialize",

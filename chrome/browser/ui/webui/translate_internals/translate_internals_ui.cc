@@ -36,7 +36,7 @@ void CreateAndAddTranslateInternalsHTMLSource(Profile* profile) {
 
   base::DictValue langs = translate::TranslateInternalsHandler::GetLanguages();
   for (const auto key_value_pair : langs) {
-    DCHECK(key_value_pair.second.is_string());
+    CHECK(key_value_pair.second.is_string(), base::NotFatalUntil::M162);
     std::string key = "language-" + key_value_pair.first;
     const std::string& value = key_value_pair.second.GetString();
     source->AddString(key, value);

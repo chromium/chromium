@@ -144,23 +144,23 @@ UrlIdentity UrlIdentity::CreateFromUrl(Profile* profile,
                                        const FormatOptions& options) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    DCHECK(allowed_types.Has(Type::kChromeExtension));
+    CHECK(allowed_types.Has(Type::kChromeExtension), base::NotFatalUntil::M162);
     return CreateChromeExtensionIdentityFromUrl(profile, url, options);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
-    DCHECK(allowed_types.Has(Type::kIsolatedWebApp));
+    CHECK(allowed_types.Has(Type::kIsolatedWebApp), base::NotFatalUntil::M162);
     return CreateIsolatedWebAppIdentityFromUrl(profile, url, options);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   if (url.SchemeIsFile()) {
-    DCHECK(allowed_types.Has(Type::kFile));
+    CHECK(allowed_types.Has(Type::kFile), base::NotFatalUntil::M162);
     return CreateFileIdentityFromUrl(profile, url, options);
   }
 
-  DCHECK(allowed_types.Has(Type::kDefault));
+  CHECK(allowed_types.Has(Type::kDefault), base::NotFatalUntil::M162);
   return CreateDefaultUrlIdentityFromUrl(url, options);
 }

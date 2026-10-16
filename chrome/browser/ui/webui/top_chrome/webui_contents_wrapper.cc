@@ -104,7 +104,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {
-  DCHECK_GE(task_manager_string_id, 0);
+  CHECK_GE(task_manager_string_id, 0, base::NotFatalUntil::M162);
   RequestResult make_contents_result = Request(webui_url, profile);
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
@@ -153,7 +153,7 @@ WebUIContentsWrapper::~WebUIContentsWrapper() {
 
 void WebUIContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
                                                  const gfx::Size& new_size) {
-  DCHECK_EQ(web_contents(), source);
+  CHECK_EQ(web_contents(), source, base::NotFatalUntil::M162);
   if (host_) {
     host_->ResizeDueToAutoResize(source, new_size);
   }
@@ -163,7 +163,7 @@ content::KeyboardEventProcessingResult
 WebUIContentsWrapper::PreHandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  DCHECK_EQ(web_contents(), source);
+  CHECK_EQ(web_contents(), source, base::NotFatalUntil::M162);
   // Close the bubble if an escape event is detected. Handle this here to
   // prevent the renderer from capturing the event and not propagating it up.
   if (host_ && IsEscapeEvent(event)) {
@@ -179,7 +179,7 @@ WebUIContentsWrapper::PreHandleKeyboardEvent(
 bool WebUIContentsWrapper::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  DCHECK_EQ(web_contents(), source);
+  CHECK_EQ(web_contents(), source, base::NotFatalUntil::M162);
   return host_ ? host_->HandleKeyboardEvent(source, event) : false;
 }
 

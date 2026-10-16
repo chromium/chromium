@@ -79,7 +79,8 @@ class FixedCandidateSelector : public webui::PreloadCandidateSelector {
 
   // webui::PreloadCandidateSelector:
   void Init(const std::vector<GURL>& preloadable_urls) override {
-    DCHECK(std::ranges::contains(preloadable_urls, webui_url_));
+    CHECK(std::ranges::contains(preloadable_urls, webui_url_),
+          base::NotFatalUntil::M162);
   }
   std::optional<GURL> GetURLToPreload(
       webui::PreloadContext context) const override {

@@ -189,8 +189,8 @@ BookmarkContextMenuController::BookmarkContextMenuController(
           BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)),
       new_nodes_parent_(GetParentForNewNodes(selection)),
       can_paste_(can_paste) {
-  DCHECK(profile_);
-  DCHECK(bookmark_service_->loaded());
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(bookmark_service_->loaded(), base::NotFatalUntil::M162);
   CheckSelectionIsValid(selection);
   CHECK(new_nodes_parent_);
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
@@ -688,7 +688,8 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
                bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
   }
 
-  DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);
+  CHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id,
+           base::NotFatalUntil::M162);
   return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
 }
 

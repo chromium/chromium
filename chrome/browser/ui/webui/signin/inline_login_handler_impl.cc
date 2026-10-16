@@ -122,7 +122,7 @@ credential_provider::UiExitCodes ValidateSigninEmail(
 
 void FinishCompleteLogin(const FinishCompleteLoginParams& params,
                          Profile* profile) {
-  DCHECK(params.handler);
+  CHECK(params.handler, base::NotFatalUntil::M162);
   CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(params.url),
            signin_metrics::Reason::kFetchLstOnly);
 
@@ -180,10 +180,10 @@ InlineSigninHelper::InlineSigninHelper(
       gaia_id_(gaia_id),
       password_(password),
       auth_code_(auth_code) {
-  DCHECK(profile_);
-  DCHECK(!email_.empty());
-  DCHECK(!auth_code_.empty());
-  DCHECK(handler);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(!email_.empty(), base::NotFatalUntil::M162);
+  CHECK(!auth_code_.empty(), base::NotFatalUntil::M162);
+  CHECK(handler, base::NotFatalUntil::M162);
 
   gaia_auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       auth_code_, signin_scoped_device_id);
@@ -308,9 +308,9 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
     return;
   }
 
-  DCHECK(!params.email.empty());
-  DCHECK(!params.gaia_id.empty());
-  DCHECK(!params.auth_code.empty());
+  CHECK(!params.email.empty(), base::NotFatalUntil::M162);
+  CHECK(!params.gaia_id.empty(), base::NotFatalUntil::M162);
+  CHECK(!params.auth_code.empty(), base::NotFatalUntil::M162);
 
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();

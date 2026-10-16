@@ -372,7 +372,7 @@ bool ManagePasswordsUIController::OnChooseCredentials(
         local_credentials,
     const url::Origin& origin,
     ManagePasswordsState::CredentialsCallback callback) {
-  DCHECK(!local_credentials.empty());
+  CHECK(!local_credentials.empty(), base::NotFatalUntil::M162);
   if (!HasBrowserWindow()) {
     return false;
   }
@@ -401,7 +401,7 @@ bool ManagePasswordsUIController::OnChooseCredentials(
 void ManagePasswordsUIController::OnAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
-  DCHECK(!local_forms.empty());
+  CHECK(!local_forms.empty(), base::NotFatalUntil::M162);
   DestroyPopups();
   passwords_data_.OnAutoSignin(std::move(local_forms), origin);
   if (base::FeatureList::IsEnabled(
@@ -851,8 +851,9 @@ ManagePasswordsUIController::GetCurrentInteractionStats() const {
 }
 
 size_t ManagePasswordsUIController::GetTotalNumberCompromisedPasswords() const {
-  DCHECK(GetState() == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
-         GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX);
+  CHECK(GetState() == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
+            GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX,
+        base::NotFatalUntil::M162);
   return post_save_compromised_helper_->compromised_count();
 }
 
@@ -937,19 +938,20 @@ void ManagePasswordsUIController::OnNoInteraction() {
       GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
   password_manager::PasswordFormManagerForUI* form_manager =
       passwords_data_.form_manager();
-  DCHECK(form_manager);
+  CHECK(form_manager, base::NotFatalUntil::M162);
   form_manager->OnNoInteraction(is_update);
 }
 
 void ManagePasswordsUIController::OnNopeUpdateClicked() {
   password_manager::PasswordFormManagerForUI* form_manager =
       passwords_data_.form_manager();
-  DCHECK(form_manager);
+  CHECK(form_manager, base::NotFatalUntil::M162);
   form_manager->OnNopeUpdateClicked();
 }
 
 void ManagePasswordsUIController::NeverSavePassword() {
-  DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  CHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState(),
+           base::NotFatalUntil::M162);
   passwords_data_.form_manager()->OnNeverClicked();
   ClearPopUpFlagForBubble();
   if (passwords_data_.GetCurrentForms().empty()) {
@@ -961,13 +963,14 @@ void ManagePasswordsUIController::NeverSavePassword() {
 }
 
 void ManagePasswordsUIController::OnNotNowClicked() {
-  DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  CHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState(),
+           base::NotFatalUntil::M162);
   // Treat this identically to dismissing via the X button.
   OnNoInteraction();
 }
 
 void ManagePasswordsUIController::OnPasswordsRevealed() {
-  DCHECK(passwords_data_.form_manager());
+  CHECK(passwords_data_.form_manager(), base::NotFatalUntil::M162);
   passwords_data_.form_manager()->OnPasswordsRevealed();
 }
 

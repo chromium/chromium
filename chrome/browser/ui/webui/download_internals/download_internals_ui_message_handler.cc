@@ -147,7 +147,7 @@ void DownloadInternalsUIMessageHandler::HandleStartDownload(
   params.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
 
-  DCHECK(download_service_);
+  CHECK(download_service_, base::NotFatalUntil::M162);
   download_service_->StartDownload(std::move(params));
 }
 

@@ -129,7 +129,7 @@ void SystemInfoUIHandler::HandleRequestSystemInfo(const base::ListValue& args) {
 
 void SystemInfoUIHandler::OnSystemInfo(
     std::unique_ptr<SystemLogsResponse> sys_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!sys_info) {
     return;
   }

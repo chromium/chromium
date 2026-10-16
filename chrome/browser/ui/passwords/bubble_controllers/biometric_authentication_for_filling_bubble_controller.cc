@@ -25,7 +25,7 @@ void OnReauthCompleted(PrefService* prefs,
   if (!success) {
     return;
   }
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M162);
   prefs->SetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
   prefs->SetBoolean(

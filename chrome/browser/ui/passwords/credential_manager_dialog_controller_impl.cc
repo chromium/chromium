@@ -79,9 +79,9 @@ CredentialManagerDialogControllerImpl::
 void CredentialManagerDialogControllerImpl::ShowAccountChooser(
     std::unique_ptr<AccountChooserPrompt> dialog,
     std::vector<std::unique_ptr<password_manager::PasswordForm>> locals) {
-  DCHECK(!account_chooser_dialog_);
-  DCHECK(!autosignin_dialog_);
-  DCHECK(dialog);
+  CHECK(!account_chooser_dialog_, base::NotFatalUntil::M162);
+  CHECK(!autosignin_dialog_, base::NotFatalUntil::M162);
+  CHECK(dialog, base::NotFatalUntil::M162);
   local_credentials_ = std::move(locals);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kCredentialManagementUnifiedUi)) {
@@ -95,9 +95,9 @@ void CredentialManagerDialogControllerImpl::ShowAccountChooser(
 
 void CredentialManagerDialogControllerImpl::ShowAutosigninPrompt(
     std::unique_ptr<AutoSigninFirstRunPrompt> dialog) {
-  DCHECK(!account_chooser_dialog_);
-  DCHECK(!autosignin_dialog_);
-  DCHECK(dialog);
+  CHECK(!account_chooser_dialog_, base::NotFatalUntil::M162);
+  CHECK(!autosignin_dialog_, base::NotFatalUntil::M162);
+  CHECK(dialog, base::NotFatalUntil::M162);
   autosignin_dialog_ = std::move(dialog);
   autosignin_dialog_->ShowAutoSigninPrompt();
 }

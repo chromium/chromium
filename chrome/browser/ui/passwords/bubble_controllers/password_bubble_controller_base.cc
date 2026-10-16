@@ -25,7 +25,7 @@ PasswordBubbleControllerBase::PasswordBubbleControllerBase(
 
 PasswordBubbleControllerBase::~PasswordBubbleControllerBase() {
   // To make sure that subclasses reported intractions when being destructed.
-  DCHECK(interaction_reported_);
+  CHECK(interaction_reported_, base::NotFatalUntil::M162);
 }
 
 void PasswordBubbleControllerBase::OnBubbleClosing() {

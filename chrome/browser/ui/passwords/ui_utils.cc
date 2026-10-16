@@ -140,7 +140,7 @@ std::u16string GetManagePasswordsDialogTitleText(
     const GURL& user_visible_url,
     const url::Origin& password_origin_url,
     bool has_credentials) {
-  DCHECK(!password_origin_url.opaque());
+  CHECK(!password_origin_url.opaque(), base::NotFatalUntil::M162);
   // Check whether the registry controlled domains for user-visible URL
   // (i.e. the one seen in the omnibox) and the managed password origin URL
   // differ or not.

@@ -11,7 +11,7 @@
 SearchIPCRouterPolicyImpl::SearchIPCRouterPolicyImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents), is_incognito_(true) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());

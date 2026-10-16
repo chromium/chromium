@@ -440,7 +440,8 @@ int OpenCount(const BookmarkNode* node,
 
 bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
                                const BookmarkNode* node) {
-  DCHECK(node && node->is_folder() && !node->children().empty());
+  CHECK(node && node->is_folder() && !node->children().empty(),
+        base::NotFatalUntil::M162);
   return chrome::ShowQuestionMessageBoxSync(
              window, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetPluralStringFUTF16(
@@ -451,14 +452,14 @@ bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
 void ShowBookmarkAllTabsDialog(BrowserWindowInterface* browser) {
   Profile* profile = browser->GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-  DCHECK(model && model->loaded());
+  CHECK(model && model->loaded(), base::NotFatalUntil::M162);
 
   const BookmarkNode* parent = GetParentForNewNodes(model);
   BookmarkEditor::EditDetails details =
       BookmarkEditor::EditDetails::AddFolder(parent, parent->children().size());
 
   GetURLsAndFoldersForOpenTabs(browser, &(details.bookmark_data.children));
-  DCHECK(!details.bookmark_data.children.empty());
+  CHECK(!details.bookmark_data.children.empty(), base::NotFatalUntil::M162);
   BookmarkEditor::Show(browser->GetWindow()->GetNativeWindow(), profile,
                        details, BookmarkEditor::SHOW_TREE,
                        base::BindOnce(

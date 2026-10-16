@@ -48,8 +48,9 @@ void CreateAndAddHTMLSource(Profile* profile, std::string_view host_name) {
   // forward/back navigation will try to recreate the same WebUI as before, so
   // will reload this one even after the user enables debug pages.
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  DCHECK(local_state->FindPreference(chrome_urls::kInternalOnlyUisEnabled));
+  CHECK(local_state, base::NotFatalUntil::M162);
+  CHECK(local_state->FindPreference(chrome_urls::kInternalOnlyUisEnabled),
+        base::NotFatalUntil::M162);
   source->AddBoolean(
       "debugPagesEnabled",
       local_state->GetBoolean(chrome_urls::kInternalOnlyUisEnabled));

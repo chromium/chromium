@@ -8,6 +8,6 @@
 
 PasswordsClientUIDelegate* PasswordsClientUIDelegateFromWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   return ManagePasswordsUIController::FromWebContents(web_contents);
 }

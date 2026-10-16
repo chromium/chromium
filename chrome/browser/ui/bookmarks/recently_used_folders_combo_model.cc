@@ -255,7 +255,7 @@ void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
 
 void RecentlyUsedFoldersComboModel::MaybeChangeParent(const BookmarkNode* node,
                                                       size_t selected_index) {
-  DCHECK_LT(selected_index, items_.size());
+  CHECK_LT(selected_index, items_.size(), base::NotFatalUntil::M162);
   if (items_[selected_index].type != Item::TYPE_NODE &&
       items_[selected_index].type != Item::TYPE_ALL_BOOKMARKS_NODE) {
     return;

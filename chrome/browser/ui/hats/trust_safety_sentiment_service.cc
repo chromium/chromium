@@ -50,7 +50,8 @@ base::TimeDelta GetMaxTimeToPrompt() {
 }
 
 base::TimeDelta GetMinSessionTime() {
-  DCHECK(base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2));
+  CHECK(base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2),
+        base::NotFatalUntil::M162);
   return features::kTrustSafetySentimentSurveyV2MinSessionTime.Get();
 }
 
@@ -219,7 +220,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
 
 TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   observed_profiles_.AddObservation(profile);
 
   // As this service is created lazily, there may already be a primary OTR
@@ -295,13 +296,14 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
 
   // The winning feature area should never be kIneligible, as this will
   // have either been removed above, or blocked showing any survey.
-  DCHECK(winning_area_iterator->first != FeatureArea::kIneligible);
+  CHECK(winning_area_iterator->first != FeatureArea::kIneligible,
+        base::NotFatalUntil::M162);
 
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
 
   // A null HaTS service should have prevented this service from being created.
-  DCHECK(hats_service);
+  CHECK(hats_service, base::NotFatalUntil::M162);
   hats_service->LaunchSurvey(
       GetHatsTriggerForFeatureArea(winning_area_iterator->first),
       /*success_callback=*/base::DoNothing(),
@@ -348,12 +350,12 @@ void TrustSafetySentimentService::RanSafetyCheck() {
 
 void TrustSafetySentimentService::PageInfoOpened() {
   // Only one Page Info should ever be open.
-  DCHECK(!page_info_state_);
+  CHECK(!page_info_state_, base::NotFatalUntil::M162);
   page_info_state_ = std::make_unique<PageInfoState>();
 }
 
 void TrustSafetySentimentService::InteractedWithPageInfo() {
-  DCHECK(page_info_state_);
+  CHECK(page_info_state_, base::NotFatalUntil::M162);
   page_info_state_->interacted = true;
 }
 
@@ -453,7 +455,7 @@ void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
       threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
   product_specific_data["Threat is billing"] =
       threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING;
-  DCHECK(!IsOtherSBInterstitialCategory(threat_type));
+  CHECK(!IsOtherSBInterstitialCategory(threat_type), base::NotFatalUntil::M162);
   TriggerOccurred(FeatureArea::kSafeBrowsingInterstitial,
                   product_specific_data);
 }
@@ -501,7 +503,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
 void TrustSafetySentimentService::ProtectResetOrCheckPasswordClicked(
     PasswordProtectionUIType ui_type) {
   // Only one Phished Password Change should ever be open.
-  DCHECK(!phished_password_change_state_);
+  CHECK(!phished_password_change_state_, base::NotFatalUntil::M162);
   phished_password_change_state_ =
       std::make_unique<PhishedPasswordChangeState>();
   phished_password_change_state_->ui_type_ = ui_type;
@@ -517,7 +519,8 @@ void TrustSafetySentimentService::ProtectResetOrCheckPasswordClicked(
 void TrustSafetySentimentService::PhishedPasswordUpdateNotClicked(
     PasswordProtectionUIType ui_type,
     PasswordProtectionUIAction action) {
-  DCHECK(action != PasswordProtectionUIAction::CHANGE_PASSWORD);
+  CHECK(action != PasswordProtectionUIAction::CHANGE_PASSWORD,
+        base::NotFatalUntil::M162);
   MaybeTriggerPasswordProtectionSurvey(ui_type, action);
 }
 
@@ -553,7 +556,8 @@ void TrustSafetySentimentService::OnProfileWillBeDestroyed(Profile* profile) {
 
 void TrustSafetySentimentService::OnSessionEnded(base::TimeDelta session_length,
                                                  base::TimeTicks session_end) {
-  DCHECK(base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2));
+  CHECK(base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2),
+        base::NotFatalUntil::M162);
   // Check if the user is eligible for the control group.
   if (!performed_control_group_dice_roll_ &&
       session_length > GetMinSessionTime()) {
@@ -664,7 +668,8 @@ void TrustSafetySentimentService::PerformedIneligibleAction() {
 void TrustSafetySentimentService::MaybeTriggerPasswordProtectionSurvey(
     PasswordProtectionUIType ui_type,
     PasswordProtectionUIAction action) {
-  DCHECK(ui_type != PasswordProtectionUIType::NOT_USED);
+  CHECK(ui_type != PasswordProtectionUIType::NOT_USED,
+        base::NotFatalUntil::M162);
   std::map<std::string, bool> product_specific_data =
       BuildProductSpecificDataForPasswordProtection(profile_, ui_type, action);
   if (action == PasswordProtectionUIAction::CHANGE_PASSWORD) {

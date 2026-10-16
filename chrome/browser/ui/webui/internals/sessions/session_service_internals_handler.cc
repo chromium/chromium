@@ -77,7 +77,7 @@ std::string EventToString(const SessionServiceEvent& event) {
 }
 
 std::string GetSessionServiceInternalsAsString(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   std::vector<std::string> events;
   events.push_back("<pre>");
   for (const auto& event : GetSessionServiceEvents(profile)) {
@@ -116,8 +116,8 @@ void SessionServiceInternalsHandler::HandleWebUIRequestCallback(
     Profile* profile,
     const std::string& path,
     content::WebUIDataSource::GotDataCallback callback) {
-  DCHECK(ShouldHandleWebUIRequestCallback(path));
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(ShouldHandleWebUIRequestCallback(path), base::NotFatalUntil::M162);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
       GetSessionServiceInternalsAsString(profile)));
 }

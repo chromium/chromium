@@ -135,14 +135,16 @@ const std::u16string& SigninUIError::message() const {
 }
 
 const base::FilePath& SigninUIError::another_profile_path() const {
-  DCHECK(type() == Type::kAccountAlreadyUsedByAnotherProfile);
+  CHECK(type() == Type::kAccountAlreadyUsedByAnotherProfile,
+        base::NotFatalUntil::M162);
   return another_profile_path_;
 }
 
 #if BUILDFLAG(IS_WIN)
 credential_provider::UiExitCodes SigninUIError::credential_provider_exit_code()
     const {
-  DCHECK(type() == Type::kFromCredentialProviderUiExitCode);
+  CHECK(type() == Type::kFromCredentialProviderUiExitCode,
+        base::NotFatalUntil::M162);
   return credential_provider_exit_code_;
 }
 #endif

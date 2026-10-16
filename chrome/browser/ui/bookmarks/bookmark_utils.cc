@@ -155,7 +155,7 @@ bool IsValidBookmarkDropLocation(
 }  // namespace
 
 GURL GetURLToBookmark(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   if (search::IsInstantNTP(web_contents)) {
     return GURL(kChromeUINewTabURL);
   }

@@ -122,7 +122,7 @@ void ThemeSource::StartDataRequest(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (IsNewTabCssPath(parsed_path)) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     NTPResourceCache::WindowType type =
         NTPResourceCache::GetWindowType(profile_);
     NTPResourceCache* cache = NTPResourceCacheFactory::GetForProfile(profile_);

@@ -22,8 +22,8 @@ IntroHandler::IntroHandler(
       default_browser_callback_(std::move(default_browser_callback)),
       is_device_managed_(is_device_managed),
       source_name_(source_name) {
-  DCHECK(intro_callback_);
-  DCHECK(default_browser_callback_);
+  CHECK(intro_callback_, base::NotFatalUntil::M162);
+  CHECK(default_browser_callback_, base::NotFatalUntil::M162);
 }
 
 IntroHandler::~IntroHandler() = default;
@@ -116,7 +116,7 @@ void IntroHandler::SetCanPinToTaskbar(bool can_pin) {
 }
 
 void IntroHandler::FireManagedDisclaimerUpdate(std::string disclaimer) {
-  DCHECK(is_device_managed_);
+  CHECK(is_device_managed_, base::NotFatalUntil::M162);
   if (IsJavascriptAllowed()) {
     FireWebUIListener("managed-device-disclaimer-updated",
                       base::Value(std::move(disclaimer)));

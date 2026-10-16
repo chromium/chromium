@@ -25,7 +25,7 @@ namespace webui {
 
 void OpenNewWindowForProfile(Profile* profile) {
   if (profiles::IsProfileLocked(profile->GetPath())) {
-    DCHECK(signin_util::IsForceSigninEnabled());
+    CHECK(signin_util::IsForceSigninEnabled(), base::NotFatalUntil::M162);
     // Displays the ProfilePicker without any sign-in dialog opened.
     if (!ProfilePicker::IsOpen()) {
       ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(

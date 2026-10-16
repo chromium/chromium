@@ -126,8 +126,9 @@ BrowserWindowInterface* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,
     const gfx::Rect& window_bounds,
     bool maximize) {
-  DCHECK(WindowFeatureController::From(browser_)->CanSupportWindowFeature(
-      WindowFeatureController::WindowFeature::kFeatureTabStrip));
+  CHECK(WindowFeatureController::From(browser_)->CanSupportWindowFeature(
+            WindowFeatureController::WindowFeature::kFeatureTabStrip),
+        base::NotFatalUntil::M162);
 
   // Create an empty new browser window the same size as the old one.
   BrowserWindowCreateParams params(browser_->GetProfile(), true);

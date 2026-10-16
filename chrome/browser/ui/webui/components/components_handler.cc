@@ -21,7 +21,7 @@
 ComponentsHandler::ComponentsHandler(
     component_updater::ComponentUpdateService* component_updater)
     : component_updater_(component_updater) {
-  DCHECK(component_updater_);
+  CHECK(component_updater_, base::NotFatalUntil::M162);
 }
 ComponentsHandler::~ComponentsHandler() = default;
 

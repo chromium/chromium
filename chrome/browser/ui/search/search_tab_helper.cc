@@ -105,7 +105,7 @@ SearchTabHelper::SearchTabHelper(tabs::TabInterface& tab,
                   std::make_unique<SearchIPCRouterPolicyImpl>(web_contents)),
       instant_service_(nullptr),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  DCHECK(search::IsInstantExtendedAPIEnabled());
+  CHECK(search::IsInstantExtendedAPIEnabled(), base::NotFatalUntil::M162);
 
   instant_service_ = InstantServiceFactory::GetForProfile(profile());
   if (instant_service_) {
@@ -307,14 +307,14 @@ void SearchTabHelper::FocusOmnibox(bool focus) {
 }
 
 void SearchTabHelper::OnDeleteMostVisitedItem(const GURL& url) {
-  DCHECK(!url.is_empty());
+  CHECK(!url.is_empty(), base::NotFatalUntil::M162);
   if (instant_service_) {
     instant_service_->DeleteMostVisitedItem(url);
   }
 }
 
 void SearchTabHelper::OnUndoMostVisitedDeletion(const GURL& url) {
-  DCHECK(!url.is_empty());
+  CHECK(!url.is_empty(), base::NotFatalUntil::M162);
   if (instant_service_) {
     instant_service_->UndoMostVisitedDeletion(url);
   }

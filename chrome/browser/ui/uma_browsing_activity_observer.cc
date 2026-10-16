@@ -39,10 +39,11 @@ UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
 
 // static
 void UMABrowsingActivityObserver::Init() {
-  DCHECK(!g_uma_browsing_activity_observer_instance);
+  CHECK(!g_uma_browsing_activity_observer_instance, base::NotFatalUntil::M162);
   // Must be created before any Browsers are.
-  DCHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
-      KeepAliveOrigin::BROWSER));
+  CHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+            KeepAliveOrigin::BROWSER),
+        base::NotFatalUntil::M162);
   g_uma_browsing_activity_observer_instance = new UMABrowsingActivityObserver;
 }
 
@@ -71,7 +72,8 @@ void UMABrowsingActivityObserver::OnNavigationEntryCommitted(
 void UMABrowsingActivityObserver::OnAppTerminating() const {
   LogTimeBeforeUpdate();
 
-  DCHECK_EQ(this, g_uma_browsing_activity_observer_instance);
+  CHECK_EQ(this, g_uma_browsing_activity_observer_instance,
+           base::NotFatalUntil::M162);
   delete g_uma_browsing_activity_observer_instance;
   g_uma_browsing_activity_observer_instance = nullptr;
 }

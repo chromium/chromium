@@ -239,7 +239,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   CHECK(service);
   auto node_id = tabs_api::NodeId::FromTabHandle(tab->GetHandle());
   const auto result = service->CloseNodes({node_id});
-  DCHECK(result.has_value());
+  CHECK(result.has_value(), base::NotFatalUntil::M162);
   // Do not add code past this point.
 }
 
@@ -288,7 +288,7 @@ void TabSearchPageHandler::CloseTabs(const std::vector<int32_t>& tab_ids) {
       GetTabStripService(valid_tab->GetBrowserWindowInterface());
   CHECK(service);
   const auto result = service->CloseNodes(nodes);
-  DCHECK(result.has_value());
+  CHECK(result.has_value(), base::NotFatalUntil::M162);
 }
 
 void TabSearchPageHandler::CloseWebUiTab() {
@@ -371,7 +371,7 @@ void TabSearchPageHandler::SwitchToTab(
       GetTabStripService(tab->GetBrowserWindowInterface());
   const auto result =
       service->ActivateTab(tabs_api::NodeId::FromTabHandle(tab->GetHandle()));
-  DCHECK(result.has_value());
+  CHECK(result.has_value(), base::NotFatalUntil::M162);
 
   // Tab search shows tabs from other windows in the profile. So if a user
   // selects a tab in another window, we need to manually activate it so
@@ -412,7 +412,7 @@ void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {
     const auto result = GetTabStripService(browser_)->ReplaceTabInSplit(
         tabs_api::NodeId::FromTabHandle(active_tab->GetHandle()),
         tabs_api::NodeId::FromTabHandle(tabs::TabHandle(replacement_tab_id)));
-    DCHECK(result.has_value());
+    CHECK(result.has_value(), base::NotFatalUntil::M162);
   }
 }
 
@@ -852,7 +852,7 @@ tab_search::mojom::RecentlyClosedTabPtr
 TabSearchPageHandler::GetRecentlyClosedTab(sessions::tab_restore::Tab* tab,
                                            const base::Time& close_time) {
   auto recently_closed_tab = tab_search::mojom::RecentlyClosedTab::New();
-  DCHECK(tab->navigations.size() > 0);
+  CHECK(tab->navigations.size() > 0, base::NotFatalUntil::M162);
   sessions::SerializedNavigationEntry& entry =
       tab->navigations[tab->current_navigation_index];
   // N.B. Recently closed tabs use session ids, not TabHandle ids.

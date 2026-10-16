@@ -48,8 +48,8 @@ class EmbeddedSearchClientFactoryImpl
       content::WebContents* web_contents,
       mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* receiver)
       : client_receiver_(receiver), factory_receivers_(web_contents, this) {
-    DCHECK(web_contents);
-    DCHECK(receiver);
+    CHECK(web_contents, base::NotFatalUntil::M162);
+    CHECK(receiver, base::NotFatalUntil::M162);
     // Before we are connected to a frame we throw away all messages.
     embedded_search_client_.reset();
   }
@@ -115,8 +115,8 @@ SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
       is_active_tab_(false),
       embedded_search_client_factory_(
           new EmbeddedSearchClientFactoryImpl(web_contents, &receiver_)) {
-  DCHECK(delegate);
-  DCHECK(policy_.get());
+  CHECK(delegate, base::NotFatalUntil::M162);
+  CHECK(policy_.get(), base::NotFatalUntil::M162);
 }
 
 SearchIPCRouter::~SearchIPCRouter() = default;
@@ -230,11 +230,11 @@ void SearchIPCRouter::UndoAllMostVisitedDeletions(int page_seq_no) {
 }
 
 void SearchIPCRouter::set_delegate_for_testing(Delegate* delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M162);
   delegate_ = delegate;
 }
 
 void SearchIPCRouter::set_policy_for_testing(std::unique_ptr<Policy> policy) {
-  DCHECK(policy);
+  CHECK(policy, base::NotFatalUntil::M162);
   policy_ = std::move(policy);
 }

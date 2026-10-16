@@ -174,7 +174,7 @@ DevToolsFrontEndObserver::DevToolsFrontEndObserver(WebContents* web_contents,
                                                    base::OnceClosure closure)
     : WebContentsObserver(web_contents),
       on_front_end_finished_(std::move(closure)) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 }
 
 DevToolsFrontEndObserver::~DevToolsFrontEndObserver() {
@@ -525,7 +525,7 @@ void InspectMessageHandler::HandleLaunchUIDevToolsCommand(
            ->GetUiDevToolsServerInstance()) {
     base::FilePath output_dir;
     bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
-    DCHECK(result);
+    CHECK(result, base::NotFatalUntil::M162);
     ui_devtools::ServerHolder::GetInstance()->CreateUiDevTools(output_dir);
 
     // Make the server only lasts for a session.

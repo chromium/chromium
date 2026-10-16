@@ -287,7 +287,7 @@ HatsService::LaunchError HatsServiceDesktop::LaunchDelayedSurveyForWebContents(
         !survey_options.message_identifier.has_value())
       << "Custom invitation strings and message types are not supported on "
          "desktop.";
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (survey_configs_by_triggers_.find(trigger) ==
       survey_configs_by_triggers_.end()) {
     // Survey configuration is not available.
@@ -746,7 +746,7 @@ HatsService::LaunchError HatsServiceDesktop::ShowSurvey(
   update->SetByDottedPath(GetLastSurveyCheckTime(trigger),
                           base::TimeToValue(base::Time::Now()));
 
-  DCHECK(!hats_next_dialog_exists_);
+  CHECK(!hats_next_dialog_exists_, base::NotFatalUntil::M162);
   if (supplied_trigger_id.has_value()) {
     survey_configs_by_triggers_[trigger].trigger_id =
         std::string(supplied_trigger_id.value());

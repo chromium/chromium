@@ -66,7 +66,7 @@ ConnectorsInternalsPageHandler::ConnectorsInternalsPageHandler(
     mojo::PendingReceiver<connectors_internals::mojom::PageHandler> receiver,
     Profile* profile)
     : receiver_(this, std::move(receiver)), profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 }
 
 ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;

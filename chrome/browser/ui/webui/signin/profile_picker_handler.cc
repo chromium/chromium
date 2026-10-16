@@ -273,7 +273,7 @@ ProfilePickerHandler::~ProfilePickerHandler() {
 }
 
 void ProfilePickerHandler::EnableStartupMetrics() {
-  DCHECK(creation_time_on_startup_.is_null());
+  CHECK(creation_time_on_startup_.is_null(), base::NotFatalUntil::M162);
   content::WebContents* contents = web_ui()->GetWebContents();
   if (contents->GetVisibility() == content::Visibility::VISIBLE) {
     // Only record paint event if the window is visible.
@@ -717,7 +717,7 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue& args) {
   }
 
   RecordProfilePickerAction(ProfilePickerAction::kDeleteProfile);
-  DCHECK(profile_statistics_keep_alive_);
+  CHECK(profile_statistics_keep_alive_, base::NotFatalUntil::M162);
 
   // Deleting the profile may delete `this` (see See
   // https://crbug.com/40934491), if the profile picker was shown in a tab. Keep
@@ -761,7 +761,7 @@ void ProfilePickerHandler::HandleOnLearnMoreClicked(
 void ProfilePickerHandler::HandleCloseProfileStatistics(
     const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
-  DCHECK(profile_statistics_keep_alive_);
+  CHECK(profile_statistics_keep_alive_, base::NotFatalUntil::M162);
   profile_statistics_keep_alive_.reset();
 }
 
@@ -848,7 +848,7 @@ void ProfilePickerHandler::OnResetPickerButtons(bool success) {
 }
 
 void ProfilePickerHandler::PushProfilesList() {
-  DCHECK(IsJavascriptAllowed());
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M162);
   FireWebUIListener("profiles-list-changed", GetProfilesList());
 }
 
@@ -886,7 +886,7 @@ ProfilePickerHandler::GetProfilesAttributesForDisplay() {
     // Should only happen the first time the function is called.
     // Profile creation and deletion are handled at
     // 'OnProfileAdded', 'OnProfileWasRemoved'.
-    DCHECK(!profiles_order_.size());
+    CHECK(!profiles_order_.size(), base::NotFatalUntil::M162);
     SetProfilesOrder(ordered_entries);
     return ordered_entries;
   }
@@ -895,10 +895,10 @@ ProfilePickerHandler::GetProfilesAttributesForDisplay() {
   std::vector<ProfileAttributesEntry*> entries(number_of_profiles);
   for (ProfileAttributesEntry* entry : ordered_entries) {
     const auto it = profiles_order_.find(entry->GetPath());
-    DCHECK(it != profiles_order_.end());
+    CHECK(it != profiles_order_.end(), base::NotFatalUntil::M162);
     size_t index = it->second;
-    DCHECK_LT(index, number_of_profiles);
-    DCHECK(!entries[index]);
+    CHECK_LT(index, number_of_profiles, base::NotFatalUntil::M162);
+    CHECK(!entries[index], base::NotFatalUntil::M162);
     entries[index] = entry;
   }
 
@@ -930,7 +930,7 @@ void ProfilePickerHandler::AddProfileToListAndPushUpdates(
   // We shouldn't add the same profile to the list more than once. Use
   // `insert()` to not corrput the map in case this happens.
   // https://crbug.com/40759222
-  DCHECK(it_and_whether_inserted.second);
+  CHECK(it_and_whether_inserted.second, base::NotFatalUntil::M162);
 
   MaybeUpdateGuestMode();
   PushProfilesList();
@@ -978,7 +978,7 @@ void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
 void ProfilePickerHandler::OnProfileWasRemoved(
     const base::FilePath& profile_path,
     const std::u16string& profile_name) {
-  DCHECK(IsJavascriptAllowed());
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M162);
   RemoveProfileFromListAndPushUpdates(profile_path);
 }
 
@@ -1052,7 +1052,7 @@ void ProfilePickerHandler::OnProfileAiSubscriptionTierUpdated(
 }
 
 void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
-  DCHECK(!creation_time_on_startup_.is_null());
+  CHECK(!creation_time_on_startup_.is_null(), base::NotFatalUntil::M162);
   auto now = base::TimeTicks::Now();
   base::UmaHistogramTimes("ProfilePicker.StartupTime.FirstPaint",
                           now - creation_time_on_startup_);

@@ -51,7 +51,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
               node, node->children().size(), bookmark_data.title);
           for (auto& child : bookmark_data.children) {
             // We do not expect to create new folders more than 2 levels deep.
-            DCHECK(child.url.has_value());
+            CHECK(child.url.has_value(), base::NotFatalUntil::M162);
             model->AddURL(nested_node, nested_node->children().size(),
                           child.title, child.url.value());
           }
@@ -253,7 +253,7 @@ void BookmarkEditor::ApplyEdits(BookmarkModel* model,
   }
 
   const BookmarkNode* node = details.existing_node;
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M162);
 
   if (new_parent != node->parent()) {
     model->Move(node, new_parent, new_parent->children().size());

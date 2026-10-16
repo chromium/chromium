@@ -67,7 +67,7 @@ constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
 
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M162);
   std::optional<std::string> hosted_domain = entry->GetHostedDomain();
   if (hosted_domain == std::string()) {
     return std::string();
@@ -425,7 +425,7 @@ void ManagedUserProfileNoticeHandler::OnLongProcessingTime() {
 
 void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
-  DCHECK(IsJavascriptAllowed());
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M162);
   if (profile_path != profile_path_) {
     return;
   }
@@ -451,9 +451,9 @@ std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
     ProfileAttributesEntry* entry,
     const std::string& account_domain_name,
     const std::u16string& email) {
-  DCHECK(profile);
-  DCHECK(entry);
-  DCHECK(!email.empty());
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK(entry, base::NotFatalUntil::M162);
+  CHECK(!email.empty(), base::NotFatalUntil::M162);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> account_manager =
@@ -607,7 +607,7 @@ ProfileAttributesEntry* ManagedUserProfileNoticeHandler::GetProfileEntry()
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path_);
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M162);
   return entry;
 }
 
@@ -618,7 +618,7 @@ std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
     AccountInfo account_info =
         IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
             ->FindExtendedAccountInfoByAccountId(account_id_);
-    DCHECK(!account_info.IsEmpty());
+    CHECK(!account_info.IsEmpty(), base::NotFatalUntil::M162);
     icon = account_info.GetAvatarImage().value_or(
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             profiles::GetPlaceholderAvatarIconResourceID()));
