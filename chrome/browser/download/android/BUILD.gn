@@ -95,6 +95,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceAdapter.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialog.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadSettings.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemProperties.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinder.java",
   ]
 
   deps = [
@@ -200,6 +202,7 @@ robolectric_library("junit_tests") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogTest.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialogUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinderTest.java",
   ]
 
   deps = [
@@ -220,6 +223,7 @@ robolectric_library("junit_tests") {
     "//components/prefs/android:java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -242,6 +246,7 @@ android_resources("java_resources") {
     "java/res/layout/download_location_preference_item.xml",
     "java/res/layout/download_location_spinner_dropdown_item.xml",
     "java/res/layout/download_location_spinner_item.xml",
+    "java/res/layout/download_tray_item_row.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/download_preferences.xml",

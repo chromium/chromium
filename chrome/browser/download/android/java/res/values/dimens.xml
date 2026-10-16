@@ -11,4 +11,11 @@ found in the LICENSE file.
     <dimen name="download_dialog_checkbox_margin_start">-5dp</dimen>
     <dimen name="download_dialog_checkbox_margin_top">16dp</dimen>
     <dimen name="download_dialog_location_space_margin_start">49dp</dimen>
+
+    <!-- Download toolbar button tray. Icon size and row height match the Downloads page rows.
+         TODO(crbug.com/574064718): Remove tools:ignore once the tray inflates its row. -->
+    <dimen name="download_tray_item_min_height" tools:ignore="UnusedResources">64dp</dimen>
+    <dimen name="download_tray_item_icon_size" tools:ignore="UnusedResources">36dp</dimen>
+    <dimen name="download_tray_item_icon_margin_end" tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="download_tray_item_padding_horizontal" tools:ignore="UnusedResources">16dp</dimen>
 </resources>

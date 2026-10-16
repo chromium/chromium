@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A single download row in the download toolbar button tray: file-type icon and the file name
+     with a status description below it. Clicking the row opens the download, as on desktop. -->
+<!-- TODO(crbug.com/574064718): Remove tools:ignore once the tray inflates this row. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/download_tray_item_min_height"
+    android:paddingStart="@dimen/download_tray_item_padding_horizontal"
+    android:paddingEnd="@dimen/download_tray_item_padding_horizontal"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    tools:ignore="UnusedResources">
+
+    <ImageView
+        android:id="@+id/download_tray_item_icon"
+        android:layout_width="@dimen/download_tray_item_icon_size"
+        android:layout_height="@dimen/download_tray_item_icon_size"
+        android:layout_marginEnd="@dimen/download_tray_item_icon_margin_end"
+        android:background="@drawable/rounded_rectangle_surface_container_low"
+        android:scaleType="center"
+        android:importantForAccessibility="no"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/download_tray_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="middle"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/download_tray_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+</LinearLayout>
