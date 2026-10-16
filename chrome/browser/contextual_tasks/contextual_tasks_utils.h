@@ -191,6 +191,10 @@ GURL GetContextualTasksFunctionalURL(content::WebContents* web_contents);
 // given WebContents if it is a Contextual Tasks page.
 GURL GetContextualTasksDisplayURL(content::WebContents* web_contents);
 
+// Returns true if the given URL is valid for sharing as tab context with AI
+// Mode (matches the composebox '+' menu tab picker eligibility).
+bool IsUrlValidForContextSharing(const GURL& url);
+
 // Returns the effective pin state for the contextual tasks button.
 bool GetEffectivePinState(Profile* profile);
 

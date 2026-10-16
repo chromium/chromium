@@ -26,6 +26,8 @@ class MockContextualTasksPanelController
     : public ContextualTasksPanelController {
  public:
   MockContextualTasksPanelController();
+  explicit MockContextualTasksPanelController(
+      BrowserWindowInterface* browser_window);
   ~MockContextualTasksPanelController() override;
 
   MOCK_METHOD(void,
@@ -37,6 +39,10 @@ class MockContextualTasksPanelController
               (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));
+  MOCK_METHOD(void,
+              ShareTabsWithActiveOrNewThread,
+              (const std::vector<tabs::TabHandle>&),
+              (override));
   MOCK_METHOD(bool, IsPanelOpenForContextualTask, (), (const, override));
   MOCK_METHOD(ContextualTasksPanelController::EntrySource,
               GetActiveEntrySource,
@@ -101,6 +107,10 @@ class MockContextualTasksPanelController
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+
+ private:
+  std::optional<ui::ScopedUnownedUserData<ContextualTasksPanelController>>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace contextual_tasks

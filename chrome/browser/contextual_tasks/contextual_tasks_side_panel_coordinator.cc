@@ -19,6 +19,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -263,6 +264,7 @@ ContextualTasksSidePanelCoordinator::WebContentsCacheItem::WebContentsCacheItem(
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::
     ~WebContentsCacheItem() = default;
 
+DEFINE_USER_DATA(ContextualTasksPanelController);
 DEFINE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
@@ -324,10 +326,21 @@ ContextualTasksUiService* ContextualTasksSidePanelCoordinator::GetUiService()
 }
 
 // static
+ContextualTasksSidePanelCoordinator* ContextualTasksSidePanelCoordinator::From(
+    BrowserWindowInterface* window) {
+  return window ? Get(window->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
 ContextualTasksPanelController* ContextualTasksPanelController::From(
     BrowserWindowInterface* window) {
-  return ContextualTasksSidePanelCoordinator::Get(
-      window->GetUnownedUserDataHost());
+  if (!window) {
+    return nullptr;
+  }
+  if (auto* controller = Get(window->GetUnownedUserDataHost())) {
+    return controller;
+  }
+  return ContextualTasksSidePanelCoordinator::From(window);
 }
 
 // static
@@ -579,6 +592,10 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
     }
   }
 
+  if (active_task_context_provider_) {
+    active_task_context_provider_->ClearAllLocalTabUnderlines();
+  }
+
   if (content::WebContents* active_contents = GetActiveWebContents()) {
     MaybeDetachWebContents(active_contents);
   }
@@ -593,6 +610,62 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
                        DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON
                  : omnibox::ChromeAimEntryPoint::
                        DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+}
+
+void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
+    const std::vector<tabs::TabHandle>& tab_handles) {
+  if (!browser_window_ || !CanShareTabContext(browser_window_->GetProfile())) {
+    return;
+  }
+
+  std::vector<tabs::TabHandle> valid_tab_handles;
+  for (tabs::TabHandle tab_handle : tab_handles) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab || !tab->GetContents()) {
+      continue;
+    }
+    const GURL& url = tab->GetContents()->GetLastCommittedURL();
+    if (IsUrlValidForContextSharing(url) &&
+        !std::ranges::contains(valid_tab_handles, tab_handle)) {
+      valid_tab_handles.push_back(tab_handle);
+    }
+  }
+  if (valid_tab_handles.empty()) {
+    return;
+  }
+
+  // If the side panel is already open on the active tab, attach the selected
+  // tabs directly to the open task so sharing multiple tabs from the tab strip
+  // stages them together without resetting previously staged tabs.
+  if (IsPanelOpenForContextualTask()) {
+    if (std::optional<ContextualTask> current_task = GetCurrentTask()) {
+      AttachTabsToTask(current_task->GetTaskId(), valid_tab_handles);
+      return;
+    }
+  }
+
+  std::vector<tabs::TabHandle> tabs_to_attach;
+  if (TabListInterface* tab_list = TabListInterface::From(browser_window_)) {
+    if (tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+        active_tab && active_tab->GetContents() &&
+        IsUrlValidForContextSharing(
+            active_tab->GetContents()->GetLastCommittedURL())) {
+      tabs_to_attach.push_back(active_tab->GetHandle());
+    }
+  }
+  for (tabs::TabHandle tab_handle : valid_tab_handles) {
+    if (!std::ranges::contains(tabs_to_attach, tab_handle)) {
+      tabs_to_attach.push_back(tab_handle);
+    }
+  }
+
+  OpenInZeroState();
+
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task.has_value()) {
+    return;
+  }
+  AttachTabsToTask(task->GetTaskId(), tabs_to_attach);
 }
 
 bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
@@ -1450,6 +1523,132 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrPanel() {
 
 void ContextualTasksSidePanelCoordinator::NotifyActiveTaskContextProvider() {
   active_task_context_provider_->RefreshContext();
+}
+
+void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
+    const base::Uuid& task_id,
+    const std::vector<tabs::TabHandle>& tab_handles) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!browser_window_ || !CanShareTabContext(browser_window_->GetProfile())) {
+    return;
+  }
+
+  auto it = task_id_to_web_contents_cache_.find(task_id);
+  content::WebContents* panel_contents =
+      it != task_id_to_web_contents_cache_.end()
+          ? it->second->web_contents.get()
+          : GetActiveWebContents();
+
+  contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
+  if (panel_contents) {
+    if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+            panel_contents)) {
+      session_handle = helper->GetSessionForTask(task_id);
+      if (!session_handle) {
+        session_handle = helper->session_handle();
+      }
+    }
+  }
+  if (!session_handle) {
+    session_handle = GetContextualSearchSessionHandleForPanel();
+  }
+
+  for (tabs::TabHandle tab_handle : tab_handles) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab || !tab->GetContents()) {
+      continue;
+    }
+    content::WebContents* tab_contents = tab->GetContents();
+    const GURL& url = tab_contents->GetLastCommittedURL();
+    if (!IsUrlValidForContextSharing(url)) {
+      continue;
+    }
+
+    SessionID session_id = sessions::SessionTabHelper::IdForTab(tab_contents);
+    if (!session_id.is_valid()) {
+      continue;
+    }
+
+    const int32_t tab_handle_id = tab_handle.raw_value();
+    if (session_handle) {
+      // If this tab is already staged/selected in the composebox (either
+      // pending delayed upload or uploaded) but not yet committed in a query,
+      // remove the existing uncommitted file/token to avoid duplicating it.
+      const auto uploaded_tokens = session_handle->GetUploadedContextTokens();
+      const auto attached_tabs = session_handle->GetTabContextState().attached;
+      for (const auto& attached_tab : attached_tabs) {
+        if (attached_tab.tab_id == session_id.id() &&
+            (attached_tab.pending_delayed_upload ||
+             std::ranges::contains(uploaded_tokens,
+                                   attached_tab.context_token))) {
+          if (panel_contents) {
+            if (auto* user_data =
+                    ContextualTasksWebContentsUserData::FromWebContents(
+                        panel_contents)) {
+              user_data->OnTabContextRemoved(attached_tab.context_token);
+            }
+          }
+          if (!session_handle->DeleteFile(attached_tab.context_token)) {
+            session_handle->RemoveUploadedContextToken(
+                attached_tab.context_token);
+          }
+        }
+      }
+
+      base::RepeatingClosure on_context_uploaded = base::BindRepeating(
+          [](base::WeakPtr<ContextualTasksSidePanelCoordinator> weak_this,
+             base::WeakPtr<content::WebContents> weak_panel_contents) {
+            if (weak_panel_contents) {
+              if (auto* user_data =
+                      ContextualTasksWebContentsUserData::FromWebContents(
+                          weak_panel_contents.get())) {
+                if (auto model = user_data->GetOrCreateInputStateModel()) {
+                  model->OnContextChanged();
+                }
+                user_data->UpdateContextLibraryInputState();
+              }
+            }
+            if (weak_this) {
+              weak_this->NotifyActiveTaskContextProvider();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(),
+          panel_contents ? panel_contents->GetWeakPtr() : nullptr);
+
+      auto result = CaptureAndUploadTabContext(tab_handle_id, session_handle,
+                                               std::move(on_context_uploaded),
+                                               browser_window_);
+      base::UnguessableToken token =
+          result.has_value() ? *result : session_handle->CreateContextToken();
+      if (!result.has_value() && active_task_context_provider_) {
+        active_task_context_provider_->AddLocalTabUnderline(tab_handle);
+      }
+      if (panel_contents) {
+        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+            panel_contents)
+            ->RecordTabIdMapping(tab_handle_id, session_id.id());
+      }
+      session_handle->AttachTabPendingUpload(
+          token, session_id.id(), url,
+          base::UTF16ToUTF8(tab_contents->GetTitle()));
+    } else if (active_task_context_provider_) {
+      active_task_context_provider_->AddLocalTabUnderline(tab_handle);
+    }
+  }
+
+  if (panel_contents) {
+    if (auto* user_data =
+            ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+                panel_contents)) {
+      if (auto model = user_data->GetOrCreateInputStateModel()) {
+        model->OnContextChanged();
+      }
+      user_data->UpdateContextLibraryInputState();
+    }
+  }
+
+  NotifyActiveTaskContextProvider();
+#endif
 }
 
 size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
