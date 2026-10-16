@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -23,7 +24,7 @@ std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
 
 // static
 std::vector<std::string> CastContentBrowserClient::GetCorsExemptHeadersList() {
-  base::span<const char*> headers = GetLegacyCorsExemptHeaders();
+  base::span<const std::string_view> headers = GetLegacyCorsExemptHeaders();
   return std::vector<std::string>(headers.begin(), headers.end());
 }
 

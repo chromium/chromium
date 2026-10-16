@@ -15,7 +15,7 @@ namespace chromecast {
 // support in HTTP servers.
 // TODO(b/154337552): Remove this list once all the servers support CORS
 // preflight requests.
-base::span<const char*> GetLegacyCorsExemptHeaders();
+base::span<const std::string_view> GetLegacyCorsExemptHeaders();
 
 // Returns true if |header| is CORS exempt.
 bool IsCorsExemptHeader(std::string_view header);

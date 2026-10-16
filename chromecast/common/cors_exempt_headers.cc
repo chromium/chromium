@@ -4,50 +4,50 @@
 
 #include "chromecast/common/cors_exempt_headers.h"
 
-#include <string>
 #include <string_view>
 
-#include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 
 namespace chromecast {
 namespace {
 
-const char* kExemptHeaders[] = {
-    "google_cast_bg",
-    "CAST-DEVICE-CAPABILITIES",
-    "CAST-SERIAL-NUM",
-    "CAST-CERT",
-    "CAST-CERT-CHAIN",
-    "CAST-SIGNATURE",
-    "CAST-SIGNATURE-TIME",
-    "CAST-APP-ID",
-    "CAST-SESSION-ID",
-    "CAST-APP-DEVICE-ID",
-    "CAST-PROD",
-    "CAST-JWT",
-    "CAST-PRIVATE-DATA",
-    "CAST-CKP-MODULUS",
-    "CAST-CKP-PUBLIC-EXPONENT",
-    "Authorization",
-    "X-Home-DeviceLinkedUserCreds",
-    "CAST-DEVICE-IN-MANAGED-MODE",
+constexpr auto kExemptHeaders = base::MakeFixedFlatSet<std::string_view>(
+    base::sorted_unique,
+    {
+        // keep-sorted start
+        "Authorization",
+        "CAST-APP-DEVICE-ID",
+        "CAST-APP-ID",
+        "CAST-CERT",
+        "CAST-CERT-CHAIN",
+        "CAST-CKP-MODULUS",
+        "CAST-CKP-PUBLIC-EXPONENT",
+        "CAST-DEVICE-CAPABILITIES",
+        "CAST-DEVICE-IN-MANAGED-MODE",
+        "CAST-JWT",
+        "CAST-PRIVATE-DATA",
+        "CAST-PROD",
+        "CAST-SERIAL-NUM",
+        "CAST-SESSION-ID",
+        "CAST-SIGNATURE",
+        "CAST-SIGNATURE-TIME",
+        "X-Home-DeviceLinkedUserCreds",
+        "google_cast_bg",
+        // keep-sorted end
 
-    // This header list is for legacy compatibility only. Do not add any more
-    // entries.
-};
+        // This header list is for legacy compatibility only. Do not add any
+        // more entries.
+    });
 
 }  // namespace
 
-base::span<const char*> GetLegacyCorsExemptHeaders() {
-  return base::span<const char*>(kExemptHeaders);
+base::span<const std::string_view> GetLegacyCorsExemptHeaders() {
+  return base::span<const std::string_view>(kExemptHeaders);
 }
 
 bool IsCorsExemptHeader(std::string_view header) {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      exempt_header_set(std::begin(kExemptHeaders), std::end(kExemptHeaders));
-  return exempt_header_set->find(header) != exempt_header_set->end();
+  return kExemptHeaders.contains(header);
 }
 
 }  // namespace chromecast
