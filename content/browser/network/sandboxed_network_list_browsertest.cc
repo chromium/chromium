@@ -33,6 +33,16 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/base_paths.h"
+#include "base/files/file_enumerator.h"
+#include "base/path_service.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
 namespace {
 
@@ -93,6 +103,37 @@ class SandboxedNetworkListBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     GTEST_SKIP() << "GetNetworkList not yet supported in Android network "
                     "sandbox. See https://crbug.com/1381381.";
+  }
+#elif BUILDFLAG(IS_WIN)
+  void SetUp() override {
+    if (GetTestPreCount() == 3) {
+      // Builders that execute content_browsertests directly via runtest.py
+      // rather than testing/test_env.py do not run set_lpac_acls() to override
+      // ACLs on hardlinked files in the build directory (such as icudtl.dat).
+      // Ensure the build output directory and its top-level files have LPAC
+      // read/execute access before launching the LPAC network service process.
+      base::FilePath exe_dir;
+      if (base::PathService::Get(base::DIR_EXE, &exe_dir)) {
+        auto sids = base::win::Sid::FromKnownSidVector(
+            {base::win::WellKnownSid::kAllRestrictedApplicationPackages});
+        constexpr DWORD kAccessMask = FILE_GENERIC_READ | FILE_GENERIC_EXECUTE;
+        base::win::GrantAccessToPath(exe_dir, sids, kAccessMask,
+                                     CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE,
+                                     /*recursive=*/false);
+        base::FileEnumerator enumerator(exe_dir, /*recursive=*/false,
+                                        base::FileEnumerator::FILES);
+        for (base::FilePath file = enumerator.Next(); !file.empty();
+             file = enumerator.Next()) {
+          if (!base::win::HasAccessToPath(file, sids, kAccessMask,
+                                          /*inheritance=*/0)) {
+            base::win::GrantAccessToPath(file, sids, kAccessMask,
+                                         /*inheritance=*/0,
+                                         /*recursive=*/false);
+          }
+        }
+      }
+    }
+    ContentBrowserTest::SetUp();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
