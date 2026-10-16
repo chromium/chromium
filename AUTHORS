@@ -13,6 +13,7 @@
 # Please keep the list sorted.
 
 # BEGIN individuals section.
+# keep-sorted start block=no case=no
 Aaron Boushley <boushley@gmail.com>
 Aaron Dewes <aarondewes@gmail.com>
 Aaron Jacobs <samusaaron3@gmail.com>
@@ -33,7 +34,6 @@ Adam Bonner <abonner-chromium@solscope.com>
 Adam Bujalski <abujalski@gmail.com>
 Adam Kallai <kadam@inf.u-szeged.hu>
 Adam Labuda <a.labuda@samsung.com>
-Anguluri Aravind Kumar <ar.kumar@samsung.com>
 Adam Roben <adam@github.com>
 Adam Treat <adam.treat@samsung.com>
 Adam Yi <i@adamyi.com>
@@ -60,8 +60,8 @@ Ajith Kumar V <ajith.v@samsung.com>
 Akash Yadav <akash1.yadav@samsung.com>
 Akihiko Odaki <akihiko.odaki@gmail.com>
 Akos Kiss <akiss@inf.u-szeged.hu>
-Akshay <akshay24495@gmail.com>
 Akpokwaye Mudiaga <mudiaga.akpokwaye@gitstart.dev>
+Akshay <akshay24495@gmail.com>
 Aku Kotkavuo <a.kotkavuo@partner.samsung.com>
 Alaric Baraou <alaric.baraou@gmail.com>
 Aldo Culquicondor <alculquicondor@gmail.com>
@@ -142,6 +142,7 @@ Andrew Nicols <andrewrn@gmail.com>
 Andrew Tulloch <andrew@tullo.ch>
 Andriy Rysin <arysin@gmail.com>
 Ane Diaz de Tuesta <anediaz@gmail.com>
+Anguluri Aravind Kumar <ar.kumar@samsung.com>
 Anish Patankar <anish.p@samsung.com>
 Anit Singh <anit.singh@samsung.com>
 Ankit Kiran <sahuankit453@gmail.com>
@@ -269,9 +270,9 @@ Calvin Mei <calvimei@amazon.com>
 Calvin Watford <watfordcalvin@gmail.com>
 Cameron Gutman <aicommander@gmail.com>
 Camille Viot <viot.camille@outlook.com>
-Canrong Lan <chanran.lan@gmail.com>
 Can Liu <peter.can.liu@gmail.com>
 Caner Altinbasak <caner.altinbasak@gmail.com>
+Canrong Lan <chanran.lan@gmail.com>
 Carlos Santa <carlos.santa@intel.com>
 Casey Primozic <me@ameo.link>
 Catalin Badea <badea@adobe.com>
@@ -279,9 +280,8 @@ Cathie Chen <cathiechen@tencent.com>
 Cem Kocagil <cem.kocagil@gmail.com>
 Cezary Kułakowski <cezary.kulakowski@gmail.com>
 CGQAQ <m.jason.liu@gmail.com>
-ChangFa Hu <huchangfa123@gmail.com>
-ChaeRin Lim <hurblin@gmail.com>
 Chaehyun Song <ch123song@gmail.com>
+ChaeRin Lim <hurblin@gmail.com>
 Chakshu Ahuja <chakshu.a@samsung.com>
 Chakshu Pragya <pragya.c1@samsung.com>
 Chamal De Silva <chamalsl@yahoo.com>
@@ -291,6 +291,7 @@ Chandra Shekar Vallala <brk376@motorola.com>
 Chandramouli Sanchi <cm.sanchi@samsung.com>
 Chang Shu <c.shu@samsung.com>
 Changbin Shao <changbin.shao@intel.com>
+ChangFa Hu <huchangfa123@gmail.com>
 Changjun Yang <changjun.yang@intel.com>
 ChangSeok Lee <charlie.lee921@gmail.com>
 ChangSeok Oh <changseok.oh@bytedance.com>
@@ -304,11 +305,11 @@ Chanyong Moon <dev.chanyongmoon@gmail.com>
 Chaobin Zhang <zhchbin@gmail.com>
 Charles Vaughn <cvaughn@gmail.com>
 Charles Zhang <csalinezh@gmail.com>
-Chenhao Diao <diaochenhao@gmail.com>
-Cheng Zhao <zcbenz@gmail.com>
 Cheng Yu <yuzichengcode@gmail.com>
+Cheng Zhao <zcbenz@gmail.com>
 Chenguang Shao <chenguangshao1@gmail.com>
 Chengzhong Wu <legendecas@gmail.com>
+Chenhao Diao <diaochenhao@gmail.com>
 Choongwoo Han <cwhan.tunz@gmail.com>
 Choudhury M. Shamsujjoha <choudhury.s@samsung.com>
 Chris Dalton <chris@rive.app>
@@ -364,8 +365,6 @@ Daniel Shaulov <dshaulov@ptc.com>
 Daniel Trebbien <dtrebbien@gmail.com>
 Daniel Waxweiler <daniel.waxweiler@gmail.com>
 Daniel Zhao <zhaodani@amazon.com>
-Dániel Bátyai <dbatyai@inf.u-szeged.hu>
-Dániel Vince <vinced@inf.u-szeged.hu>
 Daniil Suvorov <severecloud@gmail.com>
 Danny Weiss <danny.weiss.fr@gmail.com>
 Danylo Boiko <danielboyko02@gmail.com>
@@ -431,10 +430,9 @@ Dominic Jodoin <dominic.jodoin@gmail.com>
 Dominik Röttsches <dominik.rottsches@intel.com>
 Dominik Schütz <do.sch.dev@gmail.com>
 Don Woodward <woodward@adobe.com>
-Donough Liu <donoughliu@gmail.com>
+Dong-hee Na <donghee.na92@gmail.com>
 Donghan Park <vkfkdtor00@gmail.com>
 Donghee Na <corona10@gmail.com>
-Dong-hee Na <donghee.na92@gmail.com>
 Dongie Agnir <dongie.agnir@gmail.com>
 Dongjun Kim <deejay.kim@navercorp.com>
 Dongjun Kim <djmix.kim@samsung.com>
@@ -443,11 +441,14 @@ Dongwoo Joshua Im <dw.im@samsung.com>
 DongYoung Kim <dongyoungkim345@gmail.com>
 Dongyu Lin <l2d4y3@gmail.com>
 Donna Wu <donna.wu@intel.com>
+Donough Liu <donoughliu@gmail.com>
 Douglas Browne <douglas.browne123@gmail.com>
 Douglas F. Turner <doug.turner@gmail.com>
 Drew Blaisdell <drew.blaisdell@gmail.com>
 Dushyant Kant Sharma <dush.sharma@samsung.com>
 Dustin Doloff <doloffd@amazon.com>
+Dániel Bátyai <dbatyai@inf.u-szeged.hu>
+Dániel Vince <vinced@inf.u-szeged.hu>
 Ebrahim Byagowi <ebrahim@gnu.org>
 Ebrahim Byagowi <ebraminio@gmail.com>
 Eden Wang <nedenwang@gmail.com>
@@ -498,9 +499,9 @@ Evgeny Agafonchikov <evgeny.agafonchikov@akvelon.com>
 Fabian Henneke <fabian.henneke@gmail.com>
 Fabien Tassin <fta@sofaraway.org>
 Fabrice Meyer <fab.fab973@gmail.com>
+Faiz Basha <duplimail4@gmail.com>
 Fan Wen <fan.wen.dev@gmail.com>
 Fauzia Haque <fauzia.haque@samsung.com>
-Faiz Basha <duplimail4@gmail.com>
 Feifei Wang <alexswang@tencent.com>
 Felipe Erias Morandeira <felipeerias@gmail.com>
 Felipe Piubello <piubellofelipe97@gmail.com>
@@ -511,21 +512,21 @@ Feng Yu <f3n67u@gmail.com>
 Fengrong Fang <fr.fang@samsung.com>
 Fernando Jiménez Moreno <ferjmoreno@gmail.com>
 Finbar Crago <finbar.crago@gmail.com>
-François Beaufort <beaufort.francois@gmail.com>
-François Devatine <devatine@verizonmedia.com>
 Franco Pieri <geo22therm@gmail.com>
 Francois Kritzinger <francoisk777@gmail.com>
 Francois Rauch <leopardb@gmail.com>
 Frankie Dintino <fdintino@theatlantic.com>
 Franklin Ta <fta2012@gmail.com>
+François Beaufort <beaufort.francois@gmail.com>
+François Devatine <devatine@verizonmedia.com>
 Fred Ranking <luliang14@huawei.com>
 Frédéric Jacob <frederic.jacob.78@gmail.com>
 Frédéric Wang <fred.wang@free.fr>
 Fu Junwei <junwei.fu@intel.com>
-Gabriel Campana <gabriel.campana@ledger.fr>
-Gabriel “gabldotink” <gabl@gabl.ink>
 Gabor Rapcsanyi <g.rapcsanyi@samsung.com>
 Gabren Sysavath <gysysavath@gmail.com>
+Gabriel Campana <gabriel.campana@ledger.fr>
+Gabriel “gabldotink” <gabl@gabl.ink>
 Gaetano Mendola <mendola@gmail.com>
 Gajendra N <gajendra.n@samsung.com>
 Gajendra Singh <wxjg68@motorola.com>
@@ -560,8 +561,8 @@ Greg Visser <gregvis@gmail.com>
 Gregory Davis <gpdavis.chromium@gmail.com>
 Grzegorz Czajkowski <g.czajkowski@samsung.com>
 Guangzhen Li <guangzhen.li@intel.com>
-Guobin Wu <wuguobin.1229@bytedance.com>
 Guiyuan Liu <liuguiyuan3@qq.com>
+Guobin Wu <wuguobin.1229@bytedance.com>
 Gurpreet Kaur <k.gurpreet@samsung.com>
 Gustav Tiger <gustav.tiger@sonymobile.com>
 Gustavo Martin <gusmartin@google.com>
@@ -627,11 +628,11 @@ Hritwik Bhardwaj <hritwik.bh@samsung.com>
 Huai Wang <gkvjwa@gmail.com>
 Huapeng Li <huapengl@amazon.com>
 Huayong Xu <huayong.xu@samsung.com>
-Hung Ngo <ngotienhung195@gmail.com>
 Hugo Holgersson <hugo.holgersson@sonymobile.com>
 Hui Wang <wanghui07050707@gmail.com>
 Hui Wang <wanghui210@huawei.com>
 Huiwon Jo <jhwon0415@gmail.com>
+Hung Ngo <ngotienhung195@gmail.com>
 Hunseop Jeong <hs85jeong@gmail.com>
 Huy Duong <huy.duongdinh@gmail.com>
 Hwanseung Lee <hs1217.lee@gmail.com>
@@ -697,6 +698,7 @@ Jaeseok Yoon <yjaeseok@gmail.com>
 Jaesung Hyun <dev.hyunjaesung@gmail.com>
 Jaewon Choi <jaewon.james.choi@gmail.com>
 Jaewon Jung <jw.jung@navercorp.com>
+Jaewoo Lee <ljw5953@gmail.com>
 Jaeyong Bae <jdragon.bae@gmail.com>
 Jagadesh P <jagadeshjai1999@gmail.com>
 Jagdish Chourasia <jagdish.c@samsung.com>
@@ -719,7 +721,6 @@ Jan Grulich <grulja@gmail.com>
 Jan Keitel <jan.keitel@gmail.com>
 Jan Rucka <ruckajan10@gmail.com>
 Jan Sauer <jan@jansauer.de>
-Ján Václav <xvaclav@fi.muni.cz>
 Jan Zidarič <janbenoviczidaric@gmail.com>
 Jan-Michael Brummer <jan.brummer@tabos.org>
 Janusz Majnert <jmajnert@gmail.com>
@@ -770,8 +771,8 @@ Jianfeng Liu <liujianfeng1994@gmail.com>
 Jiangzhen Hou <houjiangzhen@360.cn>
 Jianjun Zhu <jianjun.zhu@intel.com>
 Jianneng Zhong <muzuiget@gmail.com>
-Jiawei Shao <jiawei.shao@intel.com>
 Jiawei Chen <jiawei.chen@dolby.com>
+Jiawei Shao <jiawei.shao@intel.com>
 Jiawei Wang <hellojw513@gmail.com>
 Jiaxun Wei <leuisken@gmail.com>
 Jiaxun Yang <jiaxun.yang@flygoat.com>
@@ -791,7 +792,9 @@ Jimin Lee <cliceleee@gmail.com>
 Jin Yang <jin.a.yang@intel.com>
 Jincheol Jo <jincheol.jo@navercorp.com>
 Jinfeng Ma <majinfeng1@xiaomi.com>
+Jing Peiyang <jingpeiyang@eswincomputing.com>
 Jing Zhao <zhaojing7@xiaomi.com>
+Jingge Yu <jinggeyu423@gmail.com>
 Jinghua Guo <guojinghua@bytedance.com>
 Jinglong Zuo <zuojinglong@xiaomi.com>
 Jingqi Sun <jingqi.sun@hotmail.com>
@@ -799,6 +802,7 @@ Jingqi Sun <sunjingqi47@gmail.com>
 Jingwei Liu <kingweiliu@gmail.com>
 Jingyi Wei <wjywbs@gmail.com>
 Jinho Bang <jinho.bang@samsung.com>
+Jinli Wu <wujinli@bytedance.com>
 Jinsong Fan <fanjinsong@sogou-inc.com>
 Jinsong Fan <jinsong.van@gmail.com>
 Jinwoo Song <jinwoo7.song@samsung.com>
@@ -841,8 +845,8 @@ Jonathan Shimonovich <jonathans@talon-sec.com>
 Jongdeok Kim <jongdeok.kim@navercorp.com>
 Jongheon Kim <sapzape@gmail.com>
 JongKwon Lee <jongkwon.lee@navercorp.com>
-Jongmok Kim <jongmok.kim@navercorp.com>
 Jongmok Kim <johny.kimc@gmail.com>
+Jongmok Kim <jongmok.kim@navercorp.com>
 Jongsoo Lee <leejongsoo@gmail.com>
 Joonas Halinen <joonashalinen@outlook.com>
 Joone Hur <joone.hur@intel.com>
@@ -869,13 +873,16 @@ Julian Geppert <spctstr@gmail.com>
 Julien Brianceau <jbriance@cisco.com>
 Julien Isorce <j.isorce@samsung.com>
 Julien Racle <jracle@logitech.com>
-Júlio Piubello <julio@gitstart.com>
 Jun Fang <jun_fang@foxitsoftware.com>
 Jun Jiang <jun.a.jiang@intel.com>
+Jun Liu <liujun042002a@gmail.com>
+Jun Wang <wangjuna@uniontech.com>
+Jun Xu <jun1.xu@intel.com>
+Jun Zeng <hjunzeng6@gmail.com>
 Junbong Eom <jb.eom@samsung.com>
+Junchao Han <junchao.han@intel.com>
 Jungah Kwak <kwakjungah0605@gmail.com>
 Jungchang Park <valley84265@gmail.com>
-Junchao Han <junchao.han@intel.com>
 Junghoon Lee <sjh836@gmail.com>
 Junghyuk Yoo <wjdgurdl272@gmail.com>
 JungJik Lee <jungjik.lee@samsung.com>
@@ -883,18 +890,13 @@ Jungkee Song <jungkee.song@samsung.com>
 Junmin Zhu <junmin.zhu@intel.com>
 Junsang Mo <mojunsang26@gmail.com>
 Junsong Li <ljs.darkfish@gmail.com>
-Jun Liu <liujun042002a@gmail.com>
-Jun Wang <wangjuna@uniontech.com>
-Jun Xu <jun1.xu@intel.com>
-Jun Zeng <hjunzeng6@gmail.com>
 Junwei Xu <xujw89@gmail.com>
 Justin Okamoto <justmoto@amazon.com>
 Justin Ribeiro <justin@justinribeiro.com>
-Jüri Valdmann <juri.valdmann@qt.io>
 Juyoung Kim <chattank05@gmail.com>
-Jingge Yu <jinggeyu423@gmail.com>
-Jing Peiyang <jingpeiyang@eswincomputing.com>
-Jinli Wu <wujinli@bytedance.com>
+Ján Václav <xvaclav@fi.muni.cz>
+Júlio Piubello <julio@gitstart.com>
+Jüri Valdmann <juri.valdmann@qt.io>
 K. M. Merajul Arefin <m.arefin@samsung.com>
 Kacper Wasniowski <kwasniow@cisco.com>
 Kai Jiang <jiangkai@gmail.com>
@@ -1002,12 +1004,11 @@ Lauren Yeun Kim <lauren.yeun.kim@gmail.com>
 Lauri Oherd <lauri.oherd@gmail.com>
 Lavar Askew <open.hyperion@gmail.com>
 Le Hoang Quyen <le.hoang.q@gmail.com>
-Jaewoo Lee <ljw5953@gmail.com>
 Leena Kaushik <l1.kaushik@samsung.com>
 Legend Lee <guanxian.li@intel.com>
-Leith Bade <leith@leithalweapon.geek.nz>
 Lei Gao <leigao@huawei.com>
 Lei Li <lli.kernel.kvm@gmail.com>
+Leith Bade <leith@leithalweapon.geek.nz>
 Lenny Khazan <lenny.khazan@gmail.com>
 Leo Wolf <jclw@ymail.com>
 Leon Han <leon.han@intel.com>
@@ -1021,23 +1022,25 @@ Lian Ruilong <lianruilong1108@gmail.com>
 Liao Cao <caoliao.leo@bytedance.com>
 Lidwine Genevet <lgenevet@cisco.com>
 Lin Guo <sinyu890807@gmail.com>
-Lin Sun <lin.sun@intel.com>
 Lin Peng <penglin220@gmail.com>
 Lin Peng <penglin22@huawei.com>
+Lin Sun <lin.sun@intel.com>
 Lingqi Chi <someway.bit@gmail.com>
 Lingyun Cai <lingyun.cai@intel.com>
 Linnan Li <lilinnan0903@gmail.com>
 Lionel Landwerlin <lionel.g.landwerlin@intel.com>
-Lisha Guo <lisha.guo@intel.com>
 Lisha Guo <guolisha@kylinos.cn>
+Lisha Guo <lisha.guo@intel.com>
 Lizhi Fan <lizhi.fan@samsung.com>
 Lloyd Huang <bzkirto@gmail.com>
 Lloyd Torres <torlloyd@amazon.com>
+Lo Bo Gan <zhangshengluobogan@gmail.com>
 Loay Ghreeb <loayahmed655@gmail.com>
 LongYinan <lynweklm@gmail.com>
 Loo Rong Jie <loorongjie@gmail.com>
 Lorenzo Stoakes <lstoakes@gmail.com>
 Lu Guanqun <guanqun.lu@gmail.com>
+Lu Yahan <yahan@iscas.ac.cn>
 Luc Shi <lei.a.shi@intel.com>
 Luca Casonato <luccasonato@gmail.com>
 Luca Di Domenico <luca94dd@gmail.com>
@@ -1047,15 +1050,12 @@ Luka Dojcilovic <l.dojcilovic@gmail.com>
 Lukas Lihotzki <lukas@lihotzki.de>
 Lukasz Krakowiak <lukasz.krakowiak@mobica.com>
 Lukasz Patron <priv.luk@gmail.com>
-Luke Inman-Semerau <luke.semerau@gmail.com>
 Luke Gu <gulukesh@gmail.com>
-Luke Warlow <lukewarlow156@gmail.com>
+Luke Inman-Semerau <luke.semerau@gmail.com>
 Luke Warlow <luke@warlow.dev>
+Luke Warlow <lukewarlow156@gmail.com>
 Luke Zarko <lukezarko@gmail.com>
-Yeye Luo <yiiyye145@gmail.com>
 Luoxi Pan <l.panpax@gmail.com>
-Lu Yahan <yahan@iscas.ac.cn>
-Lo Bo Gan <zhangshengluobogan@gmail.com>
 Lyra Rebane <rebane2001@gmail.com>
 Ma Aiguo <imaiguo@gmail.com>
 Maarten Lankhorst <m.b.lankhorst@gmail.com>
@@ -1081,8 +1081,8 @@ Mao Yujie <maojie0924@gmail.com>
 Mao Yujie <yujie.mao@intel.com>
 Marc des Garets <marc.desgarets@googlemail.com>
 Marcello Balduccini <marcello.balduccini@gmail.com>
-Marcio Caroso <msscaroso@gmail.com>
 Marcin Wiacek <marcin@mwiacek.com>
+Marcio Caroso <msscaroso@gmail.com>
 Marco Monaco <marco.monaco@ocado.com>
 Marco Rodrigues <gothicx@gmail.com>
 Marcos Caceres <marcos@marcosc.com>
@@ -1139,13 +1139,13 @@ Mayank Kumar <mayank.k@samsung.com>
 Mayur Kankanwadi <mayurk.vk@samsung.com>
 Mc Zeng <zengmcong@gmail.com>
 Md Abdullah Al Alamin <a.alamin.cse@gmail.com>
-Md. Hasanur Rashid <hasanur.r@samsung.com>
-Md Hasibul Hasan <hasibulhasan873@gmail.com>
 Md Hasibul Hasan <hasibul.h@samsung.com>
+Md Hasibul Hasan <hasibulhasan873@gmail.com>
 Md Jobed Hossain <jobed.h@samsung.com>
 Md Raiyan bin Sayeed <mrbsayee@uwaterloo.ca>
-Md. Sadiqul Amin <sadiqul.amin@samsung.com>
 Md Sami Uddin <md.sami@samsung.com>
+Md. Hasanur Rashid <hasanur.r@samsung.com>
+Md. Sadiqul Amin <sadiqul.amin@samsung.com>
 Mego Tan <tannal2409@gmail.com>
 Meitar Naveh <meitar@neo.ai>
 Merajul Arefin <merajularefin@gmail.com>
@@ -1166,8 +1166,8 @@ Michael Schechter <mike.schechter@gmail.com>
 Michael Smith <sideshowbarker@gmail.com>
 Michael Steuer <miragegarim@gmail.com>
 Michael Weiss <dev.primeos@gmail.com>
-Michaël Zasso <mic.besace@gmail.com>
 Michael Zugelder <michael@zugelder.org>
+Michaël Zasso <mic.besace@gmail.com>
 Michel Promonet <michel.promonet.1@gmail.com>
 Mihai Maerean <mmaerean@adobe.com>
 Mihai Tica <mihai.o.tica@gmail.com>
@@ -1180,7 +1180,6 @@ Miles Chen <milesatw@gmail.com>
 Milko Leporis <milko.leporis@imgtec.com>
 Milton Chiang <milton.chiang@mediatek.com>
 Milutin Smiljanic <msmiljanic.gm@gmail.com>
-Miłosz Pracowity <mioszpracowity@gmail.com>
 Minchul Kang <tegongkang@gmail.com>
 Ming Lei <minggeorgelei@gmail.com>
 Mingeun Park <mindal99546@gmail.com>
@@ -1203,9 +1202,10 @@ Misha Nasledov <misha@nasledov.com>
 Mitchell Cohen <mitchell@agilebits.com>
 Miyamoto Eri <wy867653608@gmail.com>
 Miyoung Shin <myid.shin@navercorp.com>
+Miłosz Pracowity <mioszpracowity@gmail.com>
+Mohamed Hany Youns <mohamedhyouns@gmail.com>
 Mohamed I. Hammad <ibraaaa@gmail.com>
 Mohamed Mansour <m0.interactive@gmail.com>
-Mohamed Hany Youns <mohamedhyouns@gmail.com>
 Mohammad Azam <m.azam@samsung.com>
 MohammadSabri <mohammad.kh.sabri@exalt.ps>
 Mohammed Ashraf <mohammedashraf4599@gmail.com>
@@ -1273,7 +1273,6 @@ Ning Zeng <zengning.zzz@gmail.com>
 Ningxin Hu <ningxin.hu@intel.com>
 Nischal Singh <singhnischal953@gmail.com>
 Nishaanth Shriram M S <nishaanthshriramms@gmail.com>
-Nischal Singh <singhnischal953@gmail.com>
 Nitish Mehrotra <nitish.m@samsung.com>
 Nivedan Sharma <ni.sharma@samsung.com>
 Noam Rosenthal <noam.j.rosenthal@gmail.com>
@@ -1321,17 +1320,16 @@ Pawan Udassi <pawanudassi@hotmail.com>
 Pawel Forysiuk <p.forysiuk@samsung.com>
 Paweł Hajdan jr <phajdan.jr@gmail.com>
 Paweł Stanek <pawel@gener8ads.com>
-Piotr Niełacny <piotr.nielacny@gmail.com>
-Piotr Zarycki <piotr.zarycki@gmail.com>
 Payal Pandey <payal.pandey@samsung.com>
 Pedro Rosa <pedro.b.rosa@tecnico.ulisboa.pt>
 Pedro Tôrres <t0rr3s.p3dr0@gmail.com>
+Pei Wang <wangpei@uniontech.com>
+Peilin Huang <peilinok@gmail.com>
 Peng Hu <penghu@tencent.com>
 Peng Jiang <leiyi.jp@gmail.com>
 Peng Xinchao <pxinchao@gmail.com>
 Peng Zhou <zhoupeng.1996@bytedance.com>
 Peng-Yu Chen <pengyu@libstarrify.so>
-Pei Wang <wangpei@uniontech.com>
 Perry Wang <perryuwang@gmail.com>
 Peter Bright <drpizza@quiscalusmexicanus.org>
 Peter Brophy <pbrophy@adobe.com>
@@ -1352,6 +1350,8 @@ PhistucK <phistuck@gmail.com>
 Pierce Fortin <pierce.fortin@promenade.co>
 Pierre Neter <pierreneter@gmail.com>
 Pierre-Antoine LaFayette <pierre.lafayette@gmail.com>
+Piotr Niełacny <piotr.nielacny@gmail.com>
+Piotr Zarycki <piotr.zarycki@gmail.com>
 Po-Chun Chang <pochang0403@gmail.com>
 Prakhar Shrivastav <p.shri@samsung.com>
 Pramod Begur Srinath <pramod.bs@samsung.com>
@@ -1365,9 +1365,8 @@ Praveen Akkiraju <praveen.anp@samsung.com>
 Preeti Nayak <preeti.nayak@samsung.com>
 Pritam Nikam <pritam.nikam@samsung.com>
 Psychpsyo <psychpsyo@gmail.com>
-Puttaraju R <puttaraju.r@samsung.com>
 Punith Nayak <npunith125@gmail.com>
-Peilin Huang <peilinok@gmail.com>
+Puttaraju R <puttaraju.r@samsung.com>
 Qi Hou <qi.hou@nxp.com>
 Qi Tiezheng <qitiezheng@360.cn>
 Qi Yang <qi1988.yang@samsung.com>
@@ -1393,9 +1392,9 @@ Ramya Vadlamudi <ramya.v@samsung.com>
 Randy Posynick <randy.posynick@gmail.com>
 Rao Rui <ruirao565@gmail.com>
 Raphael Kubo da Costa <raphael.kubo.da.costa@intel.com>
-Raul Tambre <raul@tambre.ee>
 Rastislav Vašička <rastislav.vasicka@codetech.cc>
 Ratnesh Patel <r4.patel@samsung.com>
+Raul Tambre <raul@tambre.ee>
 Raveendra Karu <r.karu@samsung.com>
 Ravi Nanjundappa <nravi.n@samsung.com>
 Ravi Phaneendra Kasibhatla <r.kasibhatla@samsung.com>
@@ -1405,17 +1404,15 @@ Raviraj Sitaram <raviraj.p.sitaram@intel.com>
 Razze <razzeee@gmail.com>
 Rebecca Chang Swee Fun <rebecca.chang@starfivetech.com>
 Reda Tawfik <redatawfik@noogler.google.com>
-Réda Housni Alaoui <alaoui.rda@gmail.com>
 Refael Ackermann <refack@gmail.com>
 Reik Reid <reikred@gmail.com>
-Rémi Arnaud <jsremi@gmail.com>
 Renata Hodovan <hodovan.renata@gmail.com>
 Rene Bolldorf <rb@radix.io>
 Rene Ladan <r.c.ladan@gmail.com>
 Rich Waters <rich@waters.io>
 Richard Baranyi <lordprotector@gmail.com>
-Richard Li <richard.li@intel.com>
 Richard Li <hellorichardli@gmail.com>
+Richard Li <richard.li@intel.com>
 Richard Smith <happyercat@gmail.com>
 Rijubrata Bhaumik <rijubrata.bhaumik@intel.com>
 Riku Voipio <riku.voipio@linaro.org>
@@ -1429,12 +1426,12 @@ Robert Bradford <robert.bradford@intel.com>
 Robert Goldberg <goldberg@adobe.com>
 Robert Günzler <r@gnzler.io>
 Robert Hogan <robhogan@gmail.com>
-Robert O'Callahan <rocallahan@gmail.com>
 Robert Nagy <robert.nagy@gmail.com>
+Robert O'Callahan <rocallahan@gmail.com>
 Robert Sesek <rsesek@bluestatic.org>
 Roee Kasher <roee91@gmail.com>
-Roger Sanders <sanders_roger@hotmail.com>
 Roger Sanders <sanders.rogerj@gmail.com>
+Roger Sanders <sanders_roger@hotmail.com>
 Roger Zanoni <rogerzanoni@gmail.com>
 Roland Takacs <rtakacs.u-szeged@partner.samsung.com>
 Romain Pokrzywka <romain.pokrzywka@gmail.com>
@@ -1457,16 +1454,18 @@ Rulong Chen（陈汝龙） <rulongchen@live.com>
 Russell Davis <russell.davis@gmail.com>
 Ryan Ackley <ryanackley@gmail.com>
 Ryan Gonzalez <rymg19@gmail.com>
+Ryan Huen <ryanhuenprivate@gmail.com>
 Ryan Manuel <rfmanuel@gmail.com>
 Ryan Norton <rnorton10@gmail.com>
 Ryan Sleevi <ryan-chromium-dev@sleevi.com>
 Ryan Yoakum <ryoakum@skobalt.com>
-Ryan Huen <ryanhuenprivate@gmail.com>
 Rye Zhang <ryezhang@tencent.com>
 Ryo Hiyoshi <ryohiy.dev@gmail.com>
 Ryo Ogawa <negibokken@gmail.com>
-Ryuya Hasegawa <ryuyxx@gmail.com>
 Ryuan Choi <ryuan.choi@samsung.com>
+Ryuya Hasegawa <ryuyxx@gmail.com>
+Réda Housni Alaoui <alaoui.rda@gmail.com>
+Rémi Arnaud <jsremi@gmail.com>
 Sahil Khan <sahilkhanvns1228@gmail.com>
 Saikrishna Arcot <saiarcot895@gmail.com>
 Sajal Khandelwal <skhandelwa22@bloomberg.net>
@@ -1506,9 +1505,9 @@ Sargun Vohra <sargun.vohra@gmail.com>
 Sashmitha Atigala <sashmitha.atigala@codimite.com>
 Sathish Kuppuswamy <sathish.kuppuswamy@intel.com>
 Satoshi Matsuzaki <satoshi.matsuzaki@gmail.com>
+Satvic Dhawan <satvicdhawan14@gmail.com>
 Satyajit Sahu <satyajit.sahu@amd.com>
 Satyaveer Singh <satyaveer.s@samsung.com>
-Satvic Dhawan <satvicdhawan14@gmail.com>
 Sayan Nayak <sayan.nayak@samsung.com>
 Sayan Sivakumaran <sivakusayan@gmail.com>
 Scott D Phillips <scott.d.phillips@intel.com>
@@ -1523,17 +1522,17 @@ Sebeen Kwon <a856412@gmail.com>
 Semih Dogan <semih702do@gmail.com>
 Seo Sanghyeon <sanxiyn@gmail.com>
 Seohyun Hwang <shhwang1257@gmail.com>
-Seokju Kwon <seokju.kwon@gmail.com>
 Seokho Song <0xdevssh@gmail.com>
+Seokju Kwon <seokju.kwon@gmail.com>
 Seonggon Cho <jmsmg1@me.com>
 Seongjin Kim <mirusu400@gmail.com>
 SeongTae Jeong <ferendevelop.gl@gmail.com>
 Sergei Poletaev <spylogsster@gmail.com>
 Sergei Romanov <rsv.981@gmail.com>
-Sergey Romanov <svromanov@sberdevices.ru>
 Sergey Kipet <sergey.kipet@gmail.com>
 Sergey Markelov <sergionso@gmail.com>
 Sergey Putilin <p.sergey@samsung.com>
+Sergey Romanov <svromanov@sberdevices.ru>
 Sergey Shekyan <shekyan@gmail.com>
 Sergey Talantov <sergey.talantov@gmail.com>
 Sergio Carlos Morales Angeles <carloschilazo@gmail.com>
@@ -1564,11 +1563,11 @@ Shelley Vohr <shelley.vohr@gmail.com>
 Shen Yu <shenyu.tcv@gmail.com>
 Sherry Mou <wenjinm@amazon.com>
 Shez Baig <sbaig1@bloomberg.net>
-Shi Chunlong <shicl@dingdao.com>
 Shi Chunlong <shichunlong@gmail.com>
+Shi Chunlong <shicl@dingdao.com>
 shi yu jie <syujie875@gmail.com>
-Shigeki Ohtsu <shigeki.ohtsu@gmail.com>
 Shicheng Wang <wangshicheng@xiaomi.com>
+Shigeki Ohtsu <shigeki.ohtsu@gmail.com>
 Shiliu Wang <aofdwsl@gmail.com>
 Shiliu Wang <shiliu.wang@intel.com>
 Shilpa Shri <shilpa.shri@samsung.com>
@@ -1600,11 +1599,11 @@ Simon La Macchia <smacchia@amazon.com>
 Siva Kumar Gunturi <siva.gunturi@samsung.com>
 Slava Aseev <nullptrnine@gmail.com>
 Smriti Singh <s01.singh@samsung.com>
-Sohom Datta <sohom.datta@learner.manipal.edu>
 Sohom Datta <dattasohom1@gmail.com>
+Sohom Datta <sohom.datta@learner.manipal.edu>
 Song Fangzhen <songfangzhen@bytedance.com>
-Song Qinglin <songql@dingdao.com>
 Song Qinglin <songqinglin@gmail.com>
+Song Qinglin <songql@dingdao.com>
 Song YeWen <ffmpeg@gmail.com>
 Sonu Thomas <sonu.thomas@amd.com>
 Sooho Park <sooho1000@gmail.com>
@@ -1634,8 +1633,8 @@ Sujith S S <sujiths.s@samsung.com>
 Sukyung Byun <dev.suu3@gmail.com>
 Sumaid Syed <sumaidsyed@gmail.com>
 Sunchang Li <johnstonli@tencent.com>
-Sundoo Kim <nerdooit@gmail.com>
 Sundoo Kim <0xd00d00b@gmail.com>
+Sundoo Kim <nerdooit@gmail.com>
 Suneel Kota <suneel.kota@samsung.com>
 Sung Lee <sung.lee@amd.com>
 Sungboo Park <seongbooopark@gmail.com>
@@ -1664,13 +1663,13 @@ Synthia Islam <synthia.is@samsung.com>
 Szabolcs David <davidsz@inf.u-szeged.hu>
 Szilard Szaloki <szilardszaloki@gmail.com>
 Szymon Piechowicz <szymonpiechowicz@o2.pl>
+Tae Shin <taeshindev@gmail.com>
 Taehee Yoo <ap420073@gmail.com>
 Taeheon Kim <skyrabbits1@gmail.com>
 Taeho Nam <thn7440@gmail.com>
 Taehoon Lee <taylor.hoon@gmail.com>
 Taeseong Yu <yugeeklab@gmail.com>
 Taeyeon Kim <ssg9732@gmail.com>
-Tae Shin <taeshindev@gmail.com>
 Taher Ali <taher.dasten@gmail.com>
 Takaaki Suzuki <takaakisuzuki.14@gmail.com>
 Takahiro Aoyagi <hogehoge@gachapin.jp>
@@ -1704,8 +1703,8 @@ Thryze Knox <thryzx@gmail.com>
 Tiago Vignatti <tiago.vignatti@intel.com>
 Tianyi Hu <oscarhuthu@gmail.com>
 Tianyi Zhang <me@1stprinciple.org>
-Tibor Dusnoki <tibor.dusnoki.91@gmail.com>
 Tibor Dusnoki <tdusnoki@inf.u-szeged.hu>
+Tibor Dusnoki <tibor.dusnoki.91@gmail.com>
 Tien Hock Loh <tienhock.loh@starfivetech.com>
 Tim Ansell <mithro@mithis.com>
 Tim Barry <oregongraperoot@gmail.com>
@@ -1718,8 +1717,8 @@ Timo Witte <timo.witte@gmail.com>
 Timothy Pearson <tpearson@raptorcs.com>
 Ting Shao <ting.shao@intel.com>
 Tobias Lippert <tobias.lippert@fastmail.com>
-Tobias Soppa <tobias@soppa.me>
 Tobias Soppa <tobias.soppa@code.berlin>
+Tobias Soppa <tobias@soppa.me>
 Tom Callaway <tcallawa@redhat.com>
 Tom Harwood <tfh@skip.org>
 Tomas Popela <tomas.popela@gmail.com>
@@ -1728,14 +1727,14 @@ Tomoaki Kobayashi <tomoaki.kobayashi.t3@alumni.tohoku.ac.jp>
 Tony Shen <legendmastertony@gmail.com>
 Topi Lassila <tolassila@gmail.com>
 Torsten Kurbad <google@tk-webart.de>
-Toshihito Kikuchi <leamovret@gmail.com>
 Toshiaki Tanaka <zokutyou2@gmail.com>
+Toshihito Kikuchi <leamovret@gmail.com>
 Travis Leithead <travis.leithead@gmail.com>
 Trent Taylor <trent.taylor@ulteig.com>
 Trent Willis <trentmwillis@gmail.com>
 Trevor Perrin <unsafe@trevp.net>
-Tripta Gupta <triptagupta19@gmail.com>
 Tripta Gupta <tripta.g@samsung.com>
+Tripta Gupta <triptagupta19@gmail.com>
 Tristan Fraipont <tristan.fraipont@gmail.com>
 Tudor Brindus <me@tbrindus.ca>
 Tushar Singh <tusharsinghnx@gmail.com>
@@ -1778,26 +1777,26 @@ Vlad Zahorodnii <vlad.zahorodnii@kde.org>
 Vladislav Soulgard <vsoulgard@gmail.com>
 Volker Sorge <volker.sorge@gmail.com>
 Väinö Mäkelä <vaino.o.makela@gmail.com>
-Waihung Fu <fufranci@amazon.com>
 wafuwafu13 <mariobaske@i.softbank.jp>
-Wang Chen <wangchen20@iscas.ac.cn>
+Waihung Fu <fufranci@amazon.com>
 Wang Chen <unicornxw@gmail.com>
+Wang Chen <wangchen20@iscas.ac.cn>
 Wang Weiwei <wangww@dingdao.com>
 Wang Zirui <kingzirvi@gmail.com>
 Wangyang Dai <jludwy@gmail.com>
 Wanming Lin <wanming.lin@intel.com>
 Wei Li <wei.c.li@intel.com>
+Wei Wang <wei4.wang@intel.com>
+Wei Wen <wenwei.wenwei@bytedance.com>
 Weicong Yu <yuweicong666@gmail.com>
+Weidong Liu <liuwd8@gmail.com>
 Wen Fan <fanwen1@huawei.com>
 Wendi Gan <ganwendix@gmail.com>
 Wenjie Lu <luw52200@gmail.com>
+WenSheng He <wensheng.he@samsung.com>
 Wenxian Guo <wxguojlu@gmail.com>
 Wenxiang Qian <leonwxqian@gmail.com>
-WenSheng He <wensheng.he@samsung.com>
 Wesley Lancel <wesleylancel@gmail.com>
-Wei Wang <wei4.wang@intel.com>
-Wei Wen <wenwei.wenwei@bytedance.com>
-Weidong Liu <liuwd8@gmail.com>
 Wesley Wigham <wwigham@gmail.com>
 Will Cohen <wwcohen@gmail.com>
 Will Hirsch <chromium@willhirsch.co.uk>
@@ -1810,11 +1809,11 @@ Wonik Choi <choiwonik91@gmail.com>
 Wooseok Sung <tjddntjr1@gmail.com>
 Wujian Sun <sunwujian90@gmail.com>
 Xavier Leune <xavier.leune@gmail.com>
-Xiao Wang <wangxiao@bytedance.com>
 Xialei Qin <qinxialei@uniontech.com>
 Xiang Long <xiang.long@intel.com>
 XiangYang <yangxiang12@huawei.com>
 Xiangze Zhang <xiangze.zhang@intel.com>
+Xiao Wang <wangxiao@bytedance.com>
 Xiaobing Yang <yangxiaobing@qianxin.com>
 Xiaofeng Zhang <xiaofeng.zhang@intel.com>
 Xiaolei Yu <dreifachstein@gmail.com>
@@ -1834,18 +1833,17 @@ Xuefu Zhang <xuefu.sh@gmail.com>
 Xuehui Xie <xuehui.xxh@alibaba-inc.com>
 Xueqing Huang <huangxueqing@xiaomi.com>
 Xun Sun <xun.sun@intel.com>
-Xunran Ding <xunran.ding@samsung.com>
 Xunran Ding <dingxunran@gmail.com>
+Xunran Ding <xunran.ding@samsung.com>
 Yael Aharon <yael.aharon@intel.com>
 Yafang Ben <yafang1826@gmail.com>
 Yagiz Nizipli <yagiz@nizipli.com>
 Yaksh Bariya <yakshbari4@gmail.com>
 Yan Wang <yan0422.wang@samsung.com>
-Yaniv Yissachar <yaniv.yscr@gmail.com>
 Yang Gu <yang.gu@intel.com>
 Yang Liu <jd9668954@gmail.com>
 Yang Liu <yangliu.leo@bytedance.com>
-Yao Wu <ywu16212@gmail.com>
+Yaniv Yissachar <yaniv.yscr@gmail.com>
 Yannay Hammer <yannayha@gmail.com>
 Yannic Bonenberger <yannic.bonenberger@gmail.com>
 Yao Wu <ywu16212@gmail.com>
@@ -1857,13 +1855,14 @@ Ye Liu <cbakgly@gmail.com>
 Yeol Park <peary2@gmail.com>
 Yeonghan Kim <soosungp33@gmail.com>
 Yeonwoo Jo <yeonwoo.jo.92@gmail.com>
+Yeye Luo <yiiyye145@gmail.com>
 Yi Lu <isdyldr@gmail.com>
 Yi Shen <yi.shen@samsung.com>
 Yi Sun <ratsunny@gmail.com>
+Yi Zhang <yi.y.zhang@intel.com>
 Yichen Jiang <jiangyichen123@gmail.com>
 Yifei Yu <yuyifei@xiaomi.com>
 Yisi Yu <hellofroser@gmail.com>
-Yi Zhang <yi.y.zhang@intel.com>
 Yizhou Jiang <yizhou.jiang@intel.com>
 Yoav Weiss <yoav@yoav.ws>
 Yoav Zilberberg <yoav.zilberberg@gmail.com>
@@ -1885,8 +1884,8 @@ Young Min Kim <y@ylem.kim>
 Youngho Seo <hazivoo@gmail.com>
 Youngjin Choi <cyjin9.yc@gmail.com>
 YoungKi Hong <simon.hong81@gmail.com>
-Youngmin Yoo <youngmin.yoo@samsung.com>
 Youngmin Hong <mjdal0523@gmail.com>
+Youngmin Yoo <youngmin.yoo@samsung.com>
 Youngsoo Choi <kenshin.choi@samsung.com>
 Youngsun Suh <zard17@gmail.com>
 Yuan-Pin Yu <yjames@uber.com>
@@ -1916,8 +1915,8 @@ Zehan Li <synclzhhans@gmail.com>
 Zeno Albisser <zeno.albisser@digia.com>
 Zeqin Chen <talonchen@tencent.com>
 Zhanbang He <hezhanbang@gmail.com>
-Zhang Hao <zhanghao.m@bytedance.com>
 Zhang Hao <15686357310a@gmail.com>
+Zhang Hao <zhanghao.m@bytedance.com>
 Zhao Qin <qzmiss@gmail.com>
 Zhaoming Jiang <zhaoming.jiang@intel.com>
 Zhaoze Zhou <zhaoze.zhou@partner.samsung.com>
@@ -1930,9 +1929,9 @@ Zhenyu Liang <zhenyu.liang@intel.com>
 Zhenyu Shan <zhenyu.shan@intel.com>
 Zhibo Wang <zhibo1.wang@intel.com>
 Zhifei Fang <facetothefate@gmail.com>
-zhizhi.dev <zhizhi.dev@gmail.com>
 Zhixin Tu <tuzhixin25@gmail.com>
 Zhiyuan Ye <zhiyuanye@tencent.com>
+zhizhi.dev <zhizhi.dev@gmail.com>
 Zhongwei Wang <carolwolfking@gmail.com>
 Zhou Jun <zhoujun@uniontech.com>
 Zhuoran Chen <chenzhuoran.638@gmail.com>
@@ -1943,22 +1942,24 @@ Zoltan Czirkos <czirkos.zoltan@gmail.com>
 Zoltan Herczeg <zherczeg.u-szeged@partner.samsung.com>
 Zoltan Kuscsik <zoltan.kuscsik@linaro.org>
 Zoru Lee <donzoru@gmail.com>
+Zsolt Borbely <zsborbely.u-szeged@partner.samsung.com>
 Zuckjet <zuckjet@gmail.com>
 Zuohui Yang <yangzuohui.yzh@gmail.com>
 Zuyao Chen <zuyaocat@gmail.com>
-Zsolt Borbely <zsborbely.u-szeged@partner.samsung.com>
-方觉 (Fang Jue) <fangjue23303@gmail.com>
-迷渡 <justjavac@gmail.com>
-赵裕 (Zhao Yu) <vimerzhao@gmail.com>
-郑苏波 (Super Zheng) <superzheng@tencent.com>
 一丝 (Yisi) <yiorsi@gmail.com>
+方觉 (Fang Jue) <fangjue23303@gmail.com>
 林训杰 (XunJie Lin) <wick.linxunjie@gmail.com>
-郭燚 (Yi Guo) <guoyi122622@gmail.com>
 欧阳杰 (Jie Ouyang) <robotjie@icloud.com>
+赵裕 (Zhao Yu) <vimerzhao@gmail.com>
+迷渡 <justjavac@gmail.com>
+郑苏波 (Super Zheng) <superzheng@tencent.com>
+郭燚 (Yi Guo) <guoyi122622@gmail.com>
+# keep-sorted end
 # Please DO NOT APPEND here. See comments at the top of the file.
 # END individuals section.
 
 # BEGIN organizations section.
+# keep-sorted start block=no case=no
 Accenture <*@accenture.com>
 ACCESS CO., LTD. <*@access-company.com>
 Ada Logics Ltd. <*@adalogics.com>
@@ -2026,8 +2027,8 @@ Quality First Software GmbH <*@qf-software.com>
 Rakuten Kobo Inc. <*@kobo.com>
 Rakuten Kobo Inc. <*@rakuten.com>
 Red Hat Inc. <*@redhat.com>
-Semihalf <*@semihalf.com>
 S57 ApS <*@s57.io>
+Semihalf <*@semihalf.com>
 Seznam.cz, a.s. <*@firma.seznam.cz>
 Slack Technologies Inc. <*@slack-corp.com>
 Spotify AB <*@spotify.com>
@@ -2049,5 +2050,6 @@ Xperi Corporation <*@xperi.com>
 Yandex LLC <*@yandex-team.ru>
 Zappar Limited <*@zappar.com>
 Zoho Corporation <*@zohocorp.com>
+# keep-sorted end
 # Please DO NOT APPEND here. See comments at the top of the file.
 # END organizations section.
