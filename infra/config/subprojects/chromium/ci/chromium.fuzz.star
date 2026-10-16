@@ -1341,6 +1341,7 @@ libfuzzer_linux_asan_builder(
         "asan",
         "android_fastbuild",
         "android_desktop",
+        "disable_jni_multiplexing",
     ],
     max_concurrent_invocations = 2,
     # TODO(b/570770824): Remove once the APK compilation fix lands.
@@ -1367,6 +1368,7 @@ libfuzzer_linux_builder(
         "android",
         "android_fastbuild",
         "hwasan",
+        "disable_jni_multiplexing",
     ],
     max_concurrent_invocations = 2,
     # TODO(b/570770824): Remove once the APK compilation fix lands.
