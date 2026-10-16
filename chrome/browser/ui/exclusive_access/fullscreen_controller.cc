@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
@@ -319,11 +320,18 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   // fullscreen to browser fullscreen should be handled here.
   const bool was_browser_fullscreen =
       state_prior_to_tab_fullscreen_ == STATE_BROWSER_FULLSCREEN;
+  base::WeakPtr<WebContents> weak_web_contents =
+      web_contents ? web_contents->GetWeakPtr() : nullptr;
 
   NotifyTabExclusiveAccessLost();
   if (was_browser_fullscreen) {
     exclusive_access_context->UpdateUIForTabFullscreen();
   }
+  // Neither `NotifyTabExclusiveAccessLost()` nor `UpdateUIForTabFullscreen()`
+  // transitions the OS window out of fullscreen or spins a nested message loop,
+  // so `web_contents` cannot be destroyed synchronously (e.g. via a pending
+  // `window.close()` IPC) before `GetDisplayId(*web_contents)` below.
+  CHECK(!web_contents || weak_web_contents);
 
   // For Tab Fullscreen -> Browser Fullscreen, enter browser fullscreen on the
   // display that originated the browser fullscreen prior to the tab fullscreen.
@@ -548,6 +556,7 @@ void FullscreenController::NotifyTabExclusiveAccessLost() {
     base::AutoReset<bool> in_notify(&in_notify_tab_exclusive_access_lost_,
                                     true);
     WebContents* web_contents = exclusive_access_tab();
+    base::WeakPtr<WebContents> weak_web_contents = web_contents->GetWeakPtr();
     SetTabWithExclusiveAccess(nullptr);
     requesting_origin_ = url::Origin();
     bool will_cause_resize = IsFullscreenCausedByTab();
@@ -555,6 +564,7 @@ void FullscreenController::NotifyTabExclusiveAccessLost() {
     tab_fullscreen_ = false;
     web_contents->ExitFullscreen(will_cause_resize);
     exclusive_access_manager()->UpdateBubble(base::NullCallback());
+    CHECK(weak_web_contents);
   }
 }
 

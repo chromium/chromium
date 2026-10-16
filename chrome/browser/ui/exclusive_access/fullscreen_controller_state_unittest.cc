@@ -1039,4 +1039,31 @@ TEST_F(FullscreenControllerDeathTest,
       }));
   EXPECT_CHECK_DEATH(ChangeWindowFullscreenState());
 }
+
+// Tests that destroying the exclusive access WebContents reentrantly during
+// ExitFullscreenModeForTab() triggers a CHECK failure.
+TEST_F(FullscreenControllerDeathTest,
+       TabDestructionDuringExitFullscreenModeForTabChecks) {
+  content::WebContents* const tab = AddTab(GURL(url::kAboutBlankURL));
+  window_->set_reentrant(false);
+
+  // Enter browser fullscreen first, then tab fullscreen, so that exiting tab
+  // fullscreen takes the Tab Fullscreen -> Browser Fullscreen path in
+  // ExitFullscreenModeForTab().
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/false);
+  ChangeWindowFullscreenState();
+  ASSERT_TRUE(window_->IsFullscreen());
+  ASSERT_TRUE(GetFullscreenController()->IsFullscreenForBrowser());
+
+  GetFullscreenController()->EnterFullscreenModeForTab(
+      tab->GetPrimaryMainFrame());
+  ASSERT_TRUE(GetFullscreenController()->IsTabFullscreen());
+
+  // Destroy the tab reentrantly while it is being notified that it lost
+  // fullscreen.
+  window_->set_on_exit_fullscreen_mode_for_tab(
+      base::BindLambdaForTesting([&]() { DetachTab(0).reset(); }));
+  EXPECT_CHECK_DEATH(GetFullscreenController()->ExitFullscreenModeForTab(tab));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
