@@ -4921,8 +4921,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionTakeScreenshot)
+          .SetText(BrowserActions::GetMnemonicTitleText(
+              l10n_util::GetStringUTF16(IDS_TAKE_SCREENSHOT)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_TAKE_SCREENSHOT)))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_TAKE_SCREENSHOT))
           .Build());
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
