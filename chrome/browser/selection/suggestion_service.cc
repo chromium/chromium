@@ -109,6 +109,8 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
 
 void LogLatencyMetrics(base::TimeTicks request_start_time,
                        base::TimeTicks mes_request_start_time,
+                       size_t image_bytes,
+                       size_t apc_bytes,
                        const proto::SmartSelectionLatencyMetrics& metrics,
                        size_t num_suggestions) {
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -165,6 +167,8 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
   VLOG(1) << "Suggestion latency: end-to-end: " << durations.end_to_end
           << " (client prep: " << durations.client_prep
           << ", transmission: " << durations.transmission
+          << " [image: " << std::roundf(image_bytes / 1000.0)
+          << " KB, apc: " << std::roundf(apc_bytes / 1000.0) << " KB]"
           << ", MES overhead: " << durations.mes_overhead
           << " [image prep: " << durations.mes_image_prep
           << ", other: " << durations.mes_other_overhead << "]"
@@ -280,6 +284,16 @@ void SuggestionService::SendServerSuggestionsRequest(
     proto_aoi.set_mime_type("image/png");
   }
 
+  const size_t image_bytes =
+      request.areas_of_interest().empty()
+          ? 0
+          : request.areas_of_interest(0).image_bytes().size();
+  const size_t apc_bytes = request.areas_of_interest().empty()
+                               ? 0
+                               : request.areas_of_interest(0)
+                                     .annotated_page_content()
+                                     .ByteSizeLong();
+
   // TODO(crbug.com/561489586): Consider adding logging.
   remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions,
@@ -287,7 +301,8 @@ void SuggestionService::SendServerSuggestionsRequest(
       base::BindOnce(&SuggestionService::OnServerSuggestions,
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
                      std::move(callback), request_start_time,
-                     /*mes_request_start_time=*/base::TimeTicks::Now()));
+                     /*mes_request_start_time=*/base::TimeTicks::Now(),
+                     image_bytes, apc_bytes));
 }
 
 void SuggestionService::OnServerSuggestions(
@@ -295,6 +310,8 @@ void SuggestionService::OnServerSuggestions(
     SuggestionsCallback callback,
     base::TimeTicks request_start_time,
     base::TimeTicks mes_request_start_time,
+    size_t image_bytes,
+    size_t apc_bytes,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   std::optional<proto::SmartSelectionSuggestionsResponse> response;
@@ -308,8 +325,8 @@ void SuggestionService::OnServerSuggestions(
   }
   std::vector<std::unique_ptr<Suggestion>> suggestions =
       ExtractSuggestionsFromResponse(processed_area, *response, tools_);
-  LogLatencyMetrics(request_start_time, mes_request_start_time,
-                    response->latency_metrics(), suggestions.size());
+  LogLatencyMetrics(request_start_time, mes_request_start_time, image_bytes,
+                    apc_bytes, response->latency_metrics(), suggestions.size());
   std::move(callback).Run(std::move(suggestions));
 }
 

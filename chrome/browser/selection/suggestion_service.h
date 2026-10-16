@@ -99,6 +99,8 @@ class SuggestionService {
       SuggestionsCallback callback,
       base::TimeTicks request_start_time,
       base::TimeTicks mes_request_start_time,
+      size_t image_bytes,
+      size_t apc_bytes,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
