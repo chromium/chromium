@@ -21,6 +21,79 @@ import time
 from typing import List
 from boot_device import BootMode
 from compatible_utils import running_unattended
+import monitors
+
+# pylint: disable=too-many-branches, too-many-return-statements
+# pylint: disable=too-many-statements, subprocess-run-check
+
+assert os.access('/tmp', os.W_OK)
+
+PDU_HOST = os.getenv('PDU_HOST')
+PDU_OUTLET = os.getenv('PDU_OUTLET')
+
+_REBOOT_PDU_OUTLET_PATH = '/usr/local/bin/reboot_pdu_outlet.py'
+
+CAN_PDU_REBOOT: bool = bool(
+    PDU_HOST and PDU_OUTLET and os.path.exists(_REBOOT_PDU_OUTLET_PATH)
+)
+
+PDU_ATTEMPTED_FILE = f'/tmp/pdu-attempted-{PDU_HOST}-{PDU_OUTLET}'
+
+
+def _clear_pdu_attempt() -> None:
+    """Removes the PDU attempt file if it exists."""
+    try:
+        os.remove(PDU_ATTEMPTED_FILE)
+    except FileNotFoundError:
+        pass
+    except OSError as e:
+        logging.warning('Failed to remove %s: %s', PDU_ATTEMPTED_FILE, e)
+
+
+def pdu_reboot() -> bool:
+    """Power-cycles the device via the PDU outlet reboot script."""
+    if not CAN_PDU_REBOOT:
+        logging.warning('PDU reboot is not configured or script missing.')
+        return False
+
+    try:
+        fd = os.open(PDU_ATTEMPTED_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.close(fd)
+    except FileExistsError:
+        logging.warning(
+            'PDU reboot was already attempted (%s exists), skipping.',
+            PDU_ATTEMPTED_FILE,
+        )
+        return False
+    except OSError as e:
+        logging.warning('Failed to create %s: %s', PDU_ATTEMPTED_FILE, e)
+        return False
+
+    logging.info(
+        'Power-cycling device via PDU: host=%s, outlet=%s',
+        PDU_HOST,
+        PDU_OUTLET,
+    )
+    monitors.count('boot_device', 'pdu_reboot', PDU_HOST, PDU_OUTLET).record()
+    with monitors.time_consumption('boot_device', 'pdu_reboot'):
+        proc = subprocess.run(
+            [_REBOOT_PDU_OUTLET_PATH],
+            capture_output=True,
+            timeout=60,
+        )
+        if proc.returncode == 0:
+            logging.info('PDU reboot succeeded.')
+            return True
+        logging.error(
+            'PDU reboot failed with returncode %d: stdout=%s, stderr=%s',
+            proc.returncode,
+            proc.stdout,
+            proc.stderr,
+        )
+        monitors.count(
+            'boot_device', 'pdu_reboot', PDU_HOST, PDU_OUTLET, 'failed'
+        ).record()
+        return False
 
 
 def _env_ready() -> bool:
@@ -38,8 +111,8 @@ def _env_ready() -> bool:
 def boot_device(
     node_id: str, serial_num: str, mode: BootMode, must_boot: bool = False
 ) -> bool:
-    """Boots device into desired mode via serial and fastboot.
-    This function waits for at most 10 minutes for the transition.
+    """Boots device into desired mode via serial, fastboot, and PDU.
+    This function waits for at most 11 minutes for the transition.
 
     Args:
         node_id: The fuchsia node id of the device.
@@ -66,60 +139,86 @@ def boot_device(
     )
     assert _env_ready()
 
-    if is_in_fastboot(serial_num):
-        # fastboot is stateless and there isn't a reason to reboot the device
-        # again to go to the fastboot.
+    def _is_in_mode() -> bool:
+        if mode == BootMode.REGULAR:
+            start_sec = time.time()
+            while time.time() - start_sec < 300:
+                if is_in_fuchsia(node_id):
+                    return True
+            return False
         if mode == BootMode.BOOTLOADER:
-            return True
-        if not _run_fastboot(['reboot'], serial_num):
-            # Shouldn't return None here, unless the device was rebooting. In
-            # the case, it would be safer to return false.
-            return False
-    else:
-        # Even not must_boot, still check if the device is running fuchsia to
-        # detect the broken state and force a reboot to recover it.
-        if is_in_fuchsia(node_id):
-            if not must_boot and mode == BootMode.REGULAR:
-                return True
-        else:
-            logging.error(
-                'Cannot find node id %s or fastboot serial number '
-                '%s, the os may run into panic, will try to use dm '
-                'to reboot it anyway.',
-                node_id,
-                serial_num,
-            )
-        if (
-            subprocess.run(
-                [
-                    'serialio',
-                    node_id,
-                    'send',
-                    'dm',
-                    'reboot'
-                    + ('' if mode == BootMode.REGULAR else '-bootloader'),
-                ]
-            ).returncode
-            != 0
-        ):
-            logging.error('Failed to send dm reboot[-bootloader] via serialio')
-            return False
+            return is_in_fastboot(serial_num)
+        return False
 
-    start_sec = time.time()
-    while time.time() - start_sec < 600:
-        assert mode in [BootMode.REGULAR, BootMode.BOOTLOADER]
-        if mode == BootMode.REGULAR and is_in_fuchsia(node_id):
+    with monitors.time_consumption('boot_device', 'boot_device'):
+        if is_in_fastboot(serial_num):
+            # fastboot is stateless and there isn't a reason to reboot the
+            # device again to go to the fastboot.
+            if mode == BootMode.BOOTLOADER:
+                return True
+            monitors.count('boot_device', 'fastboot_reboot').record()
+            if not _run_fastboot(['reboot'], serial_num):
+                # Shouldn't return None here, unless the device was rebooting.
+                # In that case, it would be safer to return false.
+                logging.warning('Failed to reboot %s from fastboot', serial_num)
+                monitors.count(
+                    'boot_device', 'fastboot_reboot', 'failed'
+                ).record()
+        else:
+            # Even not must_boot, still check if the device is running fuchsia
+            # to detect the broken state and force a reboot to recover it.
+            if is_in_fuchsia(node_id):
+                if not must_boot and mode == BootMode.REGULAR:
+                    return True
+            else:
+                logging.error(
+                    'Cannot find node id %s or fastboot serial number '
+                    '%s, the os may run into panic, will try to use dm '
+                    'to reboot it anyway.',
+                    node_id,
+                    serial_num,
+                )
+            monitors.count('boot_device', 'serial_reboot').record()
+            if (
+                subprocess.run(
+                    [
+                        'serialio',
+                        node_id,
+                        'send',
+                        'dm',
+                        'reboot'
+                        + ('' if mode == BootMode.REGULAR else '-bootloader'),
+                    ]
+                ).returncode
+                != 0
+            ):
+                logging.error(
+                    'Failed to send dm reboot[-bootloader] via serialio'
+                )
+                monitors.count(
+                    'boot_device', 'serial_reboot', 'failed'
+                ).record()
+
+        if _is_in_mode():
             return True
-        if mode == BootMode.BOOTLOADER and is_in_fastboot(serial_num):
-            return True
-    logging.error(
-        'Failed to transite node id %s or fastboot serial number %s '
-        'to expected state %s',
-        node_id,
-        serial_num,
-        mode,
-    )
-    return False
+
+        # 3. PDU reboot if 2nd failed.
+        if pdu_reboot():
+            if mode == BootMode.BOOTLOADER:
+                for _ in range(100):
+                    subprocess.run(['serialio', node_id, 'send', 'f' * 10])
+                    time.sleep(0.1)
+            if _is_in_mode():
+                return True
+
+        logging.error(
+            'Failed to transition node id %s or fastboot serial number %s '
+            'to expected state %s',
+            node_id,
+            serial_num,
+            mode,
+        )
+        return False
 
 
 def _serialio_send_and_wait(
@@ -183,6 +282,7 @@ def is_in_fuchsia(node_id: str) -> bool:
             'connection may not be available.',
             node_id,
         )
+    _clear_pdu_attempt()
     return True
 
 
@@ -198,6 +298,7 @@ def is_in_fastboot(serial_num: str) -> bool:
         if result is None:
             return False
         if result:
+            _clear_pdu_attempt()
             return True
         time.sleep(2)
     logging.error('Failed to wait for fastboot state of %s', serial_num)
@@ -276,7 +377,10 @@ def main(action: str) -> int:
 
     if action == 'health-check':
         _shutdown_if_serial_is_unavailable(node_id)
-        if is_in_fuchsia(node_id) or is_in_fastboot(serial_num):
+        healthy = is_in_fuchsia(node_id) or is_in_fastboot(serial_num)
+        if not healthy and pdu_reboot():
+            healthy = is_in_fuchsia(node_id) or is_in_fastboot(serial_num)
+        if healthy:
             # Print out the json result without using logging to avoid any
             # potential formatting issue.
             print(
