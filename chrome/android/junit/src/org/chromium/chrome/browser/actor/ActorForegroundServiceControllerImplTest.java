@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicIntentConstants;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -518,6 +521,64 @@ public class ActorForegroundServiceControllerImplTest {
         task.clearNativePtr();
         assertEquals(Tab.INVALID_TAB_ID, task.getLastActuatedTabId());
         assertEquals(456, task.getTargetTabId());
+    }
+
+    @Test
+    public void testStartBackgroundActuation_DelegatesToManager() {
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+        Profile profile = mock(Profile.class);
+
+        mController.startBackgroundActuation(profile, "test-msg-id");
+
+        verify(mMockBackgroundManager).startBackgroundActuation(profile, "test-msg-id");
+    }
+
+    @Test
+    public void testStartBackgroundActuation_ActivityVisible_DoesNotStartBackgroundActuation() {
+        MultiWindowUtils.setLastAccessedWindowIdForTesting(42);
+        MultiWindowUtils.setActivityByWindowIdForTesting(42, mChromeActivity);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+
+        ActorKeyedService mockActorService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(mockActorService);
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+
+        when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+
+        mController.startBackgroundActuation(mProfile, "test-message-id");
+
+        verify(mMockBackgroundManager, never())
+                .startBackgroundActuation(mProfile, "test-message-id");
+        verify(mockActorService).notifyBackgroundSetupFailed(eq("test-message-id"));
+
+        ActorKeyedServiceFactory.setForTesting(null);
+    }
+
+    @Test
+    public void testStartBackgroundActuation_ActivityVisible_ReusesNtpTab() {
+        MultiWindowUtils.setLastAccessedWindowIdForTesting(42);
+        MultiWindowUtils.setActivityByWindowIdForTesting(42, mChromeActivity);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+
+        ActorKeyedService mockActorService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(mockActorService);
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+
+        Tab ntpTab = mock(Tab.class);
+        when(ntpTab.getId()).thenReturn(555);
+        when(ntpTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
+        when(ntpTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(ntpTab);
+
+        mController.startBackgroundActuation(mProfile, "test-message-id");
+
+        verify(mockActorService).setTabReady(eq(ntpTab), eq("test-message-id"));
+        verify(mockActorService, never()).notifyBackgroundSetupFailed(any());
+        verify(mMockBackgroundManager, never()).startBackgroundActuation(any(), any());
+
+        ActorKeyedServiceFactory.setForTesting(null);
     }
 
     public ServiceConnection getServiceConnectionForTesting() {

@@ -128,6 +128,14 @@ public interface ActorForegroundServiceController {
     default void destroyBackgroundActuationManager() {}
 
     /**
+     * Starts background actuation for the given profile and triggering message ID.
+     *
+     * @param profile The profile to use.
+     * @param glicTriggerMessageId The unique identifier for the triggering message.
+     */
+    default void startBackgroundActuation(Profile profile, String glicTriggerMessageId) {}
+
+    /**
      * Provisions an offscreen tab on demand for the specified task ID.
      *
      * @param profile The profile to use.

@@ -299,6 +299,11 @@ class ActorKeyedService : public KeyedService,
   base::CallbackListSubscription AddPendingTaskCountChangedCallback(
       PendingTaskCountChangedCallback callback);
 
+  using PendingTaskAddedCallback =
+      base::RepeatingCallback<void(const std::string&)>;
+  base::CallbackListSubscription AddPendingTaskAddedCallback(
+      PendingTaskAddedCallback callback);
+
 #if BUILDFLAG(IS_ANDROID)
   using EnsureForegroundServiceStartedCallback =
       base::RepeatingCallback<void(const std::string&)>;
@@ -389,6 +394,8 @@ class ActorKeyedService : public KeyedService,
   base::flat_map<std::string, PendingTask> pending_tasks_;
   base::RepeatingCallbackList<void(size_t)>
       pending_task_count_change_callback_list_;
+  base::RepeatingCallbackList<void(const std::string&)>
+      pending_task_added_callback_list_;
 
 #if BUILDFLAG(IS_ANDROID)
   base::RepeatingCallbackList<void(const std::string&)>

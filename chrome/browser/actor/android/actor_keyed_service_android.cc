@@ -96,6 +96,10 @@ ActorKeyedServiceAndroid::ActorKeyedServiceAndroid(ActorKeyedService* service)
       service_->AddPendingTaskCountChangedCallback(base::BindRepeating(
           &ActorKeyedServiceAndroid::OnPendingTaskCountChanged,
           base::Unretained(this)));
+
+  pending_task_added_subscription_ = service_->AddPendingTaskAddedCallback(
+      base::BindRepeating(&ActorKeyedServiceAndroid::OnPendingTaskAdded,
+                          base::Unretained(this)));
 }
 
 ActorKeyedServiceAndroid::~ActorKeyedServiceAndroid() {
@@ -195,6 +199,13 @@ void ActorKeyedServiceAndroid::OnPendingTaskCountChanged(size_t pending_count) {
   JNIEnv* env = AttachCurrentThread();
   Java_ActorKeyedService_onPendingTaskCountChanged(
       env, java_obj_, static_cast<int32_t>(pending_count));
+}
+
+void ActorKeyedServiceAndroid::OnPendingTaskAdded(
+    const std::string& context_id) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_ActorKeyedService_onPendingTaskAdded(env, java_obj_,
+                                            service_->GetProfile(), context_id);
 }
 
 int32_t ActorKeyedServiceAndroid::GetPendingTasksCount() {

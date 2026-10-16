@@ -33,10 +33,14 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Set;
@@ -79,8 +83,7 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
     public void startService(String glicTriggerMessageId) {
         ensureBackgroundActuationManagerCreated();
         Context context = ContextUtils.getApplicationContext();
-        ActorForegroundServiceImpl.startActorForegroundServiceWithGlicTriggerMessageId(
-                context, glicTriggerMessageId);
+        ActorForegroundServiceImpl.startActorForegroundService(context);
     }
 
     @Override
@@ -168,6 +171,26 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
     }
 
     @Override
+    public void startBackgroundActuation(Profile profile, String glicTriggerMessageId) {
+        ThreadUtils.assertOnUiThread();
+        if (isTabbedActivityVisible()) {
+            ActorKeyedService actorService = ActorKeyedServiceFactory.getForProfile(profile);
+            if (actorService != null) {
+                Tab appendedTab = generateForegroundTabForTask();
+                if (appendedTab != null) {
+                    actorService.setTabReady(appendedTab, glicTriggerMessageId);
+                } else {
+                    actorService.notifyBackgroundSetupFailed(glicTriggerMessageId);
+                }
+            }
+            return;
+        }
+        ensureBackgroundActuationManagerCreated();
+        assert mBackgroundActuationManager != null;
+        mBackgroundActuationManager.startBackgroundActuation(profile, glicTriggerMessageId);
+    }
+
+    @Override
     public void provisionBackgroundTabForTask(
             Profile profile, int taskId, Callback<@Nullable Tab> callback) {
         ThreadUtils.assertOnUiThread();
@@ -248,6 +271,35 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
 
         int state = ApplicationStatus.getStateForActivity(asyncActivity);
         return state == ActivityState.STARTED || state == ActivityState.RESUMED;
+    }
+
+    private static @Nullable Tab generateForegroundTabForTask() {
+        int windowId = MultiWindowUtils.getInstanceIdForViewIntent();
+        Activity activity = MultiWindowUtils.getActivityById(windowId);
+        if (activity instanceof AsyncInitializationActivity) {
+            TabModelSelector selector =
+                    TabModelSelectorSupplier.getValueOrNullFrom(
+                            ((AsyncInitializationActivity) activity).getWindowAndroid());
+            if (selector != null) {
+                Tab lastActiveTab = selector.getCurrentTab();
+                if (lastActiveTab != null
+                        && !lastActiveTab.isIncognito()
+                        && UrlUtilities.isNtpUrl(lastActiveTab.getUrl())) {
+                    return lastActiveTab;
+                }
+                TabModel model = selector.getModel(false);
+                if (model != null) {
+                    TabCreator tabCreator = model.getTabCreator();
+                    if (tabCreator != null) {
+                        return tabCreator.createNewTab(
+                                new LoadUrlParams("about:blank"),
+                                TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
+                                null);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override

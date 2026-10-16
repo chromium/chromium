@@ -396,23 +396,33 @@ TEST_F(ActorKeyedServiceTest, PendingTasksLifecycle) {
             last_notified_count = count;
           }));
 
+  std::vector<std::string> added_tasks;
+  base::CallbackListSubscription added_subscription =
+      actor_service->AddPendingTaskAddedCallback(
+          base::BindLambdaForTesting([&](const std::string& context_id) {
+            added_tasks.push_back(context_id);
+          }));
+
   // Adding a pending task fires notification.
   actor_service->AddPendingTask("msg-1");
   EXPECT_EQ(1, notification_call_count);
   EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
   EXPECT_TRUE(actor_service->HasPendingTask("msg-1"));
   EXPECT_EQ(1u, last_notified_count);
+  EXPECT_THAT(added_tasks, testing::ElementsAre("msg-1"));
 
   // Duplicate addition is ignored and does NOT fire notification.
   actor_service->AddPendingTask("msg-1");
   EXPECT_EQ(1, notification_call_count);
   EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_THAT(added_tasks, testing::ElementsAre("msg-1"));
 
   // Second pending task.
   actor_service->AddPendingTask("msg-2");
   EXPECT_EQ(2, notification_call_count);
   EXPECT_EQ(2u, actor_service->GetPendingTasksCount());
   EXPECT_EQ(2u, last_notified_count);
+  EXPECT_THAT(added_tasks, testing::ElementsAre("msg-1", "msg-2"));
 
   // Remove first pending task.
   actor_service->RemovePendingTask("msg-1");
