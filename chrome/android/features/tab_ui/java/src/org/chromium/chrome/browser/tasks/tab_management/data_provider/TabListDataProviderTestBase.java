@@ -23,6 +23,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
@@ -59,15 +60,15 @@ abstract class TabListDataProviderTestBase {
 
     @Mock TabModel mTabModel;
     @Mock TabModel mOtherTabModel;
-    @Mock Tab mTab1;
-    @Mock Tab mTab2;
-    @Mock Tab mTab3;
-    @Mock Tab mTab4;
     @Mock TabListDataObserver mObserver;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
 
+    final MockTab mTab1 = new MockTab(TAB1_ID, /* profile= */ null);
+    final MockTab mTab2 = new MockTab(TAB2_ID, /* profile= */ null);
+    final MockTab mTab3 = new MockTab(TAB3_ID, /* profile= */ null);
+    final MockTab mTab4 = new MockTab(TAB4_ID, /* profile= */ null);
     final List<Tab> mModelTabs = new ArrayList<>();
     final List<Tab> mOtherModelTabs = new ArrayList<>();
     final Map<Token, Boolean> mCollapsed = new HashMap<>();
@@ -81,11 +82,6 @@ abstract class TabListDataProviderTestBase {
 
     @Before
     public void setUp() {
-        when(mTab1.getId()).thenReturn(TAB1_ID);
-        when(mTab2.getId()).thenReturn(TAB2_ID);
-        when(mTab3.getId()).thenReturn(TAB3_ID);
-        when(mTab4.getId()).thenReturn(TAB4_ID);
-
         stubBackedTabModel(mTabModel, mModelTabs);
         stubBackedTabModel(mOtherTabModel, mOtherModelTabs);
     }
@@ -191,7 +187,7 @@ abstract class TabListDataProviderTestBase {
 
     static void groupTabs(@Nullable Token groupId, Tab... tabs) {
         for (Tab tab : tabs) {
-            when(tab.getTabGroupId()).thenReturn(groupId);
+            tab.setTabGroupId(groupId);
         }
     }
 

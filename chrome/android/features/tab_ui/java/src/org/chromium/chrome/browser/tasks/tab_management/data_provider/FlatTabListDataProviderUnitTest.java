@@ -101,7 +101,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
 
     @Test
     public void testInitialState_NullFilter_IncludesAllTabsInModelOrderWithState() {
-        when(mTab1.getIsPinned()).thenReturn(true);
+        mTab1.setIsPinned(true);
         groupTabs(TAB_GROUP_ID, mTab2);
         mSelectedTab = mTab2;
         setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
@@ -605,7 +605,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
         assertItems(item(TAB1_ID), item(TAB2_ID));
 
-        when(mTab2.getIsPinned()).thenReturn(true);
+        mTab2.setIsPinned(true);
         mTabModelObserver.didChangePinState(mTab2);
 
         verify(mObserver).onItemUpdated(pinned(TAB2_ID), PayloadType.PIN_STATE);
@@ -614,11 +614,11 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
 
     @Test
     public void testDidChangePinState_Unpinned_UpdatesPinProperty() {
-        when(mTab2.getIsPinned()).thenReturn(true);
+        mTab2.setIsPinned(true);
         setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
         assertItems(item(TAB1_ID), pinned(TAB2_ID));
 
-        when(mTab2.getIsPinned()).thenReturn(false);
+        mTab2.setIsPinned(false);
         mTabModelObserver.didChangePinState(mTab2);
 
         verify(mObserver).onItemUpdated(item(TAB2_ID), PayloadType.PIN_STATE);
@@ -631,7 +631,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         setUpProviderWithTabs(tab -> !tab.getIsPinned(), mTab1, mTab2);
         assertItems(item(TAB1_ID), item(TAB2_ID));
 
-        when(mTab1.getIsPinned()).thenReturn(true);
+        mTab1.setIsPinned(true);
         mTabModelObserver.didChangePinState(mTab1);
 
         verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID)));
@@ -641,11 +641,11 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     @Test
     public void testDidChangePinState_Unpinned_FilteredOut_RemovesTab() {
         // Filter that only shows pinned tabs.
-        when(mTab1.getIsPinned()).thenReturn(true);
+        mTab1.setIsPinned(true);
         setUpProviderWithTabs(Tab::getIsPinned, mTab1, mTab2);
         assertItems(pinned(TAB1_ID));
 
-        when(mTab1.getIsPinned()).thenReturn(false);
+        mTab1.setIsPinned(false);
         mTabModelObserver.didChangePinState(mTab1);
 
         verify(mObserver).onItemsRemoved(List.of(pinned(TAB1_ID)));
@@ -658,7 +658,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         setUpProviderWithTabs(Tab::getIsPinned, mTab1);
         assertItems();
 
-        when(mTab1.getIsPinned()).thenReturn(true);
+        mTab1.setIsPinned(true);
         mTabModelObserver.didChangePinState(mTab1);
 
         verify(mObserver).onItemsInserted(List.of(pinned(TAB1_ID)), /* after= */ null);
@@ -672,7 +672,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
         assertItems(item(TAB1_ID));
 
         // Pin state change on unprojected mTab2 does nothing.
-        when(mTab2.getIsPinned()).thenReturn(true);
+        mTab2.setIsPinned(true);
         mTabModelObserver.didChangePinState(mTab2);
 
         verifyNoInteractions(mObserver);
