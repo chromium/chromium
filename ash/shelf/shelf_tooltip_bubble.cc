@@ -27,7 +27,7 @@ ShelfTooltipBubble::ShelfTooltipBubble(
   set_close_on_deactivate(false);
   SetCanActivate(false);
   set_accept_events(false);
-  set_shadow(views::BubbleBorder::NO_SHADOW);
+  set_shadow_config({.shadow_type = views::BubbleBorder::NO_SHADOW});
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   set_margins(gfx::Insets(0));
