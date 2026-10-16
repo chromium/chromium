@@ -420,6 +420,12 @@ def AddDeviceOptions(parser):
         help='Attempt to recover devices prior to the final retry. Warning: '
         'this will cause all devices to reboot.',
     )
+    parser.add_argument(
+        '--device-retries',
+        type=int,
+        help='Default number of retries for device (adb) commands. Defaults '
+        'to the value of --num-retries.',
+    )
 
     parser.add_argument(
         '--upload-logcats-file',

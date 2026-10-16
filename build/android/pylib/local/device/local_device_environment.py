@@ -110,6 +110,11 @@ class LocalDeviceEnvironment(environment.Environment):
         self._logcat_output_dir = args.logcat_output_dir
         self._logcat_output_file = args.logcat_output_file
         self._max_tries = 1 + args.num_retries
+        # Must use getattr because this class is used by
+        # //third_party/catapult's browser_options.py
+        self._device_retries = getattr(args, 'device_retries', None)
+        if self._device_retries is None:
+            self._device_retries = args.num_retries
         self._preferred_abis = None
         self._recover_devices = args.recover_devices
         self._skip_clear_data = args.skip_clear_data
@@ -188,7 +193,7 @@ class LocalDeviceEnvironment(environment.Environment):
             retries=5,
             enable_usb_resets=True,
             enable_device_files_cache=self._enable_device_cache,
-            default_retries=self._max_tries - 1,
+            default_retries=self._device_retries,
             device_arg=device_arg,
             abis=self._preferred_abis,
             persistent_shell=self._use_persistent_shell,

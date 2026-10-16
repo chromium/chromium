@@ -2532,6 +2532,10 @@ if (_is_default_toolchain) {
       # to introducing flakes, while preserving 2 retries (3 attempts) for
       # other test suites (crbug.com/465148828).
       "--num-retries=1",
+
+      # Keep device (adb) command retries at 2, which would otherwise follow
+      # --num-retries.
+      "--device-retries=2",
     ]
   }
 
