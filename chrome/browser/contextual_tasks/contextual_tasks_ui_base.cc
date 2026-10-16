@@ -53,7 +53,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
@@ -67,7 +67,7 @@
 #include "chrome/grit/contextual_tasks_extension_resources.h"
 #include "chrome/grit/contextual_tasks_extension_resources_map.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #endif
 #endif
 
@@ -452,15 +452,14 @@ void ContextualTasksUIBase::MoveTaskUiToNewTab() {
 
 void ContextualTasksUIBase::ShowThreadHistory() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
-  lens::ClientToAimMessage message;
-  message.mutable_open_threads_view()->mutable_payload();
+  lens::ClientToSearchMessage message;
+  message.mutable_open_threads_view();
 
   if (auto* panel_controller = GetPanelController()) {
     if (auto* active_contents = panel_controller->GetActiveWebContents()) {
-      if (auto* extension_handler =
-              ContextualTasksExtensionHandler::FromWebContents(
-                  active_contents)) {
-        extension_handler->PostAimMessage(message);
+      if (auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+              active_contents)) {
+        user_data->PostSearchMessage(message);
       }
     }
   }
