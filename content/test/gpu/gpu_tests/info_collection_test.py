@@ -21,7 +21,7 @@ from gpu_tests.util import host_information
 class InfoCollectionTestArgs:
   """Struct-like class for passing args to an InfoCollection test."""
 
-  expected_vendor_id_str: str | None = None
+  expected_vendor_id_strs: list[str] | None = None
   expected_device_id_strs: list[str] | None = None
   gpu: gi.GPUInfo | None = None
 
@@ -45,7 +45,14 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       ),
     )
     parser.add_argument(
-      '--expected-vendor-id', help='The expected vendor id in hexadecimal.'
+      '--expected-vendor-id',
+      action='append',
+      dest='expected_vendor_ids',
+      default=[],
+      help=(
+        'The expected vendor id in hexadecimal. Can be specified '
+        'multiple times.'
+      ),
     )
 
   @classmethod
@@ -56,7 +63,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       [
         '_RunBasicTest',
         InfoCollectionTestArgs(
-          expected_vendor_id_str=options.expected_vendor_id,
+          expected_vendor_id_strs=options.expected_vendor_ids,
           expected_device_id_strs=options.expected_device_ids,
         ),
       ],
@@ -87,7 +94,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       [
         '_RunHostInformationTest',
         InfoCollectionTestArgs(
-          expected_vendor_id_str=options.expected_vendor_id,
+          expected_vendor_id_strs=options.expected_vendor_ids,
           expected_device_id_strs=options.expected_device_ids,
         ),
       ],
@@ -145,20 +152,23 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
     # Gather the expected IDs passed on the command line
     if (
-      not test_args.expected_vendor_id_str
+      not test_args.expected_vendor_id_strs
       or not test_args.expected_device_id_strs
     ):
       self.fail('Missing --expected-[vendor|device]-id command line args')
 
-    expected_vendor_id = int(test_args.expected_vendor_id_str, 16)
+    expected_vendor_ids = [
+      int(id_str, 16) for id_str in test_args.expected_vendor_id_strs
+    ]
     expected_device_ids = [
       int(id_str, 16) for id_str in test_args.expected_device_id_strs
     ]
 
     # Check expected and detected GPUs match
-    if detected_vendor_id != expected_vendor_id:
+    if detected_vendor_id not in expected_vendor_ids:
+      hex_ids = [f'0x{evi:x}' for evi in expected_vendor_ids]
       self.fail(
-        f'Vendor ID mismatch, expected 0x{expected_vendor_id:x} but '
+        f'Vendor ID mismatch, expected one of [{", ".join(hex_ids)}] but '
         f'got 0x{detected_vendor_id:x}.'
       )
 
@@ -245,23 +255,28 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     else:
       self.fail('Running on unknown platform')
 
-    expected_vendor_id = int(test_args.expected_vendor_id_str, 16)
-    if expected_vendor_id == constants.GpuVendor.QUALCOMM:
+    if not test_args.expected_vendor_id_strs:
+      self.fail('Missing --expected-vendor-id command line args')
+
+    expected_vendor_ids = [
+      int(id_str, 16) for id_str in test_args.expected_vendor_id_strs
+    ]
+    if constants.GpuVendor.QUALCOMM in expected_vendor_ids:
       self.assertTrue(host_information.IsArmCpu())
       self.assertFalse(host_information.Isx86Cpu())
       self.assertTrue(host_information.IsQualcommGpu())
-    elif expected_vendor_id == constants.GpuVendor.APPLE:
+    elif constants.GpuVendor.APPLE in expected_vendor_ids:
       self.assertTrue(host_information.IsArmCpu())
       self.assertFalse(host_information.Isx86Cpu())
       self.assertTrue(host_information.IsAppleGpu())
     else:
       self.assertTrue(host_information.Isx86Cpu())
       self.assertFalse(host_information.IsArmCpu())
-      if expected_vendor_id == constants.GpuVendor.AMD:
+      if constants.GpuVendor.AMD in expected_vendor_ids:
         self.assertTrue(host_information.IsAmdGpu())
-      elif expected_vendor_id == constants.GpuVendor.INTEL:
+      elif constants.GpuVendor.INTEL in expected_vendor_ids:
         self.assertTrue(host_information.IsIntelGpu())
-      elif expected_vendor_id == constants.GpuVendor.NVIDIA:
+      elif constants.GpuVendor.NVIDIA in expected_vendor_ids:
         self.assertTrue(host_information.IsNvidiaGpu())
       else:
         self.fail('Running with unknown GPU vendor')
