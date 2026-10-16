@@ -61,6 +61,7 @@ class CreditCardRiskBasedAuthenticator;
 struct FilledCardInformationBubbleOptions;
 class IbanAccessManager;
 class MerchantPromoCodeManager;
+class OfferNotificationHandler;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
@@ -429,6 +430,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // interactions when the user triggers Autofill from the Omnibox.
   std::unique_ptr<OmniboxAutofillDelegate> omnibox_autofill_delegate_;
 #endif
+
+  // Shows the offer notification on this tab. Nullptr if there is no
+  // `AutofillOfferManager`, e.g. in off-the-record profiles.
+  std::unique_ptr<OfferNotificationHandler> offer_notification_handler_;
 
   // Whether autofill payment methods are supported for this client. Is true by
   // default, and is flipped manually when `DisablePaymentsAutofill` is called.

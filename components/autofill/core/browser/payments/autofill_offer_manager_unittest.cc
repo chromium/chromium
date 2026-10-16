@@ -15,8 +15,6 @@
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
-#include "components/autofill/core/browser/payments/offer_notification_options.h"
-#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -30,9 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using testing::_;
 using testing::ElementsAre;
-using testing::Field;
 using testing::Pair;
 using testing::Pointee;
 
@@ -40,27 +36,6 @@ namespace autofill {
 namespace {
 
 const char kTestUrl[] = "http://www.example.com/";
-
-class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
- public:
-  explicit MockPaymentsAutofillClient(AutofillClient* client)
-      : TestPaymentsAutofillClient(client) {}
-  ~MockPaymentsAutofillClient() override = default;
-
-  MOCK_METHOD(void,
-              UpdateOfferNotification,
-              (const AutofillOfferData&, const OfferNotificationOptions&),
-              (override));
-  MOCK_METHOD(void, DismissOfferNotification, (), (override));
-};
-
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MockAutofillClient() {
-    set_payments_autofill_client(
-        std::make_unique<testing::NiceMock<MockPaymentsAutofillClient>>(this));
-  }
-};
 
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
@@ -71,8 +46,7 @@ class AutofillOfferManagerTest : public testing::Test {
   AutofillOfferManagerTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillEnableWalletDirectOffers,
-         features::kAutofillEnableWalletDirectOffersNotificationBubble},
+        {features::kAutofillEnableWalletDirectOffers},
         /*disabled_features=*/{});
   }
   ~AutofillOfferManagerTest() override = default;
@@ -81,18 +55,6 @@ class AutofillOfferManagerTest : public testing::Test {
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
     autofill_offer_manager_ =
         std::make_unique<AutofillOfferManager>(&payments_data_manager());
-  }
-
-  // Simulates a navigation to `url` in the primary main frame.
-  void NavigateTo(const GURL& url) {
-    autofill_client_.set_last_committed_primary_main_frame_url(url);
-    autofill_offer_manager_->UpdateOfferNotificationVisibility(
-        autofill_client_);
-  }
-
-  MockPaymentsAutofillClient& payments_autofill_client() {
-    return static_cast<MockPaymentsAutofillClient&>(
-        *autofill_client_.GetPaymentsAutofillClient());
   }
 
   TestPersonalDataManager& personal_data_manager() {
@@ -109,7 +71,7 @@ class AutofillOfferManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   syncer::TestSyncService sync_service_;
-  MockAutofillClient autofill_client_;
+  TestAutofillClient autofill_client_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 };
 
@@ -203,36 +165,6 @@ TEST_F(AutofillOfferManagerTest, MarkNotificationShown) {
   EXPECT_FALSE(autofill_offer_manager_->HasShownNotification("2"));
 }
 
-// Hidden tabs must not set up an offer notification the user cannot see.
-TEST_F(AutofillOfferManagerTest, HiddenTab_DoesNotUpdateNotification) {
-  payments_autofill_client().set_is_tab_visible_for_offer_notification(false);
-  payments_data_manager().AddAutofillOfferData(
-      test::GetPromoCodeOfferData(GURL(kTestUrl)));
-
-  EXPECT_CALL(payments_autofill_client(), UpdateOfferNotification).Times(0);
-  EXPECT_CALL(payments_autofill_client(), DismissOfferNotification).Times(0);
-
-  NavigateTo(GURL(kTestUrl));
-}
-
-// The automatic show is granted only once per offer. A hidden tab must not
-// consume it on behalf of the tab the user is actually looking at.
-TEST_F(AutofillOfferManagerTest, HiddenTab_DoesNotConsumeAutomaticShow) {
-  payments_autofill_client().set_is_tab_visible_for_offer_notification(false);
-  payments_data_manager().AddAutofillOfferData(
-      test::GetPromoCodeOfferData(GURL(kTestUrl)));
-  NavigateTo(GURL(kTestUrl));
-
-  EXPECT_CALL(
-      payments_autofill_client(),
-      UpdateOfferNotification(
-          _, Field(&OfferNotificationOptions::show_notification_automatically,
-                   true)));
-
-  payments_autofill_client().set_is_tab_visible_for_offer_notification(true);
-  NavigateTo(GURL(kTestUrl));
-}
-
 // Verify that if several offers apply to a URL, the first matching one in the
 // order returned by `PaymentsDataManager::GetAutofillOffers()` is returned.
 TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnsFirstMatchingOffer) {
@@ -292,10 +224,10 @@ TEST_F(AutofillOfferManagerTest,
       autofill_offer_manager_->IsUrlEligible(GURL("https://notexample.com/")));
 }
 
-// Verify that no URL is eligible, and the offer notification is dismissed
-// rather than shown, when the user's locale is not eligible for Wallet direct
-// offers. This matches the eligibility used for promo code suggestions.
-TEST_F(AutofillOfferManagerTest, IneligibleLocale_DoesNotShowNotification) {
+// Verify that no URL is eligible when the user's locale is not eligible for
+// Wallet direct offers. This matches the eligibility used for promo code
+// suggestions.
+TEST_F(AutofillOfferManagerTest, IneligibleLocale_UrlNotEligible) {
   TestPaymentsDataManager ineligible_payments_data_manager(
       /*app_locale=*/"de-DE");
   ineligible_payments_data_manager.SetAutofillPaymentMethodsEnabled(true);
@@ -308,24 +240,18 @@ TEST_F(AutofillOfferManagerTest, IneligibleLocale_DoesNotShowNotification) {
 
   AutofillOfferManager offer_manager(&ineligible_payments_data_manager);
   EXPECT_FALSE(offer_manager.IsUrlEligible(GURL(kTestUrl)));
-
-  EXPECT_CALL(payments_autofill_client(), UpdateOfferNotification).Times(0);
-  EXPECT_CALL(payments_autofill_client(), DismissOfferNotification);
-  autofill_client_.set_last_committed_primary_main_frame_url(GURL(kTestUrl));
-  offer_manager.UpdateOfferNotificationVisibility(autofill_client_);
+  EXPECT_FALSE(offer_manager.GetOfferForUrl(GURL(kTestUrl)));
 }
 
-// Verify that the offer notification is not shown when Wallet import is
-// disabled, matching the eligibility used for promo code suggestions.
-TEST_F(AutofillOfferManagerTest, WalletImportDisabled_DoesNotShowNotification) {
+// Verify that no URL is eligible when Wallet import is disabled, matching the
+// eligibility used for promo code suggestions.
+TEST_F(AutofillOfferManagerTest, WalletImportDisabled_UrlNotEligible) {
   payments_data_manager().AddAutofillOfferData(
       test::GetPromoCodeOfferData(GURL(kTestUrl)));
   payments_data_manager().SetAutofillWalletImportEnabled(false);
 
   EXPECT_FALSE(autofill_offer_manager_->IsUrlEligible(GURL(kTestUrl)));
-  EXPECT_CALL(payments_autofill_client(), UpdateOfferNotification).Times(0);
-  EXPECT_CALL(payments_autofill_client(), DismissOfferNotification);
-  NavigateTo(GURL(kTestUrl));
+  EXPECT_FALSE(autofill_offer_manager_->GetOfferForUrl(GURL(kTestUrl)));
 }
 
 }  // namespace autofill

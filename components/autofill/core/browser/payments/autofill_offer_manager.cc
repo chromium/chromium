@@ -10,7 +10,6 @@
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 AutofillOfferManager::AutofillOfferManager(
@@ -18,11 +17,6 @@ AutofillOfferManager::AutofillOfferManager(
     : payments_data_manager_(CHECK_DEREF(payments_data_manager)) {}
 
 AutofillOfferManager::~AutofillOfferManager() = default;
-
-void AutofillOfferManager::UpdateOfferNotificationVisibility(
-    AutofillClient& client) {
-  notification_handler_.UpdateOfferNotificationVisibility(client);
-}
 
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
