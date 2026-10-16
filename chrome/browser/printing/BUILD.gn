@@ -427,6 +427,28 @@ if (enable_print_preview) {
   }
 }
 
+if (enable_oop_printing) {
+  source_set("oop_print_test_support") {
+    testonly = true
+    public = [ "print_backend_service_test_impl.h" ]
+    sources = [ "print_backend_service_test_impl.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/services/printing:lib",
+      "//chrome/services/printing/public/mojom",
+      "//mojo/public/cpp/bindings",
+      "//printing:test_support",
+      "//printing/backend:test_support",
+      "//printing/mojom",
+    ]
+    deps = [
+      ":printing",
+      "//base/test:test_support",
+      "//content/public/browser",
+    ]
+  }
+}
+
 if (enable_print_preview) {
   source_set("test_support") {
     testonly = true

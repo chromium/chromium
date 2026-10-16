@@ -4982,15 +4982,7 @@ static_library("test_support") {
   }
 
   if (enable_oop_printing) {
-    sources += [
-      "printing/print_backend_service_test_impl.cc",
-      "printing/print_backend_service_test_impl.h",
-    ]
-    deps += [
-      "//chrome/services/printing:lib",
-      "//chrome/services/printing/public/mojom",
-      "//printing:test_support",
-    ]
+    public_deps += [ "//chrome/browser/printing:oop_print_test_support" ]
   }
 
   if (enable_library_cdms || is_win) {
