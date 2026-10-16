@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.net.http.SslCertificate;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -328,6 +329,108 @@ public class AwWebContent {
 
     public void goBack() {
         runOrQueueUntilStarted(AwContents::goBack);
+    }
+
+    public void goForward() {
+        runOrQueueUntilStarted(AwContents::goForward);
+    }
+
+    public void goBackOrForward(int steps) {
+        runOrQueueUntilStarted(awContents -> awContents.goBackOrForward(steps));
+    }
+
+    public void stopLoading() {
+        runOrQueueUntilStarted(AwContents::stopLoading);
+    }
+
+    public void reload() {
+        runOrQueueUntilStarted(AwContents::reload);
+    }
+
+    public void onPause() {
+        runOrQueueUntilStarted(AwContents::onPause);
+    }
+
+    public void onResume() {
+        runOrQueueUntilStarted(AwContents::onResume);
+    }
+
+    public void pauseTimers() {
+        runOrQueueUntilStarted(AwContents::pauseTimers);
+    }
+
+    public void resumeTimers() {
+        runOrQueueUntilStarted(AwContents::resumeTimers);
+    }
+
+    public void setNetworkAvailable(boolean networkUp) {
+        runOrQueueUntilStarted(awContents -> awContents.setNetworkAvailable(networkUp));
+    }
+
+    public void clearCache(boolean includeDiskFiles) {
+        runOrQueueUntilStarted(awContents -> awContents.clearCache(includeDiskFiles));
+    }
+
+    public void clearHistory() {
+        runOrQueueUntilStarted(AwContents::clearHistory);
+    }
+
+    public void clearSslPreferences() {
+        runOrQueueUntilStarted(AwContents::clearSslPreferences);
+    }
+
+    public void clearView() {
+        runOrQueueUntilStarted(AwContents::clearView);
+    }
+
+    public void hideAutofillPopup() {
+        runOrQueueUntilStarted(AwContents::hideAutofillPopup);
+    }
+
+    public void findNext(boolean forward) {
+        runOrQueueUntilStarted(awContents -> awContents.findNext(forward));
+    }
+
+    public void findAllAsync(@Nullable String searchString) {
+        runOrQueueUntilStarted(awContents -> awContents.findAllAsync(searchString));
+    }
+
+    public void clearMatches() {
+        runOrQueueUntilStarted(AwContents::clearMatches);
+    }
+
+    public void documentHasImages(Message message) {
+        runOrQueueUntilStarted(awContents -> awContents.documentHasImages(message));
+    }
+
+    public void requestFocusNodeHref(@Nullable Message msg) {
+        runOrQueueUntilStarted(awContents -> awContents.requestFocusNodeHref(msg));
+    }
+
+    public void requestImageRef(@Nullable Message msg) {
+        runOrQueueUntilStarted(awContents -> awContents.requestImageRef(msg));
+    }
+
+    public void saveWebArchive(
+            String basename, boolean autoname, @Nullable Callback<String> callback) {
+        runOrQueueUntilStarted(
+                awContents -> awContents.saveWebArchive(basename, autoname, callback));
+    }
+
+    public void addJavascriptInterface(Object object, String name) {
+        runOrQueueUntilStarted(awContents -> awContents.addJavascriptInterface(object, name));
+    }
+
+    public void removeJavascriptInterface(String interfaceName) {
+        runOrQueueUntilStarted(awContents -> awContents.removeJavascriptInterface(interfaceName));
+    }
+
+    public void invokeZoomPicker() {
+        runOrQueueUntilStarted(AwContents::invokeZoomPicker);
+    }
+
+    public void flingScroll(int velocityX, int velocityY) {
+        runOrQueueUntilStarted(awContents -> awContents.flingScroll(velocityX, velocityY));
     }
 
     // The following methods don't trigger startup. They return a default value if the AwContents
