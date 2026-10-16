@@ -111,3 +111,13 @@ if (enable_android_secondary_abi) {
         "//build/toolchain/android:android_clang_${android_secondary_abi_cpu}"
   }
 }
+
+# For 32-bit-only target_cpu's, the corresponding 64-bit ABI. There is no
+# toolchain for it. It is used only to add placeholder libraries (via
+# secondary_native_lib_placeholders) so that 32-bit-only APKs can be marked
+# multiArch.
+if (target_cpu == "arm") {
+  android_app_64bit_placeholder_abi = "arm64-v8a"
+} else if (target_cpu == "x86") {
+  android_app_64bit_placeholder_abi = "x86_64"
+}

@@ -146,6 +146,16 @@ template("chrome_common_apk_or_module_tmpl") {
         get_label_info("X($android_secondary_abi_toolchain)", "root_out_dir")
     not_needed([ "_secondary_out_dir" ])
   }
+
+  # A 32-bit-only browser (e.g. Chrome32 in 64-bit builds, or Chrome in 32-bit
+  # builds). These are made multiarch (with a 64-bit placeholder library) so
+  # that Android does not show a "deprecated ABI" warning on devices supporting
+  # both 64-bit and 32-bit ABIs. The 32-bit ABI remains the primary one via
+  # use32bitAbi="true".
+  _is_32_bit_multiarch_browser =
+      !_is_trichrome && !_is_test && !_is_64_bit_browser &&
+      (android_64bit_target_cpu || defined(android_app_64bit_placeholder_abi))
+
   if (_is_trichrome) {
     _include_64_bit_webview =
         android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
@@ -222,6 +232,7 @@ template("chrome_common_apk_or_module_tmpl") {
         variables += [ "library_name=chrome" ]
       }
     }
+    variables += [ "is_32_bit_multiarch_browser=$_is_32_bit_multiarch_browser" ]
     if (_is_trichrome) {
       _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
                       !_is_64_bit_browser
@@ -661,6 +672,14 @@ template("chrome_common_apk_or_module_tmpl") {
       }
       if (_include_secondary_abi && secondary_abi_loadable_modules == []) {
         secondary_native_lib_placeholders = [ "libplaceholder.so" ]
+      }
+    } else if (_is_32_bit_multiarch_browser) {
+      # Never loaded. See comment for _is_32_bit_multiarch_browser.
+      if (!android_64bit_target_cpu) {
+        # Uses android_app_64bit_placeholder_abi.
+        secondary_native_lib_placeholders = [ "libplaceholder.so" ]
+      } else if (loadable_modules == [] && shared_libraries == []) {
+        native_lib_placeholders = [ "libplaceholder.so" ]
       }
     }
 
