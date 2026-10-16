@@ -170,7 +170,7 @@ bool ResourceResponse::HasMatchingServiceWorkerUrl() const {
 bool ResourceResponse::IsServiceWorkerPassThrough() const {
   return service_worker_response_source_ !=
              network::mojom::FetchResponseSource::kCacheStorage &&
-         !cache_storage_side_data_writer_.is_bound() &&
+         !cache_storage_side_data_writer_->data.is_valid() &&
          HasMatchingServiceWorkerUrl();
 }
 

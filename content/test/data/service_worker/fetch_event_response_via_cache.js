@@ -8,13 +8,15 @@ this.onfetch = function(event) {
     var url = event.request.url;
     event.respondWith(
         caches.open(CACHE_NAME)
-          .then(function(c) {
+            .then(function(c) {
               cache = c;
               return cache.match(url);
             })
-          .then(function(response) {
-              if (response)
-                return response;
+            .then(function(response) {
+              if (response) {
+                return self.location.search === '?clone' ? response.clone() :
+                                                           response;
+              }
               var cloned_response = undefined;
               return fetch(url)
                 .then(function(res) {

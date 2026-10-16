@@ -8,6 +8,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -44,7 +45,7 @@ CachedMetadataSenderImpl::CachedMetadataSenderImpl(
       original_response_time_(response.OriginalResponseTime()),
       code_cache_type_(code_cache_type) {
   // WebAssembly always uses the site isolated code cache.
-  DCHECK(!response.CacheStorageSideDataWriter().is_bound() ||
+  DCHECK(!response.CacheStorageSideDataWriterHolder()->data.is_valid() ||
          code_cache_type_ == mojom::blink::CodeCacheType::kWebAssembly);
   DCHECK(!response.WasFetchedViaServiceWorker() ||
          response.IsServiceWorkerPassThrough() ||
@@ -83,22 +84,26 @@ class ServiceWorkerCachedMetadataSender : public CachedMetadataSender {
   bool IsServedFromCacheStorage() override { return true; }
 
  private:
-  const mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
+  const scoped_refptr<CacheStorageSideDataWriterHolder>
       cache_storage_side_data_writer_;
 };
 
 ServiceWorkerCachedMetadataSender::ServiceWorkerCachedMetadataSender(
     const ResourceResponse& response)
-    : cache_storage_side_data_writer_(response.CacheStorageSideDataWriter()) {
-  CHECK(cache_storage_side_data_writer_.is_bound());
+    : cache_storage_side_data_writer_(
+          response.CacheStorageSideDataWriterHolder()) {
+  CHECK(cache_storage_side_data_writer_);
+  CHECK(cache_storage_side_data_writer_->data.is_valid());
 }
 
 void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost*,
                                              mojo_base::BigBuffer data) {
-  if (!cache_storage_side_data_writer_.is_bound()) {
+  if (!cache_storage_side_data_writer_->data.is_valid()) {
     return;
   }
-  cache_storage_side_data_writer_->WriteSideData(std::move(data));
+  mojo::Remote<network::mojom::blink::CacheStorageSideDataWriter>(
+      std::move(cache_storage_side_data_writer_->data))
+      ->WriteSideData(std::move(data));
 }
 
 // static
@@ -107,11 +112,13 @@ void CachedMetadataSender::SendToCodeCacheHost(
     mojom::blink::CodeCacheType code_cache_type,
     String url,
     base::Time response_time,
-    const mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>&
+    mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
         cache_storage_side_data_writer,
     base::span<const uint8_t> data) {
-  if (cache_storage_side_data_writer.is_bound()) {
-    cache_storage_side_data_writer->WriteSideData(mojo_base::BigBuffer(data));
+  if (cache_storage_side_data_writer.is_valid()) {
+    mojo::Remote<network::mojom::blink::CacheStorageSideDataWriter>(
+        std::move(cache_storage_side_data_writer))
+        ->WriteSideData(mojo_base::BigBuffer(data));
     return;
   }
   if (!code_cache_host) {
@@ -141,7 +148,7 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
 
   // If the service worker provided a Response produced from cache_storage,
   // then we need to use a different code cache sender.
-  if (response.CacheStorageSideDataWriter().is_bound()) {
+  if (response.CacheStorageSideDataWriterHolder()->data.is_valid()) {
     CHECK_EQ(response.GetServiceWorkerResponseSource(),
              network::mojom::FetchResponseSource::kCacheStorage);
     // TODO(leszeks): Check whether it's correct that |origin| can be nullptr.
@@ -156,10 +163,8 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
     return std::make_unique<ServiceWorkerCachedMetadataSender>(response);
   } else if (response.GetServiceWorkerResponseSource() ==
              network::mojom::FetchResponseSource::kCacheStorage) {
-    // TODO(crbug.com/570132114): Some paths (e.g., Response.clone() or certain
-    // URLLoaderThrottles) drop the writer for kCacheStorage responses. This
-    // silently disables code caching. Find and fix these paths, then restore
-    // the bidirectional CHECK.
+    // TODO(crbug.com/570132114): Restore the bidirectional CHECK once we verify
+    // no remaining paths drop the writer for kCacheStorage responses.
     base::debug::DumpWithoutCrashing();
   }
 

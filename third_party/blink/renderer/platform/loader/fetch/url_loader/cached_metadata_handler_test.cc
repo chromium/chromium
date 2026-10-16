@@ -45,12 +45,8 @@ class MockGeneratedCodeCache
     mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
         writer_remote;
     receivers_.Add(this, writer_remote.InitWithNewPipeAndPassReceiver());
-    response.SetCacheStorageSideDataWriter(
-        mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>(
-            std::move(writer_remote)));
+    response.SetCacheStorageSideDataWriter(std::move(writer_remote));
   }
-
-  void FlushForTesting() { receivers_.FlushForTesting(); }
 
   // network::mojom::blink::CacheStorageSideDataWriter:
   void WriteSideData(mojo_base::BigBuffer data) override {
@@ -119,7 +115,7 @@ class CachedMetadataHandlerTest : public testing::Test {
 
     // Flush the receiver pipes to process any pending Mojo messages.
     receiver.FlushForTesting();
-    disk->FlushForTesting();
+    task_environment_.RunUntilIdle();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -254,8 +250,7 @@ TEST_F(
   ScopedServiceWorkerCodeCacheForTest scoped_feature(true);
   MockGeneratedCodeCache mock_disk_cache;
 
-  // Equivalent to a kCacheStorage response whose writer was not preserved
-  // (e.g., after Response.clone() or when the cache backend is closed).
+  // Equivalent to a kCacheStorage response whose writer was not preserved.
   ResourceResponse response(CreateTestResourceResponse());
   response.SetWasFetchedViaServiceWorker(true);
   response.SetUrlListViaServiceWorker({response.CurrentRequestUrl()});

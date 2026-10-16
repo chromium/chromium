@@ -75,6 +75,7 @@ class CORE_EXPORT Response final : public ScriptWrappable, public Body {
   Response(const Response&) = delete;
   Response& operator=(const Response&) = delete;
 
+  FetchResponseData* GetResponse() { return response_.Get(); }
   const FetchResponseData* GetResponse() const { return response_.Get(); }
 
   // From Response.idl:

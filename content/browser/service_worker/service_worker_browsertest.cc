@@ -3587,6 +3587,42 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageTest,
   NavigateToTestPage();
 }
 
+class ServiceWorkerV8CodeCacheForCacheStorageClonedResponseTest
+    : public ServiceWorkerV8CodeCacheForCacheStorageTest {
+ public:
+  std::string GetWorkerURL() override {
+    return "/service_worker/fetch_event_response_via_cache.js?clone";
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerV8CodeCacheForCacheStorageClonedResponseTest,
+    V8CacheOnCacheStorage) {
+  RegisterAndActivateServiceWorker();
+
+  // First load: fetch_event_response_via_cache.js puts the response into
+  // CacheStorage and returns |cloned_response| from network fetch.
+  // The V8 code cache should not be stored in CacheStorage yet.
+  NavigateToTestPage();
+  WaitUntilSideDataSizeIs(0);
+
+  // Second load: fetch_event_response_via_cache.js?clone returns
+  // |response.clone()| from CacheStorage. The V8 code cache should be stored in
+  // CacheStorage even when the cached Response is cloned before respondWith().
+  NavigateToTestPage();
+#if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
+  // V8 code caching for CacheStorage is explicitly disabled on Fuchsia
+  // size-optimized builds to save storage space.
+  WaitUntilSideDataSizeIs(0);
+#else
+  // It must have size greater than 16 bytes.
+  WaitUntilSideDataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
+#endif
+
+  // Third load: The V8 code cache stored in CacheStorage should be consumed.
+  NavigateToTestPage();
+}
+
 class ServiceWorkerV8CodeCacheForCacheStorageNoneTest
     : public ServiceWorkerV8CodeCacheForCacheStorageTest {
  public:
