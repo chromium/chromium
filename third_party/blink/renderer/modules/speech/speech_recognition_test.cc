@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -29,12 +30,15 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -133,6 +137,16 @@ class ScopedFakeOnDeviceSpeechRecognition {
   const BrowserInterfaceBrokerProxy* broker_;
 };
 
+// Counts the number of times an event is dispatched.
+class EventCounter final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { ++count_; }
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
 // Captures the `timeStamp` of each dispatched `result` event.
 class ResultEventRecorder final : public NativeEventListener {
  public:
@@ -173,6 +187,21 @@ media::mojom::blink::WebSpeechRecognitionResultPtr MakeResult(
 class SpeechRecognitionTest : public PageTestBase {
  public:
   void SetUp() override { PageTestBase::SetUp(); }
+
+  MockMediaStreamTrack* CreateAudioTrack(
+      MediaStreamSource::ReadyState source_ready_state,
+      MediaStreamSource::ReadyState track_ready_state) {
+    auto* track = MakeGarbageCollected<MockMediaStreamTrack>();
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        "id", MediaStreamSource::kTypeAudio, "name", false,
+        /*platform_source=*/nullptr, source_ready_state);
+    auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
+        source, std::make_unique<MediaStreamAudioTrack>(true));
+    track->SetComponent(component);
+    track->SetReadyState(track_ready_state);
+    track->SetEnded(track_ready_state == MediaStreamSource::kReadyStateEnded);
+    return track;
+  }
 };
 
 TEST_F(SpeechRecognitionTest, MediaStreamTrackAudioSinkCleanup) {
@@ -181,23 +210,290 @@ TEST_F(SpeechRecognitionTest, MediaStreamTrackAudioSinkCleanup) {
   V8TestingScope scope;
   LocalDOMWindow* window = &scope.GetWindow();
 
-  auto* track = MakeGarbageCollected<MockMediaStreamTrack>();
-  auto* source = MakeGarbageCollected<MediaStreamSource>(
-      "id", MediaStreamSource::kTypeAudio, "name", false,
-      /*platform_source=*/nullptr, MediaStreamSource::kReadyStateLive);
-  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
-      source, std::make_unique<MediaStreamAudioTrack>(true));
-  track->SetComponent(component);
-  track->SetReadyState(MediaStreamSource::kReadyStateLive);
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateLive, MediaStreamSource::kReadyStateLive);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+  auto* end_counter = MakeGarbageCollected<EventCounter>();
+  auto* error_counter = MakeGarbageCollected<EventCounter>();
+  speech_recognition->addEventListener(event_type_names::kEnd, end_counter);
+  speech_recognition->addEventListener(event_type_names::kError, error_counter);
 
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(1);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(1);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(speech_recognition->HasPendingActivity());
+
+  speech_recognition->abort();
+  EXPECT_EQ(end_counter->count(), 0);
+  test::RunPendingTasks();
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+  EXPECT_EQ(end_counter->count(), 1);
+  EXPECT_EQ(error_counter->count(), 0);
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest, StartWithMutedMediaStreamTrackSucceeds) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateMuted, MediaStreamSource::kReadyStateMuted);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+  auto* end_counter = MakeGarbageCollected<EventCounter>();
+  auto* error_counter = MakeGarbageCollected<EventCounter>();
+  speech_recognition->addEventListener(event_type_names::kEnd, end_counter);
+  speech_recognition->addEventListener(event_type_names::kError, error_counter);
+
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(1);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(1);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(speech_recognition->HasPendingActivity());
+
+  speech_recognition->abort();
+  EXPECT_EQ(end_counter->count(), 0);
+  test::RunPendingTasks();
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+  EXPECT_EQ(end_counter->count(), 1);
+  EXPECT_EQ(error_counter->count(), 0);
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest,
+       StopWithMutedMediaStreamTrackFiresEndAndAllowsRestart) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateMuted, MediaStreamSource::kReadyStateMuted);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+  auto* end_counter = MakeGarbageCollected<EventCounter>();
+  auto* error_counter = MakeGarbageCollected<EventCounter>();
+  speech_recognition->addEventListener(event_type_names::kEnd, end_counter);
+  speech_recognition->addEventListener(event_type_names::kError, error_counter);
+
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(2);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(2);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(speech_recognition->HasPendingActivity());
+
+  speech_recognition->stopFunction();
+  EXPECT_EQ(end_counter->count(), 0);
+  EXPECT_TRUE(speech_recognition->HasPendingActivity());
+
+  // Calling start() before the asynchronous `end` event fires must throw
+  // InvalidStateError because `started_` remains true until `Ended()` runs.
+  DummyExceptionStateForTesting exception_state;
+  speech_recognition->start(track, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            exception_state.CodeAs<DOMExceptionCode>());
+
+  test::RunPendingTasks();
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+  EXPECT_EQ(end_counter->count(), 1);
+  EXPECT_EQ(error_counter->count(), 0);
+
+  // Starting again after the muted track session ended should succeed.
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(speech_recognition->HasPendingActivity());
+
+  speech_recognition->abort();
+  test::RunPendingTasks();
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+  EXPECT_EQ(end_counter->count(), 2);
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest,
+       StartWithSecondTrackWhileActiveThrowsAndPreservesFirstTrack) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track1 = CreateAudioTrack(
+      MediaStreamSource::kReadyStateLive, MediaStreamSource::kReadyStateLive);
+  MockMediaStreamTrack* track2 = CreateAudioTrack(
+      MediaStreamSource::kReadyStateLive, MediaStreamSource::kReadyStateLive);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+
+  EXPECT_CALL(*track1, RegisterSink(testing::_)).Times(1);
+  EXPECT_CALL(*track1, UnregisterSink(testing::_)).Times(1);
+  EXPECT_CALL(*track2, RegisterSink(testing::_)).Times(0);
+  EXPECT_CALL(*track2, UnregisterSink(testing::_)).Times(0);
+
+  speech_recognition->start(track1, scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(speech_recognition->HasPendingActivity());
+
+  // Calling start(track2) while track1 is active throws InvalidStateError and
+  // must not overwrite `stream_track_`, so aborting still cleans up track1.
+  speech_recognition->start(track2, scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+
+  speech_recognition->abort();
+  test::RunPendingTasks();
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+
+  testing::Mock::VerifyAndClearExpectations(track1);
+  testing::Mock::VerifyAndClearExpectations(track2);
+  testing::Mock::AllowLeak(track1);
+  testing::Mock::AllowLeak(track2);
+}
+
+TEST_F(SpeechRecognitionTest,
+       StartWithoutTrackAfterTrackSessionDoesNotReuseTrack) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateLive, MediaStreamSource::kReadyStateLive);
   auto* speech_recognition = SpeechRecognition::Create(window);
 
   EXPECT_CALL(*track, RegisterSink(testing::_)).Times(1);
   EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(1);
 
   speech_recognition->start(track, scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
 
   speech_recognition->abort();
+  test::RunPendingTasks();
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+
+  // Subsequent no-arg start() should use microphone capture rather than
+  // reusing `track`.
+  speech_recognition->start(scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  speech_recognition->abort();
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest, StartWithEndedMediaStreamTrackThrows) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateEnded, MediaStreamSource::kReadyStateEnded);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(0);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(0);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest,
+       StartWithStoppedTrackOnLiveMediaStreamSourceThrows) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateLive, MediaStreamSource::kReadyStateEnded);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(0);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(0);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest,
+       StartWithLiveTrackOnEndedMediaStreamSourceThrows) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  MockMediaStreamTrack* track = CreateAudioTrack(
+      MediaStreamSource::kReadyStateEnded, MediaStreamSource::kReadyStateLive);
+  auto* speech_recognition = SpeechRecognition::Create(window);
+
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(0);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(0);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
+
+  testing::Mock::VerifyAndClearExpectations(track);
+  testing::Mock::AllowLeak(track);
+}
+
+TEST_F(SpeechRecognitionTest, StartWithVideoMediaStreamTrackThrows) {
+  ScopedMediaStreamTrackWebSpeechForTest media_stream_track_web_speech(true);
+
+  V8TestingScope scope;
+  LocalDOMWindow* window = &scope.GetWindow();
+
+  auto* track = MakeGarbageCollected<MockMediaStreamTrack>();
+  auto video_source =
+      std::make_unique<testing::NiceMock<MockMediaStreamVideoSource>>();
+  auto* video_source_ptr = video_source.get();
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::kTypeVideo, "name", false,
+      std::move(video_source), MediaStreamSource::kReadyStateLive);
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
+      source,
+      std::make_unique<MediaStreamVideoTrack>(
+          video_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+  track->SetComponent(component);
+  track->SetReadyState(MediaStreamSource::kReadyStateLive);
+  track->SetEnded(false);
+
+  auto* speech_recognition = SpeechRecognition::Create(window);
+
+  EXPECT_CALL(*track, RegisterSink(testing::_)).Times(0);
+  EXPECT_CALL(*track, UnregisterSink(testing::_)).Times(0);
+
+  speech_recognition->start(track, scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_FALSE(speech_recognition->HasPendingActivity());
 
   testing::Mock::VerifyAndClearExpectations(track);
   testing::Mock::AllowLeak(track);

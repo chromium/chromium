@@ -175,8 +175,9 @@ class MODULES_EXPORT SpeechRecognition final
 
   void OnConnectionError();
   void SchedulePhrasesUpdate();
-  void CheckAvailabilityAndStart(ExceptionState* exception_state);
-  void StartInternal();
+  void CheckAvailabilityAndStart(ExceptionState* exception_state,
+                                 MediaStreamTrack* media_stream_track);
+  void StartInternal(MediaStreamTrack* media_stream_track);
   void ResetAudioSink();
   void StartController(
       mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>

@@ -160,10 +160,11 @@ void SpeechRecognition::start(ExceptionState& exception_state) {
   if (DomWindow() && DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
         BindOnce(&SpeechRecognition::CheckAvailabilityAndStart,
-                 WrapWeakPersistent(this), /*exception_state=*/nullptr));
+                 WrapWeakPersistent(this), /*exception_state=*/nullptr,
+                 /*media_stream_track=*/nullptr));
     return;
   }
-  CheckAvailabilityAndStart(&exception_state);
+  CheckAvailabilityAndStart(&exception_state, /*media_stream_track=*/nullptr);
 }
 
 // TODO(crbug.com/384797834): Add Web Platform Tests for MediaStreamTrack
@@ -172,8 +173,11 @@ void SpeechRecognition::start(MediaStreamTrack* media_stream_track,
                               ExceptionState& exception_state) {
   DCHECK(media_stream_track && media_stream_track->Component());
 
-  if (media_stream_track->Component()->GetReadyState() !=
-          MediaStreamSource::kReadyStateLive ||
+  if (media_stream_track->Ended() ||
+      media_stream_track->GetReadyState() ==
+          MediaStreamSource::kReadyStateEnded ||
+      media_stream_track->Component()->GetReadyState() ==
+          MediaStreamSource::kReadyStateEnded ||
       media_stream_track->Component()->GetSourceType() !=
           MediaStreamSource::kTypeAudio) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -182,8 +186,15 @@ void SpeechRecognition::start(MediaStreamTrack* media_stream_track,
     return;
   }
 
-  stream_track_ = media_stream_track;
-  start(exception_state);
+  // https://wicg.github.io/nav-speculation/prerendering.html#web-speech-patch
+  // If this is called in prerendering, it should be deferred.
+  if (DomWindow() && DomWindow()->document()->IsPrerendering()) {
+    DomWindow()->document()->AddPostPrerenderingActivationStep(BindOnce(
+        &SpeechRecognition::CheckAvailabilityAndStart, WrapWeakPersistent(this),
+        /*exception_state=*/nullptr, WrapPersistent(media_stream_track)));
+    return;
+  }
+  CheckAvailabilityAndStart(&exception_state, media_stream_track);
 }
 
 void SpeechRecognition::stopFunction() {
@@ -200,8 +211,20 @@ void SpeechRecognition::stopFunction() {
 
   if (started_ && !stopping_) {
     stopping_ = true;
-    session_->StopCapture();
     ResetAudioSink();
+    if (receiver_.is_bound()) {
+      session_->StopCapture();
+    } else {
+      // If `StartController()` has not run yet (e.g. a muted MediaStreamTrack
+      // has not delivered its first audio buffer), there is no browser session
+      // to stop. End the session locally and asynchronously on the same
+      // `kMiscPlatformAPI` task runner used by the audio sink, matching the
+      // browser's `AbortSilently()` behavior before audio capture starts.
+      GetExecutionContext()
+          ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+          ->PostTask(FROM_HERE, BindOnce(&SpeechRecognition::Ended,
+                                         WrapWeakPersistent(this)));
+    }
   }
 }
 
@@ -219,8 +242,20 @@ void SpeechRecognition::abort() {
 
   if (started_ && !stopping_) {
     stopping_ = true;
-    session_->Abort();
     ResetAudioSink();
+    if (receiver_.is_bound()) {
+      session_->Abort();
+    } else {
+      // If `StartController()` has not run yet (e.g. a muted MediaStreamTrack
+      // has not delivered its first audio buffer), there is no browser session
+      // to abort. End the session locally and asynchronously on the same
+      // `kMiscPlatformAPI` task runner used by the audio sink, matching the
+      // browser's `AbortSilently()` behavior before audio capture starts.
+      GetExecutionContext()
+          ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+          ->PostTask(FROM_HERE, BindOnce(&SpeechRecognition::Ended,
+                                         WrapWeakPersistent(this)));
+    }
   }
 }
 
@@ -539,9 +574,13 @@ void SpeechRecognition::ResetAudioSink() {
     stream_track_->UnregisterSink(audio_sink_.Get());
     audio_sink_ = nullptr;
   }
+  stream_track_ = nullptr;
 }
 
 void SpeechRecognition::Ended() {
+  if (!GetExecutionContext() || !started_) {
+    return;
+  }
   started_ = false;
   stopping_ = false;
   session_.reset();
@@ -585,7 +624,7 @@ void SpeechRecognition::OnPhrasesChanged() {
   }
 
   // If the speech recognition session has started, update the phrases.
-  if (started_) {
+  if (started_ && receiver_.is_bound()) {
     CHECK(session_);
     Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> wtf_phrases;
     for (const auto& phrase : *phrases_) {
@@ -648,7 +687,8 @@ void SpeechRecognition::OnConnectionError() {
 }
 
 void SpeechRecognition::CheckAvailabilityAndStart(
-    ExceptionState* exception_state) {
+    ExceptionState* exception_state,
+    MediaStreamTrack* media_stream_track) {
   if (!controller_ || !GetExecutionContext()) {
     if (exception_state) {
       exception_state->ThrowDOMException(
@@ -693,8 +733,9 @@ void SpeechRecognition::CheckAvailabilityAndStart(
         Vector<String>{lang_}, SpeechRecognitionQualityToMojom(quality_),
         BindOnce(
             [](SpeechRecognition* speech_recognition,
+               MediaStreamTrack* media_stream_track,
                media::mojom::blink::AvailabilityStatus status) {
-              if (!speech_recognition) {
+              if (!speech_recognition || speech_recognition->started_) {
                 return;
               }
 
@@ -708,16 +749,16 @@ void SpeechRecognition::CheckAvailabilityAndStart(
                 return;
               }
 
-              speech_recognition->StartInternal();
+              speech_recognition->StartInternal(media_stream_track);
             },
-            WrapWeakPersistent(this)));
+            WrapWeakPersistent(this), WrapPersistent(media_stream_track)));
     return;
   }
 
-  StartInternal();
+  StartInternal(media_stream_track);
 }
 
-void SpeechRecognition::StartInternal() {
+void SpeechRecognition::StartInternal(MediaStreamTrack* media_stream_track) {
   // If this is called from a bound task (eg. from
   // SpeechRecognitionController::AvailableOnDevice), the caller must not invoke
   // it after the ExecutionContext is destroyed.
@@ -739,6 +780,9 @@ void SpeechRecognition::StartInternal() {
 
   final_results_.clear();
   audio_start_ticks_ = base::TimeTicks();
+  started_ = true;
+  stopping_ = false;
+  stream_track_ = media_stream_track;
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -747,7 +791,8 @@ void SpeechRecognition::StartInternal() {
     SpeechRecognitionMediaStreamAudioSink* sink =
         MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
             GetExecutionContext(),
-            BindOnce(&SpeechRecognition::StartController, WrapPersistent(this),
+            BindOnce(&SpeechRecognition::StartController,
+                     WrapWeakPersistent(this),
                      session_.BindNewPipeAndPassReceiver(task_runner)));
     WebMediaStreamAudioSink::AddToAudioTrack(
         sink, WebMediaStreamTrack(stream_track_->Component()));
@@ -756,8 +801,6 @@ void SpeechRecognition::StartInternal() {
   } else {
     StartController(session_.BindNewPipeAndPassReceiver(task_runner));
   }
-
-  started_ = true;
 }
 
 void SpeechRecognition::StartController(
@@ -770,6 +813,13 @@ void SpeechRecognition::StartController(
   // SpeechRecognitionMediaStreamAudioSink), the caller must not invoke it after
   // the ExecutionContext is destroyed.
   CHECK(GetExecutionContext());
+  // `ResetAudioSink()` removes the sink under the deliverer lock before
+  // `stopFunction()`/`abort()` posts `Ended()` to `TaskType::kMiscPlatformAPI`
+  // (the same FIFO runner used by `SpeechRecognitionMediaStreamAudioSink`), so
+  // any in-flight `OnSetFormat()` task runs while `stopping_` is still true.
+  if (!started_ || stopping_ || receiver_.is_bound()) {
+    return;
+  }
   UseCounter::Count(GetExecutionContext(), WebFeature::kWebSpeechSttStart);
 
   LocalDOMWindow* window = DomWindow();
