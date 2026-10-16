@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2127090458081644412">Parola s-a salvat pe acest dispozitiv</translation>
 <translation id="2127747486437921899">Cursiv</translation>
+<translation id="2129163794581571479">Dezvoltat de Gemini cu Inteligență personalizată. Solicitările, titlurile paginilor și adresele URL pot fi examinate pentru a îmbunătăți completarea automată îmbunătățită. <ph name="BEGIN_LINK" />Gestionarea setărilor<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Șabloanele specificate nu pot fi aplicate, deoarece politica DnsOverHttpsMode nu este setată.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Opțiunea Activează completarea automată pentru plăți s-a deschis la înălțimea completă.</translation>
@@ -1575,6 +1576,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3655670868607891010">Dacă această pagină se afișează în mod frecvent, încercați <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Versiune</translation>
 <translation id="3659521826520353662">Ce site-uri definite de administrator sunt accesate și când: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Dezvoltat de Gemini cu Inteligență personalizată. <ph name="BEGIN_LINK" />Gestionarea setărilor<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Caută mai multe opțiuni de cumpărare de la alte magazine care vând acest produs.</translation>
 <translation id="3664782872746246217">Cuvinte cheie:</translation>
 <translation id="3670030362669914947">Număr</translation>
@@ -1595,6 +1597,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3693516565203081475">Alege metoda de plată</translation>
 <translation id="3698353241727597930">Administratorul a configurat salvarea <ph name="FILES" /> în spațiul de stocare <ph name="CLOUD_STORAGE" /> gestionat de companie. Aceste fișiere pot fi monitorizate, verificate și păstrate atunci când le ștergi.</translation>
 <translation id="3698629142018988477">Butonul Creează un site, activează pentru a crea rapid un site în Site-uri Google</translation>
+<translation id="3698708128812719147">Apasă de două ori pe Ctrl oriunde pe web pentru a găsi și a completa mai multe informații</translation>
 <translation id="3700094625653511150">Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Folosești amprenta pentru a completa parolele</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
@@ -1898,6 +1901,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4185037616931963178">Actualizează în siguranță numărul de remediere</translation>
 <translation id="4186035307311647330">Anulează urmărirea prețului</translation>
 <translation id="4191334393248735295">Lungime</translation>
+<translation id="4192770747482479191">Apasă de două ori pe ⌘ oriunde pe web pentru a găsi și a completa mai multe informații</translation>
 <translation id="4195459680867822611">Butonul Vezi sfaturile privind Chrome, activează pentru a afla despre funcțiile Chrome</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4196861286325780578">&amp;Repetați mutarea</translation>
@@ -2846,6 +2850,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="573974402615125334">Pentru a permite accesul, a te alătura și a colabora la grupuri de file, sincronizează istoricul și filele</translation>
 <translation id="5740911612628596808">Plic C9</translation>
 <translation id="574392208103952083">Mediu</translation>
+<translation id="5744350700955456407">Completarea automată îmbunătățită poate acum să găsească și să completeze informații, cum ar fi numerele de comandă și codurile de confirmare a zborurilor, din aplicații precum Gmail și Foto</translation>
 <translation id="5745586894920491759">Chrome procesează titlurile paginilor și adresele URL în cloud</translation>
 <translation id="5745733273847572235">Poate solicita permisiunea de a accesa locația</translation>
 <translation id="5750869797196646528">Urmărirea mâinilor</translation>

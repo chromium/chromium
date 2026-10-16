@@ -163,6 +163,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1109482864356262001">No se habilitarán las funciones que necesitan sensores de movimiento o de luz</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Elige los idiomas que quieres instalar en este dispositivo. Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en el disco. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Enfocar el grupo de pestañas</translation>
 <translation id="1112227834592480032">Selecciona el botón de Google Lens, haz clic y arrastra el cursor sobre un problema</translation>
 <translation id="1112420131909513020">La pestaña en segundo plano está usando Bluetooth</translation>
 <translation id="1112998165730922436">Se detuvo la transmisión</translation>
@@ -2227,6 +2228,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2701960282717219666">Dirección MAC de la red</translation>
 <translation id="2702720509009999256">Revisa tu conexión a Internet y elige la opción "Intentar nuevamente" o "Abrir en el editor básico" para usar las opciones de edición y visualización limitadas.</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Dejar de enfocar la pestaña}other{Dejar de enfocar las pestañas}}</translation>
 <translation id="270414148003105978">Redes móviles</translation>
 <translation id="2704184184447774363">Firma de documentos de Microsoft</translation>
 <translation id="2704606927547763573">Copiado</translation>
@@ -3142,6 +3144,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3379268272734690">Desierto</translation>
 <translation id="3382737653173267704">Ver familia</translation>
 <translation id="338323348408199233">Bloquear tráfico sin VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Enfocar la pestaña}other{Enfocar las pestañas}}</translation>
 <translation id="3385053436247851142">Acceder con Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en la ubicación, además de mejorar, proporcionar y mantener los servicios de Google en general en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
@@ -4525,6 +4528,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4406308048672435032">Puedes desactivar esta pestaña o actualizarla para volver a ver la lista completa</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406963243402726564">Datos sin guardar</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Dejar de enfocar la pestaña}other{Dejar de enfocar las pestañas}}</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. Recibirás una notificación cuando comience la grabación.}=2{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. Recibirás una notificación cuando comience la grabación.}=3{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. Recibirás una notificación cuando comience la grabación.}other{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. Recibirás una notificación cuando comience la grabación.}}</translation>
 <translation id="4409697491990005945">Márgenes</translation>
@@ -7403,6 +7407,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6651762277693024112">Se ejecuta automáticamente cada vez que visitas este sitio</translation>
 <translation id="6654509035557065241">Configurar una red preferida</translation>
 <translation id="6655190889273724601">Modo de desarrollador</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Enfocar la pestaña}other{Enfocar las pestañas}}</translation>
 <translation id="6657180931610302174">¿Quieres agregar un nombre de usuario?</translation>
 <translation id="6657240842932274095">¿Quieres permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
@@ -10040,6 +10045,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8652400352452647993">Error al empaquetar extensiones</translation>
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu equipo lo procese.</translation>
 <translation id="8655295600908251630">Canal</translation>
+<translation id="8656101380279383244">Enfocar el grupo de pestañas</translation>
 <translation id="8656888282555543604">Habilitar el acceso con braille</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
 <translation id="8657542881463614516">Deslizar el dedo para navegar entre páginas</translation>

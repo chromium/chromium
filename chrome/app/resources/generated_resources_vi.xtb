@@ -163,6 +163,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1109482864356262001">Các tính năng cần dùng cảm biến chuyển động hoặc cảm biến ánh sáng sẽ không hoạt động</translation>
 <translation id="1110155001042129815">Chờ</translation>
 <translation id="1110965959145884739">Chọn ngôn ngữ để cài đặt trên thiết bị này. Các tệp ngôn ngữ được chia sẻ giữa những người dùng để tiết kiệm dung lượng ổ đĩa. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Đặt tiêu điểm vào nhóm thẻ</translation>
 <translation id="1112227834592480032">Chọn nút Google Ống kính, rồi nhấp và kéo qua một bài tập</translation>
 <translation id="1112420131909513020">Thẻ nền đang sử dụng Bluetooth</translation>
 <translation id="1112998165730922436">Đã tạm dừng truyền</translation>
@@ -2240,6 +2241,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2701960282717219666">Địa chỉ MAC trên mạng</translation>
 <translation id="2702720509009999256">Kiểm tra kết nối Internet, rồi chọn "Thử lại" hoặc chọn "Mở trong trình chỉnh sửa cơ bản" để sử dụng các tuỳ chọn xem và chỉnh sửa hạn chế.</translation>
 <translation id="2702801445560668637">Danh sách đọc</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Xoá tiêu điểm khỏi thẻ}other{Xoá tiêu điểm khỏi các thẻ}}</translation>
 <translation id="270414148003105978">Mạng di động</translation>
 <translation id="2704184184447774363">Ký Tài liệu của Microsoft</translation>
 <translation id="2704606927547763573">Đã sao chép</translation>
@@ -3155,6 +3157,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3379268272734690">Sa mạc</translation>
 <translation id="3382737653173267704">Xem gia đình</translation>
 <translation id="338323348408199233">Chặn lưu lượng truy cập không qua VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Đặt tiêu điểm vào thẻ}other{Đặt tiêu điểm vào các thẻ}}</translation>
 <translation id="3385053436247851142">Đăng nhập bằng Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Chế độ Độ chính xác của vị trí cung cấp thông tin chính xác hơn về vị trí cho các ứng dụng và dịch vụ. Để thực hiện việc này, Google định kỳ xử lý thông tin về cảm biến thiết bị và tín hiệu không dây từ thiết bị của bạn nhằm thu thập dữ liệu vị trí dựa trên tín hiệu không dây từ đám đông. Những thông tin này sẽ được sử dụng theo cách không xác định danh tính của bạn nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí. Ngoài ra, những thông tin này còn dùng để cải thiện, cung cấp và duy trì các dịch vụ của Google nói chung căn cứ trên lợi ích chính đáng của Google và bên thứ ba nhằm phục vụ nhu cầu của người dùng.</translation>
@@ -4538,6 +4541,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4406308048672435032">Bạn có thể dừng hoạt động của thẻ này hoặc làm mới để xem lại danh sách đầy đủ</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
 <translation id="4406963243402726564">Dữ liệu chưa được lưu</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Xoá tiêu điểm khỏi thẻ}other{Xoá tiêu điểm khỏi các thẻ}}</translation>
 <translation id="4408599188496843485">T&amp;rợ giúp</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Quản trị viên có thể ghi lại màn hình của bạn bằng <ph name="APP0_NAME" />. Bạn sẽ nhận được thông báo khi quá trình ghi bắt đầu.}=2{Quản trị viên có thể ghi lại màn hình của bạn bằng <ph name="APP0_NAME" /> và <ph name="APP1_NAME" />. Bạn sẽ nhận được thông báo khi quá trình ghi bắt đầu.}=3{Quản trị viên có thể ghi lại màn hình của bạn bằng <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> và 1 ứng dụng khác. Bạn sẽ nhận được thông báo khi quá trình ghi bắt đầu.}other{Quản trị viên có thể ghi lại màn hình của bạn bằng <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> và # ứng dụng khác. Bạn sẽ nhận được thông báo khi quá trình ghi bắt đầu.}}</translation>
 <translation id="4409697491990005945">Lề</translation>
@@ -7416,6 +7420,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6651762277693024112">Tự động chạy mỗi khi bạn truy cập trang web này</translation>
 <translation id="6654509035557065241">Đặt mạng ưu tiên</translation>
 <translation id="6655190889273724601">Chế độ dành cho nhà phát triển</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Đặt tiêu điểm vào thẻ}other{Đặt tiêu điểm vào các thẻ}}</translation>
 <translation id="6657180931610302174">Thêm tên người dùng?</translation>
 <translation id="6657240842932274095">Cho phép các dịch vụ hệ thống sử dụng thông tin vị trí của bạn?</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
@@ -10055,6 +10060,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8652400352452647993">Lỗi đóng gói tiện ích</translation>
 <translation id="8654151524613148204">Rất tiếc, tệp quá lớn để máy tính của bạn có thể xử lý.</translation>
 <translation id="8655295600908251630">Kênh</translation>
+<translation id="8656101380279383244">Đặt tiêu điểm vào nhóm thẻ</translation>
 <translation id="8656888282555543604">Bật ghi nhật ký chữ nổi</translation>
 <translation id="8657393004602556571">Bạn có muốn loại bỏ ý kiến phản hồi này không?</translation>
 <translation id="8657542881463614516">Sử dụng cử chỉ vuốt để di chuyển giữa các trang</translation>

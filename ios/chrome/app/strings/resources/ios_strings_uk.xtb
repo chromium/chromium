@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Закладку оновлено</translation>
 <translation id="1018804590490383958">Відсканувати й заповнити автоматично</translation>
 <translation id="1019990162050689579">Історія дій у додатках Gemini</translation>
+<translation id="102471647093736603">Утримуйте, щоб перемістити</translation>
 <translation id="102645702181682900">Завдання розпочато</translation>
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030376737535466765">Відкрити Менеджер паролів</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Оновлення</translation>
 <translation id="4813345808229079766">З’єднання</translation>
 <translation id="4821595350501541683">Вкладки було закрито, а дані веб-перегляду – видалено</translation>
+<translation id="4823322556950229674">Щоб перемістити адресний рядок і кнопку "Назад" у нижню частину екрана, натисніть і утримуйте їх</translation>
 <translation id="4824480232751123840">Об’єм</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і ще 1}one{{domain} і ще {count}}few{{domain} і ще {count}}many{{domain} і ще {count}}other{{domain} і ще {count}}}</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
@@ -2057,6 +2059,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Продовжити</translation>
 <translation id="741204030948306876">Увімкнути</translation>
+<translation id="7417055777338419059">Створюйте код, тексти й презентації</translation>
 <translation id="7419565702166471774">Завжди використовувати надійні з’єднання</translation>
 <translation id="7423098979219808738">Спершу запитувати</translation>
 <translation id="7425053386765766120">Додати спосіб оплати…</translation>

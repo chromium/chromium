@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Нерсе жаңырды</translation>
 <translation id="1018804590490383958">Скандоо жана автотолтуруу</translation>
 <translation id="1019990162050689579">Gemini колдонмолорундагы аракеттер</translation>
+<translation id="102471647093736603">Жылдыруу үчүн коё бербей басып туруңуз</translation>
 <translation id="102645702181682900">Тапшырма башталды</translation>
 <translation id="102916930470544692">Киргизүүчү ачкыч</translation>
 <translation id="1030376737535466765">Сырсөз башкаргычын ачыңыз</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Жаңыртуулар</translation>
 <translation id="4813345808229079766">Туташуу</translation>
 <translation id="4821595350501541683">Өтмөктөр жабылып, серептөө дайындары өчүрүлдү</translation>
+<translation id="4823322556950229674">Дарек тилкесин жана артка баскычын ылдый жылдыруу үчүн коё бербей басып турсаңыз болот</translation>
 <translation id="4824480232751123840">Үндүн катуулугу</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} жана дагы 1}other{{domain} жана дагы {count}}}</translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>

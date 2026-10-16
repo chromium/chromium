@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">ອັບ​ເດດ​ລາຍ​ການ​ແລ້ວ</translation>
 <translation id="1018804590490383958">ສະແກນ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="1019990162050689579">ການເຄື່ອນໄຫວແອັບ Gemini</translation>
+<translation id="102471647093736603">ກົດຄ້າງໄວ້ເພື່ອຍ້າຍ</translation>
 <translation id="102645702181682900">ເລີ່ມຕົ້ນໜ້າວຽກແລ້ວ</translation>
 <translation id="102916930470544692">ກະແຈຜ່ານ</translation>
 <translation id="1030376737535466765">ເປີດຕົວຈັດການລະຫັດຜ່ານ</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">ອັບເດດ</translation>
 <translation id="4813345808229079766">ການ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="4821595350501541683">ປິດແຖບແລ້ວ ແລະ ລຶບຂໍ້ມູນການທ່ອງເວັບແລ້ວ</translation>
+<translation id="4823322556950229674">ທ່ານສາມາດກົດຄ້າງໄວ້ເພື່ອຍ້າຍແຖບທີ່ຢູ່ ແລະ ປຸ່ມກັບຄືນໄປໄວ້ລຸ່ມສຸດໄດ້</translation>
 <translation id="4824480232751123840">ບໍລິມາດ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ແລະ ອີກ 1 ລາຍການ}other{{domain} ແລະ ອີກ {count} ລາຍການ}}</translation>
 <translation id="4826588772550366629">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>

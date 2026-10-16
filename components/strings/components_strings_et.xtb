@@ -665,6 +665,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2126374524350484896">PDF-i looja:</translation>
 <translation id="2127090458081644412">Parool salvestati sellesse seadmesse</translation>
 <translation id="2127747486437921899">Kursiiv</translation>
+<translation id="2129163794581571479">Toimib Gemini Personal Intelligence'i abil. Teie taotlused, lehtede pealkirjad ja URL-id võidakse täiustatud automaattäite parendamiseks üle vaadata. <ph name="BEGIN_LINK" />Seadete haldamine<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Teie määratud malle ei pruugita rakendada, kuna reeglit DnsOverHttpsMode pole määratud.</translation>
 <translation id="2130699163006053678">A3 × 7</translation>
 <translation id="2131006834960167560">Maksete automaattäite lubamise leht on avatud täiskõrgusel.</translation>
@@ -1575,6 +1576,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3655670868607891010">Kui näete seda sageli, proovige järgmist: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Redaktsioon</translation>
 <translation id="3659521826520353662">Milliseid administraatori määratud veebisaite külastatakse ja millal: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Toimib Gemini Personal Intelligence'i abil. <ph name="BEGIN_LINK" />Seadete haldamine<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Rohkemate ostuvalikute otsimine teistest seda toodet müüvatest poodidest.</translation>
 <translation id="3664782872746246217">Märksõnad:</translation>
 <translation id="3670030362669914947">Number</translation>
@@ -1595,6 +1597,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3693516565203081475">Makseviisi valimine</translation>
 <translation id="3698353241727597930">Teie administraatori seadistuse kohaselt salvestatakse <ph name="FILES" /> teie ettevõtte hallatavasse salvestusruumi <ph name="CLOUD_STORAGE" />. Neid faile võidakse jälgida, auditeerida ja säilitada, kui need kustutate.</translation>
 <translation id="3698629142018988477">Nupp Loo sait, aktiveerige nupp, et luua teenuses Google Sites kiiresti uus sait</translation>
+<translation id="3698708128812719147">Vajutage veebis kus tahes kaks korda klahvi Ctrl, et leida ja sisestada rohkem teavet</translation>
 <translation id="3700094625653511150">Järelmaksuvalikute peitmiseks avage <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Kasutate paroolide täitmiseks oma sõrmejälge</translation>
 <translation id="3701427423622901115">Lähtestamine kinnitati.</translation>
@@ -1898,6 +1901,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4185037616931963178">Hüvitisnumbri turvaliselt värskendamine</translation>
 <translation id="4186035307311647330">Peata hinna jälgimine</translation>
 <translation id="4191334393248735295">Pikkus</translation>
+<translation id="4192770747482479191">Vajutage mis tahes veebilehel kaks korda klahvi ⌘, et leida ja sisestada rohkem teavet</translation>
 <translation id="4195459680867822611">Nupp Kuva Chrome'i nõuanded, aktiveerige nupp Chrome'i funktsioonide kohta lisateabe saamiseks</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4196861286325780578">&amp;Teisalda uuesti</translation>
@@ -2846,6 +2850,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="573974402615125334">Vahelehegruppide jagamiseks, nendega liitumiseks ning nendes koos töötamiseks sünkroonige oma ajalugu ja vahelehed</translation>
 <translation id="5740911612628596808">Ümbrik C9</translation>
 <translation id="574392208103952083">Keskmine</translation>
+<translation id="5744350700955456407">Täiustatud automaattäide saab nüüd leida ja täita teavet (nt tellimuse numbreid ja lennu kinnituskoode) sellistest rakendustest nagu Gmail ja Photos.</translation>
 <translation id="5745586894920491759">Chrome töötleb lehtede pealkirju ja URL-e pilves.</translation>
 <translation id="5745733273847572235">Saab küsida teie asukohta</translation>
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>

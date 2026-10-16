@@ -665,6 +665,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2126374524350484896">PDF-konvertáló:</translation>
 <translation id="2127090458081644412">Jelszó mentve erre az eszközre</translation>
 <translation id="2127747486437921899">Dőlt</translation>
+<translation id="2129163794581571479">A Gemini Személyre szabott intelligencia funkciójával. A továbbfejlesztett automatikus kitöltés javítása érdekében ellenőrizhetjük a kéréseket, az oldalcímeket és az URL-eket. <ph name="BEGIN_LINK" />Beállítások kezelése<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">A megadott sablonok nem alkalmazhatók, mert nincs beállítva a DnsOverHttpsMode házirend.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">A Fizetési adatok automatikus kitöltésének engedélyezése teljes magasságban megnyitva.</translation>
@@ -1573,6 +1574,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3655670868607891010">Ha gyakran látja ezt, próbálja ki a következőt: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ellenőrzés</translation>
 <translation id="3659521826520353662">Mely, rendszergazda által meghatározott webhelyek lettek felkeresve, és mikor: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">A Gemini Személyre szabott intelligencia funkciójával. <ph name="BEGIN_LINK" />Beállítások kezelése<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">További vásárlási lehetőségek keresése más, ezt a terméket értékesítő üzleteknél.</translation>
 <translation id="3664782872746246217">Kulcsszavak:</translation>
 <translation id="3670030362669914947">Szám</translation>
@@ -1593,6 +1595,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3693516565203081475">Válasszon fizetési módot</translation>
 <translation id="3698353241727597930">A rendszergazda úgy konfigurálta a <ph name="FILES" /> mentését, hogy a vállalati kezelésű <ph name="CLOUD_STORAGE" />-tárhelyre kerüljenek. Ezek a fájlok figyelhetők, auditálhatók és megőrizhetők, amikor törli őket.</translation>
 <translation id="3698629142018988477">Webhely létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új webhelyet a Google Webhelyek szolgáltatásban.</translation>
+<translation id="3698708128812719147">Nyomja le kétszer a Ctrl billentyűt bárhol az interneten további adatok kereséséhez és kitöltéséhez</translation>
 <translation id="3700094625653511150">A későbbi fizetési lehetőségek elrejtéséhez lépjen a következő oldalra: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Ujjlenyomatot használ jelszavak kitöltéséhez</translation>
 <translation id="3701427423622901115">Visszaállítás elfogadva.</translation>
@@ -1895,6 +1898,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4185037616931963178">Panaszkezelési azonosító biztonságos frissítése</translation>
 <translation id="4186035307311647330">Árkövetés kikapcsolása</translation>
 <translation id="4191334393248735295">Hossz</translation>
+<translation id="4192770747482479191">Nyomja le kétszer a ⌘ billentyűt bárhol az interneten további adatok kereséséhez és kitöltéséhez</translation>
 <translation id="4195459680867822611">Chrome-tippek megjelenítése gomb, nyomja meg a Chrome funkcióival kapcsolatos további információkért.</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196861286325780578">&amp;Áthelyezés újra</translation>
@@ -2843,6 +2847,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="573974402615125334">Ha meg szeretne osztani lapcsoportokat, csatlakozni szeretne hozzájuk, illetve együtt szeretne dolgozni másokkal bennük, szinkronizálja az előzményeket és a lapokat</translation>
 <translation id="5740911612628596808">C9 boríték</translation>
 <translation id="574392208103952083">Közepes</translation>
+<translation id="5744350700955456407">A továbbfejlesztett automatikus kitöltés mostantól megkereshet és kitölthet információkat (például rendelésszámokat és járatok visszaigazoló kódjait) olyan alkalmazásokból, mint a Gmail és a Fotók.</translation>
 <translation id="5745586894920491759">A Chrome a felhőben dolgozza fel az oldalcímeket és az URL-eket</translation>
 <translation id="5745733273847572235">Engedélyt kérhet a helyadataihoz való hozzáférésre</translation>
 <translation id="5750869797196646528">Kézmozgás követése</translation>

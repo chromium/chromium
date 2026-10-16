@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Umesasisha kipengee</translation>
 <translation id="1018804590490383958">Changanua na ujaze kiotomatiki</translation>
 <translation id="1019990162050689579">Shughuli kwenye Programu ya Gemini</translation>
+<translation id="102471647093736603">Bonyeza na ushikilie ili usogeze</translation>
 <translation id="102645702181682900">Jukumu limeanza</translation>
 <translation id="102916930470544692">Ufunguo wa siri</translation>
 <translation id="1030376737535466765">Fungua Kidhibiti cha Manenosiri</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Masasisho</translation>
 <translation id="4813345808229079766">Muunganisho</translation>
 <translation id="4821595350501541683">Vichupo vilifungwa na data ya kuvinjari ikafutwa</translation>
+<translation id="4823322556950229674">Unaweza kubonyeza na kushikilia ili usogeze sehemu ya anwani na kitufe cha kurudi nyuma upande wa chini</translation>
 <translation id="4824480232751123840">Kiwango</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} na kingine kimoja}other{{domain} na vingine {count}}}</translation>
 <translation id="4826588772550366629">kamera na maikrofoni</translation>
@@ -2057,6 +2059,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Endelea</translation>
 <translation id="741204030948306876">Ndiyo, ninakubali</translation>
+<translation id="7417055777338419059">Kusimba, kuandika au kutayarisha slaidi</translation>
 <translation id="7419565702166471774">Tumia miunganisho salama kila wakati</translation>
 <translation id="7423098979219808738">Uliza kwanza</translation>
 <translation id="7425053386765766120">Kuweka njia ya kulipa…</translation>

@@ -665,6 +665,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2126374524350484896">Produtor do PDF:</translation>
 <translation id="2127090458081644412">O contrasinal gardouse neste dispositivo</translation>
 <translation id="2127747486437921899">Cursiva</translation>
+<translation id="2129163794581571479">Función impulsada por Gemini coa Intelixencia personalizada. As túas solicitudes, os títulos das páxinas e os URL poden revisarse para perfeccionar a función de autocompletar mellorada. <ph name="BEGIN_LINK" />Xestionar a configuración<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Os modelos que especificaches poden non aplicarse debido a que non se definiu a política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Abriuse a altura completa a opción para activar o completado automático de pagos.</translation>
@@ -1575,6 +1576,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3655670868607891010">Se esta mensaxe aparece con frecuencia, proba a solucionalo con estas <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3659521826520353662">Que sitios web definidos pola persoa administradora se visitan e cando: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Función impulsada por Gemini coa Intelixencia personalizada. <ph name="BEGIN_LINK" />Xestionar a configuración<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Busca máis opcións de compra noutras tendas nas que se venda este produto.</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1595,6 +1597,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3693516565203081475">Escoller método de pago</translation>
 <translation id="3698353241727597930">A persoa administradora definiu a configuración para gardar <ph name="FILES" /> no teu almacenamento de <ph name="CLOUD_STORAGE" /> xestionado pola empresa. Estes ficheiros pódense supervisar, auditar e conservar cando os elimines.</translation>
 <translation id="3698629142018988477">Botón para crear un sitio. Actívao para crear rapidamente un sitio en Google Sites</translation>
+<translation id="3698708128812719147">Preme Control dúas veces en calquera lugar da Web para buscar e completar máis información</translation>
 <translation id="3700094625653511150">Para ocultar as opcións de pagar máis tarde, vai a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Estás usando a túa impresión dixital para completar os contrasinais</translation>
 <translation id="3701427423622901115">Realizouse o restablecemento.</translation>
@@ -1898,6 +1901,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4185037616931963178">Actualiza o número Redress de forma segura</translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
 <translation id="4191334393248735295">Lonxitude</translation>
+<translation id="4192770747482479191">Preme ⌘ dúas veces en calquera lugar da Web para buscar e completar máis información</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196861286325780578">&amp;Refacer movemento</translation>
@@ -2846,6 +2850,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="573974402615125334">Para compartir grupos de pestanas, unirte a eles e colaborar, sincroniza o teu historial e as pestanas</translation>
 <translation id="5740911612628596808">Sobre C9</translation>
 <translation id="574392208103952083">Medio</translation>
+<translation id="5744350700955456407">A función de autocompletar mellorada agora pode buscar e completar información (por exemplo, números de pedido e códigos de confirmación de voos) en aplicacións como Gmail e Fotos</translation>
 <translation id="5745586894920491759">Chrome procesa os títulos das páxinas e os URL na nube</translation>
 <translation id="5745733273847572235">Pode pedirche permiso para usar a túa localización</translation>
 <translation id="5750869797196646528">Seguimento das mans</translation>

@@ -163,6 +163,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1109482864356262001">Funkcije, ki potrebujejo tipala gibanja ali svetlobe, ne bodo delovale</translation>
 <translation id="1110155001042129815">Počakaj</translation>
 <translation id="1110965959145884739">Izberite, katere jezike želite namestiti v tej napravi. Jezikovne datoteke so zaradi varčevanja s prostorom na disku skupne za vse uporabnike. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Premakni fokus na skupino zavihkov</translation>
 <translation id="1112227834592480032">Izberite gumb za Google Lens, nato kliknite in povlecite čez težavo</translation>
 <translation id="1112420131909513020">Zavihek v ozadju uporablja Bluetooth</translation>
 <translation id="1112998165730922436">Predvajanje je začasno zaustavljeno</translation>
@@ -2239,6 +2240,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2701960282717219666">Omrežni naslov MAC</translation>
 <translation id="2702720509009999256">Preverite internetno povezavo in izberite možnost »Poskusi znova« ali pa »Odpri v osnovnem urejevalniku«, če želite uporabiti omejene možnosti za ogled in urejanje.</translation>
 <translation id="2702801445560668637">Reading List</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Premakni zavihek iz fokusa}one{Premakni zavihke iz fokusa}two{Premakni zavihke iz fokusa}few{Premakni zavihke iz fokusa}other{Premakni zavihke iz fokusa}}</translation>
 <translation id="270414148003105978">Mobilna omrežja</translation>
 <translation id="2704184184447774363">Microsoftovo podpisovanje dokumentov</translation>
 <translation id="2704606927547763573">Kopirano</translation>
@@ -3154,6 +3156,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3379268272734690">Puščava</translation>
 <translation id="3382737653173267704">Ogled družine</translation>
 <translation id="338323348408199233">Blokiraj promet brez omrežja VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Premakni fokus na zavihek}one{Premakni fokus na zavihke}two{Premakni fokus na zavihke}few{Premakni fokus na zavihke}other{Premakni fokus na zavihke}}</translation>
 <translation id="3385053436247851142">Prijava z računom za Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Natančnost zaznavanja lokacije zagotavlja natančnejšo lokacijo za aplikacije in storitve. Google to naredi tako, da redno obdeluje podatke o tipalih naprav in brezžične signale iz naprave ter tako množično zbere lokacije brezžičnih signalov. Ti se uporabljajo brez vaše osebne prepoznave, in sicer za namene izboljšanja natančnosti zaznavanja lokacije in storitev na podlagi lokacije ter za namene splošnega izboljšanja, zagotavljanja in vzdrževanja Googlovih storitev glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.</translation>
@@ -4537,6 +4540,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4406308048672435032">Če si želite znova ogledati celoten seznam, ta zavihek lahko spremenite v neaktivnega ali ga osvežite</translation>
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4406963243402726564">Neshranjeni podatki</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Premakni zavihek iz fokusa}one{Premakni zavihke iz fokusa}two{Premakni zavihke iz fokusa}few{Premakni zavihke iz fokusa}other{Premakni zavihke iz fokusa}}</translation>
 <translation id="4408599188496843485">&amp;Pomoč</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Skrbnik lahko snema vaš zaslon z aplikacijo <ph name="APP0_NAME" />. Ko se bo snemanje začelo, boste obveščeni.}=2{Skrbnik lahko snema vaš zaslon z aplikacijama <ph name="APP0_NAME" /> in <ph name="APP1_NAME" />. Ko se bo snemanje začelo, boste obveščeni.}=3{Skrbnik lahko snema vaš zaslon z aplikacijama <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> in še eno. Ko se bo snemanje začelo, boste obveščeni.}one{Skrbnik lahko snema vaš zaslon z aplikacijama <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> in še #. Ko se bo snemanje začelo, boste obveščeni.}two{Skrbnik lahko snema vaš zaslon z aplikacijama <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> in še #. Ko se bo snemanje začelo, boste obveščeni.}few{Skrbnik lahko snema vaš zaslon z aplikacijama <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> in še #. Ko se bo snemanje začelo, boste obveščeni.}other{Skrbnik lahko snema vaš zaslon z aplikacijama <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> in še #. Ko se bo snemanje začelo, boste obveščeni.}}</translation>
 <translation id="4409697491990005945">Robovi</translation>
@@ -7422,6 +7426,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6651762277693024112">Samodejno se zažene ob vsakem obisku tega spletnega mesta</translation>
 <translation id="6654509035557065241">Prednostno omrežje</translation>
 <translation id="6655190889273724601">Način za razvijalce</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Premakni fokus na zavihek}one{Premakni fokus na zavihke}two{Premakni fokus na zavihke}few{Premakni fokus na zavihke}other{Premakni fokus na zavihke}}</translation>
 <translation id="6657180931610302174">Želite dodati uporabniško ime?</translation>
 <translation id="6657240842932274095">Želite sistemskim storitvam dovoliti uporabo lokacije?</translation>
 <translation id="6657585470893396449">Geslo</translation>
@@ -10059,6 +10064,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8652400352452647993">Napaka pri pakiranju razširitve</translation>
 <translation id="8654151524613148204">Datoteka je prevelika in je računalnik ne more obdelati. Oprostite.</translation>
 <translation id="8655295600908251630">Kanal</translation>
+<translation id="8656101380279383244">Premakni fokus na skupino zavihkov</translation>
 <translation id="8656888282555543604">Omogočanje beleženja Braillove pisave</translation>
 <translation id="8657393004602556571">Ali želite zavreči povratne informacije?</translation>
 <translation id="8657542881463614516">Uporaba poteze vlečenja za premikanje med stranmi</translation>

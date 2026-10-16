@@ -163,6 +163,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1109482864356262001">Kenmerke waarvoor beweging- of ligsensors nodig is, sal nie werk nie</translation>
 <translation id="1110155001042129815">Wag</translation>
 <translation id="1110965959145884739">Kies watter tale jy op hierdie toestel wil installeer. Taallêers word tussen gebruikers gedeel om skyfspasie te bespaar. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Fokus op oortjiegroep</translation>
 <translation id="1112227834592480032">Kies die Google Lens-knoppie, klik en sleep dan oor ’n probleem</translation>
 <translation id="1112420131909513020">Agtergrondoortjie gebruik tans Bluetooth</translation>
 <translation id="1112998165730922436">Uitsending is onderbreek</translation>
@@ -2240,6 +2241,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2701960282717219666">Netwerk-MAC-adres</translation>
 <translation id="2702720509009999256">Gaan jou internetverbinding na en kies “Probeer weer” of kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeringopsies te gebruik.</translation>
 <translation id="2702801445560668637">Leeslys</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Ontfokus oortjie}other{Ontfokus oortjies}}</translation>
 <translation id="270414148003105978">Mobiele netwerke</translation>
 <translation id="2704184184447774363">Microsoft-dokumentondertekening</translation>
 <translation id="2704606927547763573">Gekopieer</translation>
@@ -3155,6 +3157,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3379268272734690">Woestyn</translation>
 <translation id="3382737653173267704">Bekyk gesin</translation>
 <translation id="338323348408199233">Blokkeer verkeer sonder VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Fokus op oortjie}other{Fokus op oortjies}}</translation>
 <translation id="3385053436247851142">Meld aan met Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Liggingakkuraatheid verskaf ’n akkurater ligging vir apps en dienste. Om dit te doen, verwerk Google van tyd tot tyd inligting oor toestelsensors en draadlose seine vanaf jou toestel om draadloseseinliggings met skareverkryging te kry. Dit word gebruik, sonder om jou te identifiseer, om liggingakkuraatheid en ligginggegronde dienste te verbeter en om oor die algemeen Google se dienste te verbeter, te verskaf en te handhaaf op grond van Google en derde partye se wettige belange om in gebruikers se behoeftes te voorsien.</translation>
@@ -4538,6 +4541,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4406308048672435032">Jy kan hierdie oortjie onaktief maak of herlaai om die volledige lys weer te sien</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4406963243402726564">Ongestoorde data</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Ontfokus oortjie}other{Ontfokus oortjies}}</translation>
 <translation id="4408599188496843485">Hulp</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> opneem. Jy sal in kennis gestel word wanneer die opname begin.}=2{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" /> opneem. Jy sal in kennis gestel word wanneer die opname begin.}=3{Jou administrateur kan jou skerm opneem met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en een ander app. Jy sal in kennis gestel word wanneer die opname begin.}other{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # ander apps opneem. Jy sal in kennis gestel word wanneer die opname begin.}}</translation>
 <translation id="4409697491990005945">Kantlyne</translation>
@@ -7417,6 +7421,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6651762277693024112">Loop outomaties elke keer wat jy hierdie werf besoek</translation>
 <translation id="6654509035557065241">Verkies netwerk</translation>
 <translation id="6655190889273724601">Ontwikkelaarmodus</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Fokus op oortjie}other{Fokus op oortjies}}</translation>
 <translation id="6657180931610302174">Voeg gebruikernaam by?</translation>
 <translation id="6657240842932274095">Wil jy stelseldienste toelaat om jou ligging te gebruik?</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
@@ -10053,6 +10058,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8652400352452647993">Pakketuitbreidingfout</translation>
 <translation id="8654151524613148204">Die lêer is te groot vir jou rekenaar om te hanteer. Jammer.</translation>
 <translation id="8655295600908251630">Kanaal</translation>
+<translation id="8656101380279383244">Fokus op oortjiegroep</translation>
 <translation id="8656888282555543604">Aktiveer braille-loginskrywings</translation>
 <translation id="8657393004602556571">Wil jy die terugvoer weggooi?</translation>
 <translation id="8657542881463614516">Gebruik ’n swiepgebaar om tussen bladsye te navigeer</translation>

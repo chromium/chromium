@@ -665,6 +665,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2126374524350484896">Aplikacija za kreiranje PDF-a:</translation>
 <translation id="2127090458081644412">Lozinka je sačuvana na uređaj</translation>
 <translation id="2127747486437921899">Kurziv</translation>
+<translation id="2129163794581571479">Omogućava Gemini s Ličnom inteligencijom. Vaši zahtjevi, naslovi stranica i URL-ovi se mogu pregledati da unaprijedimo poboljšano automatsko popunjavanje. <ph name="BEGIN_LINK" />Upravljajte postavkama<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Šabloni koje ste naveli neće se primijeniti jer pravilo DnsOverHttpsMode nije postavljeno.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Omogućavanje automatskog popunjavanja plaćanja je otvoreno u punoj visini.</translation>
@@ -1575,6 +1576,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3655670868607891010">Ako vam se često prikazuje ova poruka, probajte sljedeće <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3659521826520353662">Koje su web lokacije koje je administrator definirao posjećene i kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Omogućava Gemini s Ličnom inteligencijom. <ph name="BEGIN_LINK" />Upravljajte postavkama<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Pretraživanje više opcija za kupovinu iz drugih trgovina koje prodaju taj proizvod.</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
 <translation id="3670030362669914947">Broj</translation>
@@ -1595,6 +1597,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3693516565203081475">Odaberite način plaćanja</translation>
 <translation id="3698353241727597930">Administrator je konfigurirao pohranjivanje <ph name="FILES" /> u pohranu na <ph name="CLOUD_STORAGE" /> kojom upravlja preduzeće. Ti fajlovi će se možda nadzirati, revidirati i zadržati kada ih izbrišete.</translation>
 <translation id="3698629142018988477">Dugme Kreiraj web lokaciju, aktivirajte da brzo kreirate novu web lokaciju na usluzi Google Web lokacije</translation>
+<translation id="3698708128812719147">Dvaput pritisnite Ctrl bilo gdje na webu da pronađete i popunite više informacija</translation>
 <translation id="3700094625653511150">Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Koristite otisak prsta za popunjavanje lozinki</translation>
 <translation id="3701427423622901115">Vraćanje na zadano je potvrđeno.</translation>
@@ -1898,6 +1901,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4185037616931963178">Sigurno ažurirajte broj rješenja prigovora</translation>
 <translation id="4186035307311647330">Prestani pratiti cijenu</translation>
 <translation id="4191334393248735295">Duljina</translation>
+<translation id="4192770747482479191">Dvaput pritisnite ⌘ bilo gdje na webu da pronađete i popunite više informacija</translation>
 <translation id="4195459680867822611">Dugme Prikaži savjete za Chrome, aktivirajte da saznate više o funkcijama Chromea</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4196861286325780578">&amp;Ponovi premještanje</translation>
@@ -2846,6 +2850,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="573974402615125334">Da dijelite grupe kartica, pridružujete im se i sarađujete u njima, sinhronizirajte historiju i kartice</translation>
 <translation id="5740911612628596808">Koverta C9</translation>
 <translation id="574392208103952083">Srednje</translation>
+<translation id="5744350700955456407">Poboljšano automatsko popunjavanje sada može pronaći i popuniti informacije, kao što su brojevi narudžbi i kodovi za potvrdu letova, iz aplikacija kao što su Gmail i Fotografije</translation>
 <translation id="5745586894920491759">Chrome obrađuje naslove stranica i URL-ove u oblaku</translation>
 <translation id="5745733273847572235">Može tražiti vašu lokaciju</translation>
 <translation id="5750869797196646528">Praćenje ruku</translation>

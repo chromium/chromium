@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Üksus on värskendatud</translation>
 <translation id="1018804590490383958">Skanni ja täida automaatselt</translation>
 <translation id="1019990162050689579">Gemini rakenduste tegevus</translation>
+<translation id="102471647093736603">Liigutamiseks vajutage pikalt</translation>
 <translation id="102645702181682900">Ülesannet alustati</translation>
 <translation id="102916930470544692">Pääsuvõti</translation>
 <translation id="1030376737535466765">Avage teenus Paroolihaldur</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Värskendused</translation>
 <translation id="4813345808229079766">Ühendus</translation>
 <translation id="4821595350501541683">Vahelehed suleti ja sirvimisandmed kustutati</translation>
+<translation id="4823322556950229674">Aadressiriba ja tagasinupu allapoole liigutamiseks puudutage neid pikalt.</translation>
 <translation id="4824480232751123840">Ruumala</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja veel 1}other{{domain} ja veel {count}}}</translation>
 <translation id="4826588772550366629">kaamerat ja mikrofoni</translation>
@@ -2057,6 +2059,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Jätka</translation>
 <translation id="741204030948306876">Jah, sobib</translation>
+<translation id="7417055777338419059">Kodeerimine, kirjutamine või slaidide koostamine</translation>
 <translation id="7419565702166471774">Kasuta alati turvalist ühendust</translation>
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7425053386765766120">Makseviisi lisamine …</translation>

@@ -665,6 +665,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2127090458081644412">Password saved to this device</translation>
 <translation id="2127747486437921899">Italic</translation>
+<translation id="2129163794581571479">Powered by Gemini with Personal Intelligence. Your requests, page titles and URLs may be reviewed to improve enhanced autofill. <ph name="BEGIN_LINK" />Manage settings<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131006834960167560">Enable payments autofill opened at full height.</translation>
@@ -1575,6 +1576,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3655670868607891010">If you're seeing this frequently, try these <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3659521826520353662">Which administrator-defined websites are visited and when: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Powered by Gemini with Personal Intelligence. <ph name="BEGIN_LINK" />Manage settings<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Search more buying options from other shops that sell this product.</translation>
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3670030362669914947">Number</translation>
@@ -1595,6 +1597,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3693516565203081475">Choose a payment method</translation>
 <translation id="3698353241727597930">Your administrator has configured to save <ph name="FILES" /> in your enterprise-managed <ph name="CLOUD_STORAGE" /> storage. These files may be monitored, audited and retained when you delete them.</translation>
 <translation id="3698629142018988477">Create site button, activate to quickly create a new site in Google Sites</translation>
+<translation id="3698708128812719147">Press Ctrl twice anywhere on the web to find and fill more info</translation>
 <translation id="3700094625653511150">To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">You're using your fingerprint for filling passwords</translation>
 <translation id="3701427423622901115">Reset acknowledged.</translation>
@@ -1898,6 +1901,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4185037616931963178">Update redress number securely</translation>
 <translation id="4186035307311647330">Untrack price</translation>
 <translation id="4191334393248735295">Length</translation>
+<translation id="4192770747482479191">Press ⌘ twice anywhere on the web to find and fill more info</translation>
 <translation id="4195459680867822611">See Chrome tips button, activate to learn about Chrome features</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
@@ -2846,6 +2850,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="573974402615125334">To share, join and collaborate in tab groups, sync your history and tabs</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">Medium</translation>
+<translation id="5744350700955456407">Enhanced autofill can now find and fill info – like order numbers and flight confirmation codes – from apps like Gmail and Photos</translation>
 <translation id="5745586894920491759">Chrome processes page titles and URLs in the cloud</translation>
 <translation id="5745733273847572235">Can ask for your location</translation>
 <translation id="5750869797196646528">Hand tracking</translation>

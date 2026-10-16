@@ -163,6 +163,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1109482864356262001">Hərəkət və ya işıq sensoru tələb edən funksiyalar işləməyəcək</translation>
 <translation id="1110155001042129815">Gözləyin</translation>
 <translation id="1110965959145884739">Bu cihazda hansı dilləri quraşdıracağınızı seçin. Diskdə yer saxlamaq üçün dil faylları istifadəçilər arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Tab qrupuna fokuslanın</translation>
 <translation id="1112227834592480032">Google Linza düyməsini seçin, sonra klikləyin və problemin üzərinə sürükləyin</translation>
 <translation id="1112420131909513020">Arxa fon tabı bluetooth istifadə edir</translation>
 <translation id="1112998165730922436">Yayıma pauza verildi</translation>
@@ -2230,6 +2231,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2701960282717219666">Şəbəkə MAC ünvanı</translation>
 <translation id="2702720509009999256">İnternet bağlantısını yoxlayıb, "Yenidən cəhd edin" seçin və ya məhdud baxış və redaktə seçimlərindən istifadə etmək üçün "Sadə redaktorda açın" seçin.</translation>
 <translation id="2702801445560668637">Siyahı oxunur</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Tabı fokusdan çıxarın}other{Tabları fokusdan çıxarın}}</translation>
 <translation id="270414148003105978">Mobil şəbəkələr</translation>
 <translation id="2704184184447774363">Microsoft Sənədlərinin İmzalanması</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
@@ -3145,6 +3147,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3379268272734690">Səhra</translation>
 <translation id="3382737653173267704">Ailəyə baxın</translation>
 <translation id="338323348408199233">VPN'siz trafiki blok edin</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Taba fokuslanın}other{Tablara fokuslanın}}</translation>
 <translation id="3385053436247851142">Microsoft ilə daxil olun</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Məkan Dəqiqliyi tətbiq və xidmətlər üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyən etmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, həmçinin ümumilikdə Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq kimi məqsədlər üçün istifadə edilir.</translation>
@@ -4526,6 +4529,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4406308048672435032">Bu tabı qeyri-aktiv edə və ya tam siyahıya yenidən baxmaq üçün təzələyə bilərsiniz</translation>
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4406963243402726564">Yadda saxlanılmamış data</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Tabı fokusdan çıxarın}other{Tabları fokusdan çıxarın}}</translation>
 <translation id="4408599188496843485">Yardım</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administratorunuz <ph name="APP0_NAME" /> ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər veriləcək.}=2{Administratorunuz <ph name="APP0_NAME" /> və <ph name="APP1_NAME" /> ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər veriləcək.}=3{Administratorunuz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> və 1 digər tətbiq ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər veriləcək.}other{Administratorunuz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> və # digər tətbiq ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər veriləcək.}}</translation>
 <translation id="4409697491990005945">Kənar boşluqlar</translation>
@@ -7404,6 +7408,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6651762277693024112">Bu sayta hər dəfə daxil olduqda avtomatik işləyir</translation>
 <translation id="6654509035557065241">Şəbəkə tərcih edin</translation>
 <translation id="6655190889273724601">Developer rejimi</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Taba fokuslanın}other{Tablara fokuslanın}}</translation>
 <translation id="6657180931610302174">İstifadəçi adı əlavə edilsin?</translation>
 <translation id="6657240842932274095">Sistem xidmətlərinin məkan istifadəsinə icazə verilsin?</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -10040,6 +10045,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8652400352452647993">Paket Artırma Xətası</translation>
 <translation id="8654151524613148204">Fayl kompüteriniz üçün çox böyükdür.</translation>
 <translation id="8655295600908251630">Kanal</translation>
+<translation id="8656101380279383244">Tab qrupuna fokuslanın</translation>
 <translation id="8656888282555543604">Brayl girişini aktiv edin</translation>
 <translation id="8657393004602556571">Rəydən imtina etmək istəyirsiniz?</translation>
 <translation id="8657542881463614516">Səhifələr arasında naviqasiya üçün çəkmə jestindən istifadə edin</translation>

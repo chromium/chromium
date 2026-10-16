@@ -163,6 +163,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1109482864356262001">Funkcie vyžadujúce senzory pohybu alebo svetla nebudú fungovať</translation>
 <translation id="1110155001042129815">Čakajte, prosím.</translation>
 <translation id="1110965959145884739">Vyberte, ktoré jazyky chcete inštalovať v tomto zariadení. Jazykové súbory sa zdieľajú medzi používateľmi, aby sa šetrilo miesto na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Zamerať na skupinu kariet</translation>
 <translation id="1112227834592480032">Vyberte tlačidlo Google Lens a potom kliknutím a presunutím označte problém</translation>
 <translation id="1112420131909513020">Karta na pozadí používa Bluetooth</translation>
 <translation id="1112998165730922436">Prenos je pozastavený</translation>
@@ -2227,6 +2228,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2701960282717219666">Adresa MAC siete</translation>
 <translation id="2702720509009999256">Skontrolujte internetové pripojenie a vyberte Skúsiť znova. Prípadne zvoľte Otvoriť v základnom editore a použite možnosti obmedzeného zobrazenia a úprav.</translation>
 <translation id="2702801445560668637">Čitateľský zoznam</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Zrušiť zameranie na kartu}few{Zrušiť zameranie na karty}many{Unfocus tabs}other{Zrušiť zameranie na karty}}</translation>
 <translation id="270414148003105978">Mobilné siete</translation>
 <translation id="2704184184447774363">Podpis dokumentu Microsoft</translation>
 <translation id="2704606927547763573">Skopírované</translation>
@@ -3142,6 +3144,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3379268272734690">Púšť</translation>
 <translation id="3382737653173267704">Zobraziť rodinu</translation>
 <translation id="338323348408199233">Blokovať dátové prenosy bez siete VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Zamerať na kartu}few{Zamerať na karty}many{Focus on tabs}other{Zamerať na karty}}</translation>
 <translation id="3385053436247851142">Prihlásiť sa účtom Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Presnosť určovania polohy poskytuje aplikáciám aj službám presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z vášho zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie vašej totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj všeobecného zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov.</translation>
@@ -4525,6 +4528,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4406308048672435032">Túto kartu môžete deaktivovať alebo ju môžete obnoviť a znova zobraziť celý zoznam</translation>
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4406963243402726564">Neuložené údaje</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Zrušiť zameranie na kartu}few{Zrušiť zameranie na karty}many{Unfocus Tabs}other{Zrušiť zameranie na karty}}</translation>
 <translation id="4408599188496843485">P&amp;omocník</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Váš správca môže nahrať vašu obrazovku pomocou aplikácie <ph name="APP0_NAME" />. Po spustení nahrávania dostanete upozornenie.}=2{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" /> a <ph name="APP1_NAME" />. Po spustení nahrávania dostanete upozornenie.}=3{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a jednej ďalšej. Po spustení nahrávania dostanete upozornenie.}few{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ďalších. Po spustení nahrávania dostanete upozornenie.}many{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and # other apps. You will be notified when the recording starts.}other{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ďalších. Po spustení nahrávania dostanete upozornenie.}}</translation>
 <translation id="4409697491990005945">Okraje</translation>
@@ -7405,6 +7409,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6651762277693024112">Spúšťa sa automaticky pri každej návšteve tohto webu</translation>
 <translation id="6654509035557065241">Preferovať sieť</translation>
 <translation id="6655190889273724601">Režim pre vývojárov</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Zamerať na kartu}few{Zamerať na karty}many{Focus on Tabs}other{Zamerať na karty}}</translation>
 <translation id="6657180931610302174">Chcete pridať používateľské meno?</translation>
 <translation id="6657240842932274095">Chcete povoliť systémovým službám používať vašu polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
@@ -10041,6 +10046,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8652400352452647993">Chyba zbalenia rozšírenia</translation>
 <translation id="8654151524613148204">Súbor je príliš veľký a váš počítač ho nemôže spracovať. Ľutujeme.</translation>
 <translation id="8655295600908251630">Kanál</translation>
+<translation id="8656101380279383244">Zamerať na skupinu kariet</translation>
 <translation id="8656888282555543604">Povoliť zápis Braillovho písma do denníka</translation>
 <translation id="8657393004602556571">Chcete spätnú väzbu zahodiť?</translation>
 <translation id="8657542881463614516">Medzi stránkami prechádzajte gestom potiahnutia</translation>

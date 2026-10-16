@@ -163,6 +163,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1109482864356262001">Veçoritë që kanë nevojë për sensorët e lëvizjes ose të dritës nuk do të funksionojnë</translation>
 <translation id="1110155001042129815">Prit</translation>
 <translation id="1110965959145884739">Zgjidh cilët gjuhë të instalohen në këtë pajisje. Skedarët e gjuhës ndahen mes përdoruesve për të kursyer hapësirë disku. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Fokusohu te grupi i skedave</translation>
 <translation id="1112227834592480032">Zgjidh butonin e "Lentes së Google" dhe më pas kliko dhe zvarrit mbi një problemë</translation>
 <translation id="1112420131909513020">Skeda në sfond po përdor Bluetooth</translation>
 <translation id="1112998165730922436">Transmetimi është vendosur në pauzë</translation>
@@ -2227,6 +2228,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2701960282717219666">Adresa MAC e rrjetit</translation>
 <translation id="2702720509009999256">Kontrollo lidhjen tënde të internetit dhe zgjidh "Provo përsëri", ose zgjidh "Hape në modifikuesin bazë" për të përdorur opsionet e kufizuara të shikimit dhe modifikimit.</translation>
 <translation id="2702801445560668637">Lista e leximit</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Anulo fokusimin te skeda}other{Anulo fokusimin te skedat}}</translation>
 <translation id="270414148003105978">Rrjetet celulare</translation>
 <translation id="2704184184447774363">Nënshkrimi i dokumentit nga Microsoft</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
@@ -3142,6 +3144,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3379268272734690">Shkretëtirë</translation>
 <translation id="3382737653173267704">Shiko familjen</translation>
 <translation id="338323348408199233">Blloko trafikun pa rrjetin VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Fokusohu te skeda}other{Fokusohu te skedat}}</translation>
 <translation id="3385053436247851142">Identifikohu me Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">"Saktësia e vendndodhjes" ofron vendndodhje më të saktë për aplikacionet dhe shërbimet. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga pajisja jote për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa të të identifikuar ty për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur në përgjithësi shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve.</translation>
@@ -4525,6 +4528,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4406308048672435032">Mund ta bësh këtë skedë joaktive ose mund ta rifreskosh për të shikuar përsëri listën e plotë</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4406963243402726564">Të dhëna të paruajtura</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Anulo fokusimin te skeda}other{Anulo fokusimin te skedat}}</translation>
 <translation id="4408599188496843485">N&amp;dihmë</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />. Do të njoftohesh kur të fillojë regjistrimi.}=2{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" /> dhe <ph name="APP1_NAME" />. Do të njoftohesh kur të fillojë regjistrimi.}=3{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe 1 aplikacion tjetër. Do të njoftohesh kur të fillojë regjistrimi.}other{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe # aplikacione të tjera. Do të njoftohesh kur të fillojë regjistrimi.}}</translation>
 <translation id="4409697491990005945">Kufijtë</translation>
@@ -7401,6 +7405,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6651762277693024112">Ekzekutohet automatikisht sa herë që ti viziton këtë sajt</translation>
 <translation id="6654509035557065241">Rrjeti i preferuar</translation>
 <translation id="6655190889273724601">Modaliteti i zhvilluesit</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Fokusohu te skeda}other{Fokusohu te skedat}}</translation>
 <translation id="6657180931610302174">Të shtohet emri i përdoruesit?</translation>
 <translation id="6657240842932274095">Të lejohen shërbimet e sistemit që të përdorin vendndodhjen tënde?</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
@@ -10037,6 +10042,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8652400352452647993">Gabim i shtesës së paketës</translation>
 <translation id="8654151524613148204">Skedari është tepër i madh për t'u përdorur nga kompjuteri yt. Na vjen keq.</translation>
 <translation id="8655295600908251630">Kanali</translation>
+<translation id="8656101380279383244">Fokusohu te grupi i skedave</translation>
 <translation id="8656888282555543604">Aktivizo regjistrimin për breil</translation>
 <translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
 <translation id="8657542881463614516">Përdor një gjest të rrëshqitjes së shpejt për të naviguar mes faqeve</translation>

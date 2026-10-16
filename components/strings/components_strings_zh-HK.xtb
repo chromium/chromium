@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">PDF 製作工具：</translation>
 <translation id="2127090458081644412">密碼已儲存至此裝置</translation>
 <translation id="2127747486437921899">斜體</translation>
+<translation id="2129163794581571479">採用 Gemini 和 Personal Intelligence 技術。你的要求、網頁標題和網址可能會送交審核，以改善加強版自動填入。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">「啟用付款資料自動填入」宜家喺成個畫面上顯示。</translation>
@@ -1574,6 +1575,7 @@
 <translation id="3655670868607891010">如果您經常看到這個頁面，請嘗試這些 <ph name="HELP_LINK" />。</translation>
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3659521826520353662">瀏覽過哪些管理員定義的網站和瀏覽時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">採用 Gemini 和 Personal Intelligence 技術。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">搜尋其他出售此產品的店舖的更多購買選項。</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3670030362669914947">號碼</translation>
@@ -1594,6 +1596,7 @@
 <translation id="3693516565203081475">選擇付款方法</translation>
 <translation id="3698353241727597930">管理員已將<ph name="FILES" />的儲存位置設定為由公司管理的 <ph name="CLOUD_STORAGE" />。即使你刪除這些檔案，公司仍可能會監控、審核及保留這些檔案。</translation>
 <translation id="3698629142018988477">建立網站按鈕，啟動之後就可以喺「Google 協作平台」度快速建立新網站</translation>
+<translation id="3698708128812719147">在網頁任何位置按兩下 Ctrl 鍵，即可尋找並填入更多資料</translation>
 <translation id="3700094625653511150">如要隱藏「稍後付款」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">你可使用指紋填入密碼</translation>
 <translation id="3701427423622901115">重設已確認。</translation>
@@ -1897,6 +1900,7 @@
 <translation id="4185037616931963178">安全地更新糾正號碼</translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
 <translation id="4191334393248735295">長度</translation>
+<translation id="4192770747482479191">在網頁任何位置按兩下 ⌘ 鍵，即可尋找並填入更多資料</translation>
 <translation id="4195459680867822611">睇 Chrome 提示按鈕，啟用之後就可以了解解各項 Chrome 功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196861286325780578">重做移動(&amp;R)</translation>
@@ -2845,6 +2849,7 @@
 <translation id="573974402615125334">如要分享、加入分頁群組和協作，請同步處理記錄和分頁</translation>
 <translation id="5740911612628596808">C9 信封</translation>
 <translation id="574392208103952083">中</translation>
+<translation id="5744350700955456407">加強版自動填入功能現可從 Gmail 和「相片」等應用程式尋找並填入資料，例如訂單編號和航班確認碼</translation>
 <translation id="5745586894920491759">Chrome 會在雲端處理網頁標題和網址</translation>
 <translation id="5745733273847572235">可要求您提供位置</translation>
 <translation id="5750869797196646528">手部追蹤</translation>

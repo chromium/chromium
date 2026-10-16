@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
 <translation id="1018804590490383958">Naskenovat a vyplnit automaticky</translation>
 <translation id="1019990162050689579">Aktivita v aplikacích s Gemini</translation>
+<translation id="102471647093736603">Podržením přesunete</translation>
 <translation id="102645702181682900">Úkol byl zahájen</translation>
 <translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1030376737535466765">Otevřít Správce hesel</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Aktualizace</translation>
 <translation id="4813345808229079766">Spojení</translation>
 <translation id="4821595350501541683">Karty byly zavřeny a údaje o prohlížení byly vymazány</translation>
+<translation id="4823322556950229674">Podržením můžete přesunout adresní řádek a tlačítko Zpět dolů</translation>
 <translation id="4824480232751123840">Objem</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 další}few{{domain} a {count} další}many{{domain} a {count} dalšího}other{{domain} a {count} dalších}}</translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
@@ -2057,6 +2059,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Pokračovat</translation>
 <translation id="741204030948306876">Ano</translation>
+<translation id="7417055777338419059">Programování, psaní nebo vytváření prezentací</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7425053386765766120">Přidat platební metodu…</translation>

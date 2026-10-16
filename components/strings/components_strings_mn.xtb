@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">PDF бүтээгч:</translation>
 <translation id="2127090458081644412">Нууц үгийг энэ төхөөрөмжид хадгалсан</translation>
 <translation id="2127747486437921899">Налуу</translation>
+<translation id="2129163794581571479">Personal Intelligence-тэй Gemini-р дэмжсэн. Сайжруулсан автомат бөглөлтийг сайжруулахын тулд таны хүсэлт, хуудасны гарчиг, URL-г хянаж магадгүй. <ph name="BEGIN_LINK" />Тохиргоог удирдах<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode удирдамжийг тохируулаагүй байгаа учраас таны тодорхойлсон загваруудыг хэрэгжүүлэхгүй байж болзошгүй.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Төлбөрийг автоматаар бөглөхийг идэвхжүүлэх сонголтыг бүтэн өндрөөр нээсэн.</translation>
@@ -1576,6 +1577,7 @@
 <translation id="3655670868607891010">Хэрэв та энэ мессежийг хэт олон удаа харж байга бол <ph name="HELP_LINK" />-ийг үзээрэй.</translation>
 <translation id="3658742229777143148">Засвар хийгдсэн</translation>
 <translation id="3659521826520353662">Администраторын тодорхойлсон аль вебсайтад хэзээ зочилсон болох: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Personal Intelligence-тэй Gemini-р дэмжсэн. <ph name="BEGIN_LINK" />Тохиргоог удирдах<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Энэ бүтээгдэхүүнийг борлуулдаг бусад дэлгүүрээс худалдан авах бусад сонголтыг хайна уу.</translation>
 <translation id="3664782872746246217">Түлхүүр үг:</translation>
 <translation id="3670030362669914947">Тоо</translation>
@@ -1596,6 +1598,7 @@
 <translation id="3693516565203081475">Төлбөрийн хэрэгсэл сонгох</translation>
 <translation id="3698353241727597930">Танай администратор <ph name="FILES" />-г танай байгууллагын удирддаг <ph name="CLOUD_STORAGE" />-н хадгалах санд хадгалахаар тохируулсан. Таныг эдгээр файлыг устгах үед хянаж, аудит хийж, хадгалж магадгүй.</translation>
 <translation id="3698629142018988477">Сайт үүсгэх товчлуур, Google Sites-д шинэ сайт шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
+<translation id="3698708128812719147">Веб хөтчийн хаана ч Ctrl товчийг хоёр удаа дарж нэмэлт мэдээлэл хайх, бөглөх боломжтой</translation>
 <translation id="3700094625653511150">Дараа төлөх сонголтуудыг нуухын тулд <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> руу очно уу</translation>
 <translation id="3700966190175650601">Та нууц үгнүүдийг бөглөхөд хурууны хээгээ ашиглаж байна</translation>
 <translation id="3701427423622901115">Шинэчлэлтийг хүлээн зөвшөөрсөн.</translation>
@@ -1899,6 +1902,7 @@
 <translation id="4185037616931963178">Залруулгын хяналтын дугаарыг (redress number) аюулгүй шинэчлээрэй</translation>
 <translation id="4186035307311647330">Үнэ хянахаа болих</translation>
 <translation id="4191334393248735295">Урт</translation>
+<translation id="4192770747482479191">Веб хөтчийн хаана ч ⌘ товчийг хоёр удаа дарж нэмэлт мэдээлэл хайх, бөглөх боломжтой</translation>
 <translation id="4195459680867822611">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
@@ -2847,6 +2851,7 @@
 <translation id="573974402615125334">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд түүх, табаа синк хийнэ үү</translation>
 <translation id="5740911612628596808">Дугтуй C9</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
+<translation id="5744350700955456407">Сайжруулсан автомат бөглөлт нь Gmail, Зураг зэрэг аппаас захиалгын дугаар, нислэгийн баталгаажуулах код зэрэг мэдээллийг олж, автоматаар бөглөх боломжтой боллоо</translation>
 <translation id="5745586894920491759">Chrome хуудасны гарчиг, URL-г үүлэнд боловсруулдаг</translation>
 <translation id="5745733273847572235">Таны байршлыг хүсэх боломжтой</translation>
 <translation id="5750869797196646528">Гар хянах</translation>

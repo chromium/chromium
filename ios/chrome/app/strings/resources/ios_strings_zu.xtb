@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Into ibuyekeziwe</translation>
 <translation id="1018804590490383958">Skena futhi uzigcwalisele</translation>
 <translation id="1019990162050689579">Umsebenzi we-App yeGemini</translation>
+<translation id="102471647093736603">Cindezela futhi ubambe ukuze uhambise</translation>
 <translation id="102645702181682900">Umsebenzi uqalile</translation>
 <translation id="102916930470544692">Ukhiye wokudlula</translation>
 <translation id="1030376737535466765">Vula Isiphathi Sephasiwedi</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Izibuyekezo</translation>
 <translation id="4813345808229079766">Uxhumano</translation>
 <translation id="4821595350501541683">Amathebhu avaliwe futhi idatha yopheqululo isuliwe</translation>
+<translation id="4823322556950229674">Ungacindezela futhi ubambe ukuze uhambise ibha lekheli nenkinobho yokubuyela emuva ezansi</translation>
 <translation id="4824480232751123840">Ivolumu</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, nolunye olungu-1}one{{domain} nabanye abangu-{count}}other{{domain} nabanye abangu-{count}}}</translation>
 <translation id="4826588772550366629">ikhamela nemakrofoni</translation>
@@ -2057,6 +2059,7 @@ Ungaqala kabusha noma nini.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Qhubeka</translation>
 <translation id="741204030948306876">Yebo, ngingenile</translation>
+<translation id="7417055777338419059">Faka ikhodi, bhala noma wenze amaslayidi</translation>
 <translation id="7419565702166471774">Sebenzisa njalo uxhumano oluvikelekile</translation>
 <translation id="7423098979219808738">Buza kuqala</translation>
 <translation id="7425053386765766120">Engeza indlela yokukhokha…</translation>

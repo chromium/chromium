@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">वस्तु अद्यावधिक गरियो</translation>
 <translation id="1018804590490383958">स्क्यान गर्नुहोस् र स्वतः भर्नुहोस्</translation>
 <translation id="1019990162050689579">Gemini एपसँग गरिएका अन्तर्क्रिया</translation>
+<translation id="102471647093736603">सार्न थिचिराख्नुहोस्</translation>
 <translation id="102645702181682900">कार्य सुरु गरिएको छ</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1030376737535466765">पासवर्ड म्यानेजर खोल्नुहोस्</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">अपडेटहरू</translation>
 <translation id="4813345808229079766">जडान</translation>
 <translation id="4821595350501541683">ट्याबहरू बन्द गरिए र ब्राउजिङ डेटा मेटाइयो</translation>
+<translation id="4823322556950229674">तपाईं एड्रेस बार र "पछाडि" बटनमा थिचिराखेर तिनलाई पुछारमा सार्न सक्नुहुन्छ</translation>
 <translation id="4824480232751123840">आयतन</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
@@ -2057,6 +2059,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
 <translation id="7412027924265291969">जारी राख्नुहोस्</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
+<translation id="7417055777338419059">कोडिङ गर्नुहोस्, लेख्नुहोस् वा स्लाइडहरू बनाउनुहोस्</translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
 <translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
 <translation id="7425053386765766120">भुक्तानी विधि हाल्नुहोस्…</translation>

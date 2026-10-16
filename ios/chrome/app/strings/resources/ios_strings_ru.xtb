@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Обновлено</translation>
 <translation id="1018804590490383958">Сканировать и заполнять автоматически</translation>
 <translation id="1019990162050689579">История действий в приложениях Gemini</translation>
+<translation id="102471647093736603">Для перемещения нажмите и удерживайте</translation>
 <translation id="102645702181682900">Задача запущена</translation>
 <translation id="102916930470544692">Ключ доступа</translation>
 <translation id="1030376737535466765">Открыть Менеджер паролей</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Обновления</translation>
 <translation id="4813345808229079766">Соединение</translation>
 <translation id="4821595350501541683">Вкладки были закрыты, а данные о работе в браузере удалены.</translation>
+<translation id="4823322556950229674">Чтобы переместить вниз адресную строку и кнопку "Назад", нажмите на них и удерживайте.</translation>
 <translation id="4824480232751123840">Громкость</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
@@ -2057,6 +2059,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Продолжить</translation>
 <translation id="741204030948306876">ОК</translation>
+<translation id="7417055777338419059">Пишите код или текст и создавайте презентации</translation>
 <translation id="7419565702166471774">Всегда использовать безопасные соединения</translation>
 <translation id="7423098979219808738">Сначала спрашивать</translation>
 <translation id="7425053386765766120">Добавить способ оплаты</translation>

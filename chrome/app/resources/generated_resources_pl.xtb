@@ -163,6 +163,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1109482864356262001">Nie będą działać funkcje, które potrzebują czujników ruchu lub światła</translation>
 <translation id="1110155001042129815">Zaczekaj</translation>
 <translation id="1110965959145884739">Wybierz języki do zainstalowania na tym urządzeniu. Aby pliki pakietów językowych nie zajmowały za dużo miejsca na dysku, użytkownicy korzystają z nich wspólnie. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Zaznacz grupę kart</translation>
 <translation id="1112227834592480032">Kliknij przycisk Obiektywu Google i przeciągnij go na problem</translation>
 <translation id="1112420131909513020">Karta w tle używa Bluetootha</translation>
 <translation id="1112998165730922436">Przesyłanie zostało wstrzymane</translation>
@@ -2221,6 +2222,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2701960282717219666">Adres MAC sieci</translation>
 <translation id="2702720509009999256">Sprawdź połączenie z internetem i wybierz „Spróbuj ponownie”. Możesz też kliknąć „Otwórz w podstawowym edytorze”, aby skorzystać z ograniczonych opcji wyświetlania i edytowania.</translation>
 <translation id="2702801445560668637">Do przeczytania</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Usuń zaznaczenie karty}few{Usuń zaznaczenie kart}many{Usuń zaznaczenie kart}other{Usuń zaznaczenie kart}}</translation>
 <translation id="270414148003105978">Sieci komórkowe</translation>
 <translation id="2704184184447774363">Podpisywanie dokumentów firmy Microsoft</translation>
 <translation id="2704606927547763573">Skopiowano</translation>
@@ -3132,6 +3134,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3379268272734690">Pustynia</translation>
 <translation id="3382737653173267704">Wyświetl grupę rodzinną</translation>
 <translation id="338323348408199233">Blokuj ruch bez VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Zaznacz kartę}few{Zaznacz karty}many{Zaznacz karty}other{Zaznacz karty}}</translation>
 <translation id="3385053436247851142">Zaloguj się przez Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Ustawienie Dokładność lokalizacji zapewnia aplikacjom i usługom dostęp do dokładniejszej lokalizacji. W tym celu Google okresowo przetwarza dane z czujników urządzenia i sygnały bezprzewodowe z Twojego urządzenia do ustalania lokalizacji sygnałów bezprzewodowych na zasadzie crowdsourcingu. Dane są wykorzystywane – bez identyfikowania Cię – do poprawiania dokładności lokalizacji i usług wykorzystujących lokalizację, a także do udoskonalania, świadczenia i utrzymywania usług Google w oparciu o uzasadniony interes Google i innych firm w spełnianiu potrzeb użytkowników.</translation>
@@ -4513,6 +4516,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4406308048672435032">Możesz ustawić tę kartę jako nieaktywną lub ją odświeżyć, aby ponownie zobaczyć pełną listę</translation>
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4406963243402726564">Niezapisane dane</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Usuń zaznaczenie karty}few{Usuń zaznaczenie kart}many{Usuń zaznaczenie kart}other{Usuń zaznaczenie kart}}</translation>
 <translation id="4408599188496843485">Pomo&amp;c</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}=2{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}=3{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze 1. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}few{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}many{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}other{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Gdy nagrywanie się rozpocznie, otrzymasz powiadomienie.}}</translation>
 <translation id="4409697491990005945">Marginesy</translation>
@@ -7392,6 +7396,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6651762277693024112">Uruchamia się automatycznie przy każdej wizycie na tej stronie</translation>
 <translation id="6654509035557065241">Ustaw sieć jako preferowaną</translation>
 <translation id="6655190889273724601">Tryb dewelopera</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Zaznacz kartę}few{Zaznacz karty}many{Zaznacz karty}other{Zaznacz karty}}</translation>
 <translation id="6657180931610302174">Dodać nazwę użytkownika?</translation>
 <translation id="6657240842932274095">Zezwolić usługom systemowym na korzystanie z Twojej lokalizacji?</translation>
 <translation id="6657585470893396449">Hasło</translation>
@@ -10026,6 +10031,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8652400352452647993">Błąd rozszerzenia pakietu</translation>
 <translation id="8654151524613148204">Plik jest zbyt duży dla komputera. Przepraszamy.</translation>
 <translation id="8655295600908251630">Kanał</translation>
+<translation id="8656101380279383244">Zaznacz grupę kart</translation>
 <translation id="8656888282555543604">Włącz rejestrowanie brajla</translation>
 <translation id="8657393004602556571">Rezygnujesz z przesłania opinii?</translation>
 <translation id="8657542881463614516">Używaj gestu przesuwania, aby przechodzić między stronami</translation>

@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">पीडीएफ निर्माता:</translation>
 <translation id="2127090458081644412">पासवर्ड या डिव्हाइसवर सेव्ह केला आहे</translation>
 <translation id="2127747486437921899">तिरपे</translation>
+<translation id="2129163794581571479">पर्सनल इंटेलिजन्स सह Gemini द्वारे सक्षम केलेले. वर्धित ऑटोफिलमध्ये सुधारणा करण्यासाठी तुमच्या विनंत्या, पेजची शीर्षके आणि URLs यांचे पुनरावलोकन केले जाऊ शकते. <ph name="BEGIN_LINK" />सेटिंग्ज व्यवस्थापित करणे<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode धोरण सेट केले नसल्यामुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">पेमेंट ऑटोफिल सुरू करा हे पूर्ण उंचीवर उघडले आहे.</translation>
@@ -1574,6 +1575,7 @@
 <translation id="3655670868607891010">तुम्ही हे वारंवार पहात असल्यास, हे वापरून पहा <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">पुनरावृत्ती</translation>
 <translation id="3659521826520353662">अ‍ॅडमिनिस्ट्रेटरने परिभाषित केलेल्या कोणत्या वेबसाइटना भेट दिली आहे आणि कधी: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">पर्सनल इंटेलिजन्स सह Gemini द्वारे सक्षम केलेले. <ph name="BEGIN_LINK" />सेटिंग्ज व्यवस्थापित करणे<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">या उत्पादनाची विक्री करणाऱ्या इतर स्टोअरवरून खरेदीचे आणखी पर्याय शोधा.</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3670030362669914947">नंबर</translation>
@@ -1594,6 +1596,7 @@
 <translation id="3693516565203081475">पेमेंट पद्धत निवडा</translation>
 <translation id="3698353241727597930">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमच्या एंटरप्राइझद्वारे व्यवस्थापित केल्या जाणाऱ्या <ph name="CLOUD_STORAGE" /> मध्ये <ph name="FILES" /> सेव्ह करण्यासाठी कॉन्फिगर केले आहे. तुम्ही या फाइल हटवता, तेव्हा त्यांचे नियंत्रण, ऑडिट केले जाऊ शकते आणि त्या स्टोअर केल्या जाऊ शकतात.</translation>
 <translation id="3698629142018988477">साइट तयार करा बटण, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
+<translation id="3698708128812719147">अधिक माहिती शोधण्यासाठी आणि भरण्यासाठी वेबवर कुठेही दोनदा कंट्रोल प्रेस करा</translation>
 <translation id="3700094625653511150">नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> वर जा</translation>
 <translation id="3700966190175650601">पासवर्ड भरण्यासाठी तुम्ही तुमचे फिंगरप्रिंट वापरत आहात</translation>
 <translation id="3701427423622901115">रीसेट करण्याची नोंद घेतली आहे.</translation>
@@ -1897,6 +1900,7 @@
 <translation id="4185037616931963178">रिड्रेस नंबर सुरक्षितपणे अपडेट करा</translation>
 <translation id="4186035307311647330">किमतीचा बंद ठेवणे बंद करा</translation>
 <translation id="4191334393248735295">लांबी</translation>
+<translation id="4192770747482479191">अधिक माहिती शोधण्यासाठी आणि भरण्यासाठी वेबवर कुठेही दोनदा ⌘ प्रेस करा</translation>
 <translation id="4195459680867822611">Chrome शी संबंधित टिपा पहा बटण, Chrome च्या वैशिष्‍ट्यांविषयी जाणून घेण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4196861286325780578">&amp;हलवा पुन्हा करा</translation>
@@ -2845,6 +2849,7 @@
 <translation id="573974402615125334">टॅब गटांमध्ये शेअर करण्यासाठी, सामील होण्यासाठी आणि सहयोग करण्यासाठी, तुमचा इतिहास व टॅब सिंक करा</translation>
 <translation id="5740911612628596808">एन्व्हलप सी९</translation>
 <translation id="574392208103952083">मध्यम</translation>
+<translation id="5744350700955456407">वर्धित ऑटोफिल आता Gmail आणि Photos यांसारख्या ॲप्समधून ऑर्डर नंबर व फ्लाइट कन्फर्मेशन कोड यांसारखी माहिती शोधू शकते आणि भरू शकते</translation>
 <translation id="5745586894920491759">Chrome हे क्लाउडमध्ये पेजची शीर्षके आणि URLs वर प्रक्रिया करते</translation>
 <translation id="5745733273847572235">तुमच्या स्थानाची विनंती करू शकते</translation>
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>

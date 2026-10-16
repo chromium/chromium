@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">‏التطبيق الذي أنشأ مستند PDF:</translation>
 <translation id="2127090458081644412">تم حفظ كلمة المرور على هذا الجهاز</translation>
 <translation id="2127747486437921899">مائل</translation>
+<translation id="2129163794581571479">‏تستنِد هذه الميزة إلى Gemini مع ميزة "الذكاء المخصّص". قد تتم مراجعة طلباتك وعناوين الصفحات وعناوين URL لتحسين ميزة "الملء التلقائي المحسّن". <ph name="BEGIN_LINK" />إدارة الإعدادات<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏قد لا يتم تطبيق النماذج التي حدّدتها بسبب عدم ضبط سياسة DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">تم فتح نافذة "تفعيل الملء التلقائي لبيانات الدفع" بطول الشاشة.</translation>
@@ -1575,6 +1576,7 @@
 <translation id="3655670868607891010">إذا تكرّر هذا الأمر، ننصحك بالاطّلاع على هذه <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">التعديل</translation>
 <translation id="3659521826520353662">قائمة المواقع الإلكترونية المحدّدة بواسطة المشرف التي تمت زيارتها ووقت زيارتها: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">‏تستنِد هذه الميزة إلى Gemini مع ميزة "الذكاء المخصّص". <ph name="BEGIN_LINK" />إدارة الإعدادات<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">يمكنك البحث عن المزيد من خيارات الشراء من المتاجر الأخرى التي تبيع هذا المنتج.</translation>
 <translation id="3664782872746246217">الكلمات الرئيسية:</translation>
 <translation id="3670030362669914947">الرقم</translation>
@@ -1595,6 +1597,7 @@
 <translation id="3693516565203081475">اختيار طريقة الدفع</translation>
 <translation id="3698353241727597930">ضبَطَ المشرف الإعدادات لحفظ <ph name="FILES" /> في مساحة التخزين التي تديرها المؤسسة على <ph name="CLOUD_STORAGE" />. قد تتم مراقبة هذه الملفات ويتم فحصها والاحتفاظ بها عند حذفها.</translation>
 <translation id="3698629142018988477">‏زر إنشاء موقع إلكتروني: انقر على هذا الزر لإنشاء موقع إلكتروني جديد بسرعة على "مواقع Google".</translation>
+<translation id="3698708128812719147">‏للعثور على المزيد من المعلومات وإدخالها، يمكنك الضغط على مفتاح Ctrl مرتين في أي مكان على الويب</translation>
 <translation id="3700094625653511150">لإخفاء خيارات "الدفع الآجل"، يُرجى الانتقال إلى "<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />"</translation>
 <translation id="3700966190175650601">أنت تستخدم حاليًا بصمة إصبعك لملء كلمات المرور</translation>
 <translation id="3701427423622901115">تمت الموافقة على إعادة الضبط.</translation>
@@ -1898,6 +1901,7 @@
 <translation id="4185037616931963178">‏تعديل رقم الإنصاف (Redress number) بأمان</translation>
 <translation id="4186035307311647330">إيقاف تتبُّع السعر</translation>
 <translation id="4191334393248735295">الطول</translation>
+<translation id="4192770747482479191">للعثور على المزيد من المعلومات وإدخالها، يمكنك الضغط على مفتاح ⌘ مرتين في أي مكان على الويب</translation>
 <translation id="4195459680867822611">‏زر الاطّلاع على معلومات بشأن استخدام متصفّح Chrome: انقر على هذا الزر للتعرّف على ميزات Chrome.</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4196861286325780578">إ&amp;عادة النقل</translation>
@@ -2683,7 +2687,7 @@
 <translation id="5481604577800516617">ترتيب النوافذ وعلامات التبويب</translation>
 <translation id="5481682542063333508">عرض مساعدة في الكتابة</translation>
 <translation id="54817484435770891">إضافة عنوان صالح</translation>
-<translation id="5483838506518938965">اكتملت المهمة</translation>
+<translation id="5483838506518938965">أصبحت جاهزًا الآن</translation>
 <translation id="5484396522446324950">الأنماط</translation>
 <translation id="5485100387355669506">سميك للغاية</translation>
 <translation id="5485973315555778056">جهاز على السحابة الإلكترونية</translation>
@@ -2846,6 +2850,7 @@
 <translation id="573974402615125334">لمشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها، يجب مزامنة السجلّ وعلامات التبويب</translation>
 <translation id="5740911612628596808">‏ظرف C9</translation>
 <translation id="574392208103952083">متوسط</translation>
+<translation id="5744350700955456407">‏يمكن لميزة "الملء التلقائي المحسّن" الآن العثور على المعلومات وإدخالها، مثل أرقام الطلبات ورموز تأكيد الرحلات الجوية، من تطبيقات مثل Gmail و"صور Google"</translation>
 <translation id="5745586894920491759">‏يعالج Chrome عناوين الصفحات وعناوين URL في السحابة الإلكترونية</translation>
 <translation id="5745733273847572235">السماح للموقع الإلكتروني بطلب معرفة موقعك الجغرافي</translation>
 <translation id="5750869797196646528">تتبُّع اليد</translation>

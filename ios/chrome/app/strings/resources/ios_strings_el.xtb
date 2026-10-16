@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Το στοιχείο ενημερώθηκε</translation>
 <translation id="1018804590490383958">Σάρωση και αυτόματη συμπλήρωση</translation>
 <translation id="1019990162050689579">Δραστηριότητα στην Εφαρμογή Gemini</translation>
+<translation id="102471647093736603">Πατήστε παρατεταμένα για μετακίνηση</translation>
 <translation id="102645702181682900">Η εργασία ξεκίνησε</translation>
 <translation id="102916930470544692">Κλειδί πρόσβασης</translation>
 <translation id="1030376737535466765">Ανοίξτε τον Διαχειριστή κωδικών πρόσβασης.</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Ενημερώσεις</translation>
 <translation id="4813345808229079766">Σύνδεση</translation>
 <translation id="4821595350501541683">Οι καρτέλες έκλεισαν και τα δεδομένα περιήγησης διαγράφηκαν</translation>
+<translation id="4823322556950229674">Μπορείτε να πατήσετε παρατεταμένα, για να μετακινήσετε τη γραμμή διευθύνσεων και το κουμπί πίσω στο κάτω μέρος</translation>
 <translation id="4824480232751123840">Ένταση</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} και 1 ακόμα}other{{domain} και {count} ακόμα}}</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
@@ -2058,6 +2060,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Συνέχεια</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
+<translation id="7417055777338419059">Γράψτε κώδικα, συντάξτε κείμενο ή δημιουργήστε διαφάνειες</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
 <translation id="7423098979219808738">Να γίνεται ερώτηση πρώτα</translation>
 <translation id="7425053386765766120">Προσθήκη τρόπου πληρωμής…</translation>

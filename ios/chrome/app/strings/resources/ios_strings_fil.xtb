@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Na-update ang item</translation>
 <translation id="1018804590490383958">I-scan at i-autofill</translation>
 <translation id="1019990162050689579">Aktibidad sa Gemini App</translation>
+<translation id="102471647093736603">Pindutin nang matagal para ilipat</translation>
 <translation id="102645702181682900">Sinimulan ang gawain</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Buksan ang Password Manager</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Mga Update</translation>
 <translation id="4813345808229079766">Pagkonekta</translation>
 <translation id="4821595350501541683">Isinara ang mga tab at na-delete ang data mula sa pag-browse</translation>
+<translation id="4823322556950229674">Puwede mong pindutin nang matagal para ilipat ang address bar at button na bumalik sa ibaba</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
@@ -2057,6 +2059,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Magpatuloy</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
+<translation id="7417055777338419059">Mag-code, magsulat, o gumawa ng mga slide</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7425053386765766120">Magdagdag ng paraan ng pagbabayad…</translation>

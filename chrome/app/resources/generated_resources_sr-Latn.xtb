@@ -163,6 +163,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1109482864356262001">Funkcije koje zahtevaju senzore pokreta i svetlosti neće raditi</translation>
 <translation id="1110155001042129815">Sačekaj</translation>
 <translation id="1110965959145884739">Odaberite koje jezike ćete instalirati na ovom uređaju. Korisnici mogu da dele fajlove za jezike da bi uštedeli prostor na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Fokusiraj na grupu kartica</translation>
 <translation id="1112227834592480032">Izaberite dugme Google objektiv, pa kliknite i prevucite preko problema</translation>
 <translation id="1112420131909513020">Kartica u pozadini koristi Bluetooth</translation>
 <translation id="1112998165730922436">Prebacivanje je pauzirano</translation>
@@ -2226,6 +2227,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2701960282717219666">MAC adresa mreže</translation>
 <translation id="2702720509009999256">Proverite internet vezu i izaberite Probaj ponovo ili odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
 <translation id="2702801445560668637">Lista za čitanje</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Ukloni fokus sa kartice}one{Ukloni fokus sa kartica}few{Ukloni fokus sa kartica}other{Ukloni fokus sa kartica}}</translation>
 <translation id="270414148003105978">Mobilne mreže</translation>
 <translation id="2704184184447774363">Microsoft potpisivanje dokumenata</translation>
 <translation id="2704606927547763573">Kopirano</translation>
@@ -3141,6 +3143,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3379268272734690">Pustinja</translation>
 <translation id="3382737653173267704">Prikaži porodicu</translation>
 <translation id="338323348408199233">Blokiraj saobraćaj bez VPN-a</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Fokusiraj na karticu}one{Fokusiraj na kartice}few{Fokusiraj na kartice}other{Fokusiraj na kartice}}</translation>
 <translation id="3385053436247851142">Prijavi me pomoću Microsoft naloga</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Preciznost lokacije pruža precizniju lokaciju za aplikacije i usluge. U tu svrhu, Google periodično obrađuje informacije o senzorima uređaja i bežičnim signalima sa uređaja kako bi pomoću kraudsorsinga odredio lokacije bežičnih signala. Bez otkrivanja vašeg identiteta ovi podaci se koriste za poboljšavanje preciznosti lokacije i usluga zasnovanih na lokaciji, kao i za opšte poboljšavanje, pružanje i održavanje Google usluga zasnovanih na legitimnim interesima Google-a i trećih strana da ispunjavaju potrebe korisnika.</translation>
@@ -4524,6 +4527,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4406308048672435032">Ovu karticu možete da deaktivirate ili osvežite da biste ponovo videli kompletnu listu</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4406963243402726564">Nesačuvani podaci</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Ukloni fokus sa kartice}one{Ukloni fokus sa kartica}few{Ukloni fokus sa kartica}other{Ukloni fokus sa kartica}}</translation>
 <translation id="4408599188496843485">P&amp;omoć</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />. Obavestićemo vas kada počne snimanje.}=2{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Obavestićemo vas kada počne snimanje.}=3{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još jednu aplikaciju. Obavestićemo vas kada počne snimanje.}one{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikaciju. Obavestićemo vas kada počne snimanje.}few{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Obavestićemo vas kada počne snimanje.}other{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacija. Obavestićemo vas kada počne snimanje.}}</translation>
 <translation id="4409697491990005945">Margine</translation>
@@ -7405,6 +7409,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6651762277693024112">Pokreće se automatski svaki put kada posetite ovaj sajt</translation>
 <translation id="6654509035557065241">Podesi kao prioritetnu mrežu</translation>
 <translation id="6655190889273724601">Režim programera</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Fokusiraj na karticu}one{Fokusiraj na kartice}few{Fokusiraj na kartice}other{Fokusiraj na kartice}}</translation>
 <translation id="6657180931610302174">Želite da dodate korisničko ime?</translation>
 <translation id="6657240842932274095">Želite da dozvolite sistemskim uslugama da koriste lokaciju?</translation>
 <translation id="6657585470893396449">Lozinka</translation>
@@ -10042,6 +10047,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8652400352452647993">Greška u vezi sa pakovanjem dodatka</translation>
 <translation id="8654151524613148204">Datoteka je prevelika da bi je računar obradio. Žao nam je.</translation>
 <translation id="8655295600908251630">Kanal</translation>
+<translation id="8656101380279383244">Fokusiraj na grupu kartica</translation>
 <translation id="8656888282555543604">Omogući evidentiranje Brajeve azbuke</translation>
 <translation id="8657393004602556571">Želite da odbacite povratne informacije?</translation>
 <translation id="8657542881463614516">Koristite pokret prevlačenja da biste se kretali između stranica</translation>

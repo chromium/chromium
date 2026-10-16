@@ -163,6 +163,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1109482864356262001">Funktioner, der skal bruge bevægelses- eller lyssensorer, fungerer ikke</translation>
 <translation id="1110155001042129815">Vent</translation>
 <translation id="1110965959145884739">Vælg, hvilke sprog der skal installeres på denne enhed. Sprogfiler deles mellem brugere for at spare på diskpladsen. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">Fokuser på fanegruppe</translation>
 <translation id="1112227834592480032">Vælg Google Lens-knappen, og klik og træk derefter over et problem</translation>
 <translation id="1112420131909513020">En fane i baggrunden anvender Bluetooth</translation>
 <translation id="1112998165730922436">Cast er sat på pause</translation>
@@ -2241,6 +2242,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2701960282717219666">Netværkets MAC-adresse</translation>
 <translation id="2702720509009999256">Tjek din internetforbindelse, og vælg "Prøv igen", eller vælg "Åbn i det grundlæggende redigeringsværktøj" for at benytte valgmuligheder for begrænset visning og redigering.</translation>
 <translation id="2702801445560668637">Læseliste</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{Fjern fokus fra fane}one{Fjern fokus fra fane}other{Fjern fokus fra faner}}</translation>
 <translation id="270414148003105978">Mobilnetværk</translation>
 <translation id="2704184184447774363">Microsoft-signering af dokument</translation>
 <translation id="2704606927547763573">Kopieret</translation>
@@ -3156,6 +3158,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3379268272734690">Ørken</translation>
 <translation id="3382737653173267704">Se familie</translation>
 <translation id="338323348408199233">Bloker trafik uden VPN</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{Fokuser på fane}one{Fokuser på fane}other{Fokuser på faner}}</translation>
 <translation id="3385053436247851142">Log ind med Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Lokationsnøjagtighed giver apps og tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.</translation>
@@ -4539,6 +4542,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4406308048672435032">Du kan gøre denne fane inaktiv eller opdatere for at se hele listen igen</translation>
 <translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4406963243402726564">Data, der ikke er gemt</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{Fjern fokus fra fane}one{Fjern fokus fra fane}other{Fjern fokus fra faner}}</translation>
 <translation id="4408599188496843485">H&amp;jælp</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />. Du får besked, når optagelsen starter.}=2{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Du får besked, når optagelsen starter.}=3{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og 1 anden app. Du får besked, når optagelsen starter.}one{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # anden app. Du får besked, når optagelsen starter.}other{Din administrator kan optage din skærm ved hjælp af <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # andre apps. Du får besked, når optagelsen starter.}}</translation>
 <translation id="4409697491990005945">Margener</translation>
@@ -7419,6 +7423,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6651762277693024112">Kører automatisk, hver gang du besøger dette website</translation>
 <translation id="6654509035557065241">Foretræk netværk</translation>
 <translation id="6655190889273724601">Udviklertilstand</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{Fokuser på fane}one{Fokuser på fane}other{Fokuser på faner}}</translation>
 <translation id="6657180931610302174">Vil du tilføje et brugernavn?</translation>
 <translation id="6657240842932274095">Vil du tillade, at systemtjenester anvender din lokation?</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
@@ -10056,6 +10061,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8652400352452647993">Fejl i pakkeudvidelse</translation>
 <translation id="8654151524613148204">Filen er desværre for stor til, at computeren kan håndtere den.</translation>
 <translation id="8655295600908251630">Kanal</translation>
+<translation id="8656101380279383244">Fokuser på fanegruppe</translation>
 <translation id="8656888282555543604">Aktivér logning af braille</translation>
 <translation id="8657393004602556571">Vil du slette denne feedback?</translation>
 <translation id="8657542881463614516">Brug en strygebevægelse til at navigere mellem sider</translation>

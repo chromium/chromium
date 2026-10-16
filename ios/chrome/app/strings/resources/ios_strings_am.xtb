@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">ንጥል ተዘምኗል</translation>
 <translation id="1018804590490383958">ቃኝ እና በራስ-ሙላ</translation>
 <translation id="1019990162050689579">የGemini መተግበሪያ እንቅስቃሴ</translation>
+<translation id="102471647093736603">ለማንቀሳቀስ ተጭነው ይያዙ</translation>
 <translation id="102645702181682900">ተግባር ተጀምሯል</translation>
 <translation id="102916930470544692">የይለፍ ቁልፍ</translation>
 <translation id="1030376737535466765">የሚስጥር ቁልፍ አስተዳዳሪ ክፈት</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">ዝማኔዎች</translation>
 <translation id="4813345808229079766">ማገናኘት</translation>
 <translation id="4821595350501541683">ትሮች ተዘግተዋል እና የአሰሳ ውሂብ ተሰርዟል</translation>
+<translation id="4823322556950229674">የአድራሻ አሞሌውን እና የተመለስ አዝራሩን ወደ ታች ለማንቀሳቀስ ተጭነው መያዝ ይችላሉ</translation>
 <translation id="4824480232751123840">የድምፅ መጠን</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} እና 1 ሌላ}one{{domain} እና {count} ሌሎች}other{{domain} እና {count} ሌሎች}}</translation>
 <translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
@@ -2057,6 +2059,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7411034503745719324"><ph name="EMAIL" />። <ph name="MANAGED_STATUS" />።</translation>
 <translation id="7412027924265291969">ቀጥል</translation>
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
+<translation id="7417055777338419059">ኮድ አድርግ፣ ጻፍ ወይም ተንሸራታቾችን ሥራ</translation>
 <translation id="7419565702166471774">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>
 <translation id="7423098979219808738">መጀመሪያ ጠይቅ</translation>
 <translation id="7425053386765766120">የመክፈያ ዘዴን ያክሉ…</translation>

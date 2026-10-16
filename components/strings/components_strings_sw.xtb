@@ -665,6 +665,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2126374524350484896">Programu ya kuzalisha PDF:</translation>
 <translation id="2127090458081644412">Nenosiri limehifadhiwa kwenye kifaa hiki</translation>
 <translation id="2127747486437921899">Italiki</translation>
+<translation id="2129163794581571479">Inaendeshwa na Gemini kupitia Umaizi wa Binafsi. Huenda maombi, majina ya kurasa na URL zako zikakaguliwa ili kuimarisha kipengele cha kujaza kiotomatiki kulikoboreshwa. <ph name="BEGIN_LINK" />Dhibiti mipangilio<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Huenda violezo ulivyobainisha visitumike kwa sababu sera ya DnsOverHttpsMode haijawekwa.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Umefungua kidirisha cha 'Washa kipengele cha Kujaza Kiotomatiki Taarifa za Malipo' katika skrini nzima.</translation>
@@ -1575,6 +1576,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3655670868607891010">Ikiwa unaliona tatizo hili mara kwa mara, jaribu <ph name="HELP_LINK" /> haya.</translation>
 <translation id="3658742229777143148">Marekebisho</translation>
 <translation id="3659521826520353662">Tovuti zinazobainishwa na msimamizi ambazo hutembelewa na zinapotembelewa: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Inaendeshwa na Gemini kupitia Umaizi wa Binafsi. <ph name="BEGIN_LINK" />Dhibiti mipangilio<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Tafuta chaguo zaidi za kununua kwenye maduka mengine yanayouza bidhaa hii.</translation>
 <translation id="3664782872746246217">Maneno muhimu:</translation>
 <translation id="3670030362669914947">Nambari</translation>
@@ -1595,6 +1597,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3693516565203081475">Chagua njia ya kulipa</translation>
 <translation id="3698353241727597930">Msimamizi wako ameweka mipangilio ili kuhifadhi <ph name="FILES" /> kwenye nafasi ya <ph name="CLOUD_STORAGE" /> inayodhibitiwa na shirika. Huenda faili hizi zikafuatiliwa, kukaguliwa na kuhifadhiwa utakapozifuta.</translation>
 <translation id="3698629142018988477">Kitufe cha 'Unda tovuti', washa ili uunde tovuti mpya katika huduma ya Tovuti za Google kwa haraka</translation>
+<translation id="3698708128812719147">Bonyeza Ctrl mara mbili popote kwenye wavuti ili utafute na ujaze maelezo zaidi</translation>
 <translation id="3700094625653511150">Ili kuficha chaguo za malipo ya baadaye, nenda kwenye <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Unatumia alama ya kidole ili kujaza manenosiri</translation>
 <translation id="3701427423622901115">Imekubali kuweka upya.</translation>
@@ -1898,6 +1901,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4185037616931963178">Sasisha namba ya usahihishaji kwa njia salama</translation>
 <translation id="4186035307311647330">Tendua ufuatiliaji bei</translation>
 <translation id="4191334393248735295">Urefu</translation>
+<translation id="4192770747482479191">Bonyeza ⌘ mara mbili popote kwenye wavuti ili utafute na ujaze maelezo zaidi</translation>
 <translation id="4195459680867822611">Kitufe cha 'Angalia vidokezo vya Chrome', washa ili upate maelezo kuhusu vipengele vya Chrome</translation>
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4196861286325780578">Rudia hatua</translation>
@@ -2846,6 +2850,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="573974402615125334">Sawazisha historia na vichupo vyako ili uruhusu ufikiaji, ujiunge na ushirikiane katika vikundi hivyo</translation>
 <translation id="5740911612628596808">Bahasha ya ukubwa wa C9</translation>
 <translation id="574392208103952083">Wastani</translation>
+<translation id="5744350700955456407">Kipengele cha kujaza kiotomatiki kilichoboreshwa sasa kinaweza kupata na kujaza maelezo, kama vile namba za oda na namba za kuthibitisha safari za ndege, kutoka kwenye programu kama vile Gmail na Picha</translation>
 <translation id="5745586894920491759">Chrome huchakata URL na majina ya kurasa kwenye wingu</translation>
 <translation id="5745733273847572235">Inaweza kuomba maelezo ya mahali ulipo</translation>
 <translation id="5750869797196646528">Ufuatiliaji wa mijongeo ya mikono</translation>

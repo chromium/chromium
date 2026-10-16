@@ -665,6 +665,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2126374524350484896">Aplikácia, v ktorej bol tento súbor PDF vytvorený:</translation>
 <translation id="2127090458081644412">Heslo bolo uložené do tohto zariadenia</translation>
 <translation id="2127747486437921899">Kurzíva</translation>
+<translation id="2129163794581571479">Využíva Gemini s inteligenciou na mieru. Vaše žiadosti, názvy stránok a webové adresy môžu byť skontrolované s cieľom zlepšiť vylepšené automatické dopĺňanie. <ph name="BEGIN_LINK" />Spravovať nastavenia<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Špecifikované šablóny nemusia byť uplatnené, pretože nebolo nastavené pravidlo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3×7</translation>
 <translation id="2131006834960167560">Povolenie automatického dopĺňania platieb je otvorené na celú výšku.</translation>
@@ -1571,6 +1572,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3655670868607891010">Ak sa vám táto stránka zobrazuje často, skúste použiť tieto stránky <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Verzia</translation>
 <translation id="3659521826520353662">Ktoré weby definované správcom budú navštívené a kedy: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Využíva Gemini s inteligenciou na mieru. <ph name="BEGIN_LINK" />Spravovať nastavenia<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Vyhľadajte ďalšie možnosti zakúpenia z iných obchodov, ktoré predávajú tento výrobok.</translation>
 <translation id="3664782872746246217">Kľúčové slová:</translation>
 <translation id="3670030362669914947">Číslo</translation>
@@ -1591,6 +1593,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3693516565203081475">Výber spôsobu platby</translation>
 <translation id="3698353241727597930">Váš správca nakonfiguroval, aby sa súbory <ph name="FILES" /> ukladali vo vašom priestore <ph name="CLOUD_STORAGE" /> spravovanom podnikom. Keď ich odstránite, môžu byť sledované, kontrolované a uchovávané.</translation>
 <translation id="3698629142018988477">Tlačidlo Vytvoriť web, ktorého aktivovaním rýchlo vytvoríte nový web vo Weboch Google</translation>
+<translation id="3698708128812719147">Ak chcete nájsť a vyplniť ďalšie informácie, kdekoľvek na internete dvakrát stlačte Ctrl</translation>
 <translation id="3700094625653511150">Ak chcete skryť možnosti platby neskôr, prejdite na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Pri vypĺňaní hesiel používate odtlačok prsta</translation>
 <translation id="3701427423622901115">Resetovanie bolo potvrdené.</translation>
@@ -1894,6 +1897,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4185037616931963178">Bezpečne si aktualizujte číslo Redress Control Number</translation>
 <translation id="4186035307311647330">Prestať sledovať cenu</translation>
 <translation id="4191334393248735295">Dĺžka</translation>
+<translation id="4192770747482479191">Ak chcete nájsť a vyplniť ďalšie informácie, kdekoľvek na internete dvakrát stlačte ⌘</translation>
 <translation id="4195459680867822611">Tlačidlo Zobraziť tipy Chromu, ktorého aktivovaním zobrazíte informácie o funkciách Chromu</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4196861286325780578">&amp;Znova presunúť</translation>
@@ -2842,6 +2846,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="573974402615125334">Ak sa chcete pripojiť ku skupinám kariet, zdieľať ich a spolupracovať na nich, synchronizujte svoju históriu a karty</translation>
 <translation id="5740911612628596808">Obálka C9</translation>
 <translation id="574392208103952083">Stredné</translation>
+<translation id="5744350700955456407">Vylepšené automatické dopĺňanie teraz dokáže vyhľadať a doplniť napríklad čísla objednávok, potvrdzovacie kódy letov a iné informácie z aplikácií ako Gmail či Fotky</translation>
 <translation id="5745586894920491759">Chrome spracúva názvy stránok a webové adresy v cloude</translation>
 <translation id="5745733273847572235">Môže žiadať o povolenie používať vašu polohu</translation>
 <translation id="5750869797196646528">Sledovanie rúk</translation>

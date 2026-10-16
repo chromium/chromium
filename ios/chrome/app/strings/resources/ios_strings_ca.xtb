@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
 <translation id="1018804590490383958">Escaneja i emplena automàticament</translation>
 <translation id="1019990162050689579">Activitat en aplicacions de Gemini</translation>
+<translation id="102471647093736603">Mantén premut per moure</translation>
 <translation id="102645702181682900">Tasca iniciada</translation>
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030376737535466765">Obre el gestor de contrasenyes</translation>
@@ -1208,6 +1209,7 @@
 <translation id="4808744395915275922">Actualitzacions</translation>
 <translation id="4813345808229079766">Connexió</translation>
 <translation id="4821595350501541683">Les pestanyes s'han tancat i les dades de navegació s'han suprimit</translation>
+<translation id="4823322556950229674">Pots mantenir premuts la barra d'adreces i el botó Enrere per moure'ls a la part inferior</translation>
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i 1 més}other{{domain} i {count} més}}</translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
@@ -2055,6 +2057,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continua</translation>
 <translation id="741204030948306876">Sí, endavant</translation>
+<translation id="7417055777338419059">Codifica, escriu o crea diapositives</translation>
 <translation id="7419565702166471774">Utilitza sempre connexions segures</translation>
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7425053386765766120">Afegeix una forma de pagament…</translation>

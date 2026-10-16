@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Elemento aggiornato</translation>
 <translation id="1018804590490383958">Scansiona e compila automaticamente</translation>
 <translation id="1019990162050689579">Attività delle app Gemini</translation>
+<translation id="102471647093736603">Tieni premuto per spostare</translation>
 <translation id="102645702181682900">Attività avviata</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Apri Gestore delle password</translation>
@@ -549,7 +550,7 @@
 <translation id="2640733327287333451">Nessun nome utente ••••••</translation>
 <translation id="264215785133931186">Controllo appena eseguito</translation>
 <translation id="2647434099613338025">Aggiungi lingua</translation>
-<translation id="2648812801228676606">L'accesso come <ph name="NAME_OR_EMAIL" /> è stato mantenuto</translation>
+<translation id="2648812801228676606">Hai mantenuto l'accesso come <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Stai per eliminare i tuoi dati del Gestore delle password di Google</translation>
 <translation id="2652129567809778422">Seleziona password</translation>
 <translation id="2658056020748144467">Impossibile aprire il file</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Aggiornamenti</translation>
 <translation id="4813345808229079766">Connessione</translation>
 <translation id="4821595350501541683">Le schede sono state chiuse e i dati di navigazione eliminati</translation>
+<translation id="4823322556950229674">Puoi tenere premuto per spostare la barra degli indirizzi e il pulsante Indietro in basso</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
@@ -2057,6 +2059,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continua</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
+<translation id="7417055777338419059">Programma, scrivi o crea slide</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
 <translation id="7423098979219808738">Chiedi prima</translation>
 <translation id="7425053386765766120">Aggiungi il metodo di pagamento…</translation>

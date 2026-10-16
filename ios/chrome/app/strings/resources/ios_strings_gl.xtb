@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
 <translation id="1018804590490383958">Escanear e autocompletar</translation>
 <translation id="1019990162050689579">Actividade na aplicación Gemini</translation>
+<translation id="102471647093736603">Mantén premida a barra para movela</translation>
 <translation id="102645702181682900">Iniciouse a tarefa</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030376737535466765">Abrir xestor de contrasinais</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Actualizacións</translation>
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4821595350501541683">Pecháronse as pestanas e elimináronse os datos de navegación</translation>
+<translation id="4823322556950229674">Podes manter premidos a barra de enderezos e o botón de volver para movelos á parte inferior</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 máis}other{{domain} e {count} máis}}</translation>
 <translation id="4826588772550366629">cámara e micrófono</translation>
@@ -2057,6 +2059,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Si, acepto</translation>
+<translation id="7417055777338419059">Programa, escribe ou fai presentacións</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7425053386765766120">Engadir método de pago…</translation>

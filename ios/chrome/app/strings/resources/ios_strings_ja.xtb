@@ -1536,7 +1536,7 @@
 <translation id="5801568494490449797">設定</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5804241973901381774">権限</translation>
-<translation id="58081802114142635">Google AI を改善するため、ユーザーのアクティビティが使用されます</translation>
+<translation id="58081802114142635">ユーザーのアクティビティをもとに Google AI を改善</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5818161931099046557">Google アカウントで編集</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2059,6 +2059,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
 <translation id="7412027924265291969">続行</translation>
 <translation id="741204030948306876">オンにする</translation>
+<translation id="7417055777338419059">コードの記述、文章の作成、スライドの作成</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7425053386765766120">お支払い方法を追加…</translation>

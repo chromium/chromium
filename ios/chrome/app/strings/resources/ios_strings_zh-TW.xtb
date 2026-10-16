@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">項目已更新</translation>
 <translation id="1018804590490383958">掃描並自動填入</translation>
 <translation id="1019990162050689579">Gemini 應用程式活動記錄</translation>
+<translation id="102471647093736603">按住即可移動</translation>
 <translation id="102645702181682900">工作已開始</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030376737535466765">開啟密碼管理工具</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4813345808229079766">連線</translation>
 <translation id="4821595350501541683">系統已關閉分頁並刪除瀏覽資料</translation>
+<translation id="4823322556950229674">按住網址列和返回按鈕，即可移到畫面底部</translation>
 <translation id="4824480232751123840">體積</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個分頁}other{{domain} 和另外 {count} 個分頁}}</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
@@ -2057,6 +2059,7 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
 <translation id="7412027924265291969">繼續</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
+<translation id="7417055777338419059">編寫程式碼、撰寫內容或製作簡報</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7425053386765766120">新增付款方式…</translation>

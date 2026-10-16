@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1018804590490383958">Scanner et saisir automatiquement</translation>
 <translation id="1019990162050689579">Activité dans les applications Gemini</translation>
+<translation id="102471647093736603">Appuyer de manière prolongée pour déplacer</translation>
 <translation id="102645702181682900">Tâche lancée</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030376737535466765">Ouvrir le Gestionnaire de mots de passe</translation>
@@ -1210,6 +1211,7 @@
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4821595350501541683">Les onglets ont été fermés et les données de navigation ont été supprimées</translation>
+<translation id="4823322556950229674">Vous pouvez appuyer de manière prolongée pour déplacer la barre d'adresse et le bouton Retour vers le bas</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826588772550366629">votre caméra et votre micro</translation>
@@ -2057,6 +2059,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuer</translation>
 <translation id="741204030948306876">J'accepte</translation>
+<translation id="7417055777338419059">Codez, écrivez ou créez des diapositives</translation>
 <translation id="7419565702166471774">Toujours utiliser une connexion sécurisée</translation>
 <translation id="7423098979219808738">Demander d'abord</translation>
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>

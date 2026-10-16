@@ -163,6 +163,7 @@
 <translation id="1109482864356262001">需要使用移动传感器或光传感器的功能将无法正常运行</translation>
 <translation id="1110155001042129815">等待</translation>
 <translation id="1110965959145884739">选择要在此设备上安装哪些语言。为节省磁盘可用空间，系统会让用户共用语言包文件。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="111168944932507021">聚焦标签页组</translation>
 <translation id="1112227834592480032">选择“Google 智能镜头”按钮，然后点击并拖动题目</translation>
 <translation id="1112420131909513020">背景标签页正在使用蓝牙</translation>
 <translation id="1112998165730922436">投放已暂停</translation>
@@ -2227,6 +2228,7 @@
 <translation id="2701960282717219666">网络 MAC 地址</translation>
 <translation id="2702720509009999256">请检查您的互联网连接情况并选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="2702801445560668637">阅读清单</translation>
+<translation id="2703151507515080771">{NUM_TABS,plural, =1{取消聚焦标签页}other{取消聚焦标签页}}</translation>
 <translation id="270414148003105978">移动网络</translation>
 <translation id="2704184184447774363">Microsoft 文档签名</translation>
 <translation id="2704606927547763573">已复制</translation>
@@ -3140,6 +3142,7 @@
 <translation id="3379268272734690">沙漠</translation>
 <translation id="3382737653173267704">查看家人群组</translation>
 <translation id="338323348408199233">屏蔽未使用 VPN 的流量</translation>
+<translation id="3384827779079384219">{NUM_TABS,plural, =1{聚焦标签页}other{聚焦标签页}}</translation>
 <translation id="3385053436247851142">使用 Microsoft 账号登录</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">开启“位置信息精确度”设置可为应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
@@ -4522,6 +4525,7 @@
 <translation id="4406308048672435032">您可以将此标签页设为非活跃状态，或刷新以再次查看完整列表</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406963243402726564">未保存的数据</translation>
+<translation id="4408595563209996725">{NUM_TABS,plural, =1{取消聚焦标签页}other{取消聚焦标签页}}</translation>
 <translation id="4408599188496843485">帮助(&amp;E)</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您会收到通知。}}</translation>
 <translation id="4409697491990005945">边距</translation>
@@ -7395,6 +7399,7 @@
 <translation id="6651762277693024112">在您每次访问此网站时自动运行</translation>
 <translation id="6654509035557065241">设置首选网络</translation>
 <translation id="6655190889273724601">开发者模式</translation>
+<translation id="6656413384508017053">{NUM_TABS,plural, =1{聚焦标签页}other{聚焦标签页}}</translation>
 <translation id="6657180931610302174">添加用户名？</translation>
 <translation id="6657240842932274095">允许系统服务使用您的位置信息？</translation>
 <translation id="6657585470893396449">密码</translation>
@@ -10032,6 +10037,7 @@
 <translation id="8652400352452647993">打包扩展程序错误</translation>
 <translation id="8654151524613148204">很抱歉，文件过大，计算机无法处理。</translation>
 <translation id="8655295600908251630">版本</translation>
+<translation id="8656101380279383244">聚焦标签页组</translation>
 <translation id="8656888282555543604">启用盲文记录功能</translation>
 <translation id="8657393004602556571">您想舍弃反馈吗？</translation>
 <translation id="8657542881463614516">使用滑动手势切换页面</translation>

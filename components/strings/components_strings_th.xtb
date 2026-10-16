@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">โปรแกรมสร้าง PDF:</translation>
 <translation id="2127090458081644412">บันทึกรหัสผ่านไว้ในอุปกรณ์นี้แล้ว</translation>
 <translation id="2127747486437921899">ตัวเอียง</translation>
+<translation id="2129163794581571479">ขับเคลื่อนโดย Gemini ที่มี Personal Intelligence ระบบอาจตรวจสอบคำขอ ชื่อหน้า และ URL เพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น <ph name="BEGIN_LINK" />จัดการการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากไม่มีการตั้งค่านโยบาย DnsOverHttpsMode ไว้</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">เปิด "เปิดใช้การป้อนข้อความอัตโนมัติในการชำระเงิน" แบบเต็มความสูงแล้ว</translation>
@@ -1574,6 +1575,7 @@
 <translation id="3655670868607891010">หากคุณเห็นข้อความนี้บ่อยๆ ให้ลองไปที่ <ph name="HELP_LINK" /></translation>
 <translation id="3658742229777143148">การแก้ไข</translation>
 <translation id="3659521826520353662">เข้าชมเว็บไซต์ใดบ้างที่ผู้ดูแลระบบกำหนดไว้และเมื่อใด: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">ขับเคลื่อนโดย Gemini ที่มี Personal Intelligence <ph name="BEGIN_LINK" />จัดการการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">ค้นหาตัวเลือกการซื้อเพิ่มเติมจากร้านค้าอื่นๆ ที่ขายผลิตภัณฑ์นี้</translation>
 <translation id="3664782872746246217">คีย์เวิร์ด:</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
@@ -1594,6 +1596,7 @@
 <translation id="3693516565203081475">เลือกวิธีการชำระเงิน</translation>
 <translation id="3698353241727597930">ผู้ดูแลระบบของคุณกำหนดค่าให้บันทึก <ph name="FILES" /> ในพื้นที่เก็บข้อมูล <ph name="CLOUD_STORAGE" /> ที่จัดการโดยองค์กร ไฟล์เหล่านี้อาจได้รับการดูแล ตรวจสอบ และเก็บรักษาไว้เมื่อคุณลบ</translation>
 <translation id="3698629142018988477">ปุ่มสร้างเว็บไซต์ เปิดใช้งานเพื่อสร้างเว็บไซต์ใหม่ใน Google Sites อย่างรวดเร็ว</translation>
+<translation id="3698708128812719147">กด Ctrl 2 ครั้งที่ใดก็ได้บนเว็บเพื่อค้นหาและป้อนข้อมูลเพิ่มเติม</translation>
 <translation id="3700094625653511150">หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">คุณกำลังใช้ลายนิ้วมือเพื่อป้อนรหัสผ่าน</translation>
 <translation id="3701427423622901115">รับทราบการรีเซ็ตแล้ว</translation>
@@ -1897,6 +1900,7 @@
 <translation id="4185037616931963178">อัปเดตหมายเลข Redress อย่างปลอดภัย</translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
 <translation id="4191334393248735295">ความยาว</translation>
+<translation id="4192770747482479191">กด ⌘ 2 ครั้งที่ใดก็ได้บนเว็บเพื่อค้นหาและป้อนข้อมูลเพิ่มเติม</translation>
 <translation id="4195459680867822611">ปุ่มดูเคล็ดลับในการใช้ Chrome เปิดใช้งานเพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4196861286325780578">&amp;ทำซ้ำการย้าย</translation>
@@ -2845,6 +2849,7 @@
 <translation id="573974402615125334">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้ซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
+<translation id="5744350700955456407">ตอนนี้การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นสามารถค้นหาและป้อนข้อมูล เช่น หมายเลขคำสั่งซื้อและรหัสยืนยันเที่ยวบิน จากแอปต่างๆ อย่าง Gmail และ Photos ได้</translation>
 <translation id="5745586894920491759">Chrome ประมวลผลชื่อหน้าและ URL ในระบบคลาวด์</translation>
 <translation id="5745733273847572235">สามารถขอตำแหน่งของคุณได้</translation>
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>

@@ -665,6 +665,7 @@
 <translation id="2126374524350484896">የPDF አዘጋጅ፦</translation>
 <translation id="2127090458081644412">የይለፍ ቃል በዚህ መሣሪያ ላይ ተቀምጧል</translation>
 <translation id="2127747486437921899">ሰያፍ</translation>
+<translation id="2129163794581571479">በGemini ከግል ብልሃት ጋር የተጎላበተ። የተሻሻለ ራስ-ሙላን ለማሻሻል የእርስዎ ጥያቄዎች፣ የገጽ ርዕሶች እና ዩአርኤሎች ሊገመገሙ ይችላሉ። <ph name="BEGIN_LINK" />ቅንብሮችን ያስተዳድሩ<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">የDnsOverHttpsMode መመሪያው ባለመዋቀሩ ምክንያት እርስዎ የገለጿቸው ቅንብር ደንቦች ላይተገበሩ ይችላሉ።</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">የክፍያዎች ራስ-ሙላን አንቃ በሙሉ ቁመት ተከፍቷል።</translation>
@@ -1574,6 +1575,7 @@
 <translation id="3655670868607891010">ይህንን በተደጋጋሚነት የሚያዩ ከሆኑ <ph name="HELP_LINK" />ን ይሞክሩ።</translation>
 <translation id="3658742229777143148">ክለሳ</translation>
 <translation id="3659521826520353662">የትኞቹ በአስተዳዳሪ-የተገለጹ ድር ጣቢያዎች እንደሚጎበኙ እና መቼ እንደሚሆን፦ <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">በGemini ከግል ብልሃት ጋር የተጎላበተ። <ph name="BEGIN_LINK" />ቅንብሮችን ያስተዳድሩ<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">ይህን ምርት ከሚሸጡ ሌሎች መደብሮች ተጨማሪ የግዢ አማራጮችን ይፈልጉ።</translation>
 <translation id="3664782872746246217">ቁልፍ ቃላት፦</translation>
 <translation id="3670030362669914947">ቁጥር</translation>
@@ -1594,6 +1596,7 @@
 <translation id="3693516565203081475">የመክፈያ ዘዴ ይምረጡ</translation>
 <translation id="3698353241727597930">አስተዳዳሪዎ በድርጅት በሚተዳደረው የ<ph name="CLOUD_STORAGE" /> ማከማቻዎ ውስጥ <ph name="FILES" /> ለማስቀመጥ አዋቅረዋል። እነዚህ ፋይሎች ሲሰርዟቸው ክትትል ሊደረግባቸው፣ ሊመረመሩ እና ሊቆዩ ይችላሉ።</translation>
 <translation id="3698629142018988477">የጣቢያ አዝራርን ይፍጠሩ፣ በGoogle ድረ ገፆች ውስጥ በፍጥነት አዲስ ጣቢያ ለመፍጠር ያግብሩ</translation>
+<translation id="3698708128812719147">ተጨማሪ መረጃ ለማግኘት እና ለመሙላት በድር ላይ በማንኛውም ቦታ Ctrlን ሁለቴ ይጫኑ</translation>
 <translation id="3700094625653511150">የበኋላ ላይ መክፈል አማራጮችን ለመደበቅ ወደ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ይሂዱ</translation>
 <translation id="3700966190175650601">የይለፍ ቃላትን ለመሙላት የጣት አሻራዎን እየተጠቀሙ ነው</translation>
 <translation id="3701427423622901115">ዳግም ማስጀመር እውቅና ተሰጥቶታል።</translation>
@@ -1897,6 +1900,7 @@
 <translation id="4185037616931963178">የማስተካከያ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ ያዘምኑ</translation>
 <translation id="4186035307311647330">ዋጋ ላይ ክትትል ማድረግ አቁም</translation>
 <translation id="4191334393248735295">ርዝመት</translation>
+<translation id="4192770747482479191">ተጨማሪ መረጃ ለማግኘት እና ለመሙላት በድር ላይ በማንኛውም ቦታ ⌘ ሁለቴ ይጫኑ</translation>
 <translation id="4195459680867822611">የChrome ጠቃሚ ምክሮች አዝራርን ይመልከቱ ስለ Chrome ባህሪያት ለማወቅ ያግብሩ</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4196861286325780578">&amp;ውሰድን ድገም</translation>
@@ -2845,6 +2849,7 @@
 <translation id="573974402615125334">የትር ቡድኖች ውስጥ ለማጋራት፣ ለመቀላቀል እና ለመተባበር ታሪክዎን እና ትሮችዎን ያሥምሩ</translation>
 <translation id="5740911612628596808">ሲ9 ፖስታ</translation>
 <translation id="574392208103952083">መካከለኛ</translation>
+<translation id="5744350700955456407">የተሻሻለ ራስ-ሙላ አሁን እንደ የትዕዛዝ ቁጥሮች እና የበረራ ማረጋገጫ ኮዶች ያሉ መረጃዎችን እንደ Gmail እና ፎቶዎች ካሉ መተግበሪያዎች ማግኘት እና መሙላት ይችላል</translation>
 <translation id="5745586894920491759">Chrome በደመና ውስጥ የገጽ ርዕሶችን እና ዩአርኤሎችን ያሰናዳል</translation>
 <translation id="5745733273847572235">አካባቢዎን መጠየቅ ይችላል</translation>
 <translation id="5750869797196646528">የእጅ ክትትል</translation>
