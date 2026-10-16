@@ -1,0 +1,7 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_GROUPING name='Dog Names' setsize:3
+++++ROLE_SYSTEM_RADIOBUTTON name='Fido' FOCUSABLE IA2_STATE_CHECKABLE setsize:3 posinset:2 checkable:true
+++++ROLE_SYSTEM_RADIOBUTTON name='Scout' FOCUSABLE IA2_STATE_CHECKABLE setsize:3 posinset:3 checkable:true
+++IA2_ROLE_SECTION name='Pet Names'
+++++ROLE_SYSTEM_RADIOBUTTON name='Biz' CHECKED FOCUSABLE IA2_STATE_CHECKABLE setsize:6 posinset:5 checkable:true
+++++ROLE_SYSTEM_RADIOBUTTON name='Baz' FOCUSABLE IA2_STATE_CHECKABLE setsize:6 posinset:6 checkable:true

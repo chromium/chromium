@@ -937,6 +937,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_radioGroupPosinsetSetsizeOverrides() {
+        performAriaTest("radio-group-posinset-setsize-overrides.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaReadonly() {
         performAriaTest("aria-readonly.html");
     }

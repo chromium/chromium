@@ -2829,6 +2829,14 @@ data/accessibility/aria/radio-group-calculation-with-ignored-radios-expected-mac
 data/accessibility/aria/radio-group-calculation-with-ignored-radios-expected-uia-win.txt
 data/accessibility/aria/radio-group-calculation-with-ignored-radios-expected-win.txt
 data/accessibility/aria/radio-group-calculation-with-ignored-radios.html
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-android-external.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-android.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-auralinux.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-blink.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-mac.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-uia-win.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides-expected-win.txt
+data/accessibility/aria/radio-group-posinset-setsize-overrides.html
 data/accessibility/aria/radios-in-radiogroups-with-intervening-non-generics-expected-android-external.txt
 data/accessibility/aria/radios-in-radiogroups-with-intervening-non-generics-expected-android.txt
 data/accessibility/aria/radios-in-radiogroups-with-intervening-non-generics-expected-auralinux.txt

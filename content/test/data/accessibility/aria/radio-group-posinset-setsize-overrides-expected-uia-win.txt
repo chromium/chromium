@@ -1,0 +1,7 @@
+Document PositionInSet=0 SizeOfSet=0
+++Group Name='Dog Names' PositionInSet=0 SizeOfSet=3 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++RadioButton Name='Fido' PositionInSet=2 SizeOfSet=3 SelectionItem.IsSelected=false
+++++RadioButton Name='Scout' PositionInSet=3 SizeOfSet=3 SelectionItem.IsSelected=false
+++Group Name='Pet Names' PositionInSet=0 SizeOfSet=0
+++++RadioButton Name='Biz' PositionInSet=5 SizeOfSet=6 SelectionItem.IsSelected=true
+++++RadioButton Name='Baz' PositionInSet=6 SizeOfSet=6 SelectionItem.IsSelected=false

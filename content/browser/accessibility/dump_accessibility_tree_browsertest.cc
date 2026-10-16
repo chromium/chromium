@@ -1884,6 +1884,11 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityRadioGroupPosinsetSetsizeOverrides) {
+  RunAriaTest(FILE_PATH_LITERAL("radio-group-posinset-setsize-overrides.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityRadioGroupCalculationWithIgnoredRadios) {
   RunAriaTest(
       FILE_PATH_LITERAL("radio-group-calculation-with-ignored-radios.html"));

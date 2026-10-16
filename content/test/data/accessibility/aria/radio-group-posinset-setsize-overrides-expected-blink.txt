@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++radioGroup name='Dog Names' setSize=3
+++++++++radioButton name='Fido' setSize=3 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText name='Fido'
+++++++++++++inlineTextBox name='Fido'
+++++++++radioButton name='Scout' setSize=3 posInSet=3 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText name='Scout'
+++++++++++++inlineTextBox name='Scout'
+++++++genericContainer name='Pet Names'
+++++++++radioButton name='Biz' setSize=6 posInSet=5 checkedState=true radioGroupIds=radioButton,radioButton
+++++++++labelText ignored
+++++++++++staticText ignored
+++++++++radioButton name='Baz' setSize=6 posInSet=6 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++labelText ignored
+++++++++++staticText ignored

@@ -1,0 +1,7 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++RadioGroup containerTitle:"Dog Names" actions:[AX_FOCUS] bundle:[chromeRole="radioGroup", roleDescription="radio group"]
+++++RadioButton text:"Fido" stateDescription:"Not checked. In group, option 2 of 2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton"]
+++++RadioButton text:"Scout" stateDescription:"Not checked. In group, option 3 of 2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton"]
+++View supplementalDescription:"Pet Names" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++RadioButton viewIdResName:"biz" stateDescription:"Checked. In group, option 5 of 2" supplementalDescription:"Biz" checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300"]
+++++RadioButton viewIdResName:"baz" stateDescription:"Not checked. In group, option 6 of 2" supplementalDescription:"Baz" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300"]

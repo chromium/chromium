@@ -1,0 +1,7 @@
+[document web]
+++[panel] name='Dog Names' setsize:3
+++++[radio button] name='Fido' checkable checkable:true posinset:2 setsize:3
+++++[radio button] name='Scout' checkable checkable:true posinset:3 setsize:3
+++[section] name='Pet Names'
+++++[radio button] name='Biz' checked checkable checkable:true posinset:5 setsize:6
+++++[radio button] name='Baz' checkable checkable:true posinset:6 setsize:6

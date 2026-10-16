@@ -1,0 +1,31 @@
+<!--
+// TODO(crbug.com/573237631): Android API does not respect aria-setsize override.
+@BLINK-ALLOW:radioGroupIds=*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@MAC-ALLOW:AXLinkedUIElements
+@MAC-DENY:AXLinkedUIElements=[]
+@MAC-ALLOW:AXARIASetSize
+@MAC-ALLOW:AXARIAPosInSet
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@UIA-WIN-ALLOW:PositionInSet*
+@UIA-WIN-ALLOW:SizeOfSet*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+  <div role="radiogroup" aria-label="Dog Names">
+    <div aria-setsize=3 aria-posinset=2 tabindex=0 role="radio">Fido</div>
+    <div aria-setsize=3 aria-posinset=3 tabindex=1 role="radio">Scout</div>
+  </div>
+  <div aria-label="Pet Names">
+    <input aria-setsize=6 aria-posinset=5 type="radio" value="biz" id="biz" name="petnames" checked>
+    <label for="biz">Biz</label>
+    <input aria-setsize=6 aria-posinset=6 type="radio" value="baz" id="baz" name="petnames">
+    <label for="baz">Baz</label>
+  </div>
+  </body>
+</html>
