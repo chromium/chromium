@@ -14,8 +14,9 @@
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace base {
+class ElapsedTimer;
 class Value;
-}
+}  // namespace base
 
 namespace web {
 class WebFrame;
@@ -80,6 +81,7 @@ class ActionTargetJavaScriptFeature : public web::JavaScriptFeature {
                               base::WeakPtr<web::WebFrame> current_frame,
                               TargetFrameCallback callback,
                               int depth,
+                              base::ElapsedTimer timer,
                               const base::Value* result);
 
   base::expected<web::WebFrame*, ToolExecutionResult>

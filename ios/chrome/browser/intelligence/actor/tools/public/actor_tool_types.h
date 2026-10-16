@@ -53,6 +53,21 @@ enum class ToolType {
   kActivateTab,
 };
 
+// Represents JavaScript calls executed in web frames by Actor tools and
+// features.
+// LINT.IfChange(IOSActorJavaScriptCall)
+enum class ActorJavaScriptCall {
+  kActionTarget,
+  kAttemptFormFilling,
+  kClick,
+  kDragAndRelease,
+  kScroll,
+  kScrollTo,
+  kSelect,
+  kType,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/histograms.xml:IOSActorJavaScriptCall,//ios/chrome/browser/intelligence/actor/tools/public/metrics.mm:IOSActorJavaScriptCall)
+
 // iOS-specific error codes for tool execution failures.
 enum class InternalToolErrorCode {
   // General errors (0-99).

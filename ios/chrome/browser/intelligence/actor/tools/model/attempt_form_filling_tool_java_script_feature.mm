@@ -11,7 +11,9 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/values.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
@@ -42,11 +44,13 @@ mojom::ActionResultCode ToActionResultCode(int code) {
 }
 
 base::expected<std::vector<uint32_t>, ToolExecutionResult>
-ParseGetAutofillRendererIdsResult(const base::Value* result) {
-  ToolExecutionResult tool_result =
-      ParseJavaScriptResultWithResultCode(&ToActionResultCode, result);
+ParseGetAutofillRendererIdsResult(const base::Value* result,
+                                  const base::ElapsedTimer& timer) {
+  ToolExecutionResult tool_result = ParseJavaScriptResultWithResultCode(
+      ActorJavaScriptCall::kAttemptFormFilling, &ToActionResultCode, result,
+      timer);
   if (!tool_result.IsOk()) {
-    return base::unexpected(tool_result);
+    return base::unexpected(std::move(tool_result));
   }
 
   const base::ListValue* unique_ids = result->GetDict().FindList(kUniqueIdsKey);
@@ -110,11 +114,12 @@ void AttemptFormFillingToolJavaScriptFeature::GetAutofillRendererIds(
       target_frame.get(), "attempt_form_filling.getAutofillRendererIds",
       parameters,
       base::BindOnce(
-          [](GetAutofillRendererIdsCallback callback,
+          [](GetAutofillRendererIdsCallback callback, base::ElapsedTimer timer,
              const base::Value* result) {
-            std::move(callback).Run(ParseGetAutofillRendererIdsResult(result));
+            std::move(callback).Run(
+                ParseGetAutofillRendererIdsResult(result, timer));
           },
-          std::move(cb_for_js)),
+          std::move(cb_for_js), base::ElapsedTimer()),
       kActorJavaScriptExecutionTimeout);
 
   if (!sent) {

@@ -7,8 +7,10 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -71,11 +73,13 @@ void SelectToolJavaScriptFeature::Select(
   bool sent = CallJavaScriptFunction(
       target_frame.get(), "select_tool.select", parameters,
       base::BindOnce(
-          [](ToolExecutionCallback callback, const base::Value* result) {
+          [](ToolExecutionCallback callback, base::ElapsedTimer timer,
+             const base::Value* result) {
             std::move(callback).Run(ParseJavaScriptResultWithResultCode(
-                &ToActionResultCode, result));
+                ActorJavaScriptCall::kSelect, &ToActionResultCode, result,
+                timer));
           },
-          std::move(cb_for_js)),
+          std::move(cb_for_js), base::ElapsedTimer()),
       kActorJavaScriptExecutionTimeout);
 
   if (!sent) {

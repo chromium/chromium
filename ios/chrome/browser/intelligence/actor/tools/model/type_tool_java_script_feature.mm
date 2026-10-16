@@ -9,8 +9,10 @@
 #import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/memory/weak_ptr.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -85,11 +87,13 @@ void TypeToolJavaScriptFeature::Type(
   bool sent = CallJavaScriptFunction(
       target_frame.get(), "type_tool.type", parameters,
       base::BindOnce(
-          [](ToolExecutionCallback callback, const base::Value* result) {
+          [](ToolExecutionCallback callback, base::ElapsedTimer timer,
+             const base::Value* result) {
             std::move(callback).Run(ParseJavaScriptResultWithResultCode(
-                &ToActionResultCode, result));
+                ActorJavaScriptCall::kType, &ToActionResultCode, result,
+                timer));
           },
-          std::move(cb_for_js)),
+          std::move(cb_for_js), base::ElapsedTimer()),
       kActorJavaScriptExecutionTimeout);
 
   if (!sent) {

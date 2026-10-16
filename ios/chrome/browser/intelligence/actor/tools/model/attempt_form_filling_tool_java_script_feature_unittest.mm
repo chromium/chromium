@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool_java_script_feature.h"
 
 #import "base/strings/stringprintf.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
@@ -57,6 +59,7 @@ class AttemptFormFillingToolJavaScriptFeatureTest
 // Test that when JavaScript returns success, GetAutofillRendererIds succeeds
 // and returns the renderer IDs as a vector of uint32_t.
 TEST_F(AttemptFormFillingToolJavaScriptFeatureTest, CoordinatesSuccess) {
+  base::HistogramTester histogram_tester;
   MockGetAutofillRendererIds("{ resultCode: 0, uniqueIds: ['12345'] }");
   ActionTarget target_coord = CreateTargetWithCoordinates();
   base::test::TestFuture<
@@ -70,6 +73,14 @@ TEST_F(AttemptFormFillingToolJavaScriptFeatureTest, CoordinatesSuccess) {
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result.value().size(), 1u);
   EXPECT_EQ(result.value()[0], 12345u);
+  histogram_tester.ExpectUniqueSample(
+      GetJavaScriptResultCodeHistogramName(
+          ActorJavaScriptCall::kAttemptFormFilling),
+      mojom::ActionResultCode::kOk, 1);
+  histogram_tester.ExpectTotalCount(
+      GetJavaScriptExecutionDurationHistogramName(
+          ActorJavaScriptCall::kAttemptFormFilling),
+      1);
 }
 
 // Test that when JavaScript returns a coordinates out of bounds result code,

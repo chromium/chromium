@@ -64,17 +64,20 @@ class ScrollToolJavaScriptFeature : public web::JavaScriptFeature {
  private:
   friend class base::NoDestructor<ScrollToolJavaScriptFeature>;
 
-  // Helper to try executing a Scroll or ScrollTo action in the given WebFrame.
+  // Executes a `Scroll` or `ScrollTo` action in the given `web_frame`.
   //
   // If `direction_and_distance` is not provided, this scrolls the page in
-  // `web_frame` until the `target` is in view. If it is provided, this
-  // scrolls the `target` in `web_frame` by that distance in that direction.
+  // `web_frame` until the `target` is in view
+  // (`ActorJavaScriptCall::kScrollTo`). If it is provided, this scrolls the
+  // `target` in `web_frame` by that distance in that direction
+  // (`ActorJavaScriptCall::kScroll`).
   void ExecuteScrollAction(
       base::WeakPtr<web::WebFrame> web_frame,
       const ActionTarget& target,
       std::optional<
           std::pair<optimization_guide::proto::ScrollAction_ScrollDirection,
                     int>> direction_and_distance,
+      ActorJavaScriptCall call,
       ToolExecutionCallback callback);
 };
 

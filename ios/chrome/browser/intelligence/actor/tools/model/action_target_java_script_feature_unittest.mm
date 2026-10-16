@@ -6,6 +6,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -13,6 +14,7 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/common/features.h"
@@ -97,6 +99,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsUnexpectedType) {
 }
 
 TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsError) {
+  base::HistogramTester histogram_tester;
   web::WebFrame* main_frame = WaitForMainFrame(feature());
   ASSERT_TRUE(main_frame);
   web::test::ExecuteJavaScriptForFeature(web_state(),
@@ -121,7 +124,14 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsError) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(),
             mojom::ActionResultCode::kCoordinatesOutOfBounds);
+  ASSERT_TRUE(result.error().message().has_value());
   EXPECT_EQ(result.error().message().value(), "Custom JS Error");
+  histogram_tester.ExpectUniqueSample(
+      GetJavaScriptResultCodeHistogramName(ActorJavaScriptCall::kActionTarget),
+      mojom::ActionResultCode::kCoordinatesOutOfBounds, 1);
+  histogram_tester.ExpectTotalCount(GetJavaScriptExecutionDurationHistogramName(
+                                        ActorJavaScriptCall::kActionTarget),
+                                    1);
 }
 
 TEST_F(ActionTargetJavaScriptFeatureTest, TargetsMainFrame_Success) {

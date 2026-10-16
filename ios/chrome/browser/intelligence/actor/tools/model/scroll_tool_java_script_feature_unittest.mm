@@ -6,12 +6,14 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::proto::ScrollAction;
@@ -128,7 +130,10 @@ TEST_F(ScrollToolJavaScriptFeatureTest, WebFrameInvalidated) {
   EXPECT_EQ(scroll_to_result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
+// Tests that executing a scroll action records the expected Scroll variant
+// histograms.
 TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByCoordinate_Success) {
+  base::HistogramTester histogram_tester;
   MockScrollJsFunctions(
       /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
   ActionTarget action = CreateTargetWithCoordinates();
@@ -140,6 +145,12 @@ TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByCoordinate_Success) {
 
   auto result = future.Get();
   EXPECT_TRUE(result.IsOk());
+  histogram_tester.ExpectUniqueSample(
+      GetJavaScriptResultCodeHistogramName(ActorJavaScriptCall::kScroll),
+      mojom::ActionResultCode::kOk, 1);
+  histogram_tester.ExpectTotalCount(
+      GetJavaScriptExecutionDurationHistogramName(ActorJavaScriptCall::kScroll),
+      1);
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByIdentifier_Success) {
@@ -156,7 +167,10 @@ TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByIdentifier_Success) {
   EXPECT_TRUE(result.IsOk());
 }
 
+// Tests that executing a scroll-to action records the expected ScrollTo
+// variant histograms.
 TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByCoordinate_Success) {
+  base::HistogramTester histogram_tester;
   MockScrollJsFunctions(
       /*mock_return_value=*/"{resultCode: 0, message: 'fake success!'}");
   ActionTarget action = CreateTargetWithCoordinates();
@@ -166,6 +180,12 @@ TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByCoordinate_Success) {
 
   auto result = future.Get();
   EXPECT_TRUE(result.IsOk());
+  histogram_tester.ExpectUniqueSample(
+      GetJavaScriptResultCodeHistogramName(ActorJavaScriptCall::kScrollTo),
+      mojom::ActionResultCode::kOk, 1);
+  histogram_tester.ExpectTotalCount(GetJavaScriptExecutionDurationHistogramName(
+                                        ActorJavaScriptCall::kScrollTo),
+                                    1);
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByIdentifier_Success) {

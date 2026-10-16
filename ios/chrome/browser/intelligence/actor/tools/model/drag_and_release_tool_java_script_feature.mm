@@ -8,8 +8,10 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/values.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -72,11 +74,13 @@ void DragAndReleaseToolJavaScriptFeature::DragAndRelease(
   bool sent = CallJavaScriptFunction(
       target_frame.get(), "drag_and_release_tool.dragAndRelease", parameters,
       base::BindOnce(
-          [](ToolExecutionCallback callback, const base::Value* result) {
+          [](ToolExecutionCallback callback, base::ElapsedTimer timer,
+             const base::Value* result) {
             std::move(callback).Run(ParseJavaScriptResultWithResultCode(
-                &ToActionResultCode, result));
+                ActorJavaScriptCall::kDragAndRelease, &ToActionResultCode,
+                result, timer));
           },
-          std::move(cb_for_js)),
+          std::move(cb_for_js), base::ElapsedTimer()),
       kActorJavaScriptExecutionTimeout);
 
   if (!sent) {

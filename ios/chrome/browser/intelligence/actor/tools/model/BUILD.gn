@@ -62,6 +62,7 @@ source_set("actor_tool_interface") {
 
   deps = [
     ":action_target",
+    ":actor_tool_constants",
     "//base",
     "//components/actor/core:journal",
     "//components/autofill/core/browser",
@@ -100,6 +101,7 @@ source_set("web_actor_tool_interface") {
 
 source_set("actor_tool_constants") {
   sources = [ "actor_tool_constants.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("navigate_tool") {
@@ -493,6 +495,7 @@ source_set("java_script_features") {
   deps = [
     ":action_target",
     ":action_target_ts",
+    ":actor_tool_constants",
     ":actor_tool_interface",
     ":attempt_form_filling_tool_ts",
     ":click_tool_ts",
@@ -591,6 +594,7 @@ source_set("unit_tests") {
     "action_target_js_unittest.mm",
     "action_target_unittest.mm",
     "actor_tool_factory_unittest.mm",
+    "actor_tool_java_script_feature_util_unittest.mm",
     "actor_tool_request_unittest.mm",
     "attempt_form_filling_tool_java_script_feature_unittest.mm",
     "attempt_form_filling_tool_js_unittest.mm",
