@@ -924,6 +924,39 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void onFocusChanged_unfocusRestoresRtlHintScrollAfterExpandedFocus() {
+        mUrlBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        mUrlBar.setHint("ابحث في Google أو اكتب عنوان URL");
+        mUrlBar.scrollDisplayText(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        measureAndLayoutUrlBar();
+
+        int expectedScrollX =
+                (int) mUrlBar.getLayout().getPrimaryHorizontal(0)
+                        - (URL_BAR_WIDTH - mUrlBar.getPaddingLeft() - mUrlBar.getPaddingRight());
+        assertNotEquals(0, expectedScrollX);
+        assertEquals(expectedScrollX, mUrlBar.getScrollX());
+
+        // Focus UrlBar, expand its width (as when entering Fusebox AI Mode), and alter scrollX.
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+        mUrlBar.scrollDisplayText(UrlBar.ScrollType.NO_SCROLL, /* originChanged= */ false);
+        measureAndLayoutUrlBarForSize(URL_BAR_WIDTH * 2, URL_BAR_HEIGHT);
+        mUrlBar.setScrollX(0);
+
+        // Unfocus UrlBar and shrink back to the original unfocused width.
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+        measureAndLayoutUrlBarForSize(URL_BAR_WIDTH, URL_BAR_HEIGHT);
+
+        assertEquals(expectedScrollX, mUrlBar.getScrollX());
+    }
+
+    @Test
     public void scrollToBeginning_rtlText_accountsForPadding() {
         String rtlText = "ابحث في Google أو اكتب عنوان URL";
         mUrlBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
