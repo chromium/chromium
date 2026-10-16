@@ -159,13 +159,15 @@ TEST_F(CastWebViewDefaultTest, NonBackKeyIsNotHandled) {
   CreateWebView();
   SelfRemovingWindowObserver window_observer(web_view_->window());
 
-  auto result = GetDelegate()->PreHandleKeyboardEvent(
-      web_view_->web_contents(),
-      MakeKeyEvent(blink::WebInputEvent::Type::kRawKeyDown, ui::VKEY_RETURN));
+  for (int key_code : {ui::VKEY_RETURN, ui::VKEY_BACK}) {
+    auto result = GetDelegate()->PreHandleKeyboardEvent(
+        web_view_->web_contents(),
+        MakeKeyEvent(blink::WebInputEvent::Type::kRawKeyDown, key_code));
 
-  EXPECT_EQ(result, content::KeyboardEventProcessingResult::NOT_HANDLED);
-  EXPECT_EQ(window_observer.destroyed_count(), 0);
-  EXPECT_NE(web_view_->window(), nullptr);
+    EXPECT_EQ(result, content::KeyboardEventProcessingResult::NOT_HANDLED);
+    EXPECT_EQ(window_observer.destroyed_count(), 0);
+    EXPECT_NE(web_view_->window(), nullptr);
+  }
 }
 
 TEST_F(CastWebViewDefaultTest, BackKeyIsNotInterceptedWhenWindowHandlesBack) {
@@ -216,7 +218,7 @@ TEST_F(CastWebViewDefaultTest,
 
 TEST_F(CastWebViewDefaultTest,
        UnhandledBackKeyClosesWindowAndNotifiesObserver) {
-  for (int key_code : {ui::VKEY_BROWSER_BACK, ui::VKEY_ESCAPE, ui::VKEY_BACK}) {
+  for (int key_code : {ui::VKEY_BROWSER_BACK, ui::VKEY_ESCAPE}) {
     CreateWebView();
     SelfRemovingWindowObserver window_observer(web_view_->window());
     TestPageStopObserver page_observer(web_view_->cast_web_contents());

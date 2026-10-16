@@ -1585,12 +1585,12 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
                                "window.backEventsReceived"));
   EXPECT_FALSE(destroy_waiter.destroyed());
 
-  // Second Back press (VKEY_BACK): window listener does not call
+  // Second Back press (VKEY_ESCAPE): window listener does not call
   // preventDefault(), closing the window cleanly.
   input::NativeWebKeyboardEvent back_key_event(
       blink::WebInputEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
-  back_key_event.windows_key_code = ui::VKEY_BACK;
+  back_key_event.windows_key_code = ui::VKEY_ESCAPE;
 
   auto stop_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(observer, PageStopped(PageState::CLOSED, net::OK))

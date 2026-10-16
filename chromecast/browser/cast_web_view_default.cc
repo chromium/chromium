@@ -52,9 +52,10 @@ namespace chromecast {
 namespace {
 
 bool IsBackKey(int windows_key_code) {
+  // Check for special control flow navigation only keys, not keyboard keys
+  // like "back/backspace" (ui::VKEY_BACK).
   return windows_key_code == ui::VKEY_BROWSER_BACK ||
-         windows_key_code == ui::VKEY_ESCAPE ||
-         windows_key_code == ui::VKEY_BACK;
+         windows_key_code == ui::VKEY_ESCAPE;
 }
 
 std::u16string GetBackPressedScript() {
