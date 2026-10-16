@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_util.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
@@ -81,7 +82,8 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   browsing_data::AutofillCounter GetCounter() {
     return {GetPersonalDataManager(), GetWebDataService(),
-            GetEntityDataManager(), /*sync_service=*/nullptr};
+            GetEntityDataManager(), &entity_suppression_manager_,
+            /*sync_service=*/nullptr};
   }
 
   // Autocomplete suggestions --------------------------------------------------
@@ -108,8 +110,8 @@ class AutofillCounterTest : public InProcessBrowserTest {
   }
 
   void ClearAutocompleteSuggestions() {
-    web_data_service_->RemoveFormElementsAddedBetween(
-        base::Time(), base::Time::Max());
+    web_data_service_->RemoveFormElementsAddedBetween(base::Time(),
+                                                      base::Time::Max());
   }
 
   // Credit cards --------------------------------------------------------------
@@ -186,6 +188,10 @@ class AutofillCounterTest : public InProcessBrowserTest {
         browser()->GetProfile());
   }
 
+  autofill::EntitySuppressionManager& GetEntitySuppressionManager() {
+    return entity_suppression_manager_;
+  }
+
   autofill::PersonalDataManager* GetPersonalDataManager() {
     return personal_data_manager_;
   }
@@ -216,6 +222,10 @@ class AutofillCounterTest : public InProcessBrowserTest {
     return counter_value_;
   }
 
+  browsing_data::BrowsingDataCounter::ResultInt GetNumSuppressions() {
+    return num_suppressions_;
+  }
+
   void WaitForResult() {
     std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result =
         future.Take();
@@ -230,6 +240,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
     num_credit_cards_ = autofill_result->num_credit_cards();
     num_addresses_ = autofill_result->num_addresses();
     num_entities_ = autofill_result->num_entities();
+    num_suppressions_ = autofill_result->num_suppressions();
   }
 
  protected:
@@ -246,12 +257,18 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
+  // The production `EntitySuppressionManagerImpl` requires a loaded sync
+  // bridge that is tracking metadata, which is not available in this test.
+  // Since the counter only depends on the `EntitySuppressionManager`
+  // interface, an in-memory implementation is injected instead.
+  autofill::InMemoryEntitySuppressionManager entity_suppression_manager_;
 
   browsing_data::BrowsingDataCounter::ResultInt counter_value_;
   browsing_data::BrowsingDataCounter::ResultInt num_suggestions_;
   browsing_data::BrowsingDataCounter::ResultInt num_credit_cards_;
   browsing_data::BrowsingDataCounter::ResultInt num_addresses_;
   browsing_data::BrowsingDataCounter::ResultInt num_entities_;
+  browsing_data::BrowsingDataCounter::ResultInt num_suppressions_;
 };
 
 // Tests that we count the correct number of autocomplete suggestions.
@@ -320,13 +337,59 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Entities) {
   EXPECT_EQ(GetNumEntities(), 1);
 }
 
+// Tests that the counter counts entity suppression metadata in the deletion
+// range, so that the UI does not report "None" when the deletion is not a
+// no-op.
+IN_PROC_BROWSER_TEST_F(AutofillCounterTest, EntitySuppressions) {
+  browsing_data::AutofillCounter counter = GetCounter();
+  counter.Init(browser()->GetProfile()->GetPrefs(),
+               future.GetRepeatingCallback());
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(0, GetNumSuppressions());
+
+  const base::Time suppression_time = base::Time::Now();
+  ASSERT_TRUE(GetEntitySuppressionManager().SuppressEntity(
+      autofill::test::GetPassportEntityInstance()));
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(0, GetCounterValue());
+  EXPECT_EQ(0, GetNumCreditCards());
+  EXPECT_EQ(0, GetNumAddresses());
+  EXPECT_EQ(0, GetNumEntities());
+  // One suppression entry per satisfied merge constraint of the passport.
+  EXPECT_GE(GetNumSuppressions(), 1);
+  const browsing_data::BrowsingDataCounter::ResultInt num_passport_entries =
+      GetNumSuppressions();
+
+  ASSERT_TRUE(GetEntitySuppressionManager().SuppressEntity(
+      autofill::test::GetVehicleEntityInstance()));
+  counter.Restart();
+  WaitForResult();
+  EXPECT_GT(GetNumSuppressions(), num_passport_entries);
+
+  // Suppressions created before the start of the deletion period are not
+  // counted.
+  counter.SetPeriodStartForTesting(suppression_time + base::Hours(1));
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(0, GetNumSuppressions());
+
+  // Once the suppressions are cleared, nothing is counted anymore.
+  counter.SetPeriodStartForTesting(base::Time());
+  ASSERT_TRUE(GetEntitySuppressionManager().ClearSuppressions(
+      base::Time(), base::Time::Max()));
+  counter.Restart();
+  WaitForResult();
+  EXPECT_EQ(0, GetNumSuppressions());
+}
+
 // Tests that we count the correct number of credit cards.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
   Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
-  counter.Init(profile->GetPrefs(),
-               future.GetRepeatingCallback());
+  counter.Init(profile->GetPrefs(), future.GetRepeatingCallback());
   counter.Restart();
   WaitForResult();
 
@@ -368,8 +431,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
   Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
-  counter.Init(profile->GetPrefs(),
-               future.GetRepeatingCallback());
+  counter.Init(profile->GetPrefs(), future.GetRepeatingCallback());
   counter.Restart();
 
   WaitForResult();
@@ -425,8 +487,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
   Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
-  counter.Init(profile->GetPrefs(),
-               future.GetRepeatingCallback());
+  counter.Init(profile->GetPrefs(), future.GetRepeatingCallback());
   counter.Restart();
 
   WaitForResult();
@@ -478,8 +539,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
-  counter.Init(profile->GetPrefs(),
-               future.GetRepeatingCallback());
+  counter.Init(profile->GetPrefs(), future.GetRepeatingCallback());
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Test case %zu", i));

@@ -86,7 +86,8 @@ TEST_F(BrowsingDataUtilsTest,
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,
                           base::MakeRefCounted<FakeWebDataService>(),
-                          /*entity_data_manager=*/nullptr, nullptr);
+                          /*entity_data_manager=*/nullptr,
+                          /*entity_suppression_manager=*/nullptr, nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.
@@ -121,7 +122,7 @@ TEST_F(BrowsingDataUtilsTest,
     AutofillCounter::AutofillResult result(
         &counter, test_case.num_suggestions, test_case.num_credit_cards,
         test_case.num_addresses, test_case.num_entities,
-        test_case.sync_enabled);
+        /*num_suppressions=*/0, test_case.sync_enabled);
 
     SCOPED_TRACE(
         base::StringPrintf("Test params: %d payment method(s), "
@@ -142,7 +143,8 @@ TEST_F(BrowsingDataUtilsTest,
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,
                           base::MakeRefCounted<FakeWebDataService>(),
-                          /*entity_data_manager=*/nullptr, nullptr);
+                          /*entity_data_manager=*/nullptr,
+                          /*entity_suppression_manager=*/nullptr, nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.
@@ -177,7 +179,7 @@ TEST_F(BrowsingDataUtilsTest,
     AutofillCounter::AutofillResult result(
         &counter, test_case.num_suggestions, test_case.num_credit_cards,
         test_case.num_addresses, test_case.num_entities,
-        test_case.sync_enabled);
+        /*num_suppressions=*/0, test_case.sync_enabled);
 
     SCOPED_TRACE(
         base::StringPrintf("Test params: %d payment method(s), "

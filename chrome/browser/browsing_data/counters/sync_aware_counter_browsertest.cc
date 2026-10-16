@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS),
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
-      sync_service);
+      /*entity_suppression_manager=*/nullptr, sync_service);
 
   counter.Init(profile->GetPrefs(),
                base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,

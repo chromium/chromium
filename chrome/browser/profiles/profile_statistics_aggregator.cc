@@ -45,8 +45,9 @@ ProfileStatisticsAggregator::~ProfileStatisticsAggregator() = default;
 
 void ProfileStatisticsAggregator::AddCallbackAndStartAggregator(
     profiles::ProfileStatisticsCallback stats_callback) {
-  if (stats_callback)
+  if (stats_callback) {
     stats_callbacks_.push_back(std::move(stats_callback));
+  }
   StartAggregator();
 }
 
@@ -85,13 +86,15 @@ void ProfileStatisticsAggregator::StartAggregator() {
   // Initiate autofill counting.
   AddCounter(std::make_unique<browsing_data::AutofillCounter>(
       personal_data_manager_, autofill_web_data_service_, entity_data_manager_,
+      /*entity_suppression_manager=*/nullptr,
       /*sync_service=*/nullptr));
 }
 
 void ProfileStatisticsAggregator::OnCounterResult(
     std::unique_ptr<BrowsingDataCounter::Result> result) {
-  if (!result->Finished())
+  if (!result->Finished()) {
     return;
+  }
   const char* pref_name = result->source()->GetPrefName();
   auto* finished_result =
       static_cast<BrowsingDataCounter::FinishedResult*>(result.get());

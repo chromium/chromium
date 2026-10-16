@@ -16,8 +16,9 @@
 namespace autofill {
 class AutofillWebDataService;
 class EntityDataManager;
+class EntitySuppressionManager;
 class PersonalDataManager;
-}
+}  // namespace autofill
 
 namespace browsing_data {
 
@@ -30,6 +31,7 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter {
                    ResultInt num_credit_cards,
                    ResultInt num_addresses,
                    ResultInt num_entities,
+                   ResultInt num_suppressions,
                    bool autofill_sync_enabled_);
 
     AutofillResult(const AutofillResult&) = delete;
@@ -40,17 +42,24 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter {
     ResultInt num_credit_cards() const { return num_credit_cards_; }
     ResultInt num_addresses() const { return num_addresses_; }
     ResultInt num_entities() const { return num_entities_; }
+    // Number of Autofill AI entity suppressions that would be deleted in the
+    // selected time range. Unlike the other counts, these are not user-visible
+    // items (one suppressed suggestion may map to several entries), so they
+    // are reported separately rather than folded into `num_entities()`.
+    ResultInt num_suppressions() const { return num_suppressions_; }
 
    private:
     const ResultInt num_credit_cards_ = 0;
     const ResultInt num_addresses_ = 0;
     const ResultInt num_entities_ = 0;
+    const ResultInt num_suppressions_ = 0;
   };
 
   AutofillCounter(
       autofill::PersonalDataManager* personal_data_manager,
       scoped_refptr<autofill::AutofillWebDataService> web_data_service,
       const autofill::EntityDataManager* entity_data_manager,
+      const autofill::EntitySuppressionManager* entity_suppression_manager,
       syncer::SyncService* sync_service);
 
   AutofillCounter(const AutofillCounter&) = delete;
@@ -93,6 +102,8 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter {
 
   const raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   const raw_ptr<const autofill::EntityDataManager> entity_data_manager_;
+  const raw_ptr<const autofill::EntitySuppressionManager>
+      entity_suppression_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
   SyncTracker sync_tracker_;
 
@@ -102,6 +113,7 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter {
   ResultInt num_credit_cards_ = 0;
   ResultInt num_addresses_ = 0;
   ResultInt num_entities_ = 0;
+  ResultInt num_suppressions_ = 0;
 
   base::Time period_start_for_testing_;
   base::Time period_end_for_testing_;

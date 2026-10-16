@@ -65,6 +65,7 @@ CreateCounterForProfileAndPref(ProfileIOS* profile,
         ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         /*entity_data_manager=*/nullptr,
+        /*entity_suppression_manager=*/nullptr,
         SyncServiceFactory::GetForProfile(profile));
   }
 
