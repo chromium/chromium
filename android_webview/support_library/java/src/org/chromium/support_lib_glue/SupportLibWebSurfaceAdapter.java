@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.web.WebSurfaceBoundaryInterface;
 import org.chromium.support_lib_boundary.web.WebSurfaceEvent;
+import org.chromium.support_lib_boundary.web.util.WebSurfaceEventPacker;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.function.BiConsumer;
@@ -74,8 +75,11 @@ class SupportLibWebSurfaceAdapter implements WebSurfaceBoundaryInterface {
             mEventListener.accept(WebSurfaceEvent.INVALIDATE, null);
         }
 
-        // TODO(b/559499991): Send nested scrolling events to AndroidX.
         @Override
-        public void onOverScroll(float deltaX, float deltaY, float velocityX, float velocityY) {}
+        public void onOverScroll(float deltaX, float deltaY, float velocityX, float velocityY) {
+            mEventListener.accept(
+                    WebSurfaceEvent.OVER_SCROLL,
+                    WebSurfaceEventPacker.packOverScroll(deltaX, deltaY, velocityX, velocityY));
+        }
     }
 }

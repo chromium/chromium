@@ -13,6 +13,7 @@ android_library("web_boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/web/WebSurfaceBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/web/WebSurfaceEvent.java",
     "src/org/chromium/support_lib_boundary/web/util/WebFeatures.java",
+    "src/org/chromium/support_lib_boundary/web/util/WebSurfaceEventPacker.java",
   ]
 
   proguard_configs = [
