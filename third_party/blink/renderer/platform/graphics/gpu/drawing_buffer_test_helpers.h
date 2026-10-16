@@ -342,10 +342,8 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   // Saves current GL state for later verification.
   void SaveState() { saved_state_ = state_; }
   void VerifyStateHasNotChangedSinceSave() const {
-    for (size_t i = 0; i < 4; ++i) {
-      EXPECT_EQ(state_.clear_color[0], saved_state_.clear_color[0]);
-      EXPECT_EQ(state_.color_mask[0], saved_state_.color_mask[0]);
-    }
+    EXPECT_EQ(state_.clear_color, saved_state_.clear_color);
+    EXPECT_EQ(state_.color_mask, saved_state_.color_mask);
     EXPECT_EQ(state_.clear_depth, saved_state_.clear_depth);
     EXPECT_EQ(state_.clear_stencil, saved_state_.clear_stencil);
     EXPECT_EQ(state_.depth_mask, saved_state_.depth_mask);
