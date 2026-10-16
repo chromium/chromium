@@ -2639,8 +2639,8 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
 
     // Menu item titles have accelerators removed, so remove them from the
     // string being searched for as well.
-    const std::u16string title = chrome::GetCleanTitleAndTooltipText(
-        l10n_util::GetStringUTF16(label_id));
+    const std::u16string title =
+        chrome::GetCleanText(l10n_util::GetStringUTF16(label_id));
     views::MenuItemView* item = nullptr;
     for (views::MenuItemView* menu_item :
          root_item->GetSubmenu()->GetMenuItems()) {
@@ -2765,7 +2765,7 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
       // the expected strings as well. Most expected strings don't have
       // accelerators, but it does no harm to unconditionally strip them.
       EXPECT_EQ(menu_model->GetLabelAt(i),
-                chrome::GetCleanTitleAndTooltipText(
+                chrome::GetCleanText(
                     l10n_util::GetStringUTF16(expected_item.label_id)));
       EXPECT_EQ(menu_model->IsEnabledAt(i), expected_item.enabled);
     }

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -752,11 +753,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   // The collapse button should be updated immediately to use the expand icon,
   // text, and tooltip.
-  EXPECT_EQ(BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(IDS_EXPAND_VERTICAL_TABS)),
-            collapse_action->GetText());
   EXPECT_EQ(
-      BrowserActions::GetCleanTitleAndTooltipText(l10n_util::GetStringFUTF16(
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_EXPAND_VERTICAL_TABS)),
+      collapse_action->GetText());
+  EXPECT_EQ(
+      chrome::GetCleanText(l10n_util::GetStringFUTF16(
           IDS_EXPAND_VERTICAL_TABS_TOOLTIP, accelerator.GetShortcutText())),
       collapse_action->GetTooltipText());
 
@@ -766,11 +767,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   // The collapse button should be updated immediately to use the collapse icon,
   // text, and tooltip.
-  EXPECT_EQ(BrowserActions::GetCleanTitleAndTooltipText(
+  EXPECT_EQ(chrome::GetCleanText(
                 l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)),
             collapse_action->GetText());
   EXPECT_EQ(
-      BrowserActions::GetCleanTitleAndTooltipText(l10n_util::GetStringFUTF16(
+      chrome::GetCleanText(l10n_util::GetStringFUTF16(
           IDS_COLLAPSE_VERTICAL_TABS_TOOLTIP, accelerator.GetShortcutText())),
       collapse_action->GetTooltipText());
 }

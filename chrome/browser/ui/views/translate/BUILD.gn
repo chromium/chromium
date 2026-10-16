@@ -174,6 +174,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/actions:actions_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/views/frame",

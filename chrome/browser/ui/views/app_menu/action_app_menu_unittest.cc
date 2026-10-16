@@ -28,6 +28,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -162,8 +163,9 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
     actions::ActionItem* action = actions::ActionManager::Get().FindAction(
         action_id, browser_actions_->root_action_item());
     CHECK(action);
-    const std::u16string text = BrowserActions::GetMnemonicTitleText(
-        l10n_util::GetStringUTF16(string_id));
+    const std::u16string text =
+        chrome::GetCleanText(l10n_util::GetStringUTF16(string_id),
+                             chrome::CleanTextOptions::kEllipses);
     action->SetText(text);
     return ui::GetMnemonic(text);
   }
@@ -1031,7 +1033,7 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
             gfx::RemoveAccelerator(
                 l10n_util::GetStringUTF16(IDS_APP_MENU_BLOCK_INCOGNITO)));
   EXPECT_EQ(incognito_button->GetViewAccessibility().GetCachedName(),
-            BrowserActions::GetCleanTitleAndTooltipText(
+            chrome::GetCleanText(
                 l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
 
   // Verify icon override is applied for new tab button.
@@ -1088,7 +1090,7 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtonsIncognito) {
   }
   ASSERT_TRUE(incognito_label);
   EXPECT_EQ(incognito_label->GetText(),
-            BrowserActions::GetCleanTitleAndTooltipText(
+            chrome::GetCleanText(
                 l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
@@ -4075,8 +4077,9 @@ TEST_F(ActionAppMenuTest, BlockButtonKeepsTextOverrideWhenActionChanges) {
   ON_CALL(mock_window_interface_, GetProfile())
       .WillByDefault(testing::Return(otr_profile));
   // In Incognito, the New tab button shows "New Incognito tab".
-  const std::u16string text_override = BrowserActions::GetMnemonicTitleText(
-      l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB));
+  const std::u16string text_override =
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB),
+                           chrome::CleanTextOptions::kEllipses);
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());

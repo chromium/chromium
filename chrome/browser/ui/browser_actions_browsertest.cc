@@ -6,6 +6,7 @@
 
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
@@ -192,31 +193,38 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
             true);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetCleanTitleAndTooltipText) {
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetCleanText) {
   // \u2026 is the unicode hex value for a horizontal ellipsis.
   const std::u16string expected = u"Print";
   std::u16string input = u"&Print\u2026";
-  std::u16string output = BrowserActions::GetCleanTitleAndTooltipText(input);
+  std::u16string output = GetCleanText(input);
   EXPECT_EQ(output, expected);
 
   std::u16string input_middle_amp = u"Pri&nt\u2026";
-  std::u16string output_middle_amp =
-      BrowserActions::GetCleanTitleAndTooltipText(input_middle_amp);
+  std::u16string output_middle_amp = GetCleanText(input_middle_amp);
   EXPECT_EQ(output_middle_amp, expected);
 
   std::u16string input_ellipsis_text = u"&Print...";
-  std::u16string output_ellipsis_text =
-      BrowserActions::GetCleanTitleAndTooltipText(input_ellipsis_text);
+  std::u16string output_ellipsis_text = GetCleanText(input_ellipsis_text);
   EXPECT_EQ(output_ellipsis_text, expected);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetMnemonicTitleText) {
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetCleanTextEllipsesOnly) {
   // The ellipsis is removed, but the mnemonic marker is kept. \u2026 is the
   // unicode hex value for a horizontal ellipsis.
-  EXPECT_EQ(BrowserActions::GetMnemonicTitleText(u"&Print\u2026"), u"&Print");
-  EXPECT_EQ(BrowserActions::GetMnemonicTitleText(u"Pri&nt..."), u"Pri&nt");
+  EXPECT_EQ(GetCleanText(u"&Print\u2026", CleanTextOptions::kEllipses),
+            u"&Print");
+  EXPECT_EQ(GetCleanText(u"Pri&nt...", CleanTextOptions::kEllipses), u"Pri&nt");
   // "&&" is a literal "&", and is kept as is.
-  EXPECT_EQ(BrowserActions::GetMnemonicTitleText(u"Q&&A"), u"Q&&A");
+  EXPECT_EQ(GetCleanText(u"Q&&A", CleanTextOptions::kEllipses), u"Q&&A");
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, GetCleanTextMnemonicOnly) {
+  // The mnemonic marker is removed, but the ellipsis is kept.
+  EXPECT_EQ(GetCleanText(u"&Print\u2026", CleanTextOptions::kMnemonic),
+            u"Print\u2026");
+  EXPECT_EQ(GetCleanText(u"Pri&nt...", CleanTextOptions::kMnemonic),
+            u"Print...");
 }
 
 // Menu actions keep the mnemonic marker in their text for menus, while
@@ -233,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
   const std::u16string incognito_title =
       l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW);
   EXPECT_EQ(incognito->GetTextWithMnemonic(), incognito_title);
-  EXPECT_EQ(incognito->GetText(),
-            BrowserActions::GetCleanTitleAndTooltipText(incognito_title));
+  EXPECT_EQ(incognito->GetText(), GetCleanText(incognito_title));
 
   // Built with ActionItem::Builder() directly.
   actions::ActionItem* new_tab =
@@ -242,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
   ASSERT_TRUE(new_tab);
   const std::u16string new_tab_title = l10n_util::GetStringUTF16(IDS_NEW_TAB);
   EXPECT_EQ(new_tab->GetTextWithMnemonic(), new_tab_title);
-  EXPECT_EQ(new_tab->GetText(),
-            BrowserActions::GetCleanTitleAndTooltipText(new_tab_title));
+  EXPECT_EQ(new_tab->GetText(), GetCleanText(new_tab_title));
 
   actions::ActionItem* show_history =
       action_manager.FindAction(kActionShowHistory, root_action_item);
@@ -251,9 +257,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
   const std::u16string history_title =
       l10n_util::GetStringUTF16(IDS_HISTORY_MENU);
   EXPECT_EQ(show_history->GetTextWithMnemonic(),
-            BrowserActions::GetMnemonicTitleText(history_title));
-  EXPECT_EQ(show_history->GetText(),
-            BrowserActions::GetCleanTitleAndTooltipText(history_title));
+            GetCleanText(history_title, CleanTextOptions::kEllipses));
+  EXPECT_EQ(show_history->GetText(), GetCleanText(history_title));
 
   actions::ActionItem* manage_extensions =
       action_manager.FindAction(kActionManageExtensions, root_action_item);
@@ -261,10 +266,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, MenuActionsKeepMnemonicText) {
   const std::u16string manage_extensions_title =
       l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS);
   EXPECT_EQ(manage_extensions->GetTextWithMnemonic(),
-            BrowserActions::GetMnemonicTitleText(manage_extensions_title));
-  EXPECT_EQ(
-      manage_extensions->GetText(),
-      BrowserActions::GetCleanTitleAndTooltipText(manage_extensions_title));
+            GetCleanText(manage_extensions_title, CleanTextOptions::kEllipses));
+  EXPECT_EQ(manage_extensions->GetText(),
+            GetCleanText(manage_extensions_title));
 }
 
 }  // namespace chrome

@@ -9,13 +9,17 @@
 
 namespace chrome {
 
-// Strips accelerators (e.g., "&") and ellipsis (e.g., "..." or "\u2026")
-// from a string, suitable for text and tooltips in ActionItems.
-std::u16string GetCleanTitleAndTooltipText(std::u16string string);
+enum class CleanTextOptions {
+  kEllipses = 1 << 0,
+  kMnemonic = 1 << 1,
+  kAll = kEllipses | kMnemonic,
+};
 
-// Strips ellipsis (e.g., "..." or "\u2026") from a string but keeps its
-// accelerator (e.g., "&"), suitable for actions::ActionItem::SetText().
-std::u16string GetMnemonicTitleText(std::u16string string);
+// Strips accelerators (e.g., "&") and/or ellipsis (e.g., "..." or "\u2026")
+// from a string based on `options`, suitable for text and tooltips in
+// ActionItems.
+std::u16string GetCleanText(std::u16string string,
+                            CleanTextOptions options = CleanTextOptions::kAll);
 
 }  // namespace chrome
 

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -92,9 +93,9 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
 
-  EXPECT_EQ(GetTranslateIcon().GetAccessibleName(),
-            BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(IDS_SHOW_TRANSLATE)));
+  EXPECT_EQ(
+      GetTranslateIcon().GetAccessibleName(),
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_SHOW_TRANSLATE)));
   EXPECT_EQ(GetTranslateIcon().GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }

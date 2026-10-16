@@ -364,15 +364,14 @@ void VerticalTabStripStateControllerImpl::UpdateCollapseActionItem() {
     collapse_action->SetImage(
         ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
     collapse_action->SetText(
-        chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
+        chrome::GetCleanText(l10n_util::GetStringUTF16(text)));
 
     ui::Accelerator accelerator = collapse_action->GetAccelerator();
     const std::u16string shortcut_text = accelerator.GetShortcutText();
     const std::u16string tooltip_text =
         shortcut_text.empty()
-            ? chrome::GetCleanTitleAndTooltipText(
-                  l10n_util::GetStringUTF16(text))
-            : chrome::GetCleanTitleAndTooltipText(
+            ? chrome::GetCleanText(l10n_util::GetStringUTF16(text))
+            : chrome::GetCleanText(
                   l10n_util::GetStringFUTF16(tooltip_id, shortcut_text));
     collapse_action->SetTooltipText(tooltip_text);
 

@@ -29,6 +29,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -603,11 +604,13 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
         Profile* profile = browser_window_interface_->GetProfile();
         std::optional<std::u16string> new_tab_text_override;
         if (profile->IsEnterpriseIsolatedModeProfile()) {
-          new_tab_text_override = BrowserActions::GetMnemonicTitleText(
-              l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB));
+          new_tab_text_override = chrome::GetCleanText(
+              l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB),
+              chrome::CleanTextOptions::kEllipses);
         } else if (profile->IsIncognitoProfile()) {
-          new_tab_text_override = BrowserActions::GetMnemonicTitleText(
-              l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB));
+          new_tab_text_override = chrome::GetCleanText(
+              l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB),
+              chrome::CleanTextOptions::kEllipses);
         }
         section
             .AddAction(
@@ -628,10 +631,10 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
                 {.display_type = DisplayType::kBlock,
                  .text_override =
                      profile->IsEnterpriseIsolatedModeProfile()
-                         ? std::make_optional(
-                               BrowserActions::GetMnemonicTitleText(
-                                   l10n_util::GetStringUTF16(
-                                       IDS_NEW_ISOLATED_WINDOW)))
+                         ? std::make_optional(chrome::GetCleanText(
+                               l10n_util::GetStringUTF16(
+                                   IDS_NEW_ISOLATED_WINDOW),
+                               chrome::CleanTextOptions::kEllipses))
                          : std::nullopt});
           } else {
             section.AddAction(
@@ -639,10 +642,10 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
                 {.display_type = DisplayType::kBlock,
                  .text_override =
                      profile->IsIncognitoProfile()
-                         ? std::make_optional(
-                               BrowserActions::GetMnemonicTitleText(
-                                   l10n_util::GetStringUTF16(
-                                       IDS_NEW_INCOGNITO_WINDOW)))
+                         ? std::make_optional(chrome::GetCleanText(
+                               l10n_util::GetStringUTF16(
+                                   IDS_NEW_INCOGNITO_WINDOW),
+                               chrome::CleanTextOptions::kEllipses))
                          : std::nullopt,
                  .element_id = AppMenuModel::kIncognitoMenuItem});
           }

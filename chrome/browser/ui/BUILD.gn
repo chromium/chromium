@@ -1853,6 +1853,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator:utils",
       "//chrome/browser/search:test_support",
       "//chrome/browser/tab_group_sync:factories",
+      "//chrome/browser/ui/actions:actions_util",
       "//chrome/browser/ui/browser_active_state_manager",
       "//chrome/browser/ui/browser_ui_controller",
       "//chrome/browser/ui/browser_web_contents_delegate",

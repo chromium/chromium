@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -395,9 +396,10 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
   std::u16string* text_override =
       new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(text_override, nullptr);
-  EXPECT_EQ(*text_override,
-            BrowserActions::GetMnemonicTitleText(
-                l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB)));
+  EXPECT_EQ(
+      *text_override,
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB),
+                           chrome::CleanTextOptions::kEllipses));
 
   ASSERT_GE(block_section->GetChildren().children().size(), 3u);
   actions::BaseAction* incognito_window_action =
@@ -409,9 +411,10 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
   std::u16string* incognito_window_text_override =
       incognito_window_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(incognito_window_text_override, nullptr);
-  EXPECT_EQ(*incognito_window_text_override,
-            BrowserActions::GetMnemonicTitleText(
-                l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
+  EXPECT_EQ(
+      *incognito_window_text_override,
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW),
+                           chrome::CleanTextOptions::kEllipses));
 }
 
 TEST_F(ActionAppMenuManagerTest,
@@ -450,9 +453,9 @@ TEST_F(ActionAppMenuManagerTest,
   std::u16string* text_override =
       new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(text_override, nullptr);
-  EXPECT_EQ(*text_override,
-            BrowserActions::GetMnemonicTitleText(
-                l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB)));
+  EXPECT_EQ(*text_override, chrome::GetCleanText(
+                                l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB),
+                                chrome::CleanTextOptions::kEllipses));
 
   ASSERT_GE(block_section->GetChildren().children().size(), 3u);
   actions::BaseAction* isolated_window_action =
@@ -464,9 +467,10 @@ TEST_F(ActionAppMenuManagerTest,
   std::u16string* isolated_window_text_override =
       isolated_window_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(isolated_window_text_override, nullptr);
-  EXPECT_EQ(*isolated_window_text_override,
-            BrowserActions::GetMnemonicTitleText(
-                l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_WINDOW)));
+  EXPECT_EQ(
+      *isolated_window_text_override,
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_WINDOW),
+                           chrome::CleanTextOptions::kEllipses));
 }
 
 TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {

@@ -313,7 +313,7 @@ void OrganizerPanelController::UpdateOrganizerActionItem() {
                          ? IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH
                          : IDS_VIEW_ORGANIZER_PANEL;
   const std::u16string title_and_tooltip =
-      chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text));
+      chrome::GetCleanText(l10n_util::GetStringUTF16(text));
   organizer_action->SetText(title_and_tooltip);
   organizer_action->SetTooltipText(title_and_tooltip);
 }
