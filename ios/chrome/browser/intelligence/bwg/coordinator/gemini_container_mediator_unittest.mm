@@ -748,16 +748,16 @@ TEST_F(GeminiContainerMediatorTest, TestGeminiLiveUserDidPressStopButton) {
   EXPECT_TRUE(delegate_.stop_button_pressed_called_);
 }
 
-// Test that `connect` configures initial UI state, sets the Gemini view
-// controller on the consumer, notifies `containerHandler`, and requests active
-// page context generation.
+// Tests that `connect` configures initial UI state, updates shared tabs for the
+// active web state, sets the Gemini view controller on the consumer, notifies
+// `containerHandler`, and requests active page context generation.
 TEST_F(GeminiContainerMediatorTest, TestConnectTriggersInitialUIState) {
   @autoreleasepool {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
         {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
 
-    AppendActiveWebState();
+    web::FakeWebState* active_web_state = AppendActiveWebState();
 
     FakeGeminiContainerConsumer* consumer =
         [[FakeGeminiContainerConsumer alloc] init];
@@ -773,6 +773,10 @@ TEST_F(GeminiContainerMediatorTest, TestConnectTriggersInitialUIState) {
 
     [mediator_mock connect];
 
+    EXPECT_EQ(1, shared_tabs_delegate_
+                     .update_shared_tabs_for_active_web_state_call_count_);
+    EXPECT_EQ(active_web_state,
+              shared_tabs_delegate_.last_updated_active_web_state_);
     EXPECT_NE(nil, consumer.geminiViewController);
     EXPECT_TRUE(consumer.isZeroState);
     EXPECT_EQ(1, consumer.zeroStateChangeCount);
@@ -1770,17 +1774,17 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_TRUE(delegate_.force_dismiss_floaty_called_);
 }
 
-// Tests that `updateWithStartupState:` updates the provider with the image
-// attachment, partial page context, prompt action, suggestion chips, loading
-// configuration, and account snackbar, and requests active page context
-// generation.
+// Tests that `updateWithStartupState:` updates shared tabs for the active web
+// state, updates the provider with the image attachment, partial page
+// context, prompt action, suggestion chips, loading configuration, and account
+// snackbar, and requests active page context generation.
 TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAppSwitcherAISummarization, kPageActionMenu}, {});
 
   ios::provider::ResetGemini();
-  AppendActiveWebState();
+  web::FakeWebState* active_web_state = AppendActiveWebState();
 
   UIImage* dummy_image = [[UIImage alloc] init];
   GeminiStartupState* startup_state = [[GeminiStartupState alloc]
@@ -1796,6 +1800,10 @@ TEST_F(GeminiContainerMediatorTest, TestUpdateWithStartupState) {
   [mediator_mock updateWithStartupState:startup_state];
 
   EXPECT_EQ(startup_state, mediator_.startupState);
+  EXPECT_EQ(1, shared_tabs_delegate_
+                   .update_shared_tabs_for_active_web_state_call_count_);
+  EXPECT_EQ(active_web_state,
+            shared_tabs_delegate_.last_updated_active_web_state_);
   EXPECT_EQ(dummy_image, ios::provider::GetLastAttachedImage());
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
   EXPECT_THAT(

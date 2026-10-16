@@ -800,8 +800,6 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
     return;
   }
 
-  UpdateSharedTabsForActiveWebState(web_state);
-
   GeminiTabHelper* gemini_tab_helper = GetActiveTabHelper();
   if (!gemini_tab_helper) {
     return;
@@ -828,10 +826,18 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
     ios::provider::UpdateGeminiViewState(
         ios::provider::GeminiViewState::kExpanded, /*animated=*/true);
     RecordStartupTime(startup_state, start_time);
+    return;
+  }
 
-    // TODO(crbug.com/571506045): Migrate the delayed presentation for
-    // autosubmit prompts.
-  } else if (startup_state.shouldAutoSubmit) {
+  // `updateWithStartupState:` already updates shared tabs when the floaty is
+  // invoked. For a new invocation, update shared tabs before generating and
+  // saving the active page context so stale tabs are cleared if `web_state` is
+  // not already attached.
+  UpdateSharedTabsForActiveWebState(web_state);
+
+  // TODO(crbug.com/571506045): Migrate the delayed presentation for
+  // autosubmit prompts.
+  if (startup_state.shouldAutoSubmit) {
     // The SDK sends an auto-submitted prompt as soon as the floaty appears,
     // with the page context the floaty was configured with. Defer the
     // invocation until the full page context is generated so the prompt is

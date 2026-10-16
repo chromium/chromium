@@ -292,6 +292,7 @@ class GeminiContainerMediatorTabHelperObserver
     _actorService->AddTaskLifecycleObserver(self);
   }
   [_tabGridState addObserver:self];
+  [self updateSharedTabsForActiveWebState];
   [self setupInitialUIState];
   [self requestActivePageContextGeneration];
   [self onFloatyInvoked];
@@ -362,6 +363,8 @@ class GeminiContainerMediatorTabHelperObserver
   }
   _startupState = startupState;
   gemini::EntryPoint entryPoint = startupState.entryPoint;
+
+  [self updateSharedTabsForActiveWebState];
 
   if (startupState.imageAttachment) {
     ios::provider::AttachImage(startupState.imageAttachment);
@@ -934,6 +937,15 @@ class GeminiContainerMediatorTabHelperObserver
 
   GeminiPageContext* activePageContext = tabHelper->GetPartialPageContext();
   [self propagatePageContext:activePageContext];
+}
+
+// Updates shared tabs for the currently active web state.
+- (void)updateSharedTabsForActiveWebState {
+  web::WebState* activeWebState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (activeWebState && _sharedTabsDelegate) {
+    _sharedTabsDelegate->UpdateSharedTabsForActiveWebState(activeWebState);
+  }
 }
 
 - (void)onActiveWebStateChanged:(web::WebState*)oldActive
