@@ -6,8 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_LOGGER_H_
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <utility>
 
@@ -110,8 +112,7 @@ class AutofillAiLogger {
   void RecordKeyMetrics(const FormFunnelStateMap& funnel_states) const;
   // Records the key metrics for a single `funnel_state`. `entity_type` and
   // `record_type` can be `std::nullopt`, denoting that the metrics to be
-  // emitted should not be split by this information. Is is assumed that
-  // `record_type` can only be non-null when `entity_type` is non-null.
+  // emitted should not be split by this information.
   void RecordKeyMetricsForState(
       FunnelState funnel_state,
       std::optional<EntityType> entity_type,
@@ -121,13 +122,13 @@ class AutofillAiLogger {
                                   bool opt_in_status) const;
 
   // Compresses `funnel_states` into a single `FunnelState` object by
-  // essentially taking the logical OR of all its boolean members.
-  template <class Key>
-  FunnelState CombineStates(
-      const std::map<Key, FunnelState>& funnel_states) const {
-    auto combine = [&](auto pred) {
-      return std::ranges::any_of(funnel_states, pred,
-                                 &std::pair<const Key, FunnelState>::second);
+  // essentially taking the logical OR of all its boolean members. `projection`
+  // maps the elements of `funnel_states` to `FunnelState`s.
+  template <std::ranges::input_range Range, class Proj = std::identity>
+  FunnelState CombineStates(const Range& funnel_states,
+                            Proj projection = {}) const {
+    auto combine = [&](bool FunnelState::* member) {
+      return std::ranges::any_of(funnel_states, member, projection);
     };
     return FunnelState{
         .has_data_to_fill = combine(&FunnelState::has_data_to_fill),
@@ -135,6 +136,12 @@ class AutofillAiLogger {
         .did_fill_suggestions = combine(&FunnelState::did_fill_suggestions),
         .edited_autofilled_field =
             combine(&FunnelState::edited_autofilled_field)};
+  }
+  template <class Key>
+  FunnelState CombineStates(
+      const std::map<Key, FunnelState>& funnel_states) const {
+    return CombineStates(funnel_states,
+                         &std::pair<const Key, FunnelState>::second);
   }
 
   // Records the funnel state for each form and entity type and record type

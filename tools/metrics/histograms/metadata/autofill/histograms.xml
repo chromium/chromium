@@ -1989,7 +1989,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="Records, at form submission, whether the user had Autofill
                  AI data to fill the form or not."/>
   </token>
-  <token key="EntityGranularity" variants="Autofill.Ai.EntityType"/>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Aggregated across all entity types."/>
+  </token>
   <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType"/>
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
