@@ -4,12 +4,7 @@
 
 package org.chromium.chrome.test.util;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import static org.chromium.base.test.transit.Triggers.noopTo;
-import static org.chromium.base.test.util.ForgivingClickAction.forgivingClick;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -23,8 +18,6 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
@@ -56,7 +49,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
-import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsProperties;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -88,47 +80,6 @@ public class OmniboxTestUtils {
     private final @Nullable ToolbarLayout mToolbar;
     private final LocationBarCoordinator mLocationBarCoordinator;
     private final LocationBarMediator mLocationBarMediator;
-
-    /**
-     * Invokes a specific ViewAction on an {@link
-     * org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction} at specific position.
-     *
-     * <p>This class can be chained with {@link
-     * androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition}.
-     */
-    private static class ActionOnOmniboxActionAtPosition implements ViewAction {
-        private final ViewAction mAction;
-
-        public ActionOnOmniboxActionAtPosition(int position, ViewAction action) {
-            mAction = actionOnItemAtPosition(position, action);
-        }
-
-        @Override
-        public Matcher<View> getConstraints() {
-            return withId(R.id.omnibox_actions_carousel);
-        }
-
-        @Override
-        public String getDescription() {
-            return mAction.getDescription();
-        }
-
-        @Override
-        public void perform(UiController uiController, View view) {
-            mAction.perform(uiController, view.findViewById(R.id.omnibox_actions_carousel));
-        }
-    }
-
-    /**
-     * Create a ViewAction that can be executed on a Suggestion with Action Chips.
-     *
-     * @param position the index of an {@link
-     *     org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction},
-     * @param action the action to perform.
-     */
-    public static ViewAction actionOnOmniboxActionAtPosition(int position, ViewAction action) {
-        return new ActionOnOmniboxActionAtPosition(position, action);
-    }
 
     /**
      * Class describing individual suggestion, delivering access to broad range of information.
@@ -325,19 +276,6 @@ public class OmniboxTestUtils {
     public @Nullable <T extends View> SuggestionInfo<T> findSuggestionWithType(
             @OmniboxSuggestionUiType int type) {
         return findSuggestion(info -> info.type == type);
-    }
-
-    /** Return the first suggestion that features Action Chips. */
-    public @Nullable <T extends View> SuggestionInfo<T> findSuggestionWithActionChips() {
-        return findSuggestion(
-                info -> {
-                    if (!info.model
-                            .getAllSetProperties()
-                            .contains(ActionChipsProperties.ACTION_CHIPS)) {
-                        return false;
-                    }
-                    return info.model.get(ActionChipsProperties.ACTION_CHIPS) != null;
-                });
     }
 
     /**
@@ -727,21 +665,6 @@ public class OmniboxTestUtils {
                     conn.setComposingText(
                             composingText, /* newCursorPosition= */ composingText.length());
                 });
-    }
-
-    /**
-     * Click the n-th action.
-     *
-     * @param suggestionIndex the index of suggestion to click an action on.
-     * @param actionIndex the index of action to invoke.
-     */
-    public void clickOnAction(int suggestionIndex, int actionIndex) {
-        onView(withId(R.id.omnibox_suggestions_dropdown))
-                .perform(
-                        actionOnItemAtPosition(
-                                suggestionIndex,
-                                OmniboxTestUtils.actionOnOmniboxActionAtPosition(
-                                        actionIndex, forgivingClick())));
     }
 
     /**

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
@@ -62,6 +63,7 @@ public class BaseSuggestionViewUnitTest {
     @Mock private Callback<Integer> mOnActivateListener;
     @Mock private Callback<Integer> mOnSuperKeyDown;
     @Mock private View.OnLongClickListener mOnLongClickListener;
+    @Mock private View.OnClickListener mChipClickListener;
     @Mock private RecyclerViewSelectionController mRecyclerViewSelectionController;
     @Mock private Runnable mRunnable;
 
@@ -140,6 +142,23 @@ public class BaseSuggestionViewUnitTest {
         doReturn(false).when(mRecyclerViewSelectionController).selectNextItem();
         assertFalse(sendKey(KeyEvent.KEYCODE_TAB));
         verify(mOnSuperKeyDown).onResult(KeyEvent.KEYCODE_TAB);
+    }
+
+    @Test
+    public void onKeyDown_tabAndEnterActivatesSelectedActionChip() {
+        mView.actionChipsView.setSelectionControllerForTesting(mRecyclerViewSelectionController);
+        View selectedChip = new View(mContext);
+        selectedChip.setOnClickListener(mChipClickListener);
+
+        doReturn(true).when(mRecyclerViewSelectionController).selectNextItem();
+        assertTrue(sendKey(KeyEvent.KEYCODE_TAB));
+        verify(mRecyclerViewSelectionController).selectNextItem();
+
+        doReturn(selectedChip).when(mRecyclerViewSelectionController).getSelectedView();
+        assertTrue(sendKey(KeyEvent.KEYCODE_ENTER));
+        verify(mChipClickListener).onClick(selectedChip);
+        verify(mOnActivateListener, never()).onResult(any());
+        verify(mOnLongClickListener, never()).onLongClick(any());
     }
 
     @Test
