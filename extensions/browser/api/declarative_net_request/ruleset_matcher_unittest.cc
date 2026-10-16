@@ -31,6 +31,7 @@
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -1860,6 +1861,74 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
 
     auto base_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(cases[i].response_headers.c_str()));
+    RequestParams params =
+        CreateRequestWithResponseHeaders(url, base_headers.get());
+    EXPECT_EQ(
+        cases[i].expected_action,
+        matcher->GetAction(params, RulesetMatchingStage::kOnHeadersReceived));
+  }
+}
+
+// Test that response headers hidden from extensions by
+// ExtensionsAPIClient::ShouldHideResponseHeader are treated as absent when
+// matching response header conditions.
+TEST_F(RulesetMatcherResponseHeadersTest, HiddenResponseHeadersNotMatched) {
+  class TestExtensionsAPIClient : public ExtensionsAPIClient {
+   public:
+    bool ShouldHideResponseHeader(
+        const GURL& url,
+        const std::string& header_name) const override {
+      return url.host() == "hidden.com" &&
+             base::EqualsCaseInsensitiveASCII(header_name, "secret");
+    }
+  };
+  TestExtensionsAPIClient api_client;
+
+  // `rule_1` matches if the secret header is present with a value starting
+  // with "a" (i.e. a value-probing rule).
+  TestRule rule_1 = CreateGenericRule(kMinValidID);
+  rule_1.action->type = std::string("block");
+  rule_1.condition->url_filter = std::string("|http://");
+  rule_1.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("secret", {"a*"}, {})});
+
+  // `rule_2` does not match if the secret header is present.
+  TestRule rule_2 = CreateGenericRule(kMinValidID + 1);
+  rule_2.action->type = std::string("block");
+  rule_2.condition->url_filter = std::string("|https://");
+  rule_2.condition->excluded_response_headers =
+      std::vector<TestHeaderCondition>({TestHeaderCondition("secret", {}, {})});
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2}, CreateTemporarySource(),
+                                    &matcher));
+  ASSERT_TRUE(matcher);
+
+  struct Cases {
+    std::string url;
+    std::optional<RequestAction> expected_action;
+  };
+  auto cases = std::to_array<Cases>({
+      // The secret header is visible for non-hidden hosts.
+      {"http://visible.com", CreateRequestActionForTesting(
+                                 RequestAction::Type::COLLAPSE, kMinValidID)},
+      {"https://visible.com", std::nullopt},
+
+      // The secret header is hidden for hidden.com, so `rule_1` does not match
+      // and `rule_2` is not excluded.
+      {"http://hidden.com", std::nullopt},
+      {"https://hidden.com",
+       CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
+                                     kMinValidID + 1)},
+  });
+
+  auto base_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders("HTTP/1.0 200 OK\r\nSecret: abc\r\n"));
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    GURL url(cases[i].url);
+    ASSERT_TRUE(url.is_valid());
+
     RequestParams params =
         CreateRequestWithResponseHeaders(url, base_headers.get());
     EXPECT_EQ(
