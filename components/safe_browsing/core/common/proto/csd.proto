@@ -1524,6 +1524,14 @@ message ClientDownloadResponse {
   // ClientDownloadRequest. A `token` to use in the follow-up request must be
   // provided if there are any `visual_features_requested`.
   repeated int32 visual_features_requested = 24 [packed = true];
+
+  // Reserved server-side fields.
+  reserved 25 to 28;
+
+  // Whether the downloaded APK is a Registered App Store (RAS) installer
+  // downloaded from the store's approved distribution domain. Used by Chrome to
+  // suppress download warnings when verdict is SAFE.
+  optional bool is_registered_app_store = 29;
 }
 
 // The following protocol buffer holds the feedback report gathered
