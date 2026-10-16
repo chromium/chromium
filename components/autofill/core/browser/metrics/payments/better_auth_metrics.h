@@ -200,7 +200,8 @@ void LogUserPerceivedLatencyOnCardSelectionDuration(
 // Google Payments server card and seeing a card unmask prompt (falling back to
 // CVC authentication instead of continuing to FIDO) when risk-based
 // authentication is not used.
-void LogUserPerceivedLatencyOnCardSelectionTimedOut(bool did_time_out);
+void LogUserPerceivedLatencyOnCardSelectionTimedOutCvcFallback(
+    bool did_time_out);
 
 // Logs whether or not the wait for the preflight call response timed out
 // between selecting a Google Payments server card and starting the risk-based

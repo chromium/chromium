@@ -1726,8 +1726,9 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
       autofill_metrics::LogUserPerceivedLatencyOnCardSelectionRiskBasedTimedOut(
           /*did_time_out=*/!get_unmask_details_returned);
     } else {
-      autofill_metrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
-          /*did_time_out=*/!get_unmask_details_returned);
+      autofill_metrics::
+          LogUserPerceivedLatencyOnCardSelectionTimedOutCvcFallback(
+              /*did_time_out=*/!get_unmask_details_returned);
     }
     card_selected_without_unmask_details_timestamp_ = std::nullopt;
   }
