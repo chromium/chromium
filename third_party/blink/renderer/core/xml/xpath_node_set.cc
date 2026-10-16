@@ -158,9 +158,96 @@ static void SortBlock(unsigned from,
   DCHECK(parent_nodes.empty());
 }
 
-void NodeSet::Sort() const {
-  if (is_sorted_)
+// When different roots are involved, sort by:
+// (1) connected nodes before disconnected nodes
+// (2) getNodeType() (deterministic)
+// (3) pointer (nondeterministic from the perspective of callers)
+static bool CompareRoots(const Node* a_root, const Node* b_root) {
+  bool a_connected = a_root->isConnected();
+  bool b_connected = b_root->isConnected();
+  if (a_connected != b_connected) {
+    return a_connected > b_connected;
+  }
+  if (a_root->getNodeType() != b_root->getNodeType()) {
+    return a_root->getNodeType() < b_root->getNodeType();
+  }
+  return std::less<const Node*>()(a_root, b_root);
+}
+
+template <typename Container>
+static void SortAndAppend(const Container& nodes,
+                          HeapVector<Member<Node>>& sorted_nodes) {
+  unsigned node_count = nodes.size();
+  if (node_count == 0) {
     return;
+  }
+  if (node_count == 1) {
+    sorted_nodes.push_back(*nodes.begin());
+    return;
+  }
+
+  // This only tracks whether we have attribute nodes that are connected to an
+  // element.
+  bool contains_attribute_nodes = false;
+
+  HeapVector<NodeSetVector> parent_matrix(node_count);
+  unsigned idx = 0;
+  for (Node* n : nodes) {
+    NodeSetVector& parents_vector = parent_matrix[idx++];
+    parents_vector.push_back(n);
+    if (auto* attr = DynamicTo<Attr>(n)) {
+      if (Element* owner = attr->ownerElement()) {
+        n = owner;
+        parents_vector.push_back(n);
+        contains_attribute_nodes = true;
+      }
+    }
+    for (n = n->parentNode(); n; n = n->parentNode()) {
+      parents_vector.push_back(n);
+    }
+  }
+
+  bool all_same_root = true;
+  Node* first_root = parent_matrix[0].back().Get();
+  for (unsigned i = 1; i < node_count; ++i) {
+    if (parent_matrix[i].back().Get() != first_root) {
+      all_same_root = false;
+      break;
+    }
+  }
+
+  if (all_same_root) {
+    SortBlock(0, node_count, parent_matrix, contains_attribute_nodes);
+  } else {
+    std::sort(parent_matrix.begin(), parent_matrix.end(),
+              [](const NodeSetVector& a, const NodeSetVector& b) {
+                return CompareRoots(a.back().Get(), b.back().Get());
+              });
+
+    // SortBlock requires all nodes in a range to share a common root.
+    // Grouping by root here avoids multi-root checks in recursive SortBlock
+    // calls.
+    unsigned block_start = 0;
+    for (unsigned i = 1; i <= node_count; ++i) {
+      if (i == node_count ||
+          parent_matrix[i].back() != parent_matrix[block_start].back()) {
+        if (i - block_start > 1) {
+          SortBlock(block_start, i, parent_matrix, contains_attribute_nodes);
+        }
+        block_start = i;
+      }
+    }
+  }
+
+  for (unsigned i = 0; i < node_count; ++i) {
+    sorted_nodes.push_back(parent_matrix[i][0]);
+  }
+}
+
+void NodeSet::Sort() const {
+  if (is_sorted_) {
+    return;
+  }
 
   unsigned node_count = nodes_.size();
   if (node_count < 2) {
@@ -173,36 +260,19 @@ void NodeSet::Sort() const {
     return;
   }
 
-  bool contains_attribute_nodes = false;
-
-  HeapVector<NodeSetVector> parent_matrix(node_count);
-  for (unsigned i = 0; i < node_count; ++i) {
-    NodeSetVector& parents_vector = parent_matrix[i];
-    Node* n = nodes_[i].Get();
-    parents_vector.push_back(n);
-    if (auto* attr = DynamicTo<Attr>(n)) {
-      n = attr->ownerElement();
-      parents_vector.push_back(n);
-      contains_attribute_nodes = true;
-    }
-    for (n = n->parentNode(); n; n = n->parentNode())
-      parents_vector.push_back(n);
-  }
-  SortBlock(0, node_count, parent_matrix, contains_attribute_nodes);
-
-  // It is not possible to just assign the result to m_nodes, because some
-  // nodes may get dereferenced and destroyed.
   HeapVector<Member<Node>> sorted_nodes;
   sorted_nodes.ReserveInitialCapacity(node_count);
-  for (unsigned i = 0; i < node_count; ++i)
-    sorted_nodes.push_back(parent_matrix[i][0]);
+  SortAndAppend(nodes_, sorted_nodes);
 
   const_cast<HeapVector<Member<Node>>&>(nodes_).swap(sorted_nodes);
 }
 
 static Node* FindRootNode(Node* node) {
-  if (auto* attr = DynamicTo<Attr>(node))
-    node = attr->ownerElement();
+  if (auto* attr = DynamicTo<Attr>(node)) {
+    if (Element* owner = attr->ownerElement()) {
+      node = owner;
+    }
+  }
   if (node->isConnected()) {
     node = &node->GetDocument();
   } else {
@@ -228,9 +298,22 @@ void NodeSet::TraversalSort() const {
   HeapVector<Member<Node>> sorted_nodes;
   sorted_nodes.ReserveInitialCapacity(node_count);
 
-  for (Node& n : NodeTraversal::StartsAt(*FindRootNode(nodes_.front()))) {
-    if (nodes.Contains(&n))
+  Node* root = nullptr;
+  for (unsigned i = 0; i < node_count; ++i) {
+    if (nodes_[i]->isConnected()) {
+      root = &nodes_[i]->GetDocument();
+      break;
+    }
+  }
+  if (!root) {
+    root = FindRootNode(nodes_.front());
+  }
+
+  for (Node& n : NodeTraversal::StartsAt(*root)) {
+    if (nodes.Contains(&n)) {
       sorted_nodes.push_back(&n);
+      nodes.erase(&n);
+    }
 
     auto* element = DynamicTo<Element>(&n);
     if (!element || !contains_attribute_nodes)
@@ -239,10 +322,17 @@ void NodeSet::TraversalSort() const {
     AttributeCollection attributes = element->Attributes();
     for (auto& attribute : attributes) {
       Attr* attr = element->AttrIfExists(attribute.GetName());
-      if (attr && nodes.Contains(attr))
+      if (attr && nodes.Contains(attr)) {
         sorted_nodes.push_back(attr);
+        nodes.erase(attr);
+      }
     }
   }
+
+  // Now append any remaining nodes (e.g., disconnected nodes) that were not
+  // reached by the traversal, sorting them using the regular (non-traversal)
+  // sorting codepath.
+  SortAndAppend(nodes, sorted_nodes);
 
   DCHECK_EQ(sorted_nodes.size(), node_count);
   const_cast<HeapVector<Member<Node>>&>(nodes_).swap(sorted_nodes);
