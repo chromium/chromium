@@ -11,10 +11,25 @@
 namespace ash::fjord_util {
 
 namespace {
-static constexpr base::fixed_flat_set<std::string_view, 7>
-    kFjordOobeAllowedLanguages = base::MakeFixedFlatSet<std::string_view>(
-        {"en", "en-GB", "de", "fr", "ja", "fr-CA", "es"});
-}
+static constexpr base::fixed_flat_set<std::string_view, 15>
+    kFjordOobeAllowedLanguages = base::MakeFixedFlatSet<std::string_view>({
+        "da",     // Danish
+        "de",     // German
+        "en-GB",  // English (UK)
+        "en-US",  // English (US)
+        "es",     // Spanish
+        "fr",     // French
+        "fr-CA",  // French (Canada)
+        "it",     // Italian
+        "ja",     // Japanese
+        "ko",     // Korean
+        "nb",     // Norwegian (Bokmal)
+        "nl",     // Dutch
+        "pl",     // Polish
+        "sv",     // Swedish
+        "zh-TW",  // Chinese (Traditional)
+    });
+}  // namespace
 
 bool ShouldShowFjordOobe() {
   return features::IsFjordOobeForceEnabled() ||
@@ -29,10 +44,10 @@ bool ShouldShowFjordOobeImageSwitch() {
 }
 
 bool IsAllowlistedLanguage(std::string_view language_code) {
-  return kFjordOobeAllowedLanguages.contains(language_code.data());
+  return kFjordOobeAllowedLanguages.contains(language_code);
 }
 
-const base::fixed_flat_set<std::string_view, 7>&
+const base::fixed_flat_set<std::string_view, 15>&
 GetAllowlistedLanguagesForTesting() {
   return kFjordOobeAllowedLanguages;
 }

@@ -21,7 +21,7 @@ bool ShouldShowFjordOobeImageSwitch();
 // Returns if the language code is allowlisted for Fjord OOBE.
 bool IsAllowlistedLanguage(std::string_view language_code);
 
-const base::fixed_flat_set<std::string_view, 7>&
+const base::fixed_flat_set<std::string_view, 15>&
 GetAllowlistedLanguagesForTesting();
 
 }  // namespace ash::fjord_util
