@@ -180,18 +180,22 @@ suite('OrganizerPanelAppTest', () => {
         assertEquals('hidden', listStyle.overflowX);
         assertEquals('none', listStyle.overscrollBehavior);
         assertEquals('8px', listStyle.paddingLeft);
-        assertEquals('8px', listStyle.paddingRight);
+        assertEquals('0px', listStyle.paddingRight);
+        assertEquals('stable', listStyle.scrollbarGutter);
 
         const dragRegionStyle = window.getComputedStyle(app.$.dragRegion);
         assertEquals('1', dragRegionStyle.flexGrow);
 
         app.style.height = '100px';
+        app.style.width = '300px';
+        const clientWidthBefore = app.$.list.clientWidth;
         const dummy = document.createElement('div');
         dummy.style.height = '500px';
         app.$.list.shadowRoot.appendChild(dummy);
         await microtasksFinished();
 
         assertTrue(app.$.list.scrollHeight > app.$.list.clientHeight);
+        assertEquals(clientWidthBefore, app.$.list.clientWidth);
 
         const searchFieldRectBefore = app.$.searchField.getBoundingClientRect();
         app.$.list.scrollTop = 50;
