@@ -46,21 +46,6 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->transform_to_root_target;
   }
 
-  static const cc::FilterOperations& filters(
-      const std::unique_ptr<viz::CompositorRenderPass>& input) {
-    return input->filters;
-  }
-
-  static const cc::FilterOperations& backdrop_filters(
-      const std::unique_ptr<viz::CompositorRenderPass>& input) {
-    return input->backdrop_filters;
-  }
-
-  static const std::optional<SkPath>& backdrop_filter_bounds(
-      const std::unique_ptr<viz::CompositorRenderPass>& input) {
-    return input->backdrop_filter_bounds;
-  }
-
   static viz::SubtreeCaptureId subtree_capture_id(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     DCHECK_LE(input->subtree_size.width(), input->output_rect.size().width());

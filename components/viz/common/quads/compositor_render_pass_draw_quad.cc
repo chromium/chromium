@@ -35,10 +35,14 @@ void CompositorRenderPassDrawQuad::SetNew(
   gfx::Vector2dF filters_scale = gfx::Vector2dF(1.0f, 1.0f);
   gfx::PointF filters_origin = gfx::PointF();
   float backdrop_filter_quality = 1.0f;
+  cc::FilterOperations filters = cc::FilterOperations();
+  cc::FilterOperations backdrop_filters = cc::FilterOperations();
+  std::optional<SkPath> backdrop_filter_bounds;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, force_anti_aliasing_off, backdrop_filter_quality,
-         intersects_damage_under);
+         intersects_damage_under, filters, backdrop_filters,
+         backdrop_filter_bounds);
 }
 
 void CompositorRenderPassDrawQuad::SetAll(
@@ -54,7 +58,10 @@ void CompositorRenderPassDrawQuad::SetAll(
     const gfx::PointF& filters_origin,
     bool force_anti_aliasing_off,
     float backdrop_filter_quality,
-    bool intersects_damage_under) {
+    bool intersects_damage_under,
+    const cc::FilterOperations& pass_filters,
+    const cc::FilterOperations& pass_backdrop_filters,
+    const std::optional<SkPath>& pass_backdrop_filter_bounds) {
   DCHECK(render_pass);
 
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kCompositorRenderPass,
@@ -68,6 +75,9 @@ void CompositorRenderPassDrawQuad::SetAll(
   this->force_anti_aliasing_off = force_anti_aliasing_off;
   this->backdrop_filter_quality = backdrop_filter_quality;
   this->intersects_damage_under = intersects_damage_under;
+  this->filters = pass_filters;
+  this->backdrop_filters = pass_backdrop_filters;
+  this->backdrop_filter_bounds = pass_backdrop_filter_bounds;
 }
 
 const CompositorRenderPassDrawQuad* CompositorRenderPassDrawQuad::MaterialCast(

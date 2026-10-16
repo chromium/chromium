@@ -36,8 +36,7 @@ viz::CompositorRenderPass* AddRenderPass(
     viz::CompositorRenderPassList* pass_list,
     viz::CompositorRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
-    const gfx::Transform& root_transform,
-    const FilterOperations& filters);
+    const gfx::Transform& root_transform);
 
 viz::AggregatedRenderPass* AddRenderPass(
     viz::AggregatedRenderPassList* pass_list,
@@ -52,8 +51,7 @@ viz::CompositorRenderPass* AddRenderPassWithDamage(
     viz::CompositorRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
-    const gfx::Transform& root_transform,
-    const FilterOperations& filters);
+    const gfx::Transform& root_transform);
 viz::AggregatedRenderPass* AddRenderPassWithDamage(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPassId render_pass_id,

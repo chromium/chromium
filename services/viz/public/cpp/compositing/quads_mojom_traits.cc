@@ -14,6 +14,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
+#include "skia/public/mojom/skpath_mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
@@ -113,6 +114,15 @@ base::expected<void, DeserializationError> StructTraits<
     return base::unexpected(DeserializationError());
   }
   if (!data.ReadMaskResourceId(&quad->resource_id)) {
+    return base::unexpected(DeserializationError());
+  }
+  if (!data.ReadFilters(&quad->filters)) {
+    return base::unexpected(DeserializationError());
+  }
+  if (!data.ReadBackdropFilters(&quad->backdrop_filters)) {
+    return base::unexpected(DeserializationError());
+  }
+  if (!data.ReadBackdropFilterBounds(&quad->backdrop_filter_bounds)) {
     return base::unexpected(DeserializationError());
   }
 

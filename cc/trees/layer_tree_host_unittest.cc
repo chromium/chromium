@@ -8641,16 +8641,16 @@ class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
                                    DrawResult draw_result) override {
     frame->render_passes.clear();
 
-    viz::CompositorRenderPass* child_pass = AddRenderPass(
-        &frame->render_passes, viz::CompositorRenderPassId{2},
-        gfx::Rect(3, 3, 100, 100), gfx::Transform(), FilterOperations());
+    viz::CompositorRenderPass* child_pass =
+        AddRenderPass(&frame->render_passes, viz::CompositorRenderPassId{2},
+                      gfx::Rect(3, 3, 100, 100), gfx::Transform());
     std::vector<viz::ResourceId> child_resources =
         AddOneOfEveryQuadType(child_pass, host_impl->resource_provider(),
                               viz::CompositorRenderPassId{0});
 
-    viz::CompositorRenderPass* pass = AddRenderPass(
-        &frame->render_passes, viz::CompositorRenderPassId{1},
-        gfx::Rect(3, 3, 100, 100), gfx::Transform(), FilterOperations());
+    viz::CompositorRenderPass* pass =
+        AddRenderPass(&frame->render_passes, viz::CompositorRenderPassId{1},
+                      gfx::Rect(3, 3, 100, 100), gfx::Transform());
     std::vector<viz::ResourceId> root_resources = AddOneOfEveryQuadType(
         pass, host_impl->resource_provider(), child_pass->id);
 

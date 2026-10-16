@@ -28,7 +28,6 @@
 
 namespace viz {
 class AggregatedRenderPass;
-class CompositorRenderPass;
 class CompositorRenderPassDrawQuad;
 class AggregatedRenderPassDrawQuad;
 
@@ -63,11 +62,8 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
               bool has_damage_from_contributing_content,
               bool generate_mipmap);
 
-  // TODO(crbug.com/444264038): Remove the `render_pass` parameter once the
-  // filter data is moved to CompositorRenderPassDrawQuad.
   AggregatedRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
       const CompositorRenderPassDrawQuad* quad,
-      const CompositorRenderPass& render_pass,
       AggregatedRenderPassId render_pass_id);
   AggregatedRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
       const AggregatedRenderPassDrawQuad* quad);

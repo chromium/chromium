@@ -7,11 +7,13 @@ module viz.mojom;
 import "cc/mojom/paint_flags.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
+import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "services/viz/public/mojom/compositing/shared_quad_state.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
+import "skia/public/mojom/skpath.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
@@ -67,6 +69,10 @@ struct CompositorRenderPassQuadState {
   // Indicates if the quad intersects any damage coming from quads under it
   // rendering to the same target.
   bool intersects_damage_under;
+
+  FilterOperations filters;
+  FilterOperations backdrop_filters;
+  skia.mojom.SkPath? backdrop_filter_bounds;
 };
 
 struct SolidColorQuadState {

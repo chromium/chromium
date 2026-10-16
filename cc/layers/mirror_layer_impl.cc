@@ -86,8 +86,10 @@ void MirrorLayerImpl::AppendQuads(const AppendQuadsContext& context,
                mirrored_layer_render_pass_id(), mask_resource_id, mask_uv_rect,
                mask_texture_size,
                !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-  quad->SetFilters(mirrored_effect_node->surface_contents_scale, gfx::PointF(),
-                   0.f);
+  quad->SetFilters(
+      mirrored_effect_node->filters, mirrored_effect_node->backdrop_filters,
+      mirrored_effect_node->backdrop_filter_bounds,
+      mirrored_effect_node->surface_contents_scale, gfx::PointF(), 0.f);
 }
 
 void MirrorLayerImpl::CopyPropertiesTo(LayerImpl* layer) const {

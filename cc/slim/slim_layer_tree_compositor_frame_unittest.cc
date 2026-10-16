@@ -61,6 +61,7 @@ namespace {
 
 using testing::AllOf;
 using testing::ElementsAre;
+using testing::Field;
 using testing::SizeIs;
 
 class StubSharedImageTextureLayerClient : public TextureLayerClient {
@@ -1437,8 +1438,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, Filters) {
     EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(80, 80));
     EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(80, 80));
   }
-  EXPECT_THAT(child_pass->filters.operations(),
-              ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
 
   auto& root_pass = frame.render_pass_list.back();
   ASSERT_THAT(
@@ -1456,6 +1455,9 @@ TEST_F(SlimLayerTreeCompositorFrameTest, Filters) {
   {
     auto* render_pass_quad = viz::CompositorRenderPassDrawQuad::MaterialCast(
         root_pass->quad_list.ElementAt(0));
+    EXPECT_THAT(render_pass_quad->filters.operations(),
+                ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
+
     const viz::SharedQuadState* shared_quad_state =
         render_pass_quad->shared_quad_state;
     EXPECT_EQ(shared_quad_state->quad_layer_rect, gfx::Rect(40, 40));
@@ -1484,15 +1486,22 @@ TEST_F(SlimLayerTreeCompositorFrameTest, FiltersOnNonDrawingLayer) {
                                   viz::HasRect(gfx::Rect(50, 50)),
                                   viz::HasVisibleRect(gfx::Rect(50, 50)))));
     EXPECT_EQ(child_pass->output_rect, gfx::Rect(50, 50));
-    EXPECT_THAT(child_pass->filters.operations(),
-                ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
     auto& root_pass = frame.render_pass_list.back();
     ASSERT_THAT(
         root_pass->quad_list,
-        ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
-                          viz::HasRect(gfx::Rect(50, 50)),
-                          viz::HasVisibleRect(gfx::Rect(50, 50))),
-                    viz::IsSolidColorQuad(SkColors::kGray)));
+        ElementsAre(
+            AllOf(viz::IsCompositorRenderPassQuad(AllOf(
+                      Field("render_pass_id",
+                            &viz::CompositorRenderPassDrawQuad::render_pass_id,
+                            child_pass->id),
+                      Field("filters",
+                            &viz::CompositorRenderPassDrawQuad::filters,
+                            cc::FilterOperations(
+                                {cc::FilterOperation::CreateBrightnessFilter(
+                                    0.5f)})))),
+                  viz::HasRect(gfx::Rect(50, 50)),
+                  viz::HasVisibleRect(gfx::Rect(50, 50))),
+            viz::IsSolidColorQuad(SkColors::kGray)));
   }
 
   // Clip the child pass.
@@ -1507,15 +1516,22 @@ TEST_F(SlimLayerTreeCompositorFrameTest, FiltersOnNonDrawingLayer) {
                                   viz::HasRect(gfx::Rect(50, 50)),
                                   viz::HasVisibleRect(gfx::Rect(25, 25)))));
     EXPECT_EQ(child_pass->output_rect, gfx::Rect(25, 25));
-    EXPECT_THAT(child_pass->filters.operations(),
-                ElementsAre(cc::FilterOperation::CreateBrightnessFilter(0.5f)));
     auto& root_pass = frame.render_pass_list.back();
     ASSERT_THAT(
         root_pass->quad_list,
-        ElementsAre(AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
-                          viz::HasRect(gfx::Rect(25, 25)),
-                          viz::HasVisibleRect(gfx::Rect(25, 25))),
-                    viz::IsSolidColorQuad(SkColors::kGray)));
+        ElementsAre(
+            AllOf(viz::IsCompositorRenderPassQuad(AllOf(
+                      Field("render_pass_id",
+                            &viz::CompositorRenderPassDrawQuad::render_pass_id,
+                            child_pass->id),
+                      Field("filters",
+                            &viz::CompositorRenderPassDrawQuad::filters,
+                            cc::FilterOperations(
+                                {cc::FilterOperation::CreateBrightnessFilter(
+                                    0.5f)})))),
+                  viz::HasRect(gfx::Rect(25, 25)),
+                  viz::HasVisibleRect(gfx::Rect(25, 25))),
+            viz::IsSolidColorQuad(SkColors::kGray)));
   }
 
   // Completely clip the child pass.

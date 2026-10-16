@@ -1326,7 +1326,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       // TODO(b/512804780) - Audit if this is necessary for UI in TreesInViz
       // mode.
       if (settings_.enable_compositing_based_throttling && target_render_pass) {
-        throttle_decider_.ProcessRenderPass(*target_render_pass);
+        throttle_decider_.ProcessRenderPass(
+            *target_render_pass,
+            /*has_foreground_blur=*/
+            target_render_surface->Filters().HasFilterOfType(
+                FilterOperation::BLUR));
       }
     } else if (it.state() ==
                EffectTreeLayerListIterator::State::kContributingSurface) {
@@ -1640,6 +1644,24 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
   // There is always at least a root RenderPass.
   DCHECK_GE(frame->render_passes.size(), 1u);
 
+  // TODO(crbug.com/444264038): Consider merging this pre-scan with one of the
+  // loops below to avoid an extra walk over all draw quads.
+  // A set of RenderPasses that have filters or backdrop filters applied to
+  // them.
+  base::flat_set<viz::CompositorRenderPassId> pass_with_filters;
+  for (const auto& render_pass : frame->render_passes) {
+    for (auto it = render_pass->quad_list.begin();
+         it != render_pass->quad_list.end(); ++it) {
+      if (it->material == viz::DrawQuad::Material::kCompositorRenderPass) {
+        const viz::CompositorRenderPassDrawQuad* quad =
+            viz::CompositorRenderPassDrawQuad::MaterialCast(*it);
+        if (!quad->filters.IsEmpty() || !quad->backdrop_filters.IsEmpty()) {
+          pass_with_filters.insert(quad->render_pass_id);
+        }
+      }
+    }
+  }
+
   // A set of RenderPasses that we have seen.
   base::flat_set<viz::CompositorRenderPassId> pass_exists;
   // A set of viz::RenderPassDrawQuads that we have seen (stored by the
@@ -1686,8 +1708,8 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
     }
 
     if (pass->quad_list.empty() && pass->copy_requests.empty() &&
-        !pass->subtree_capture_id.is_valid() && pass->filters.IsEmpty() &&
-        pass->backdrop_filters.IsEmpty() &&
+        !pass->subtree_capture_id.is_valid() &&
+        !pass_with_filters.contains(pass->id) &&
         // TODO(khushalsagar) : Send information about no-op passes to viz to
         // retain this optimization for shared elements. See crbug.com/1265178.
         !pass->view_transition_element_resource_id.IsValid()) {

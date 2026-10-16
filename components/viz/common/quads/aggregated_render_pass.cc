@@ -15,7 +15,6 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
-#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -87,10 +86,8 @@ void AggregatedRenderPass::SetAll(
 AggregatedRenderPassDrawQuad*
 AggregatedRenderPass::CopyFromAndAppendRenderPassDrawQuad(
     const CompositorRenderPassDrawQuad* quad,
-    const CompositorRenderPass& render_pass,
     AggregatedRenderPassId render_pass_id) {
   DCHECK(!shared_quad_state_list.empty());
-  CHECK_EQ(quad->render_pass_id, render_pass.id);
   auto* copy_quad = CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   copy_quad->SetAll(
       shared_quad_state_list.back(), quad->rect, quad->visible_rect,
@@ -98,8 +95,7 @@ AggregatedRenderPass::CopyFromAndAppendRenderPassDrawQuad(
       quad->mask_uv_rect, quad->mask_texture_size, quad->filters_scale,
       quad->filters_origin, quad->force_anti_aliasing_off,
       quad->backdrop_filter_quality, quad->intersects_damage_under,
-      render_pass.filters, render_pass.backdrop_filters,
-      render_pass.backdrop_filter_bounds);
+      quad->filters, quad->backdrop_filters, quad->backdrop_filter_bounds);
   return copy_quad;
 }
 

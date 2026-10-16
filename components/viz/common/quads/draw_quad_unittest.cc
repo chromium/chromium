@@ -173,20 +173,21 @@ void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
   { QUAD_DATA quad_new->SetNew(shared_state, quad_rect, __VA_ARGS__); } \
   SETUP_AND_COPY_QUAD_NEW(Type, quad_new);
 
-#define CREATE_QUAD_ALL_RP(Type, a, b, c, d, e, f, g, i, j, k, copy_a)        \
+#define CREATE_QUAD_ALL_RP(Type, a, b, c, d, e, f, g, i, j, k, l, m, n,       \
+                           copy_a)                                            \
   Type* quad_all = render_pass->CreateAndAppendDrawQuad<Type>();              \
   {                                                                           \
     QUAD_DATA quad_all->SetAll(shared_state, quad_rect, a, needs_blending, b, \
-                               c, d, e, f, g, i, j, k);                       \
+                               c, d, e, f, g, i, j, k, l, m, n);              \
   }                                                                           \
   SETUP_AND_COPY_QUAD_ALL_RP(Type, quad_all, copy_a);
 
-#define CREATE_QUAD_NEW_RP(Type, a, b, c, d, e, f, g, i, j, copy_a)        \
-  Type* quad_new = render_pass->CreateAndAppendDrawQuad<Type>();           \
-  {                                                                        \
-    QUAD_DATA quad_new->SetNew(shared_state, quad_rect, a, b, c, d, e, i); \
-    quad_new->SetFilters(f, g, j);                                         \
-  }                                                                        \
+#define CREATE_QUAD_NEW_RP(Type, a, b, c, d, e, f, g, i, j, l, m, n, copy_a) \
+  Type* quad_new = render_pass->CreateAndAppendDrawQuad<Type>();             \
+  {                                                                          \
+    QUAD_DATA quad_new->SetNew(shared_state, quad_rect, a, b, c, d, e, m);   \
+    quad_new->SetFilters(f, g, i, j, l, n);                                  \
+  }                                                                          \
   SETUP_AND_COPY_QUAD_NEW_RP(Type, quad_new, copy_a);
 
 TEST(DrawQuadTest, CopyDebugBorderDrawQuad) {
@@ -218,6 +219,16 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   bool force_anti_aliasing_off = false;
   float backdrop_filter_quality = 1.0f;
   bool intersects_damage_under = false;
+  cc::FilterOperations filters(
+      {cc::FilterOperation::CreateGrayscaleFilter(0.25f)});
+  cc::FilterOperations backdrop_filters(
+      {cc::FilterOperation::CreateInvertFilter(0.64f)});
+
+  gfx::RRectF rrect(gfx::RectF(40.f, 50.f, 30.f, 20.f), 1.5f);
+  ASSERT_EQ(gfx::RRectF::Type::kSingle, rrect.GetType());
+  SkPath backdrop_filter_bounds = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectFToSkRect(rrect.rect()), rrect.GetSimpleRadii().x(),
+      rrect.GetSimpleRadii().y()));
 
   CompositorRenderPassId copied_render_pass_id{235};
   CREATE_SHARED_STATE();
@@ -225,7 +236,8 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   CREATE_QUAD_ALL_RP(CompositorRenderPassDrawQuad, visible_rect, render_pass_id,
                      mask_resource_id, mask_uv_rect, mask_texture_size,
                      filters_scale, filters_origin, force_anti_aliasing_off,
-                     backdrop_filter_quality, intersects_damage_under,
+                     backdrop_filter_quality, intersects_damage_under, filters,
+                     backdrop_filters, backdrop_filter_bounds,
                      copied_render_pass_id);
   EXPECT_EQ(DrawQuad::Material::kCompositorRenderPass, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
@@ -239,6 +251,9 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   EXPECT_EQ(force_anti_aliasing_off, copy_quad->force_anti_aliasing_off);
   EXPECT_EQ(backdrop_filter_quality, copy_quad->backdrop_filter_quality);
   EXPECT_EQ(intersects_damage_under, copy_quad->intersects_damage_under);
+  EXPECT_EQ(filters, copy_quad->filters);
+  EXPECT_EQ(backdrop_filters, copy_quad->backdrop_filters);
+  EXPECT_EQ(backdrop_filter_bounds, copy_quad->backdrop_filter_bounds);
 }
 
 TEST(DrawQuadTest, CopySolidColorDrawQuad) {
@@ -467,6 +482,15 @@ TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
   ResourceId mask_resource_id(78);
   gfx::RectF mask_uv_rect(0.f, 0.f, 33.f, 19.f);
   gfx::Size mask_texture_size(128, 134);
+  cc::FilterOperations filters(
+      {cc::FilterOperation::CreateGrayscaleFilter(0.25f)});
+  cc::FilterOperations backdrop_filters(
+      {cc::FilterOperation::CreateInvertFilter(0.64f)});
+  gfx::RRectF rrect(gfx::RectF(40.f, 50.f, 30.f, 20.f), 1.5f);
+  ASSERT_EQ(gfx::RRectF::Type::kSingle, rrect.GetType());
+  SkPath backdrop_filter_bounds = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectFToSkRect(rrect.rect()), rrect.GetSimpleRadii().x(),
+      rrect.GetSimpleRadii().y()));
   gfx::Vector2dF filters_scale(2.f, 3.f);
   gfx::PointF filters_origin(0.f, 0.f);
   bool force_anti_aliasing_off = false;
@@ -475,8 +499,9 @@ TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW_RP(CompositorRenderPassDrawQuad, visible_rect, render_pass_id,
-                     mask_resource_id, mask_uv_rect, mask_texture_size,
-                     filters_scale, filters_origin, force_anti_aliasing_off,
+                     mask_resource_id, mask_uv_rect, mask_texture_size, filters,
+                     backdrop_filters, backdrop_filter_bounds, filters_scale,
+                     filters_origin, force_anti_aliasing_off,
                      backdrop_filter_quality, copied_render_pass_id);
   EXPECT_EQ(mask_resource_id, quad_new->mask_resource_id());
 
@@ -485,7 +510,8 @@ TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
   quad_new->SetNew(shared_state, quad_rect, visible_rect, render_pass_id,
                    new_mask_resource_id, mask_uv_rect, mask_texture_size,
                    force_anti_aliasing_off);
-  quad_new->SetFilters(filters_scale, filters_origin, backdrop_filter_quality);
+  quad_new->SetFilters(filters, backdrop_filters, backdrop_filter_bounds,
+                       filters_scale, filters_origin, backdrop_filter_quality);
   EXPECT_EQ(kInvalidResourceId, quad_new->mask_resource_id());
 }
 

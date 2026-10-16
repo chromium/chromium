@@ -77,13 +77,16 @@ testing::Matcher<const DrawQuad*> IsSurfaceQuad() {
 }
 
 testing::Matcher<const DrawQuad*> IsCompositorRenderPassQuad(
-    CompositorRenderPassId id) {
+    testing::Matcher<const CompositorRenderPassDrawQuad*> matcher) {
   return testing::AllOf(
       IsQuadType(DrawQuad::Material::kCompositorRenderPass),
-      testing::Truly([id](const DrawQuad* quad) {
-        return CompositorRenderPassDrawQuad::MaterialCast(quad)
-                   ->render_pass_id == id;
-      }));
+      testing::ResultOf(&CompositorRenderPassDrawQuad::MaterialCast, matcher));
+}
+
+testing::Matcher<const DrawQuad*> IsCompositorRenderPassQuad(
+    CompositorRenderPassId id) {
+  return IsCompositorRenderPassQuad(testing::Field(
+      "render_pass_id", &CompositorRenderPassDrawQuad::render_pass_id, id));
 }
 
 testing::Matcher<const DrawQuad*> IsAggregatedRenderPassQuad() {

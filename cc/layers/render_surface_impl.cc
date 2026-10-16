@@ -532,9 +532,6 @@ RenderSurfaceImpl::CreateRenderPassCommon(viz::CompositorRenderPassId id,
   damage_rect.Intersect(output_rect);
   pass->SetNew(id, output_rect, damage_rect,
                draw_properties_.screen_space_transform);
-  pass->filters = Filters();
-  pass->backdrop_filters = BackdropFilters();
-  pass->backdrop_filter_bounds = BackdropFilterBounds();
   pass->generate_mipmap = TrilinearFiltering();
   // The subtree size may be slightly larger than our content rect during
   // some animations, so we clamp it here.
@@ -663,7 +660,8 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
       /*needs_blending=*/true, append_render_pass_id, mask_resource_id,
       mask_uv_rect, mask_texture_size, surface_contents_scale, gfx::PointF(),
       !layer_tree_impl_->settings().enable_edge_anti_aliasing,
-      OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
+      OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_,
+      Filters(), BackdropFilters(), BackdropFilterBounds());
 }
 
 bool RenderSurfaceImpl::ShouldClip() const {

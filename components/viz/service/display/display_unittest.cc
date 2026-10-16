@@ -707,14 +707,16 @@ TEST_F(DisplayTest, BackdropFilterTest) {
       auto frame =
           CompositorFrameBuilder()
               .AddRenderPass(RenderPassBuilder(child_pass_id, sub_surface_rect)
-                                 .AddBackdropFilter(backdrop_filter)
                                  .AddSurfaceQuad(sub_surface_rect,
                                                  SurfaceRange(std::nullopt,
                                                               sub_surface_id1),
                                                  {.allow_merge = false}))
               .AddRenderPass(
                   RenderPassBuilder(root_pass_id, gfx::Rect(display_size))
-                      .AddRenderPassQuad(sub_surface_rect, child_pass_id)
+                      .AddRenderPassQuad(
+                          sub_surface_rect, child_pass_id,
+                          {.backdrop_filters =
+                               cc::FilterOperations({backdrop_filter})})
                       .AddSurfaceQuad(
                           gfx::Rect(display_size),
                           SurfaceRange(std::nullopt, sub_surface_id2),
@@ -1358,14 +1360,15 @@ TEST_F(DisplayTest, PixelMovingForegroundFilterTest) {
       auto frame =
           CompositorFrameBuilder()
               .AddRenderPass(RenderPassBuilder(child_pass_id, sub_surface_rect)
-                                 .AddFilter(foreground_filter)
                                  .AddSurfaceQuad(sub_surface_rect,
                                                  SurfaceRange(std::nullopt,
                                                               sub_surface_id1),
                                                  {.allow_merge = false}))
               .AddRenderPass(
                   RenderPassBuilder(root_pass_id, gfx::Rect(display_size))
-                      .AddRenderPassQuad(sub_surface_rect, child_pass_id)
+                      .AddRenderPassQuad(sub_surface_rect, child_pass_id,
+                                         {.filters = cc::FilterOperations(
+                                              {foreground_filter})})
                       .AddSurfaceQuad(
                           gfx::Rect(display_size),
                           SurfaceRange(std::nullopt, sub_surface_id2),

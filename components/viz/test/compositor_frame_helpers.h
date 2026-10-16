@@ -45,6 +45,8 @@ struct RenderPassQuadParams {
   bool needs_blending = true;
   bool force_anti_aliasing_off = false;
   bool intersects_damage_under = true;
+  cc::FilterOperations filters;
+  cc::FilterOperations backdrop_filters;
 };
 
 struct TextureQuadParams {
@@ -167,8 +169,6 @@ class RenderPassBuilder : public internal::AddQuads<RenderPassBuilder> {
   RenderPassBuilder& SetDamageRect(const gfx::Rect& damage_rect);
   RenderPassBuilder& SetCacheRenderPass(bool val);
   RenderPassBuilder& SetHasDamageFromContributingContent(bool val);
-  RenderPassBuilder& AddFilter(const cc::FilterOperation& filter);
-  RenderPassBuilder& AddBackdropFilter(const cc::FilterOperation& filter);
   RenderPassBuilder& SetTransformToRootTarget(const gfx::Transform& transform);
 
   // Creates a new stub CopyOutputRequest and adds it to the render pass. If

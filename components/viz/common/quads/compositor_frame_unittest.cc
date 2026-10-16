@@ -5,7 +5,6 @@
 #include "components/viz/common/quads/compositor_frame.h"
 
 #include "base/unguessable_token.h"
-#include "cc/paint/filter_operation.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -166,59 +165,6 @@ TEST(CompositorFrameTest, EmptyRootPassWithSecondPassIsNonEmpty) {
                              .AddSolidColorQuad(kOutputRect, SkColors::kWhite))
           .AddRenderPass(kOutputRect, kDamageRect)
           .Build();
-  EXPECT_TRUE(frame.HasVisuallyNonEmptyContent());
-}
-
-// A filter on the root pass turns a single background quad into arbitrary
-// content, so it is non-empty despite the single solid color quad. An alpha
-// threshold filter masks the pass to an arbitrary set of rects, which is enough
-// to draw recognizable shapes or text out of one opaque quad.
-TEST(CompositorFrameTest, SingleSolidColorQuadWithFilterIsNonEmpty) {
-  CompositorFrame frame =
-      CompositorFrameBuilder()
-          .AddRenderPass(
-              RenderPassBuilder(kOutputRect)
-                  .AddSolidColorQuad(kOutputRect, SkColors::kBlack)
-                  .AddFilter(cc::FilterOperation::CreateOpacityFilter(0.5f)))
-          .Build();
-  EXPECT_TRUE(frame.HasVisuallyNonEmptyContent());
-}
-
-// The same, for the alpha threshold filter specifically, since its region is
-// deserialized from the client and can be an arbitrary union of rects.
-TEST(CompositorFrameTest, SingleSolidColorQuadWithAlphaThresholdIsNonEmpty) {
-  CompositorFrame frame =
-      CompositorFrameBuilder()
-          .AddRenderPass(
-              RenderPassBuilder(kOutputRect)
-                  .AddSolidColorQuad(kOutputRect, SkColors::kBlack)
-                  .AddFilter(cc::FilterOperation::CreateAlphaThresholdFilter(
-                      cc::FilterOperation::ShapeRects{kSmallRect})))
-          .Build();
-  EXPECT_TRUE(frame.HasVisuallyNonEmptyContent());
-}
-
-// Backdrop filters sample and transform what is already on screen behind the
-// pass, so they can also produce visible content from a single quad.
-TEST(CompositorFrameTest, SingleSolidColorQuadWithBackdropFilterIsNonEmpty) {
-  CompositorFrame frame =
-      CompositorFrameBuilder()
-          .AddRenderPass(RenderPassBuilder(kOutputRect)
-                             .AddSolidColorQuad(kOutputRect, SkColors::kWhite)
-                             .AddBackdropFilter(
-                                 cc::FilterOperation::CreateInvertFilter(1.0f)))
-          .Build();
-  EXPECT_TRUE(frame.HasVisuallyNonEmptyContent());
-}
-
-// A filter with no quads to apply it to still counts as non-empty, rather than
-// relying on the empty quad list alone to decide.
-TEST(CompositorFrameTest, EmptyRootPassWithFilterIsNonEmpty) {
-  CompositorFrame frame =
-      CompositorFrameBuilder().AddRenderPass(kOutputRect, kDamageRect).Build();
-  // Set the filter directly, because RenderPassBuilder requires a quad.
-  frame.render_pass_list.back()->filters.Append(
-      cc::FilterOperation::CreateInvertFilter(1.0f));
   EXPECT_TRUE(frame.HasVisuallyNonEmptyContent());
 }
 

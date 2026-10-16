@@ -191,28 +191,14 @@ class VizSerializationPerfTest : public testing::Test {
     ResourceId arbitrary_resourceid2(47);
     ResourceId arbitrary_resourceid3(23);
     ResourceId arbitrary_resourceid4(16);
-    SkScalar arbitrary_sigma = SkFloatToScalar(2.0f);
     CompositorRenderPassId root_id{14};
-
-    cc::FilterOperations arbitrary_filters1;
-    arbitrary_filters1.Append(
-        cc::FilterOperation::CreateGrayscaleFilter(arbitrary_float1));
-    arbitrary_filters1.Append(cc::FilterOperation::CreateReferenceFilter(
-        sk_make_sp<cc::BlurPaintFilter>(arbitrary_sigma, arbitrary_sigma,
-                                        SkTileMode::kDecal, nullptr)));
-
-    cc::FilterOperations arbitrary_filters2;
-    arbitrary_filters2.Append(
-        cc::FilterOperation::CreateBrightnessFilter(arbitrary_float2));
 
     auto pass_in = CompositorRenderPass::Create();
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
-                    arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
-                    SkPath::RRect(SkRRect(arbitrary_rrectf1)),
-                    SubtreeCaptureId(), arbitrary_rect1.size(),
-                    ViewTransitionElementResourceId(), arbitrary_bool1,
+                    arbitrary_matrix1, SubtreeCaptureId(),
+                    arbitrary_rect1.size(), ViewTransitionElementResourceId(),
                     arbitrary_bool1, arbitrary_bool1, arbitrary_bool1,
-                    arbitrary_bool7);
+                    arbitrary_bool1, arbitrary_bool7);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {

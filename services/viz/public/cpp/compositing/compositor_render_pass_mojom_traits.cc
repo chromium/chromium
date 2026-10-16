@@ -9,7 +9,6 @@
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h"
-#include "skia/public/mojom/skpath_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
 namespace mojo {
@@ -30,15 +29,6 @@ StructTraits<viz::mojom::CompositorRenderPassDataView,
     return base::unexpected(DeserializationError());
   }
   if (!data.ReadTransformToRootTarget(&(*out)->transform_to_root_target)) {
-    return base::unexpected(DeserializationError());
-  }
-  if (!data.ReadFilters(&(*out)->filters)) {
-    return base::unexpected(DeserializationError());
-  }
-  if (!data.ReadBackdropFilters(&(*out)->backdrop_filters)) {
-    return base::unexpected(DeserializationError());
-  }
-  if (!data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds)) {
     return base::unexpected(DeserializationError());
   }
   if (!data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id)) {

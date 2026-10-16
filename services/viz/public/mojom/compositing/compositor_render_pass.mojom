@@ -6,13 +6,11 @@ module viz.mojom;
 
 import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
-import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/quads.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
-import "skia/public/mojom/skpath.mojom";
 
 // See components/viz/common/quads/compositor_render_pass.h.
 struct CompositorRenderPass {
@@ -20,9 +18,6 @@ struct CompositorRenderPass {
   gfx.mojom.Rect output_rect;
   gfx.mojom.Rect damage_rect;
   gfx.mojom.Transform transform_to_root_target;
-  FilterOperations filters;
-  FilterOperations backdrop_filters;
-  skia.mojom.SkPath? backdrop_filter_bounds;
   SubtreeCaptureId subtree_capture_id;
   gfx.mojom.Size subtree_size;
   ViewTransitionElementResourceId? view_transition_element_resource_id;

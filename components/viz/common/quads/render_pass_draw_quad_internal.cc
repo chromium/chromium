@@ -12,9 +12,16 @@
 
 namespace viz {
 
-void RenderPassDrawQuadInternal::SetFilters(const gfx::Vector2dF& scale,
-                                            const gfx::PointF& origin,
-                                            const float backdrop_quality) {
+void RenderPassDrawQuadInternal::SetFilters(
+    cc::FilterOperations foreground_operations,
+    cc::FilterOperations backdrop_operations,
+    std::optional<SkPath> backdrop_bounds,
+    const gfx::Vector2dF& scale,
+    const gfx::PointF& origin,
+    const float backdrop_quality) {
+  this->filters = foreground_operations;
+  this->backdrop_filters = backdrop_operations;
+  this->backdrop_filter_bounds = backdrop_bounds;
   this->filters_scale = scale;
   this->filters_origin = origin;
   this->backdrop_filter_quality = backdrop_quality;
@@ -36,6 +43,19 @@ void RenderPassDrawQuadInternal::ExtendValue(
   value->SetDouble("backdrop_filter_quality", backdrop_filter_quality);
   value->SetBoolean("force_anti_aliasing_off", force_anti_aliasing_off);
   value->SetBoolean("intersects_damage_under", intersects_damage_under);
+
+  value->BeginArray("filters");
+  filters.AsValueInto(value);
+  value->EndArray();
+
+  value->BeginArray("backdrop_filters");
+  backdrop_filters.AsValueInto(value);
+  value->EndArray();
+
+  if (backdrop_filter_bounds.has_value()) {
+    cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
+                                   *backdrop_filter_bounds, value);
+  }
 }
 
 }  // namespace viz

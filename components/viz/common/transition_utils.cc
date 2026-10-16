@@ -68,9 +68,6 @@ std::unordered_set<uint64_t> ProcessStack(
     if (pass->view_transition_element_resource_id.IsValid()) {
       str << " " << pass->view_transition_element_resource_id.ToString();
     }
-    if (!pass->backdrop_filters.IsEmpty()) {
-      str << " w/backdrop_filters";
-    }
     str << "\n";
   };
   auto write_sqs = [&str](const SharedQuadState* sqs) {
@@ -89,7 +86,11 @@ std::unordered_set<uint64_t> ProcessStack(
   };
   auto write_compositor_render_pass_quad =
       [&str](const CompositorRenderPassDrawQuad* quad) {
-        str << "(" << quad << ") CompositorRenderPassDrawQuad\n";
+        str << "(" << quad << ") CompositorRenderPassDrawQuad";
+        if (!quad->backdrop_filters.IsEmpty()) {
+          str << " w/backdrop_filters";
+        }
+        str << "\n";
       };
   std::unordered_set<uint64_t> seen_render_pass_ids;
   int quads_per_frame_logged = 0;
@@ -235,10 +236,8 @@ TransitionUtils::CopyPassWithQuadFiltering(
 
   copy_pass->SetAll(
       source_pass.id, source_pass.output_rect, source_pass.damage_rect,
-      source_pass.transform_to_root_target, source_pass.filters,
-      source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
-      source_pass.subtree_capture_id, source_pass.subtree_size,
-      source_pass.view_transition_element_resource_id,
+      source_pass.transform_to_root_target, source_pass.subtree_capture_id,
+      source_pass.subtree_size, source_pass.view_transition_element_resource_id,
       source_pass.has_transparent_background, source_pass.cache_render_pass,
       source_pass.has_damage_from_contributing_content,
       source_pass.generate_mipmap, source_pass.has_per_quad_damage);

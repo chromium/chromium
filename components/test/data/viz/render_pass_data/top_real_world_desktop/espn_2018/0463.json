@@ -30,7 +30,6 @@
    } ],
    "render_pass_count": 7,
    "render_pass_list": [ {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -44,7 +43,6 @@
          "x": 149,
          "y": 129
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": true,
@@ -195,7 +193,6 @@
       } ],
       "transform_to_root_target": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 319.0, 1101.0, 0.0, 1.0 ]
    }, {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -209,7 +206,6 @@
          "x": 149,
          "y": 129
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": true,
@@ -257,7 +253,9 @@
             "width": 40,
             "x": 149,
             "y": 129
-         }
+         },
+         "filters": [  ],
+         "backdrop_filters": [  ]
       } ],
       "shared_quad_state_list": [ {
          "are_contents_opaque": false,
@@ -306,7 +304,6 @@
       } ],
       "transform_to_root_target": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 319.0, 1101.0, 0.0, 1.0 ]
    }, {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -320,7 +317,6 @@
          "x": 0,
          "y": 433
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": true,
@@ -559,7 +555,6 @@
       } ],
       "transform_to_root_target": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 319.0, 320.0, 0.0, 1.0 ]
    }, {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -573,7 +568,6 @@
          "x": 481,
          "y": 579
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": true,
@@ -728,7 +722,6 @@
       } ],
       "transform_to_root_target": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 319.0, -424.0, 0.0, 1.0 ]
    }, {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -742,7 +735,6 @@
          "x": 84,
          "y": 579
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": true,
@@ -897,7 +889,6 @@
       } ],
       "transform_to_root_target": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 319.0, -424.0, 0.0, 1.0 ]
    }, {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -911,7 +902,6 @@
          "x": 84,
          "y": 579
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": true,
@@ -959,7 +949,9 @@
             "width": 40,
             "x": 481,
             "y": 563
-         }
+         },
+         "filters": [  ],
+         "backdrop_filters": [  ]
       }, {
          "backdrop_filter_quality": 1.0,
          "filters_origin": {
@@ -997,7 +989,9 @@
             "width": 40,
             "x": 84,
             "y": 563
-         }
+         },
+         "filters": [  ],
+         "backdrop_filters": [  ]
       } ],
       "shared_quad_state_list": [ {
          "are_contents_opaque": false,
@@ -1090,7 +1084,6 @@
       } ],
       "transform_to_root_target": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 319.0, -424.0, 0.0, 1.0 ]
    }, {
-      "backdrop_filters": [  ],
       "cache_render_pass": false,
       "color_space": {
          "matrix": "RGB",
@@ -1104,7 +1097,6 @@
          "x": 0,
          "y": 155
       },
-      "filters": [  ],
       "generate_mipmap": false,
       "has_damage_from_contributing_content": true,
       "has_transparent_background": false,
@@ -1560,7 +1552,9 @@
             "width": 40,
             "x": 149,
             "y": 129
-         }
+         },
+         "filters": [  ],
+         "backdrop_filters": [  ]
       }, {
          "force_anti_aliasing_off": false,
          "is_premultiplied": true,
@@ -1624,7 +1618,9 @@
             "width": 825,
             "x": 0,
             "y": 433
-         }
+         },
+         "filters": [  ],
+         "backdrop_filters": [  ]
       }, {
          "force_anti_aliasing_off": false,
          "is_premultiplied": true,
@@ -1740,7 +1736,9 @@
             "width": 437,
             "x": 84,
             "y": 579
-         }
+         },
+         "filters": [  ],
+         "backdrop_filters": [  ]
       }, {
          "force_anti_aliasing_off": false,
          "is_premultiplied": true,

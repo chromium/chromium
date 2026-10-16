@@ -47,7 +47,10 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
               const gfx::PointF& filters_origin,
               bool force_anti_aliasing_off,
               float backdrop_filter_quality,
-              bool intersects_damage_under);
+              bool intersects_damage_under,
+              const cc::FilterOperations& pass_filters,
+              const cc::FilterOperations& pass_backdrop_filters,
+              const std::optional<SkPath>& pass_backdrop_filter_bounds);
 
   CompositorRenderPassId render_pass_id;
 

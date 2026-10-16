@@ -53,11 +53,9 @@ viz::CompositorRenderPass* AddRenderPass(
     viz::CompositorRenderPassList* pass_list,
     viz::CompositorRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
-    const gfx::Transform& root_transform,
-    const FilterOperations& filters) {
+    const gfx::Transform& root_transform) {
   auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(render_pass_id, output_rect, output_rect, root_transform);
-  pass->filters = filters;
   viz::CompositorRenderPass* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
@@ -80,11 +78,9 @@ viz::CompositorRenderPass* AddRenderPassWithDamage(
     viz::CompositorRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
-    const gfx::Transform& root_transform,
-    const FilterOperations& filters) {
+    const gfx::Transform& root_transform) {
   auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(render_pass_id, output_rect, damage_rect, root_transform);
-  pass->filters = filters;
   viz::CompositorRenderPass* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
@@ -320,8 +316,7 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
       const viz::CompositorRenderPassDrawQuad* src =
           viz::CompositorRenderPassDrawQuad::MaterialCast(src_quad);
       quad = copy_pass->CopyFromAndAppendRenderPassDrawQuad(
-          src, *from_pass,
-          viz::AggregatedRenderPassId(src->render_pass_id.value()));
+          src, viz::AggregatedRenderPassId(src->render_pass_id.value()));
     } else {
       quad = copy_pass->CopyFromAndAppendDrawQuad(src_quad);
       if (!quad->resource_id.is_null()) {

@@ -127,11 +127,12 @@ Self& AddQuads<Self>::AddRenderPassQuad(const gfx::Rect& rect,
                                         const RenderPassQuadParams& params) {
   auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-  quad->SetAll(
-      sqs, rect, visible_rect, params.needs_blending, id, kInvalidResourceId,
-      gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
-      params.force_anti_aliasing_off,
-      /*backdrop_filter_quality=*/1.0f, params.intersects_damage_under);
+  quad->SetAll(sqs, rect, visible_rect, params.needs_blending, id,
+               kInvalidResourceId, gfx::RectF(), gfx::Size(),
+               gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+               params.force_anti_aliasing_off,
+               /*backdrop_filter_quality=*/1.0f, params.intersects_damage_under,
+               params.filters, params.backdrop_filters, std::nullopt);
 
   return ThisRef();
 }
@@ -240,18 +241,6 @@ RenderPassBuilder& RenderPassBuilder::SetCacheRenderPass(bool val) {
 RenderPassBuilder& RenderPassBuilder::SetHasDamageFromContributingContent(
     bool val) {
   pass_->has_damage_from_contributing_content = val;
-  return *this;
-}
-
-RenderPassBuilder& RenderPassBuilder::AddFilter(
-    const cc::FilterOperation& filter) {
-  pass_->filters.Append(filter);
-  return *this;
-}
-
-RenderPassBuilder& RenderPassBuilder::AddBackdropFilter(
-    const cc::FilterOperation& filter) {
-  pass_->backdrop_filters.Append(filter);
   return *this;
 }
 

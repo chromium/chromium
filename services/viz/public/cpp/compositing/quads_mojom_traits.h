@@ -348,6 +348,26 @@ struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
     return quad->intersects_damage_under;
   }
 
+  static const cc::FilterOperations& filters(const viz::DrawQuad& input) {
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
+    return quad->filters;
+  }
+
+  static const cc::FilterOperations& backdrop_filters(
+      const viz::DrawQuad& input) {
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
+    return quad->backdrop_filters;
+  }
+
+  static const std::optional<SkPath>& backdrop_filter_bounds(
+      const viz::DrawQuad& input) {
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
+    return quad->backdrop_filter_bounds;
+  }
+
   static base::expected<void, DeserializationError> Read(
       viz::mojom::CompositorRenderPassQuadStateDataView data,
       viz::DrawQuad* out);

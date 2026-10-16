@@ -1189,6 +1189,13 @@ void CompositorRenderPassDrawQuadToDict(
   dict->Set("backdrop_filter_quality", draw_quad->backdrop_filter_quality);
   dict->Set("force_anti_aliasing_off", draw_quad->force_anti_aliasing_off);
   dict->Set("intersects_damage_under", draw_quad->intersects_damage_under);
+  dict->Set("filters", FilterOperationsToList(draw_quad->filters));
+  dict->Set("backdrop_filters",
+            FilterOperationsToList(draw_quad->backdrop_filters));
+  if (draw_quad->backdrop_filter_bounds) {
+    dict->Set("backdrop_filter_bounds",
+              SkPathToBlob(draw_quad->backdrop_filter_bounds.value()));
+  }
 }
 
 void SolidColorDrawQuadToDict(const SolidColorDrawQuad* draw_quad,
@@ -1340,6 +1347,10 @@ bool CompositorRenderPassDrawQuadFromDict(
   const std::string* render_pass_id = dict.FindString("render_pass_id");
   const base::DictValue* mask_uv_rect = dict.FindDict("mask_uv_rect");
   const base::DictValue* mask_texture_size = dict.FindDict("mask_texture_size");
+  const base::ListValue* filters = dict.FindList("filters");
+  const base::ListValue* backdrop_filters = dict.FindList("backdrop_filters");
+  const base::Value::BlobStorage* backdrop_filter_bounds =
+      dict.FindBlob("backdrop_filter_bounds");
   const base::DictValue* filters_scale = dict.FindDict("filters_scale");
   const base::DictValue* filters_origin = dict.FindDict("filters_origin");
   std::optional<double> backdrop_filter_quality =
@@ -1351,22 +1362,34 @@ bool CompositorRenderPassDrawQuadFromDict(
 
   if (!render_pass_id || !mask_uv_rect || !mask_texture_size ||
       !filters_scale || !filters_origin || !backdrop_filter_quality ||
-      !force_anti_aliasing_off) {
+      !force_anti_aliasing_off || !filters || !backdrop_filters) {
     return false;
   }
   uint64_t render_pass_id_as_int;
   gfx::RectF t_mask_uv_rect;
   gfx::Size t_mask_texture_size;
+  cc::FilterOperations t_filters;
+  cc::FilterOperations t_backdrop_filters;
   gfx::Vector2dF t_filters_scale;
   gfx::PointF t_filters_origin;
   if (!base::StringToUint64(*render_pass_id, &render_pass_id_as_int) ||
       !RectFFromDict(*mask_uv_rect, &t_mask_uv_rect) ||
       !SizeFromDict(*mask_texture_size, &t_mask_texture_size) ||
       !Vector2dFFromDict(*filters_scale, &t_filters_scale) ||
-      !PointFFromDict(*filters_origin, &t_filters_origin)) {
+      !PointFFromDict(*filters_origin, &t_filters_origin) ||
+      !FilterOperationsFromList(*filters, &t_filters) ||
+      !FilterOperationsFromList(*backdrop_filters, &t_backdrop_filters)) {
     return false;
   }
   CompositorRenderPassId t_render_pass_id{render_pass_id_as_int};
+
+  std::optional<SkPath> t_backdrop_filter_bounds;
+  if (backdrop_filter_bounds) {
+    SkPath backdrop_filter_bounds_aux;
+    if (SkPathFromBlob(*backdrop_filter_bounds, &backdrop_filter_bounds_aux)) {
+      t_backdrop_filter_bounds = std::move(backdrop_filter_bounds_aux);
+    }
+  }
 
   ResourceId mask_resource_id = common.resource_id;
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
@@ -1374,7 +1397,8 @@ bool CompositorRenderPassDrawQuadFromDict(
                     t_mask_uv_rect, t_mask_texture_size, t_filters_scale,
                     t_filters_origin, force_anti_aliasing_off.value(),
                     backdrop_filter_quality.value(),
-                    intersects_damage_under && intersects_damage_under.value());
+                    intersects_damage_under && intersects_damage_under.value(),
+                    t_filters, t_backdrop_filters, t_backdrop_filter_bounds);
   return true;
 }
 
@@ -1809,17 +1833,6 @@ base::DictValue CompositorRenderPassToDict(
     dict.Set("transform_to_root_target",
              TransformToList(render_pass.transform_to_root_target));
   }
-  if (ProcessRenderPassField(kRenderPassFilters))
-    dict.Set("filters", FilterOperationsToList(render_pass.filters));
-  if (ProcessRenderPassField(kRenderPassBackdropFilters)) {
-    dict.Set("backdrop_filters",
-             FilterOperationsToList(render_pass.backdrop_filters));
-  }
-  if (ProcessRenderPassField(kRenderPassBackdropFilterBounds) &&
-      render_pass.backdrop_filter_bounds) {
-    dict.Set("backdrop_filter_bounds",
-             SkPathToBlob(render_pass.backdrop_filter_bounds.value()));
-  }
   if (ProcessRenderPassField(kRenderPassColorSpace)) {
     // CompositorRenderPasses used to have a color space field, but this was
     // removed in favor of color usage. https://crbug.com/1049334
@@ -1895,36 +1908,6 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
     if (!TransformFromList(*transform_to_root_target,
                            &(pass->transform_to_root_target))) {
       return nullptr;
-    }
-  }
-
-  if (ProcessRenderPassField(kRenderPassFilters)) {
-    const base::ListValue* filters = dict.FindList("filters");
-    if (!filters)
-      return nullptr;
-    if (!FilterOperationsFromList(*filters, &(pass->filters)))
-      return nullptr;
-  }
-
-  if (ProcessRenderPassField(kRenderPassBackdropFilters)) {
-    const base::ListValue* backdrop_filters = dict.FindList("backdrop_filters");
-    if (!backdrop_filters)
-      return nullptr;
-    if (!FilterOperationsFromList(*backdrop_filters,
-                                  &(pass->backdrop_filters))) {
-      return nullptr;
-    }
-  }
-
-  if (ProcessRenderPassField(kRenderPassBackdropFilterBounds)) {
-    const base::Value::BlobStorage* backdrop_filter_bounds =
-        dict.FindBlob("backdrop_filter_bounds");
-    if (backdrop_filter_bounds) {
-      SkPath bounds;
-      if (!SkPathFromBlob(*backdrop_filter_bounds, &bounds)) {
-        return nullptr;
-      }
-      pass->backdrop_filter_bounds = bounds;
     }
   }
 

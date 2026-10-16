@@ -334,9 +334,9 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                         std::vector<SurfaceRange>* referenced_surfaces) {
     gfx::Transform root_transform;
     for (auto& pass : passes) {
-      CompositorRenderPass* test_pass = AddRenderPassWithDamage(
-          pass_list, pass.id, pass.output_rect, pass.damage_rect,
-          root_transform, cc::FilterOperations());
+      CompositorRenderPass* test_pass =
+          cc::AddRenderPassWithDamage(pass_list, pass.id, pass.output_rect,
+                                      pass.damage_rect, root_transform);
       test_pass->has_transparent_background = pass.has_transparent_background;
       test_pass->has_damage_from_contributing_content =
           pass.has_damage_from_contributing_content;
@@ -450,7 +450,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                  gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
                  gfx::PointF(),
                  /*force_anti_aliasing_off=*/false,
-                 /*backdrop_filter_quality=*/1.0f, intersects_damage_under);
+                 /*backdrop_filter_quality=*/1.0f, intersects_damage_under,
+                 cc::FilterOperations(), cc::FilterOperations(), std::nullopt);
   }
 
   static void AddTextureDrawQuad(CompositorRenderPass* pass,
@@ -5546,12 +5547,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
           .AddRenderPass(
               RenderPassBuilder(CompositorRenderPassId{2}, child_surface_size)
                   .AddRenderPassQuad(gfx::Rect(child_surface_size),
-                                     CompositorRenderPassId{1})
-                  .AddBackdropFilter(cc::FilterOperation::CreateBlurFilter(5)))
+                                     CompositorRenderPassId{1}))
           .AddRenderPass(
               RenderPassBuilder(CompositorRenderPassId{3}, child_surface_size)
-                  .AddRenderPassQuad(gfx::Rect(child_surface_size),
-                                     CompositorRenderPassId{2})
+                  .AddRenderPassQuad(
+                      gfx::Rect(child_surface_size), CompositorRenderPassId{2},
+                      {.backdrop_filters = cc::FilterOperations(
+                           {cc::FilterOperation::CreateBlurFilter(5)})})
                   .SetQuadToTargetTranslation(20, 30))
           .Build();
 
@@ -5655,12 +5657,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
           .AddRenderPass(
               RenderPassBuilder(CompositorRenderPassId{2}, child_surface_size)
                   .AddRenderPassQuad(gfx::Rect(child_surface_size),
-                                     CompositorRenderPassId{1})
-                  .AddBackdropFilter(cc::FilterOperation::CreateBlurFilter(5)))
+                                     CompositorRenderPassId{1}))
           .AddRenderPass(
               RenderPassBuilder(CompositorRenderPassId{3}, child_surface_size)
-                  .AddRenderPassQuad(gfx::Rect(child_surface_size),
-                                     CompositorRenderPassId{2})
+                  .AddRenderPassQuad(
+                      gfx::Rect(child_surface_size), CompositorRenderPassId{2},
+                      {.backdrop_filters = cc::FilterOperations(
+                           {cc::FilterOperation::CreateBlurFilter(5)})})
                   .SetQuadToTargetTranslation(20, 30))
           .Build();
 
@@ -9320,18 +9323,29 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       root_pass_list.push_back(
           RenderPassBuilder(CompositorRenderPassId{i}, render_pass_rect)
               .AddSolidColorQuad(render_pass_rect, SkColors::kGreen)
-              .AddBackdropFilter(cc::FilterOperation::CreateBlurFilter(5))
               .Build());
     }
     root_pass_list.push_back(
         RenderPassBuilder(CompositorRenderPassId{5}, gfx::Rect(kSurfaceSize))
-            .AddRenderPassQuad(render_pass_rect, CompositorRenderPassId{1})
+            .AddRenderPassQuad(
+                render_pass_rect, CompositorRenderPassId{1},
+                {.backdrop_filters = cc::FilterOperations(
+                     {cc::FilterOperation::CreateBlurFilter(5)})})
             .SetQuadToTargetTranslation(70, 0)
-            .AddRenderPassQuad(render_pass_rect, CompositorRenderPassId{2})
+            .AddRenderPassQuad(
+                render_pass_rect, CompositorRenderPassId{2},
+                {.backdrop_filters = cc::FilterOperations(
+                     {cc::FilterOperation::CreateBlurFilter(5)})})
             .SetQuadToTargetTranslation(30, 30)
-            .AddRenderPassQuad(render_pass_rect, CompositorRenderPassId{3})
+            .AddRenderPassQuad(
+                render_pass_rect, CompositorRenderPassId{3},
+                {.backdrop_filters = cc::FilterOperations(
+                     {cc::FilterOperation::CreateBlurFilter(5)})})
             .SetQuadToTargetTranslation(10, 50)
-            .AddRenderPassQuad(render_pass_rect, CompositorRenderPassId{4})
+            .AddRenderPassQuad(
+                render_pass_rect, CompositorRenderPassId{4},
+                {.backdrop_filters = cc::FilterOperations(
+                     {cc::FilterOperation::CreateBlurFilter(5)})})
             .SetQuadToTargetTranslation(70, 70)
             .AddSurfaceQuad(gfx::Rect(100, 100), SurfaceRange(child_surface_id),
                             {.allow_merge = AllowMerge()})
@@ -10204,12 +10218,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
         CompositorFrameBuilder()
             .AddRenderPass(
                 RenderPassBuilder(CompositorRenderPassId{1}, gfx::Size(50, 50))
-                    .AddSolidColorQuad(gfx::Rect(50, 50), SkColors::kGreen)
-                    .AddFilter(cc::FilterOperation::CreateBlurFilter(5.0f)))
-            .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{2},
-                                             gfx::Size(100, 100))
-                               .AddRenderPassQuad(gfx::Rect(50, 50),
-                                                  CompositorRenderPassId{1}))
+                    .AddSolidColorQuad(gfx::Rect(50, 50), SkColors::kGreen))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2},
+                                  gfx::Size(100, 100))
+                    .AddRenderPassQuad(
+                        gfx::Rect(50, 50), CompositorRenderPassId{1},
+                        {.filters = cc::FilterOperations(
+                             {cc::FilterOperation::CreateBlurFilter(5.0f)})}))
             .AddTrackedElementRect(feature, element_rect)
             .Build();
     child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
@@ -10770,12 +10786,13 @@ TEST_F(SurfaceAggregatorVulkanSecondaryCB, AppendPassForFrameWithFilter) {
       CompositorFrameBuilder()
           .AddRenderPass(
               RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
-                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors ::kGreen)
-                  .AddBackdropFilter(cc::FilterOperation::CreateBlurFilter(5)))
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
           .AddRenderPass(
               RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
-                  .AddRenderPassQuad(gfx::Rect(kSurfaceSize),
-                                     CompositorRenderPassId{1}))
+                  .AddRenderPassQuad(
+                      gfx::Rect(kSurfaceSize), CompositorRenderPassId{1},
+                      {.backdrop_filters = cc::FilterOperations(
+                           {cc::FilterOperation::CreateBlurFilter(5)})}))
           .Build();
 
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),

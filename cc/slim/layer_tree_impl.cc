@@ -743,8 +743,7 @@ void LayerTreeImpl::Draw(Layer& layer,
   {
     const int num_drawing_layers_in_subtree =
         layer.GetNumDrawingLayersInSubtree();
-    const bool is_root = root_.get() == &layer;
-    const bool filters_needs_pass = layer.HasFilters() && !is_root;
+    const bool filters_needs_pass = layer.HasFilters();
     // There is no way to merge 2 rounded corners, so create a render pass so
     // existing rounded corners can go into RenderPassDrawQuad, and the layer's
     // rounded corners can go into quad its own pass.
@@ -752,6 +751,7 @@ void LayerTreeImpl::Draw(Layer& layer,
         layer.HasNonTrivialMaskFilterInfo() &&
         (data.mask_filter_info_in_target.HasRoundedCorners() ||
          data.mask_filter_info_in_target.HasGradientMask());
+    const bool is_root = root_.get() == &layer;
     const bool clip_needs_pass =
         !is_root && mask_to_bounds &&
         !transform_to_target.Preserves2dAxisAlignment();
@@ -921,10 +921,12 @@ void LayerTreeImpl::Draw(Layer& layer,
                /*filters_origin=*/gfx::PointF(),
                /*force_anti_aliasing_off=*/false,
                /*backdrop_filter_quality=*/1.f,
-               /*intersects_damage_under=*/true);
+               /*intersects_damage_under=*/true,
+               /*pass_filters=*/layer.GetFilters(),
+               /*pass_backdrop_filters=*/cc::FilterOperations(),
+               /*pass_backdrop_filter_bounds=*/std::nullopt);
 
   new_pass->output_rect = content_rect;
-  new_pass->filters = layer.GetFilters();
 
   ProcessDamageForRenderPass(*new_pass, data);
   parent_pass_damage.emplace_back(

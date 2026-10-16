@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_TEST_DRAW_QUAD_MATCHERS_H_
 
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -44,6 +45,10 @@ testing::Matcher<const DrawQuad*> IsTextureQuad();
 
 // Matches a SurfaceDrawQuad.
 testing::Matcher<const DrawQuad*> IsSurfaceQuad();
+
+// Matches a CompositorRenderPassDrawQuad accepted by `matcher`.
+testing::Matcher<const DrawQuad*> IsCompositorRenderPassQuad(
+    testing::Matcher<const CompositorRenderPassDrawQuad*> matcher = testing::_);
 
 // Matches an CompositorRenderPassQuad with matching `id`.
 testing::Matcher<const DrawQuad*> IsCompositorRenderPassQuad(

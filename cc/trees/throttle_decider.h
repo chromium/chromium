@@ -30,8 +30,11 @@ class CC_EXPORT ThrottleDecider {
   // Go through the quads in |render_pass| and decide for each embedded surface
   // in SurfaceDrawQuad if it can be throttled. This is a simple version where
   // intersection calculation of surface/quad rects are confined to the render
-  // pass's constituent quads.
-  void ProcessRenderPass(const viz::CompositorRenderPass& render_pass);
+  // pass's constituent quads. If `has_foreground_blur` is true, the embedder
+  // blurs the output of `render_pass`, so every embedded surface is eligible
+  // for throttling without checking whether it is inside backdrop blur bounds.
+  void ProcessRenderPass(const viz::CompositorRenderPass& render_pass,
+                         bool has_foreground_blur);
   // Process a layer that will not draw. This is only relevant for surface
   // layers and checks if the embedded frame sink is qualified for throttling.
   void ProcessLayerNotToDraw(const LayerImpl* layer);

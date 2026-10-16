@@ -36,9 +36,6 @@ static void CompareRenderPassLists(
     EXPECT_EQ(expected->transform_to_root_target,
               actual->transform_to_root_target);
     EXPECT_EQ(expected->damage_rect, actual->damage_rect);
-    EXPECT_EQ(expected->filters, actual->filters);
-    EXPECT_EQ(expected->backdrop_filters, actual->backdrop_filters);
-    EXPECT_EQ(expected->backdrop_filter_bounds, actual->backdrop_filter_bounds);
     EXPECT_EQ(expected->subtree_capture_id, actual->subtree_capture_id);
     EXPECT_EQ(expected->has_transparent_background,
               actual->has_transparent_background);
@@ -54,6 +51,16 @@ static void CompareRenderPassLists(
       EXPECT_EQ(exp_iter->rect.ToString(), act_iter->rect.ToString());
       EXPECT_EQ(exp_iter->shared_quad_state->quad_layer_rect.ToString(),
                 act_iter->shared_quad_state->quad_layer_rect.ToString());
+      auto* exp_rpdq = exp_iter->DynamicCast<CompositorRenderPassDrawQuad>();
+      auto* act_rpdq = act_iter->DynamicCast<CompositorRenderPassDrawQuad>();
+      if ((exp_rpdq)) {
+        ASSERT_TRUE(act_rpdq);
+        EXPECT_EQ(exp_rpdq->render_pass_id, act_rpdq->render_pass_id);
+        EXPECT_EQ(exp_rpdq->filters, act_rpdq->filters);
+        EXPECT_EQ(exp_rpdq->backdrop_filters, act_rpdq->backdrop_filters);
+        EXPECT_EQ(exp_rpdq->backdrop_filter_bounds,
+                  act_rpdq->backdrop_filter_bounds);
+      }
     }
   }
 }
@@ -118,12 +125,6 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   gfx::Transform transform_to_root =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect damage_rect(56, 123, 19, 43);
-  cc::FilterOperations filters;
-  filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
-  cc::FilterOperations backdrop_filters;
-  backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
-      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
   bool has_transparent_background = true;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
@@ -131,8 +132,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   bool has_per_quad_damage = false;
 
   auto pass = CompositorRenderPass::Create();
-  pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
-               backdrop_filters, backdrop_filter_bounds,
+  pass->SetAll(id, output_rect, damage_rect, transform_to_root,
                SubtreeCaptureId(base::Token(0u, 1u)), output_rect.size(),
                ViewTransitionElementResourceId(), has_transparent_background,
                cache_render_pass, has_damage_from_contributing_content,
@@ -180,12 +180,6 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   gfx::Transform contrib_transform_to_root =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect contrib_damage_rect(11, 16, 10, 15);
-  cc::FilterOperations contrib_filters;
-  contrib_filters.Append(cc::FilterOperation::CreateSepiaFilter(0.5));
-  cc::FilterOperations contrib_backdrop_filters;
-  contrib_backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(1));
-  std::optional<SkPath> contrib_backdrop_filter_bounds(SkPath::RRect(
-      SkRRect(gfx::RRectF{20, 30, 140, 150, 1, 2, 3, 4, 5, 6, 7, 8})));
   bool contrib_has_transparent_background = true;
   bool contrib_cache_render_pass = false;
   bool contrib_has_damage_from_contributing_content = false;
@@ -194,8 +188,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
 
   auto contrib = CompositorRenderPass::Create();
   contrib->SetAll(contrib_id, contrib_output_rect, contrib_damage_rect,
-                  contrib_transform_to_root, contrib_filters,
-                  contrib_backdrop_filters, contrib_backdrop_filter_bounds,
+                  contrib_transform_to_root,
                   SubtreeCaptureId(base::Token(0u, 2u)),
                   contrib_output_rect.size(), ViewTransitionElementResourceId(),
                   contrib_has_transparent_background, contrib_cache_render_pass,
@@ -220,6 +213,19 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   pass_quad->SetNew(pass->shared_quad_state_list.back(), contrib_output_rect,
                     contrib_output_rect, contrib_id, ResourceId(1u),
                     gfx::RectF(), gfx::Size(), false);
+
+  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
+      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
+  pass_quad->SetFilters(
+      /*filters=*/cc::FilterOperations(
+          {cc::FilterOperation::CreateOpacityFilter(0.5)}),
+      /*backdrop_filters=*/
+      cc::FilterOperations({cc::FilterOperation::CreateInvertFilter(1.0)}),
+      /*backdrop_filter_bounds=*/backdrop_filter_bounds,
+      /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
+      /*filters_origin=*/gfx::PointF(),
+      /*backdrop_filter_quality=*/1.0f);
+
   pass_list.push_back(std::move(pass));
   pass_list.push_back(std::move(contrib));
 
@@ -238,24 +244,17 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   gfx::Transform transform_to_root =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   gfx::Rect damage_rect(56, 123, 19, 43);
-  cc::FilterOperations filters;
-  filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
-  cc::FilterOperations backdrop_filters;
-  backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
-      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
   bool has_transparent_background = true;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
   bool generate_mipmap = false;
   bool has_per_quad_damage = false;
   auto pass = CompositorRenderPass::Create();
-  pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
-               backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId(),
-               output_rect.size(), ViewTransitionElementResourceId(),
-               has_transparent_background, cache_render_pass,
-               has_damage_from_contributing_content, generate_mipmap,
-               has_per_quad_damage);
+  pass->SetAll(id, output_rect, damage_rect, transform_to_root,
+               SubtreeCaptureId(), output_rect.size(),
+               ViewTransitionElementResourceId(), has_transparent_background,
+               cache_render_pass, has_damage_from_contributing_content,
+               generate_mipmap, has_per_quad_damage);
 
   // A shared state with a quad.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();

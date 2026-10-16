@@ -43,75 +43,84 @@ TEST(RenderPassIOTest, Default) {
 
 TEST(RenderPassIOTest, FilterOperations) {
   auto render_pass0 = CompositorRenderPass::Create();
+  CompositorRenderPassDrawQuad* rpdq0;
   {
+    SharedQuadState* sqs = render_pass0->CreateAndAppendSharedQuadState();
+    ASSERT_TRUE(sqs);
+
     // Add two filters.
-    cc::FilterOperation grayscale =
-        cc::FilterOperation::CreateGrayscaleFilter(0.25f);
-    render_pass0->filters.Append(grayscale);
-    cc::FilterOperation opacity =
-        cc::FilterOperation::CreateOpacityFilter(0.8f);
-    render_pass0->filters.Append(opacity);
-  }
-  {
+    cc::FilterOperations filters(
+        {cc::FilterOperation::CreateGrayscaleFilter(0.25f),
+         cc::FilterOperation::CreateOpacityFilter(0.8f)});
+
     // Add three backdrop filters.
-    cc::FilterOperation drop_shadow =
-        cc::FilterOperation::CreateDropShadowFilter(gfx::Point(1.0f, 2.0f),
-                                                    0.8f, SkColors::kYellow);
-    render_pass0->backdrop_filters.Append(drop_shadow);
-    cc::FilterOperation invert = cc::FilterOperation::CreateInvertFilter(0.64f);
-    render_pass0->backdrop_filters.Append(invert);
-    cc::FilterOperation zoom = cc::FilterOperation::CreateZoomFilter(2.1f, 10);
-    render_pass0->backdrop_filters.Append(zoom);
-  }
-  {
+    cc::FilterOperations backdrop_filters(
+        {cc::FilterOperation::CreateDropShadowFilter(gfx::Point(1.0f, 2.0f),
+                                                     0.8f, SkColors::kYellow),
+         cc::FilterOperation::CreateInvertFilter(0.64f),
+         cc::FilterOperation::CreateZoomFilter(2.1f, 10)});
+
     // Set backdrop filter bounds.
     gfx::RRectF rrect(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f);
     ASSERT_EQ(gfx::RRectF::Type::kSingle, rrect.GetType());
-    render_pass0->backdrop_filter_bounds = SkPath::RRect(SkRRect::MakeRectXY(
+    SkPath backdrop_filter_bounds = SkPath::RRect(SkRRect::MakeRectXY(
         gfx::RectFToSkRect(rrect.rect()), rrect.GetSimpleRadii().x(),
         rrect.GetSimpleRadii().y()));
+
+    rpdq0 =
+        render_pass0->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+    rpdq0->SetAll(render_pass0->shared_quad_state_list.ElementAt(0),
+                  gfx::Rect(2, 3, 100, 50), gfx::Rect(2, 3, 100, 50), true,
+                  CompositorRenderPassId{198u}, ResourceId(81u),
+                  gfx::RectF(0.1f, 0.2f, 0.5f, 0.6f), gfx::Size(800, 600),
+                  gfx::Vector2dF(1.1f, 0.9f), gfx::PointF(0.01f, 0.02f), true,
+                  0.88f, true, filters, backdrop_filters,
+                  backdrop_filter_bounds);
   }
   base::DictValue dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
+
+  EXPECT_EQ(1ull, render_pass1->quad_list.size());
+  EXPECT_EQ(DrawQuad::Material::kCompositorRenderPass,
+            render_pass1->quad_list.ElementAt(0)->material);
+  auto* rpdq1 = CompositorRenderPassDrawQuad::MaterialCast(
+      render_pass1->quad_list.ElementAt(0));
   {
     // Verify two filters are as expected.
-    EXPECT_EQ(render_pass0->filters, render_pass1->filters);
-    EXPECT_EQ(2u, render_pass1->filters.size());
-    EXPECT_EQ(cc::FilterOperation::GRAYSCALE,
-              render_pass1->filters.at(0).type());
-    EXPECT_EQ(0.25f, render_pass1->filters.at(0).amount());
-    EXPECT_EQ(cc::FilterOperation::OPACITY, render_pass1->filters.at(1).type());
-    EXPECT_EQ(0.8f, render_pass1->filters.at(1).amount());
+    EXPECT_EQ(rpdq0->filters, rpdq1->filters);
+    EXPECT_EQ(2u, rpdq1->filters.size());
+    EXPECT_EQ(cc::FilterOperation::GRAYSCALE, rpdq1->filters.at(0).type());
+    EXPECT_EQ(0.25f, rpdq1->filters.at(0).amount());
+    EXPECT_EQ(cc::FilterOperation::OPACITY, rpdq1->filters.at(1).type());
+    EXPECT_EQ(0.8f, rpdq1->filters.at(1).amount());
   }
   {
     // Verify three backdrop filters are as expected.
-    EXPECT_EQ(render_pass0->backdrop_filters, render_pass1->backdrop_filters);
-    EXPECT_EQ(3u, render_pass1->backdrop_filters.size());
+    EXPECT_EQ(rpdq0->backdrop_filters, rpdq1->backdrop_filters);
+    EXPECT_EQ(3u, rpdq1->backdrop_filters.size());
     EXPECT_EQ(cc::FilterOperation::DROP_SHADOW,
-              render_pass1->backdrop_filters.at(0).type());
-    EXPECT_EQ(0.8f, render_pass1->backdrop_filters.at(0).amount());
+              rpdq1->backdrop_filters.at(0).type());
+    EXPECT_EQ(0.8f, rpdq1->backdrop_filters.at(0).amount());
     EXPECT_EQ(SkColors::kYellow,
-              render_pass1->backdrop_filters.at(0).drop_shadow_color());
-    EXPECT_EQ(gfx::Point(1.0f, 2.0f),
-              render_pass1->backdrop_filters.at(0).offset());
+              rpdq1->backdrop_filters.at(0).drop_shadow_color());
+    EXPECT_EQ(gfx::Point(1.0f, 2.0f), rpdq1->backdrop_filters.at(0).offset());
     EXPECT_EQ(cc::FilterOperation::INVERT,
-              render_pass1->backdrop_filters.at(1).type());
-    EXPECT_EQ(0.64f, render_pass1->backdrop_filters.at(1).amount());
-    EXPECT_EQ(cc::FilterOperation::ZOOM,
-              render_pass1->backdrop_filters.at(2).type());
-    EXPECT_EQ(2.1f, render_pass1->backdrop_filters.at(2).amount());
-    EXPECT_EQ(10, render_pass1->backdrop_filters.at(2).zoom_inset());
+              rpdq1->backdrop_filters.at(1).type());
+    EXPECT_EQ(0.64f, rpdq1->backdrop_filters.at(1).amount());
+    EXPECT_EQ(cc::FilterOperation::ZOOM, rpdq1->backdrop_filters.at(2).type());
+    EXPECT_EQ(2.1f, rpdq1->backdrop_filters.at(2).amount());
+    EXPECT_EQ(10, rpdq1->backdrop_filters.at(2).zoom_inset());
   }
   {
     // Verify backdrop filter bounds are as expected.
-    EXPECT_TRUE(render_pass1->backdrop_filter_bounds.has_value());
+    EXPECT_TRUE(rpdq1->backdrop_filter_bounds.has_value());
     SkRRect backdrop_filter_as_rect_0;
     SkRRect backdrop_filter_as_rect_1;
-    EXPECT_TRUE(render_pass0->backdrop_filter_bounds->isRRect(
-        &backdrop_filter_as_rect_0));
-    EXPECT_TRUE(render_pass1->backdrop_filter_bounds->isRRect(
-        &backdrop_filter_as_rect_1));
+    EXPECT_TRUE(
+        rpdq0->backdrop_filter_bounds->isRRect(&backdrop_filter_as_rect_0));
+    EXPECT_TRUE(
+        rpdq1->backdrop_filter_bounds->isRRect(&backdrop_filter_as_rect_1));
     EXPECT_EQ(backdrop_filter_as_rect_0, backdrop_filter_as_rect_1);
     EXPECT_EQ(backdrop_filter_as_rect_1.type(), SkRRect::kSimple_Type);
     EXPECT_EQ(1.5f, backdrop_filter_as_rect_1.getSimpleRadii().x());
@@ -254,12 +263,22 @@ TEST(RenderPassIOTest, QuadList) {
       // 4. CompositorRenderPassDrawQuad
       CompositorRenderPassDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
-                   gfx::Rect(2, 3, 100, 50), gfx::Rect(2, 3, 100, 50), true,
-                   CompositorRenderPassId{198u}, ResourceId(81u),
-                   gfx::RectF(0.1f, 0.2f, 0.5f, 0.6f), gfx::Size(800, 600),
-                   gfx::Vector2dF(1.1f, 0.9f), gfx::PointF(0.01f, 0.02f), true,
-                   0.88f, true);
+      gfx::RRectF rrect(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f);
+      SkPath backdrop_filter_bounds = SkPath::RRect(SkRRect::MakeRectXY(
+          gfx::RectFToSkRect(rrect.rect()), rrect.GetSimpleRadii().x(),
+          rrect.GetSimpleRadii().y()));
+      quad->SetAll(
+          render_pass0->shared_quad_state_list.ElementAt(sqs_index),
+          gfx::Rect(2, 3, 100, 50), gfx::Rect(2, 3, 100, 50), true,
+          CompositorRenderPassId{198u}, ResourceId(81u),
+          gfx::RectF(0.1f, 0.2f, 0.5f, 0.6f), gfx::Size(800, 600),
+          gfx::Vector2dF(1.1f, 0.9f), gfx::PointF(0.01f, 0.02f), true, 0.88f,
+          true,
+          cc::FilterOperations(
+              {cc::FilterOperation::CreateGrayscaleFilter(0.25f)}),
+          cc::FilterOperations({cc::FilterOperation::CreateDropShadowFilter(
+              gfx::Point(1.0f, 2.0f), 0.8f, SkColors::kYellow)}),
+          backdrop_filter_bounds);
       ++sqs_index;
       ++quad_count;
     }
@@ -328,8 +347,8 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   EXPECT_TRUE(
       CompositorRenderPassListFromDict(dict0->GetDict(), &render_pass_list));
   base::DictValue dict1 = CompositorRenderPassListToDict(render_pass_list);
-  // Since the test file doesn't contain the field
-  // 'intersects_damage_under' in its CompositorRenderPassDrawQuad, I'm
+  // Since the test file doesn't contain the fields 'intersects_damage_under'
+  // and 'backdrop_filter_bounds' in its CompositorRenderPassDrawQuad, I'm
   // removing the field on dict1 for the exact comparison to work.
   base::ListValue* list = dict1.FindList("render_pass_list");
   for (auto& entry : *list) {
@@ -340,6 +359,11 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
               quad_entry.GetDict().Find("intersects_damage_under")) {
         EXPECT_FALSE(extra_value->GetBool());
         ASSERT_TRUE(quad_entry.GetDict().Remove("intersects_damage_under"));
+      }
+      if (base::Value* extra_value =
+              quad_entry.GetDict().Find("backdrop_filter_bounds")) {
+        EXPECT_TRUE(extra_value->GetBlob().empty());
+        ASSERT_TRUE(quad_entry.GetDict().Remove("backdrop_filter_bounds"));
       }
     }
   }

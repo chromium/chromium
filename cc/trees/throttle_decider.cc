@@ -24,9 +24,8 @@ void ThrottleDecider::Prepare() {
 }
 
 void ThrottleDecider::ProcessRenderPass(
-    const viz::CompositorRenderPass& render_pass) {
-  bool foreground_blurred =
-      render_pass.filters.HasFilterOfType(FilterOperation::BLUR);
+    const viz::CompositorRenderPass& render_pass,
+    bool has_foreground_blur) {
   std::vector<gfx::RectF> blur_backdrop_filter_bounds;
   for (viz::QuadList::ConstIterator it = render_pass.quad_list.begin();
        it != render_pass.quad_list.end(); ++it) {
@@ -44,12 +43,14 @@ void ThrottleDecider::ProcessRenderPass(
         continue;
       }
       const auto& child_rp = *found->second;
-      if (child_rp.backdrop_filters.HasFilterOfType(FilterOperation::BLUR) &&
+      if (render_pass_quad->backdrop_filters.HasFilterOfType(
+              FilterOperation::BLUR) &&
           render_pass_quad->resource_id == viz::kInvalidResourceId) {
         gfx::RectF blur_bounds(child_rp.output_rect);
-        if (child_rp.backdrop_filter_bounds)
-          blur_bounds.Intersect(
-              gfx::SkRectToRectF(child_rp.backdrop_filter_bounds->getBounds()));
+        if (render_pass_quad->backdrop_filter_bounds) {
+          blur_bounds.Intersect(gfx::SkRectToRectF(
+              render_pass_quad->backdrop_filter_bounds->getBounds()));
+        }
         blur_bounds = quad->shared_quad_state->quad_to_target_transform.MapRect(
             blur_bounds);
         if (quad->shared_quad_state->clip_rect) {
@@ -61,7 +62,7 @@ void ThrottleDecider::ProcessRenderPass(
     } else if (const auto* surface_quad =
                    quad->DynamicCast<viz::SurfaceDrawQuad>()) {
       bool inside_backdrop_filter_bounds = false;
-      if (!foreground_blurred && !blur_backdrop_filter_bounds.empty()) {
+      if (!has_foreground_blur && !blur_backdrop_filter_bounds.empty()) {
         gfx::RectF rect_in_target_space =
             quad->shared_quad_state->quad_to_target_transform.MapRect(
                 gfx::RectF(quad->visible_rect));
@@ -80,8 +81,9 @@ void ThrottleDecider::ProcessRenderPass(
 
       const viz::SurfaceRange& range = surface_quad->surface_range;
       DCHECK(range.IsValid());
-      if (foreground_blurred || inside_backdrop_filter_bounds)
+      if (has_foreground_blur || inside_backdrop_filter_bounds) {
         ids_.insert(range.end().frame_sink_id());
+      }
     }
   }
   id_to_pass_map_.emplace(render_pass.id, &render_pass);
