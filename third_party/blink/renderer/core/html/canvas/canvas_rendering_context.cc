@@ -61,11 +61,6 @@
 namespace blink {
 namespace {
 BASE_FEATURE(kAllowAcceleratedTexElement, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Delay for recording the UKM for canvas accessibility to allow the canvas
-// element to update its accessibility related information. This value is chosen
-// arbitrarily and can be subject to optimization.
-constexpr base::TimeDelta kAccessibilityUkmRecordingDelay = base::Seconds(5);
 }
 
 CanvasRenderingContext::CanvasRenderingContext(
@@ -334,13 +329,6 @@ void CanvasRenderingContext::MaybeRecordUKMCanvasAccessibility() {
     return;
   }
 
-  // If heuristic collection is disabled, record the UKM immediately.
-  if (!base::FeatureList::IsEnabled(
-          ::features::kEnableCollectAccessibilityHeuristicInCanvasUkm)) {
-    RecordUKMCanvasAccessibility();
-    return;
-  }
-
   if (did_schedule_accessibility_ukm_recording_) {
     return;
   }
@@ -384,6 +372,9 @@ void CanvasRenderingContext::RecordUKMCanvasAccessibility() {
     HTMLCanvasElement* canvas_element = static_cast<HTMLCanvasElement*>(host);
     // Non offscreen canvases are only collected if they are visible.
     if (!canvas_element->IsDisplayed()) {
+      // Reset the scheduling flag so that when the canvas becomes displayed
+      // later, UKM recording will be rescheduled.
+      did_schedule_accessibility_ukm_recording_ = false;
       return;
     }
 
