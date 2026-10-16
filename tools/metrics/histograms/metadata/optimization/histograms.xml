@@ -841,6 +841,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.AIPageContent.MathSerializedSize"
+    units="bytes" expires_after="2027-09-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the size in bytes of the serialized MathML content extracted for a
+    &lt;math&gt; element in AnnotatedPageContent when serialization succeeds
+    within the 64 KiB size limit and 64-level depth limit. Recorded once per
+    visible root &lt;math&gt; element extracted by AIPageContentAgent with
+    populated stripped_mathml.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.AIPageContent.RendererLatency.{FrameType}"
     units="ms" expires_after="2027-03-07">
   <owner>khushalsagar@chromium.org</owner>

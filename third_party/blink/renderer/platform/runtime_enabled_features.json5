@@ -392,6 +392,10 @@
       status: "stable",
     },
     {
+      name: "AIPageContentIncludeMathML",
+      status: "stable",
+    },
+    {
       name: "AIPageContentIncludeSVGSubtree",
       status: "stable"
     },
