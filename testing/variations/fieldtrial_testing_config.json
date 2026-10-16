@@ -8143,27 +8143,6 @@
             ]
         }
     ],
-    "GlicBottomSheetResizeAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20261013",
-                    "params": {
-                        "full_height_ratio": "0.95",
-                        "resizing_placeholder": "skeleton",
-                        "resizing_strategy": "default"
-                    },
-                    "enable_features": [
-                        "TabBottomSheetFullHeight",
-                        "TabBottomSheetResizeWebview"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicCSPConfig_Dogfood": [
         {
             "platforms": [
