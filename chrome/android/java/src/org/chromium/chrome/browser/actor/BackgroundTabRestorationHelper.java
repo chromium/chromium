@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -168,6 +169,7 @@ public final class BackgroundTabRestorationHelper {
         }
 
         try {
+            long startTimeMs = TimeUtils.uptimeMillis();
             BackgroundPoolTab backgroundTab = pool.loadTabByPlaceholderId(placeholderTabId);
             if (backgroundTab == null) return null;
 
@@ -177,9 +179,13 @@ public final class BackgroundTabRestorationHelper {
                     tabState != null
                             ? backgroundTab.attachTab(model, index, tabState)
                             : backgroundTab.attachTab(model, index);
+            long durationMs = TimeUtils.uptimeMillis() - startTimeMs;
             if (tabState != null && tabState.contentsState != null) {
                 tabState.contentsState.destroy();
                 tabState.contentsState = null;
+            }
+            if (restoredTab != null) {
+                ActorMetrics.recordColdRestoreLatency(durationMs);
             }
             return restoredTab;
         } finally {
@@ -221,11 +227,14 @@ public final class BackgroundTabRestorationHelper {
                     pool.removeTabById(tabId);
                     continue;
                 }
+                long startTimeMs = TimeUtils.uptimeMillis();
                 BackgroundPoolTab backgroundTab = pool.loadTabByOriginalId(tabId);
                 if (backgroundTab != null) {
                     backgroundTab.prepareForForeground(selector);
                     Tab restoredTab = backgroundTab.attachTab(model, model.getCount());
+                    long durationMs = TimeUtils.uptimeMillis() - startTimeMs;
                     if (restoredTab != null) {
+                        ActorMetrics.recordColdRestoreLatency(durationMs);
                         restoredTabs.add(restoredTab);
                     }
                 }

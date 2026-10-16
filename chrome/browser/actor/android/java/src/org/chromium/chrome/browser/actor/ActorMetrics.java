@@ -36,6 +36,8 @@ import java.util.WeakHashMap;
 /** Helper class for recording Actor-related UMA metrics. */
 @NullMarked
 public class ActorMetrics implements ActorKeyedService.Observer {
+    public static final String ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY =
+            "Actor.BackgroundActuation.Restore.ColdRestore.Latency";
     public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY =
             "Actor.BackgroundActuation.OnTabAdded.Latency";
     public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD =
@@ -340,6 +342,17 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                         ? ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD
                         : ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM,
                 durationMs);
+    }
+
+    /**
+     * Records the latency in milliseconds to restore and attach a background tab from {@link
+     * BackgroundTabPool} during tab state initialization.
+     *
+     * @param durationMs The elapsed latency in milliseconds.
+     */
+    public static void recordColdRestoreLatency(long durationMs) {
+        RecordHistogram.recordTimesHistogram(
+                ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY, durationMs);
     }
 
     /**
