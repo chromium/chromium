@@ -155,4 +155,63 @@ TEST_F(AssistantAIMMetricsRecorderTest,
       kAssistantAimSessionHadEngagementHistogram, true, 1);
 }
 
+// Tests that clicking a link and expanding back from minimized state records
+// `ReturnedAfterLinkClick` as true, counts link clicks per session, and resets
+// link click state when a new session starts.
+TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedAndReturnFromMinimized) {
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kLocationBarAction];
+
+  [recorder_ recordLinkClicked];
+  [recorder_ recordDetentChanged:AssistantContainerDetent::kMinimized];
+  [recorder_ recordDetentChanged:AssistantContainerDetent::kMedium];
+  [recorder_ recordLinkClicked];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectUniqueSample(kAssistantAimLinkClickedHistogram, true,
+                                       2);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimLinksClickedPerSessionHistogram, 2, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimSessionHadLinkClickHistogram, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimReturnedAfterLinkClickHistogram, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimReturnedAfterLinkClickHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimSessionHadEngagementHistogram, true, 1);
+
+  // Starting a new session should reset `_linksClickedCount` and
+  // `_awaitingReturnFromLinkClick`.
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kLocationBarAction];
+  [recorder_ recordDetentChanged:AssistantContainerDetent::kLarge];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectBucketCount(
+      kAssistantAimLinksClickedPerSessionHistogram, 0, 1);
+  histogram_tester_.ExpectBucketCount(kAssistantAimSessionHadLinkClickHistogram,
+                                      false, 1);
+  histogram_tester_.ExpectTotalCount(
+      kAssistantAimReturnedAfterLinkClickHistogram, 2);
+}
+
+// Tests that dismissing the sheet while awaiting return from a link click logs
+// `ReturnedAfterLinkClick` as false.
+TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedWithoutReturn) {
+  [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
+                                                    kLocationBarAction];
+
+  [recorder_ recordLinkClicked];
+  [recorder_ recordDetentChanged:AssistantContainerDetent::kMinimized];
+  [recorder_ recordSessionEnded];
+
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimReturnedAfterLinkClickHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimLinksClickedPerSessionHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kAssistantAimSessionHadLinkClickHistogram, true, 1);
+}
+
 }  // namespace

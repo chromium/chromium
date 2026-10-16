@@ -48,6 +48,10 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   BOOL _hasPositiveEngagement;
   // Whether the session was explicitly closed via the close button.
   BOOL _closedByButton;
+  // Number of outbound links clicked during the active session.
+  int _linksClickedCount;
+  // Whether the sheet was minimized due to a link click and is awaiting return.
+  BOOL _awaitingReturnFromLinkClick;
 }
 
 #pragma mark - Public
@@ -81,6 +85,11 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
 
   if (detent != AssistantContainerDetent::kMinimized) {
     _hasPositiveEngagement = YES;
+    if (_awaitingReturnFromLinkClick) {
+      base::UmaHistogramBoolean(kAssistantAimReturnedAfterLinkClickHistogram,
+                                true);
+      _awaitingReturnFromLinkClick = NO;
+    }
   }
 
   _currentDetent = detent;
@@ -108,6 +117,16 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   base::UmaHistogramEnumeration(kAssistantAimHeaderActionHistogram, action);
 }
 
+- (void)recordLinkClicked {
+  if (!_sessionActive) {
+    return;
+  }
+  _linksClickedCount++;
+  _hasPositiveEngagement = YES;
+  _awaitingReturnFromLinkClick = YES;
+  base::UmaHistogramBoolean(kAssistantAimLinkClickedHistogram, true);
+}
+
 - (void)recordSessionEnded {
   if (!_sessionActive) {
     return;
@@ -119,6 +138,16 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
                       : AssistantAimStateTransition::kDismissedOther;
   base::UmaHistogramEnumeration(kAssistantAimStateTransitionHistogram,
                                 dismissalState);
+  if (_awaitingReturnFromLinkClick) {
+    base::UmaHistogramBoolean(kAssistantAimReturnedAfterLinkClickHistogram,
+                              false);
+    _awaitingReturnFromLinkClick = NO;
+  }
+
+  base::UmaHistogramCounts100(kAssistantAimLinksClickedPerSessionHistogram,
+                              _linksClickedCount);
+  base::UmaHistogramBoolean(kAssistantAimSessionHadLinkClickHistogram,
+                            _linksClickedCount > 0);
   [self recordSessionEngagementAndDurationMetrics];
 
   _sessionActive = NO;
@@ -134,6 +163,8 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   _currentDetent = std::nullopt;
   _hasPositiveEngagement = NO;
   _closedByButton = NO;
+  _linksClickedCount = 0;
+  _awaitingReturnFromLinkClick = NO;
 }
 
 // Logs engagement boolean, active visible time, and immediate dismissal.

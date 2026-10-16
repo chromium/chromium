@@ -173,6 +173,7 @@ class AssistantAIMUIStateProvider
                                   self.browser->GetProfile())];
 
   _mediator.delegate = self;
+  _mediator.metricsRecorder = _metricsRecorder;
   _mediator.sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   _mediator.consumer = _viewController;

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
@@ -265,6 +266,7 @@
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
     // Only replay valid HTTP or HTTPS URLs in the main browser.
     if (URL.is_valid() && URL.SchemeIsHTTPOrHTTPS()) {
+      [self.metricsRecorder recordLinkClicked];
       UrlLoadParams params = UrlLoadParams::InNewTab(URL);
       params.web_params.is_renderer_initiated = true;
       params.web_params.transition_type = ui::PAGE_TRANSITION_LINK;
@@ -285,6 +287,7 @@
     createNewWebStateForURL:(const GURL&)URL
                   openerURL:(const GURL&)openerURL
             initiatedByUser:(BOOL)initiatedByUser {
+  [self.metricsRecorder recordLinkClicked];
   // Cobrowse is not supported in incognito, so new tabs are always opened in
   // regular mode.
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL

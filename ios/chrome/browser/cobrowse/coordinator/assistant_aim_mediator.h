@@ -37,6 +37,7 @@ class WebStateDelegate;
 }
 
 @class AssistantAIMMediator;
+@class AssistantAIMMetricsRecorder;
 
 // Delegate for the Assistant AIM Mediator.
 @protocol AssistantAIMMediatorDelegate <NSObject>
@@ -74,6 +75,9 @@ class WebStateDelegate;
 
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
+
+// Metrics recorder for Assistant AIM events.
+@property(nonatomic, strong) AssistantAIMMetricsRecorder* metricsRecorder;
 
 // Initializes the mediator with a `webState`, a `browserWebStateDelegate`, a
 // `cobrowseBrowserAgent` that defines the AI mode assistant state, a

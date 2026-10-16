@@ -26,6 +26,14 @@ inline constexpr std::string_view kAssistantAimImmediateDismissalHistogram =
     "IOS.SicBottomSheet.ImmediateDismissal";
 inline constexpr std::string_view kAssistantAimHeaderActionHistogram =
     "IOS.SicBottomSheet.HeaderAction";
+inline constexpr std::string_view kAssistantAimLinkClickedHistogram =
+    "IOS.SicBottomSheet.LinkClicked";
+inline constexpr std::string_view kAssistantAimLinksClickedPerSessionHistogram =
+    "IOS.SicBottomSheet.LinksClickedPerSession";
+inline constexpr std::string_view kAssistantAimSessionHadLinkClickHistogram =
+    "IOS.SicBottomSheet.SessionHadLinkClick";
+inline constexpr std::string_view kAssistantAimReturnedAfterLinkClickHistogram =
+    "IOS.SicBottomSheet.ReturnedAfterLinkClick";
 
 // Entrypoints for starting an Assistant AIM bottom sheet session.
 enum class AssistantAimEntrypoint {
