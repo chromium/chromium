@@ -233,8 +233,8 @@ static bool ParseDescriptors(base::span<const CharType> attribute,
       }
       result.SetResourceWidth(*resource_width);
     } else if (c == 'h') {
-      // This is here only for future compat purposes. The value of the 'h'
-      // descriptor is not used.
+      // The value of the 'h' descriptor is only used (to compute the source
+      // aspect ratio) when SrcsetTwoDimensionalSizes is enabled.
       if (result.HasDensity() || result.HasHeight()) {
         SrcsetError(document,
                     "it has multiple 'h' descriptors or a mix of 'x' and 'h' "
@@ -436,9 +436,43 @@ static unsigned AvoidDownloadIfHigherDensityResourceIsInCache(
   return winner;
 }
 
+// https://html.spec.whatwg.org/#source-concrete-width
+static float SourceConcreteWidth(const ImageCandidate& image,
+                                 const TargetBoxSize& box_size,
+                                 std::optional<float> default_aspect_ratio) {
+  DCHECK_GT(image.GetResourceWidth(), 0);
+  // Only 'contain' and 'cover' (and 'scale-down', which behaves like
+  // 'contain' for the purpose of source selection) depend on the candidate's
+  // aspect ratio. Otherwise, the source size is the box width.
+  const float width = box_size.width;
+  if (!box_size.height || (box_size.object_fit != EObjectFit::kContain &&
+                           box_size.object_fit != EObjectFit::kScaleDown &&
+                           box_size.object_fit != EObjectFit::kCover)) {
+    return width;
+  }
+  // Let aspectRatio be the source aspect ratio of source given
+  // defaultAspectRatio. If aspectRatio is null, then return width.
+  std::optional<float> aspect_ratio = default_aspect_ratio;
+  if (image.GetResourceHeight() > 0) {
+    aspect_ratio = static_cast<float>(image.GetResourceWidth()) /
+                   image.GetResourceHeight();
+  }
+  if (!aspect_ratio) {
+    return width;
+  }
+  // The width of the image when fit into the box: the minimum of the box
+  // width and the box height multiplied by aspectRatio for 'contain', the
+  // maximum for 'cover'.
+  const float scaled_width = *box_size.height * *aspect_ratio;
+  return box_size.object_fit == EObjectFit::kCover
+             ? std::max(width, scaled_width)
+             : std::min(width, scaled_width);
+}
+
 static ImageCandidate PickBestImageCandidate(
     float device_scale_factor,
-    float source_size,
+    const TargetBoxSize& box_size,
+    std::optional<float> default_aspect_ratio,
     Vector<ImageCandidate>& image_candidates,
     Document* document = nullptr) {
   const float kDefaultDensityValue = 1.0;
@@ -449,7 +483,9 @@ static ImageCandidate PickBestImageCandidate(
   // http://picture.responsiveimages.org/#normalize-source-densities
   for (ImageCandidate& image : image_candidates) {
     if (image.GetResourceWidth() > 0) {
-      image.SetDensity((float)image.GetResourceWidth() / source_size);
+      image.SetDensity(
+          (float)image.GetResourceWidth() /
+          SourceConcreteWidth(image, box_size, default_aspect_ratio));
       ignore_src = true;
     } else if (image.Density() < 0) {
       image.SetDensity(kDefaultDensityValue);
@@ -484,24 +520,29 @@ static ImageCandidate PickBestImageCandidate(
   return *de_duped_image_candidates[winner];
 }
 
-ImageCandidate BestFitSourceForSrcsetAttribute(float device_scale_factor,
-                                               float source_size,
-                                               const String& srcset_attribute,
-                                               Document* document) {
+ImageCandidate BestFitSourceForSrcsetAttribute(
+    float device_scale_factor,
+    const TargetBoxSize& box_size,
+    std::optional<float> default_aspect_ratio,
+    const String& srcset_attribute,
+    Document* document) {
   Vector<ImageCandidate> image_candidates;
 
   ParseImageCandidatesFromSrcsetAttribute(srcset_attribute, image_candidates,
                                           document);
 
-  return PickBestImageCandidate(device_scale_factor, source_size,
-                                image_candidates, document);
+  return PickBestImageCandidate(device_scale_factor, box_size,
+                                default_aspect_ratio, image_candidates,
+                                document);
 }
 
-ImageCandidate BestFitSourceForImageAttributes(float device_scale_factor,
-                                               float source_size,
-                                               const String& src_attribute,
-                                               const String& srcset_attribute,
-                                               Document* document) {
+ImageCandidate BestFitSourceForImageAttributes(
+    float device_scale_factor,
+    const TargetBoxSize& box_size,
+    std::optional<float> default_aspect_ratio,
+    const String& src_attribute,
+    const String& srcset_attribute,
+    Document* document) {
   if (srcset_attribute.IsNull()) {
     if (src_attribute.IsNull())
       return ImageCandidate();
@@ -520,14 +561,17 @@ ImageCandidate BestFitSourceForImageAttributes(float device_scale_factor,
         ImageCandidate(src_attribute, 0, src_attribute.length(),
                        DescriptorParsingResult(), ImageCandidate::kSrcOrigin));
 
-  return PickBestImageCandidate(device_scale_factor, source_size,
-                                image_candidates, document);
+  return PickBestImageCandidate(device_scale_factor, box_size,
+                                default_aspect_ratio, image_candidates,
+                                document);
 }
 
-String BestFitSourceForImageAttributes(float device_scale_factor,
-                                       float source_size,
-                                       const String& src_attribute,
-                                       ImageCandidate& srcset_image_candidate) {
+String BestFitSourceForImageAttributes(
+    float device_scale_factor,
+    const TargetBoxSize& box_size,
+    std::optional<float> default_aspect_ratio,
+    const String& src_attribute,
+    ImageCandidate& srcset_image_candidate) {
   if (srcset_image_candidate.IsEmpty())
     return src_attribute;
 
@@ -539,8 +583,8 @@ String BestFitSourceForImageAttributes(float device_scale_factor,
         ImageCandidate(src_attribute, 0, src_attribute.length(),
                        DescriptorParsingResult(), ImageCandidate::kSrcOrigin));
 
-  return PickBestImageCandidate(device_scale_factor, source_size,
-                                image_candidates)
+  return PickBestImageCandidate(device_scale_factor, box_size,
+                                default_aspect_ratio, image_candidates)
       .ToString();
 }
 

@@ -537,8 +537,8 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
       continue;
 
     ImageCandidate candidate = BestFitSourceForSrcsetAttribute(
-        GetDocument().DevicePixelRatio(), SourceSize(*source), srcset,
-        &GetDocument());
+        GetDocument().DevicePixelRatio(), SourceSize(*source),
+        /*default_aspect_ratio=*/std::nullopt, srcset, &GetDocument());
     if (candidate.IsEmpty())
       continue;
     source_ = source;
@@ -665,10 +665,10 @@ void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
     GetDocument().View()->UnregisterFromLifecycleNotifications(this);
   }
   HTMLElement::RemovedFrom(insertion_point);
-  // https://html.spec.whatwg.org/#last-auto-sizes-width is reset by the
+  // https://html.spec.whatwg.org/#last-auto-sizes-size is reset by the
   // removing steps, which a state-preserving atomic move does not run.
   if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
-    last_auto_sizes_width_.reset();
+    last_auto_sizes_size_.reset();
   }
 }
 
@@ -973,7 +973,7 @@ gfx::SizeF HTMLImageElement::DefaultDestinationSize(
 
 struct SourceSizeValueResult {
   bool has_attribute{};
-  float value{};
+  TargetBoxSize value;
   bool is_auto{};
 };
 
@@ -1035,13 +1035,13 @@ std::optional<float> HTMLImageElement::GetResourceWidth() const {
   const SourceSizeValueResult source_size_val_res =
       SourceSizeValue(element ? element : this, GetDocument());
   if (source_size_val_res.has_attribute) {
-    resource_width = source_size_val_res.value;
+    resource_width = source_size_val_res.value.width;
   }
 
   return resource_width;
 }
 
-float HTMLImageElement::SourceSize(Element& element) {
+TargetBoxSize HTMLImageElement::SourceSize(Element& element) {
   const SourceSizeValueResult source_size_val_res =
       SourceSizeValue(&element, GetDocument());
 
@@ -1056,6 +1056,10 @@ float HTMLImageElement::SourceSize(Element& element) {
   return source_size_val_res.value;
 }
 
+TargetBoxSize HTMLImageElement::AutoSizesSize() const {
+  return {static_cast<float>(LayoutBoxWidth())};
+}
+
 void HTMLImageElement::ForceReload() const {
   GetImageLoader().UpdateFromElement(ImageLoader::kUpdateForcedReload);
 }
@@ -1068,10 +1072,9 @@ void HTMLImageElement::SelectSourceURL(
   HTMLSourceElement* old_source = source_;
   ImageCandidate candidate = FindBestFitImageFromPictureParent();
   if (candidate.IsEmpty()) {
-    const float source_size{SourceSize(*this)};
-
     candidate = BestFitSourceForImageAttributes(
-        GetDocument().DevicePixelRatio(), source_size,
+        GetDocument().DevicePixelRatio(), SourceSize(*this),
+        /*default_aspect_ratio=*/std::nullopt,
         FastGetAttribute(html_names::kSrcAttr),
         FastGetAttribute(html_names::kSrcsetAttr), &GetDocument());
   }

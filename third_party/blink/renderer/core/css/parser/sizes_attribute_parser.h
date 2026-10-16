@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -26,18 +27,19 @@ class CORE_EXPORT SizesAttributeParser {
                        const HTMLImageElement* = nullptr);
 
   bool IsAuto();
-  float Size();
+  TargetBoxSize Size();
 
  private:
   bool Parse(CSSParserTokenStream&);
-  float EffectiveSize();
+  bool ParseTwoDimensionalSize(CSSParserTokenStream&);
+  TargetBoxSize EffectiveSize();
   bool CalculateLengthInPixels(CSSParserTokenStream&, float& result);
   bool MediaConditionMatches(const MediaQuerySet& media_condition);
-  float EffectiveSizeDefaultValue();
+  TargetBoxSize EffectiveSizeDefaultValue();
 
   MediaValues* media_values_{};
   ExecutionContext* execution_context_{};
-  float size_{};
+  TargetBoxSize size_;
   bool size_was_set_{};
   bool is_valid_{};
   bool is_auto_{};

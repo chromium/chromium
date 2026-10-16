@@ -173,11 +173,12 @@ KURL GetBestFitImageURL(const Document& document,
                         const KURL& href,
                         const String& image_srcset,
                         const String& image_sizes) {
-  float source_size = SizesAttributeParser(media_values, image_sizes,
-                                           document.GetExecutionContext())
-                          .Size();
+  SizesAttributeParser sizes_parser(media_values, image_sizes,
+                                    document.GetExecutionContext());
+  // A link element has no dimension attribute aspect ratio.
   ImageCandidate candidate = BestFitSourceForImageAttributes(
-      media_values->DevicePixelRatio(), source_size, href, image_srcset);
+      media_values->DevicePixelRatio(), sizes_parser.Size(),
+      /*default_aspect_ratio=*/std::nullopt, href, image_srcset);
   return base_url.IsNull() ? document.CompleteURL(candidate.ToString())
                            : KURL(base_url, candidate.ToString());
 }

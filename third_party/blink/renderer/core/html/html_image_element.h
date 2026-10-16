@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
+#include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "ui/gfx/geometry/size.h"
@@ -86,15 +87,17 @@ class CORE_EXPORT HTMLImageElement
   bool IsBeingRendered() const;
   bool AllowAutoSizes() const;
 
-  // https://html.spec.whatwg.org/#last-auto-sizes-width
-  std::optional<float> LastAutoSizesWidth() const {
-    return last_auto_sizes_width_;
+  // https://html.spec.whatwg.org/#last-auto-sizes-size
+  std::optional<TargetBoxSize> LastAutoSizesSize() const {
+    return last_auto_sizes_size_;
   }
   // Updated during sizes attribute parsing, which runs on const paths
-  // (e.g. GetResourceWidth()); the width is a cache of layout state.
-  void UpdateLastAutoSizesWidth(float width) const {
-    last_auto_sizes_width_ = width;
+  // (e.g. GetResourceWidth()); this is a cache of layout state.
+  void UpdateLastAutoSizes(const TargetBoxSize& size) const {
+    last_auto_sizes_size_ = size;
   }
+  // The box size that sizes=auto resolves to for this (rendered) image.
+  TargetBoxSize AutoSizesSize() const;
 
   const String& currentSrc() const;
 
@@ -165,7 +168,7 @@ class CORE_EXPORT HTMLImageElement
   void SetIsFallbackImage() { is_fallback_image_ = true; }
 
   std::optional<float> GetResourceWidth() const;
-  float SourceSize(Element&);
+  TargetBoxSize SourceSize(Element&);
 
   void ForceReload() const;
 
@@ -315,7 +318,7 @@ class CORE_EXPORT HTMLImageElement
   bool is_auto_sized_ : 1;
   bool is_predicted_lcp_element_ : 1;
   bool is_lazy_load_issue_reported_ : 1;
-  mutable std::optional<float> last_auto_sizes_width_;
+  mutable std::optional<TargetBoxSize> last_auto_sizes_size_;
 
   HashSet<String> creator_scripts_;
 };

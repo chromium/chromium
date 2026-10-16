@@ -44,8 +44,8 @@ TEST_P(HTMLSrcsetParserTest, Basic) {
   test::TaskEnvironment task_environment;
   const SrcsetParserTestCase test = GetParam();
   ImageCandidate candidate = BestFitSourceForImageAttributes(
-      test.device_scale_factor, test.effective_size, test.src_input,
-      test.srcset_input);
+      test.device_scale_factor, {test.effective_size},
+      /*default_aspect_ratio=*/std::nullopt, test.src_input, test.srcset_input);
 
   EXPECT_EQ(test.output_density, candidate.Density());
   EXPECT_EQ(test.output_resource_width, candidate.GetResourceWidth());
@@ -206,8 +206,8 @@ TEST_P(SrcsetSelectionMatchesImageSetDisabledHTMLSrcsetParserTest,
   ScopedSrcsetSelectionMatchesImageSetForTest enabled(false);
   const SrcsetParserTestCase test = GetParam();
   ImageCandidate candidate = BestFitSourceForImageAttributes(
-      test.device_scale_factor, test.effective_size, test.src_input,
-      test.srcset_input);
+      test.device_scale_factor, {test.effective_size},
+      /*default_aspect_ratio=*/std::nullopt, test.src_input, test.srcset_input);
 
   EXPECT_EQ(test.output_density, candidate.Density());
   EXPECT_EQ(test.output_resource_width, candidate.GetResourceWidth());
@@ -221,5 +221,61 @@ INSTANTIATE_TEST_SUITE_P(
         {2.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
         {3.8, 400, "", "400.gif 400w, 6000.gif 6000w", "400.gif", 1.0, 400},
     }));
+
+TEST(HTMLSrcsetParserTwoDimensionalSizesTest, SourceConcreteWidth) {
+  test::TaskEnvironment task_environment;
+  struct {
+    TargetBoxSize box_size;
+    std::optional<float> default_aspect_ratio;
+    const char* srcset;
+    float expected_density;
+  } test_cases[] = {
+      // 'fill' and 'none' only use the width.
+      {{100}, std::nullopt, "a 400w 100h", 4},
+      {{100, 100, EObjectFit::kFill}, 2, "a 400w 100h", 4},
+      {{100, 100, EObjectFit::kNone}, 2, "a 400w 100h", 4},
+      // The 'h' descriptor gives the source aspect ratio.
+      {{100, 100, EObjectFit::kCover}, std::nullopt, "a 400w 100h", 1},
+      {{100, 100, EObjectFit::kContain}, std::nullopt, "a 400w 100h", 4},
+      {{200, 100, EObjectFit::kContain}, std::nullopt, "a 400w 400h", 4},
+      {{200, 100, EObjectFit::kCover}, std::nullopt, "a 400w 400h", 2},
+      // 'scale-down' is treated like 'contain'.
+      {{200, 100, EObjectFit::kScaleDown}, std::nullopt, "a 400w 400h", 4},
+      // The 'h' descriptor takes precedence over the default aspect ratio.
+      {{100, 100, EObjectFit::kCover}, 1, "a 400w 100h", 1},
+      // Without an 'h' descriptor the default aspect ratio is used.
+      {{100, 100, EObjectFit::kCover}, 2, "a 400w", 2},
+      {{100, 100, EObjectFit::kContain}, 0.5, "a 400w", 8},
+      // Without any aspect ratio, only the width is used.
+      {{100, 100, EObjectFit::kCover}, std::nullopt, "a 400w", 4},
+  };
+
+  for (const auto& test_case : test_cases) {
+    ImageCandidate candidate = BestFitSourceForSrcsetAttribute(
+        1.0, test_case.box_size, test_case.default_aspect_ratio,
+        test_case.srcset);
+    EXPECT_EQ(test_case.expected_density, candidate.Density())
+        << test_case.srcset << " width=" << test_case.box_size.width
+        << " height=" << test_case.box_size.height.value_or(-1)
+        << " object-fit=" << static_cast<int>(test_case.box_size.object_fit);
+  }
+}
+
+TEST(HTMLSrcsetParserTwoDimensionalSizesTest, SelectsByConcreteWidth) {
+  test::TaskEnvironment task_environment;
+  // With "cover 100px 100px", b's concrete width is 400px (density 1), so it
+  // is preferred over a (density 1.5) at a device scale factor of 1.
+  ImageCandidate candidate = BestFitSourceForImageAttributes(
+      1.0, {100, 100, EObjectFit::kCover}, std::nullopt, "",
+      "data:,a 150w, data:,b 400w 100h");
+  EXPECT_EQ("data:,b", candidate.ToString().Ascii());
+  EXPECT_EQ(1.0, candidate.Density());
+
+  // A one-dimensional size of 100px selects a.
+  candidate = BestFitSourceForImageAttributes(
+      1.0, {100}, std::nullopt, "", "data:,a 150w, data:,b 400w 100h");
+  EXPECT_EQ("data:,a", candidate.ToString().Ascii());
+  EXPECT_EQ(1.5, candidate.Density());
+}
 
 }  // namespace blink

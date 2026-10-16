@@ -51,9 +51,9 @@ TEST_F(HTMLImageElementTest, width) {
 TEST_F(HTMLImageElementTest, sourceSize) {
   auto* image = MakeGarbageCollected<HTMLImageElement>(GetDocument());
   image->setAttribute(html_names::kWidthAttr, AtomicString("400"));
-  EXPECT_EQ(kViewportWidth, image->SourceSize(*image));
+  EXPECT_EQ(kViewportWidth, image->SourceSize(*image).width);
   image->setAttribute(html_names::kSizesAttr, AtomicString("50vw"));
-  EXPECT_EQ(250, image->SourceSize(*image));
+  EXPECT_EQ(250, image->SourceSize(*image).width);
 }
 
 TEST_F(HTMLImageElementTest, ResourceWidthWithPicture) {

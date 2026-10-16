@@ -307,7 +307,7 @@ class TokenPreloadScanner::StartTagScanner {
         picture_data.source_url.empty()) {
       picture_data.source_url = srcset_image_candidate_.ToString();
       picture_data.source_size_set = source_size_set_;
-      picture_data.source_size = source_size_;
+      picture_data.source_size = source_size_.width;
       picture_data.picked = true;
     } else if (Match(tag_impl_, html_names::kImgTag) &&
                !picture_data.source_url.empty()) {
@@ -343,7 +343,7 @@ class TokenPreloadScanner::StartTagScanner {
       }
     }
 
-    float source_size = source_size_;
+    float source_size = source_size_.width;
     bool source_size_set = source_size_set_;
     if (picture_data.picked) {
       source_size_set = picture_data.source_size_set;
@@ -534,12 +534,13 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   void SetUrlFromImageAttributes() {
-    srcset_image_candidate_ =
-        BestFitSourceForSrcsetAttribute(media_values_->DevicePixelRatio(),
-                                        source_size_, srcset_attribute_value_);
+    srcset_image_candidate_ = BestFitSourceForSrcsetAttribute(
+        media_values_->DevicePixelRatio(), source_size_,
+        /*default_aspect_ratio=*/std::nullopt, srcset_attribute_value_);
     SetUrlToLoad(BestFitSourceForImageAttributes(
                      media_values_->DevicePixelRatio(), source_size_,
-                     img_src_url_, srcset_image_candidate_),
+                     /*default_aspect_ratio=*/std::nullopt, img_src_url_,
+                     srcset_image_candidate_),
                  kAllowURLReplacement);
   }
 
@@ -621,14 +622,15 @@ class TokenPreloadScanner::StartTagScanner {
         srcset_image_candidate_.IsEmpty()) {
       srcset_attribute_value_ = attribute_value;
       srcset_image_candidate_ = BestFitSourceForSrcsetAttribute(
-          media_values_->DevicePixelRatio(), source_size_, attribute_value);
+          media_values_->DevicePixelRatio(), source_size_,
+          /*default_aspect_ratio=*/std::nullopt, attribute_value);
     } else if (Match(attribute_name, html_names::kSizesAttr) &&
                !source_size_set_) {
       ParseSourceSize(attribute_value);
       if (!srcset_image_candidate_.IsEmpty()) {
         srcset_image_candidate_ = BestFitSourceForSrcsetAttribute(
             media_values_->DevicePixelRatio(), source_size_,
-            srcset_attribute_value_);
+            /*default_aspect_ratio=*/std::nullopt, srcset_attribute_value_);
       }
     } else if (Match(attribute_name, html_names::kMediaAttr)) {
       // FIXME - Don't match media multiple times.
@@ -890,7 +892,7 @@ class TokenPreloadScanner::StartTagScanner {
   AtomicString scopes_attribute_value_;
   AtomicString resources_attribute_value_;
   bool nomodule_attribute_value_ = false;
-  float source_size_ = 0;
+  TargetBoxSize source_size_;
   bool source_size_is_auto_ = false;
   bool source_size_set_ = false;
   FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
