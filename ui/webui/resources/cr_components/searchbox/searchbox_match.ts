@@ -591,11 +591,11 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   private getMatchPrimaryText_(): string {
-    return this.match ? this.match.suggestTemplate.primaryText : '';
+    return this.match ? this.match.suggestTemplate.primaryText.text : '';
   }
 
   private getMatchSecondaryText_(): string {
-    return this.match ? this.match.suggestTemplate.secondaryText : '';
+    return this.match ? this.match.suggestTemplate.secondaryText.text : '';
   }
 
   private getMatchPrimaryTextClassifications_(): ACMatchClassification[] {

@@ -13,6 +13,49 @@ struct ACMatchClassification {
   int32 style;
 };
 
+// The color of a FormattedString fragment. Maps to FormattedString.ColorType in
+// //third_party/omnibox_proto/formatted_string.proto. The values must match, so
+// that the proto values can be cast directly.
+// LINT.IfChange(ColorType)
+enum ColorType {
+  kUnknown = 0,
+  kCanvas = 1,
+  kSurface = 2,
+  kPrimary = 3,
+  kTertiary = 4,
+  kOnTertiary = 5,
+  kOnSurfaceLinkVisited = 6,
+  kOnSurfaceDefault = 7,
+  kOnSurfacePositive = 8,
+  kOnSurfaceNegative = 9,
+  kOnSurfaceEmphasis = 10,
+  kOnSurfaceDeemphasis = 11,
+  kOutlineDefault = 12,
+  kSubtitleText = 13,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/formatted_string.proto:ColorType)
+
+// A styled part of a FormattedString. It covers the text from `start_index` up
+// to the next fragment's `start_index`, or to the end of the text. Maps to
+// FormattedString.FormattedStringFragment in
+// //third_party/omnibox_proto/formatted_string.proto.
+struct FormattedStringFragment {
+  // UTF-16 offset into FormattedString.text.
+  uint32 start_index;
+  ColorType color = ColorType.kUnknown;
+  bool is_bolded;
+};
+
+// Text with per-fragment styling. Maps to FormattedString in
+// //third_party/omnibox_proto/formatted_string.proto.
+struct FormattedString {
+  mojo_base.mojom.String16 text;
+  // Sorted by `start_index`. If empty, the whole text is unstyled.
+  array<FormattedStringFragment> fragments;
+  // The text for screen readers, if it differs from `text`.
+  mojo_base.mojom.String16? a11y_text;
+};
+
 // Where to display the secondary text relative to the primary text.
 // Maps to SuggestTemplateInfo.SecondaryTextPlacement in
 // //third_party/omnibox_proto/suggest_template_info.proto.
@@ -40,9 +83,6 @@ struct Image {
 // client-supported, rendering-relevant subset of the SuggestTemplateInfo proto
 // message in //third_party/omnibox_proto/suggest_template_info.proto.
 //
-// TODO(crbug.com/568347195): Use FormattedString for the primary and
-// secondary text, so it matches how the proto defines these.
-//
 // This is populated for every match at the Mojo boundary, including matches
 // that did not receive a SuggestTemplateInfo from the server (e.g. local
 // provider matches), for which the browser synthesizes the equivalent values.
@@ -50,10 +90,14 @@ struct Image {
 // rather than re-deriving layout from match types or ad-hoc flags.
 struct SuggestTemplateInfo {
   // The primary text of the suggestion and its styling.
-  mojo_base.mojom.String16 primary_text;
+  FormattedString primary_text;
+  // TODO(crbug.com/571949791): Remove once the WebUI renders the styling from
+  // `primary_text.fragments`.
   array<ACMatchClassification> primary_text_class;
   // The secondary text of the suggestion (e.g. a subtitle) and its styling.
-  mojo_base.mojom.String16 secondary_text;
+  FormattedString secondary_text;
+  // TODO(crbug.com/571949791): Remove once the WebUI renders the styling from
+  // `secondary_text.fragments`.
   array<ACMatchClassification> secondary_text_class;
   // Where to display the secondary text relative to the primary text.
   SecondaryTextPlacement secondary_text_placement =

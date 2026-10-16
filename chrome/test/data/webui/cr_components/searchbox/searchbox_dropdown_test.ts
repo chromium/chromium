@@ -5,10 +5,12 @@
 import 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
 import 'chrome://new-tab-page/strings.m.js';
 
-import {createAutocompleteResultForTesting, createSearchMatchForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {createSuggestTemplateInfo} from './searchbox_test_utils.js';
 
 // TODO(crbug.com/455876602): Move dropdown-specific tests in searchbox_test.ts
 //  into this file.
