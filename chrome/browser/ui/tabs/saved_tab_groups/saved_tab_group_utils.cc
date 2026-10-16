@@ -855,6 +855,11 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
     BrowserWindowInterface* browser,
     TabGroupSyncService* tab_group_service) {
   auto type = action.type;
+  if (type != TabGroupMenuAction::Type::DEFAULT) {
+    saved_tab_groups::metrics::RecordTabGroupContextMenuAction(
+        GetSavedTabGroupSubmenuOpenedMetric(context), type);
+  }
+
   if (type == TabGroupMenuAction::Type::OPEN_URL) {
     SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
         browser, std::get<GURL>(action.element));

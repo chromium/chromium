@@ -13,7 +13,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -21,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -86,6 +89,16 @@ class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
       }
     }
     return false;
+  }
+
+  std::optional<size_t> GetIndexOfElementId(STGTabsMenuModel* model,
+                                            ui::ElementIdentifier id) {
+    for (size_t i = 0; i < model->GetItemCount(); ++i) {
+      if (model->GetElementIdentifierAt(i) == id) {
+        return i;
+      }
+    }
+    return std::nullopt;
   }
 
  protected:
@@ -258,6 +271,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.EntryPoint",
       TabGroupFocusEntryPoint::kBookmarksBarContextMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.BookmarksBar.Action",
+      TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 1);
 
   // Rebuild model when group is focused; verify label updates to "Unfocus
   // group".
@@ -277,6 +293,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.ExitReason",
       TabGroupFocusExitReason::kBookmarksBarContextMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.BookmarksBar.Action",
+      TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
@@ -302,6 +321,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   EXPECT_EQ(tsm->GetFocusedGroup().value(), local_id);
   histogram_tester.ExpectUniqueSample("TabGroups.Focus.EntryPoint",
                                       TabGroupFocusEntryPoint::kAppMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.AppMenu.Action",
+      TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 1);
 
   STGTabsMenuModel focused_model(browser(), TabGroupMenuContext::APP_MENU);
   focused_model.Build(
@@ -312,6 +334,109 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
   histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
                                       TabGroupFocusExitReason::kAppMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.AppMenu.Action",
+      TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
+                       ContextMenuActionMetricsAcrossSources) {
+  base::HistogramTester histogram_tester;
+  if (DeletionDialogController::From(browser())) {
+    DeletionDialogController::From(browser())
+        ->SetPrefsPreventShowingDialogForTesting(
+            /*should_prevent_dialog=*/true);
+  }
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroupTab tab(GURL("about:blank"), u"Blank", group_guid,
+                       /*position=*/0);
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {tab},
+                      /*position=*/std::nullopt, group_guid);
+  GetSyncService()->AddGroup(group);
+
+  // 1. Organizer Panel (Spice Rack): Open URL and Open in Browser.
+  {
+    STGTabsMenuModel organizer_model(browser(),
+                                     TabGroupMenuContext::ORGANIZER_PANEL);
+    organizer_model.Build(
+        *GetSyncService()->GetGroup(group_guid),
+        base::BindRepeating(
+            &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+            base::Unretained(this)));
+
+    std::optional<size_t> tab_index =
+        GetIndexOfElementId(&organizer_model, STGTabsMenuModel::kTab);
+    ASSERT_TRUE(tab_index.has_value());
+    organizer_model.ActivatedAt(tab_index.value());
+    histogram_tester.ExpectBucketCount(
+        "TabGroups.ContextMenu.OrganizerPanel.Action",
+        TabGroupMenuAction::Type::OPEN_URL, 1);
+
+    std::optional<size_t> open_index =
+        GetIndexOfElementId(&organizer_model, STGTabsMenuModel::kOpenGroup);
+    ASSERT_TRUE(open_index.has_value());
+    organizer_model.ActivatedAt(open_index.value());
+    histogram_tester.ExpectBucketCount(
+        "TabGroups.ContextMenu.OrganizerPanel.Action",
+        TabGroupMenuAction::Type::OPEN_IN_BROWSER, 1);
+  }
+
+  // 2. Everything Menu: Pin/Unpin Group.
+  {
+    STGTabsMenuModel everything_model(
+        browser(), TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU);
+    everything_model.Build(
+        *GetSyncService()->GetGroup(group_guid),
+        base::BindRepeating(
+            &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+            base::Unretained(this)));
+
+    std::optional<size_t> pin_index = GetIndexOfElementId(
+        &everything_model, STGTabsMenuModel::kToggleGroupPinStateMenuItem);
+    ASSERT_TRUE(pin_index.has_value());
+    everything_model.ActivatedAt(pin_index.value());
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.ContextMenu.EverythingMenu.Action",
+        TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, 1);
+  }
+
+  // 3. Mac System Menu: Pin/Unpin Group.
+  {
+    STGTabsMenuModel mac_model(browser(), TabGroupMenuContext::MAC_SYSTEM_MENU);
+    mac_model.Build(
+        *GetSyncService()->GetGroup(group_guid),
+        base::BindRepeating(
+            &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+            base::Unretained(this)));
+
+    std::optional<size_t> pin_index = GetIndexOfElementId(
+        &mac_model, STGTabsMenuModel::kToggleGroupPinStateMenuItem);
+    ASSERT_TRUE(pin_index.has_value());
+    mac_model.ActivatedAt(pin_index.value());
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.ContextMenu.MacSystemMenu.Action",
+        TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP, 1);
+  }
+
+  // 4. Bookmarks Bar Context Menu: Delete Group.
+  {
+    STGTabsMenuModel button_model(
+        browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
+    button_model.Build(
+        *GetSyncService()->GetGroup(group_guid),
+        base::BindRepeating(
+            &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+            base::Unretained(this)));
+
+    std::optional<size_t> delete_index = GetIndexOfElementId(
+        &button_model, STGTabsMenuModel::kDeleteGroupMenuItem);
+    ASSERT_TRUE(delete_index.has_value());
+    button_model.ActivatedAt(delete_index.value());
+    histogram_tester.ExpectUniqueSample(
+        "TabGroups.ContextMenu.BookmarksBar.Action",
+        TabGroupMenuAction::Type::DELETE_GROUP, 1);
+  }
 }
 
 }  // namespace tab_groups

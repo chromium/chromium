@@ -475,6 +475,8 @@ void TabGroupEditorBubbleView::UpdateGroup() {
   if (current_visual_data->color() != updated_color) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_ColorChanged"));
+    shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+        shared_tab_group_metrics::TabGroupEditorBubbleAction::kColorChanged);
   }
 
   // If the old close button is being displayed, then update it's text.
@@ -1044,6 +1046,8 @@ TabGroupEditorBubbleView::BuildAskGeminiButton() {
 }
 
 void TabGroupEditorBubbleView::AskGeminiPressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kAskGemini);
   glic::GlicKeyedService* service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile(),
                                                          /*create=*/true);
@@ -1056,6 +1060,8 @@ void TabGroupEditorBubbleView::AskGeminiPressed() {
 void TabGroupEditorBubbleView::NewTabInGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_NewTabInGroup"));
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kNewTabInGroup);
   TabStripModel* const model = browser_->GetTabStripModel();
   const auto tabs = model->group_model()->GetTabGroup(group_)->ListTabs();
   model->delegate()->AddTabAt(GURL(), tabs.end(), true, group_);
@@ -1065,6 +1071,8 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::HomePressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kHome);
   chrome::AddSelectedTabWithURL(browser_, GURL("chrome://tab-group-home/"),
                                 ui::PAGE_TRANSITION_TYPED);
   GetWidget()->Close();
@@ -1073,6 +1081,8 @@ void TabGroupEditorBubbleView::HomePressed() {
 void TabGroupEditorBubbleView::UngroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kUngroup);
 
   base::WeakPtr<views::Widget> widget = GetWidget()->GetWeakPtr();
 
@@ -1099,6 +1109,9 @@ void TabGroupEditorBubbleView::UngroupPressed() {
 }
 
 void TabGroupEditorBubbleView::ShareOrManagePressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::
+          kShareOrManageGroup);
   collaboration::CollaborationService* service =
       collaboration::CollaborationServiceFactory::GetForProfile(
           browser_->GetProfile());
@@ -1123,6 +1136,8 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
 void TabGroupEditorBubbleView::CloseGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kCloseGroup);
 
   bool is_group_shared = IsGroupShared();
   base::WeakPtr<views::Widget> widget = GetWidget()->GetWeakPtr();
@@ -1156,6 +1171,9 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
     return CloseGroupPressed();
   }
 
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kDeleteGroup);
+
   base::WeakPtr<views::Widget> widget = GetWidget()->GetWeakPtr();
 
   bool is_group_shared = saved_group->is_shared_tab_group();
@@ -1173,6 +1191,8 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::LeaveGroupPressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kLeaveGroup);
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
@@ -1197,6 +1217,9 @@ void TabGroupEditorBubbleView::LeaveGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::
+          kMoveGroupToNewWindow);
   base::WeakPtr<views::Widget> widget = GetWidget()->GetWeakPtr();
 
   browser_->GetTabStripModel()->delegate()->MoveGroupToNewWindow(group_);
@@ -1207,6 +1230,9 @@ void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
 }
 
 void TabGroupEditorBubbleView::FocusGroupPressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::
+          kFocusOrUnfocusGroup);
   base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
                                 TabGroupFocusEntryPoint::kEditorBubble);
   TabStripModel* const model = browser_->GetTabStripModel();
@@ -1215,12 +1241,17 @@ void TabGroupEditorBubbleView::FocusGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::UnfocusGroupPressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::
+          kFocusOrUnfocusGroup);
   TabStripModel* const model = browser_->GetTabStripModel();
   model->ExitFocusMode(TabGroupFocusExitReason::kEditorBubble);
   GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::RecentActivityPressed() {
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kRecentActivity);
   views::View* tab_group_header =
       BrowserView::GetBrowserViewForBrowser(browser_)
           ->tab_strip_view()
@@ -1250,6 +1281,8 @@ void TabGroupEditorBubbleView::OnBubbleClose() {
   if (title_at_opening_ != title_field_->GetText()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_NameChanged"));
+    shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+        shared_tab_group_metrics::TabGroupEditorBubbleAction::kNameChanged);
   }
 
   if (browser_ &&

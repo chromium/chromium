@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_METRICS_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_METRICS_H_
 
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
+
 // Contains enums, functions used to record desktop specific metrics for saved
 // tab groups.
 namespace tab_groups::saved_tab_groups::metrics {
@@ -55,10 +57,36 @@ enum class SavedTabGroupOpenedSubmenuDesktop {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SavedTabGroupOpenedSubmenuDesktop)
 
+// Actions that can be triggered from the tab group editor bubble.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(TabGroupEditorBubbleAction)
+enum class TabGroupEditorBubbleAction {
+  kNewTabInGroup = 0,
+  kUngroup = 1,
+  kCloseGroup = 2,
+  kDeleteGroup = 3,
+  kLeaveGroup = 4,
+  kMoveGroupToNewWindow = 5,
+  kFocusOrUnfocusGroup = 6,
+  kShareOrManageGroup = 7,
+  kRecentActivity = 8,
+  kAskGemini = 9,
+  kHome = 10,
+  kNameChanged = 11,
+  kColorChanged = 12,
+  kMaxValue = kColorChanged
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupEditorBubbleAction)
+
 void RecordSharedTabGroupRecallType(SharedTabGroupRecallTypeDesktop action);
 void RecordSharedTabGroupManageType(SharedTabGroupManageTypeDesktop action);
 void RecordSavedTabGroupOpenedSubmenu(
     SavedTabGroupOpenedSubmenuDesktop submenu_type);
+void RecordTabGroupContextMenuAction(
+    SavedTabGroupOpenedSubmenuDesktop submenu_source,
+    TabGroupMenuAction::Type action);
+void RecordTabGroupEditorBubbleAction(TabGroupEditorBubbleAction action);
 
 }  // namespace tab_groups::saved_tab_groups::metrics
 

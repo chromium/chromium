@@ -434,6 +434,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h:TabDragPinnedness) -->
 
+<!-- LINT.IfChange(TabGroupEditorBubbleAction) -->
+
+<enum name="TabGroupEditorBubbleAction">
+  <int value="0" label="New tab in group"/>
+  <int value="1" label="Ungroup"/>
+  <int value="2" label="Close group"/>
+  <int value="3" label="Delete group"/>
+  <int value="4" label="Leave group"/>
+  <int value="5" label="Move group to new window"/>
+  <int value="6" label="Focus or unfocus group"/>
+  <int value="7" label="Share or manage group"/>
+  <int value="8" label="Recent activity"/>
+  <int value="9" label="Ask Gemini"/>
+  <int value="10" label="Home"/>
+  <int value="11" label="Name changed"/>
+  <int value="12" label="Color changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:TabGroupEditorBubbleAction) -->
+
 <!-- LINT.IfChange(TabGroupFocusEntryPoint) -->
 
 <enum name="TabGroupFocusEntryPoint">
@@ -492,6 +512,21 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.cc:TabGroupLoadedEmptiness) -->
+
+<!-- LINT.IfChange(TabGroupMenuAction) -->
+
+<enum name="TabGroupMenuAction">
+  <int value="0" label="Open in browser"/>
+  <int value="1" label="Close group"/>
+  <int value="2" label="Open or move to new window"/>
+  <int value="3" label="Focus or unfocus group"/>
+  <int value="4" label="Pin or unpin group"/>
+  <int value="5" label="Delete group"/>
+  <int value="6" label="Leave group"/>
+  <int value="7" label="Open URL"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h:TabGroupMenuAction) -->
 
 <!-- LINT.IfChange(TabGroupShortcut)-->
 

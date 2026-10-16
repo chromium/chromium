@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -158,6 +159,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   histogram_tester.ExpectUniqueSample("TabGroups.TabGroupBubble.TabCount", 2,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kNewTabInGroup,
+      1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -336,6 +342,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
 
   // Should not record for 0 tabs.
   histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 0);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kUngroup,
+      1);
 }
 
 // TODO(crbug.com/388544209): Flaky on linux-win-cross-rel.
@@ -346,6 +357,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
 #endif
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        MAYBE_MoveGroupToNewWindow) {
+  base::HistogramTester histogram_tester;
   // Add a tab so theres more than just the group in the tabstrip
   InProcessBrowserTest::AddBlankTabAndShow(browser());
 
@@ -378,6 +390,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                     ->group_model()
                     ->ListTabGroups()
                     .size());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kMoveGroupToNewWindow,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
@@ -590,6 +607,11 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.EntryPoint", TabGroupFocusEntryPoint::kEditorBubble, 1);
   histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kFocusOrUnfocusGroup,
+      1);
 
   // 3. Open the editor again to unfocus.
   browser()->GetTabStripModel()->OpenTabGroupEditor(group_id);
@@ -619,6 +641,11 @@ IN_PROC_BROWSER_TEST_F(
       "TabGroups.Focus.EntryPoint", TabGroupFocusEntryPoint::kEditorBubble, 1);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kEditorBubble, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kFocusOrUnfocusGroup,
+      2);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -659,6 +686,7 @@ class TabGroupEditorBubbleViewDialogBrowserTestWithTabGroupHome
 IN_PROC_BROWSER_TEST_F(
     TabGroupEditorBubbleViewDialogBrowserTestWithTabGroupHome,
     TabGroupHomeTrigger) {
+  base::HistogramTester histogram_tester;
   ShowUi("SetUp");
 
   views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
@@ -691,6 +719,10 @@ IN_PROC_BROWSER_TEST_F(
       browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_contents);
   EXPECT_EQ(active_contents->GetVisibleURL(), GURL("chrome://tab-group-home/"));
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::kHome,
+      1);
 }
 
 #if BUILDFLAG(IS_OZONE)
@@ -904,4 +936,54 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
       browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
   EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
             u"Promoted Title");
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EditorBubbleNameChangeAndCloseGroupMetrics) {
+  base::HistogramTester histogram_tester;
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+  ShowUi("SetUp");
+
+  // 1. Rename the group and close the bubble.
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  auto* title_field = views::AsViewClass<views::Textfield>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleId,
+          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
+  ASSERT_NE(nullptr, title_field);
+  title_field->InsertOrReplaceText(u"Renamed Group");
+
+  base::WeakPtr<views::Widget> weak_widget = editor_bubble->GetWeakPtr();
+  editor_bubble->Close();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_widget; }));
+
+  histogram_tester.ExpectBucketCount(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kNameChanged,
+      1);
+
+  // 2. Reopen the bubble and click "Close group".
+  browser()->GetTabStripModel()->OpenTabGroupEditor(group_.value());
+  views::Widget* editor_bubble2 = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble2);
+
+  views::Button* const close_group_button =
+      views::Button::AsButton(editor_bubble2->GetContentsView()->GetViewByID(
+          TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP));
+  ASSERT_NE(nullptr, close_group_button);
+
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
+                                gfx::PointF(), base::TimeTicks(), 0, 0);
+  base::WeakPtr<views::Widget> weak_widget2 = editor_bubble2->GetWeakPtr();
+  views::test::ButtonTestApi(close_group_button).NotifyClick(released_event);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_widget2; }));
+
+  histogram_tester.ExpectBucketCount(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kCloseGroup,
+      1);
 }

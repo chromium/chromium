@@ -130,6 +130,20 @@ chromium-metrics-reviews@google.com.
                condition"/>
 </variants>
 
+<!-- LINT.IfChange(TabGroupContextMenuSource) -->
+
+<variants name="TabGroupContextMenuSource">
+  <variant name="AppMenu" summary="the App Menu tab groups submenu"/>
+  <variant name="BookmarksBar" summary="the Bookmarks Bar tab group button"/>
+  <variant name="EverythingMenu"
+      summary="the Saved Tab Groups Everything Menu"/>
+  <variant name="MacSystemMenu" summary="the macOS Tab Groups system menu bar"/>
+  <variant name="OrganizerPanel"
+      summary="the Tab Group Organizer (Spice Rack) panel"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.cc:TabGroupContextMenuSource) -->
+
 <!-- LINT.IfChange(TabOrchestratorType) -->
 
 <variants name="TabModelOrchestratorType">
@@ -936,6 +950,27 @@ chromium-metrics-reviews@google.com.
     would not have affected the recorded value. It would only duplicate a
     previous recording.
   </summary>
+</histogram>
+
+<histogram name="TabGroups.ContextMenu.EditorBubble.Action"
+    enum="TabGroupEditorBubbleAction" expires_after="2027-02-04">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    [Desktop] Records the action selected by the user from the Tab Group Header
+    editor bubble menu.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.ContextMenu.{TabGroupContextMenuSource}.Action"
+    enum="TabGroupMenuAction" expires_after="2027-02-04">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    [Desktop] Records the action selected by the user from a tab group context
+    menu triggered from {TabGroupContextMenuSource}.
+  </summary>
+  <token key="TabGroupContextMenuSource" variants="TabGroupContextMenuSource"/>
 </histogram>
 
 <histogram name="TabGroups.CountAtStartup" units="groups"
