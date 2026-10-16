@@ -361,15 +361,13 @@ FileDownloadScanningResources PrepareCloudContentScanning(
     return resources;
   }
 
-  // For non-blocking mode, the download and the content scanning should proceed
-  // asynchronously. Defer the `download_proceed` callback so it runs after the
-  // caller has assigned the returned dummy handler.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(download_proceed), true));
-
-  // Start a non-block scan.
+  // For non-blocking mode, the `download_proceed` callback is deferred so it
+  // runs after the downloaded file has been cloned to ensure it can be uploaded
+  // succesfully. After the clone, the download and content scanning should
+  // proceed asynchronously.
   BackgroundCloudScannerManagerFactory::GetForProfile(profile)->StartScanner(
-      std::move(content_analysis_info), url, file_path);
+      std::move(content_analysis_info), url, file_path,
+      std::move(download_proceed));
 
   // Return a dummy handler to the caller. An empty `file_path` makes it a no-op
   // dummy. This is used to maintain the existing synchronous-like flow in the

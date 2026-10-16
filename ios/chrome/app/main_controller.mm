@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/background_cloud_scanner_manager.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -206,6 +207,9 @@ NSString* const kDeleteChooseFile = @"DeleteChooseFile";
 
 // Constants for deferred deletion of leftover temporary passwords files.
 NSString* const kDeleteTempPasswords = @"DeleteTempPasswords";
+
+// Constants for deferred deletion of leftover temporary enterprise scan files.
+NSString* const kDeleteTempEnterpriseScan = @"DeleteTempEnterpriseScan";
 
 // Constants for deferred UMA logging of existing Siri User shortcuts.
 NSString* const kLogSiriShortcuts = @"LogSiriShortcuts";
@@ -391,6 +395,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // Schedule the deletion of the temporary passwords files that might
 // be left over from incomplete export operations.
 - (void)scheduleDeleteTempPasswordsDirectory;
+// Schedules the deletion of temporary enterprise scan files that might be
+// left over from the last time Chrome was run.
+- (void)scheduleDeleteTempEnterpriseScanDirectory;
 // Schedule the start of memory experimentation.
 - (void)scheduleMemoryExperimentation;
 // Schedules the removal of files that were scheduled for automatic deletion and
@@ -1457,6 +1464,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   [self scheduleDeleteTempDownloadsDirectory];
   [self scheduleDeleteTempPasswordsDirectory];
   [self scheduleDeleteTempChooseFileDirectory];
+  [self scheduleDeleteTempEnterpriseScanDirectory];
   [self scheduleLogSiriShortcuts];
   [self scheduleStartupAttemptReset];
   [self startFreeMemoryMonitoring];
@@ -1494,6 +1502,14 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
       enqueueBlockNamed:kDeleteTempPasswords
                   block:^{
                     password_manager::DeletePasswordsDirectory();
+                  }];
+}
+
+- (void)scheduleDeleteTempEnterpriseScanDirectory {
+  [_appState.deferredRunner
+      enqueueBlockNamed:kDeleteTempEnterpriseScan
+                  block:^{
+                    enterprise_connectors::DeleteTempEnterpriseScanDirectory();
                   }];
 }
 

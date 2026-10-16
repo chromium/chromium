@@ -8,6 +8,7 @@
 #import <memory>
 #import <vector>
 
+#import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -22,6 +23,17 @@ class FilePath;
 }  // namespace base
 
 namespace enterprise_connectors {
+
+// Controls whether to use `clonefile` for DLP scan upload on iOS.
+BASE_DECLARE_FEATURE(kEnableDLPClonefileScanUploadIOS);
+
+// This method does not create the directory, it simply tries to find and fill
+// `directory_path` with the system temporary directory and append
+// `kEnterpriseScanDirName` to the end. Returns true if this is successful.
+bool GetTempEnterpriseScanDirectory(base::FilePath* directory_path);
+
+// Asynchronously deletes the temporary enterprise scan directory.
+void DeleteTempEnterpriseScanDirectory();
 
 class BinaryUploadService;
 class ConnectorsService;
@@ -54,7 +66,14 @@ class BackgroundCloudScannerManager : public KeyedService {
   // the scan must still run to completion and report audit verdicts.
   void StartScanner(std::unique_ptr<ContentAnalysisInfo> info,
                     const GURL& url,
-                    const base::FilePath& file_path);
+                    const base::FilePath& file_path,
+                    base::OnceCallback<void(bool)> download_proceed);
+
+  // Starts the scan with the cloned file in `temp_dir`.
+  void StartScannerWithClonedFile(std::unique_ptr<ContentAnalysisInfo> info,
+                                  const GURL& url,
+                                  const base::FilePath& clone_path,
+                                  const base::FilePath& temp_dir);
 
   base::WeakPtr<BackgroundCloudScannerManager> GetWeakPtr();
 
@@ -83,6 +102,7 @@ class BackgroundCloudScannerManager : public KeyedService {
                            BinaryUploadService* upload_service,
                            const GURL& url,
                            const base::FilePath& file_path,
+                           const base::FilePath& temp_dir,
                            OnCompleteCallback on_complete_callback);
 
     ~BackgroundCloudScanner();
@@ -103,6 +123,7 @@ class BackgroundCloudScannerManager : public KeyedService {
     std::unique_ptr<ContentAnalysisInfo> info_;
     std::unique_ptr<FilesRequestHandlerBase> handler_;
     OnCompleteCallback on_complete_callback_;
+    base::FilePath temp_dir_;
     base::WeakPtrFactory<BackgroundCloudScanner> weak_ptr_factory_{this};
   };
 
