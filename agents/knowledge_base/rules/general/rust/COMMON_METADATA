@@ -1,0 +1,32 @@
+agentic_review {
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:rs|h|cc)"
+    rules: "agents/knowledge_base/rules/general/rust/avoid-cstr-in-repr-c-structs.md"
+    rules: "agents/knowledge_base/rules/general/rust/hide-macro-internal-rust-modules-with-doc-hidden.md"
+    rules: "agents/knowledge_base/rules/general/rust/keep-internal-rust-struct-fields-private.md"
+    rules: "agents/knowledge_base/rules/general/rust/mark-rust-functions-relying-on-caller-invariants-as-unsafe.md"
+    rules: "agents/knowledge_base/rules/general/rust/no-cpp-naming-conventions-in-rust.md"
+    rules: "agents/knowledge_base/rules/general/rust/suffix-eager-vec-allocating-rust-methods-with-to-vec.md"
+    rules: "agents/knowledge_base/rules/general/rust/use-standard-rust-assertion-macros.md"
+    rules: "agents/knowledge_base/rules/general/rust/validate-compile-time-cstr-literals-safely.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:rs|h|cc)"
+    content_patterns: "\\.(?:to_string|to_owned|clone)\\s*\\(\\s*\\)"
+    rules: "agents/knowledge_base/rules/general/rust/no-redundant-to-string-on-owned-string.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:rs|h|cc)"
+    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
+    rules: "agents/knowledge_base/rules/general/rust/document-api-adaptation-not-generic-ffi-lifetimes-on-shims.md"
+    rules: "agents/knowledge_base/rules/general/rust/document-rust-ffi-mirror-types-and-reference-cpp-header.md"
+    rules: "agents/knowledge_base/rules/general/rust/encapsulate-unsafe-ffi-conversions-in-from-into-traits.md"
+    rules: "agents/knowledge_base/rules/general/rust/pass-rust-str-and-string-view-across-ffi-boundaries.md"
+    rules: "agents/knowledge_base/rules/general/rust/prefer-opaque-cxx-types-over-raw-byte-pointers.md"
+    rules: "agents/knowledge_base/rules/general/rust/require-safety-comments-for-unsafe-rust-code.md"
+    rules: "agents/knowledge_base/rules/general/rust/reuse-canonical-cpp-entry-points-for-ffi.md"
+    rules: "agents/knowledge_base/rules/general/rust/suffix-rust-ffi-shim-types-with-rs.md"
+    rules: "agents/knowledge_base/rules/general/rust/use-c-char-for-ffi-in-rust.md"
+    rules: "agents/knowledge_base/rules/general/rust/use-cxx-self-attribute-for-static-methods.md"
+  }
+}
