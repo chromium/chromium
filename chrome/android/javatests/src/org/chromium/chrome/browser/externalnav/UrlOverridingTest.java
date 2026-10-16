@@ -342,6 +342,8 @@ public class UrlOverridingTest {
         private boolean mResolveToTrustedCaller;
         private final String mNonBrowserPackageName;
         private String mHostToMatch;
+        private @Nullable String mHostPathToMatch;
+        private @Nullable String mHostTargetPackage;
         private String mSchemeToMatch;
         private IntentFilter mFilterForHostMatch;
         private IntentFilter mFilterForSchemeMatch;
@@ -372,9 +374,19 @@ public class UrlOverridingTest {
             return false;
         }
 
-        private void setIntentFilterForHost(String host, IntentFilter filter) {
+        private void setIntentFilterForHost(
+                String host,
+                @Nullable String path,
+                IntentFilter filter,
+                @Nullable String targetPackage) {
             mHostToMatch = host;
+            mHostPathToMatch = path;
             mFilterForHostMatch = filter;
+            mHostTargetPackage = targetPackage;
+        }
+
+        private void setIntentFilterForHost(String host, IntentFilter filter) {
+            setIntentFilterForHost(host, null, filter, null);
         }
 
         private void setIntentFilterForScheme(String scheme, IntentFilter filter) {
@@ -410,8 +422,14 @@ public class UrlOverridingTest {
 
                     if (mHostToMatch != null
                             && intent.getData() != null
-                            && mHostToMatch.equals(intent.getData().getHost())) {
-                        ResolveInfo info = newResolveInfo(targetPackage);
+                            && mHostToMatch.equals(intent.getData().getHost())
+                            && (mHostPathToMatch == null
+                                    || mHostPathToMatch.equals(intent.getData().getPath()))) {
+                        ResolveInfo info =
+                                newResolveInfo(
+                                        mHostTargetPackage != null
+                                                ? mHostTargetPackage
+                                                : targetPackage);
                         info.filter = mFilterForHostMatch;
                         return Arrays.asList(info);
                     }
@@ -698,7 +716,13 @@ public class UrlOverridingTest {
             ChromeTabUtils.waitForInteractable(latestTabHolder.value);
         }
 
-        if (params.shouldFailNavigation) {
+        // When an intercepted initial navigation in a new tab launches an external intent,
+        // handleShouldCloseTab() can destroy the new tab before an async HTTP throttle check
+        // reaches WillProcessResponse() to notify onPageLoadFailed (crbug.com/446837985).
+        boolean expectFailCallback =
+                params.shouldFailNavigation
+                        && !(params.createsNewTab && params.shouldLaunchExternalIntent);
+        if (expectFailCallback) {
             failCallback.waitForCallback("Navigation didn't fail.", 0, 1, 20, TimeUnit.SECONDS);
         }
 
@@ -763,7 +787,11 @@ public class UrlOverridingTest {
                     Criteria.checkThat(
                             finishCallback.getCallCount(), Matchers.is(finalFinishTarget));
                 });
-        Assert.assertEquals(params.shouldFailNavigation ? 1 : 0, failCallback.getCallCount());
+        if (expectFailCallback) {
+            Assert.assertEquals(1, failCallback.getCallCount());
+        } else if (!params.shouldFailNavigation) {
+            Assert.assertEquals(0, failCallback.getCallCount());
+        }
 
         return lastResultValue.get();
     }
@@ -2627,7 +2655,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/446837985")
     public void testTopLevelNavigationShouldBeIntercepted() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
 
@@ -2638,7 +2665,7 @@ public class UrlOverridingTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        mTestContext.setIntentFilterForHost("127.0.0.1", filter);
+        mTestContext.setIntentFilterForHost("127.0.0.1", HELLO_PAGE, filter, null);
 
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
 
