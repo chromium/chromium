@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -136,8 +137,17 @@ bool WebUIToolbarExtensionsContainerWrapper::AnyActionHasCurrentSiteAccess(
 void WebUIToolbarExtensionsContainerWrapper::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   if (browser_interface && browser_interface->GetTabStripModel()) {
-    content::WebContentsObserver::Observe(
-        browser_interface->GetTabStripModel()->GetActiveWebContents());
+    content::WebContents* active_contents =
+        browser_interface->GetTabStripModel()->GetActiveWebContents();
+    Observe(active_contents);
+    if (active_contents) {
+      // No need to check whether the active tab is an extension-controlled NTP
+      // here; the helper inspects the tab's visible navigation entry and
+      // returns early unless it is an extension URL matching the overridden
+      // NTP. This mirrors ExtensionsToolbarDesktop::OnActiveWebContentsChanged.
+      extensions::MaybeShowExtensionControlledNewTabPage(browser_interface,
+                                                         active_contents);
+    }
   }
   if (extensions_container_) {
     // State of extensions depends on what's active --- e.g. some may be
