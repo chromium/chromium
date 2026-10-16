@@ -55,6 +55,13 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   ~ChromeMainDelegate() override;
 
  protected:
+#if !BUILDFLAG(IS_ANDROID)
+  // Does not record startup metrics; for use in tests where
+  // ChromeUnitTestSuite::Initialize() has already recorded application start
+  // time.
+  ChromeMainDelegate();
+#endif
+
   // content::ContentMainDelegate:
   std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;

@@ -846,6 +846,8 @@ bool IsHangWatcherCrashReportingEnabled() {
 #if BUILDFLAG(IS_ANDROID)
 ChromeMainDelegate::ChromeMainDelegate()
     : ChromeMainDelegate(StartupTimestamps{}) {}
+#else
+ChromeMainDelegate::ChromeMainDelegate() = default;
 #endif
 
 ChromeMainDelegate::ChromeMainDelegate(const StartupTimestamps& timestamps) {
