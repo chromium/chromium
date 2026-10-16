@@ -396,7 +396,7 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   set_margins(gfx::Insets(0));
   set_corner_radius(kCornerRadius);
   SetBackgroundColor(ui::ColorVariant(SK_ColorTRANSPARENT));
-  set_shadow(views::BubbleBorder::NO_SHADOW);
+  set_shadow_config({.shadow_type = views::BubbleBorder::NO_SHADOW});
   set_adjust_if_offscreen(false);
 
   // Flip the chip below the selection if it overflows the top of the page.
