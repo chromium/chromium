@@ -145,6 +145,12 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
 
  private:
   void OnExitTimerFinished() {
+    // `menu_widget_` outlives `this`, but the menu may have closed while the
+    // timer was running, and its window may be gone.
+    if (menu_widget_->IsClosed()) {
+      return;
+    }
+
     if (!menu_widget_->GetLayer()->GetAnimator()->is_animating()) {
       views::AnimationBuilder()
           .SetPreemptionStrategy(
@@ -160,8 +166,8 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
   void OnFadeOutFinished() { dismiss_callback_.Run(); }
 
   // The widget of the multitask menu that is currently shown. Guaranteed to
-  // outlive `this`, which will get destroyed when the menu is destructed in
-  // `close_callback_`.
+  // outlive `this`, which is owned by a view in the widget's view tree. The
+  // widget's window may be destroyed first.
   const raw_ptr<views::Widget> menu_widget_;
 
   // The anchor of the menu's widget if it exists. Set if there is an anchor and

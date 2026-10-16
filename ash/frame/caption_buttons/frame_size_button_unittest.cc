@@ -1149,9 +1149,12 @@ TEST_F(MultitaskMenuTest, ReverseFloatButton) {
   // floated and is roughly on the left edge (there is some padding).
   ShowMultitaskMenu();
   PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
-  MultitaskMenuViewTestApi test_api(GetMultitaskMenu()->multitask_menu_view());
-  ASSERT_TRUE(test_api.GetIsReversed());
-  LeftClickOn(test_api.GetFloatButton());
+  ASSERT_TRUE(
+      MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
+          .GetIsReversed());
+  LeftClickOn(
+      MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
+          .GetFloatButton());
   EXPECT_EQ(WindowStateType::kFloated, window_state()->GetStateType());
   EXPECT_EQ(
       work_area_bounds_in_screen.x() + chromeos::wm::kFloatedWindowPaddingDp,
@@ -1161,9 +1164,12 @@ TEST_F(MultitaskMenuTest, ReverseFloatButton) {
   // floated.
   ShowMultitaskMenu();
   PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
-  MultitaskMenuViewTestApi test_api2(GetMultitaskMenu()->multitask_menu_view());
-  ASSERT_TRUE(test_api2.GetIsReversed());
-  LeftClickOn(test_api2.GetFloatButton());
+  ASSERT_TRUE(
+      MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
+          .GetIsReversed());
+  LeftClickOn(
+      MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
+          .GetFloatButton());
   EXPECT_EQ(WindowStateType::kNormal, window_state()->GetStateType());
   EXPECT_EQ(original_bounds, window_state()->window()->bounds());
 }

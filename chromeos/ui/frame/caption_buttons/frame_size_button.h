@@ -9,12 +9,16 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace chromeos {
@@ -32,7 +36,8 @@ namespace chromeos {
 // multitask menu bubble shows up.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     : public views::FrameCaptionButton,
-      public display::DisplayObserver {
+      public display::DisplayObserver,
+      public views::WidgetObserver {
   METADATA_HEADER(FrameSizeButton, views::FrameCaptionButton)
 
  public:
@@ -71,6 +76,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
   void set_long_tap_delay_for_testing(base::TimeDelta delay) {
     long_tap_delay_ = delay;
   }
@@ -83,6 +91,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
  private:
   class PieAnimationView;
   class SnappingWindowObserver;
+
+  // Returns the multitask menu, or null if there is none or its window has
+  // been destroyed.
+  MultitaskMenu* GetMultitaskMenu();
 
   // Starts `long_tap_delay_timer_`.
   void StartLongTapDelayTimer(const ui::LocatedEvent& event);
@@ -123,10 +135,19 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // show the multitask menu and maybe enter snap mode.
   void OnLongTapDelayTimerEnded(bool is_mouse, const gfx::Point& location);
 
+  // Deletes `closed_multitask_menu_widget_`.
+  void DeleteClosedMultitaskMenuWidget();
+
   // Not owned.
   raw_ptr<FrameSizeButtonDelegate> delegate_;
-  views::UniqueWidgetPtr multitask_menu_widget_;
-  base::WeakPtr<MultitaskMenu> multitask_menu_;
+  std::unique_ptr<views::Widget> multitask_menu_widget_;
+
+  // The multitask menu widget after its window is destroyed, kept until it can
+  // be deleted outside of its own destruction notifications.
+  std::unique_ptr<views::Widget> closed_multitask_menu_widget_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      multitask_menu_widget_observation_{this};
 
   // The window observer to observe the to-be-snapped window.
   std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;

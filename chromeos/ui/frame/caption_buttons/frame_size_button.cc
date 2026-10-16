@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -257,18 +259,28 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
   return multitask_menu_widget_ && !multitask_menu_widget_->IsClosed();
 }
 
+MultitaskMenu* FrameSizeButton::GetMultitaskMenu() {
+  return multitask_menu_widget_ ? static_cast<MultitaskMenu*>(
+                                      multitask_menu_widget_->widget_delegate()
+                                          ->AsDialogDelegate())
+                                : nullptr;
+}
+
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
   CHECK(!display::Screen::Get()->InTabletMode());
   RecordMultitaskMenuEntryType(entry_type);
-  // Owned by the bubble which contains this view. If there is an existing
-  // bubble, it will be deactivated and then close and destroy itself.
+  // Owned by the bubble which contains this view. Replacing
+  // `multitask_menu_widget_` destroys the previous bubble, if any.
   auto menu_delegate = std::make_unique<MultitaskMenu>(
       /*anchor=*/this, GetWidget(),
       /*close_on_move_out=*/entry_type ==
           MultitaskMenuEntryType::kFrameSizeButtonHover);
-  multitask_menu_ = menu_delegate->GetWeakPtr();
-  multitask_menu_widget_ = base::WrapUnique(
-      views::BubbleDialogDelegateView::CreateBubble(std::move(menu_delegate)));
+  multitask_menu_widget_observation_.Reset();
+  multitask_menu_widget_ =
+      base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+          std::move(menu_delegate),
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+  multitask_menu_widget_observation_.Observe(multitask_menu_widget_.get());
   multitask_menu_widget_->Show();
   delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
       /*tablet_mode=*/false);
@@ -303,8 +315,8 @@ bool FrameSizeButton::OnMouseDragged(const ui::MouseEvent& event) {
   if (!in_snap_mode_)
     views::FrameCaptionButton::OnMouseDragged(event);
 
-  if (multitask_menu_) {
-    multitask_menu_->multitask_menu_view()->OnSizeButtonDrag(
+  if (MultitaskMenu* multitask_menu = GetMultitaskMenu()) {
+    multitask_menu->multitask_menu_view()->OnSizeButtonDrag(
         views::View::ConvertPointToScreen(this, event.location()));
   }
 
@@ -315,8 +327,8 @@ void FrameSizeButton::OnMouseReleased(const ui::MouseEvent& event) {
   if (IsTriggerableEvent(event)) {
     CommitSnap(event);
 
-    if (multitask_menu_) {
-      multitask_menu_->multitask_menu_view()->OnSizeButtonRelease(
+    if (MultitaskMenu* multitask_menu = GetMultitaskMenu()) {
+      multitask_menu->multitask_menu_view()->OnSizeButtonRelease(
           views::View::ConvertPointToScreen(this, event.location()));
     }
   }
@@ -355,8 +367,8 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
       event->type() == ui::EventType::kGestureScrollUpdate) {
     UpdateSnapPreview(*event);
 
-    if (multitask_menu_) {
-      multitask_menu_->multitask_menu_view()->OnSizeButtonDrag(
+    if (MultitaskMenu* multitask_menu = GetMultitaskMenu()) {
+      multitask_menu->multitask_menu_view()->OnSizeButtonDrag(
           views::View::ConvertPointToScreen(this, event->location()));
     }
 
@@ -368,8 +380,9 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
       event->type() == ui::EventType::kGestureScrollEnd ||
       event->type() == ui::EventType::kScrollFlingStart ||
       event->type() == ui::EventType::kGestureEnd) {
-    if (multitask_menu_ && !multitask_menu_->GetWidget()->IsClosed() &&
-        multitask_menu_->multitask_menu_view()->OnSizeButtonRelease(
+    MultitaskMenu* multitask_menu = GetMultitaskMenu();
+    if (multitask_menu && !multitask_menu->GetWidget()->IsClosed() &&
+        multitask_menu->multitask_menu_view()->OnSizeButtonRelease(
             views::View::ConvertPointToScreen(this, event->location()))) {
       event->SetHandled();
       return;
@@ -425,6 +438,17 @@ void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
     pie_animation_view_->Stop();
     long_tap_delay_timer_.Stop();
   }
+}
+
+void FrameSizeButton::OnWidgetDestroyed(views::Widget* widget) {
+  // The menu's window is gone, but its widget is still notifying observers and
+  // can't be deleted yet.
+  multitask_menu_widget_observation_.Reset();
+  closed_multitask_menu_widget_ = std::move(multitask_menu_widget_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FrameSizeButton::DeleteClosedMultitaskMenuWidget,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
@@ -575,6 +599,10 @@ void FrameSizeButton::OnLongTapDelayTimerEnded(bool is_mouse,
     set_buttons_to_snap_mode_timer_event_location_ = location;
     AnimateButtonsToSnapMode();
   }
+}
+
+void FrameSizeButton::DeleteClosedMultitaskMenuWidget() {
+  closed_multitask_menu_widget_.reset();
 }
 
 BEGIN_METADATA(FrameSizeButton)

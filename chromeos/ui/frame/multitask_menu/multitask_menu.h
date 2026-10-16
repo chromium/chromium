@@ -6,7 +6,6 @@
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/aura/window.h"
@@ -44,8 +43,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
 
   void HideBubble();
 
-  base::WeakPtr<MultitaskMenu> GetWeakPtr();
-
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
@@ -64,8 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  base::WeakPtrFactory<MultitaskMenu> weak_factory_{this};
 };
 
 }  // namespace chromeos
