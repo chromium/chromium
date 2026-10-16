@@ -1737,6 +1737,34 @@ suite('ComposeboxMixinTest', () => {
     assertEquals(null, element.suggestInventory);
   });
 
+  test('close-composebox marks closes that follow a submit', async () => {
+    type CloseEvent =
+        CustomEvent<{composeboxText: string, afterSubmit: boolean}>;
+
+    // A modifier submit closes the composebox right after submitting.
+    await simulateUserTextInput(element.getInputElement(), 'test');
+    let whenCloseComposebox =
+        eventToPromise<CloseEvent>('close-composebox', element);
+    element.submitQuery(
+        new KeyboardEvent('keydown', {key: 'Enter', ctrlKey: true}));
+    assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+    assertTrue((await whenCloseComposebox).detail.afterSubmit);
+
+    // So does a modifier click on a match.
+    whenCloseComposebox =
+        eventToPromise<CloseEvent>('close-composebox', element);
+    element.onMatchClick(new CustomEvent(
+        'match-click',
+        {detail: {ctrlKey: true, metaKey: false, shiftKey: false}}));
+    assertTrue((await whenCloseComposebox).detail.afterSubmit);
+
+    // Any other close is a dismissal.
+    whenCloseComposebox =
+        eventToPromise<CloseEvent>('close-composebox', element);
+    element.closeComposebox();
+    assertFalse((await whenCloseComposebox).detail.afterSubmit);
+  });
+
   test(
       'esc clears input instead of closing when closeOnEscape is false and has content',
       async () => {

@@ -46,7 +46,11 @@ interface Page {
 
   // Called when the popup is hidden. The page is expected to perform any
   // necessary cleanup and return the input text via the callback.
-  ClearPopup() => (string input);
+  // `query_submitted` is true if a query was submitted from the popup since it
+  // was last shown, i.e. the popup is closing because of that submission. The
+  // browser then leaves focus on the page instead of returning it to the
+  // omnibox.
+  ClearPopup() => (string input, bool query_submitted);
 
   // Sets whether the context should be preserved when the popup is closed.
   // Intended to be called while the popup is open before an interstitial

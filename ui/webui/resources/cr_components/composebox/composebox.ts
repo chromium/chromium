@@ -734,8 +734,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   // TODO(crbug.com/486706573): Common logic is moved to the mixin class. Move
   // embedder specific logic to the embedder class.
-  override closeComposebox() {
-    super.closeComposebox();
+  override closeComposebox(afterSubmit: boolean = false) {
+    super.closeComposebox(afterSubmit);
 
     if (this.isCollapsible) {
       this.expanding_ = false;

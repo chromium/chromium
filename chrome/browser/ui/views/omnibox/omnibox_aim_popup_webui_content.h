@@ -45,8 +45,9 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   //    b. OmniboxPopupWebUIBaseContent::Detach() (Detaches WebContents
   //       and breaks recursion loops).
   //    c. OmniboxAimPopupWebUIContent::ApplyInputAndCleanup() (Resets the
-  //       OmniboxView text and, under Full WebUI, restores focus). Skipped on
-  //       a tab switch or when `CloseUI()` already applied the draft.
+  //       OmniboxView text and, under Full WebUI, restores focus unless a
+  //       query was submitted from the popup). Skipped on a tab switch or when
+  //       `CloseUI()` already applied the draft.
   //
   // Step 5c is where drafts from native closes reach the omnibox. WebUI closes
   // run `CloseUI()` first, which applies the draft and then triggers this same
@@ -54,9 +55,10 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   void Clear() override;
   void OnContextMenuClosed() override;
 
-  // Hands `input` to the omnibox, replacing its text. Under
-  // Full WebUI this also restores focus by reopening the full popup.
-  void ApplyInputAndCleanup(const std::string& input);
+  // Hands `input` to the omnibox, replacing its text. Under Full WebUI this
+  // also restores focus by reopening the full popup, unless `query_submitted`
+  // indicates the popup is closing because a query was submitted from it.
+  void ApplyInputAndCleanup(const std::string& input, bool query_submitted);
 
   // Focuses the input element inside the WebUI AIM popup via Mojo.
   void FocusInput();
@@ -86,8 +88,11 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   OmniboxPopupAimHandler* popup_aim_handler();
 
   // Called when the popup is hidden and the WebUI has painted a clean frame.
-  void OnClearCallback(base::WeakPtr<content::WebContents> original_web_contents,
-                       const std::string& input);
+  // `query_submitted` is true if a query was submitted from the popup.
+  void OnClearCallback(
+      base::WeakPtr<content::WebContents> original_web_contents,
+      const std::string& input,
+      bool query_submitted);
 
   FRIEND_TEST_ALL_PREFIXES(OmniboxAimPopupBrowserTest,
                            DraftTextPreservedOnTabSwitch);
