@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
@@ -11,6 +12,7 @@
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
@@ -82,9 +85,12 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
   Document& GetDocument() const { return *GetWindow()->document(); }
 
   HTMLCanvasElement& canvas_element() const { return *canvas_element_; }
-  OffscreenCanvas* TransferControlToOffscreen() {
+  OffscreenCanvas* TransferControlToOffscreen(HTMLCanvasElement& canvas) {
     return HTMLCanvasElementModule::TransferControlToOffscreenInternal(
-        ToScriptStateForMainWorld(GetWindow()->GetFrame()), canvas_element());
+        ToScriptStateForMainWorld(GetWindow()->GetFrame()), canvas);
+  }
+  OffscreenCanvas* TransferControlToOffscreen() {
+    return TransferControlToOffscreen(canvas_element());
   }
 
   test::TaskEnvironment task_environment_;
@@ -98,6 +104,87 @@ TEST_F(HTMLCanvasElementModuleTest, TransferControlToOffscreen) {
   const OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
   const DOMNodeId canvas_id = offscreen_canvas->PlaceholderCanvasId();
   EXPECT_EQ(canvas_id, canvas_element().GetDomNodeId());
+}
+
+// Tests that transferring control of a canvas created while the page is hidden
+// starts the OffscreenCanvas suspended, rather than waiting for the next
+// visibility change.
+TEST_F(HTMLCanvasElementModuleTest,
+       TransferControlToOffscreenWhileHiddenSuspendsAnimation) {
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  test::RunPendingTasks();
+
+  // Create the canvas after the page became hidden, so that it never observed
+  // a visibility change.
+  auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+  GetDocument().body()->AppendChild(canvas);
+  OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen(*canvas);
+  CanvasResourceDispatcher* dispatcher =
+      offscreen_canvas->GetOrCreateResourceDispatcher();
+  test::RunPendingTasks();
+  EXPECT_TRUE(dispatcher->IsAnimationSuspended());
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kVisible, /*is_initial_state=*/false);
+  test::RunPendingTasks();
+  EXPECT_FALSE(dispatcher->IsAnimationSuspended());
+}
+
+// Tests that the animation state is preserved when the resource dispatcher is
+// recreated (e.g. after a GPU context loss).
+TEST_F(HTMLCanvasElementModuleTest,
+       SuspendedAnimationSurvivesResourceDispatcherRecreation) {
+  OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen();
+  offscreen_canvas->GetOrCreateResourceDispatcher();
+  test::RunPendingTasks();
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  test::RunPendingTasks();
+  EXPECT_TRUE(offscreen_canvas->GetOrCreateResourceDispatcher()
+                  ->IsAnimationSuspended());
+
+  offscreen_canvas->DiscardResourceDispatcher();
+  CanvasResourceDispatcher* dispatcher =
+      offscreen_canvas->GetOrCreateResourceDispatcher();
+  test::RunPendingTasks();
+  EXPECT_TRUE(dispatcher->IsAnimationSuspended());
+}
+
+// Tests that disabling OffscreenCanvasSyncAnimationState restores the legacy
+// behavior.
+TEST_F(HTMLCanvasElementModuleTest, SyncAnimationStateKillSwitch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kOffscreenCanvasSyncAnimationState);
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  test::RunPendingTasks();
+
+  // A canvas created while hidden is not suspended at transfer time.
+  auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+  GetDocument().body()->AppendChild(canvas);
+  OffscreenCanvas* offscreen_canvas = TransferControlToOffscreen(*canvas);
+  offscreen_canvas->GetOrCreateResourceDispatcher();
+  test::RunPendingTasks();
+  EXPECT_FALSE(offscreen_canvas->GetOrCreateResourceDispatcher()
+                   ->IsAnimationSuspended());
+
+  // Once suspended, the state is lost when the dispatcher is recreated.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kVisible, /*is_initial_state=*/false);
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  test::RunPendingTasks();
+  EXPECT_TRUE(offscreen_canvas->GetOrCreateResourceDispatcher()
+                  ->IsAnimationSuspended());
+  offscreen_canvas->DiscardResourceDispatcher();
+  CanvasResourceDispatcher* dispatcher =
+      offscreen_canvas->GetOrCreateResourceDispatcher();
+  test::RunPendingTasks();
+  EXPECT_FALSE(dispatcher->IsAnimationSuspended());
 }
 
 // Test that lang and direction attributes are transferred correctly.

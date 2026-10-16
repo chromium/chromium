@@ -758,6 +758,9 @@ BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
 BASE_FEATURE(kOffscreenCanvasPropagateVisibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOffscreenCanvasSyncAnimationState,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebGLDiscardBackBuffer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Automatically convert light-themed pages to use a Blink-generated dark theme

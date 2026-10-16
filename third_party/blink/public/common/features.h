@@ -531,6 +531,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
 // Gated visibility propagation from placeholder canvas to OffscreenCanvas.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOffscreenCanvasPropagateVisibility);
 
+// Kill switch for keeping the animation state (e.g. suspended while the page is
+// hidden) of an OffscreenCanvas in sync with its placeholder canvas, at
+// transfer time and when its resource dispatcher is recreated.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOffscreenCanvasSyncAnimationState);
+
 // Discard WebGL back buffer when page visibility is hidden.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebGLDiscardBackBuffer);
 
