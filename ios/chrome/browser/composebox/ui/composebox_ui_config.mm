@@ -328,6 +328,7 @@
                                  kSymbolActionPointSize);
     case kThinking:
     case kThinkingNoGenUI:
+    case kProLatest:
       return SymbolWithPointSize(SymbolClock, kSymbolActionPointSize);
     default:
       return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);

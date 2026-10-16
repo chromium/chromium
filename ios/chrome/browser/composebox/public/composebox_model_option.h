@@ -21,8 +21,10 @@ enum class ComposeboxModelOption {
   kThinkingNoGenUI = 4,
   // The system utilizes the latest flash model.
   kFlash = 5,
+  // The system utilizes the latest pro model.
+  kProLatest = 6,
   // The maximum value for iteration.
-  kMaxValue = kFlash,
+  kMaxValue = kProLatest,
 };
 
 // A set of ComposeboxModelOption values used for iteration.
