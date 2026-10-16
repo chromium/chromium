@@ -28,8 +28,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ui/base/device_form_factor.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 using search_engines::SearchEngineChoiceScreenEvents;
 
@@ -122,12 +120,10 @@ using search_engines::SearchEngineChoiceScreenEvents;
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kSearchEngineChoiceScreenStart);
   } else {
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-      _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-      _viewController.preferredContentSize =
-          CGSizeMake(kIPadSearchEngineChoiceScreenPreferredWidth,
-                     kIPadSearchEngineChoiceScreenPreferredHeight);
-    }
+    _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+    _viewController.preferredContentSize =
+        CGSizeMake(kSearchEngineChoiceScreenPreferredWidth,
+                   kSearchEngineChoiceScreenPreferredHeight);
     [self.baseViewController presentViewController:_viewController
                                           animated:YES
                                         completion:nil];
@@ -160,8 +156,7 @@ using search_engines::SearchEngineChoiceScreenEvents;
       [[SearchEngineChoiceLearnMoreCoordinator alloc]
           initWithBaseViewController:_viewController
                              browser:self.browser];
-  _searchEngineChoiceLearnMoreCoordinator.forcePresentationFormSheet =
-      _firstRun;
+  _searchEngineChoiceLearnMoreCoordinator.firstRun = _firstRun;
   _searchEngineChoiceLearnMoreCoordinator.delegate = self;
   [_searchEngineChoiceLearnMoreCoordinator start];
 

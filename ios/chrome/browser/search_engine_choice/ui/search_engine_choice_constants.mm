@@ -7,8 +7,8 @@
 const CGFloat kFaviconImageViewSize = 24.;
 const CGFloat kFaviconImageViewRadius = 3.;
 
-const CGFloat kIPadSearchEngineChoiceScreenPreferredWidth = 540.;
-const CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 760.;
+const CGFloat kSearchEngineChoiceScreenPreferredWidth = 540.;
+const CGFloat kSearchEngineChoiceScreenPreferredHeight = 760.;
 
 NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
     @"SearchEngineChoiceTitleAccessibilityIdentifier";

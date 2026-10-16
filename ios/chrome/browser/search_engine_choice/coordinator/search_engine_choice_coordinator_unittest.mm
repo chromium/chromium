@@ -33,7 +33,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#import "ui/base/device_form_factor.h"
 
 // Empty implementation of the FirstRunScreenDelegate used to check that the
 // screen does get dismissed.
@@ -131,12 +130,11 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
     OCMStub(
         [search_engine_choice_view_controller_mock_ presentingViewController])
         .andReturn(base_view_controller_);
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE &&
-        !first_run_) {
+    if (!first_run_) {
       OCMExpect([search_engine_choice_view_controller_mock_
           setModalPresentationStyle:UIModalPresentationFormSheet]);
-      CGSize size = CGSizeMake(kIPadSearchEngineChoiceScreenPreferredWidth,
-                               kIPadSearchEngineChoiceScreenPreferredHeight);
+      CGSize size = CGSizeMake(kSearchEngineChoiceScreenPreferredWidth,
+                               kSearchEngineChoiceScreenPreferredHeight);
       OCMExpect([search_engine_choice_view_controller_mock_
           setPreferredContentSize:size]);
     }
@@ -259,7 +257,22 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   // Simulates the user openning the Learn-More dialog.
   void ShowLearnMore() {
     OCMExpect([search_engine_choice_view_controller_mock_
-        presentViewController:[OCMArg any]
+        presentViewController:[OCMArg checkWithBlock:^BOOL(
+                                          UINavigationController* controller) {
+          EXPECT_EQ(UIModalPresentationFormSheet,
+                    controller.modalPresentationStyle);
+          // UINavigationController adds its navigation bar height when
+          // preferredContentSize is set to a non-zero size.
+          CGSize expected_size =
+              first_run_
+                  ? CGSizeZero
+                  : CGSizeMake(kSearchEngineChoiceScreenPreferredWidth,
+                               kSearchEngineChoiceScreenPreferredHeight +
+                                   controller.navigationBar.bounds.size.height);
+          EXPECT_TRUE(CGSizeEqualToSize(expected_size,
+                                        controller.preferredContentSize));
+          return YES;
+        }]
                      animated:YES
                    completion:nil]);
     [search_engine_choice_action_delegate_ showLearnMore];

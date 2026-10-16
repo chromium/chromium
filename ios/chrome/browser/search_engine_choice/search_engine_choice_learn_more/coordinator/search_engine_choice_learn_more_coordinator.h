@@ -23,14 +23,11 @@
 @property(nonatomic, weak) id<SearchEngineChoiceLearnMoreCoordinatorDelegate>
     delegate;
 
-// If `YES`, the view controller is presented with UIModalPresentationFormSheet,
-// otherwise the view controller is presented:
-//  + For iPhone: UIModalPresentationPageSheet
-//  + For iPad: UIModalPresentationFormSheet, using
-//         kIPadSearchEngineChoiceScreenPreferredWidth
-//         kIPadSearchEngineChoiceScreenPreferredHeight.
+// Whether the learn more screen is being presented during the First Run
+// Experience (FRE). When `NO`, `preferredContentSize` is set to match the
+// standalone Search Engine Choice screen's preferred dimensions.
 // The value has to be set before `start` is called.
-@property(nonatomic, assign) BOOL forcePresentationFormSheet;
+@property(nonatomic, assign) BOOL firstRun;
 
 @end
 
