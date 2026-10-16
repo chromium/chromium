@@ -37,7 +37,7 @@ crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
 crbug.com/547946848 [ win arm64 ] external/wpt/ai/language-model/prompt/multimodal/* [ Skip ]
 
 # Gemma 4 hits early EOS on natural story termination under exact-length regex constraint.
-crbug.com/546202331 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Failure ]
+crbug.com/546202331 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Failure Pass ]
 
 # Temporarily skip TinyGemma small expert model WPTs (Proofreader and Summarizer
 # speed preference) until small expert model support lands for Conversation API.

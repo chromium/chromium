@@ -26,13 +26,16 @@ external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.ht
 crbug.com/560176361 external/wpt/ai/summarizer/summarizer-summarize-concurrent.tentative.https.window.html [ Failure Pass ]
 crbug.com/560176361 external/wpt/ai/summarizer/summarizer-summarize-streaming-concurrent.tentative.https.window.html [ Failure Pass ]
 
-# Audio inputs are currently disabled by default for the CPU model via feature flags; image and video should be re-assessed.
-crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure Pass ]
-crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/availability.tentative.https.window.html [ Failure Pass ]
-crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/create.tentative.https.window.html [ Failure Pass ]
-crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/image/* [ Failure Pass ]
-crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/mix-post-abort.tentative.https.window.html [ Failure Pass ]
-crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/video/* [ Failure Pass ]
+# Audio inputs are currently disabled by default for the CPU model via feature flags.
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/availability.tentative.https.window.html [ Failure ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/create.tentative.https.window.html [ Failure ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/mix-post-abort.tentative.https.window.html [ Failure ]
+
+# Specific image multimodal tests that flake/fail on CPU.
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/image/blob.tentative.https.window.html [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/image/image-bitmap.tentative.https.window.html [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/image/offscreen-canvas.tentative.https.window.html [ Failure Pass ]
 
 # Temporarily skip semantic embedder WPTs
 crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
