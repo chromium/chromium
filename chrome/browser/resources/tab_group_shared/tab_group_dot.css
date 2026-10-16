@@ -19,14 +19,14 @@
 #groupSvg,
 svg {
   display: block;
-  height: 8px;
-  width: 8px;
+  height: 6px;
+  width: 6px;
 }
 
 :host([size=large]) #groupSvg,
 :host([size=large]) svg {
-  height: 16px;
-  width: 16px;
+  height: 12px;
+  width: 12px;
 }
 
 #groupDot,

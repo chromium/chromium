@@ -26,15 +26,15 @@ suite('TabGroupDotTest', () => {
     assertTrue(dot.filled);
     const svg = dot.shadowRoot.querySelector('svg');
     assertTrue(!!svg);
-    assertEquals('-5 -5 10 10', svg.getAttribute('viewBox'));
-    assertEquals('8px', getComputedStyle(svg).width);
-    assertEquals('8px', getComputedStyle(svg).height);
+    assertEquals('-3 -3 6 6', svg.getAttribute('viewBox'));
+    assertEquals('6px', getComputedStyle(svg).width);
+    assertEquals('6px', getComputedStyle(svg).height);
 
     const circle = dot.shadowRoot.querySelector('circle');
     assertTrue(!!circle);
     assertEquals('0', circle.getAttribute('cx'));
     assertEquals('0', circle.getAttribute('cy'));
-    assertEquals('4', circle.getAttribute('r'));
+    assertEquals('3', circle.getAttribute('r'));
     assertEquals('0', circle.getAttribute('stroke-width'));
   });
 
@@ -45,7 +45,7 @@ suite('TabGroupDotTest', () => {
     dot.filled = false;
     await microtasksFinished();
 
-    assertEquals('3', circle.getAttribute('r'));
+    assertEquals('2', circle.getAttribute('r'));
     assertEquals('2', circle.getAttribute('stroke-width'));
 
     dot.size = TabGroupDotSize.LARGE;
@@ -71,17 +71,17 @@ suite('TabGroupDotTest', () => {
     await microtasksFinished();
 
     assertEquals('-6 -6 12 12', svg.getAttribute('viewBox'));
-    assertEquals('16px', getComputedStyle(svg).width);
-    assertEquals('16px', getComputedStyle(svg).height);
+    assertEquals('12px', getComputedStyle(svg).width);
+    assertEquals('12px', getComputedStyle(svg).height);
     assertEquals('6', circle.getAttribute('r'));
 
     dot.size = TabGroupDotSize.SMALL;
     await microtasksFinished();
 
-    assertEquals('-5 -5 10 10', svg.getAttribute('viewBox'));
-    assertEquals('8px', getComputedStyle(svg).width);
-    assertEquals('8px', getComputedStyle(svg).height);
-    assertEquals('4', circle.getAttribute('r'));
+    assertEquals('-3 -3 6 6', svg.getAttribute('viewBox'));
+    assertEquals('6px', getComputedStyle(svg).width);
+    assertEquals('6px', getComputedStyle(svg).height);
+    assertEquals('3', circle.getAttribute('r'));
   });
 
   test('sets color without refresh', async () => {
