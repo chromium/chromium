@@ -471,6 +471,7 @@ if (is_android) {
       "//chrome/browser/lifetime/android:java",
       "//chrome/browser/settings:java",
       "//chrome/browser/tabpersistence:java",
+      "//third_party/android_deps:playcore_app_update_java",
       "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     ]
   }
@@ -1087,6 +1088,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/omaha/RequestGeneratorTest.java",
       "src/org/chromium/chrome/browser/omaha/ResponseParserTest.java",
       "src/org/chromium/chrome/browser/omaha/StringSanitizerTest.java",
+      "src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelperTest.java",
       "src/org/chromium/chrome/browser/omaha/VersionNumberTest.java",
       "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateControllerTest.java",
       "src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicyTest.java",

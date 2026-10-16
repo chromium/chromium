@@ -22,13 +22,17 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -79,10 +83,19 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public final class InAppUpdateController {
+    /** Interface for Activities that host and manage an {@link InAppUpdateController}. */
+    public interface InAppUpdateManageable {
+        /**
+         * Returns the {@link InAppUpdateController} for this Activity, or null if the feature is
+         * disabled.
+         */
+        @Nullable InAppUpdateController getInAppUpdateController();
+    }
+
     // Unified logcat tag matching InAppUpdatePolicy for end-to-end tracing during prototype
     // rollout.
     // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
-    private static final String TAG = "InAppUpdateFlow";
+    public static final String TAG = "InAppUpdateFlow";
 
     /**
      * Request code passed to Play Core's {@link AppUpdateManager#startUpdateFlowForResult}. The
@@ -94,6 +107,38 @@ public final class InAppUpdateController {
     // UMA Histograms
     @VisibleForTesting
     static final String HISTOGRAM_DOWNLOAD_RESULT = "Android.InAppUpdate.Download.Result";
+
+    @VisibleForTesting
+    public static final String HISTOGRAM_APP_MENU_ACTION = "Android.InAppUpdate.AppMenu.Action";
+
+    @VisibleForTesting
+    static final String PARAM_RESUME_COOLDOWN_MINUTES = "resume_cooldown_minutes";
+
+    @VisibleForTesting static final int DEFAULT_RESUME_COOLDOWN_MINUTES = 5;
+
+    /** Actions triggered via the App Menu "Update Chrome" item. */
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    //
+    // LINT.IfChange(AppMenuAction)
+    @IntDef({
+        AppMenuAction.TRIGGER_DOWNLOAD,
+        AppMenuAction.TRIGGER_RESTART,
+        AppMenuAction.INTENT_FALLBACK,
+        AppMenuAction.ALREADY_DOWNLOADING,
+        AppMenuAction.RESTART_FAILED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AppMenuAction {
+        int TRIGGER_DOWNLOAD = 0;
+        int TRIGGER_RESTART = 1;
+        int INTENT_FALLBACK = 2;
+        int ALREADY_DOWNLOADING = 3;
+        int RESTART_FAILED = 4;
+        int COUNT = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InAppUpdateAppMenuAction)
 
     /**
      * Outcomes of Play Core update download operations recorded to {@link
@@ -190,6 +235,15 @@ public final class InAppUpdateController {
      */
     private boolean mIsDestroyed;
 
+    /**
+     * In-flight guard set to true while an update flow or metadata query is starting via the app
+     * menu. Debounces rapid taps to prevent duplicate concurrent flow invocations.
+     */
+    private boolean mIsFlowStarting;
+
+    /** Timestamp of the last resume update check in milliseconds. */
+    private static long sLastResumeCheckTimestampMs;
+
     /** Overrides the {@link AppUpdateManager} instance for testing. */
     public static void setAppUpdateManagerForTesting(@Nullable AppUpdateManager manager) {
         sAppUpdateManagerForTesting = manager;
@@ -219,6 +273,7 @@ public final class InAppUpdateController {
      */
     public void destroy() {
         mIsDestroyed = true;
+        mIsFlowStarting = false;
         unregisterInstallListener();
         if (mDiscoverySnackbarController != null) {
             mDiscoverySnackbarController.dismiss();
@@ -402,8 +457,9 @@ public final class InAppUpdateController {
      * @param appUpdateInfo Current update metadata from Play Core.
      */
     private void showDiscoverySnackbar(AppUpdateInfo appUpdateInfo) {
-        // Guard against duplicate prompts and destroyed activity state.
+        // Guard against duplicate prompts, active restart prompts, and destroyed activity state.
         if (mDiscoverySnackbarController != null
+                || mRestartSnackbarController != null
                 || isDestroyedFinishingOrChangingConfigurations()) {
             return;
         }
@@ -448,6 +504,11 @@ public final class InAppUpdateController {
             return;
         }
 
+        if (mDiscoverySnackbarController != null) {
+            mDiscoverySnackbarController.dismiss();
+            mDiscoverySnackbarController = null;
+        }
+
         mRestartSnackbarController =
                 InAppUpdateSnackbarController.showRestart(
                         mActivity,
@@ -489,10 +550,11 @@ public final class InAppUpdateController {
      *
      * @param appUpdateInfo Current update metadata.
      * @param updateType Flow type to start (strictly {@link AppUpdateType#FLEXIBLE}).
+     * @return True if the update flow was successfully initiated; false otherwise.
      */
-    private void startFlow(AppUpdateInfo appUpdateInfo, int updateType) {
+    private boolean startFlow(AppUpdateInfo appUpdateInfo, int updateType) {
         if (isDestroyedFinishingOrChangingConfigurations()) {
-            return;
+            return false;
         }
 
         // Attach install listener before initiating update flow to catch early download states.
@@ -508,22 +570,26 @@ public final class InAppUpdateController {
                             appUpdateInfo, mActivity, options, REQUEST_CODE_IN_APP_UPDATE);
             if (started) {
                 logDownloadResult(DownloadResult.FLOW_STARTED);
+                return true;
             } else {
                 Log.w(TAG, "startUpdateFlowForResult returned false.");
                 logDownloadResult(DownloadResult.START_FAILED);
                 InAppUpdatePolicy.recordDownloadFailed();
                 unregisterInstallListener();
+                return false;
             }
         } catch (IntentSender.SendIntentException e) {
             Log.e(TAG, "SendIntentException in startUpdateFlowForResult: %s", e.getMessage(), e);
             logDownloadResult(DownloadResult.SEND_INTENT_FAILED);
             InAppUpdatePolicy.recordDownloadFailed();
             unregisterInstallListener();
+            return false;
         } catch (RuntimeException e) {
             Log.e(TAG, "RuntimeException in startUpdateFlowForResult: %s", e.getMessage(), e);
             logDownloadResult(DownloadResult.START_EXCEPTION);
             InAppUpdatePolicy.recordDownloadFailed();
             unregisterInstallListener();
+            return false;
         }
     }
 
@@ -549,6 +615,9 @@ public final class InAppUpdateController {
         if (mInstallListener == null) {
             mInstallListener =
                     state -> {
+                        if (isDestroyedFinishingOrChangingConfigurations()) {
+                            return;
+                        }
                         int status = state.installStatus();
                         int errorCode = state.installErrorCode();
 
@@ -600,6 +669,24 @@ public final class InAppUpdateController {
         return mInstallListener;
     }
 
+    @Nullable InAppUpdateSnackbarController getDiscoverySnackbarControllerForTesting() {
+        return mDiscoverySnackbarController;
+    }
+
+    @Nullable InAppUpdateSnackbarController getRestartSnackbarControllerForTesting() {
+        return mRestartSnackbarController;
+    }
+
+    static void setLastResumeCheckTimestampMsForTesting(long timestampMs) {
+        sLastResumeCheckTimestampMs = timestampMs;
+        ResettersForTesting.register(() -> sLastResumeCheckTimestampMs = 0);
+    }
+
+    static void resetResumeCooldownForTesting() {
+        sLastResumeCheckTimestampMs = 0;
+        ResettersForTesting.register(() -> sLastResumeCheckTimestampMs = 0);
+    }
+
     /**
      * Handles the outcome of the Google Play in-app update consent dialog.
      *
@@ -646,6 +733,23 @@ public final class InAppUpdateController {
         }
     }
 
+    private boolean isResumeThrottled() {
+        ThreadUtils.assertOnUiThread();
+        if (sLastResumeCheckTimestampMs <= 0) {
+            return false;
+        }
+        int cooldownMinutes =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.IN_APP_UPDATE_FLOW,
+                        PARAM_RESUME_COOLDOWN_MINUTES,
+                        DEFAULT_RESUME_COOLDOWN_MINUTES);
+        if (cooldownMinutes <= 0) {
+            return false;
+        }
+        long elapsedMs = TimeUtils.elapsedRealtimeMillis() - sLastResumeCheckTimestampMs;
+        return elapsedMs >= 0 && elapsedMs < TimeUnit.MINUTES.toMillis(cooldownMinutes);
+    }
+
     /**
      * Activity lifecycle hook called during foreground resumption ({@code onResumeWithNative}).
      *
@@ -663,12 +767,21 @@ public final class InAppUpdateController {
      * deferred startup and manual menu invocation to prevent interrupting resuming users.
      */
     public void onResume() {
+        ThreadUtils.assertOnUiThread();
         if (isDestroyedFinishingOrChangingConfigurations()) {
+            return;
+        }
+        if (mRestartSnackbarController != null) {
+            return;
+        }
+        if (!InAppUpdatePolicy.isForceUpdate() && isResumeThrottled()) {
+            Log.i(TAG, "onResume: Throttled by resume cooldown.");
             return;
         }
         if (!InAppUpdatePolicy.isEligible(mActivity)) {
             return;
         }
+        sLastResumeCheckTimestampMs = TimeUtils.elapsedRealtimeMillis();
 
         AppUpdateManager manager = getOrCreateAppUpdateManager();
         // Play Core's asynchronous Task API signals retrieval errors via addOnFailureListener
@@ -704,5 +817,143 @@ public final class InAppUpdateController {
                                     e.getMessage(),
                                     e);
                         });
+    }
+
+    /**
+     * Handles user clicking the update menu item in the app menu with an optional fallback to start
+     * an intent-based update if Play Core update is not available or fails.
+     */
+    public void onMenuItemClicked(@Nullable Runnable fallback) {
+        if (isDestroyedFinishingOrChangingConfigurations()) {
+            return;
+        }
+        if (mDiscoverySnackbarController != null) {
+            mDiscoverySnackbarController.dismiss();
+            mDiscoverySnackbarController = null;
+        }
+        if (mIsFlowStarting) {
+            Log.i(
+                    TAG,
+                    "onMenuItemClicked: Update flow already starting -> ignoring duplicate tap.");
+            return;
+        }
+        if (!InAppUpdatePolicy.isEligible(mActivity)) {
+            Log.i(TAG, "onMenuItemClicked: Not eligible for in-app update -> triggering fallback.");
+            if (fallback != null) {
+                fallback.run();
+            }
+            return;
+        }
+
+        mIsFlowStarting = true;
+        AppUpdateManager manager = getOrCreateAppUpdateManager();
+        // This completion listener is deliberately unscoped (not tied to the Activity lifecycle)
+        // so that mIsFlowStarting is guaranteed to reset even if the host Activity is stopped
+        // while the query is in flight.
+        manager.getAppUpdateInfo()
+                .addOnCompleteListener(task -> mIsFlowStarting = false)
+                .addOnSuccessListener(
+                        mActivity,
+                        appUpdateInfo -> {
+                            if (isDestroyedFinishingOrChangingConfigurations()) {
+                                return;
+                            }
+                            int status = appUpdateInfo.installStatus();
+                            int availability = appUpdateInfo.updateAvailability();
+
+                            if (status == InstallStatus.DOWNLOADED) {
+                                if (mRestartSnackbarController != null) {
+                                    mRestartSnackbarController.dismiss();
+                                    mRestartSnackbarController = null;
+                                }
+                                Log.i(
+                                        TAG,
+                                        "onMenuItemClicked: Update already downloaded ->"
+                                                + " restarting Chrome via completeUpdate().");
+                                logAppMenuAction(AppMenuAction.TRIGGER_RESTART);
+                                manager.completeUpdate()
+                                        .addOnFailureListener(
+                                                mActivity,
+                                                e -> {
+                                                    Log.e(
+                                                            TAG,
+                                                            "completeUpdate() failed on menu"
+                                                                    + " click: %s",
+                                                            e.getMessage(),
+                                                            e);
+                                                    InAppUpdatePolicy.recordDownloadFailed();
+                                                    logAppMenuAction(AppMenuAction.RESTART_FAILED);
+                                                    if (fallback != null) {
+                                                        fallback.run();
+                                                    }
+                                                });
+                                return;
+                            }
+
+                            // If an update download is already in progress, ensure the install
+                            // listener is registered to display the restart snackbar upon
+                            // completion.
+                            if (status == InstallStatus.DOWNLOADING
+                                    || status == InstallStatus.PENDING) {
+                                Log.i(
+                                        TAG,
+                                        "onMenuItemClicked: Update already downloading/pending ->"
+                                                + " registering listener.");
+                                logAppMenuAction(AppMenuAction.ALREADY_DOWNLOADING);
+                                registerInstallListener();
+                                return;
+                            }
+
+                            if (availability == UpdateAvailability.UPDATE_AVAILABLE
+                                    || InAppUpdatePolicy.isForceUpdate()) {
+                                boolean isFlexibleAllowed =
+                                        InAppUpdatePolicy.isForceUpdate()
+                                                || appUpdateInfo.isUpdateTypeAllowed(
+                                                        AppUpdateOptions.defaultOptions(
+                                                                AppUpdateType.FLEXIBLE));
+                                if (isFlexibleAllowed) {
+                                    Log.i(TAG, "onMenuItemClicked: Starting flexible update flow.");
+                                    if (startFlow(appUpdateInfo, AppUpdateType.FLEXIBLE)) {
+                                        logAppMenuAction(AppMenuAction.TRIGGER_DOWNLOAD);
+                                        return;
+                                    }
+                                } else {
+                                    Log.w(
+                                            TAG,
+                                            "onMenuItemClicked: Flexible update not allowed by Play"
+                                                    + " Core.");
+                                }
+                            }
+                            Log.i(
+                                    TAG,
+                                    "onMenuItemClicked: Update unavailable or ineligible ->"
+                                            + " triggering fallback.");
+                            triggerFallback(fallback);
+                        })
+                .addOnFailureListener(
+                        mActivity,
+                        e -> {
+                            if (isDestroyedFinishingOrChangingConfigurations()) {
+                                return;
+                            }
+                            Log.w(
+                                    TAG,
+                                    "Failed to query AppUpdateInfo on menu item click: %s",
+                                    e.getMessage(),
+                                    e);
+                            triggerFallback(fallback);
+                        });
+    }
+
+    private static void logAppMenuAction(@AppMenuAction int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_APP_MENU_ACTION, action, AppMenuAction.COUNT);
+    }
+
+    private void triggerFallback(@Nullable Runnable fallback) {
+        if (fallback != null) {
+            logAppMenuAction(AppMenuAction.INTENT_FALLBACK);
+            fallback.run();
+        }
     }
 }

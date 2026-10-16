@@ -2676,6 +2676,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InAppUpdate.AppMenu.Action"
+    enum="InAppUpdateAppMenuAction" expires_after="2027-03-10">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records user interactions with the 3-dot app menu update item in Chrome for
+    Android, capturing the action taken (initiating download, completing
+    restart, observing an in-progress download, falling back to an external
+    update flow, or encountering a restart failure).
+  </summary>
+</histogram>
+
 <histogram name="Android.InAppUpdate.DiscoverySnackbar.Event"
     enum="InAppUpdateSnackbarEvent" expires_after="2027-03-10">
   <owner>vakh@chromium.org</owner>

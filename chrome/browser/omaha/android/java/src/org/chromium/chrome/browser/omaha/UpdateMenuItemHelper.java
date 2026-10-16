@@ -21,8 +21,11 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateController.InAppUpdateManageable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -136,16 +139,36 @@ public class UpdateMenuItemHelper {
     public void onMenuItemClicked(Activity activity) {
         if (mStatus == null) return;
 
+        // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
+        Log.i(
+                TAG,
+                "UpdateMenuItemHelper.onMenuItemClicked: activity=%s, mStatus=%s",
+                activity.getClass().getSimpleName(),
+                mStatus.updateState);
+
         switch (mStatus.updateState) {
             case UpdateState.UPDATE_AVAILABLE:
-                if (TextUtils.isEmpty(mStatus.updateUrl)) return;
-
-                try {
-                    UpdateStatusProvider.getInstance()
-                            .startIntentUpdate(activity, /* newTask= */ false);
-                } catch (ActivityNotFoundException e) {
-                    Log.e(TAG, "Failed to launch Activity for: %s", mStatus.updateUrl);
+                final String updateUrl = mStatus.updateUrl;
+                // TODO(crbug.com/574106939): Replace Activity instanceof InAppUpdateManageable
+                // with constructor or setter injection from RootUiCoordinator.
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+                        && activity instanceof InAppUpdateManageable manageable) {
+                    InAppUpdateController inAppUpdateController =
+                            manageable.getInAppUpdateController();
+                    if (inAppUpdateController != null) {
+                        // TODO(crbug.com/553918188): Remove logging once in-app update flow
+                        // stabilizes.
+                        Log.i(TAG, "Triggering InAppUpdateController.onMenuItemClicked()...");
+                        inAppUpdateController.onMenuItemClicked(
+                                () -> startIntentFallback(activity, updateUrl));
+                        break;
+                    }
                 }
+
+                if (TextUtils.isEmpty(updateUrl)) {
+                    return;
+                }
+                startIntentUpdate(activity, updateUrl);
                 break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
             // Intentional fall through.
@@ -262,11 +285,38 @@ public class UpdateMenuItemHelper {
         for (Runnable observer : mObservers) observer.run();
     }
 
+    private void startIntentUpdate(Activity activity, @Nullable String updateUrl) {
+        if (TextUtils.isEmpty(updateUrl)) return;
+
+        try {
+            UpdateStatusProvider.getInstance().startIntentUpdate(activity, /* newTask= */ false);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Failed to launch Activity for: %s", updateUrl);
+        }
+    }
+
+    private void startIntentFallback(Activity activity, @Nullable String updateUrl) {
+        if (activity.isFinishing()
+                || activity.isDestroyed()
+                || activity.isChangingConfigurations()) {
+            return;
+        }
+        // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
+        Log.i(TAG, "InAppUpdate: Falling back to startIntentUpdate for URL: %s", updateUrl);
+        startIntentUpdate(activity, updateUrl);
+    }
+
     private PrefService getPrefService() {
         return UserPrefs.get(mProfile);
     }
 
     boolean getMenuDismissedRunnableExecutedForTests() {
         return mMenuDismissedRunnableExecuted;
+    }
+
+    void setUpdateStatusForTesting(@Nullable UpdateStatus status) {
+        UpdateStatus previous = mStatus;
+        mStatus = status;
+        ResettersForTesting.register(() -> mStatus = previous);
     }
 }

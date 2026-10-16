@@ -227,6 +227,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromo
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -1783,6 +1784,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         // This call is not guarded by a feature flag.
         SearchEngineChoiceNotification.handleSearchEngineChoice(this, getSnackbarManager());
+
+        // TODO(crbug.com/574106939): Move in-app update resume evaluation to
+        // TabbedRootUiCoordinator or a dedicated lifecycle observer.
+        if (isWarmOnResume()) {
+            InAppUpdateController inAppUpdateController = getInAppUpdateController();
+            if (inAppUpdateController != null) {
+                inAppUpdateController.onResume();
+            }
+        }
 
         if (!isWarmOnResume()) {
             getProfileProviderSupplier()
@@ -4192,6 +4202,17 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         var modalDialogManager = assertNonNull(getModalDialogManager());
         VersioningMessageBanner.maybeShow(activity, messageDispatcher, modalDialogManager, profile);
+
+        // TODO(crbug.com/574106939): Move InAppUpdateController initialization and startup flow
+        // check out of ChromeTabbedActivity and into TabbedRootUiCoordinator.
+        InAppUpdateController inAppUpdateController = getInAppUpdateController();
+        if (inAppUpdateController != null) {
+            // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
+            Log.i(
+                    InAppUpdateController.TAG,
+                    "ChromeTabbedActivity.onDeferredStartup: initiating in-app update check");
+            inAppUpdateController.checkAndStartUpdateFlow();
+        }
 
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.onDeferredStartup();

@@ -1516,6 +1516,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
 
+<!-- LINT.IfChange(InAppUpdateAppMenuAction) -->
+
+<enum name="InAppUpdateAppMenuAction">
+  <int value="0" label="Trigger Download"/>
+  <int value="1" label="Trigger Restart"/>
+  <int value="2" label="Intent Fallback"/>
+  <int value="3" label="Already Downloading"/>
+  <int value="4" label="Restart Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateController.java:AppMenuAction) -->
+
 <!-- LINT.IfChange(InAppUpdateDownloadResult) -->
 
 <enum name="InAppUpdateDownloadResult">
