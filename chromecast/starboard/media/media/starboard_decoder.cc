@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
@@ -242,7 +243,7 @@ BufferStatus StarboardDecoder::PushBufferInternal(
   const uint8_t* buffer_addr = buffer_data.data();
   const size_t buffer_size = buffer_data.size();
   sample_info.buffer = static_cast<const void*>(buffer_addr);
-  sample_info.buffer_size = buffer_size;
+  sample_info.buffer_size = base::checked_cast<int>(buffer_size);
   sample_info.drm_info = drm_info.GetDrmSampleInfo();
 
   // Ensure that we do not delete the media data until Deallocate is called.

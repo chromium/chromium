@@ -230,7 +230,7 @@ DrmInfoWrapper DrmInfoWrapper::Create(const ::media::DecoderBuffer& buffer) {
     // requires at least one subsample.
     subsample_mappings->push_back(
         {.clear_byte_count = 0,
-         .encrypted_byte_count = static_cast<int32_t>(buffer.size())});
+         .encrypted_byte_count = base::checked_cast<int32_t>(buffer.size())});
   }
   drm_info->subsample_mapping =
       base::span<const StarboardDrmSubSampleMapping>(*subsample_mappings);

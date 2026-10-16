@@ -10,8 +10,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gtest_util.h"
 #include "chromecast/media/cma/base/cast_decrypt_config_impl.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
@@ -206,6 +208,42 @@ TEST(DrmUtilTest, HandlesEmptySubsampleMappings) {
   CHECK(cast_buffer);
   EXPECT_THAT(DrmInfoWrapper::Create(*cast_buffer).GetDrmSampleInfo(),
               Pointee(MatchesDrmInfo(expected_drm_info)));
+}
+
+TEST(DrmUtilTest, EmptySubsamplesLargeBufferCrashes) {
+  constexpr size_t kLargeSize = size_t{0x80000000};  // 2 GiB
+  static_assert(kLargeSize > static_cast<size_t>(INT32_MAX));
+
+  constexpr std::string_view kId = "drm_id";
+  constexpr std::string_view kIv = "0123456789abcdef";
+  CHECK_EQ(kIv.size(),
+           static_cast<size_t>(::media::DecryptConfig::kDecryptionKeySize));
+
+  std::unique_ptr<::media::DecryptConfig> decrypt_config =
+      ::media::DecryptConfig::CreateCencConfig(std::string(kId),
+                                               std::string(kIv),
+                                               /*subsamples=*/{});
+  CHECK(decrypt_config);
+
+  class DummyExternalMemory : public ::media::DecoderBuffer::ExternalMemory {
+   public:
+    explicit DummyExternalMemory(size_t size) : size_(size) {}
+    ~DummyExternalMemory() override = default;
+    const base::span<const uint8_t> Span() const override {
+      return UNSAFE_BUFFERS(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(0x1000), size_));
+    }
+
+   private:
+    size_t size_;
+  };
+
+  auto chromium_buffer = ::media::DecoderBuffer::FromExternalMemory(
+      std::make_unique<DummyExternalMemory>(kLargeSize));
+  CHECK_EQ(chromium_buffer->size(), kLargeSize);
+  chromium_buffer->set_decrypt_config(std::move(decrypt_config));
+
+  EXPECT_CHECK_DEATH(DrmInfoWrapper::Create(*chromium_buffer));
 }
 
 class FakeCastDecoderBuffer : public CastDecoderBuffer {
