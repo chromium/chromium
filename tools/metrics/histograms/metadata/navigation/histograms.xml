@@ -3212,9 +3212,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Records the page transition type of a navigation when its initiator is
-    unknown (ChromeInitiatorLocation::kOther) for {Scope}. Recorded for a
-    standard navigation when it commits. For a prerendered navigation, it is
-    recorded when the page is activated.
+    unknown (page_load_metrics::navigation_initiator::kOther) for {Scope}.
+    Recorded for a standard navigation when it commits. For a prerendered
+    navigation, it is recorded when the page is activated.
   </summary>
   <token key="Scope">
     <variant name="All" summary="all navigations"/>
