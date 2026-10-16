@@ -93,7 +93,6 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -101,6 +100,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
@@ -214,15 +214,16 @@ class OverflowMenuMediatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
 
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     web::test::OverrideJavaScriptFeatures(
-        profile_,
+        personal_profile_,
         {language::LanguageDetectionJavaScriptFeature::GetInstance()});
 
     // Set up the TestBrowser.
     scene_state_ = [[SceneState alloc] init];
-    browser_ = std::make_unique<TestBrowser>(profile_);
+    browser_ = std::make_unique<TestBrowser>(personal_profile_);
 
     // Set up the WebStateList.
     auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
@@ -237,13 +238,13 @@ class OverflowMenuMediatorTest : public PlatformTest {
         std::make_unique<web::FakeWebState>();
     test_web_state->SetNavigationManager(std::move(navigation_manager));
     test_web_state->SetLoading(true);
-    test_web_state->SetBrowserState(profile_);
+    test_web_state->SetBrowserState(personal_profile_);
     web_state_ = test_web_state.get();
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/url);
-    main_frame->set_browser_state(profile_);
+    main_frame->set_browser_state(personal_profile_);
     frames_manager->AddWebFrame(std::move(main_frame));
     web::ContentWorld content_world =
         language::LanguageDetectionJavaScriptFeature::GetInstance()
@@ -287,7 +288,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     bookmark_model_ = nullptr;
     browser_.reset();
     scene_state_ = nil;
-    profile_ = nullptr;
+    personal_profile_ = nullptr;
 
     CleanupNSUserDefaults();
 
@@ -351,7 +352,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   void SetUpBookmarks() {
-    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_);
+    bookmark_model_ =
+        ios::BookmarkModelFactory::GetForProfile(personal_profile_);
     DCHECK(bookmark_model_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;
@@ -378,7 +380,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
         ReaderModeTabHelper::FromWebState(web_state_);
     if (!tab_helper) {
       ReaderModeTabHelper::CreateForWebState(
-          web_state_, DistillerServiceFactory::GetForProfile(profile_));
+          web_state_,
+          DistillerServiceFactory::GetForProfile(personal_profile_));
       SnapshotSourceTabHelper::CreateForWebState(web_state_);
       tab_helper = ReaderModeTabHelper::FromWebState(web_state_);
     }
@@ -397,7 +400,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/url);
-    main_frame->set_browser_state(profile_);
+    main_frame->set_browser_state(personal_profile_);
     frames_manager->AddWebFrame(std::move(main_frame));
     web::ContentWorld content_world =
         language::LanguageDetectionJavaScriptFeature::GetInstance()
@@ -506,7 +509,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(profile_);
+    return IdentityManagerFactory::GetForProfile(personal_profile_);
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -518,8 +521,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
     const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(
         identity);
-    AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
-        identity, signin_metrics::AccessPoint::kStartPage);
+    AuthenticationServiceFactory::GetForProfile(personal_profile_)
+        ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
     CoreAccountInfo core_account_info =
         identity_manager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin);
@@ -537,7 +540,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   // mediator are usually hosted in `localStatePrefs_`.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_ = nullptr;
+  raw_ptr<TestProfileIOS> personal_profile_ = nullptr;
   SceneState* scene_state_ = nil;
   std::unique_ptr<Browser> browser_;
   raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
@@ -652,8 +655,8 @@ TEST_F(OverflowMenuMediatorTest, FeedbackItemHiddenWhenCapabilityFalse) {
 
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(identity);
-  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
-      identity, signin_metrics::AccessPoint::kStartPage);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_)
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
   CoreAccountInfo core_account_info =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -692,8 +695,8 @@ TEST_F(OverflowMenuMediatorTest, TestFeedbackItemShownWhenCapabilityTrue) {
 
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(identity);
-  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
-      identity, signin_metrics::AccessPoint::kStartPage);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_)
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
   CoreAccountInfo core_account_info =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -901,22 +904,25 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   // Add managed account to sign in with.
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity);
-  GetApplicationContext()
-      ->GetAccountProfileMapper()
-      ->MakePersonalProfileManagedWithGaiaID(fake_system_identity.gaiaId);
+  TestProfileIOS::Builder builder;
+  builder.SetPrefService(CreatePrefServiceForProfile());
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateTestSyncService));
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, fake_system_identity, std::move(builder));
 
   // Emulate signing in with managed account.
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+      AuthenticationServiceFactory::GetForProfile(managed_profile);
   authentication_service->SignIn(fake_system_identity,
                                  signin_metrics::AccessPoint::kStartPage);
   EXPECT_TRUE(authentication_service->HasPrimaryIdentityManaged());
 
   CreateMediator(/*incognito=*/NO);
   // Set the objects needed to detect the signed in managed account.
-  mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+  mediator_.authenticationService = authentication_service;
 
   // Force model update.
   mediator_.model = model_;
@@ -997,7 +1003,7 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSignedOut) {
   // Setup the mediator.
   CreateMediator(/*incognito=*/NO);
   mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+      AuthenticationServiceFactory::GetForProfile(personal_profile_);
   mediator_.model = model_;
 
   // Check the identity item is not there.
@@ -1013,13 +1019,13 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedIn) {
   // Sign in user.
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
-  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
-      identity, signin_metrics::AccessPoint::kStartPage);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_)
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
   // Check the identity group.
   CreateMediator(/*incognito=*/NO);
   mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+      AuthenticationServiceFactory::GetForProfile(personal_profile_);
   mediator_.model = model_;
 
   // Check the identity group.
@@ -1047,13 +1053,13 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenInIncognitoMode) {
   // Sign in user.
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
-  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
-      identity, signin_metrics::AccessPoint::kStartPage);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_)
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
   // Create mediator in incognito mode.
   CreateMediator(/*incognito=*/YES);
   mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+      AuthenticationServiceFactory::GetForProfile(personal_profile_);
   mediator_.model = model_;
 
   // Check the identity item is not present.
@@ -1069,8 +1075,8 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSigninDisabled) {
   // Sign in user.
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
-  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
-      identity, signin_metrics::AccessPoint::kStartPage);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_)
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
   // Disable sign-in.
   GetApplicationContext()->GetLocalState()->SetBoolean(
@@ -1079,7 +1085,7 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSigninDisabled) {
   // Setup the mediator.
   CreateMediator(/*incognito=*/NO);
   mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+      AuthenticationServiceFactory::GetForProfile(personal_profile_);
   mediator_.model = model_;
 
   // Check the identity item is not present.
@@ -1117,8 +1123,8 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   EXPECT_FALSE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_TRUE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
 
-  ios::BookmarkModelFactory::GetForProfile(profile_)->RemoveAllUserBookmarks(
-      FROM_HERE);
+  ios::BookmarkModelFactory::GetForProfile(personal_profile_)
+      ->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
 }
@@ -1597,7 +1603,8 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageHasPreviewImage) {
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.backgroundCustomizationService =
-      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_);
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(
+          personal_profile_);
 
   // Force model update.
   mediator_.model = model_;
@@ -1635,7 +1642,8 @@ TEST_F(OverflowMenuMediatorTest,
   mediator_.webStateList = browser_->GetWebStateList();
 
   HomeBackgroundCustomizationService* backgroundCustomizationService =
-      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_);
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(
+          personal_profile_);
   backgroundCustomizationService->SetCurrentBackground(
       GURL("https://example.com/bg.jpg"), GURL("https://example.com/thumb.jpg"),
       "attribution1", "attribution2", GURL("https://example.com/action"),
@@ -1643,7 +1651,7 @@ TEST_F(OverflowMenuMediatorTest,
 
   mediator_.backgroundCustomizationService = backgroundCustomizationService;
   mediator_.userUploadedImageManager =
-      UserUploadedImageManagerFactory::GetForProfile(profile_);
+      UserUploadedImageManagerFactory::GetForProfile(personal_profile_);
   image_fetcher::MockImageFetcher mockImageFetcher;
   EXPECT_CALL(mockImageFetcher, FetchImageAndData_(_, _, _, _))
       .Times(testing::AtLeast(1))
@@ -1766,20 +1774,20 @@ TEST_F(OverflowMenuMediatorTest,
                             kAiSubscriptionAvatarRingFollowupIOS},
       /*disabled_features=*/{});
 
-  profile_->GetPrefs()->SetInteger(
+  personal_profile_->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
   SignInPrimaryAccountWithSupervisionStatus(/*is_supervised=*/false);
 
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
-      SyncServiceFactory::GetForProfile(profile_));
+      SyncServiceFactory::GetForProfile(personal_profile_));
   sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
 
   CreateMediator(/*incognito=*/NO);
   mediator_.syncService = sync_service;
   mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile_);
+      AuthenticationServiceFactory::GetForProfile(personal_profile_);
   mediator_.subscriptionEligibilityService =
-      SubscriptionEligibilityServiceFactory::GetForProfile(profile_);
+      SubscriptionEligibilityServiceFactory::GetForProfile(personal_profile_);
   mediator_.model = model_;
 
   OverflowMenuAction* identity_action = GetAction(kToolsMenuIdentityId);
@@ -1787,12 +1795,12 @@ TEST_F(OverflowMenuMediatorTest,
   EXPECT_TRUE(identity_action.showsAITierRing);
 
   // Updating the AI subscription tier to 0 should remove the ring.
-  profile_->GetPrefs()->SetInteger(
+  personal_profile_->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 0);
   EXPECT_FALSE(identity_action.showsAITierRing);
 
   // Updating the AI subscription tier back to 1 should restore the ring.
-  profile_->GetPrefs()->SetInteger(
+  personal_profile_->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
   EXPECT_TRUE(identity_action.showsAITierRing);
 
