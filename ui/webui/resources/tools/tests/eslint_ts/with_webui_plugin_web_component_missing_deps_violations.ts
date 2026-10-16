@@ -12,6 +12,7 @@ import './my_foo.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {} from './other_button1.js';
 import {getHtml} from './with_webui_plugin_web_component_missing_deps_violations.html.js';
 
 export class MyDummyElement extends CrLitElement {

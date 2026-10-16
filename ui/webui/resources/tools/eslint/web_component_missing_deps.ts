@@ -45,7 +45,7 @@ export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs<
               (node: TSESTree.ProgramStatement):
                   node is TSESTree.ImportDeclaration =>
                   isType(node, Node.ImportDeclaration) &&
-                  node.specifiers.length === 0)
+                  node.importKind === 'value' && node.specifiers.length === 0)
           .map(node => node.source.value);
     }
 
