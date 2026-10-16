@@ -303,7 +303,7 @@ void WebUIDataSourceImpl::UseStringsJs() {
 void WebUIDataSourceImpl::AddResourcePath(std::string_view path,
                                           int resource_id) {
   CHECK(!resources_frozen_);
-  path_to_idr_map_.insert_or_assign(std::string(path), resource_id);
+  path_to_idr_map_.insert_or_assign(path, resource_id);
 }
 
 void WebUIDataSourceImpl::AddResourcePaths(

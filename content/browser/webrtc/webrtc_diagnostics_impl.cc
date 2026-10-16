@@ -248,12 +248,13 @@ WebRtcDiagnosticsImpl::StartCaptureForClient(BrowserContext* context,
     return StartCaptureResult::kUnavailable;
   }
 
-  if (state->clients_.find(client_id) != state->clients_.end()) {
+  auto client_it = state->clients_.lower_bound(client_id);
+  if (client_it != state->clients_.end() && client_it->first == client_id) {
     return StartCaptureResult::kAlreadyCapturing;
   }
 
   const bool context_was_idle = !state->has_clients();
-  state->clients_.emplace(client_id, std::move(origins));
+  state->clients_.emplace_hint(client_it, client_id, std::move(origins));
 
   if (context_was_idle) {
     // Start from a clean cache for this profile so a session never sees data
