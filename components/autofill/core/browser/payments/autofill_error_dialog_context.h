@@ -10,7 +10,9 @@
 
 namespace autofill {
 
-// Keep in sync with `AutofillErrorDialogType` in enums.xml.
+// Keep in sync with `AutofillErrorDialogType` in enums.xml and with
+// `CWVAutofillErrorDialogType` in
+// ios/web_view/public/cwv_autofill_error_dialog_context.h.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AutofillErrorDialogType {
