@@ -18,6 +18,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -817,6 +818,9 @@ final class SidePanelContainerCoordinatorImpl
         } else {
             vis = View.VISIBLE;
             assert content.mTitle != null;
+            ImageView iconView = mContainerView.findViewById(R.id.side_panel_icon);
+            iconView.setImageDrawable(content.mIcon);
+            iconView.setVisibility(content.mIcon != null ? View.VISIBLE : View.GONE);
             TextView titleView = mContainerView.findViewById(R.id.side_panel_title);
             titleView.setText(content.mTitle);
             mContainerView

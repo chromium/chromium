@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -20,19 +21,20 @@ public final class SidePanelContent {
      */
     public final View mView;
 
-    /** The title of the side panel content, to be shown in the header. */
-    public final @Nullable String mTitle;
-
     /** Whether to render a header (with title and close button). */
     public final boolean mShowHeader;
 
-    public SidePanelContent(View view) {
-        this(view, /* title= */ null, /* showHeader= */ false);
-    }
+    /** The optional representative icon shown at the start of the header. */
+    public final @Nullable Drawable mIcon;
 
-    public SidePanelContent(View view, @Nullable String title, boolean showHeader) {
+    /** The title of the side panel content, to be shown in the header. */
+    public final @Nullable String mTitle;
+
+    public SidePanelContent(
+            View view, boolean showHeader, @Nullable Drawable icon, @Nullable String title) {
         mView = view;
-        mTitle = title;
         mShowHeader = showHeader;
+        mIcon = icon;
+        mTitle = title;
     }
 }

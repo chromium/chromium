@@ -9,4 +9,10 @@ found in the LICENSE file.
     <dimen name="side_panel_corner_radius">12dp</dimen>
     <dimen name="side_ui_container_padding">6dp</dimen>
     <dimen name="side_ui_container_web_content_height_top_padding">0dp</dimen>
+
+    <!-- Header -->
+    <dimen name="side_panel_header_height">44dp</dimen>
+    <dimen name="side_panel_header_horizontal_spacing">12dp</dimen>
+    <dimen name="side_panel_header_bottom_margin">6dp</dimen>
+    <dimen name="side_panel_header_icon_size">24dp</dimen>
 </resources>

@@ -32,10 +32,23 @@
         <LinearLayout
             android:id="@+id/side_panel_header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/side_panel_header_height"
+            android:layout_marginBottom="@dimen/side_panel_header_bottom_margin"
             android:orientation="horizontal"
-            android:padding="14dp"
+            android:paddingStart="@dimen/side_panel_header_horizontal_spacing"
+            android:paddingEnd="@dimen/side_panel_header_horizontal_spacing"
             android:gravity="center_vertical">
+
+            <!-- Representative icon -->
+            <ImageView
+                android:id="@+id/side_panel_icon"
+                android:layout_width="@dimen/side_panel_header_icon_size"
+                android:layout_height="@dimen/side_panel_header_icon_size"
+                android:layout_marginEnd=
+                    "@dimen/side_panel_header_horizontal_spacing"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
 
             <!-- Title -->
             <TextView
@@ -43,16 +56,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textAppearance=
                     "@style/TextAppearance.TextLargeThick.Primary" />
 
             <!-- Close button -->
             <ImageButton
                 android:id="@+id/side_panel_close_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/side_panel_header_icon_size"
+                android:layout_height="@dimen/side_panel_header_icon_size"
+                android:layout_marginStart=
+                    "@dimen/side_panel_header_horizontal_spacing"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/close"
+                android:scaleType="fitCenter"
                 android:src="@drawable/material_ic_close_24dp"
                 android:tint="@macro/default_icon_color" />
 

@@ -188,7 +188,8 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
         log(TAG, "startOpeningPanel", profile, sidePanelNativeView, title);
         mNativeBridgeSelector.startOpeningPanel(
                 profile,
-                new SidePanelContent(sidePanelNativeView, title, shouldShowHeader),
+                new SidePanelContent(
+                        sidePanelNativeView, shouldShowHeader, /* icon= */ null, title),
                 suppressAnimations || mDisableAnimationsForTesting);
     }
 
@@ -208,7 +209,9 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
             boolean shouldShowHeader) {
         log(TAG, "startReplacingPanelContent", profile, sidePanelNativeView, title);
         mNativeBridgeSelector.startReplacingPanelContent(
-                profile, new SidePanelContent(sidePanelNativeView, title, shouldShowHeader));
+                profile,
+                new SidePanelContent(
+                        sidePanelNativeView, shouldShowHeader, /* icon= */ null, title));
     }
 
     @CalledByNative
