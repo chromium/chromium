@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   "+chrome/browser/ash/magic_boost",
-  "+chrome/browser/manta",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/ash/mako",
@@ -32,8 +31,11 @@ specific_include_rules = {
     "+chrome/browser/feedback",
   ],
   # Exceptionally allow using g_browser_process for the profile keyed service.
+  # The factory DependsOn MantaServiceFactory and injects the MantaService into
+  # the service via its constructor.
   "lobster_service_provider\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/manta/manta_service_factory.h",
     "+chrome/browser/signin/identity_manager_factory.h",
   ],
   "lobster_feedback_unittest\\.cc": [
