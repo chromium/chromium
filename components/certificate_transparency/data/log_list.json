@@ -1,6 +1,6 @@
 {
-  "version": "95.1",
-  "log_list_timestamp": "2026-10-15T13:36:37Z",
+  "version": "95.2",
+  "log_list_timestamp": "2026-10-16T13:42:55Z",
   "operators": [
     {
       "name": "Google",
@@ -9,7 +9,7 @@
       ],
       "logs": [
         {
-          "description": "Google 'Argon2026h2' log",
+          "description": "Google Argon2026h2",
           "log_id": "1219ENGn9XfCx+lf1wC/+YLJM1pl4dCzAXMXwMjFaXc=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEKjpni/66DIYrSlGK6Rf+e6F2c/28ZUvDJ79N81+gyimAESAyeNZ++TRgjHWg9TVQnKHTSU0T1TtqDupFnSQTIg==",
           "url": "https://ct.googleapis.com/logs/us1/argon2026h2/",
@@ -25,7 +25,7 @@
           }
         },
         {
-          "description": "Google 'Argon2027h1'",
+          "description": "Google Argon2027h1",
           "log_id": "1tWNqdAXU/NqSqDHV0kCr+vH3CzTjNn3ZMgMiRkenwI=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEKHRm0H/zUaFA6Idz5cGvGO3tCPQyfGMgJmVBOPyKAP6mGM1IiNXi4CLomOUyYj0YN74p+eGVApFMsM4h/jzCsA==",
           "url": "https://ct.googleapis.com/logs/us1/argon2027h1/",
@@ -41,7 +41,7 @@
           }
         },
         {
-          "description": "Google 'Xenon2026h2' log",
+          "description": "Google Xenon2026h2",
           "log_id": "2AlVO5RPev/IFhlvlE+Fq7D4/F6HVSYPFdEucrtFSxQ=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5Xd4lXEos5XJpcx6TOgyA5Z7/C4duaTbQ6C9aXL5Rbqaw+mW1XDnDX7JlRUninIwZYZDU9wRRBhJmCVopzwFvw==",
           "url": "https://ct.googleapis.com/logs/eu1/xenon2026h2/",
@@ -57,7 +57,7 @@
           }
         },
         {
-          "description": "Google 'Xenon2027h1'",
+          "description": "Google Xenon2027h1",
           "log_id": "RMK9DOkUDmSlyUoBkwpaobs1lw4A7hEWiWgqHETXtWY=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/6WcA4VRSljIfTdY48+pFRLLtLrmTb88cGDdl8Gv3E2LduG4jgJ3AK5iNMFGhpbRRLi5B3rPlBaXVywuR5IFDg==",
           "url": "https://ct.googleapis.com/logs/eu1/xenon2027h1/",
@@ -75,7 +75,7 @@
       ],
       "tiled_logs": [
         {
-          "description": "Google 'ParcelYard2026h2' log",
+          "description": "Google ParcelYard2026h2",
           "log_id": "utuIpG+cr6QJDoLlk1bbbni0pT9YLbCBl5UkLym2jJg=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEP2H56bHx6pPm5mCku6PFpeRuA5Ux0gs8iwXIVhvVdbojs0pPwZqLtlIEoJNbjxMEePTYo/qDW85AjhMJITlavA==",
           "submission_url": "https://parcelyard2026h2.prod.certificate.transparency.goog/",
@@ -92,7 +92,7 @@
           }
         },
         {
-          "description": "Google 'ParcelYard2027h1' log",
+          "description": "Google ParcelYard2027h1",
           "log_id": "HIl0B+YBCgEpO7Z439ejaM6xjMpSHcyk04bkoy5bXQQ=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEX7i7gYwmBxpiLXAlM/VLk4BFzspJRmZA86iReO7NVRlwGL1KWb/Dv5DRXJNBZd+9uREkNUTee5yBy2dRdRGa0w==",
           "submission_url": "https://parcelyard2027h1.prod.certificate.transparency.goog/",
@@ -109,7 +109,7 @@
           }
         },
         {
-          "description": "Google 'ParcelYard2027h2' log",
+          "description": "Google ParcelYard2027h2",
           "log_id": "aYS3IzyydLLRRn2l4EDXH+upCiHniGU3Srn5vPhocjc=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE+CTFsoroxXi53eLT+x2T4gsMKOcqzYEhqSLjyF6uVfdgF8yBeyA2cDWsu6nmhKGhqyoohwLh3PPgXdltfPP3BA==",
           "submission_url": "https://parcelyard2027h2.prod.certificate.transparency.goog/",
@@ -126,7 +126,7 @@
           }
         },
         {
-          "description": "Google 'PlumbersArms2026h2' log",
+          "description": "Google PlumbersArms2026h2",
           "log_id": "IPBfqqOkkvxqwUjMM6ICNhhrSfqpfmuzkk+yXsNrHDU=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERcKG6mGyrCTtzkWBNT51LFFsM1lZ3ZPSIoXgVilDtnY0dyhwKSX7jomkXvdyqWr8DOP3HA6I6kzmREX5wpUvug==",
           "submission_url": "https://plumbersarms2026h2.prod.certificate.transparency.goog/",
@@ -143,7 +143,7 @@
           }
         },
         {
-          "description": "Google 'PlumbersArms2027h1' log",
+          "description": "Google PlumbersArms2027h1",
           "log_id": "X/nA+6QtrHjOZELrGazggaKb1OL7U68MYzB55QWCBMk=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAKYYdjIeQwDP0RIY9mhAVntX5s2ObMc2F6u8cELSbhvavljWD/OesJZHUtqQjBXE5Ekbpiq6nchmaVnEHHpJmw==",
           "submission_url": "https://plumbersarms2027h1.prod.certificate.transparency.goog/",
@@ -160,7 +160,7 @@
           }
         },
         {
-          "description": "Google 'PlumbersArms2027h2' log",
+          "description": "Google PlumbersArms2027h2",
           "log_id": "M3qex8rmqQSLdS8tk65+SyqQLSG0lxKdg+J5x1PJL4w=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHCu5hooSXlk8FAiSkoWiZJ5G9GzCiJhj3eoJ9p3F3ZzV2QgcgxWWI9f75vnFgygju+baK11dsf3bXHAo/+TL/Q==",
           "submission_url": "https://plumbersarms2027h2.prod.certificate.transparency.goog/",
@@ -185,7 +185,7 @@
       ],
       "logs": [
         {
-          "description": "Cloudflare 'Nimbus2026'",
+          "description": "Cloudflare Nimbus2026",
           "log_id": "yzj3FYl8hKFEX1vB3fvJbvKaWc1HCmkFhbDLFMMUWOc=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2FxhT6xq0iCATopC9gStS9SxHHmOKTLeaVNZ661488Aq8tARXQV+6+jB0983v5FkRm4OJxPqu29GJ1iG70Ahow==",
           "url": "https://ct.cloudflare.com/logs/nimbus2026/",
@@ -201,7 +201,7 @@
           }
         },
         {
-          "description": "Cloudflare 'Nimbus2027'",
+          "description": "Cloudflare Nimbus2027",
           "log_id": "TGPcmOWcHauI9h6KPd6uj6tEozd7X5uUw/uhnPzBviY=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEYjd/jE0EoAhNBbfcNhrTb7F0x10KZK8r2SDjx1GdjJ75hJrHx2OCQ+BXRjXi+czoREN1u0j9cWl8d6OoPMPogQ==",
           "url": "https://ct.cloudflare.com/logs/nimbus2027/",
@@ -226,7 +226,7 @@
       ],
       "logs": [
         {
-          "description": "DigiCert 'Wyvern2026h2'",
+          "description": "DigiCert Wyvern2026h2",
           "log_id": "wjF+V0UZo0XufzjespBB68fCIVoiv3/Vta12mtkOUs0=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEenPbSvLeT+zhFBu+pqk8IbhFEs16iCaRIFb1STLDdWzL6XwTdTWcbOzxMTzB3puME5K3rT0PoZyPSM50JxgjmQ==",
           "url": "https://wyvern.ct.digicert.com/2026h2/",
@@ -242,7 +242,7 @@
           }
         },
         {
-          "description": "DigiCert 'Wyvern2027h1'",
+          "description": "DigiCert Wyvern2027h1",
           "log_id": "ABpdGhwtk3W2SFV4+C9xoa5u7zl9KXyK4xV7yt7hoB4=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEastxYj1mntGuyv74k4f+yaIx+ZEzlSJ+iVTYWlw8SpSKJ4TfxYWuBhnETlhpyG/5seJn0mOSnVgXsZ1JRflI7g==",
           "url": "https://wyvern.ct.digicert.com/2027h1/",
@@ -258,7 +258,7 @@
           }
         },
         {
-          "description": "DigiCert 'Wyvern2027h2'",
+          "description": "DigiCert Wyvern2027h2",
           "log_id": "N6oHzCFvLm2RnHCdJNj3MbAPKxR8YhzAkaX6GoTYFt0=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuOg8hcgaYT/MShxpag2Hige0zsLzz8vOLZXp6faCdzM+Mn/njyU9ROAuwDxuu88/Grxn46kmehdOKVDFexbdSg==",
           "url": "https://wyvern.ct.digicert.com/2027h2/",
@@ -274,7 +274,7 @@
           }
         },
         {
-          "description": "DigiCert 'Sphinx2026h2'",
+          "description": "DigiCert Sphinx2026h2",
           "log_id": "lE5Dh/rswe+B8xkkJqgYZQHH0184AgE/cmd9VTcuGdg=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEquD0JkRQT/2inuaA4HC1sc6UpfiXgURVQmQcInmnZFnTiZMhZvsJgWAfYlU0OIykOC6slQzr7U9kvEVC9wZ6zQ==",
           "url": "https://sphinx.ct.digicert.com/2026h2/",
@@ -290,7 +290,7 @@
           }
         },
         {
-          "description": "DigiCert 'sphinx2027h1'",
+          "description": "DigiCert Sphinx2027h1",
           "log_id": "RqI5Z8YNtkaHxm89+ZmUdpOmphEghFfVVefj0KHZtkY=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvirIq1XPwgwG7BnbMh2zoUbEt+T8z8XAtg9lo8jma+aaTQl8iVCypUFXtLpt4/SHaoUzbvcjDX/6B1IbL3OoIQ==",
           "url": "https://sphinx.ct.digicert.com/2027h1/",
@@ -306,7 +306,7 @@
           }
         },
         {
-          "description": "DigiCert 'sphinx2027h2'",
+          "description": "DigiCert Sphinx2027h2",
           "log_id": "H7D4qS2K3aEhd2wF4qouFbrLxitlOTaVV2qqtS4R0R0=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEUCe23M889mAsUVeTTBcNsAmP374ZWQboLdR8RdGwM3VZ6P/sDwhrL7wK4zrXPh3HwLDDLxDjvRBeivUSbpZSwA==",
           "url": "https://sphinx.ct.digicert.com/2027h2/",
@@ -331,7 +331,7 @@
       ],
       "logs": [
         {
-          "description": "Sectigo 'Mammoth2026h2'",
+          "description": "Sectigo Mammoth2026h2",
           "log_id": "lLHBirDQV8R74KwEDh8svI3DdXJ7yVHyClJhJoY7pzw=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7INh8te0u+TkO+vIY3WYz2GQYxQ9XyLfdLpQp1ibaX3mY4lt2ddRhD/4AtjI/8KXceV+J/VysY8kJ1cKDXTAtg==",
           "url": "https://mammoth2026h2.ct.sectigo.com/",
@@ -351,7 +351,7 @@
           }
         },
         {
-          "description": "Sectigo 'Sabre2026h2'",
+          "description": "Sectigo Sabre2026h2",
           "log_id": "H1bRq5RwSkHdP+r99GmTVTAsFDG/5hNGCJ//rnldzC8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzjXK7DkHgtp3J4bk8n7F3Djym6mrjKfA7YMePmobwPCVVroyM0x1fAkH6eE+ZTVj8Em+ctGqna99CMS0jVk9cw==",
           "url": "https://sabre2026h2.ct.sectigo.com/",
@@ -371,7 +371,7 @@
           }
         },
         {
-          "description": "Sectigo 'Elephant2026h2'",
+          "description": "Sectigo Elephant2026h2",
           "log_id": "r2eIO1ewTt2Pptl+9i6o64EKx3Fg8CReVdYML+eFhzo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEO/t4Uwkoou78zkCchh9tfAKbIUJmbOoUAb8szD8StnnHFKAVY5kq1Ljs8YD7CfzdD7xcVjmQYpbtNUhxRMRtmA==",
           "url": "https://elephant2026h2.ct.sectigo.com/",
@@ -387,7 +387,7 @@
           }
         },
         {
-          "description": "Sectigo 'Elephant2027h1'",
+          "description": "Sectigo Elephant2027h1",
           "log_id": "YEyar3p/d18B1Ab8kg3ImesLHH34yVIb+voXdzuXi8k=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE4fu36JygUwaaVO+ddWJ97FJZlA5SjPLmT+RHwg0pavkIrbT1b5LNQrsaEw0CoGraf7BkzKZf7PC8gYAScw2woA==",
           "url": "https://elephant2027h1.ct.sectigo.com/",
@@ -403,7 +403,7 @@
           }
         },
         {
-          "description": "Sectigo 'Elephant2027h2'",
+          "description": "Sectigo Elephant2027h2",
           "log_id": "okkM3NuOM6QAMhdg1tTVGiA2GR6nfZaL4mqKAPb///c=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAECTPhpJnRFroRRpP/1DdAns+PrnmUywtqIV+EeL4Jg8zKouoW7kuAkYo+kZeoHtyK7CBhflIlMk7T2Qrn4w/t8g==",
           "url": "https://elephant2027h2.ct.sectigo.com/",
@@ -419,7 +419,7 @@
           }
         },
         {
-          "description": "Sectigo 'Tiger2026h2'",
+          "description": "Sectigo Tiger2026h2",
           "log_id": "yKPEf8ezrbk1awE/anoSbeM6TkOlxkb5l605dZkdz5o=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfJFUD/FRkonvZIA9ZT1J3yvA4EpSp3innbIVpMTDR1oCe5vguapheQ7wYiWaCES1EL1B+2BEC+P5bUfwF44lnA==",
           "url": "https://tiger2026h2.ct.sectigo.com/",
@@ -435,7 +435,7 @@
           }
         },
         {
-          "description": "Sectigo 'Tiger2027h1'",
+          "description": "Sectigo Tiger2027h1",
           "log_id": "HJ9oLOn68EVpUPgbloqH3dsyENhM5siy44JSSsTPWZ8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmMQofpsDjCVYzF4jXdFWM/ioYBJIPcsQQrNAHE6v4lOsADoI+/jN1lph8x4K3NgnXDXwmyJcFwRYgVOBMhaYhA==",
           "url": "https://tiger2027h1.ct.sectigo.com/",
@@ -451,7 +451,7 @@
           }
         },
         {
-          "description": "Sectigo 'Tiger2027h2'",
+          "description": "Sectigo Tiger2027h2",
           "log_id": "A4AqwmL24F4D+Lxve5hRMk/Xaj31t1lRdeIi+46b1fY=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEb0AgkemhsPmYe1goCSy5ncf2lG9vtK6f+SzODKJMYEgPOT+z93cUEKM1EaTuo09rozfdqhjeihIl25y9A3JhyQ==",
           "url": "https://tiger2027h2.ct.sectigo.com/",
@@ -613,7 +613,7 @@
       ],
       "logs": [
         {
-          "description": "Let's Encrypt 'Oak2026h2'",
+          "description": "Let's Encrypt Oak2026h2",
           "log_id": "rKswcGzr7IQx9BPS9JFfER5CJEOx8qaMTzwrO6ceAsM=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEanCds5bj7IU2lcNPnIvZfMnVkSmu69aH3AS8O/Y0D/bbCPdSqYjvuz9Z1tT29PxcqYxf+w1g5CwPFuwqsm3rFQ==",
           "url": "https://oak.ct.letsencrypt.org/2026h2/",
@@ -631,7 +631,7 @@
       ],
       "tiled_logs": [
         {
-          "description": "Let's Encrypt 'Sycamore2026h2'",
+          "description": "Let's Encrypt Sycamore2026h2",
           "log_id": "bP5QGUOoXqkWvFLRM+TcyR7xQRx9JYQg0XOAnhgY6zo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwR1FtiiMbpvxR+sIeiZ5JSCIDIdTAPh7OrpdchcrCcyNVDvNUq358pqJx2qdyrOI+EjGxZ7UiPcN3bL3Q99FqA==",
           "submission_url": "https://log.sycamore.ct.letsencrypt.org/2026h2/",
@@ -648,7 +648,7 @@
           }
         },
         {
-          "description": "Let's Encrypt 'Sycamore2027h1'",
+          "description": "Let's Encrypt Sycamore2027h1",
           "log_id": "jspHC6zeavOiBrCkeoS3Rv4fxr+VPiXmm07kAkjzxug=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWrGdYyZYB7teCS4K/oKIsbV0yVBSgjlOwO22OOCoA6Y252QhFzC8Wg7oVXVKqfkWaSaM/n+3pfCBf4BAkpdx8g==",
           "submission_url": "https://log.sycamore.ct.letsencrypt.org/2027h1/",
@@ -665,7 +665,7 @@
           }
         },
         {
-          "description": "Let's Encrypt 'Sycamore2027h2'",
+          "description": "Let's Encrypt Sycamore2027h2",
           "log_id": "5eNiR9ku9K2jhYO1NZHbcp/C8ArktnRRdNPd/GqiU4g=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK+2zy2UWRMIyC2jU46+rj8UsyMjLsQIr1Y/6ClbdpWGthUb8y3Maf4zfAZTWW+AH9wAWPLRL5vmtz7Zkh2f2nA==",
           "submission_url": "https://log.sycamore.ct.letsencrypt.org/2027h2/",
@@ -682,7 +682,7 @@
           }
         },
         {
-          "description": "Let's Encrypt 'Willow2026h2'",
+          "description": "Let's Encrypt Willow2026h2",
           "log_id": "qCbL4wrGNRJGUz/gZfFPGdluGQgTxB3ZbXkAsxI8VSc=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEp8wH8R6zfM+UhsQq5un+lPdNTDkzcgkWLi1DwyqU6T00mtP5/CuGjvpw4mIz89I6KV5ZvhRHt5ZTF6qe24pqiA==",
           "submission_url": "https://log.willow.ct.letsencrypt.org/2026h2/",
@@ -699,7 +699,7 @@
           }
         },
         {
-          "description": "Let's Encrypt 'Willow2027h1'",
+          "description": "Let's Encrypt Willow2027h1",
           "log_id": "ooEAGHNOF24dR+CVQPOBulRml81jqENQcW64CU7a8Q0=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzsMKtojO0BVB4t59lVyAhxtqObVA+wId5BpJGA8pZrw5GTjzuhpvLu/heQGi0hHCeislkDe34N/2D0SwEUBE0w==",
           "submission_url": "https://log.willow.ct.letsencrypt.org/2027h1/",
@@ -716,7 +716,7 @@
           }
         },
         {
-          "description": "Let's Encrypt 'Willow2027h2'",
+          "description": "Let's Encrypt Willow2027h2",
           "log_id": "ppWirZJtb5lujvxJAUJX2LvwRqfWJYm4jcLXh2x45S8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEYbMDg0qQEEYjsTttdDlouTKhg3fRiMJYNE+Epr/2bXyeQdQOHKQNKv5sbIKxjtE/5Vqo9YjQbnaOeH4Wm4PhdQ==",
           "submission_url": "https://log.willow.ct.letsencrypt.org/2027h2/",
@@ -809,7 +809,7 @@
       ],
       "logs": [
         {
-          "description": "TrustAsia 'log2026a'",
+          "description": "TrustAsia log2026a",
           "log_id": "dNudWPfUfp39eHoWKpkcGM9pjafHKZGMmhiwRQ26RLw=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEp056yaYH+f907JjLSeEAJLNZLoP9wHA1M0xjynSDwDxbU0B8MR81pF8P5O5PiRfoWy7FrAAFyXY3RZcDFf9gWQ==",
           "url": "https://ct2026-a.trustasia.com/log2026a/",
@@ -825,7 +825,7 @@
           }
         },
         {
-          "description": "TrustAsia 'log2026b'",
+          "description": "TrustAsia log2026b",
           "log_id": "Jbfv3qETAZPtkweXcKoyKiZiDeNayKp8dRl94LGp4GU=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEDxKMqebj7GLu31jIUOYmcHYQtwQ5s6f4THM7wzhaEgBM4NoOFopFMgoxqiLHnX0FU8eelOqbV0a/T6R++9/6hQ==",
           "url": "https://ct2026-b.trustasia.com/log2026b/",
@@ -841,7 +841,7 @@
           }
         },
         {
-          "description": "TrustAsia 'HETU2027'",
+          "description": "TrustAsia HETU2027",
           "log_id": "7drrgVxjITRJtHvlB3kFq9DZMUfCesUUazvFjkPptsc=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE14jG8D9suqIVWPtTNOL33uXKZ4mUnnOMrIwOWeZU7GtoDRCWIXfy/9/SC8lTAbtP2NOP4wjIufAk6f64sY4DWg==",
           "url": "https://hetu2027.trustasia.com/hetu2027/",
@@ -902,7 +902,7 @@
       ],
       "tiled_logs": [
         {
-          "description": "Geomys 'Tuscolo2026h2'",
+          "description": "Geomys Tuscolo2026h2",
           "log_id": "Rq+GPTs+5Z+ld96oJF02sNntIqIj9GF3QSKUUu6VUF8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaA6P0i7JTsd9XfzF1/76avRWA3XXI4NStsFO/aFtBp6SY7olDEMiPSFSxGzFQjKA1r9vgG/oFQwurlWMy9FQNw==",
           "submission_url": "https://tuscolo2026h2.sunlight.geomys.org/",
@@ -919,7 +919,7 @@
           }
         },
         {
-          "description": "Geomys 'Tuscolo2027h1'",
+          "description": "Geomys Tuscolo2027h1",
           "log_id": "WW5sM4aUsllyolbIoOjdkEp26Ag92oc7AQg4KBQ87lk=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOYwwGoaNpZ/SQW0VNGICP7wGRQsSeEowTRl4DPSdPjSkO/+ouvFH78I8sQTR3FWPZDScALbclBqnqL0ptY8beA==",
           "submission_url": "https://tuscolo2027h1.sunlight.geomys.org/",
@@ -936,7 +936,7 @@
           }
         },
         {
-          "description": "Geomys 'Tuscolo2027h2'",
+          "description": "Geomys Tuscolo2027h2",
           "log_id": "1d5V7roItgyf/BjFE75qYLoARga8WVuWu0T2LMV9Ofo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIAz2gOD7wIptaiLTnmR4k7AQwp5kFmqmGHY/8JmMJxaSHyAipoFA/YSBCTX7ZowxIkSKpZYGlqLtdLVcLWDS5w==",
           "submission_url": "https://tuscolo2027h2.sunlight.geomys.org/",
@@ -1098,7 +1098,7 @@
       ],
       "tiled_logs": [
         {
-          "description": "IPng Networks 'Halloumi2026h2a'",
+          "description": "IPng Networks Halloumi2026h2a",
           "log_id": "JuNkblhpISO8ND9HJDWbN5LNJFqI2BXTkzP9mRirRyM=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEiGh4zMsdukTgrdk9iPIwz9OfU9TQVi4Mxufpmnlrzv3ivJcxVhrST4XQSeQoF5LlFVIU6PL4IzrYl12BUWn9rQ==",
           "submission_url": "https://halloumi2026h2a.log.ct.ipng.ch/",
@@ -1115,7 +1115,7 @@
           }
         },
         {
-          "description": "IPng Networks 'Halloumi2027h1'",
+          "description": "IPng Networks Halloumi2027h1",
           "log_id": "ROgi/CurDpLu0On61pZkYCd20Bdg4IkFCckjobA/w38=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEw5SUl2yfd5TFSqUGv7A+I5+TpLe+zEccmtWVQakQQtOHYKqH8TbycalFx5xaqE5PU4NEwwnAJ9FWeT/6QaovZw==",
           "submission_url": "https://halloumi2027h1.log.ct.ipng.ch/",
@@ -1132,7 +1132,7 @@
           }
         },
         {
-          "description": "IPng Networks 'Halloumi2027h2'",
+          "description": "IPng Networks Halloumi2027h2",
           "log_id": "CRV/Yy1Gx/dtlSZUk7wPALOVrF2zorJr+wQ9ukrGOJM=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErmKbFkPG7QfQUARhbIik8vVbIkXhK+YMB6TvLZkyhnzv7wedn+l7VChqovZHKOQXmZEd4B+3ljovIpQz2HmyHA==",
           "submission_url": "https://halloumi2027h2.log.ct.ipng.ch/",
@@ -1149,7 +1149,7 @@
           }
         },
         {
-          "description": "IPng Networks 'Gouda2026h2'",
+          "description": "IPng Networks Gouda2026h2",
           "log_id": "Goudaw/+v4G0eTnG0jEKhtbRAtTwRuIYLJ3jX14mJe8=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjayczmhUMNftWy6VjvYXcTUEpvL8LIAKcYcxrxx5xxQGZEVvhnZeCnXVlsMWhq1h9J55eZfQWM/dqIr6GmoN9Q==",
           "submission_url": "https://gouda2026h2.log.ct.ipng.ch/",
@@ -1166,7 +1166,7 @@
           }
         },
         {
-          "description": "IPng Networks 'Gouda2027h1'",
+          "description": "IPng Networks Gouda2027h1",
           "log_id": "Gouda43XkdHNBUnttgNV1ga2T60w23H+eI8Px8j7xLE=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOh11B2aRT9BiTqo+6kvQ7cSGf819Ait+jGc6AuHlGUXxWCX1YCQ9OFNnr6MUKStyw4sVin5FCvtbke1mctl3gQ==",
           "submission_url": "https://gouda2027h1.log.ct.ipng.ch/",
@@ -1183,7 +1183,7 @@
           }
         },
         {
-          "description": "IPng Networks 'Gouda2027h2'",
+          "description": "IPng Networks Gouda2027h2",
           "log_id": "GoudaVNi2GSSp7niI2BuNOzp4xC6NPuTBXhdKc5XV+s=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEPuxPH20sSqUzHGllZceceFvyoSffwBWgX4LKd8wk3A3ayZuwwh2pDuEOsimMxLXFh0IUYz73a9I7kxkUqM+N8w==",
           "submission_url": "https://gouda2027h2.log.ct.ipng.ch/",
