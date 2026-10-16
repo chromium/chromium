@@ -1,8 +1,4 @@
 This is a wdspec test.
-[FAIL] test_response_status[101-Switching Protocols]
-  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: signal is aborted without reason
-[FAIL] test_response_status[407-Proxy Authentication Required]
-  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
 [FAIL] test_www_authenticate
   asyncio.exceptions.CancelledError
 Harness: the test ran to completion.

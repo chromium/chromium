@@ -7416,9 +7416,6 @@ crbug.com/455194902 [ Mac15-arm64 ] wpt_internal/speculation-rules/prefetch/no-v
 [ Fuchsia ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 [ Mac ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 [ Win ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
-# WebDriver BiDi WPT network interception tests are not stable yet.
-# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2045.
-[ Linux ] external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Pass ]
 
 # Gardener 2024-03-21 (PST)
 crbug.com/330668788 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-seeking.html [ Failure Pass ]
