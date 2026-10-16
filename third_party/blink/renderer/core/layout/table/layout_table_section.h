@@ -47,6 +47,7 @@ class CORE_EXPORT LayoutTableSection : public LayoutBlock {
                       const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
+  LayoutBlock* CreateAnonymousChild() const override;
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
@@ -79,9 +80,6 @@ class CORE_EXPORT LayoutTableSection : public LayoutBlock {
   unsigned NumRows() const;
 
  private:
-  void AddChildBeforeDescendant(LayoutObject* new_child,
-                                LayoutObject* before_descendant);
-
   bool IsTableSection() const final {
     NOT_DESTROYED();
     return true;
@@ -95,6 +93,11 @@ class CORE_EXPORT LayoutTableSection : public LayoutBlock {
   bool IsEligibleForSizeContainment() const final {
     NOT_DESTROYED();
     return false;
+  }
+
+  bool CanBeDirectChild(const LayoutObject& child) const override {
+    NOT_DESTROYED();
+    return child.IsTableRow();
   }
 
   bool CanMergeWith(const LayoutBoxModelObject& other) const override {

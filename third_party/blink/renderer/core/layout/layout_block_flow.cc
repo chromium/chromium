@@ -264,7 +264,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
     // and that is not inline level, but IsInline().
     if (new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) {
       // No suitable existing anonymous block-flow - create a new one.
-      auto* new_block_flow = To<LayoutBlockFlow>(CreateAnonymousBlock());
+      auto* new_block_flow = To<LayoutBlockFlow>(CreateAnonymousChild());
       LayoutBox::AddChild(new_block_flow, before_child);
       // Reparent adjacent floating or out-of-flow siblings to the new block.
       ReparentPrecedingFloatingOrOutOfFlow(this, new_block_flow,
@@ -523,7 +523,7 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
 
     child = inline_run_end->NextSibling();
 
-    LayoutBlock* block = CreateAnonymousBlock();
+    LayoutBlock* block = CreateAnonymousChild();
     Children()->InsertChildNode(this, block, inline_run_start);
     MoveChildrenTo(block, inline_run_start, child,
                    /*full_remove_insert=*/true);

@@ -126,16 +126,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   const char* GetName() const override;
 
- private:
-  // Insert a child correctly into the tree when |before_descendant| isn't a
-  // direct child of |this|. This happens e.g. when there's an anonymous block
-  // child of |this| and |before_descendant| has been reparented into that one.
-  // Such things are invisible to the DOM, and addChild() is typically called
-  // with the DOM tree (and not the layout tree) in mind.
-  void AddChildBeforeDescendant(LayoutObject* new_child,
-                                LayoutObject* before_descendant);
-
- public:
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
@@ -146,7 +136,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   static LayoutBlock* CreateAnonymousWithParentAndDisplay(
       const LayoutObject*,
       EDisplay = EDisplay::kBlock);
-  LayoutBlock* CreateAnonymousBlock() const {
+  virtual LayoutBlock* CreateAnonymousChild() const {
     NOT_DESTROYED();
     return CreateAnonymousWithParentAndDisplay(this, EDisplay::kBlock);
   }
@@ -220,6 +210,11 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool IsLayoutBlock() const final {
     NOT_DESTROYED();
     return true;
+  }
+
+  virtual bool CanBeDirectChild(const LayoutObject& child) const {
+    NOT_DESTROYED();
+    return !child.IsInline() && !child.IsTablePart();
   }
 
  protected:

@@ -209,63 +209,11 @@ bool LayoutTable::HasBackgroundForPaint() const {
   return false;
 }
 
-void LayoutTable::AddChildBeforeDescendant(LayoutObject* new_child,
-                                           LayoutObject* before_descendant,
-                                           bool can_be_direct_child) {
-  NOT_DESTROYED();
-  DCHECK_NE(before_descendant->Parent(), this);
-
-  if (can_be_direct_child) {
-    LayoutObject* before_child =
-        SplitAnonymousBoxesAroundChild(before_descendant);
-    DCHECK_EQ(before_child->Parent(), this);
-    AddChild(new_child, before_child);
-    return;
-  }
-
-  LayoutObject* before_descendant_container = before_descendant->Parent();
-  while (before_descendant_container->Parent() != this) {
-    before_descendant_container = before_descendant_container->Parent();
-  }
-  CHECK(before_descendant_container->IsAnonymous());
-  CHECK(before_descendant_container->IsTableSection());
-
-  // Insert the child into the anonymous table-section instead of here.
-  before_descendant_container->AddChild(new_child, before_descendant);
-}
-
 void LayoutTable::AddChild(LayoutObject* new_child,
                            LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
-
-  const bool can_be_direct_child = new_child->IsTableCaption() ||
-                                   new_child->IsLayoutTableCol() ||
-                                   new_child->IsTableSection();
-
-  if (before_child && before_child->Parent() != this) {
-    AddChildBeforeDescendant(new_child, before_child, can_be_direct_child);
-    return;
-  }
-
-  if (!can_be_direct_child) {
-    LayoutObject* after_child =
-        before_child ? before_child->PreviousSibling() : LastChild();
-
-    if (after_child && after_child->IsAnonymous()) {
-      after_child->AddChild(new_child);
-      return;
-    }
-
-    // No suitable existing anonymous table-section - create a new one.
-    LayoutTableSection* section =
-        LayoutTableSection::CreateAnonymousWithParent(*this);
-    LayoutBox::AddChild(section, before_child);
-    section->AddChild(new_child);
-    return;
-  }
-
-  LayoutBox::AddChild(new_child, before_child);
+  LayoutBlock::AddChild(new_child, before_child);
 }
 
 void LayoutTable::RemoveChild(LayoutObject* child) {
@@ -293,6 +241,11 @@ void LayoutTable::StyleDidChange(
       GridBordersChanged();
   }
   LayoutBlock::StyleDidChange(diff, old_style, new_style, style_change_context);
+}
+
+LayoutBlock* LayoutTable::CreateAnonymousChild() const {
+  NOT_DESTROYED();
+  return LayoutTableSection::CreateAnonymousWithParent(*this);
 }
 
 LayoutBox* LayoutTable::CreateAnonymousBoxWithSameTypeAs(

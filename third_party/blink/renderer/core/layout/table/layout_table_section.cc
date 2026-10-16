@@ -45,60 +45,13 @@ LayoutTable* LayoutTableSection::Table() const {
   return To<LayoutTable>(Parent());
 }
 
-void LayoutTableSection::AddChildBeforeDescendant(
-    LayoutObject* new_child,
-    LayoutObject* before_descendant) {
-  NOT_DESTROYED();
-  DCHECK_NE(before_descendant->Parent(), this);
-
-  if (new_child->IsTableRow()) {
-    LayoutObject* before_child =
-        SplitAnonymousBoxesAroundChild(before_descendant);
-    DCHECK_EQ(before_child->Parent(), this);
-    AddChild(new_child, before_child);
-    return;
-  }
-
-  LayoutObject* before_descendant_container = before_descendant->Parent();
-  while (before_descendant_container->Parent() != this) {
-    before_descendant_container = before_descendant_container->Parent();
-  }
-  CHECK(before_descendant_container->IsAnonymous());
-  CHECK(before_descendant_container->IsTableRow());
-
-  // Insert the child into the anonymous table-row instead of here.
-  before_descendant_container->AddChild(new_child, before_descendant);
-}
-
 void LayoutTableSection::AddChild(LayoutObject* new_child,
                                   LayoutObject* before_child) {
   NOT_DESTROYED();
   if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
   }
-
-  if (before_child && before_child->Parent() != this) {
-    AddChildBeforeDescendant(new_child, before_child);
-    return;
-  }
-
-  if (!new_child->IsTableRow()) {
-    LayoutObject* after_child =
-        before_child ? before_child->PreviousSibling() : LastChild();
-
-    if (after_child && after_child->IsAnonymous()) {
-      after_child->AddChild(new_child);
-      return;
-    }
-
-    // No suitable existing anonymous table-row - create a new one.
-    LayoutTableRow* row = LayoutTableRow::CreateAnonymousWithParent(*this);
-    LayoutBox::AddChild(row, before_child);
-    row->AddChild(new_child);
-    return;
-  }
-
-  LayoutBox::AddChild(new_child, before_child);
+  LayoutBlock::AddChild(new_child, before_child);
 }
 
 void LayoutTableSection::RemoveChild(LayoutObject* child) {
@@ -131,6 +84,11 @@ void LayoutTableSection::StyleDidChange(
     }
   }
   LayoutBlock::StyleDidChange(diff, old_style, new_style, style_change_context);
+}
+
+LayoutBlock* LayoutTableSection::CreateAnonymousChild() const {
+  NOT_DESTROYED();
+  return LayoutTableRow::CreateAnonymousWithParent(*this);
 }
 
 LayoutBox* LayoutTableSection::CreateAnonymousBoxWithSameTypeAs(

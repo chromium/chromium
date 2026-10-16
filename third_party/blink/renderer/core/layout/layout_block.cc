@@ -118,65 +118,57 @@ bool LayoutBlock::RespectsCSSOverflow() const {
   return GetNode() != GetDocument().ViewportDefiningElement();
 }
 
-void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
-                                           LayoutObject* before_descendant) {
-  NOT_DESTROYED();
-  DCHECK(!IsLayoutBlockFlow());
-  DCHECK_NE(before_descendant->Parent(), this);
-
-  if (!new_child->IsInline() && !new_child->IsTablePart()) {
-    LayoutObject* before_child =
-        SplitAnonymousBoxesAroundChild(before_descendant);
-
-    DCHECK_EQ(before_child->Parent(), this);
-    AddChild(new_child, before_child);
-    return;
-  }
-
-  LayoutObject* before_descendant_container = before_descendant->Parent();
-  while (before_descendant_container->Parent() != this) {
-    before_descendant_container = before_descendant_container->Parent();
-  }
-  CHECK(before_descendant_container->IsAnonymous());
-  CHECK(before_descendant_container->IsLayoutBlockFlow());
-
-  // Insert the child into the anonymous block-flow instead of here.
-  before_descendant_container->AddChild(new_child, before_descendant);
-}
-
 void LayoutBlock::AddChild(LayoutObject* new_child,
                            LayoutObject* before_child) {
   NOT_DESTROYED();
-  if (before_child && before_child->Parent() != this) {
-    AddChildBeforeDescendant(new_child, before_child);
-    return;
-  }
-
-  // Only LayoutBlockFlow should have inline children, and then we shouldn't be
-  // here.
+  DCHECK(!IsLayoutBlockFlow() || IsLayoutCustom());
   DCHECK(!ChildrenInline());
 
-  if (new_child->IsInline() || new_child->IsTablePart()) {
-    // If we're inserting an inline child but all of our children are blocks,
-    // then we have to make sure it is put into an anomyous block box. We try to
-    // use an existing anonymous box if possible, otherwise a new one is created
-    // and inserted into our list of children in the appropriate position.
-    LayoutObject* after_child =
-        before_child ? before_child->PreviousSibling() : LastChild();
+  const bool is_before_child_a_direct_child =
+      !before_child || before_child->Parent() == this;
 
-    if (after_child && after_child->IsAnonymousBlockFlow()) {
-      after_child->AddChild(new_child);
-      return;
+  // First check if this child is allowed to be a direct child of `this`.
+  if (CanBeDirectChild(*new_child)) {
+    // If `before_child` is not a direct child (it's wrapped in some anonymous
+    // objects), split these anonymous objects so that we can insert
+    // `new_child` between them.
+    if (!is_before_child_a_direct_child) {
+      before_child = SplitAnonymousBoxesAroundChild(before_child);
+      DCHECK_EQ(before_child->Parent(), this);
     }
-
-    // No suitable existing anonymous box - create a new one.
-    LayoutBlock* new_box = CreateAnonymousBlock();
-    LayoutBox::AddChild(new_box, before_child);
-    new_box->AddChild(new_child);
+    LayoutBox::AddChild(new_child, before_child);
     return;
   }
 
-  LayoutBox::AddChild(new_child, before_child);
+  // We are inserting a child which isn't allowed to be a direct child of
+  // `this`.
+
+  if (!is_before_child_a_direct_child) {
+    // If `before_child` is not a direct child, find the anonymous wrapper
+    // which is a direct child of `this`, and insert `new_child`.
+    LayoutObject* before_child_container = before_child->Parent();
+    while (before_child_container->Parent() != this) {
+      before_child_container = before_child_container->Parent();
+    }
+    CHECK(before_child_container->IsAnonymous());
+    before_child_container->AddChild(new_child, before_child);
+    return;
+  }
+
+  // We have to insert `new_child` within an anonymous wrapper. `before_child`
+  // is a direct child - so check if the object before it is anonymous, if so
+  // insert `new_child` within that wrapper.
+  LayoutObject* after_child =
+      before_child ? before_child->PreviousSibling() : LastChild();
+  if (after_child && after_child->IsAnonymous()) {
+    after_child->AddChild(new_child);
+    return;
+  }
+
+  // We didn't find a suitable anonymous wrapper, create a new one.
+  LayoutBlock* anonymous = CreateAnonymousChild();
+  LayoutBox::AddChild(anonymous, before_child);
+  anonymous->AddChild(new_child);
 }
 
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
