@@ -165,12 +165,11 @@ public class ProfileDataCacheIntegrationTest {
         mSigninTestRule.addAccount(account);
         waitForCachedAccounts(List.of(account));
 
-        // Adding an account triggers an onRefreshTokenUpdatedForAccount(), which caused a cache
-        // rebuild and trigger onAccountsUpdated() and onProfileDataUpdated() for that account.
-        // AccountTrackerService triggers two onExtendedAccountInfoUpdated() for each added account
-        // - one for the account info, another for the avatar image.
+        // Both onExtendedAccountInfoUpdated() calls for the new account (account info and avatar
+        // image) arrive before its refresh token and are ignored. The following
+        // onRefreshTokenUpdatedForAccount() adds the account and notifies about it once.
         assertAccountsUpdatedCount(1);
-        assertProfileDataUpdatedCount(3);
+        assertProfileDataUpdatedCount(1);
     }
 
     @Test
@@ -202,6 +201,28 @@ public class ProfileDataCacheIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testAddNextAccountShouldNotifyAboutAccountsListAndNewlyAddedAccountChange_withIdentityManagerSourceOfTruth() {
+        addAccounts(mLargeAccountsList);
+        createProfileDataCache();
+
+        final AccountInfo newAccount = createAccount(LARGE_ACCOUNTS_LIST_SIZE);
+        mSigninTestRule.addAccount(newAccount);
+        final List<AccountInfo> expectedAccounts = new ArrayList<>(mLargeAccountsList);
+        expectedAccounts.add(newAccount);
+        waitForCachedAccounts(expectedAccounts);
+
+        // Both onExtendedAccountInfoUpdated() calls for the new account (account info and avatar
+        // image) arrive before its refresh token and are ignored. The following
+        // onRefreshTokenUpdatedForAccount() adds the account and notifies about it once. The
+        // refresh token updates of the other accounts are ignored, as they are already known.
+        assertAccountsUpdatedCount(1);
+        assertProfileDataUpdatedCount(1);
+    }
+
+    @Test
+    @MediumTest
     @DisableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
     public void
             testUpdateExistingAccountShouldNotifyAboutAccountsListAndUpdatedAccountChange_withAmfSourceOfTruth() {
@@ -221,6 +242,28 @@ public class ProfileDataCacheIntegrationTest {
         // account has been changed.
         assertAccountsUpdatedCount(1);
         assertProfileDataUpdatedCount(LARGE_ACCOUNTS_LIST_SIZE + 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testUpdateExistingAccountShouldNotifyAboutUpdatedAccountChange_withIdentityManagerSourceOfTruth() {
+        addAccounts(mLargeAccountsList);
+        createProfileDataCache();
+
+        final AccountInfo account = mLargeAccountsList.get(0);
+        final String newFullName = "Updated Full Name";
+        mSigninTestRule.updateAccount(
+                new AccountInfo.Builder(account).fullName(newFullName).build());
+        CriteriaHelper.pollUiThread(
+                () -> newFullName.equals(mProfileDataCache.getById(account.getId()).getFullName()),
+                "The cache wasn't updated with the new full name");
+
+        // The account info update only refreshes the updated account. The following refresh token
+        // updates are ignored, as all the accounts are already known.
+        assertAccountsUpdatedCount(0);
+        assertProfileDataUpdatedCount(1);
     }
 
     @Test
@@ -294,6 +337,24 @@ public class ProfileDataCacheIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testRemoveAccountShouldNotifyAboutAccountsListAndRemovedAccountChange_withIdentityManagerSourceOfTruth() {
+        addAccounts(mLargeAccountsList);
+        createProfileDataCache();
+
+        mSigninTestRule.removeAccount(mLargeAccountsList.get(LARGE_ACCOUNTS_LIST_SIZE - 1).getId());
+        waitForCachedAccounts(mLargeAccountsList.subList(0, LARGE_ACCOUNTS_LIST_SIZE - 1));
+
+        // The refresh token removal rebuilds the cache of the LARGE_ACCOUNTS_LIST_SIZE - 1
+        // remaining accounts. Their
+        // refresh token updates are ignored, as all of them are already known.
+        assertAccountsUpdatedCount(1);
+        assertProfileDataUpdatedCount(LARGE_ACCOUNTS_LIST_SIZE - 1);
+    }
+
+    @Test
+    @MediumTest
     @DisableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
     public void testSigninShouldNotNotifyAboutAccountsListOrSignedinAccount_withAmfSourceOfTruth() {
         addAccounts(mLargeAccountsList);
@@ -333,6 +394,24 @@ public class ProfileDataCacheIntegrationTest {
         mSigninTestRule.signOut();
         ThreadUtils.runOnUiThreadBlocking(() -> assertFalse(mIdentityManager.hasPrimaryAccount()));
 
+        assertAccountsUpdatedCount(0);
+        assertProfileDataUpdatedCount(0);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+    public void
+            testSignoutShouldNotNotifyAboutAccountsListOrSignedOutAccount_withIdentityManagerSourceOfTruth() {
+        addAccounts(mLargeAccountsList);
+        mSigninTestRule.signin(mLargeAccountsList.get(0));
+
+        createProfileDataCache();
+        mSigninTestRule.signOut();
+        ThreadUtils.runOnUiThreadBlocking(() -> assertFalse(mIdentityManager.hasPrimaryAccount()));
+
+        // The sign-out reseeds the accounts, but the following refresh token updates are ignored,
+        // as all the accounts are already known.
         assertAccountsUpdatedCount(0);
         assertProfileDataUpdatedCount(0);
     }
