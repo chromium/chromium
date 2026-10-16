@@ -123,8 +123,7 @@ class FuseboxAttachmentViewBinder {
     }
 
     private Drawable tabThumbnail(Context context, FuseboxAttachment attachment) {
-        Bitmap favicon =
-                OmniboxResourceProvider.getFaviconBitmapForTab(assumeNonNull(attachment.tab));
+        Bitmap favicon = mResourceProvider.getTabFavicon(assumeNonNull(attachment.tab));
         Drawable drawable =
                 FuseboxTabUtils.getDrawableForTabFavicon(
                         context,
