@@ -187,4 +187,58 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, DevanagariFontFamilies) {
   EXPECT_EQ(u"CustomDevaSansSerif",
             web_prefs.sans_serif_font_family_map["Deva"]);
 }
+
+// Tests that Arabic Nastaliq font family preferences are registered and
+// populated with platform-specific default values from GRD resources.
+IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, ArabicNastaliqDefaultPrefs) {
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+
+  // Verify the Arabic Nastaliq prefs are registered.
+  const PrefService::Preference* standard_pref =
+      prefs->FindPreference(prefs::kWebKitStandardFontFamilyArabicNastaliq);
+  const PrefService::Preference* serif_pref =
+      prefs->FindPreference(prefs::kWebKitSerifFontFamilyArabicNastaliq);
+  const PrefService::Preference* sans_serif_pref =
+      prefs->FindPreference(prefs::kWebKitSansSerifFontFamilyArabicNastaliq);
+
+  ASSERT_TRUE(standard_pref);
+  ASSERT_TRUE(serif_pref);
+  ASSERT_TRUE(sans_serif_pref);
+
+  // All three should still be at their default values (not overridden by user).
+  EXPECT_TRUE(standard_pref->IsDefaultValue());
+  EXPECT_TRUE(serif_pref->IsDefaultValue());
+  EXPECT_TRUE(sans_serif_pref->IsDefaultValue());
+
+  // The defaults should be non-empty (populated from GRD resources).
+  EXPECT_FALSE(
+      prefs->GetString(prefs::kWebKitStandardFontFamilyArabicNastaliq).empty());
+  EXPECT_FALSE(
+      prefs->GetString(prefs::kWebKitSerifFontFamilyArabicNastaliq).empty());
+  EXPECT_FALSE(prefs->GetString(prefs::kWebKitSansSerifFontFamilyArabicNastaliq)
+                   .empty());
+}
+
+// Tests that Arabic Nastaliq font family preferences propagate correctly to
+// Blink's WebPreferences font family maps under the "Aran" script key.
+IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, ArabicNastaliqFontFamilies) {
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  prefs->SetString(prefs::kWebKitStandardFontFamilyArabicNastaliq,
+                   "CustomAranStandard");
+  prefs->SetString(prefs::kWebKitSerifFontFamilyArabicNastaliq,
+                   "CustomAranSerif");
+  prefs->SetString(prefs::kWebKitSansSerifFontFamilyArabicNastaliq,
+                   "CustomAranSansSerif");
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  web_contents->NotifyPreferencesChanged();
+  blink::web_pref::WebPreferences web_prefs =
+      web_contents->GetOrCreateWebPreferences();
+
+  EXPECT_EQ(u"CustomAranStandard", web_prefs.standard_font_family_map["Aran"]);
+  EXPECT_EQ(u"CustomAranSerif", web_prefs.serif_font_family_map["Aran"]);
+  EXPECT_EQ(u"CustomAranSansSerif",
+            web_prefs.sans_serif_font_family_map["Aran"]);
+}
 #endif

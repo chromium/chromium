@@ -276,6 +276,24 @@
         Kohinoor Devanagari
       </message>
 
+      <!-- The default value for |WebPreference::standard_font_family_map| for
+           Arabic Nastaliq script. -->
+      <message name="IDS_STANDARD_FONT_FAMILY_ARABIC_NASTALIQ" use_name_for_id="true" translateable="false">
+        Noto Nastaliq Urdu
+      </message>
+
+      <!-- The default value for |WebPreference::serif_font_family_map| for
+           Arabic Nastaliq script. -->
+      <message name="IDS_SERIF_FONT_FAMILY_ARABIC_NASTALIQ" use_name_for_id="true" translateable="false">
+        Noto Nastaliq Urdu
+      </message>
+
+      <!-- The default value for |WebPreference::sans_serif_font_family_map| for
+           Arabic Nastaliq script. -->
+      <message name="IDS_SANS_SERIF_FONT_FAMILY_ARABIC_NASTALIQ" use_name_for_id="true" translateable="false">
+        Noto Nastaliq Urdu
+      </message>
+
       <!-- The default value for |WebPreference::minimum_font_size| -->
       <message name="IDS_MINIMUM_FONT_SIZE" use_name_for_id="true">
         0

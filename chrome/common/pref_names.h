@@ -244,6 +244,12 @@ inline constexpr char kWebKitSerifFontFamilyArabic[] =
     "webkit.webprefs.fonts.serif.Arab";
 inline constexpr char kWebKitSansSerifFontFamilyArabic[] =
     "webkit.webprefs.fonts.sansserif.Arab";
+inline constexpr char kWebKitStandardFontFamilyArabicNastaliq[] =
+    "webkit.webprefs.fonts.standard.Aran";
+inline constexpr char kWebKitSerifFontFamilyArabicNastaliq[] =
+    "webkit.webprefs.fonts.serif.Aran";
+inline constexpr char kWebKitSansSerifFontFamilyArabicNastaliq[] =
+    "webkit.webprefs.fonts.sansserif.Aran";
 #if BUILDFLAG(IS_WIN)
 inline constexpr char kWebKitStandardFontFamilyCyrillic[] =
     "webkit.webprefs.fonts.standard.Cyrl";

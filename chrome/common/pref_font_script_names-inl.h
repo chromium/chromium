@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Multiply-included file, hence no include guard.
+// no-include-guard-because-multiply-included
 // This file defines all font scripts in a manner that can be re-used to
 // generate the various data tables required in RO memory, and it can not
 // contain any header guards. Callers need to
@@ -11,6 +11,7 @@
 #define ALL_FONT_SCRIPTS(x)     \
   EXPAND_SCRIPT_FONT(x, "Afak") \
   EXPAND_SCRIPT_FONT(x, "Arab") \
+  EXPAND_SCRIPT_FONT(x, "Aran") \
   EXPAND_SCRIPT_FONT(x, "Armi") \
   EXPAND_SCRIPT_FONT(x, "Armn") \
   EXPAND_SCRIPT_FONT(x, "Avst") \
