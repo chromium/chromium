@@ -1483,16 +1483,46 @@ if (is_chromeos) {
     deps = [ "//ui/aura:test_support" ]
   }
 
+  source_set("js_test_api") {
+    testonly = true
+    sources = [
+      "ash/js_test_api.cc",
+      "ash/js_test_api.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [ "//chrome/common:constants" ]
+  }
+
+  source_set("v8_unit_test") {
+    testonly = true
+    sources = [
+      "ash/v8_unit_test.cc",
+      "ash/v8_unit_test.h",
+    ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//v8",
+    ]
+    deps = [
+      ":js_test_api",
+      "//chrome/common:constants",
+      "//content/test:test_support",
+      "//third_party/blink/public:blink",
+    ]
+  }
+
   source_set("javascript_browser_test") {
     testonly = true
     sources = [
       "ash/javascript_browser_test.cc",
       "ash/javascript_browser_test.h",
-      "ash/js_test_api.cc",
-      "ash/js_test_api.h",
     ]
     public_deps = [
       ":in_process_browser_test",
+      ":js_test_api",
       "//base",
     ]
     deps = [

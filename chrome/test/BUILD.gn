@@ -3441,11 +3441,6 @@ test("unit_tests") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "../test/base/ash/v8_unit_test.cc",
-      "../test/base/ash/v8_unit_test.h",
-    ]
-
     deps += [
       "//chrome/browser/apps/app_service/app_install:unit_tests",
       "//chrome/browser/ash/attestation",
@@ -3466,6 +3461,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/about:unit_tests",
       "//chrome/browser/ui/webui/help:unit_tests",
       "//chrome/test:test_support",
+      "//chrome/test/base:v8_unit_test",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/dbus/attestation",
       "//chromeos/components/magic_boost/test:fake_magic_boost_state",
