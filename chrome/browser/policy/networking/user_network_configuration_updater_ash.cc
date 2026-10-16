@@ -34,7 +34,7 @@ namespace {
 void GetNssCertDatabaseOnIOThread(
     NssCertDatabaseGetter database_getter,
     base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   net::NSSCertDatabase* cert_db =
@@ -113,7 +113,7 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
     : UserNetworkConfigurationUpdater(policy_service),
       user_(&user),
       network_config_handler_(network_config_handler) {
-  DCHECK(user_);
+  CHECK(user_, base::NotFatalUntil::M162);
   // The updater is created with |client_certificate_importer_| unset and is
   // responsible for creating it. This requires |GetNSSCertDatabaseForProfile|
   // call, which is not safe before the profile initialization is finalized.
@@ -153,7 +153,7 @@ void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
     const base::ListValue& network_configs_onc,
     const base::DictValue& global_network_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(user_);
+  CHECK(user_, base::NotFatalUntil::M162);
 
   // Call on UserSessionManager to send the user's password to session manager
   // if the password substitution variable exists in the ONC.
@@ -170,7 +170,8 @@ void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
 
 void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(
     Profile* profile) {
-  DCHECK(profile_observation_.IsObservingSource(profile));
+  CHECK(profile_observation_.IsObservingSource(profile),
+        base::NotFatalUntil::M162);
   profile_observation_.Reset();
   // Note: This unsafely grabs a persistent reference to the `NssService`'s
   // `NSSCertDatabase`, which may be invalidated once `profile` is shut down.
@@ -189,7 +190,7 @@ void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(
 
 void UserNetworkConfigurationUpdaterAsh::CreateAndSetClientCertificateImporter(
     net::NSSCertDatabase* database) {
-  DCHECK(database);
+  CHECK(database, base::NotFatalUntil::M162);
   SetClientCertificateImporter(
       std::make_unique<ash::onc::CertificateImporterImpl>(
           content::GetIOThreadTaskRunner({}), database));

@@ -57,7 +57,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
   }
 
   void CheckUrl(const GURL& url) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
     // Start the timer before the call to CheckDownloadUrl(), as it may
     // call back into CheckDownloadUrl() synchronously.
@@ -131,6 +131,6 @@ SafeBrowsingRequest::SafeBrowsingRequest(
 SafeBrowsingRequest::~SafeBrowsingRequest() = default;
 
 void SafeBrowsingRequest::OnResultReceived(bool is_url_safe) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
   std::move(callback_).Run(is_url_safe);
 }

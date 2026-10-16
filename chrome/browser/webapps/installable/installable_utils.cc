@@ -21,7 +21,8 @@
 bool DoesOriginContainAnyInstalledWebApp(
     content::BrowserContext* browser_context,
     const GURL& origin) {
-  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
+  CHECK_EQ(origin, origin.DeprecatedGetOriginAsURL(),
+           base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
   return ShortcutHelper::DoesOriginContainAnyInstalledWebApk(origin);
 #else
@@ -54,7 +55,7 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
   std::set<GURL> installed_origins;
   for (auto& app_id : app_ids) {
     GURL origin = registrar.GetAppScope(app_id).DeprecatedGetOriginAsURL();
-    DCHECK(origin.is_valid());
+    CHECK(origin.is_valid(), base::NotFatalUntil::M162);
     if (origin.SchemeIs(url::kHttpsScheme)) {
       installed_origins.emplace(origin);
     }

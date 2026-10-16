@@ -53,7 +53,7 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
     // |register_result_| has been set only if the enrollment has finished.
     // And it must be failed if it's finished without a DM token which is
     // checked above. Show the error message directly.
-    DCHECK(!register_result_.value());
+    CHECK(!register_result_.value(), base::NotFatalUntil::M162);
 
     if (!token_storage->ShouldDisplayErrorMessageOnFailure()) {
       return RegisterResult::kEnrollmentFailedSilentlyBeforeDialogDisplayed;

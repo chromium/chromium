@@ -52,7 +52,7 @@ PrepareDirectoryTask::PrepareDirectoryTask(
 PrepareDirectoryTask::~PrepareDirectoryTask() = default;
 
 void PrepareDirectoryTask::Start() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&PrepareDirectoryTask::PrepareDirectory, directory_,
@@ -63,7 +63,7 @@ void PrepareDirectoryTask::Start() {
 
 void PrepareDirectoryTask::StartWithCallback(
     PrepareDirectoryCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&PrepareDirectoryTask::PrepareDirectory, directory_,
@@ -115,7 +115,7 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
       VLOG(1) << "Insufficient space for sharing files";
     }
   } else {
-    DCHECK(result != base::File::FILE_OK);
+    CHECK(result != base::File::FILE_OK, base::NotFatalUntil::M162);
     VLOG(1) << "Could not create directory for shared files";
   }
 
@@ -123,7 +123,7 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
 }
 
 void PrepareDirectoryTask::OnPrepareDirectory(base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (callback_) {
     std::move(callback_).Run((result == base::File::FILE_OK)
                                  ? blink::mojom::ShareError::OK

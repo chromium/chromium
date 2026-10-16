@@ -33,17 +33,17 @@ SharesheetServiceDelegator::SharesheetServiceDelegator(
 SharesheetServiceDelegator::~SharesheetServiceDelegator() = default;
 
 gfx::NativeWindow SharesheetServiceDelegator::GetNativeWindow() {
-  DCHECK(native_window_);
+  CHECK(native_window_, base::NotFatalUntil::M162);
   return native_window_;
 }
 
 SharesheetController* SharesheetServiceDelegator::GetSharesheetController() {
-  DCHECK(sharesheet_controller_);
+  CHECK(sharesheet_controller_, base::NotFatalUntil::M162);
   return sharesheet_controller_.get();
 }
 
 Profile* SharesheetServiceDelegator::GetProfile() {
-  DCHECK(sharesheet_service_);
+  CHECK(sharesheet_service_, base::NotFatalUntil::M162);
   return sharesheet_service_->GetProfile();
 }
 
@@ -72,7 +72,7 @@ void SharesheetServiceDelegator::ShowNearbyShareBubbleForArc(
     apps::IntentPtr intent,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
-  DCHECK(sharesheet_controller_);
+  CHECK(sharesheet_controller_, base::NotFatalUntil::M162);
   sharesheet_controller_->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
@@ -99,7 +99,7 @@ void SharesheetServiceDelegator::CloseBubble(SharesheetResult result) {
 
 void SharesheetServiceDelegator::OnBubbleClosed(
     const std::optional<ShareActionType>& share_action_type) {
-  DCHECK(sharesheet_service_);
+  CHECK(sharesheet_service_, base::NotFatalUntil::M162);
   sharesheet_service_->OnBubbleClosed(native_window_, share_action_type);
   // This object is now deleted and nothing can be accessed any more.
 }
@@ -110,7 +110,7 @@ void SharesheetServiceDelegator::OnTargetSelected(
     const std::optional<std::u16string>& app_name,
     apps::IntentPtr intent,
     views::View* share_action_view) {
-  DCHECK(sharesheet_service_);
+  CHECK(sharesheet_service_, base::NotFatalUntil::M162);
   sharesheet_service_->OnTargetSelected(native_window_, type, share_action_type,
                                         app_name, std::move(intent),
                                         share_action_view);
@@ -119,14 +119,14 @@ void SharesheetServiceDelegator::OnTargetSelected(
 bool SharesheetServiceDelegator::OnAcceleratorPressed(
     const ui::Accelerator& accelerator,
     const ShareActionType share_action_type) {
-  DCHECK(sharesheet_service_);
+  CHECK(sharesheet_service_, base::NotFatalUntil::M162);
   return sharesheet_service_->OnAcceleratorPressed(accelerator,
                                                    share_action_type);
 }
 
 const gfx::VectorIcon* SharesheetServiceDelegator::GetVectorIcon(
     const std::optional<ShareActionType>& share_action_type) {
-  DCHECK(sharesheet_service_);
+  CHECK(sharesheet_service_, base::NotFatalUntil::M162);
   return sharesheet_service_->GetVectorIcon(share_action_type);
 }
 

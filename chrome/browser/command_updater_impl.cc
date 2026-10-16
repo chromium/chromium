@@ -94,7 +94,7 @@ CommandUpdaterImpl::GetCommand(int id, bool create) {
   if (supported)
     return commands_[id].get();
 
-  DCHECK(create);
+  CHECK(create, base::NotFatalUntil::M162);
   std::unique_ptr<Command>& entry = commands_[id];
   entry = std::make_unique<Command>();
   return entry.get();

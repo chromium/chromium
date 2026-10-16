@@ -49,20 +49,23 @@ PersistentStoragePermissionContext::PersistentStoragePermissionContext(
 void PersistentStoragePermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
 #if DCHECK_IS_ON()
   std::unique_ptr<permissions::PermissionResolver> resolver =
       CreatePermissionResolver(/*permission_descriptor=*/nullptr);
-  DCHECK_NE(PermissionStatus::GRANTED,
-            GetPermissionStatus(*resolver, /*render_frame_host=*/nullptr,
-                                request_data->requesting_origin,
-                                request_data->embedding_origin)
-                .status);
-  DCHECK_NE(PermissionStatus::DENIED,
-            GetPermissionStatus(*resolver, /*render_frame_host=*/nullptr,
-                                request_data->requesting_origin,
-                                request_data->embedding_origin)
-                .status);
+  CHECK_NE(PermissionStatus::GRANTED,
+           GetPermissionStatus(*resolver, /*render_frame_host=*/nullptr,
+                               request_data->requesting_origin,
+                               request_data->embedding_origin)
+               .status,
+           base::NotFatalUntil::M162);
+  CHECK_NE(PermissionStatus::DENIED,
+           GetPermissionStatus(*resolver, /*render_frame_host=*/nullptr,
+                               request_data->requesting_origin,
+                               request_data->embedding_origin)
+               .status,
+           base::NotFatalUntil::M162);
 #endif
 
   // Durable is only allowed to be granted to the top-level origin. Embedding

@@ -85,7 +85,7 @@ base::DictValue GetIdentityFieldsFromPolicy(
 
 ChromePolicyConversionsClient::ChromePolicyConversionsClient(
     content::BrowserContext* context) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M162);
   profile_ = Profile::FromBrowserContext(
       GetBrowserContextRedirectedInIncognito(context));
 }
@@ -194,12 +194,13 @@ base::ListValue ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
 
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  DCHECK(connector);  // always not-null.
+  CHECK(connector, base::NotFatalUntil::M162);  // always not-null.
 
   auto* device_local_account_policy_service =
       connector->GetDeviceLocalAccountPolicyService();
-  DCHECK(device_local_account_policy_service);  // always non null for
-                                                // affiliated users.
+  CHECK(device_local_account_policy_service,
+        base::NotFatalUntil::M162);  // always non null for
+                                     // affiliated users.
   std::vector<DeviceLocalAccount> device_local_accounts =
       GetDeviceLocalAccounts(ash::CrosSettings::Get());
   for (const auto& account : device_local_accounts) {
@@ -215,9 +216,9 @@ base::ListValue ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
     }
 
     auto* cloud_policy_core = device_local_account_policy_broker->core();
-    DCHECK(cloud_policy_core);
+    CHECK(cloud_policy_core, base::NotFatalUntil::M162);
     auto* cloud_policy_store = cloud_policy_core->store();
-    DCHECK(cloud_policy_store);
+    CHECK(cloud_policy_store, base::NotFatalUntil::M162);
 
     const scoped_refptr<SchemaMap> schema_map =
         device_local_account_policy_broker->schema_registry()->schema_map();

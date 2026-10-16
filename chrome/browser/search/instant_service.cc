@@ -198,7 +198,7 @@ void InstantService::OnURLsAvailable(
     bool is_user_triggered,
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
-  DCHECK(most_visited_sites_);
+  CHECK(most_visited_sites_, base::NotFatalUntil::M162);
   most_visited_info_->items.clear();
   // Use only personalized tiles for instant service.
   const ntp_tiles::NTPTilesVector& tiles =
@@ -303,7 +303,7 @@ bool InstantService::ShouldServiceRequest(
     const GURL& url,
     content::BrowserContext* browser_context,
     int render_process_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   auto* instant_service = InstantServiceFactory::GetForProfile(
       static_cast<Profile*>(browser_context));

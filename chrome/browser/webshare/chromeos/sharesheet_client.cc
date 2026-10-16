@@ -114,7 +114,7 @@ void SharesheetClient::Share(
     const GURL& share_url,
     std::vector<blink::mojom::SharedFilePtr> files,
     blink::mojom::ShareService::ShareCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // The SharesheetClient only shows one share sheet at a time.
   if (current_share_.has_value() || !web_contents()) {
@@ -126,7 +126,7 @@ void SharesheetClient::Share(
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   // File sharing is denied in incognito and enterprise isolated mode, as files
   // are written to disk. To prevent sites from using that to detect whether
@@ -200,7 +200,7 @@ void SharesheetClient::SetSharesheetCallbackForTesting(
 }
 
 void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!current_share_.has_value())
     return;
 
@@ -226,7 +226,7 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
 }
 
 void SharesheetClient::OnPrepareSubdirectory(blink::mojom::ShareError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!current_share_.has_value())
     return;
 
@@ -248,7 +248,7 @@ void SharesheetClient::OnPrepareSubdirectory(blink::mojom::ShareError error) {
 }
 
 void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!current_share_.has_value())
     return;
 
@@ -293,12 +293,12 @@ void SharesheetClient::ShowSharesheet(
     const std::string& text,
     const std::string& title,
     DeliveredCallback delivered_callback) {
-  DCHECK_EQ(file_paths.size(), content_types.size());
-  DCHECK_EQ(file_paths.size(), file_sizes.size());
+  CHECK_EQ(file_paths.size(), content_types.size(), base::NotFatalUntil::M162);
+  CHECK_EQ(file_paths.size(), file_sizes.size(), base::NotFatalUntil::M162);
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   apps::IntentPtr intent =
       file_paths.empty() ? apps_util::MakeShareIntent(text, title)
@@ -310,7 +310,8 @@ void SharesheetClient::ShowSharesheet(
       (intent->files)[index]->file_size = file_sizes[index];
     }
   }
-  DCHECK(intent->share_text.has_value() || !intent->files.empty());
+  CHECK(intent->share_text.has_value() || !intent->files.empty(),
+        base::NotFatalUntil::M162);
 
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);

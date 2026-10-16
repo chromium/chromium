@@ -22,7 +22,7 @@ InstantService* InstantServiceFactory::GetForProfile(Profile* profile) {
     return nullptr;
   }
 #endif
-  DCHECK(search::IsInstantExtendedAPIEnabled());
+  CHECK(search::IsInstantExtendedAPIEnabled(), base::NotFatalUntil::M162);
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
               "InstantServiceFactory::GetForProfile");
   return static_cast<InstantService*>(
@@ -58,7 +58,7 @@ InstantServiceFactory::~InstantServiceFactory() = default;
 std::unique_ptr<KeyedService>
 InstantServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(search::IsInstantExtendedAPIEnabled());
+  CHECK(search::IsInstantExtendedAPIEnabled(), base::NotFatalUntil::M162);
   return std::make_unique<InstantService>(Profile::FromBrowserContext(context));
 }
 

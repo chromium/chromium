@@ -1093,10 +1093,11 @@ bool ProcessSingleton::Create() {
 }
 
 void ProcessSingleton::StartWatching() {
-  DCHECK_GE(sock_, 0);
-  DCHECK(!watcher_);
+  CHECK_GE(sock_, 0, base::NotFatalUntil::M162);
+  CHECK(!watcher_, base::NotFatalUntil::M162);
   watcher_ = base::MakeRefCounted<LinuxWatcher>(this);
-  DCHECK(BrowserThread::IsThreadInitialized(BrowserThread::IO));
+  CHECK(BrowserThread::IsThreadInitialized(BrowserThread::IO),
+        base::NotFatalUntil::M162);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ProcessSingleton::LinuxWatcher::StartListening,
                                 watcher_, sock_));

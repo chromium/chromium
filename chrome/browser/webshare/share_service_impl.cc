@@ -282,7 +282,7 @@ void ShareServiceImpl::Share(const std::string& title,
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  DCHECK(!safe_browsing_request_);
+  CHECK(!safe_browsing_request_, base::NotFatalUntil::M162);
   if (should_check_url && g_browser_process->safe_browsing_service()) {
     auto* v5_manager =
         web_contents->GetBrowserContext()

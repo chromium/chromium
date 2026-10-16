@@ -437,7 +437,7 @@ bool HandleNewTabURLReverseRewrite(GURL* url,
 
   // Do nothing in incognito.
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (profile->IsOffTheRecord()) {
     return false;
   }

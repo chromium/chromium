@@ -105,7 +105,7 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
       : data_writer_(data_writer), file_bytes_shared_(file_bytes_shared) {}
 
   int Cancel(net::CompletionOnceCallback callback) final {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
     // If there is no async operation in progress, Cancel() should
     // return net::ERR_UNEXPECTED per file_stream_header.h
     if (!flush_operation_ && !write_operation_)
@@ -143,11 +143,11 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
 
   int Flush(storage::FlushMode /*flush_mode*/,
             net::CompletionOnceCallback callback) final {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    DCHECK(flush_callback_.is_null());
-    DCHECK_EQ(flush_operation_, nullptr);
-    DCHECK(write_callback_.is_null());
-    DCHECK_EQ(write_operation_, nullptr);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
+    CHECK(flush_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_EQ(flush_operation_, nullptr, base::NotFatalUntil::M162);
+    CHECK(write_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_EQ(write_operation_, nullptr, base::NotFatalUntil::M162);
 
     auto hr = data_writer_->FlushAsync(&flush_operation_);
     if (FAILED(hr))
@@ -164,11 +164,11 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
   int Write(net::IOBuffer* buf,
             int buf_len,
             net::CompletionOnceCallback callback) final {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    DCHECK(flush_callback_.is_null());
-    DCHECK_EQ(flush_operation_, nullptr);
-    DCHECK(write_callback_.is_null());
-    DCHECK_EQ(write_operation_, nullptr);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
+    CHECK(flush_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_EQ(flush_operation_, nullptr, base::NotFatalUntil::M162);
+    CHECK(write_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_EQ(write_operation_, nullptr, base::NotFatalUntil::M162);
 
     // Before processing the Write request, increment the total number of file
     // bytes shared as part of the overall Share operation this belongs to, and
@@ -197,11 +197,11 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
 
  private:
   void OnFlushCompleted(boolean operation_result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    DCHECK(!flush_callback_.is_null());
-    DCHECK_NE(flush_operation_, nullptr);
-    DCHECK(write_callback_.is_null());
-    DCHECK_EQ(write_operation_, nullptr);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
+    CHECK(!flush_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_NE(flush_operation_, nullptr, base::NotFatalUntil::M162);
+    CHECK(write_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_EQ(write_operation_, nullptr, base::NotFatalUntil::M162);
 
     flush_operation_.Reset();
     int result = operation_result == TRUE ? net::OK : net::ERR_UNEXPECTED;
@@ -209,11 +209,11 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
   }
 
   void OnWriteCompleted(UINT32 operation_result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    DCHECK(flush_callback_.is_null());
-    DCHECK_EQ(flush_operation_, nullptr);
-    DCHECK(!write_callback_.is_null());
-    DCHECK_NE(write_operation_, nullptr);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
+    CHECK(flush_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_EQ(flush_operation_, nullptr, base::NotFatalUntil::M162);
+    CHECK(!write_callback_.is_null(), base::NotFatalUntil::M162);
+    CHECK_NE(write_operation_, nullptr, base::NotFatalUntil::M162);
 
     write_operation_.Reset();
     std::move(write_callback_).Run(operation_result);
@@ -274,11 +274,11 @@ class OutputStreamWriteOperation
     // protect against future changes that may modify what needs to be destroyed
     // on the IO thread we broadly enforce the class as a whole is always
     // destroyed there.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   }
 
   void WriteStreamOnIOThread() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
 
     storage::BlobStorageContext* blob_storage_context =
         blob_context_getter_.Run().get();
@@ -295,7 +295,7 @@ class OutputStreamWriteOperation
 
   void BlobDataHandleReady(
       std::unique_ptr<storage::BlobDataHandle> data_handle) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
 
     blob_handle_ = std::move(data_handle);
     ComPtr<IDataWriterFactory> data_writer_factory;
@@ -329,7 +329,7 @@ class OutputStreamWriteOperation
       base::File::Error error,
       int64_t bytes_wrriten,
       storage::FileWriterDelegate::WriteProgressStatus write_status) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
     // Any status other than SUCCESS_IO_PENDING indicates completion.
     if (write_status !=
         storage::FileWriterDelegate::WriteProgressStatus::SUCCESS_IO_PENDING) {
@@ -392,7 +392,7 @@ base::WeakPtr<ShareOperation> ShareOperation::AsWeakPtr() {
 
 void ShareOperation::Run(SharedFiles files,
                          blink::mojom::ShareService::ShareCallback callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M162);
   callback_ = std::move(callback);
 
   // If the corresponding web_contents have already been cleaned up, cancel
@@ -480,7 +480,7 @@ void ShareOperation::Run(SharedFiles files,
 
 void ShareOperation::OnDataRequested(SharedFiles files,
                                      IDataRequestedEventArgs* event_args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   blink::mojom::ShareError share_result;
   if (!web_contents_) {
@@ -499,7 +499,7 @@ void ShareOperation::OnDataRequested(SharedFiles files,
 bool ShareOperation::PutShareContentInEventArgs(
     SharedFiles files,
     IDataRequestedEventArgs* event_args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!event_args)
     return false;
 
@@ -527,7 +527,7 @@ bool ShareOperation::PutShareContentInEventArgs(
 
 bool ShareOperation::PutShareContentInDataPackage(SharedFiles files,
                                                   IDataRequest* data_request) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!text_.empty()) {
     auto text_h = base::win::ScopedHString::Create(text_);
@@ -631,7 +631,7 @@ bool ShareOperation::PutShareContentInDataPackage(SharedFiles files,
 
 void ShareOperation::OnStreamedFileCreated(uint32_t expected_file_count,
                                            ComPtr<IStorageFile> storage_file) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // If there is no callback this ShareOperation already completed due to an
   // error, so work can be halted early.

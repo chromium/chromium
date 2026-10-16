@@ -96,9 +96,11 @@ void DeferredInitializationRunner::OnProviderUpdatePropagated(
 }
 
 bool CloudManagementEnrollmentTokenPolicyAvailable() {
-  DCHECK(g_browser_process);
-  DCHECK(g_browser_process->browser_policy_connector());
-  DCHECK(g_browser_process->browser_policy_connector()->GetPolicyService());
+  CHECK(g_browser_process, base::NotFatalUntil::M162);
+  CHECK(g_browser_process->browser_policy_connector(),
+        base::NotFatalUntil::M162);
+  CHECK(g_browser_process->browser_policy_connector()->GetPolicyService(),
+        base::NotFatalUntil::M162);
 
   return g_browser_process->browser_policy_connector()
       ->GetPolicyService()
@@ -192,7 +194,7 @@ scoped_refptr<base::SingleThreadTaskRunner>
 ChromeBrowserCloudManagementControllerAndroid::GetBestEffortTaskRunner() {
   // ChromeBrowserCloudManagementControllerAndroid is bound to BrowserThread::UI
   // and so must its best-effort task runner.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
 }
 
@@ -259,9 +261,10 @@ bool ChromeBrowserCloudManagementControllerAndroid::
 
 void ChromeBrowserCloudManagementControllerAndroid::DeferInitialization(
     base::OnceClosure callback) {
-  DCHECK(callback);
-  DCHECK(g_browser_process);
-  DCHECK(g_browser_process->browser_policy_connector());
+  CHECK(callback, base::NotFatalUntil::M162);
+  CHECK(g_browser_process, base::NotFatalUntil::M162);
+  CHECK(g_browser_process->browser_policy_connector(),
+        base::NotFatalUntil::M162);
 
   provider_update_observer_ =
       std::make_unique<DeferredInitializationRunner>(std::move(callback));

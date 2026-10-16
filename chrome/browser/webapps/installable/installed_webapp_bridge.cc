@@ -56,7 +56,7 @@ static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
     int64_t j_provider,
     int32_t type_int) {
   ContentSettingsType type = static_cast<ContentSettingsType>(type_int);
-  DCHECK(IsKnownEnumValue(type));
+  CHECK(IsKnownEnumValue(type), base::NotFatalUntil::M162);
   InstalledWebappProvider* provider =
       reinterpret_cast<InstalledWebappProvider*>(j_provider);
   provider->Notify(type);
@@ -64,7 +64,8 @@ static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
 
 static void JNI_InstalledWebappBridge_RunPermissionCallback(int64_t callback_id,
                                                             int32_t setting) {
-  DCHECK_LE(setting, static_cast<int32_t>(PermissionDecision::kMaxValue));
+  CHECK_LE(setting, static_cast<int32_t>(PermissionDecision::kMaxValue),
+           base::NotFatalUntil::M162);
   auto* callback = GetPermissionCallbacks().Lookup(callback_id);
   if (!callback) {
     return;

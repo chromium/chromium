@@ -77,7 +77,8 @@ UserPolicySigninService::UserPolicySigninService(
   // IdentityManager should not yet have loaded its tokens since this
   // happens in the background after PKS initialization - so this service
   // should always be created before the oauth token is available.
-  DCHECK(!CanApplyPolicies(/*check_for_refresh_token=*/true));
+  CHECK(!CanApplyPolicies(/*check_for_refresh_token=*/true),
+        base::NotFatalUntil::M162);
   // Some tests don't have a profile manager.
   if (g_browser_process->profile_manager()) {
     observed_profile_.Observe(
@@ -101,7 +102,8 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
   if (!IsAnySigninEvent(event))
     return;
 
-  DCHECK(identity_manager()->HasPrimaryAccount(consent_level()));
+  CHECK(identity_manager()->HasPrimaryAccount(consent_level()),
+        base::NotFatalUntil::M162);
   if (!CanApplyPolicies(/*check_for_refresh_token=*/true))
     return;
 
@@ -125,7 +127,8 @@ void UserPolicySigninService::OnRefreshTokenUpdatedForAccount(
 }
 
 void UserPolicySigninService::TryInitializeForSignedInUser() {
-  DCHECK(CanApplyPolicies(/*check_for_refresh_token=*/true));
+  CHECK(CanApplyPolicies(/*check_for_refresh_token=*/true),
+        base::NotFatalUntil::M162);
 
   // If using a TestingProfile with no CloudPolicyManager, skip
   // initialization.
@@ -205,7 +208,7 @@ void UserPolicySigninService::OnProfileAttributesStorageDestroying() {
 }
 
 void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
-  DCHECK_EQ(profile, profile_);
+  CHECK_EQ(profile, profile_, base::NotFatalUntil::M162);
 
   // If using a TestingProfile with no IdentityManager or
   // CloudPolicyManager, skip initialization.

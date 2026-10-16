@@ -64,7 +64,7 @@ WebappInstallSource WebappsClientAndroid::GetInstallSource(
     // Create shortcut does not exist on Android, so it doesn't apply to custom
     // tab.
     case InstallTrigger::CREATE_SHORTCUT:
-      DCHECK(!is_custom_tab);
+      CHECK(!is_custom_tab, base::NotFatalUntil::M162);
       return WebappInstallSource::MENU_CREATE_SHORTCUT;
   }
   NOTREACHED();

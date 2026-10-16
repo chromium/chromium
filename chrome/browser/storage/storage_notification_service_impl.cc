@@ -39,7 +39,8 @@ const base::TimeDelta GetThrottlingInterval() {
 
 StoragePressureNotificationCallback
 StorageNotificationServiceImpl::CreateThreadSafePressureNotificationCallback() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   auto thread_unsafe_callback = base::BindRepeating(
       &StorageNotificationServiceImpl::MaybeShowStoragePressureNotification,
       weak_ptr_factory_.GetWeakPtr());

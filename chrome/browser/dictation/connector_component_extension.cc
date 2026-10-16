@@ -88,12 +88,14 @@ void ConnectorComponentExtension::OnManifestLoaded(
     return;
   }
 
-  DCHECK(!component_loader->Exists(
-      extension_misc::kDictationConnectorExtensionId));
+  CHECK(
+      !component_loader->Exists(extension_misc::kDictationConnectorExtensionId),
+      base::NotFatalUntil::M162);
 
   std::string actual_id =
       component_loader->Add(std::move(manifest.value()), directory);
-  DCHECK_EQ(actual_id, extension_misc::kDictationConnectorExtensionId);
+  CHECK_EQ(actual_id, extension_misc::kDictationConnectorExtensionId,
+           base::NotFatalUntil::M162);
   install_pending_ = false;
   DictationKeyedService::Get(profile_)->DidInstallConnector();
 }

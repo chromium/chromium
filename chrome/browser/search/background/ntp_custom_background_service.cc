@@ -181,7 +181,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
     const std::string& attribution_line_2,
     const GURL& action_url,
     const std::string& collection_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
@@ -256,7 +256,7 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
 }
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // Do not refresh background & color if extension theme is in use.
   if (theme_delegate_ && theme_delegate_->UsingExtensionTheme()) {
     return;
@@ -281,7 +281,7 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
 
 std::optional<CustomBackground>
 NtpCustomBackgroundService::GetCustomBackground() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
     auto custom_background = std::make_optional<CustomBackground>();
@@ -342,7 +342,8 @@ bool NtpCustomBackgroundService::IsCustomBackgroundDisabledByPolicy() {
   bool managed =
       pref_service_->IsManagedPreference(prefs::kNtpCustomBackgroundDict);
   if (managed) {
-    DCHECK(pref_service_->GetDict(prefs::kNtpCustomBackgroundDict).empty());
+    CHECK(pref_service_->GetDict(prefs::kNtpCustomBackgroundDict).empty(),
+          base::NotFatalUntil::M162);
   }
   return managed;
 }
@@ -436,7 +437,7 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
 }
 
 void NtpCustomBackgroundService::ForceRefreshBackground() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   const base::DictValue& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);

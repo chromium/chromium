@@ -73,7 +73,7 @@ DeviceNetworkConfigurationUpdaterAsh::DeviceNetworkConfigurationUpdaterAsh(
       network_device_handler_(network_device_handler),
       cros_settings_(cros_settings),
       device_asset_id_fetcher_(device_asset_id_fetcher) {
-  DCHECK(network_device_handler_);
+  CHECK(network_device_handler_, base::NotFatalUntil::M162);
   data_roaming_setting_subscription_ = cros_settings->AddSettingsObserver(
       ash::kSignedDataRoamingEnabled,
       base::BindRepeating(
@@ -114,7 +114,7 @@ void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
     const base::DictValue& global_network_config) {
   // Ensure this is runnng on the UI thead because we're accessing global data
   // to populate the substitutions.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Expand device-specific placeholders. Note: It is OK that if the serial
   // number or Asset ID are empty, the placeholders will be expanded to an empty
@@ -155,7 +155,8 @@ void DeviceNetworkConfigurationUpdaterAsh::OnDataRoamingSettingChanged() {
       data_roaming_setting = false;
     }
   } else {
-    DCHECK_EQ(trusted_status, ash::CrosSettingsProvider::PERMANENTLY_UNTRUSTED);
+    CHECK_EQ(trusted_status, ash::CrosSettingsProvider::PERMANENTLY_UNTRUSTED,
+             base::NotFatalUntil::M162);
     // Roaming is disabled as we can't determine the correct setting.
   }
 

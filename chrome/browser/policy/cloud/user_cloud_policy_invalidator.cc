@@ -35,7 +35,7 @@ UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
     Profile* profile,
     CloudPolicyManager* policy_manager)
     : profile_(profile), policy_manager_(policy_manager) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   // Register for notification that profile creation is complete. The
   // invalidator must not be initialized before then because the invalidation
@@ -84,7 +84,8 @@ void UserCloudPolicyInvalidator::Shutdown() {
 
 void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
     Profile* profile) {
-  DCHECK(profile_observation_.IsObservingSource(profile));
+  CHECK(profile_observation_.IsObservingSource(profile),
+        base::NotFatalUntil::M162);
   profile_observation_.Reset();
 
   // Initialize now that profile creation is complete and the invalidation

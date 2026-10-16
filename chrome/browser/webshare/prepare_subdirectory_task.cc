@@ -24,7 +24,7 @@ PrepareSubDirectoryTask::PrepareSubDirectoryTask(
 PrepareSubDirectoryTask::~PrepareSubDirectoryTask() = default;
 
 void PrepareSubDirectoryTask::Start() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&PrepareSubDirectoryTask::PrepareSubDirectories,
@@ -50,7 +50,7 @@ base::File::Error PrepareSubDirectoryTask::PrepareSubDirectories(
 
 void PrepareSubDirectoryTask::OnPrepareSubDirectories(
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   std::move(callback_).Run((result == base::File::FILE_OK)
                                ? blink::mojom::ShareError::OK
                                : blink::mojom::ShareError::PERMISSION_DENIED);

@@ -147,7 +147,7 @@ void DeviceAccountInitializer::Stop() {
 void DeviceAccountInitializer::OnClientError(CloudPolicyClient* client) {
   if (!handling_request_)
     return;
-  DCHECK_EQ(client_, client);
+  CHECK_EQ(client_, client, base::NotFatalUntil::M162);
   handling_request_ = false;
   delegate_->OnDeviceAccountClientError(client->last_dm_status());
 }

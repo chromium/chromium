@@ -181,7 +181,7 @@ class LocalTestInfoBarVisibilityManager :
 #if BUILDFLAG(IS_ANDROID)
   // TabModelObserver
   void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     if (tab && tab->web_contents()) {
       EnsureInfobarForActiveLocalTestPolicies(tab->web_contents());
     }
@@ -189,7 +189,7 @@ class LocalTestInfoBarVisibilityManager :
 
   // TabModelObserver
   void DidSelectTab(TabAndroid* tab) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     if (tab && tab->web_contents()) {
       EnsureInfobarForActiveLocalTestPolicies(tab->web_contents());
     }

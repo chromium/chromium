@@ -81,7 +81,7 @@ void UpdateProcessTypeAndTitles(
     return;
 
   WebContents* contents = WebContents::FromRenderFrameHost(rfh);
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M162);
 
   // The rest of this block will happen only once per WebContents.
   GURL page_url = contents->GetLastCommittedURL();
@@ -191,7 +191,8 @@ ProcessData& ProcessData::operator=(const ProcessData& rhs) {
 void MemoryDetails::StartFetch() {
   // This might get called from the UI or FILE threads, but should not be
   // getting called from the IO thread.
-  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::IO));
+  CHECK(!BrowserThread::CurrentlyOn(BrowserThread::IO),
+        base::NotFatalUntil::M162);
 
   std::vector<ProcessMemoryInformation> child_info;
 
@@ -263,7 +264,8 @@ std::string MemoryDetails::ToLogString(bool include_tab_title) {
 }
 
 void MemoryDetails::CollectChildInfoOnUIThread() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M162);
   ProcessData* const chrome_browser = ChromeBrowser();
 
   // First pass, collate the widgets by process ID.
@@ -305,11 +307,11 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
           render_process_host->GetBrowserContext();
       extensions::ExtensionRegistry* extension_registry =
           extensions::ExtensionRegistry::Get(context);
-      DCHECK(extension_registry);
+      CHECK(extension_registry, base::NotFatalUntil::M162);
       extension_set = &extension_registry->enabled_extensions();
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(context);
-      DCHECK(process_map);
+      CHECK(process_map, base::NotFatalUntil::M162);
       content::ChildProcessId rph_id = render_process_host->GetID();
       process_is_for_extensions = process_map->Contains(rph_id);
 

@@ -1015,12 +1015,12 @@ FileUploadDelegate::FileUploadDelegate() {
 }
 
 FileUploadDelegate::~FileUploadDelegate() {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void FileUploadDelegate::InitializeOnce() {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_loader_factory_) {
     return;  // Already initialized.

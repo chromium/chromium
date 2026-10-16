@@ -219,7 +219,7 @@ void UserPolicySigninService::TryInitializeForSignedInUser() {
 }
 
 void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
-  DCHECK_EQ(profile, profile_);
+  CHECK_EQ(profile, profile_, base::NotFatalUntil::M162);
   VLOG_POLICY(1, POLICY_FETCHING)
       << "UserPolicySigninService::InitializeOnProfileReady";
   // If using a TestingProfile with no IdentityManager or

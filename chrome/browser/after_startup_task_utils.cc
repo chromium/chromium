@@ -73,7 +73,8 @@ bool IsBrowserStartupComplete() {
 
 void RunTask(std::unique_ptr<AfterStartupTask> queued_task) {
   // We're careful to delete the caller's |task| on the target runner's thread.
-  DCHECK(queued_task->task_runner->RunsTasksInCurrentSequence());
+  CHECK(queued_task->task_runner->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   std::move(queued_task->task).Run();
 }
 
@@ -86,7 +87,7 @@ void ScheduleTask(std::unique_ptr<AfterStartupTask> queued_task) {
 }
 
 void QueueTask(std::unique_ptr<AfterStartupTask> queued_task) {
-  DCHECK(queued_task);
+  CHECK(queued_task, base::NotFatalUntil::M162);
 
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/40515428
   // for details.
@@ -111,7 +112,7 @@ void QueueTask(std::unique_ptr<AfterStartupTask> queued_task) {
 }
 
 void SetBrowserStartupIsComplete(StartupIsCompleteReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (IsBrowserStartupComplete())
     return;
@@ -158,7 +159,7 @@ bool g_is_monitoring_started = false;
 int g_ref_count = 1;
 
 void MaybeSignalStartupComplete(StartupIsCompleteReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (g_ref_count > 0) {
     return;
   }
@@ -170,7 +171,7 @@ void MaybeSignalStartupComplete(StartupIsCompleteReason reason) {
 }
 
 void ReleaseRef(StartupIsCompleteReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK_GT(g_ref_count, 0);
   g_ref_count--;
   MaybeSignalStartupComplete(reason);
@@ -357,7 +358,7 @@ void StartupObserver::Start(performance_manager::Graph* graph) {
 
 // static
 void AfterStartupTaskUtils::BeginMonitoringStartupCompletion() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!g_is_monitoring_started);
   performance_manager::Graph* graph = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
@@ -371,7 +372,7 @@ void AfterStartupTaskUtils::BeginMonitoringStartupCompletion() {
 // static
 void AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
     performance_manager::Graph* graph) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (g_is_monitoring_started) {
     return;
   }
@@ -381,7 +382,7 @@ void AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
 // static
 void AfterStartupTaskUtils::FinishStartupRegistration(
     performance_manager::Graph* graph) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   g_is_monitoring_started = true;
 #if BUILDFLAG(IS_CHROMEOS)
   // If we are on a login screen which does not expect WebUI to be loaded,
@@ -426,7 +427,7 @@ AfterStartupTaskUtils::StartupInProgressRef::~StartupInProgressRef() {
 std::unique_ptr<AfterStartupTaskUtils::StartupInProgressRef>
 AfterStartupTaskUtils::RegisterStartupInProgressRef(
     StartupIsCompleteReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (IsBrowserStartupComplete()) {
     return nullptr;
   }
@@ -464,8 +465,8 @@ bool AfterStartupTaskUtils::IsBrowserStartupComplete() {
 }
 
 void AfterStartupTaskUtils::UnsafeResetForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(GetAfterStartupTasks().empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(GetAfterStartupTasks().empty(), base::NotFatalUntil::M162);
   if (!IsBrowserStartupComplete())
     return;
   GetStartupCompleteFlag().UnsafeResetForTesting();  // IN-TEST
@@ -473,7 +474,7 @@ void AfterStartupTaskUtils::UnsafeResetForTesting() {
   g_ref_count = 1;
 #endif
   g_is_monitoring_started = false;
-  DCHECK(!IsBrowserStartupComplete());
+  CHECK(!IsBrowserStartupComplete(), base::NotFatalUntil::M162);
 }
 
 // static

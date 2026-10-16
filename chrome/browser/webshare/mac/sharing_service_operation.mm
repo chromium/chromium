@@ -68,7 +68,7 @@ void SharingServiceOperation::Share(
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   // File sharing is denied in incognito and enterprise isolated mode, as files
   // are written to disk. To prevent sites from using that to detect whether
@@ -134,7 +134,7 @@ void SharingServiceOperation::OnPrepareDirectory(
   for (const auto& file : shared_files_) {
     // SafeBaseName protects against including paths in a file name.
     std::string file_name = file->name.path().value();
-    DCHECK_EQ(file_name.find('/'), std::string::npos);
+    CHECK_EQ(file_name.find('/'), std::string::npos, base::NotFatalUntil::M162);
     base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
     file_paths_.push_back(
         GenerateUniqueSubDirectory(directory_).Append(file_name));

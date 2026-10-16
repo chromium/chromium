@@ -83,7 +83,7 @@ void ShowShareUIForWindowOperation::SetRoGetActivationFactoryFunctionForTesting(
 
 void ShowShareUIForWindowOperation::Run(
     DataRequestedCallback data_requested_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   data_requested_callback_ = std::move(data_requested_callback);
 
@@ -101,7 +101,8 @@ void ShowShareUIForWindowOperation::Run(
       ITypedEventHandler<DataTransferManager*, DataRequestedEventArgs*>>(
       [weak_ptr](IDataTransferManager* data_transfer_manager,
                  IDataRequestedEventArgs* event_args) -> HRESULT {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+        CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                           base::NotFatalUntil::M162);
         if (weak_ptr)
           weak_ptr.get()->OnDataRequested(data_transfer_manager, event_args);
 
@@ -169,7 +170,7 @@ void ShowShareUIForWindowOperation::Cancel() {
 void ShowShareUIForWindowOperation::OnDataRequested(
     IDataTransferManager* data_transfer_manager,
     IDataRequestedEventArgs* event_args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // If the callback to remove the DataRequested listener has been stored on
   // |this| (i.e. this function is being invoked asynchronously), invoke it now

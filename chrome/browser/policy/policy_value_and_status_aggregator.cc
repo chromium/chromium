@@ -375,7 +375,8 @@ void PolicyValueAndStatusAggregator::OnPolicyStatusChanged() {
 
 void PolicyValueAndStatusAggregator::OnProfileWillBeDestroyed(
     Profile* profile) {
-  DCHECK(profile_observation_.IsObservingSource(profile));
+  CHECK(profile_observation_.IsObservingSource(profile),
+        base::NotFatalUntil::M162);
   profile_observation_.Reset();
   policy_value_provider_observations_.RemoveAllObservations();
   value_providers_.clear();

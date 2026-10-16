@@ -15,7 +15,7 @@ SearchEngineBaseURLTracker::SearchEngineBaseURLTracker(
       search_terms_data_(std::move(search_terms_data)),
       base_url_changed_callback_(base_url_changed_callback),
       previous_google_base_url_(search_terms_data_->GoogleBaseURLValue()) {
-  DCHECK(template_url_service_);
+  CHECK(template_url_service_, base::NotFatalUntil::M162);
 
   observation_.Observe(template_url_service_.get());
 

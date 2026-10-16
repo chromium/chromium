@@ -67,7 +67,7 @@ namespace {
 // Returns `true` if device info should be included in the upload, `false`
 // otherwise.
 bool DeviceInfoRequiredForUpload() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
          // Check if this is a managed device.
          policy::ManagementServiceFactory::GetForPlatform()
@@ -116,7 +116,7 @@ ReportingServerConnector* ReportingServerConnector::GetInstance() {
 
 // Called after the core is connected.
 void ReportingServerConnector::OnCoreConnected(CloudPolicyCore* core) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   const auto client_status = EnsureUsableClient();
   LOG_IF(WARNING, !client_status.ok()) << client_status;
 
@@ -132,7 +132,7 @@ void ReportingServerConnector::OnRefreshSchedulerStarted(
 
 // Called before the core is disconnected.
 void ReportingServerConnector::OnCoreDisconnecting(CloudPolicyCore* core) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Notify observers.
   for (auto ob : observers_) {
@@ -144,7 +144,7 @@ void ReportingServerConnector::OnCoreDisconnecting(CloudPolicyCore* core) {
 
 // Called before the core is destructed.
 void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   core->RemoveObserver(this);
   core_ = nullptr;
 }
@@ -182,7 +182,7 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
     ScopedReservation scoped_reservation,
     UploadEnqueuedCallback enqueued_cb,
     ResponseCallback callback) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Add context elements needed by reporting server.
   base::DictValue context;
@@ -229,7 +229,8 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
       std::move(scoped_reservation), std::move(enqueued_cb),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           [](ResponseCallback callback, StatusOr<UploadResponseParser> result) {
-            DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+            CHECK_CURRENTLY_ON(::content::BrowserThread::UI,
+                               base::NotFatalUntil::M162);
             if (!result.has_value()) {
               std::move(callback).Run(std::move(result));
               return;
@@ -241,7 +242,7 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
 
 StatusOr<::policy::CloudPolicyManager*>
 ReportingServerConnector::GetUserCloudPolicyManager() {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   // Pointer to `policy::CloudPolicyManager` is retrieved differently
   // for ChromeOS, for Android and for all other cases.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -279,7 +280,7 @@ ReportingServerConnector::GetUserCloudPolicyManager() {
 }
 
 Status ReportingServerConnector::EnsureUsableCore() {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   // The `policy::CloudPolicyCore` object is retrieved in two different ways
   // for ChromeOS and non-ChromeOS browsers.
   if (!core_) {
@@ -302,7 +303,7 @@ Status ReportingServerConnector::EnsureUsableCore() {
 }
 
 Status ReportingServerConnector::EnsureUsableClient() {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   // The `policy::CloudPolicyClient` object is retrieved in two different ways
   // for ChromeOS and non-ChromeOS browsers.
   if (!client_) {
@@ -326,7 +327,7 @@ Status ReportingServerConnector::EnsureUsableClient() {
 }
 
 void ReportingServerConnector::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(observer);
   for (auto ob : observers_) {
     CHECK_NE(ob, observer) << "Observer cannot be registered more than once";
@@ -335,7 +336,7 @@ void ReportingServerConnector::AddObserver(Observer* observer) {
 }
 
 void ReportingServerConnector::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M162);
   for (auto it = observers_.begin(); it != observers_.end();) {
     if (it->get() == observer) {
       it = observers_.erase(it);

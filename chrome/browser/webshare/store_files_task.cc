@@ -23,14 +23,14 @@ StoreFilesTask::StoreFilesTask(
       available_space_(available_space),
       callback_(std::move(callback)),
       index_(files_.size()) {
-  DCHECK_EQ(filenames_.size(), files_.size());
-  DCHECK(!files_.empty());
+  CHECK_EQ(filenames_.size(), files_.size(), base::NotFatalUntil::M162);
+  CHECK(!files_.empty(), base::NotFatalUntil::M162);
 }
 
 StoreFilesTask::~StoreFilesTask() = default;
 
 void StoreFilesTask::Start() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // The tasks posted to this sequenced task runner do synchronous File I/O.
   file_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -44,7 +44,8 @@ void StoreFilesTask::Start() {
 }
 
 void StoreFilesTask::OnStoreFile(blink::mojom::ShareError result) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(file_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   store_file_task_.reset();
   if (result != blink::mojom::ShareError::OK) {

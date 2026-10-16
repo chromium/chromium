@@ -27,7 +27,7 @@ InstalledWebappGeolocationBridge::InstalledWebappGeolocationBridge(
       origin_(origin),
       high_accuracy_(false),
       receiver_(this, std::move(receiver)) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M162);
   receiver_.set_disconnect_handler(
       base::BindOnce(&InstalledWebappGeolocationBridge::OnConnectionError,
                      base::Unretained(this)));
@@ -130,7 +130,7 @@ void InstalledWebappGeolocationBridge::OnConnectionError() {
 
 void InstalledWebappGeolocationBridge::OnLocationUpdate(
     device::mojom::GeopositionResultPtr result) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M162);
   CHECK(result);
 
   current_position_ = std::move(result);
@@ -140,7 +140,7 @@ void InstalledWebappGeolocationBridge::OnLocationUpdate(
 }
 
 void InstalledWebappGeolocationBridge::ReportCurrentPosition() {
-  DCHECK(position_callback_);
+  CHECK(position_callback_, base::NotFatalUntil::M162);
   CHECK(current_position_);
   std::move(position_callback_).Run(std::move(current_position_));
 }

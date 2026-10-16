@@ -32,7 +32,7 @@ namespace {
 // Sync the bookmark node with |entry|. Returns whether the conversion is
 // succeeded.
 bool SyncToBookmark(const ReadingListEntry& entry, BookmarkNode* bookmark) {
-  DCHECK(bookmark);
+  CHECK(bookmark, base::NotFatalUntil::M162);
   std::u16string title;
   if (!base::UTF8ToUTF16(entry.Title().c_str(), entry.Title().size(), &title)) {
     LOG(ERROR) << "Failed to convert the following title to string16:"
@@ -59,11 +59,11 @@ ReadingListManagerImpl::ReadingListManagerImpl(
       loaded_(false),
       performing_batch_update_(false),
       changes_applied_during_batch_(false) {
-  DCHECK(reading_list_model_);
+  CHECK(reading_list_model_, base::NotFatalUntil::M162);
   root_ = std::make_unique<BookmarkNode>(
       id_gen_func_.Run(), base::Uuid::GenerateRandomV4(), GURL());
   root_->SetTitle(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
-  DCHECK(root_->is_folder());
+  CHECK(root_->is_folder(), base::NotFatalUntil::M162);
   reading_list_model_->AddObserver(this);
 }
 
@@ -101,10 +101,10 @@ void ReadingListManagerImpl::ReadingListWillRemoveEntry(
 void ReadingListManagerImpl::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   scoped_refptr<const ReadingListEntry> updated_entry =
       reading_list_model_->GetEntryByURL(url);
-  DCHECK(updated_entry);
+  CHECK(updated_entry, base::NotFatalUntil::M162);
   AddOrUpdateBookmark(updated_entry.get());
 }
 
@@ -121,7 +121,7 @@ void ReadingListManagerImpl::ReadingListDidApplyChanges(
 
 void ReadingListManagerImpl::ReadingListModelBeganBatchUpdates(
     const ReadingListModel* model) {
-  DCHECK(!changes_applied_during_batch_);
+  CHECK(!changes_applied_during_batch_, base::NotFatalUntil::M162);
   performing_batch_update_ = true;
 }
 
@@ -147,7 +147,7 @@ void ReadingListManagerImpl::RemoveObserver(Observer* observer) {
 
 const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
                                                 const std::string& title) {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   if (!reading_list_model_->IsUrlSupported(url))
     return nullptr;
 
@@ -161,7 +161,7 @@ const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
 }
 
 const BookmarkNode* ReadingListManagerImpl::Get(const GURL& url) const {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   return FindBookmarkByURL(url);
 }
 
@@ -208,33 +208,33 @@ bool ReadingListManagerImpl::IsReadingListBookmark(
 }
 
 void ReadingListManagerImpl::Delete(const GURL& url) {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   reading_list_model_->RemoveEntryByURL(url, FROM_HERE);
 }
 
 void ReadingListManagerImpl::DeleteAll() {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   reading_list_model_->DeleteAllEntries(FROM_HERE);
 }
 
 const BookmarkNode* ReadingListManagerImpl::GetRoot() const {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   return root_.get();
 }
 
 size_t ReadingListManagerImpl::size() const {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   return reading_list_model_->size();
 }
 
 size_t ReadingListManagerImpl::unread_size() const {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   return reading_list_model_->unread_size();
 }
 
 void ReadingListManagerImpl::SetTitle(const GURL& url,
                                       const std::u16string& title) {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   scoped_refptr<const ReadingListEntry> entry =
       reading_list_model_->GetEntryByURL(url);
   if (!entry)
@@ -249,7 +249,7 @@ void ReadingListManagerImpl::SetTitle(const GURL& url,
 }
 
 void ReadingListManagerImpl::SetReadStatus(const GURL& url, bool read) {
-  DCHECK(reading_list_model_->loaded());
+  CHECK(reading_list_model_->loaded(), base::NotFatalUntil::M162);
   scoped_refptr<const ReadingListEntry> entry =
       reading_list_model_->GetEntryByURL(url);
   if (!entry)

@@ -28,7 +28,7 @@ namespace {
 // profile delegate
 policy::DMToken GetDMToken(
     const UserDMTokenRetriever::ProfileRetrievalCallback profile_retrieval_cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   Profile* profile = std::move(profile_retrieval_cb).Run();
   policy::DMToken dm_token = policy::GetDMToken(profile);
   return dm_token;
@@ -36,7 +36,7 @@ policy::DMToken GetDMToken(
 
 // Gets current active user profile
 Profile* GetUserProfile() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_CHROMEOS)
   return ProfileManager::GetActiveUserProfile();
 #else

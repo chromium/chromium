@@ -49,7 +49,7 @@ base::FilePath::StringType ExpandPathVariables(
 }
 
 void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
-  DCHECK(user_data_dir);
+  CHECK(user_data_dir, base::NotFatalUntil::M162);
   // Policy from the HKLM hive has precedence over HKCU.
   if (!LoadUserDataDirPolicyFromRegistry(HKEY_LOCAL_MACHINE, key::kUserDataDir,
                                          user_data_dir)) {

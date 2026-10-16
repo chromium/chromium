@@ -130,7 +130,7 @@ std::wstring GetExpectedAppId(const base::CommandLine& command_line,
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
   if (user_data_dir.empty())
     chrome::GetDefaultUserDataDirectory(&user_data_dir);
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M162);
 
   base::FilePath profile_subdir;
   if (command_line.HasSwitch(switches::kProfileDirectory)) {
@@ -139,7 +139,7 @@ std::wstring GetExpectedAppId(const base::CommandLine& command_line,
   } else {
     profile_subdir = base::FilePath(base::ASCIIToWide(chrome::kInitialProfile));
   }
-  DCHECK(!profile_subdir.empty());
+  CHECK(!profile_subdir.empty(), base::NotFatalUntil::M162);
 
   base::FilePath profile_path = user_data_dir.Append(profile_subdir);
   std::wstring prefix;
@@ -155,7 +155,7 @@ std::wstring GetExpectedAppId(const base::CommandLine& command_line,
   } else {
     app_name = ShellUtil::GetBrowserModelId(is_per_user_install);
   }
-  DCHECK(!app_name.empty());
+  CHECK(!app_name.empty(), base::NotFatalUntil::M162);
 
   return GetAppUserModelIdImpl(prefix, app_name, profile_path);
 }
@@ -388,7 +388,7 @@ void IsPinnedToTaskbarHelper::GetState(ResultCallback result_callback) {
 IsPinnedToTaskbarHelper::IsPinnedToTaskbarHelper(ResultCallback result_callback)
     : remote_util_win_(LaunchUtilWinServiceInstance()),
       result_callback_(std::move(result_callback)) {
-  DCHECK(result_callback_);
+  CHECK(result_callback_, base::NotFatalUntil::M162);
 
   // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
   // before |this|, therefore making base::Unretained() safe to use.
@@ -449,7 +449,7 @@ UnpinShortcutsHelper::UnpinShortcutsHelper(
     base::OnceClosure completion_callback)
     : remote_util_win_(LaunchUtilWinServiceInstance()),
       completion_callback_(std::move(completion_callback)) {
-  DCHECK(completion_callback_);
+  CHECK(completion_callback_, base::NotFatalUntil::M162);
 
   // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
   // before |this|, therefore making base::Unretained() safe to use.
@@ -522,7 +522,7 @@ CreateOrUpdateShortcutsHelper::CreateOrUpdateShortcutsHelper(
     win::CreateOrUpdateShortcutsResultCallback completion_callback)
     : remote_util_win_(LaunchUtilWinServiceInstance()),
       completion_callback_(std::move(completion_callback)) {
-  DCHECK(completion_callback_);
+  CHECK(completion_callback_, base::NotFatalUntil::M162);
 
   // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
   // before |this|, therefore making base::Unretained() safe to use.
@@ -668,8 +668,8 @@ int MigrateShortcutsInPath(const base::FilePath& chrome_exe,
                            bool only_profile_shortcuts) {
   // This function may load DLL's so ensure it is running in a foreground
   // thread.
-  DCHECK_GT(base::PlatformThread::GetCurrentThreadType(),
-            base::ThreadType::kBackground);
+  CHECK_GT(base::PlatformThread::GetCurrentThreadType(),
+           base::ThreadType::kBackground, base::NotFatalUntil::M162);
 
   const std::wstring product_name =
       only_profile_shortcuts
