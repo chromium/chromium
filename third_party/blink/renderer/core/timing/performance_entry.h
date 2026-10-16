@@ -90,13 +90,24 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   };
 
   const AtomicString& name() const { return name_; }
-  DOMHighResTimeStamp startTime() const;
   uint64_t navigationId() const;
   // source() will return null if the PerformanceEntry did not originate from a
   // Window context.
   DOMWindow* source() const;
   virtual const AtomicString& entryType() const = 0;
   virtual PerformanceEntryType EntryTypeEnum() const = 0;
+
+  // By default, returns the `start_time_` set during construction. Subclasses
+  // may override this to return other values, which may not be known at
+  // construction time.
+  virtual DOMHighResTimeStamp startTime() const;
+
+  // Returns true if the value is ready to be reported to performance timeline,
+  // and false otherwise. Some entries are ready to be reported as soon as they
+  // are constructed, but others should not be reported until other conditions
+  // are met, e.g. until presentation of the relevant frame.
+  virtual bool IsReadyForReporting() const { return true; }
+
   // PerformanceNavigationTiming will override this due to
   // the nature of reporting it early, which means not having a
   // finish time available at construction time.
@@ -176,6 +187,15 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     paint_timing_info_ = paint_timing_info;
   }
 
+  // Finalizes the entry, setting its `DOMPaintTimingInfo` and navigation ID.
+  // Used to finalize pending entries created at paint time when presentation
+  // time is resolved. Subclasses can override this to set additional state.
+  virtual void FinalizeEntry(const DOMPaintTimingInfo& paint_timing_info,
+                             uint64_t navigation_id) {
+    SetPaintTimingInfo(paint_timing_info);
+    navigation_id_ = navigation_id;
+  }
+
  protected:
   PerformanceEntry(const AtomicString& name,
                    double start_time,
@@ -190,6 +210,8 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
+  bool HasPaintTimingInfo() const { return paint_timing_info_.has_value(); }
+
   // Protected and not const because PerformanceEventTiming needs to modify it.
   double duration_;
 
@@ -200,7 +222,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   // source_ will be null if the PerformanceEntry did not originate from a
   // Window context.
   const WeakMember<DOMWindow> source_;
-  const uint64_t navigation_id_;
+  uint64_t navigation_id_;
   // For entries implementing PaintTimingMixin.
   std::optional<DOMPaintTimingInfo> paint_timing_info_;
 };

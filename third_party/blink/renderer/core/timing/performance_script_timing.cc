@@ -32,21 +32,20 @@ PerformanceScriptTiming::PerformanceScriptTiming(
     bool cross_origin_isolated_capability,
     DOMWindow* source,
     uint64_t navigation_id)
-    : PerformanceEntry(0,
-                       performance_entry_names::kScript,
+    : PerformanceEntry(performance_entry_names::kScript,
                        Performance::MonotonicTimeToDOMHighResTimeStamp(
                            time_origin,
                            info->StartTime(),
                            false,
                            cross_origin_isolated_capability),
+                       Performance::MonotonicTimeToDOMHighResTimeStamp(
+                           time_origin,
+                           info->EndTime(),
+                           false,
+                           cross_origin_isolated_capability),
                        source,
                        navigation_id),
       cross_origin_isolated_capability_(cross_origin_isolated_capability) {
-  DOMHighResTimeStamp end_time =
-      Performance::MonotonicTimeToDOMHighResTimeStamp(
-          time_origin, info->EndTime(), false,
-          cross_origin_isolated_capability);
-  duration_ = end_time - startTime();
   info_ = info;
   if (!info_->Window() || !source) {
     window_attribution_ = V8ScriptWindowAttribution::Enum::kOther;

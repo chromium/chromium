@@ -289,6 +289,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     // Values set at presentation time.
     base::TimeTicks raw_presentation_timestamp;
     std::optional<DOMPaintTimingInfo> paint_timing_info;
+    uint64_t navigation_id = 0;
 
     // The presentation timestamp of the first arriving presentation feedback
     // with id greater or equal to `id`. This is only used when
@@ -353,7 +354,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       const PendingPaintTimingRecord&,
       AnimationFrameTimingInfo*,
       const base::TimeTicks& raw_presentation_timestamp,
-      const DOMPaintTimingInfo&);
+      const DOMPaintTimingInfo&,
+      uint64_t navigation_id);
 
   // Sets the paint timing info for the `PresentationCallbackData` associated
   // with `id` and flushes any `PresentationCallbackData` whose paint timing
@@ -365,7 +367,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void SetPresentationTimeAndMaybeFlushPaintTimingsOnFramePresented(
       uint32_t id,
       const base::TimeTicks& raw_presentation_timestamp,
-      const DOMPaintTimingInfo&);
+      const DOMPaintTimingInfo&,
+      uint64_t navigation_id);
 
   // Flushes pending paint timing entries for a single frame, e.g. LCP and ICP
   // entries, element timings, LoAF entries, etc., after the frame has been

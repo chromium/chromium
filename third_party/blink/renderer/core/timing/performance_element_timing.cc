@@ -17,52 +17,43 @@ PerformanceElementTiming* PerformanceElementTiming::Create(
     const AtomicString& name,
     const String& url,
     const gfx::RectF& intersection_rect,
-    DOMHighResTimeStamp render_time,
     DOMHighResTimeStamp load_time,
     const AtomicString& identifier,
     int naturalWidth,
     int naturalHeight,
     const AtomicString& id,
     Element* element,
-    DOMWindow* source,
-    uint64_t navigation_id) {
+    DOMWindow* source) {
   // It is possible to 'paint' images which have naturalWidth or naturalHeight
   // equal to 0.
   DCHECK_GE(naturalWidth, 0);
   DCHECK_GE(naturalHeight, 0);
-  double start_time = render_time != 0.0 ? render_time : load_time;
-  // Note: `element` can be null here if it was removed and GCed before the
-  // presentation callback ran.
-  // TODO(crbug.com/454082773): Move creation to paint time and assert that
-  // `element` is non-null.
+  CHECK(element);
   return MakeGarbageCollected<PerformanceElementTiming>(
-      name, start_time, url, intersection_rect, render_time, load_time,
-      identifier, naturalWidth, naturalHeight, id, element, source,
-      navigation_id);
+      name, url, intersection_rect, load_time, identifier, naturalWidth,
+      naturalHeight, id, element, source);
 }
 
 PerformanceElementTiming::PerformanceElementTiming(
     const AtomicString& name,
-    DOMHighResTimeStamp start_time,
     const String& url,
     const gfx::RectF& intersection_rect,
-    DOMHighResTimeStamp render_time,
     DOMHighResTimeStamp load_time,
     const AtomicString& identifier,
     int naturalWidth,
     int naturalHeight,
     const AtomicString& id,
     Element* element,
-    DOMWindow* source,
-    uint64_t navigation_id)
-    : PerformanceEntry(/*duration=*/0.0,
-                       name,
-                       start_time,
-                       source,
-                       navigation_id),
+    DOMWindow* source)
+    : PerformanceEntry(
+          /*duration=*/0.0,
+          name,
+          /*start_time=*/0.0,
+          source,
+          /*navigation_id=*/
+          PerformanceTimelineEntryIdInfo::kNone.web_exposed_id),
       element_(element),
       intersection_rect_(DOMRectReadOnly::FromRectF(intersection_rect)),
-      render_time_(render_time),
       load_time_(load_time),
       identifier_(identifier),
       naturalWidth_(naturalWidth),
@@ -78,6 +69,27 @@ const AtomicString& PerformanceElementTiming::entryType() const {
 
 PerformanceEntryType PerformanceElementTiming::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kElement;
+}
+
+bool PerformanceElementTiming::IsReadyForReporting() const {
+  return navigationId() !=
+             PerformanceTimelineEntryIdInfo::kNone.web_exposed_id &&
+         HasPaintTimingInfo();
+}
+
+DOMHighResTimeStamp PerformanceElementTiming::startTime() const {
+  // "The startTime attribute’s getter must return the value of this’s
+  // renderTime if it is not 0, and the value of this’s loadTime otherwise."
+  return render_time_ != 0.0 ? render_time_ : load_time_;
+}
+
+void PerformanceElementTiming::FinalizeEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
+  CHECK(!IsReadyForReporting());
+  PerformanceEntry::FinalizeEntry(paint_timing_info, navigation_id);
+  render_time_ = paint_timing_info.presentation_time;
+  CHECK(IsReadyForReporting());
 }
 
 Element* PerformanceElementTiming::element() const {

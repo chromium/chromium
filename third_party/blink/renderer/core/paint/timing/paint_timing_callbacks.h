@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_CALLBACKS_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -18,7 +19,9 @@ struct DOMPaintTimingInfo;
 
 // Presentation time callback used for PaintTiming clients.
 using PaintTimingCallback =
-    base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>;
+    base::OnceCallback<void(const base::TimeTicks& raw_presentation_timestamp,
+                            const DOMPaintTimingInfo& paint_timing_info,
+                            uint64_t navigation_id)>;
 using OptionalPaintTimingCallback = std::optional<PaintTimingCallback>;
 
 }  // namespace blink

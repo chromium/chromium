@@ -46,6 +46,12 @@ MATCHER_P(ForIdentifier, identifier, "") {
          identifier;
 }
 
+MATCHER_P(ForNavigationId, navigation_id, "") {
+  CHECK_EQ(arg->EntryTypeEnum(), PerformanceEntry::EntryType::kElement);
+  return static_cast<PerformanceElementTiming*>(arg.Get())->navigationId() ==
+         navigation_id;
+}
+
 }  // namespace
 
 class ElementTimingTest : public PaintTimingTestBase,
@@ -496,6 +502,32 @@ TEST_P(ElementTimingTest, AttributeRemovedBetweenPaintAndPresentation) {
   EXPECT_THAT(GetElementTimingEntries(),
               ElementsAre(AllOf(ForId("target"), ForIdentifier("initial"),
                                 ForElement(target))));
+}
+
+TEST_P(ElementTimingTest, NavigationIdChangedBetweenPaintAndPresentation) {
+  SetMainFrameBodyContent(R"HTML(
+    <p id="text-target" elementtiming="text-et">Text</p>
+    <img id="img-target" elementtiming="img-et" style="width: 100px; height: 100px;"/>
+  )HTML");
+  SetImageContent("img-target", 100, 100);
+
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  uint64_t initial_navigation_id = performance->NavigationId().web_exposed_id;
+
+  SimulateRendering();
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+
+  performance->IncrementNavigationId();
+  EXPECT_NE(performance->NavigationId().web_exposed_id, initial_navigation_id);
+
+  SimulatePresentationTime();
+
+  EXPECT_THAT(
+      GetElementTimingEntries(),
+      ElementsAre(
+          AllOf(ForId("img-target"), ForNavigationId(initial_navigation_id)),
+          AllOf(ForId("text-target"), ForNavigationId(initial_navigation_id))));
 }
 
 }  // namespace blink

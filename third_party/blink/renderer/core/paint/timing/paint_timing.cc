@@ -369,6 +369,12 @@ void PaintTiming::MarkPaintTimingInternal() {
     pending_presentation_data_.push_back(data);
   }
 
+  // Capture the navigation ID now so that entries created due to this paint are
+  // attributed to the correct navigation.
+  uint64_t navigation_id = CHECK_DEREF(GetPerformanceInstance(GetFrame()))
+                               .NavigationId()
+                               .web_exposed_id;
+
   // 10. Let flushPaintTimings be the following steps:
   PaintTimingCallback flush_paint_timings =
       base::FeatureList::IsEnabled(kPaintTimingWaitForPresentationFrameIndex)
@@ -389,7 +395,7 @@ void PaintTiming::MarkPaintTimingInternal() {
   //    been presented to the user.
   RegisterNotifyPresentationTime(blink::BindOnce(
       [](PaintTiming* self, PaintTimingCallback flush_paint_timings,
-         const PendingPaintTimingRecord& record,
+         const PendingPaintTimingRecord& record, uint64_t navigation_id,
          const viz::FrameTimingDetails& frame_timing_details) {
         if (!self) {
           return;
@@ -436,7 +442,7 @@ void PaintTiming::MarkPaintTimingInternal() {
         auto flush = blink::BindOnce(
             std::move(flush_paint_timings),
             frame_timing_details.presentation_feedback.timestamp,
-            paint_timing_info);
+            paint_timing_info, navigation_id);
 
         if (coarsen) {
           // 12.3.2 Wait until the current high resolution time is
@@ -464,7 +470,7 @@ void PaintTiming::MarkPaintTimingInternal() {
         }
       },
       WrapWeakPersistent(this), std::move(flush_paint_timings),
-      paint_timing_record));
+      paint_timing_record, navigation_id));
 }
 
 // https://w3c.github.io/paint-timing/#mark-paint-timing
@@ -475,7 +481,8 @@ void PaintTiming::FlushPaintTimingsOnFramePresentedCallback(
     const PendingPaintTimingRecord& record,
     AnimationFrameTimingInfo* frame_timing_info,
     const base::TimeTicks& raw_presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info) {
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
   // If the frame was detached between scheduling the coarsening task and
   // running it, do nothing. This matches the non-coarsening case, which already
   // checks detach via `GetPerformanceInstance()`.
@@ -513,7 +520,8 @@ void PaintTiming::FlushPaintTimingsOnFramePresentedCallback(
     SetPaintTimingInfoForPaintTimingRecords(*data, paint_timing_info,
                                             raw_presentation_timestamp);
     for (auto& callback : data->client_callbacks) {
-      std::move(callback).Run(raw_presentation_timestamp, paint_timing_info);
+      std::move(callback).Run(raw_presentation_timestamp, paint_timing_info,
+                              navigation_id);
     }
     if (data->ShouldNotifyClientsOnFramePresented()) {
       ForEachClient([&](PaintTimingClient* client) {
@@ -535,7 +543,8 @@ void PaintTiming::FlushPaintTimingsOnFramePresentedCallback(
 void PaintTiming::SetPresentationTimeAndMaybeFlushPaintTimingsOnFramePresented(
     uint32_t id,
     const base::TimeTicks& raw_presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info) {
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
   // If the frame was detached between scheduling the coarsening task and
   // running it, do nothing. This matches the non-coarsening case, which already
   // checks detach via `GetPerformanceInstance()`.
@@ -570,6 +579,7 @@ void PaintTiming::SetPresentationTimeAndMaybeFlushPaintTimingsOnFramePresented(
     if (data->id == id) {
       data->raw_presentation_timestamp = raw_presentation_timestamp;
       data->paint_timing_info = paint_timing_info;
+      data->navigation_id = navigation_id;
       found = true;
       break;
     }
@@ -629,7 +639,7 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
                                           data.raw_presentation_timestamp);
   for (auto& callback : data.client_callbacks) {
     std::move(callback).Run(data.raw_presentation_timestamp,
-                            *data.paint_timing_info);
+                            *data.paint_timing_info, data.navigation_id);
   }
   if (data.ShouldNotifyClientsOnFramePresented()) {
     ForEachClient([&](PaintTimingClient* client) {

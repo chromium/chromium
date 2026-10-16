@@ -131,6 +131,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   const AtomicString& entryType() const override { return entry_type_; }
   PerformanceEntryType EntryTypeEnum() const override;
+  bool IsReadyForReporting() const override;
 
   bool cancelable() const { return cancelable_; }
 
@@ -165,8 +166,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   const AtomicString& targetSelector() const;
 
   bool HasKnownEndTime() const;
-
-  bool IsReadyForReporting() const;
 
   base::TimeTicks GetStartTime() const;
   base::TimeTicks GetEndTime() const;

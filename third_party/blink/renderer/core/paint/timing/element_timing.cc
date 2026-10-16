@@ -18,13 +18,13 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/paint/timing/element_timing_info.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -106,12 +106,6 @@ ElementTiming::ElementTiming(LocalDOMWindow& window,
     : window_(&window),
       performance_(DOMWindowPerformance::performance(window)),
       image_paint_timing_detector_(&detector) {}
-
-bool ElementTiming::CanReportToElementTiming() const {
-  CHECK(performance_);
-  return performance_->HasObserverFor(PerformanceEntry::kElement) ||
-         !performance_->IsElementTimingBufferFull();
-}
 
 void ElementTiming::NotifyImagePaint(
     const LayoutObject& layout_object,
@@ -211,12 +205,12 @@ void ElementTiming::NotifyImagePaintedInternal(
       style_image ? image_paint_timing_detector_->LoadTime(*style_image)
                   : image_paint_timing_detector_->LoadTime(&image_layout_object,
                                                            cached_image);
-  QueueElementTimingInfoForReportingIfNeeded(
+  QueuePerformanceEntriesForReportingIfNeeded(
       generating_node, image_layout_object, *cached_image,
       current_paint_chunk_properties, image_border, load_time);
 }
 
-void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
+void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
     Node& generating_node,
     const LayoutObject& image_layout_object,
     const ImageResourceContent& cached_image,
@@ -242,30 +236,39 @@ void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
   auto* element = To<Element>(&generating_node);
   CHECK(!generating_node.IsInShadowTree());
 
-  RespectImageOrientationEnum respect_orientation =
-      image_layout_object.Style().ImageOrientation();
-
   gfx::RectF intersection_rect = ComputeIntersectionRect(
       frame, image_border, current_paint_chunk_properties);
 
-  // If the image URL is a data URL ("data:image/..."), then the |name| of the
-  // PerformanceElementTiming entry should be the URL trimmed to 100 characters.
-  // If it is not, then pass in the full URL regardless of the length to be
-  // consistent with Resource Timing.
-  const KURL& url = cached_image.Url();
-  const String& image_string = url.GetString();
-  const String& image_url = url.ProtocolIsData()
-                                ? image_string.substr(0, kInlineImageMaxChars)
-                                : image_string;
-  DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
-  element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
-      kImagePaint, image_url, intersection_rect, load_time,
-      element->FastGetAttribute(html_names::kElementtimingAttr),
-      cached_image.IntrinsicSize(respect_orientation),
-      element->GetIdAttribute(), element, performance_->NavigationId()));
+  if (IsRegisteredForElementTiming(element)) {
+    RespectImageOrientationEnum respect_orientation =
+        image_layout_object.Style().ImageOrientation();
+    gfx::Size intrinsic_size = cached_image.IntrinsicSize(respect_orientation);
+
+    // If the image URL is a data URL ("data:image/..."), then the |name| of the
+    // PerformanceElementTiming entry should be the URL trimmed to 100
+    // characters. If it is not, then pass in the full URL regardless of the
+    // length to be consistent with Resource Timing.
+    const KURL& url = cached_image.Url();
+    const String& image_string = url.GetString();
+    const String& image_url = url.ProtocolIsData()
+                                  ? image_string.substr(0, kInlineImageMaxChars)
+                                  : image_string;
+    DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
+    element_timings_.push_back(PerformanceElementTiming::Create(
+        kImagePaint, image_url, intersection_rect,
+        performance_->MonotonicTimeToDOMHighResTimeStamp(load_time),
+        element->FastGetAttribute(html_names::kElementtimingAttr),
+        intrinsic_size.width(), intrinsic_size.height(),
+        element->GetIdAttribute(), element, window_));
+  }
+
+  if (ContainerTiming::ContributesToContainerTiming(element)) {
+    container_timings_.push_back(
+        MakeGarbageCollected<ContainerTimingInfo>(intersection_rect, element));
+  }
 }
 
-void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
+void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
     const TextRecord& record) {
   if (!IsNeededForElementOrContainerTiming(record.GetNode())) {
     return;
@@ -276,14 +279,21 @@ void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
   auto* element = To<Element>(record.GetNode());
   CHECK(!element->IsInShadowTree());
 
-  DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint, ("text-paint"));
-  element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
-      kTextPaint,
-      /*url=*/g_empty_string, record.ElementTimingRect(),
-      /*response_end=*/base::TimeTicks(),
-      element->FastGetAttribute(html_names::kElementtimingAttr),
-      /*intrinsic_size=*/gfx::Size(), element->GetIdAttribute(), element,
-      performance_->NavigationId()));
+  if (IsRegisteredForElementTiming(element)) {
+    DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint, ("text-paint"));
+    element_timings_.push_back(PerformanceElementTiming::Create(
+        kTextPaint,
+        /*url=*/g_empty_string, record.ElementTimingRect(),
+        /*load_time=*/0.0,
+        element->FastGetAttribute(html_names::kElementtimingAttr),
+        /*naturalWidth=*/0, /*naturalHeight=*/0, element->GetIdAttribute(),
+        element, window_));
+  }
+
+  if (ContainerTiming::ContributesToContainerTiming(element)) {
+    container_timings_.push_back(MakeGarbageCollected<ContainerTimingInfo>(
+        record.ElementTimingRect(), element));
+  }
 }
 
 PaintTimingClient::Type ElementTiming::GetType() const {
@@ -293,73 +303,48 @@ PaintTimingClient::Type ElementTiming::GetType() const {
 OptionalPaintTimingCallback ElementTiming::OnPaintFinished(
     const HeapVector<Member<ImageRecord>>&,
     const HeapVector<Member<TextRecord>>& text_records) {
-  // Ensure image entries queued during paint use the updated navigation ID, if
-  // a soft navigation committed in this frame.
-  //
-  // TODO(crbug.com/535432431): Remove this once image processing uses the list
-  // of image records passed here, since PaintTiming guarantees the navigation
-  // ID is updated for soft navigations before this runs.
-  const PerformanceTimelineEntryIdInfo current_nav_id =
-      performance_->NavigationId();
-  for (ElementTimingInfo* info : element_timings_) {
-    info->navigation_id = current_nav_id;
-  }
-
   for (const auto& record : text_records) {
     if (record->WasPreviouslyReported()) {
       continue;
     }
-    QueueElementTimingInfoForReportingIfNeeded(*record);
+    QueuePerformanceEntriesForReportingIfNeeded(*record);
   }
 
-  if (element_timings_.empty()) {
+  if (element_timings_.empty() && container_timings_.empty()) {
     return std::nullopt;
   }
 
-  auto* pending_timings =
-      MakeGarbageCollected<GCedHeapVector<Member<ElementTimingInfo>>>(
+  auto* pending_element_timings =
+      MakeGarbageCollected<GCedHeapVector<Member<PerformanceElementTiming>>>(
           std::move(element_timings_));
-  return blink::BindOnce(&ElementTiming::FlushElementTimingsOnFramePresented,
+  auto* pending_container_timings =
+      MakeGarbageCollected<GCedHeapVector<Member<ContainerTimingInfo>>>(
+          std::move(container_timings_));
+  return blink::BindOnce(&ElementTiming::FlushTimingsOnFramePresented,
                          WrapWeakPersistent(this),
-                         WrapPersistent(pending_timings));
+                         WrapPersistent(pending_element_timings),
+                         WrapPersistent(pending_container_timings));
 }
 
-void ElementTiming::FlushElementTimingsOnFramePresented(
-    GCedHeapVector<Member<ElementTimingInfo>>* element_timings,
+void ElementTiming::FlushTimingsOnFramePresented(
+    GCedHeapVector<Member<PerformanceElementTiming>>* element_timings,
+    GCedHeapVector<Member<ContainerTimingInfo>>* container_timings,
     const base::TimeTicks&,
-    const DOMPaintTimingInfo& paint_timing_info) {
-  for (ElementTimingInfo* info : *element_timings) {
-    FlushElementTiming(*info, paint_timing_info);
-  }
-}
-
-void ElementTiming::FlushElementTiming(
-    const ElementTimingInfo& element_timing_info,
-    const DOMPaintTimingInfo& paint_timing_info) {
-  CHECK(performance_);
-
-  if (!element_timing_info.identifier.IsNull() && CanReportToElementTiming()) {
-    performance_->AddElementTiming(
-        element_timing_info.name, element_timing_info.url,
-        element_timing_info.rect, paint_timing_info,
-        element_timing_info.response_end, element_timing_info.identifier,
-        element_timing_info.intrinsic_size, element_timing_info.id,
-        element_timing_info.element, element_timing_info.navigation_id);
-  }
-
-  MaybeReportToContainerTimingOnFramePresented(
-      paint_timing_info, element_timing_info.element, element_timing_info.rect);
-}
-
-void ElementTiming::MaybeReportToContainerTimingOnFramePresented(
     const DOMPaintTimingInfo& paint_timing_info,
-    Element* element,
-    const gfx::RectF& intersection_rect) {
-  if (!EnsureContainerTiming()) {
-    return;
+    uint64_t navigation_id) {
+  CHECK(performance_);
+  for (PerformanceElementTiming* entry : *element_timings) {
+    entry->FinalizeEntry(paint_timing_info, navigation_id);
+    performance_->AddElementTiming(entry);
   }
-  container_timing_->OnElementPainted(paint_timing_info, element,
-                                      intersection_rect);
+
+  if (!container_timings->empty()) {
+    EnsureContainerTiming();
+    for (ContainerTimingInfo* info : *container_timings) {
+      container_timing_->OnElementPainted(paint_timing_info, info->element,
+                                          info->intersection_rect);
+    }
+  }
 }
 
 void ElementTiming::OnImageRemoved(const LayoutObject& layout_object,
@@ -388,6 +373,7 @@ void ElementTiming::Trace(Visitor* visitor) const {
   visitor->Trace(container_timing_);
   visitor->Trace(image_paint_timing_detector_);
   visitor->Trace(element_timings_);
+  visitor->Trace(container_timings_);
 }
 
 }  // namespace blink

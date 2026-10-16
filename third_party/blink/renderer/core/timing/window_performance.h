@@ -68,6 +68,7 @@ class InteractionContentfulPaint;
 class InteractiveDetector;
 class LocalDOMWindow;
 class Node;
+class PerformanceElementTiming;
 class PerformanceSoftNavigation;
 class PerformanceTimingForReporting;
 class SoftNavigationContext;
@@ -154,16 +155,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void OnPaintFinished();
   void OnBeginMainFrame(viz::BeginFrameId frame_id);
 
-  void AddElementTiming(const AtomicString& name,
-                        const String& url,
-                        const gfx::RectF& rect,
-                        const DOMPaintTimingInfo&,
-                        base::TimeTicks load_time,
-                        const AtomicString& identifier,
-                        const gfx::Size& intrinsic_size,
-                        const AtomicString& id,
-                        Element*,
-                        PerformanceTimelineEntryIdInfo navigation_id);
+  void AddElementTiming(PerformanceElementTiming*);
 
   void AddContainerTiming(const DOMPaintTimingInfo& paint_timing_info,
                           const gfx::Rect& rect,

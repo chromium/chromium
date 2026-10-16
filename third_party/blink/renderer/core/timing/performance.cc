@@ -1235,6 +1235,7 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 }
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
+  CHECK(entry.IsReadyForReporting());
   bool observer_found = false;
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
@@ -1416,6 +1417,7 @@ void Performance::BuildJSONValue(V8ObjectBuilder& builder) const {
 // the order of the StartTime, hence the sort beginning from the tail-end.
 void Performance::InsertEntryIntoSortedBuffer(PerformanceEntryVector& entries,
                                               PerformanceEntry& entry) {
+  CHECK(entry.IsReadyForReporting());
   entries.push_back(&entry);
 
   if (entries.size() > 1) {

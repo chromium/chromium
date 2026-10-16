@@ -1451,32 +1451,14 @@ void WindowPerformance::AddLongAnimationFrameEntry(PerformanceEntry* entry) {
   NotifyObserversOfEntry(*entry);
 }
 
-void WindowPerformance::AddElementTiming(
-    const AtomicString& name,
-    const String& url,
-    const gfx::RectF& rect,
-    const DOMPaintTimingInfo& paint_timing_info,
-    base::TimeTicks load_time,
-    const AtomicString& identifier,
-    const gfx::Size& intrinsic_size,
-    const AtomicString& id,
-    Element* element,
-    PerformanceTimelineEntryIdInfo navigation_id) {
+void WindowPerformance::AddElementTiming(PerformanceElementTiming* entry) {
   if (!DomWindow()) {
     return;
   }
 
-  DOMHighResTimeStamp coarsened_load_time =
-      MonotonicTimeToDOMHighResTimeStamp(load_time);
-
-  PerformanceElementTiming* entry = PerformanceElementTiming::Create(
-      name, url, rect, paint_timing_info.presentation_time, coarsened_load_time,
-      identifier, intrinsic_size.width(), intrinsic_size.height(), id, element,
-      DomWindow(), navigation_id.web_exposed_id);
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  entry->SetPaintTimingInfo(paint_timing_info);
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kElementTimingEntryEmitted);
   if (HasObserverFor(PerformanceEntry::kElement)) {

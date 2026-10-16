@@ -25,33 +25,32 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
   static PerformanceElementTiming* Create(const AtomicString& name,
                                           const String& url,
                                           const gfx::RectF& intersection_rect,
-                                          DOMHighResTimeStamp render_time,
                                           DOMHighResTimeStamp load_time,
                                           const AtomicString& identifier,
                                           int naturalWidth,
                                           int naturalHeight,
                                           const AtomicString& id,
                                           Element*,
-                                          DOMWindow* source,
-                                          uint64_t navigation_id);
+                                          DOMWindow* source);
   PerformanceElementTiming(const AtomicString& name,
-                           DOMHighResTimeStamp start_time,
                            const String& url,
                            const gfx::RectF& intersection_rect,
-                           DOMHighResTimeStamp render_time,
                            DOMHighResTimeStamp load_time,
                            const AtomicString& identifier,
                            int naturalWidth,
                            int naturalHeight,
                            const AtomicString& id,
                            Element*,
-                           DOMWindow* source,
-                           uint64_t navigation_id);
+                           DOMWindow* source);
 
   ~PerformanceElementTiming() override;
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
+  DOMHighResTimeStamp startTime() const override;
+  bool IsReadyForReporting() const override;
+  void FinalizeEntry(const DOMPaintTimingInfo&,
+                     uint64_t navigation_id) override;
 
   DOMRectReadOnly* intersectionRect() const { return intersection_rect_.Get(); }
   DOMHighResTimeStamp renderTime() const { return render_time_; }
@@ -72,7 +71,7 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
 
   WeakMember<Element> element_;
   Member<DOMRectReadOnly> intersection_rect_;
-  DOMHighResTimeStamp render_time_;
+  DOMHighResTimeStamp render_time_ = 0.0;
   DOMHighResTimeStamp load_time_;
   AtomicString identifier_;
   unsigned naturalWidth_;

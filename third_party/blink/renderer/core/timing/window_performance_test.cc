@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -1576,13 +1577,15 @@ TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   // |element| needs to be non-null to prevent a crash.
-  performance_->AddElementTiming(
+  PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       AtomicString("image-paint"), "url", gfx::RectF(10, 20, 30, 40),
-      DOMPaintTimingInfo{2000, 2000},
-      GetTimeOrigin() + base::Milliseconds(1000), AtomicString("identifier"),
-      gfx::Size(200, 300), AtomicString("id"),
-      /*element*/ page_holder_->GetDocument().documentElement(),
-      performance_->NavigationId());
+      /*load_time=*/1000, AtomicString("identifier"), 200, 300,
+      AtomicString("id"),
+      /*element=*/page_holder_->GetDocument().documentElement(),
+      performance_->DomWindow());
+  entry->FinalizeEntry(DOMPaintTimingInfo{2000, 2000},
+                       performance_->NavigationId().web_exposed_id);
+  performance_->AddElementTiming(entry);
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
   Query q = Query::EventNameIs("PerformanceElementTiming");
