@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 
+namespace supervised_user {
+
 SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory(
     PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key),
@@ -21,10 +23,12 @@ SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory(
 std::unique_ptr<KeyedService>
 SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return std::make_unique<supervised_user::SupervisedUserMetricsService>(
+  return std::make_unique<SupervisedUserMetricsService>(
       profile->GetPrefs(),
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       GetApplicationContext()->GetDeviceParentalControls(),
       /*extensions_metrics_delegate=*/nullptr);
 }
+
+}  // namespace supervised_user

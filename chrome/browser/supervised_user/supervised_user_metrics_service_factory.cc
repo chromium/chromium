@@ -24,11 +24,13 @@
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #endif
 
+namespace supervised_user {
+
 // static
-supervised_user::SupervisedUserMetricsService*
+SupervisedUserMetricsService*
 SupervisedUserMetricsServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<supervised_user::SupervisedUserMetricsService*>(
+  return static_cast<SupervisedUserMetricsService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
@@ -58,7 +60,7 @@ SupervisedUserMetricsServiceFactory::~SupervisedUserMetricsServiceFactory() =
 
 void SupervisedUserMetricsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
+  SupervisedUserMetricsService::RegisterProfilePrefs(registry);
 }
 
 std::unique_ptr<KeyedService>
@@ -66,7 +68,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  std::unique_ptr<supervised_user::SupervisedUserMetricsService ::
+  std::unique_ptr<SupervisedUserMetricsService::
                       SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate = nullptr;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -76,7 +78,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
   CHECK(extensions_metrics_delegate);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  return std::make_unique<supervised_user::SupervisedUserMetricsService>(
+  return std::make_unique<SupervisedUserMetricsService>(
       profile->GetPrefs(),
       CHECK_DEREF(supervised_user::SupervisedUserUrlFilteringServiceFactory::
                       GetForProfile(profile)),
@@ -92,3 +94,5 @@ bool SupervisedUserMetricsServiceFactory::ServiceIsCreatedWithBrowserContext()
 bool SupervisedUserMetricsServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
+
+}  // namespace supervised_user

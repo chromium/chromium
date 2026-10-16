@@ -12,6 +12,9 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
+namespace supervised_user {
+namespace {
+
 // Test fixture for testing SupervisedUserMetricsServiceFactory class.
 class SupervisedUserMetricsServiceFactoryTest : public PlatformTest {
  protected:
@@ -30,7 +33,7 @@ class SupervisedUserMetricsServiceFactoryTest : public PlatformTest {
 // Tests that SupervisedUserMetricsServiceFactory creates
 // SupervisedUserSettingsService.
 TEST_F(SupervisedUserMetricsServiceFactoryTest, CreateService) {
-  supervised_user::SupervisedUserMetricsService* service =
+  SupervisedUserMetricsService* service =
       SupervisedUserMetricsServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
 }
@@ -41,7 +44,9 @@ TEST_F(SupervisedUserMetricsServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
   ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   CHECK(otr_profile);
-  supervised_user::SupervisedUserMetricsService* service =
+  SupervisedUserMetricsService* service =
       SupervisedUserMetricsServiceFactory::GetForProfile(otr_profile);
   ASSERT_FALSE(service);
 }
+}  // namespace
+}  // namespace supervised_user

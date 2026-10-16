@@ -8,6 +8,7 @@
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
+namespace supervised_user {
 // Singleton that owns SupervisedUserMetricsService object and associates
 // them with ProfileIOS.
 class SupervisedUserMetricsServiceFactory
@@ -22,5 +23,6 @@ class SupervisedUserMetricsServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };
+}  // namespace supervised_user
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_METRICS_SERVICE_FACTORY_H_

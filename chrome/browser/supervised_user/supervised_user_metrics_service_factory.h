@@ -12,13 +12,12 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace supervised_user {
-class SupervisedUserMetricsService;
-}  // namespace supervised_user
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
+
+namespace supervised_user {
+class SupervisedUserMetricsService;
 
 // Singleton that owns SupervisedUserMetricsService object and associates
 // them with corresponding BrowserContexts. Listens for the BrowserContext's
@@ -31,7 +30,7 @@ class SupervisedUserMetricsServiceFactory : public ProfileKeyedServiceFactory {
   SupervisedUserMetricsServiceFactory& operator=(
       const SupervisedUserMetricsServiceFactory&) = delete;
 
-  static supervised_user::SupervisedUserMetricsService* GetForBrowserContext(
+  static SupervisedUserMetricsService* GetForBrowserContext(
       content::BrowserContext* context);
 
   static SupervisedUserMetricsServiceFactory* GetInstance();
@@ -50,5 +49,8 @@ class SupervisedUserMetricsServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
+
+}  // namespace supervised_user
+
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_METRICS_SERVICE_FACTORY_H_
