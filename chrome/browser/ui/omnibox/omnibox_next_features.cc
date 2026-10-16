@@ -28,6 +28,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -60,8 +61,28 @@ BASE_FEATURE(kWebUIOmniboxSimplification, ENABLED);
 // will be removed).
 BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
 
+// Safety guard: if enabled, and a screen reader is detected the first time the
+// full WebUI omnibox state is queried (i.e. at startup), the full WebUI omnibox
+// popup is not used for the remainder of the session, even if
+// `kWebUIOmniboxFullPopup` is enabled.
+BASE_FEATURE(kDisableFullWebuiOmniboxForScreenreaderUsers, DISABLED);
+
 bool IsWebUIOmniboxFullPopupEnabled() {
-  return base::FeatureList::IsEnabled(internal::kWebUIOmniboxFullPopup);
+  if (!base::FeatureList::IsEnabled(internal::kWebUIOmniboxFullPopup)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          internal::kDisableFullWebuiOmniboxForScreenreaderUsers)) {
+    // Latched on first use, so that the full WebUI omnibox state stays
+    // consistent for the whole session even if a screen reader is started or
+    // stopped later on.
+    static const bool kScreenReaderActiveAtStartup =
+        ui::AXPlatform::GetInstance().IsScreenReaderActive();
+    if (kScreenReaderActiveAtStartup) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace internal

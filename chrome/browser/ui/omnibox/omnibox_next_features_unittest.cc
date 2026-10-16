@@ -31,6 +31,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
+#include "ui/accessibility/platform/assistive_tech.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace omnibox {
@@ -252,6 +254,45 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_Valid_ClearMimeTypes) {
 
   histogram_tester.ExpectUniqueSample(kConfigParamParseSuccessHistogram, true,
                                       1);
+}
+
+// Tests for `kDisableFullWebuiOmniboxForScreenreaderUsers`. Note that the
+// screen reader state is latched for the lifetime of the process the first
+// time the guard is evaluated, so only one test may enable both features.
+class OmniboxNextFullPopupScreenReaderTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
+        ui::AssistiveTech::kGenericScreenReader);
+  }
+
+  void TearDown() override {
+    ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
+        ui::AssistiveTech::kNone);
+  }
+};
+
+// Without the guard feature, a screen reader does not affect the full popup.
+TEST_F(OmniboxNextFullPopupScreenReaderTest, GuardDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {internal::kWebUIOmniboxFullPopup},
+      {internal::kDisableFullWebuiOmniboxForScreenreaderUsers});
+  EXPECT_TRUE(internal::IsWebUIOmniboxFullPopupEnabled());
+}
+
+// With the guard feature, the full popup is disabled for screen reader users,
+// and stays disabled even if the screen reader goes away.
+TEST_F(OmniboxNextFullPopupScreenReaderTest, GuardEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {internal::kWebUIOmniboxFullPopup,
+       internal::kDisableFullWebuiOmniboxForScreenreaderUsers},
+      {});
+  EXPECT_FALSE(internal::IsWebUIOmniboxFullPopupEnabled());
+  ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
+      ui::AssistiveTech::kNone);
+  EXPECT_FALSE(internal::IsWebUIOmniboxFullPopupEnabled());
 }
 
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
