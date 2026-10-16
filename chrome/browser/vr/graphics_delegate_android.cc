@@ -29,6 +29,10 @@ GraphicsDelegateAndroid::GraphicsDelegateAndroid() = default;
 GraphicsDelegateAndroid::~GraphicsDelegateAndroid() {
   ResetMemoryBuffer();
   for (BufferSlot& slot : buffers_) {
+    if (slot.draw_frame_buffer != 0) {
+      glDeleteFramebuffersEXT(1, &slot.draw_frame_buffer);
+      slot.draw_frame_buffer = 0;
+    }
     if (slot.shared_buffer && slot.shared_buffer->local_texture.id != 0) {
       glDeleteTextures(1, &slot.shared_buffer->local_texture.id);
       slot.shared_buffer->local_texture.id = 0;
@@ -163,11 +167,6 @@ bool GraphicsDelegateAndroid::EnsureAndBindMemoryBuffer() {
     glGenTextures(1, &slot.shared_buffer->local_texture.id);
   }
 
-  if (slot.draw_frame_buffer != 0) {
-    glDeleteFramebuffersEXT(1, &slot.draw_frame_buffer);
-    slot.draw_frame_buffer = 0;
-  }
-
   if (slot.shared_buffer->shared_image) {
     slot.unowned_shared_image.reset();
     mailbox_bridge_->DestroySharedImage(
@@ -226,7 +225,9 @@ bool GraphicsDelegateAndroid::EnsureAndBindMemoryBuffer() {
   slot.unowned_shared_image = slot.shared_buffer->shared_image->MakeUnowned();
   slot.needs_handle_export = true;
 
-  glGenFramebuffersEXT(1, &slot.draw_frame_buffer);
+  if (slot.draw_frame_buffer == 0) {
+    glGenFramebuffersEXT(1, &slot.draw_frame_buffer);
+  }
   glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, slot.draw_frame_buffer);
   glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target,
                             slot.shared_buffer->local_texture.id, 0);
