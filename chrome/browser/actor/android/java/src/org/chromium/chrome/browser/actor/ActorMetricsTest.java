@@ -959,4 +959,128 @@ public class ActorMetricsTest {
 
         watcher.assertExpected();
     }
+
+    @Test
+    public void testBackgroundExecutionDuration_AllStates() {
+        int taskId = 801;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(true);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(200, TimeUnit.MILLISECONDS);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.REFLECTING);
+        ShadowSystemClock.advanceBy(300, TimeUnit.MILLISECONDS);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.PAUSED_BY_ACTOR);
+        ShadowSystemClock.advanceBy(400, TimeUnit.MILLISECONDS);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.PAUSED_BY_USER);
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.WAITING_ON_USER);
+        ShadowSystemClock.advanceBy(600, TimeUnit.MILLISECONDS);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 200)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Reflecting", 300)
+                        .expectIntRecord(
+                                "Actor.Tools.ExecutionDuration.Background.PausedByActor", 400)
+                        .expectIntRecord(
+                                "Actor.Tools.ExecutionDuration.Background.PausedByUser", 500)
+                        .expectIntRecord(
+                                "Actor.Tools.ExecutionDuration.Background.WaitingOnUser", 600)
+                        .build();
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testForegroundToBackgroundAndBackToForegroundTransitions() {
+        int taskId = 802;
+
+        // Start in Foreground (ACTING for 400ms)
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(400, TimeUnit.MILLISECONDS);
+
+        // Transition to Background while still ACTING (600ms)
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(true);
+        mActorMetrics.refreshActiveTaskModes();
+        ShadowSystemClock.advanceBy(600, TimeUnit.MILLISECONDS);
+
+        // Transition state to REFLECTING while in Background (300ms)
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.REFLECTING);
+        ShadowSystemClock.advanceBy(300, TimeUnit.MILLISECONDS);
+
+        // Restore to Foreground while in REFLECTING (250ms)
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(false);
+        mActorMetrics.refreshActiveTaskModes();
+        ShadowSystemClock.advanceBy(250, TimeUnit.MILLISECONDS);
+
+        // Transition back to ACTING in Foreground (150ms)
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(150, TimeUnit.MILLISECONDS);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Foreground.Acting", 550)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 600)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Reflecting", 300)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Foreground.Reflecting", 250)
+                        .build();
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testBackgroundExecutionDuration_ViaHasBackgroundSessionForTask() {
+        int taskId = 803;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(true);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(350, TimeUnit.MILLISECONDS);
+
+        // Simulate background session restored to foreground and refreshActiveTaskModes called
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(false);
+        mActorMetrics.refreshActiveTaskModes();
+        ShadowSystemClock.advanceBy(450, TimeUnit.MILLISECONDS);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 350)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Foreground.Acting", 450)
+                        .build();
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testBackgroundExecutionDuration_PrecedenceOverPip() {
+        int taskId = 804;
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(true);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.ACTING);
+        ShadowSystemClock.advanceBy(300, TimeUnit.MILLISECONDS);
+
+        // Entering PiP while task is in Background should keep task in Background mode
+        mActorMetrics.setIsInPip(true);
+        ShadowSystemClock.advanceBy(200, TimeUnit.MILLISECONDS);
+
+        // Restoring task out of Background while PiP is active transitions task to Pip mode
+        when(mServiceController.hasBackgroundSessionForTask(taskId)).thenReturn(false);
+        mActorMetrics.refreshActiveTaskModes();
+        ShadowSystemClock.advanceBy(400, TimeUnit.MILLISECONDS);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Background.Acting", 500)
+                        .expectIntRecord("Actor.Tools.ExecutionDuration.Pip.Acting", 400)
+                        .expectNoRecords("Actor.Tools.ExecutionDuration.Foreground.Acting")
+                        .build();
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        watcher.assertExpected();
+    }
 }

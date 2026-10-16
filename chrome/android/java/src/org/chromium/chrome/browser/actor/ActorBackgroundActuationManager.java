@@ -78,6 +78,7 @@ public class ActorBackgroundActuationManager {
     /** Removes the specified background sessions from the active list. */
     public void removeBackgroundSessions(List<BackgroundSession> sessionsToRemove) {
         mBackgroundSessions.removeAll(sessionsToRemove);
+        ActorMetrics.getInstance().refreshActiveTaskModes();
     }
 
     /** Default constructor. */
@@ -155,6 +156,7 @@ public class ActorBackgroundActuationManager {
                     mBackgroundSessions.add(session);
                     ingestSessionsIntoPool(profile, List.of(session));
                     actorService.setTabReady(tab, glicTriggerMessageId);
+                    ActorMetrics.getInstance().refreshActiveTaskModes();
                     ActorMetrics.recordBackgroundActuationTrigger(
                             ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
                     ActorMetrics.recordTabCreatedInBackground(
@@ -195,6 +197,7 @@ public class ActorBackgroundActuationManager {
                         session.addTab(preparedTab);
                     }
                     ingestSessionsIntoPool(profile, List.of(session));
+                    ActorMetrics.getInstance().refreshActiveTaskModes();
                     ActorMetrics.recordTabCreatedInBackground(
                             ActorMetrics.ActorBackgroundTabCreationStatus
                                     .TASK_INIT_BY_CHROME_SUCCESS);
@@ -249,6 +252,7 @@ public class ActorBackgroundActuationManager {
 
         mBackgroundSessions.addAll(detachedSessions);
         ingestSessionsIntoPool(profile, detachedSessions);
+        ActorMetrics.getInstance().refreshActiveTaskModes();
     }
 
     private boolean isFcmInitiatedSession(BackgroundSession session) {
@@ -445,6 +449,7 @@ public class ActorBackgroundActuationManager {
                 OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
             }
         }
+        ActorMetrics.getInstance().refreshActiveTaskModes();
     }
 
     /**
@@ -495,7 +500,7 @@ public class ActorBackgroundActuationManager {
                         targetSessions,
                         tabDelegateFactory,
                         sessionsToRemove);
-        mBackgroundSessions.removeAll(sessionsToRemove);
+        removeBackgroundSessions(sessionsToRemove);
         if (restoredTabCount > 0) {
             long restoreDurationMs = TimeUtils.uptimeMillis() - startTimeMs;
             if (isColdStart) {
