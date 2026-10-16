@@ -35,7 +35,6 @@ build_webui("build") {
     "textfield_model.ts",
   ]
   css_files = [
-    "aim_app.css",
     "app.css",
     "omnibox_composebox.css",
     "omnibox_popup_contextual_entrypoint.css",

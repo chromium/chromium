@@ -10,7 +10,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SearchContext} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {getCss} from './aim_app.css.js';
 import {getHtml} from './aim_app.html.js';
 import type {OmniboxComposeboxElement} from './omnibox_composebox.js';
 import {browserProxyFactory} from './omnibox_popup_aim.mojom-webui.js';
@@ -39,10 +38,6 @@ export class OmniboxAimAppElement extends CrLitElement {
     return 'omnibox-aim-app';
   }
 
-  static override get styles() {
-    return getCss();
-  }
-
   override render() {
     return getHtml.bind(this)();
   }
@@ -50,16 +45,9 @@ export class OmniboxAimAppElement extends CrLitElement {
   static override get properties() {
     return {
       webuiOmniboxFullPopupEnabled_: {type: Boolean},
-      // Reflected because aim_app.css has selectors on these attributes
-      // (and omnibox_popup_document_style.css on webui-shadow-enabled_).
-      energyEffectEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
-      energyEffectAnimationEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
+      // Reflected so omnibox_popup_document_style.css's
+      // 'body:has([webui-shadow-enabled_])' sees it on the page root, as it
+      // does on <omnibox-full-app>.
       webuiShadowEnabled_: {
         type: Boolean,
         reflect: true,
@@ -67,19 +55,11 @@ export class OmniboxAimAppElement extends CrLitElement {
     };
   }
 
-  // Whether Escape closes the composebox depends on which popup widget hosts
-  // it; the composebox cannot know that on its own.
+  // Host-specific composebox configuration. Which popup widget the composebox
+  // is in decides whether it paints the popup surface itself and whether
+  // Escape closes it; the composebox cannot know that on its own.
   protected accessor webuiOmniboxFullPopupEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxFullPopupEnabled');
-  protected accessor energyEffectEnabled_: boolean =
-      loadTimeData.getBoolean('energyEffectEnabled');
-  // The use of energyEffectEnabled to set energyEffectAnimationEnabled_ is
-  // intentional. This is to align the gating properties for energy effects
-  // across all surfaces (= Nextbox, Omnibox, and Realbox).
-  protected accessor energyEffectAnimationEnabled_: boolean =
-      loadTimeData.getBoolean('energyEffectEnabled');
-  // When true, this page paints the popup's background, rounded corners and
-  // drop shadow instead of the Views frame.
   protected accessor webuiShadowEnabled_: boolean =
       loadTimeData.getBoolean('omniboxAimWebUIShadowEnabled');
 

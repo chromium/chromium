@@ -8,9 +8,10 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  /* TODO(b/524320143): aim_app.css has different definitions for the following
-   * colors. We should reconcile these, so that all popups use the same color.
-   * Requires UX input to determine which color is the correct one:
+  /* TODO(b/524320143): omnibox_composebox.css has different definitions for
+   * the following colors. We should reconcile these, so that all popups use
+   * the same color. Requires UX input to determine which color is the
+   * correct one:
    *   - --color-composebox-context-entrypoint-background
    *   - --color-composebox-context-entrypoint-hover-background
    *   - --color-composebox-context-entrypoint-text
@@ -78,13 +79,13 @@
    * mode. It is E_CPONLY, so there is no generated CSS variable for it.
    *
    * Each popup draws this as a plain box-shadow on its root element
-   * ('#inputWrapper' in omnibox_popup_searchbox.css, '#content' in
-   * aim_app.css). Do not move it to a ::before/::after pseudo-element of the
-   * root: Blink discards an element's entire accessibility subtree whenever
-   * one of its pseudo-elements is restyled (Element::UpdatePseudoElement), so
-   * a pseudo-element on the root made every keystroke and selection change
-   * destroy and recreate the accessibility nodes of the whole popup,
-   * including the one screen readers were on. */
+   * ('#inputWrapper' in omnibox_popup_searchbox.css, ':host' in
+   * omnibox_composebox.css). Do not move it to a ::before/::after
+   * pseudo-element of the root: Blink discards an element's entire
+   * accessibility subtree whenever one of its pseudo-elements is restyled
+   * (Element::UpdatePseudoElement), so a pseudo-element on the root made every
+   * keystroke and selection change destroy and recreate the accessibility
+   * nodes of the whole popup, including the one screen readers were on. */
   --omnibox-webui-shadow-base-rgb: 60, 64, 67;
   --omnibox-webui-shadow:
       0 0 12px rgba(var(--omnibox-webui-shadow-base-rgb), 0.08),
