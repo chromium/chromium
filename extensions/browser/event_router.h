@@ -827,28 +827,6 @@ struct Event {
   // related browser_contexts. See https://crbug.com/40522431.
   Event(events::HistogramValue histogram_value,
         std::string_view event_name,
-        base::ListValue event_args);
-
-  Event(events::HistogramValue histogram_value,
-        std::string_view event_name,
-        base::ListValue event_args,
-        content::BrowserContext* restrict_to_browser_context,
-        std::optional<mojom::ContextType> restrict_to_context_type =
-            std::nullopt);
-
-  Event(events::HistogramValue histogram_value,
-        std::string_view event_name,
-        base::ListValue event_args,
-        content::BrowserContext* restrict_to_browser_context,
-        std::optional<mojom::ContextType> restrict_to_context_type,
-        const GURL& event_url,
-        EventRouter::UserGestureState user_gesture,
-        mojom::EventFilteringInfoPtr info,
-        bool lazy_background_active_on_dispatch = false,
-        base::TimeTicks dispatch_start_time = base::TimeTicks{});
-
-  Event(events::HistogramValue histogram_value,
-        std::string_view event_name,
         scoped_refptr<const EventArgs> event_args);
 
   Event(events::HistogramValue histogram_value,

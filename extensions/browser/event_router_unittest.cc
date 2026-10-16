@@ -522,15 +522,14 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   // Sending an otr event should not trigger the regular observer.
   auto otr_event =
       std::make_unique<Event>(extensions::events::FOR_TEST, kTestEventName,
-                              base::ListValue(), incognito_context());
+                              nullptr, incognito_context());
   router.BroadcastEvent(std::move(otr_event));
   EXPECT_EQ(0, regular_counter.dispatch_count);
   EXPECT_EQ(1, otr_counter.dispatch_count);
 
   // Setting a regular event should not trigger the otr observer.
-  std::unique_ptr<Event> regular_event =
-      std::make_unique<Event>(extensions::events::FOR_TEST, kTestEventName,
-                              base::ListValue(), browser_context());
+  std::unique_ptr<Event> regular_event = std::make_unique<Event>(
+      extensions::events::FOR_TEST, kTestEventName, nullptr, browser_context());
   router.BroadcastEvent(std::move(regular_event));
   EXPECT_EQ(1, regular_counter.dispatch_count);
   EXPECT_EQ(1, otr_counter.dispatch_count);
@@ -621,9 +620,8 @@ TEST_F(EventRouterTest, TestReportEvent) {
 // crbug.com/484218883.
 TEST_F(EventRouterTest, DispatchPendingEvent_NullContext) {
   EventRouter* router = EventRouter::Get(browser_context());
-  auto event =
-      std::make_unique<Event>(extensions::events::FOR_TEST, "test.event",
-                              base::ListValue(), browser_context());
+  auto event = std::make_unique<Event>(
+      extensions::events::FOR_TEST, "test.event", nullptr, browser_context());
   base::RunLoop run_loop;
   event->cannot_dispatch_callback = run_loop.QuitClosure();
 
@@ -1112,7 +1110,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   add_extension(ext2);
   auto event = [](std::string name) {
     return std::make_unique<extensions::Event>(extensions::events::FOR_TEST,
-                                               name, base::ListValue());
+                                               name, nullptr);
   };
 
   // Register both extensions and both URLs for event.
@@ -1180,7 +1178,7 @@ TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
   std::vector<extensions::EventTarget> dispatched;
   auto create_restricted_event = [&](int64_t sw_version_id, int sw_thread_id) {
     auto event = std::make_unique<extensions::Event>(
-        extensions::events::FOR_TEST, kTestEventName, base::ListValue());
+        extensions::events::FOR_TEST, kTestEventName, nullptr);
     event->restrict_to_dispatch_target =
         Event::DispatchTarget{.render_process_id = process()->GetID(),
                               .worker_thread_id = sw_thread_id,
@@ -1231,8 +1229,8 @@ TEST_F(EventRouterDispatchTest,
   // registered.
   auto other_process =
       std::make_unique<content::MockRenderProcessHost>(browser_context());
-  auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, kTestEventName, base::ListValue());
+  auto event = std::make_unique<extensions::Event>(extensions::events::FOR_TEST,
+                                                   kTestEventName, nullptr);
   event->restrict_to_dispatch_target =
       Event::DispatchTarget{.render_process_id = other_process->GetID()};
 
@@ -1265,7 +1263,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   std::vector<extensions::EventTarget> dispatched;
   auto create_event = [&](const std::string& name) {
     auto event = std::make_unique<extensions::Event>(
-        extensions::events::FOR_TEST, name, base::ListValue());
+        extensions::events::FOR_TEST, name, nullptr);
     return event;
   };
 
@@ -1362,8 +1360,8 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback_NoListeners) {
 
   // A dispatch restricted to `ext1` should still trigger the callback when
   // EventRouter has no listener to receive the event.
-  auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, kTestEventName, base::ListValue());
+  auto event = std::make_unique<extensions::Event>(extensions::events::FOR_TEST,
+                                                   kTestEventName, nullptr);
   base::RunLoop run_loop;
   bool callback_ran = false;
   event->cannot_dispatch_callback = base::BindLambdaForTesting([&]() {
@@ -1400,8 +1398,8 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback_OtherExtensionListener) {
       /*service_worker_context=*/nullptr, base::DictValue(),
       /*add_lazy_listener=*/false);
 
-  auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, kTestEventName, base::ListValue());
+  auto event = std::make_unique<extensions::Event>(extensions::events::FOR_TEST,
+                                                   kTestEventName, nullptr);
   base::RunLoop run_loop;
   bool callback_ran = false;
   event->cannot_dispatch_callback = base::BindLambdaForTesting([&]() {
@@ -1421,8 +1419,8 @@ TEST_F(EventRouterDispatchTest, CopySelectivelyAndClone_Enabled) {
   feature_list.InitAndEnableFeature(
       extensions_features::kShareEventArgsOnDispatch);
 
-  base::ListValue args;
-  args.Append("test_arg");
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append("test_arg");
 
   auto info = mojom::EventFilteringInfo::New();
   info->instance_id = 42;
@@ -1475,9 +1473,10 @@ TEST_F(EventRouterDispatchTest, CopySelectivelyAndClone_Enabled) {
   ASSERT_TRUE(filter_copied->filter_info);
   EXPECT_EQ(99, filter_copied->filter_info->instance_id);
 
+  auto event_args = base::MakeRefCounted<EventArgs>();
   // Verify empty event args and default empty filter_info.
   auto empty_event1 = std::make_unique<Event>(events::FOR_TEST, "test.event",
-                                              base::ListValue());
+                                              std::move(event_args));
   auto empty_event2 = std::make_unique<Event>(events::FOR_TEST, "test.event",
                                               scoped_refptr<const EventArgs>());
   EXPECT_TRUE(empty_event1->args().empty());
@@ -1493,8 +1492,8 @@ TEST_F(EventRouterDispatchTest, CopySelectivelyAndClone_Disabled) {
   feature_list.InitAndDisableFeature(
       extensions_features::kShareEventArgsOnDispatch);
 
-  base::ListValue args;
-  args.Append("test_arg");
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append("test_arg");
 
   auto info = mojom::EventFilteringInfo::New();
   info->instance_id = 42;
@@ -1585,8 +1584,8 @@ TEST_F(EventRouterDispatchTest,
 
     TestEventRouterObserver observer(event_router());
 
-    base::ListValue broadcast_args;
-    broadcast_args.Append("broadcast_payload");
+    auto broadcast_args = base::MakeRefCounted<EventArgs>();
+    broadcast_args->data.Append("broadcast_payload");
     auto broadcast_event = std::make_unique<Event>(
         events::FOR_TEST, kTestEventName, std::move(broadcast_args));
     scoped_refptr<const EventArgs> original_args_ptr =
@@ -1610,8 +1609,8 @@ TEST_F(EventRouterDispatchTest,
 
     TestEventRouterObserver observer(event_router());
 
-    base::ListValue broadcast_args;
-    broadcast_args.Append("broadcast_payload");
+    auto broadcast_args = base::MakeRefCounted<EventArgs>();
+    broadcast_args->data.Append("broadcast_payload");
     auto broadcast_event = std::make_unique<Event>(
         events::FOR_TEST, kTestEventName, std::move(broadcast_args));
     scoped_refptr<const EventArgs> original_args_ptr =
@@ -1670,8 +1669,8 @@ TEST_F(EventRouterDispatchTest,
 
     TestEventRouterObserver observer(event_router());
 
-    base::ListValue event_args;
-    event_args.Append("original_val");
+    auto event_args = base::MakeRefCounted<EventArgs>();
+    event_args->data.Append("original_val");
     auto broadcast_event = std::make_unique<Event>(
         events::FOR_TEST, kTestEventName, std::move(event_args));
     scoped_refptr<const EventArgs> original_args_ptr =
@@ -1729,8 +1728,8 @@ TEST_F(EventRouterDispatchTest,
 
     TestEventRouterObserver observer(event_router());
 
-    base::ListValue event_args;
-    event_args.Append("original_val");
+    auto event_args = base::MakeRefCounted<EventArgs>();
+    event_args->data.Append("original_val");
     auto broadcast_event = std::make_unique<Event>(
         events::FOR_TEST, kTestEventName, std::move(event_args));
     scoped_refptr<const EventArgs> original_args_ptr =
@@ -1799,7 +1798,7 @@ TEST_F(EventRouterDispatchTest, DispatchedEventPreservesFilterInfo) {
   info->instance_id = 42;
 
   auto event = std::make_unique<extensions::Event>(
-      events::FOR_TEST, kTestEventName, base::ListValue(), browser_context(),
+      events::FOR_TEST, kTestEventName, nullptr, browser_context(),
       std::nullopt, GURL(), EventRouter::UserGestureState::kEnabled,
       std::move(info));
 
@@ -1844,7 +1843,7 @@ TEST_F(EventRouterDispatchTest, EventURLRespectsPolicyBlockedHosts) {
 
   auto create_event = [&](const char* url) {
     auto event = std::make_unique<Event>(events::FOR_TEST, kTestEventName,
-                                         base::ListValue(), browser_context());
+                                         nullptr, browser_context());
     event->event_url = GURL(url);
     return event;
   };

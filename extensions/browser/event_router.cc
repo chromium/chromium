@@ -2050,46 +2050,6 @@ void EventRouter::UnbindServiceWorkerEventDispatcher(RenderProcessHost* host,
 
 Event::Event(events::HistogramValue histogram_value,
              std::string_view event_name,
-             base::ListValue event_args)
-    : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             std::string_view event_name,
-             base::ListValue event_args,
-             content::BrowserContext* restrict_to_browser_context,
-             std::optional<mojom::ContextType> restrict_to_context_type)
-    : Event(histogram_value,
-            event_name,
-            std::move(event_args),
-            restrict_to_browser_context,
-            restrict_to_context_type,
-            GURL(),
-            EventRouter::UserGestureState::kUnknown,
-            mojom::EventFilteringInfo::New()) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             std::string_view event_name,
-             base::ListValue event_args,
-             content::BrowserContext* restrict_to_browser_context,
-             std::optional<mojom::ContextType> restrict_to_context_type,
-             const GURL& event_url,
-             EventRouter::UserGestureState user_gesture,
-             mojom::EventFilteringInfoPtr info,
-             bool lazy_background_active_on_dispatch,
-             base::TimeTicks dispatch_start_time)
-    : Event(histogram_value,
-            event_name,
-            base::MakeRefCounted<EventArgs>(std::move(event_args)),
-            restrict_to_browser_context,
-            restrict_to_context_type,
-            event_url,
-            user_gesture,
-            std::move(info),
-            lazy_background_active_on_dispatch,
-            dispatch_start_time) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             std::string_view event_name,
              scoped_refptr<const EventArgs> event_args)
     : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
 
