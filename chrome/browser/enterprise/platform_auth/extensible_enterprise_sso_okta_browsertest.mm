@@ -267,6 +267,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
         .extension_id = base::SysUTF8ToCFStringRef(kOktaSsoExtensionId),
         .team_id = base::SysUTF8ToCFStringRef(kOktaSsoTeamId),
         .hosts = HostsToPropRef(configured_hosts_),
+        .urls = ScopedPropList(),
     };
   }
 

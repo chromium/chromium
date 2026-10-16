@@ -23,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/values.h"
+#include "url/gurl.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -40,6 +41,7 @@ class CFPreferencesObserver {
     base::apple::ScopedCFTypeRef<CFPropertyListRef> extension_id;
     base::apple::ScopedCFTypeRef<CFPropertyListRef> team_id;
     base::apple::ScopedCFTypeRef<CFPropertyListRef> hosts;
+    base::apple::ScopedCFTypeRef<CFPropertyListRef> urls;
   };
 
   virtual ~CFPreferencesObserver() = default;
@@ -70,6 +72,13 @@ class ExtensibleEnterpriseSSOPrefsHandler {
     // Host names that begin with a "." are wildcard suffixes that match all
     // subdomains; otherwise the host name needs to be an exact match.
     std::optional<std::vector<std::string>> hosts;
+
+    // `URLs` entry of the payload. `std::nullopt` if the entry is missing or
+    // malformed, can be empty.
+    // Host and schema are normalized to lowercase.
+    // Entries that are not HTTP or HTTPS, have query parameters or refs are
+    // dropped.
+    std::optional<std::vector<GURL>> urls;
 
     friend bool operator==(const Config&, const Config&) = default;
   };
