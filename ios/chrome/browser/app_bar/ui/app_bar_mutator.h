@@ -27,6 +27,12 @@
 - (void)setPreferredAssistantButtonState:
     (AppBarAssistantButtonPreferredState)preferredState;
 
+// Perform a backward web navigation.
+- (void)navigateBack;
+
+// Perform a forward web navigation.
+- (void)navigateForward;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_MUTATOR_H_

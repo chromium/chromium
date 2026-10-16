@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
@@ -189,6 +190,8 @@ inline LayoutStateAssistantPassKey PassKey() {
       _incognitoFullscreenObserver;
   raw_ptr<WebNavigationBrowserAgent> _regularNavigationBrowserAgent;
   raw_ptr<WebNavigationBrowserAgent> _incognitoNavigationBrowserAgent;
+  raw_ptr<TabBasedIPHBrowserAgent> _regularTabBasedIPHAgent;
+  raw_ptr<TabBasedIPHBrowserAgent> _incognitoTabBasedIPHAgent;
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authenticationService;
   std::unique_ptr<AuthenticationServiceObserverBridge>
@@ -235,6 +238,10 @@ inline LayoutStateAssistantPassKey PassKey() {
           (WebNavigationBrowserAgent*)regularNavigationBrowserAgent
     incognitoWebNavigationBrowserAgent:
         (WebNavigationBrowserAgent*)incognitoNavigationBrowserAgent
+               regularTabBasedIPHAgent:
+                   (TabBasedIPHBrowserAgent*)regularTabBasedIPHAgent
+             incognitoTabBasedIPHAgent:
+                 (TabBasedIPHBrowserAgent*)incognitoTabBasedIPHAgent
                   regularActionFactory:
                       (BrowserActionFactory*)regularActionFactory
                 incognitoActionFactory:
@@ -270,6 +277,8 @@ inline LayoutStateAssistantPassKey PassKey() {
       _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
       _regularNavigationBrowserAgent = regularNavigationBrowserAgent;
       _incognitoNavigationBrowserAgent = incognitoNavigationBrowserAgent;
+      _regularTabBasedIPHAgent = regularTabBasedIPHAgent;
+      _incognitoTabBasedIPHAgent = incognitoTabBasedIPHAgent;
     }
 
     _URLLoader = URLLoader;
@@ -432,8 +441,17 @@ inline LayoutStateAssistantPassKey PassKey() {
 - (void)setIncognitoNavigationBrowserAgent:
     (WebNavigationBrowserAgent*)navigationBrowserAgent {
   CHECK(IsFiveButtonAppBarLayoutEnabled());
+  if (navigationBrowserAgent == _incognitoNavigationBrowserAgent) {
+    return;
+  }
   _incognitoNavigationBrowserAgent = navigationBrowserAgent;
   [self updateConsumer];
+}
+
+- (void)setIncognitoTabBasedIPHBrowserAgent:
+    (TabBasedIPHBrowserAgent*)iphBrowserAgent {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  _incognitoTabBasedIPHAgent = iphBrowserAgent;
 }
 
 - (void)setIncognitoActionFactory:
@@ -489,6 +507,8 @@ inline LayoutStateAssistantPassKey PassKey() {
   if (IsFiveButtonAppBarLayoutEnabled()) {
     _regularNavigationBrowserAgent = nullptr;
     _incognitoNavigationBrowserAgent = nullptr;
+    _regularTabBasedIPHAgent = nullptr;
+    _incognitoTabBasedIPHAgent = nullptr;
     _activeWebStateObservationForwarder.reset();
     _webStateObserver.reset();
   }
@@ -809,6 +829,50 @@ inline LayoutStateAssistantPassKey PassKey() {
   _prefService->SetInteger(prefs::kAppBarAssistantButtonPreferredState,
                            static_cast<int>(preferredState));
   [self recordAssistantButtonStateSelection:preferredState];
+}
+
+- (void)navigateBack {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  if (!self.currentWebStateList) {
+    return;
+  }
+  BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
+  WebNavigationBrowserAgent* navigationBrowserAgent =
+      incognito ? _incognitoNavigationBrowserAgent
+                : _regularNavigationBrowserAgent;
+
+  if (!navigationBrowserAgent) {
+    return;
+  }
+  navigationBrowserAgent->GoBack();
+
+  TabBasedIPHBrowserAgent* tabBasedIPHAgent =
+      incognito ? _incognitoTabBasedIPHAgent : _regularTabBasedIPHAgent;
+  if (tabBasedIPHAgent) {
+    tabBasedIPHAgent->NotifyBackForwardButtonTap();
+  }
+}
+
+- (void)navigateForward {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  if (!self.currentWebStateList) {
+    return;
+  }
+  BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
+  WebNavigationBrowserAgent* navigationBrowserAgent =
+      incognito ? _incognitoNavigationBrowserAgent
+                : _regularNavigationBrowserAgent;
+
+  if (!navigationBrowserAgent) {
+    return;
+  }
+  navigationBrowserAgent->GoForward();
+
+  TabBasedIPHBrowserAgent* tabBasedIPHAgent =
+      incognito ? _incognitoTabBasedIPHAgent : _regularTabBasedIPHAgent;
+  if (tabBasedIPHAgent) {
+    tabBasedIPHAgent->NotifyBackForwardButtonTap();
+  }
 }
 
 #pragma mark - ToolbarButtonMenuFactoryDelegate

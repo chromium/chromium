@@ -11,6 +11,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_symbol.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
@@ -1196,18 +1197,30 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Returns a back button for web navigation.
 - (UIButton*)createBackButton {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
   UIButton* button = [self buttonWithTitle:nil image:AppBarSymbol(SymbolBack)];
-  // TODO(crbug.com/573542581): Implement tap functionality and accessibility
-  // properties
+  button.accessibilityIdentifier = kAppBarBackButtonIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
+  button.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK);
+  [button addTarget:self
+                action:@selector(didTapBackButton)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
 // Returns a forward button for web navigation.
 - (UIButton*)createForwardButton {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
   UIButton* button = [self buttonWithTitle:nil
                                      image:AppBarSymbol(SymbolForward)];
-  // TODO(crbug.com/573542581): Implement tap functionality and accessibility
-  // properties
+  button.accessibilityIdentifier = kAppBarForwardButtonIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_FORWARD);
+  button.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD);
+  [button addTarget:self
+                action:@selector(didTapForwardButton)
+      forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
@@ -1455,6 +1468,26 @@ UIColor* AssistantHighlightBackgroundColor() {
 }
 
 #pragma mark - Actions
+
+// Called when the back button for web navigation is tapped.
+- (void)didTapBackButton {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  if (_isNtpVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarBackOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarBack"));
+  [self.mutator navigateBack];
+}
+
+// Called when the forward button for web navigation is tapped.
+- (void)didTapForwardButton {
+  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  if (_isNtpVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarForwardOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
+  [self.mutator navigateForward];
+}
 
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {

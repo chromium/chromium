@@ -33,6 +33,7 @@ class ProfileIOS;
 @class SceneLayoutState;
 @class SceneState;
 @protocol SettingsCommands;
+class TabBasedIPHBrowserAgent;
 @protocol TabGridCommands;
 @class TabGridState;
 @protocol TabGroupsCommands;
@@ -118,6 +119,10 @@ class WebStateList;
           (WebNavigationBrowserAgent*)regularNavigationBrowserAgent
     incognitoWebNavigationBrowserAgent:
         (WebNavigationBrowserAgent*)incognitoNavigationBrowserAgent
+               regularTabBasedIPHAgent:
+                   (TabBasedIPHBrowserAgent*)regularTabBasedIPHAgent
+             incognitoTabBasedIPHAgent:
+                 (TabBasedIPHBrowserAgent*)incognitoTabBasedIPHAgent
                   regularActionFactory:
                       (BrowserActionFactory*)regularActionFactory
                 incognitoActionFactory:
@@ -154,6 +159,10 @@ class WebStateList;
 // Resets the incognito navigation browser agent.
 - (void)setIncognitoNavigationBrowserAgent:
     (WebNavigationBrowserAgent*)navigationBrowserAgent;
+
+// Resets the incognito tab-based IPH browser agent.
+- (void)setIncognitoTabBasedIPHBrowserAgent:
+    (TabBasedIPHBrowserAgent*)iphBrowserAgent;
 
 // Resets the incognito action factory.
 - (void)setIncognitoActionFactory:(BrowserActionFactory*)incognitoActionFactory;

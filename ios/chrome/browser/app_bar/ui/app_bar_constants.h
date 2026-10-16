@@ -69,6 +69,12 @@ extern NSString* const kAppBarTabGridButtonIdentifier;
 // Accessibility identifier for the app bar new tab button.
 extern NSString* const kAppBarNewTabButtonIdentifier;
 
+// Accessibility identifier for the app bar back navigation button.
+extern NSString* const kAppBarBackButtonIdentifier;
+
+// Accessibility identifier for the app bar forward navigation button.
+extern NSString* const kAppBarForwardButtonIdentifier;
+
 // The histogram name for tracking when the assistant button is tapped.
 extern const char kAppBarAssistantButtonTappedHistogram[];
 
