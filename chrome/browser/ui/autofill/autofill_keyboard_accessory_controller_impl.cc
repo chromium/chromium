@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -959,6 +960,7 @@ bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
 void AutofillKeyboardAccessoryControllerImpl::
     OnAutofillAiSuppressionDialogClosed(const Suggestion& suggestion,
                                         bool confirmed) {
+  LogEntitySuppressionConfirmationDialogResult(confirmed);
   if (!confirmed) {
     return;
   }

@@ -26,6 +26,7 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -1076,17 +1077,22 @@ void UndoInSessionSuppressedEntity(
 
   __weak __typeof__(self) weakSelf = self;
 
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:^{
-                                 [weakSelf dismissAlertCoordinator];
-                               }
-                                style:UIAlertActionStyleCancel];
+  [_alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^{
+                  autofill::LogEntitySuppressionConfirmationDialogResult(
+                      /*accepted=*/false);
+                  [weakSelf dismissAlertCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
 
   NSString* removeActionTitle =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_ACTION);
   [_alertCoordinator
       addItemWithTitle:removeActionTitle
                 action:^{
+                  autofill::LogEntitySuppressionConfirmationDialogResult(
+                      /*accepted=*/true);
                   [weakSelf suppressEntityForSuggestion:suggestion];
                   [weakSelf dismissAlertCoordinator];
                 }
