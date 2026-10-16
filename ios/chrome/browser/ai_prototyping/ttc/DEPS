@@ -5,6 +5,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/ttc/app",
+  "+ios/chrome/browser/intelligence/proto_wrappers",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/shared/public/features",
