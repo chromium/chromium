@@ -7,11 +7,14 @@
 
 #import <memory>
 #import <optional>
+#import <string>
 #import <string_view>
+#import <vector>
 
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
@@ -19,6 +22,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 class GURL;
 
@@ -149,6 +153,49 @@ bool HasJournalEntryWithDetail(
     std::string_view detail_key,
     std::string_view detail_value,
     std::optional<mojom::JournalEntryType> entry_type = std::nullopt);
+
+// Records a copy of every entry added to an `AggregatedJournal` while it is
+// alive. Unlike `AggregatedJournal::Items()`, which only keeps the most recent
+// entries, no entry is dropped, so that tests can verify the order and nesting
+// of long sequences of entries.
+class RecordingJournalObserver : public AggregatedJournal::Observer {
+ public:
+  explicit RecordingJournalObserver(AggregatedJournal& journal);
+  RecordingJournalObserver(const RecordingJournalObserver&) = delete;
+  RecordingJournalObserver& operator=(const RecordingJournalObserver&) = delete;
+  ~RecordingJournalObserver() override;
+
+  // `AggregatedJournal::Observer` implementation.
+  void WillAddJournalEntry(const AggregatedJournal::Entry& entry) override;
+
+  // Returns all the recorded entries, in the order they were added.
+  const std::vector<mojom::JournalEntryPtr>& entries() const {
+    return entries_;
+  }
+
+  // Returns the recorded entries named `event_name`, in the order they were
+  // added.
+  std::vector<const mojom::JournalEntry*> EntriesNamed(
+      std::string_view event_name) const;
+
+ private:
+  std::vector<mojom::JournalEntryPtr> entries_;
+  base::ScopedObservation<AggregatedJournal, AggregatedJournal::Observer>
+      observation_{this};
+};
+
+// Returns the value of the detail of `entry` keyed `key`, if any. The value is
+// copied so that it stays valid after `entry` is destroyed.
+std::optional<std::string> FindJournalDetail(const mojom::JournalEntry& entry,
+                                             std::string_view key);
+
+// Returns success if, on every track, each `kEnd` entry closes the most
+// recently opened and still open `kBegin` entry, which must have the same name,
+// and no slice is left open after the last entry. This mirrors how Perfetto
+// builds slices, so a failure means that the trace would contain misplaced end
+// events or slices that never end.
+testing::AssertionResult IsStrictlyNestedPerTrack(
+    const std::vector<mojom::JournalEntryPtr>& entries);
 
 // Runs the tasks already posted to the current sequence. Tasks posted by those
 // tasks in turn are not run; use `base::test::RunUntil()` to wait on such

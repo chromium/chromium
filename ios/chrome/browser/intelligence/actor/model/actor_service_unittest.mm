@@ -13,6 +13,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/to_string.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -20,6 +21,7 @@
 #import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
 #import "base/types/expected.h"
+#import "components/actor/core/journal_details_builder.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -51,6 +53,7 @@
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -657,6 +660,107 @@ TEST_F(ActorServiceTest, PerformActions_LogsActionsToJournal) {
   EXPECT_TRUE(HasJournalEntryWithDetail(
       *GetJournal(service), "PerformActions", "proto_type",
       "chrome_intelligence_proto_features.Actions"));
+}
+
+// Tests that `PerformActionsFinished` is logged with the code of the first
+// failed action once a batch of actions finishes.
+TEST_F(ActorServiceTest, PerformActions_LogsPerformActionsFinished) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+  RecordingJournalObserver observer(*GetJournal(service));
+
+  ActorTaskId task_id = CreateTask(service);
+  PerformActionsResult result =
+      PerformActions(service, task_id, {MakeFailingActorAction()});
+  ASSERT_EQ(1u, result.action_results.size());
+  const mojom::ActionResultCode failure_code =
+      result.action_results[0].tool_result.code();
+  ASSERT_NE(mojom::ActionResultCode::kOk, failure_code);
+
+  std::vector<const mojom::JournalEntry*> entries =
+      observer.EntriesNamed("PerformActionsFinished");
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(mojom::JournalEntryType::kInstant, entries[0]->type);
+  EXPECT_EQ(MakeBrowserTrackUUID(task_id), entries[0]->track_uuid);
+  EXPECT_EQ(base::ToString(failure_code),
+            FindJournalDetail(*entries[0], "result_code"));
+}
+
+// Tests that no `TabObservationController` slice is logged when a batch of
+// actions leaves no WebState to observe.
+TEST_F(ActorServiceTest,
+       PerformActions_NoObservedWebState_SkipsTabObservationController) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+  RecordingJournalObserver observer(*GetJournal(service));
+
+  ActorTaskId task_id = CreateTask(service);
+  PerformActions(service, task_id);
+
+  std::vector<const mojom::JournalEntry*> finished_entries =
+      observer.EntriesNamed("PerformActionsFinished");
+  ASSERT_EQ(1u, finished_entries.size());
+  EXPECT_EQ("kOk", FindJournalDetail(*finished_entries[0], "result_code"));
+  EXPECT_TRUE(observer.EntriesNamed("TabObservationController").empty());
+  EXPECT_TRUE(observer.EntriesNamed("RequestTabObservation").empty());
+}
+
+// Tests that the tab observation following a batch of actions is wrapped in a
+// `TabObservationController` slice, with each `RequestTabObservation` slice
+// nested under it on the task's Browser track.
+TEST_F(ActorServiceTest,
+       PerformActions_WrapsRequestTabObservationInTabObservationController) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+  RecordingJournalObserver observer(*GetJournal(service));
+
+  ActorTaskId task_id = CreateTask(service);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto* fake_web_state_ptr = fake_web_state.get();
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  PerformActionsResult result = PerformActions(
+      service, task_id,
+      {MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier())});
+  ASSERT_EQ(1u, result.action_results.size());
+  ASSERT_TRUE(result.action_results[0].tool_result.IsOk());
+  ASSERT_EQ(1u, result.page_contexts.size());
+
+  std::vector<std::pair<mojom::JournalEntryType, std::string>>
+      observation_entries;
+  for (const mojom::JournalEntryPtr& entry : observer.entries()) {
+    if (entry->event != "TabObservationController" &&
+        entry->event != "RequestTabObservation") {
+      continue;
+    }
+    EXPECT_EQ(MakeBrowserTrackUUID(task_id), entry->track_uuid);
+    observation_entries.emplace_back(entry->type, entry->event);
+  }
+  EXPECT_THAT(
+      observation_entries,
+      testing::ElementsAre(
+          testing::Pair(mojom::JournalEntryType::kBegin,
+                        "TabObservationController"),
+          testing::Pair(mojom::JournalEntryType::kBegin,
+                        "RequestTabObservation"),
+          testing::Pair(mojom::JournalEntryType::kEnd, "RequestTabObservation"),
+          testing::Pair(mojom::JournalEntryType::kEnd,
+                        "TabObservationController")));
+  EXPECT_TRUE(IsStrictlyNestedPerTrack(observer.entries()));
+
+  std::vector<const mojom::JournalEntry*> controller_entries =
+      observer.EntriesNamed("TabObservationController");
+  ASSERT_FALSE(controller_entries.empty());
+  EXPECT_EQ("kOk", FindJournalDetail(*controller_entries[0], "result_code"));
+  EXPECT_EQ("false", FindJournalDetail(*controller_entries[0],
+                                       "skip_async_observation_information"));
+
+  browser_list->RemoveBrowser(test_browser.get());
 }
 
 // Tests that PerformActions is deferred when the WebState is loading, and only

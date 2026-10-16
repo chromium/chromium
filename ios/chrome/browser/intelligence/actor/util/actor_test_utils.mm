@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 
+#import <map>
+#import <string>
 #import <utility>
 
 #import "base/functional/bind.h"
@@ -213,6 +215,78 @@ bool HasJournalEntryWithDetail(
     std::optional<mojom::JournalEntryType> entry_type) {
   return HasMatchingJournalEntry(journal, event_name, entry_type, detail_key,
                                  detail_value);
+}
+
+RecordingJournalObserver::RecordingJournalObserver(AggregatedJournal& journal) {
+  observation_.Observe(&journal);
+}
+
+RecordingJournalObserver::~RecordingJournalObserver() = default;
+
+void RecordingJournalObserver::WillAddJournalEntry(
+    const AggregatedJournal::Entry& entry) {
+  entries_.push_back(entry.data.Clone());
+}
+
+std::vector<const mojom::JournalEntry*> RecordingJournalObserver::EntriesNamed(
+    std::string_view event_name) const {
+  std::vector<const mojom::JournalEntry*> matching_entries;
+  for (const mojom::JournalEntryPtr& entry : entries_) {
+    if (entry->event == event_name) {
+      matching_entries.push_back(entry.get());
+    }
+  }
+  return matching_entries;
+}
+
+std::optional<std::string> FindJournalDetail(const mojom::JournalEntry& entry,
+                                             std::string_view key) {
+  for (const mojom::JournalDetailsPtr& detail : entry.details) {
+    if (detail && detail->key == key) {
+      return detail->value;
+    }
+  }
+  return std::nullopt;
+}
+
+testing::AssertionResult IsStrictlyNestedPerTrack(
+    const std::vector<mojom::JournalEntryPtr>& entries) {
+  // Each track keeps a stack of its open slices, and an end entry closes the
+  // slice on top of its track's stack.
+  std::map<uint64_t, std::vector<std::string_view>> open_slices_by_track;
+  for (const mojom::JournalEntryPtr& entry : entries) {
+    std::vector<std::string_view>& open_slices =
+        open_slices_by_track[entry->track_uuid];
+    switch (entry->type) {
+      case mojom::JournalEntryType::kBegin:
+        open_slices.push_back(entry->event);
+        break;
+      case mojom::JournalEntryType::kEnd:
+        if (open_slices.empty()) {
+          return testing::AssertionFailure()
+                 << "`" << entry->event << "` ended on track "
+                 << entry->track_uuid << " while no slice was open.";
+        }
+        if (open_slices.back() != entry->event) {
+          return testing::AssertionFailure()
+                 << "`" << entry->event << "` ended on track "
+                 << entry->track_uuid << " while `" << open_slices.back()
+                 << "` was the innermost open slice.";
+        }
+        open_slices.pop_back();
+        break;
+      case mojom::JournalEntryType::kInstant:
+        break;
+    }
+  }
+  for (const auto& [track_uuid, open_slices] : open_slices_by_track) {
+    if (!open_slices.empty()) {
+      return testing::AssertionFailure()
+             << "`" << open_slices.back() << "` is still open on track "
+             << track_uuid << " after the last entry.";
+    }
+  }
+  return testing::AssertionSuccess();
 }
 
 void FlushCurrentSequence() {

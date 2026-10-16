@@ -47,6 +47,18 @@ namespace actor {
 
 namespace {
 
+// Returns the code of the first failed action in `results`, or `kOk` if every
+// action succeeded.
+mojom::ActionResultCode GetFirstFailedActionResultCode(
+    const std::vector<ActionResult>& results) {
+  for (const ActionResult& result : results) {
+    if (!result.tool_result.IsOk()) {
+      return result.tool_result.code();
+    }
+  }
+  return mojom::ActionResultCode::kOk;
+}
+
 // Serializes and logs the given batch of `actions` as an Actions proto
 // associated with `task_id` to `journal` for Protoshop inspection and Perfetto
 // tracing.
@@ -448,6 +460,13 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
                                   PerformActionsCallback callback,
                                   std::vector<ActionResult> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const mojom::ActionResultCode result_code =
+      GetFirstFailedActionResultCode(results);
+  // Matches the entry logged by Desktop's `ActorKeyedServiceProtoWrapper`.
+  journal_->Log(
+      GURL(), task_id, "PerformActionsFinished",
+      JournalDetailsBuilder().Add("result_code", result_code).Build());
+
   PerformActionsResult perform_actions_result;
   perform_actions_result.action_results = std::move(results);
 
@@ -475,17 +494,37 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
     return;
   }
 
+  // Spans every tab observation of this batch so that each
+  // `RequestTabObservation` slice nests under it on the Browser track, as on
+  // Desktop. iOS always captures the screenshot and the APC, so the observation
+  // never skips them.
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> observation_entry =
+      journal_->CreatePendingAsyncEntry(
+          GURL(), task_id, MakeBrowserTrackUUID(task_id),
+          "TabObservationController",
+          JournalDetailsBuilder()
+              .Add("result_code", result_code)
+              .Add("skip_async_observation_information", false)
+              .Build());
+
   // Barrier to wait for all PageContext extractions and add them to
   // ActionsResult.
   auto barrier = base::BarrierCallback<std::unique_ptr<TabObservationResponse>>(
       web_states_to_extract.size(),
       base::BindOnce(
-          [](PerformActionsCallback callback, PerformActionsResult result,
+          [](std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
+                 observation_entry,
+             PerformActionsCallback callback, PerformActionsResult result,
              std::vector<std::unique_ptr<TabObservationResponse>> contexts) {
+            // Ended before replying so that the slice only covers the
+            // observation, and after every `RequestTabObservation` slice so
+            // that those stay nested under it.
+            observation_entry->EndEntry(/*details=*/{});
             result.page_contexts = std::move(contexts);
             std::move(callback).Run(std::move(result));
           },
-          std::move(callback), std::move(perform_actions_result)));
+          std::move(observation_entry), std::move(callback),
+          std::move(perform_actions_result)));
 
   for (web::WebState* web_state : web_states_to_extract) {
     web::WebStateID id = web_state->GetUniqueIdentifier();

@@ -16,6 +16,7 @@ source_set("test_support") {
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/web/public",
     "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
   deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
