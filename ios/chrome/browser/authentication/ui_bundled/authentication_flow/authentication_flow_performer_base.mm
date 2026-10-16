@@ -70,16 +70,27 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 
+@interface AuthenticationFlowPerformerBase ()
+
+// Called when the profile switching succeeded.
+- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                     completion:(base::OnceClosure)completion;
+
+@end
+
 namespace {
 const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 // The change profile continuation for the authentication flow.
 void AuthenticationFlowContinuationImpl(
-    id<AuthenticationFlowPerformerBaseDelegate> delegate,
+    AuthenticationFlowPerformerBase* performer,
     SceneState* scene_state,
     base::OnceClosure closure) {
-  CHECK(delegate);
-  [delegate
+  // Once the profile switch has started, the authentication flow cannot be
+  // interrupted and retains itself (and `performer`) until the switch
+  // completes.
+  CHECK(performer, base::NotFatalUntil::M160);
+  [performer
       didSwitchToProfileWithNewProfileBrowser:scene_state
                                                   .browserProviderInterface
                                                   .mainBrowserProvider.browser
@@ -336,12 +347,22 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
 
 #pragma mark - Private
 
-// The change profile continuation for the authentication flow.
-- (ChangeProfileContinuation)authenticationFlowContinuation {
-  return base::BindOnce(&AuthenticationFlowContinuationImpl, _delegate);
+- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                     completion:(base::OnceClosure)completion {
+  if (!_delegate) {
+    std::move(completion).Run();
+    return;
+  }
+  [_delegate authenticationFlowPerformerBase:self
+      didSwitchToProfileWithNewProfileBrowser:newProfileBrowser
+                                   completion:std::move(completion)];
 }
 
-#pragma mark - Private
+// The change profile continuation for the authentication flow.
+- (ChangeProfileContinuation)authenticationFlowContinuation {
+  __weak __typeof(self) weakSelf = self;
+  return base::BindOnce(&AuthenticationFlowContinuationImpl, weakSelf);
+}
 
 // Callback for when the alert is dismissed.
 - (void)alertControllerDidDisappear:(ChromeCoordinator*)coordinator {

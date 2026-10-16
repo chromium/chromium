@@ -21,66 +21,75 @@ class Browser;
 @class UIViewController;
 @class AuthenticationFlowPerformer;
 
-// Handles completion of AuthenticationFlowPerformerBase steps.
+// Handles completion of AuthenticationFlowPerformer steps.
 @protocol AuthenticationFlowPerformerDelegate <
     AuthenticationFlowPerformerBaseDelegate>
 
 // Indicates that the reauthentication flow completed.
-- (void)didCompleteReauthWithSuccess:(BOOL)success;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+       didCompleteReauthWithSuccess:(BOOL)success;
 
 // Indicates that the CanSignInToChrome capability was fetched.
 - (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
     didFetchCanSignInToChromeCapability:(signin::Tribool)capability;
 
-// Called after `-[AuthenticationFlowPerformerBase
+// Called after `-[AuthenticationFlowPerformer
 // fetchUnsyncedDataWithSyncService:]`, to return the list of data types
 // unsynced in the current profile.
-- (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
-    (syncer::DataTypeSet)unsyncedDataTypes;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didFetchUnsyncedDataWithUnsyncedDataTypes:
+        (syncer::DataTypeSet)unsyncedDataTypes;
 
 // Called once the user accepts or refuses to leave the primary account.
-// See `-[AuthenticationFlowPerformerBase
+// See `-[AuthenticationFlowPerformer
 // showLeavingPrimaryAccountConfirmationWithBaseViewController:browser:
 // anchorView:anchorRect:]`.
-- (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+     didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue;
 
 // Indicates that the identity managed status was fetched.
-- (void)didFetchManagedStatus:(NSString*)hostedDomain;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+              didFetchManagedStatus:(NSString*)hostedDomain;
 
 // Indicates that the requested identity managed status fetch failed.
-- (void)didFailFetchManagedStatus:(NSError*)error;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+          didFailFetchManagedStatus:(NSError*)error;
 
 // Indicates that the Age Mismatch dialog was dismissed.
-- (void)didDismissAgeMismatchDialogWithCancelationReason:
-    (signin_ui::CancelationReason)reason;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didDismissAgeMismatchDialogWithCancelationReason:
+        (signin_ui::CancelationReason)reason;
 
 // Indicates that the value for ProfileSeparationDataMigrationSettings has been
 // fetched from the server.
-- (void)didFetchProfileSeparationPolicies:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profileSeparationDataMigrationSettings;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didFetchProfileSeparationPolicies:
+        (policy::ProfileSeparationDataMigrationSettings)
+            profileSeparationDataMigrationSettings;
 
 // Indicates that the user accepted signing in to a managed account.
 // If `browsingDataSeparate` is `YES`, the managed account gets signed in to a
 // new empty work profile. If `browsingDataSeparate` is `NO`, the account gets
 // signed in to the current profile, converting it into a work profile.
-- (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
-    (BOOL)browsingDataSeparate;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didAcceptManagedConfirmationWithBrowsingDataSeparate:
+        (BOOL)browsingDataSeparate;
 
 // Indicates that the user cancelled signing in to a managed account.
-- (void)didCancelManagedConfirmation;
+- (void)authenticationFlowPerformerDidCancelManagedConfirmation:
+    (AuthenticationFlowPerformer*)performer;
 
 // Indicates that the managed confirmation could not proceed.
-- (void)managedConfirmationCouldNotProceed;
-
-// Indicates that switching to a different profile failed.
-- (void)didFailToSwitchToProfile;
+- (void)authenticationFlowPerformerDidFailToProceedWithManagedConfirmation:
+    (AuthenticationFlowPerformer*)performer;
 
 // Indicates that the personal profile was converted to a managed one.
-- (void)didMakePersonalProfileManaged;
+- (void)authenticationFlowPerformerDidMakePersonalProfileManaged:
+    (AuthenticationFlowPerformer*)performer;
 
 // Indicates whether the user confirmed changing profile can proceed.
-- (void)didConfirmChangeProfileCanProceed:(BOOL)canProceed;
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didConfirmChangeProfileCanProceed:(BOOL)canProceed;
 
 @end
 

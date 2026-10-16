@@ -9,6 +9,7 @@
 
 #import "base/functional/callback_forward.h"
 
+@class AuthenticationFlowPerformerBase;
 class Browser;
 
 // Handles completion of AuthenticationFlowPerformerBase steps.
@@ -17,8 +18,10 @@ class Browser;
 // Indicates that switching to a different profile was completed.
 // `newProfileBrowser` must be regular. The continuation must be executed with
 // `completion`.
-- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
-                                     completion:(base::OnceClosure)completion;
+- (void)authenticationFlowPerformerBase:
+            (AuthenticationFlowPerformerBase*)performer
+    didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                 completion:(base::OnceClosure)completion;
 
 @end
 

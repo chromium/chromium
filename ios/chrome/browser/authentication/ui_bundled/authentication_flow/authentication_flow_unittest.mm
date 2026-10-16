@@ -284,7 +284,8 @@ class AuthenticationFlowTest : public PlatformTest {
           PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
     }
     auto fetchManagedStatusCallback = ^(NSInvocation*) {
-      [authentication_flow_ didFetchManagedStatus:hosted_domain];
+      [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                  didFetchManagedStatus:hosted_domain];
     };
     OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                       forIdentity:identity])
@@ -306,12 +307,13 @@ class AuthenticationFlowTest : public PlatformTest {
                                      forIdentity:identity])
           .andDo(^(NSInvocation*) {
             [authentication_flow_
+                      authenticationFlowPerformer:performer_mock_
                 didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
           });
 
       auto showManagedConfirmationForHostedDomainCallback = ^(NSInvocation*) {
         managed_confirmation_dialog_shown_count_++;
-        [authentication_flow_
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
             didAcceptManagedConfirmationWithBrowsingDataSeparate:YES];
       };
       OCMStub([performer_mock_
@@ -332,10 +334,12 @@ class AuthenticationFlowTest : public PlatformTest {
             if (confirmChangeProfile) {
               confirmChangeProfile(^(BOOL proceed) {
                 [authentication_flow_
+                          authenticationFlowPerformer:performer_mock_
                     didConfirmChangeProfileCanProceed:proceed];
               });
             } else {
-              [authentication_flow_ didConfirmChangeProfileCanProceed:YES];
+              [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                              didConfirmChangeProfileCanProceed:YES];
             }
           });
 
@@ -350,6 +354,7 @@ class AuthenticationFlowTest : public PlatformTest {
             },
             final_browser, std::move(continuation));
         [authentication_flow_
+                    authenticationFlowPerformerBase:performer_mock_
             didSwitchToProfileWithNewProfileBrowser:final_browser
                                          completion:std::move(completion)];
       };
@@ -477,7 +482,8 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                     forIdentity:identity1_])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_ didFailFetchManagedStatus:error];
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                didFailFetchManagedStatus:error];
       });
 
   OCMExpect([performer_mock_ showAuthenticationError:[OCMArg any]
@@ -575,6 +581,7 @@ TEST_F(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
   OCMExpect([performer_mock_ fetchUnsyncedDataWithSyncService:sync_service])
       .andDo(^(NSInvocation*) {
         [authentication_flow_
+                          authenticationFlowPerformer:performer_mock_
             didFetchUnsyncedDataWithUnsyncedDataTypes:syncer::DataTypeSet()];
       });
   // There is no unsynced data in this case, so no confirmation should be
@@ -606,8 +613,9 @@ TEST_F(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
       SyncServiceFactory::GetForProfile(personal_profile_.get());
   OCMExpect([performer_mock_ fetchUnsyncedDataWithSyncService:sync_service])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_ didFetchUnsyncedDataWithUnsyncedDataTypes:
-                                  {syncer::DataType::BOOKMARKS}];
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                didFetchUnsyncedDataWithUnsyncedDataTypes:
+                    {syncer::DataType::BOOKMARKS}];
       });
   // There is unsynced data, so a confirmation should be shown.
   // Don't bother continuing the flow beyond that step for this test.
@@ -648,7 +656,8 @@ TEST_F(AuthenticationFlowTest, TestSignInNotAllowed) {
   OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                     forIdentity:identity1_])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_ didFetchManagedStatus:nil];
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                    didFetchManagedStatus:nil];
       });
 
   [authentication_flow_ startSignIn];
@@ -680,7 +689,8 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileProceed) {
   OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                     forIdentity:identity])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_ didFetchManagedStatus:hosted_domain];
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                    didFetchManagedStatus:hosted_domain];
       });
 
   OCMStub([performer_mock_
@@ -688,6 +698,7 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileProceed) {
                                  forIdentity:identity])
       .andDo(^(NSInvocation*) {
         [authentication_flow_
+                  authenticationFlowPerformer:performer_mock_
             didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
       });
 
@@ -700,7 +711,7 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileProceed) {
                               signin::ManagedAccountSigninMode::
                                   kForceSeparateProfileDataByPolicy])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
             didAcceptManagedConfirmationWithBrowsingDataSeparate:YES];
       });
 
@@ -710,7 +721,8 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileProceed) {
         __unsafe_unretained void (^confirmChangeProfile)(void (^)(BOOL));
         [invocation getArgument:&confirmChangeProfile atIndex:2];
         confirmChangeProfile(^(BOOL proceed) {
-          [authentication_flow_ didConfirmChangeProfileCanProceed:proceed];
+          [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                          didConfirmChangeProfileCanProceed:proceed];
         });
       });
 
@@ -755,7 +767,8 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileCancel) {
   OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                     forIdentity:identity])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_ didFetchManagedStatus:hosted_domain];
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                    didFetchManagedStatus:hosted_domain];
       });
 
   OCMStub([performer_mock_
@@ -763,6 +776,7 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileCancel) {
                                  forIdentity:identity])
       .andDo(^(NSInvocation*) {
         [authentication_flow_
+                  authenticationFlowPerformer:performer_mock_
             didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
       });
 
@@ -775,7 +789,7 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileCancel) {
                               signin::ManagedAccountSigninMode::
                                   kForceSeparateProfileDataByPolicy])
       .andDo(^(NSInvocation*) {
-        [authentication_flow_
+        [authentication_flow_ authenticationFlowPerformer:performer_mock_
             didAcceptManagedConfirmationWithBrowsingDataSeparate:YES];
       });
 
@@ -785,7 +799,8 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileCancel) {
         __unsafe_unretained void (^confirmChangeProfile)(void (^)(BOOL));
         [invocation getArgument:&confirmChangeProfile atIndex:2];
         confirmChangeProfile(^(BOOL proceed) {
-          [authentication_flow_ didConfirmChangeProfileCanProceed:proceed];
+          [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                          didConfirmChangeProfileCanProceed:proceed];
         });
       });
 
@@ -803,12 +818,13 @@ TEST_F(AuthenticationFlowTest, TestAgeMismatchCancel) {
                            /*shouldHandOverToFlowInProfile=*/NO);
 
   AuthenticationFlow* authentication_flow = authentication_flow_;
+  AuthenticationFlowPerformer* performer_mock = performer_mock_;
   OCMExpect([performer_mock_
                 showAgeMismatchDialogForIdentity:identity1_
                                   viewController:view_controller_mock_
                                          browser:personal_browser_.get()])
       .andDo(^(NSInvocation*) {
-        [authentication_flow
+        [authentication_flow authenticationFlowPerformer:performer_mock
             didDismissAgeMismatchDialogWithCancelationReason:
                 signin_ui::CancelationReason::kAgeMismatchCanceled];
       });

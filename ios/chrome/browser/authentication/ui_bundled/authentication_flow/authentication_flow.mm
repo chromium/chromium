@@ -799,8 +799,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     __weak __typeof(self) weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
-                       [](__typeof(self) weakSelf) {
-                         [weakSelf didFailToSwitchToProfile];
+                       [](__typeof(self) strongSelf) {
+                         [strongSelf failToSwitchToProfile];
                        },
                        weakSelf));
     return;
@@ -935,8 +935,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 #pragma mark AuthenticationFlowPerformerDelegate
 
-- (void)didCompleteReauthWithSuccess:(BOOL)success {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+       didCompleteReauthWithSuccess:(BOOL)success {
   // Success means the user reauthenticated with `_identityToSignIn`.
+  CHECK_EQ(performer, _performer);
   CHECK_EQ(AuthenticationState::kReauthIfNeeded, _state);
   if (!success) {
     _cancelationReason = signin_ui::CancelationReason::kUserCanceled;
@@ -944,13 +946,17 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
-    (syncer::DataTypeSet)unsyncedDataTypes {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didFetchUnsyncedDataWithUnsyncedDataTypes:
+        (syncer::DataTypeSet)unsyncedDataTypes {
+  CHECK_EQ(performer, _performer);
   _unsyncedDataTypes = unsyncedDataTypes;
   [self continueFlow];
 }
 
-- (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+     didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue {
+  CHECK_EQ(performer, _performer);
   if (acceptToContinue) {
     [self continueFlow];
   } else {
@@ -958,7 +964,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   }
 }
 
-- (void)didFetchManagedStatus:(NSString*)hostedDomain {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+              didFetchManagedStatus:(NSString*)hostedDomain {
+  CHECK_EQ(performer, _performer);
   DCHECK_EQ(AuthenticationState::kFetchManagedStatus, _state);
   _identityToSignInHostedDomain = hostedDomain;
   if ([self.delegate
@@ -971,6 +979,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
     didFetchCanSignInToChromeCapability:(signin::Tribool)capability {
+  CHECK_EQ(performer, _performer);
   CHECK_EQ(AuthenticationState::kFetchCanSignInToChromeCapability, _state);
   if (capability == signin::Tribool::kFalse) {
     _canSignInToChrome = NO;
@@ -978,14 +987,18 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didDismissAgeMismatchDialogWithCancelationReason:
-    (signin_ui::CancelationReason)reason {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didDismissAgeMismatchDialogWithCancelationReason:
+        (signin_ui::CancelationReason)reason {
+  CHECK_EQ(performer, _performer);
   CHECK_EQ(AuthenticationState::kShowAgeMismatchDialogIfNeeded, _state);
   _cancelationReason = reason;
   [self continueFlow];
 }
 
-- (void)didFailFetchManagedStatus:(NSError*)error {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+          didFailFetchManagedStatus:(NSError*)error {
+  CHECK_EQ(performer, _performer);
   DCHECK_EQ(AuthenticationState::kFetchManagedStatus, _state);
   NSError* flowError =
       [NSError errorWithDomain:kAuthenticationErrorDomain
@@ -998,16 +1011,20 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self handleAuthenticationError:flowError];
 }
 
-- (void)didFetchProfileSeparationPolicies:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profile_separation_data_migration_settings {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didFetchProfileSeparationPolicies:
+        (policy::ProfileSeparationDataMigrationSettings)
+            profile_separation_data_migration_settings {
+  CHECK_EQ(performer, _performer);
   _profileSeparationDataMigrationCloudSettings =
       profile_separation_data_migration_settings;
   [self continueFlow];
 }
 
-- (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
-    (BOOL)browsingDataSeparate {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didAcceptManagedConfirmationWithBrowsingDataSeparate:
+        (BOOL)browsingDataSeparate {
+  CHECK_EQ(performer, _performer);
   _shouldConvertPersonalProfileToManaged = !browsingDataSeparate;
 
   // When we show the managed profile screen, the profile is a new one, ensure
@@ -1026,21 +1043,41 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didCancelManagedConfirmation {
+- (void)authenticationFlowPerformerDidCancelManagedConfirmation:
+    (AuthenticationFlowPerformer*)performer {
+  CHECK_EQ(performer, _performer);
   [self cancelFlowWithReason:signin_ui::CancelationReason::kUserCanceled];
 }
 
-- (void)managedConfirmationCouldNotProceed {
+- (void)authenticationFlowPerformerDidFailToProceedWithManagedConfirmation:
+    (AuthenticationFlowPerformer*)performer {
+  CHECK_EQ(performer, _performer);
   [self cancelFlowWithReason:signin_ui::CancelationReason::kFailed];
 }
 
-- (void)didFailToSwitchToProfile {
-  NSError* error = ios::provider::CreateMissingIdentitySigninError();
-  [self handleAuthenticationError:error];
+- (void)authenticationFlowPerformerDidMakePersonalProfileManaged:
+    (AuthenticationFlowPerformer*)performer {
+  CHECK_EQ(performer, _performer);
+  [self continueFlow];
 }
 
-- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
-                                     completion:(base::OnceClosure)completion {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didConfirmChangeProfileCanProceed:(BOOL)canProceed {
+  CHECK_EQ(performer, _performer);
+  if (canProceed) {
+    [self continueFlow];
+  } else {
+    [self cancelFlowWithReason:signin_ui::CancelationReason::kUserCanceled];
+  }
+}
+
+#pragma mark - AuthenticationFlowPerformerBaseDelegate
+
+- (void)authenticationFlowPerformerBase:
+            (AuthenticationFlowPerformerBase*)performer
+    didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                 completion:(base::OnceClosure)completion {
+  CHECK_EQ(performer, _performer);
   CHECK(completion);
   CHECK(newProfileBrowser);
   // Sign-in related work should be done on regular browser.
@@ -1058,19 +1095,13 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didMakePersonalProfileManaged {
-  [self continueFlow];
-}
-
-- (void)didConfirmChangeProfileCanProceed:(BOOL)canProceed {
-  if (canProceed) {
-    [self continueFlow];
-  } else {
-    [self cancelFlowWithReason:signin_ui::CancelationReason::kUserCanceled];
-  }
-}
-
 #pragma mark - Private methods
+
+// Handles the failure to switch to a different profile.
+- (void)failToSwitchToProfile {
+  NSError* error = ios::provider::CreateMissingIdentitySigninError();
+  [self handleAuthenticationError:error];
+}
 
 // Returns the mode for Managed Profile Creation view. Returns nullopt if there
 // is no need for this view.

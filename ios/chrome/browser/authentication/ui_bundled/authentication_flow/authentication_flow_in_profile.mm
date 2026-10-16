@@ -443,10 +443,13 @@ enum class AuthenticationFlowInProfileState {
   [self continueFlow];
 }
 
-#pragma mark - AuthenticationFlowPerformerDelegate
+#pragma mark - AuthenticationFlowPerformerBaseDelegate
 
-- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
-                                     completion:(base::OnceClosure)completion {
+- (void)authenticationFlowPerformerBase:
+            (AuthenticationFlowPerformerBase*)performer
+    didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                 completion:(base::OnceClosure)completion {
+  CHECK_EQ(performer, _performer);
   CHECK(newProfileBrowser);
   CHECK(completion);
 
@@ -454,6 +457,8 @@ enum class AuthenticationFlowInProfileState {
   _browser = nullptr;
   std::move(completion).Run();
 }
+
+#pragma mark - AuthenticationFlowInProfilePerformerDelegate
 
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
                                    clientID:(NSString*)clientID

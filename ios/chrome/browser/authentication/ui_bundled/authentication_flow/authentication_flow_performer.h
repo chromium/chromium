@@ -41,8 +41,8 @@ class SyncService;
 
 // Fetches the list of data types with unsync data in the primary account.
 // `-[id<AuthenticationFlowPerformerDelegate>
-// didFetchUnsyncedDataWithUnsyncedDataTypes:]` is called once the data are
-// fetched.
+// authenticationFlowPerformer:didFetchUnsyncedDataWithUnsyncedDataTypes:]` is
+// called once the data are fetched.
 - (void)fetchUnsyncedDataWithSyncService:(syncer::SyncService*)syncService;
 
 // Shows confirmation dialog to leaving the primary account. This dialog
@@ -51,8 +51,8 @@ class SyncService;
 // `anchorView` and `anchorRect` is the position that triggered sign-in. It is
 // used to attach the popover dialog with a regular window size (like iPad).
 // `-[id<AuthenticationFlowPerformerDelegate>
-// didAcceptToLeavePrimaryAccount:]` is called once the user accepts or
-// refuses the confirmation dialog.
+// authenticationFlowPerformer:didAcceptToLeavePrimaryAccount:]` is called once
+// the user accepts or refuses the confirmation dialog.
 - (void)showLeavingPrimaryAccountConfirmationWithBaseViewController:
             (UIViewController*)baseViewController
                                                             browser:(Browser*)
@@ -109,7 +109,7 @@ class SyncService;
 
 // Checks whether the user wants to switch to `identity` in a new profile with
 // `confirmChangeProfile` and transmits the answer to
-// `didConfirmChangeProfileCanProceed`.
+// `authenticationFlowPerformer:didConfirmChangeProfileCanProceed:`.
 - (void)confirmChangeProfile:
             (SigninChangeProfileConfirmationBlock)confirmChangeProfile
                  forIdentity:(id<SystemIdentity>)identity;
