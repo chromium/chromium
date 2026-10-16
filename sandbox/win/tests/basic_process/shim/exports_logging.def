@@ -187,6 +187,7 @@ EXPORTS
   AreFileApisANSI = ApifwAreFileApisANSI
   AttachConsole = ApifwAttachConsole
   CancelIo = ApifwCancelIo
+  CancelIoEx = ApifwCancelIoEx
   CompareStringEx = ApifwCompareStringEx
   ConnectNamedPipe = ApifwConnectNamedPipe
   ConvertSidToStringSidA = ApifwConvertSidToStringSidA
@@ -417,7 +418,6 @@ EXPORTS
   AllocConsole = ApifwNotReached
   AssignProcessToJobObject = ApifwNotReached
   bind = ApifwNotReached @2
-  CancelIoEx = ApifwNotReached
   CertAddCertificateContextToStore = ApifwNotReached
   CertAddEncodedCertificateToStore = ApifwNotReached
   CertAddStoreToCollection = ApifwNotReached
@@ -683,6 +683,7 @@ EXPORTS
   sendto = ApifwNotReached @20
   SetCommState = ApifwNotReached
   SetCommTimeouts = ApifwNotReached
+  SetConsoleMode = ApifwNotReached
   SetConsoleTextAttribute = ApifwNotReached
   SetDefaultDllDirectories = ApifwNotReached
   SetEnvironmentVariableA = ApifwNotReached

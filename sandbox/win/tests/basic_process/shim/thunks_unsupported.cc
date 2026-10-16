@@ -256,6 +256,9 @@ APIFW_FORWARD_DWRITECORE(DWriteCoreCreateFactory,
 
 APIFW_FORWARD_KERNEL32(AttachConsole, (DWORD, dwProcessId))
 APIFW_FORWARD_KERNEL32(CancelIo, (HANDLE, hFile))
+APIFW_FORWARD_KERNEL32(CancelIoEx,
+                       (HANDLE, hFile),
+                       (LPOVERLAPPED, lpOverlapped))
 APIFW_FORWARD_KERNEL32(CompareStringEx,
                        (LPCWSTR, lpLocaleName),
                        (DWORD, dwCmpFlags),
