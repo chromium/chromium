@@ -81,6 +81,23 @@ public class FullscreenManagerTestUtils {
     }
 
     /**
+     * Waits for the bottom browser controls min-height offset to match the current bottom controls
+     * min height.
+     *
+     * @param activity The ChromeActivity.
+     */
+    public static void waitForBottomControlsMinHeightOffset(ChromeActivity activity) {
+        final BrowserControlsStateProvider browserControlsStateProvider =
+                activity.getBrowserControlsManager();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            browserControlsStateProvider.getBottomControlsMinHeightOffset(),
+                            Matchers.is(browserControlsStateProvider.getBottomControlsMinHeight()));
+                });
+    }
+
+    /**
      * Waits for the base page to be scrollable.
      *
      * @param tab The current activity tab.

@@ -41,13 +41,13 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.keyboard_accessory.EmptyManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -80,9 +80,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
-// TODO(crbug.com/568382414): Re-enable AndroidBottomBar once the tab switcher button is no longer
-// transiently INVISIBLE while BottomControlsStacker updates the bottom sheet layer height.
-@DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
 public class TabBottomSheetManagerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -170,14 +167,13 @@ public class TabBottomSheetManagerTest {
                     mManager.tryToShowBottomSheet(
                             delegate, mCoBrowseViews, animate, startsExpanded);
                 });
-        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
-        CriteriaHelper.pollUiThread(() -> mCoBrowseViews.getView().isAttachedToWindow());
-        ThreadUtils.runOnUiThreadBlocking(() -> {});
+        blockUntilSheetFullyRestored();
     }
 
     private void blockUntilSheetFullyRestored() {
         CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
         CriteriaHelper.pollUiThread(() -> mCoBrowseViews.getView().isAttachedToWindow());
+        FullscreenManagerTestUtils.waitForBottomControlsMinHeightOffset(mActivity);
         ThreadUtils.runOnUiThreadBlocking(() -> {});
     }
 
@@ -666,7 +662,7 @@ public class TabBottomSheetManagerTest {
         // 2. Close tab switcher (Return to tab)
         WebPageStation pageStation =
                 tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
-        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+        blockUntilSheetFullyRestored();
 
         // 3. Open tab switcher again (Second suppression)
         tabSwitcher = pageStation.openRegularTabSwitcher();
