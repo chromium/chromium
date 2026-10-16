@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -575,9 +576,12 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   // TODO(crbug.com/566667042): `base::unchecked` is needed for now to
   // unblock tighter bounds checking for Checked Span, but it's
   // symptomatic of a bigger problem in SQLite3 that ought to be fixed.
-  return UNSAFE_TODO(base::span(base::unchecked,
-                                static_cast<const uint8_t*>(result_buffer),
-                                base::checked_cast<size_t>(result_size)));
+  //
+  // SAFETY: sqlite3_column_bytes(), called after sqlite3_column_blob() above,
+  // is the size of the buffer it returned.
+  return UNSAFE_BUFFERS(base::span(base::unchecked,
+                                   static_cast<const uint8_t*>(result_buffer),
+                                   base::checked_cast<size_t>(result_size)));
 }
 
 std::string Statement::ColumnBlobAsString(int column_index) {
@@ -596,8 +600,7 @@ std::optional<std::u16string> Statement::ColumnBlobAsString16(
 }
 
 std::vector<uint8_t> Statement::ColumnBlobAsVector(int column_index) {
-  base::span<const uint8_t> byte_span = ColumnBlob(column_index);
-  return std::vector<uint8_t>(byte_span.begin(), byte_span.end());
+  return base::ToVector(ColumnBlob(column_index));
 }
 
 std::string Statement::GetSQLStatement() {
