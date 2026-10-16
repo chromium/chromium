@@ -35,15 +35,12 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
   // GmailOtpBackend:
   OneTimeTokenLogSink* GetLogSink() override;
 
-  ExpiringSubscription Subscribe(base::Time expiration,
-                                 Callback callback) override;
   ExpiringSubscription Subscribe(
       base::Time expiration,
       Callback callback,
       base::OnceClosure expiration_callback) override;
   ExpiringSubscription SubscribeToTickles(base::Time expiration,
                                           TickleCallback callback) override;
-  std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
   std::vector<OneTimeToken> PurgeExpiredAndGetCachedOneTimeTokens() override;
   void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) override;

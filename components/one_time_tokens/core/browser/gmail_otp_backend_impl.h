@@ -55,9 +55,6 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       OneTimeTokenLogSink::LogHandler log_handler = {});
   ~GmailOtpBackendImpl() override;
 
-  ExpiringSubscription Subscribe(base::Time expiration,
-                                 Callback callback) override;
-
   ExpiringSubscription Subscribe(
       base::Time expiration,
       Callback callback,
@@ -65,8 +62,6 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   ExpiringSubscription SubscribeToTickles(base::Time expiration,
                                           TickleCallback callback) override;
-
-  std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
 
   std::vector<OneTimeToken> PurgeExpiredAndGetCachedOneTimeTokens() override;
 

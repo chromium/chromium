@@ -67,12 +67,6 @@ OneTimeTokenLogSink* GmailOtpBackendImpl::GetLogSink() {
   return &log_sink_;
 }
 
-ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
-                                                    Callback callback) {
-  return Subscribe(expiration, std::move(callback),
-                   /*expiration_callback=*/base::DoNothing());
-}
-
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(
     base::Time expiration,
     Callback callback,
@@ -118,10 +112,6 @@ ExpiringSubscription GmailOtpBackendImpl::SubscribeToTickles(
   }
 
   return subscription;
-}
-
-std::vector<OneTimeToken> GmailOtpBackendImpl::GetCachedOneTimeTokens() const {
-  return base::ToVector(one_time_token_cache_.GetItems());
 }
 
 std::vector<OneTimeToken>

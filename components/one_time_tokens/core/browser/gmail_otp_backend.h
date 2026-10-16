@@ -60,10 +60,6 @@ class GmailOtpBackend : public KeyedService {
   // Returns the log sink owned by the backend.
   virtual OneTimeTokenLogSink* GetLogSink() = 0;
 
-  // Creates a subscription for new incoming OTPs.
-  [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
-                                                       Callback callback) = 0;
-
   // Creates a subscription for new incoming OTPs with an expiration callback.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(
       base::Time expiration,
@@ -75,9 +71,6 @@ class GmailOtpBackend : public KeyedService {
   [[nodiscard]] virtual ExpiringSubscription SubscribeToTickles(
       base::Time expiration,
       TickleCallback callback) = 0;
-
-  // Returns all cached one-time tokens, without filtering for expiration.
-  virtual std::vector<OneTimeToken> GetCachedOneTimeTokens() const = 0;
 
   // Purges expired tokens and returns the remaining cached one-time tokens.
   virtual std::vector<OneTimeToken> PurgeExpiredAndGetCachedOneTimeTokens() = 0;

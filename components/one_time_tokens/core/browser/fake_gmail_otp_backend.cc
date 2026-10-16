@@ -27,12 +27,6 @@ OneTimeTokenLogSink* FakeGmailOtpBackend::GetLogSink() {
   return &log_sink_;
 }
 
-ExpiringSubscription FakeGmailOtpBackend::Subscribe(base::Time expiration,
-                                                    Callback callback) {
-  return Subscribe(expiration, std::move(callback),
-                   /*expiration_callback=*/base::DoNothing());
-}
-
 ExpiringSubscription FakeGmailOtpBackend::Subscribe(
     base::Time expiration,
     Callback callback,
@@ -57,10 +51,6 @@ ExpiringSubscription FakeGmailOtpBackend::SubscribeToTickles(
     callback.Run();
   }
   return subscription;
-}
-
-std::vector<OneTimeToken> FakeGmailOtpBackend::GetCachedOneTimeTokens() const {
-  return base::ToVector(one_time_token_cache_.GetItems());
 }
 
 std::vector<OneTimeToken>
