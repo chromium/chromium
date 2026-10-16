@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -47,15 +48,12 @@ void GracefulShutdownHandler(int signal) {
   RAW_CHECK(g_shutdown_pipe_write_fd != -1);
   RAW_CHECK(g_shutdown_pipe_read_fd != -1);
   RAW_CHECK(g_pipe_pid == getpid());
-  size_t bytes_written = 0;
-  do {
-    int rv = UNSAFE_TODO(HANDLE_EINTR(
-        write(g_shutdown_pipe_write_fd,
-              reinterpret_cast<const char*>(&signal) + bytes_written,
-              sizeof(signal) - bytes_written)));
-    RAW_CHECK(rv >= 0);
-    bytes_written += rv;
-  } while (bytes_written < sizeof(signal));
+  // POSIX guarantees that writes of at most PIPE_BUF bytes to a pipe are
+  // atomic, so a single write() sends the whole signal number.
+  static_assert(sizeof(signal) <= PIPE_BUF);
+  RAW_CHECK(
+      HANDLE_EINTR(write(g_shutdown_pipe_write_fd, &signal, sizeof(signal))) ==
+      static_cast<ssize_t>(sizeof(signal)));
 }
 
 void SIGHUPHandler(int signal) {
@@ -126,20 +124,18 @@ NOINLINE void ExitPosted(int signal) {
 void ShutdownDetector::ThreadMain() {
   base::PlatformThread::SetName("CrShutdownDetector");
 
-  int signal;
-  size_t bytes_read = 0;
-  ssize_t ret;
-  do {
-    ret = UNSAFE_TODO(HANDLE_EINTR(
-        read(shutdown_fd_, reinterpret_cast<char*>(&signal) + bytes_read,
-             sizeof(signal) - bytes_read)));
+  int signal = 0;
+  base::span<uint8_t> buffer = base::byte_span_from_ref(signal);
+  while (!buffer.empty()) {
+    const ssize_t ret =
+        HANDLE_EINTR(read(shutdown_fd_, buffer.data(), buffer.size()));
     if (ret < 0) {
       NOTREACHED() << "Unexpected error: " << strerror(errno);
     } else if (ret == 0) {
       NOTREACHED() << "Unexpected closure of shutdown pipe.";
     }
-    bytes_read += ret;
-  } while (bytes_read < sizeof(signal));
+    buffer = buffer.subspan(static_cast<size_t>(ret));
+  }
   VLOG(1) << "Handling shutdown for signal " << signal << ".";
 
   if (!task_runner_->PostTask(
