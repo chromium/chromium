@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_
 #define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -43,11 +40,6 @@ class ScreenAIInstallState {
   virtual ~ScreenAIInstallState();
 
   static ScreenAIInstallState* GetInstance();
-
-  // These functions are implemented in `ScreenAIDownloaderChromeOS` and
-  // `ScreenAIDownloaderNonChromeOS`.
-  static std::unique_ptr<ScreenAIInstallState> Create();
-  static ScreenAIInstallState* CreateForTesting();
 
   // Verifies that the device and library version are compatible with current
   // Chromium requirements. Will be used to avoid accepting the library if the
@@ -94,10 +86,25 @@ class ScreenAIInstallState {
 
   State get_state() { return state_; }
 
+  // Resets the state back to `kNotDownloaded`, clears the binary path,
+  // notifies observers of destruction, clears registered observers, and
+  // resets device compatibility overrides. Because `ScreenAIInstallState` is a
+  // persistent process singleton, tests that mutate state or download
+  // components should call this during `SetUp()` and `TearDown()` to guarantee
+  // a clean starting state and prevent state leakage across test cases running
+  // in the same process.
   void ResetForTesting();
   void SetStateForTesting(State state);
 
+ protected:
+  bool HasObservers() const;
+  virtual void OnStateOrObserversChanged() {}
+
  private:
+  // Implemented in `ScreenAIDownloaderChromeOS` and
+  // `ScreenAIDownloaderNonChromeOS`.
+  static ScreenAIInstallState* Create();
+
   // This function depends on component updater or DLC downloader and since they
   // need have dependencies on browser thread, we need to move it to another
   // build target to avoid circular dependency.
@@ -107,6 +114,10 @@ class ScreenAIInstallState {
   State state_ = State::kNotDownloaded;
 
   base::ObserverList<Observer> observers_;
+
+  // Stores the previous instance so that test instances can restore
+  // `g_instance` upon destruction.
+  raw_ptr<ScreenAIInstallState> previous_instance_ = nullptr;
 };
 
 }  // namespace screen_ai

@@ -106,10 +106,6 @@ namespace speech {
 class SodaInstaller;
 }  // namespace speech
 
-namespace screen_ai {
-class ScreenAIInstallState;
-}  // namespace screen_ai
-
 namespace supervised_user {
 class DeviceParentalControls;
 }  // namespace supervised_user
@@ -469,10 +465,6 @@ class BrowserProcessImpl : public BrowserProcess,
   // SodaInstallerImpl depends on ComponentUpdateService, so define it here
   // to ensure that SodaInstallerImpl gets destructed first.
   std::unique_ptr<speech::SodaInstaller> soda_installer_impl_;
-
-  // Used to download Screen AI on demand and keep track of the library
-  // availability.
-  std::unique_ptr<screen_ai::ScreenAIInstallState> screen_ai_download_;
 
   std::unique_ptr<speech::SpeechRecognitionSmallExpertModelInstaller>
       speech_recognition_small_expert_model_installer_;

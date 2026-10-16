@@ -32,6 +32,7 @@ class ScreenAIDownloaderNonChromeOS
  private:
   // ScreenAIInstallState:
   void DownloadComponentInternal() override;
+  void OnStateOrObserversChanged() override;
 
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>

@@ -17,12 +17,7 @@
 namespace screen_ai {
 
 // static
-std::unique_ptr<ScreenAIInstallState> ScreenAIInstallState::Create() {
-  return std::make_unique<ScreenAIDownloaderNonChromeOS>();
-}
-
-// static
-ScreenAIInstallState* ScreenAIInstallState::CreateForTesting() {
+ScreenAIInstallState* ScreenAIInstallState::Create() {
   static base::NoDestructor<ScreenAIDownloaderNonChromeOS> install_state;
   return install_state.get();
 }
@@ -32,16 +27,41 @@ ScreenAIDownloaderNonChromeOS::~ScreenAIDownloaderNonChromeOS() = default;
 
 void ScreenAIDownloaderNonChromeOS::DownloadComponentInternal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Proactive defense to ensure calls do not crash in early browser
+  // startup, late browser shutdown after `BrowserProcessImpl` teardown, or in
+  // unit tests without `TestingBrowserProcess`.
+  if (!g_browser_process || !g_browser_process->component_updater()) {
+    SetState(State::kDownloadFailed);
+    return;
+  }
   component_updater::RegisterScreenAIComponent(
       g_browser_process->component_updater());
-  if (!component_updater_observation_.IsObserving()) {
-    component_updater_observation_.Observe(
-        g_browser_process->component_updater());
+}
+
+void ScreenAIDownloaderNonChromeOS::OnStateOrObserversChanged() {
+  // Only observe `ComponentUpdateService` while downloading and observers are
+  // present. Since `ScreenAIDownloaderNonChromeOS` is a `base::NoDestructor`
+  // singleton, this also ensures the observation is reset before
+  // `g_browser_process->component_updater()` is destroyed at shutdown.
+  if (HasObservers() && get_state() == State::kDownloading) {
+    if (!component_updater_observation_.IsObserving() && g_browser_process &&
+        g_browser_process->component_updater()) {
+      component_updater_observation_.Observe(
+          g_browser_process->component_updater());
+    }
+  } else {
+    component_updater_observation_.Reset();
   }
 }
 
 void ScreenAIDownloaderNonChromeOS::SetLastUsageTime() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Proactive defense to ensure calls do not crash in early browser
+  // startup, late browser shutdown after `BrowserProcessImpl` teardown, or in
+  // unit tests without `TestingBrowserProcess` / `ScopedTestingLocalState`.
+  if (!g_browser_process || !g_browser_process->local_state()) {
+    return;
+  }
   g_browser_process->local_state()->SetTime(
       prefs::kScreenAILastUsedTimePrefName, base::Time::Now());
 }

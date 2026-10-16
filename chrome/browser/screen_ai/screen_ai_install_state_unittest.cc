@@ -102,6 +102,36 @@ TEST_F(ScreenAIInstallStateTest, DestroyStateBeforeObserver) {
   EXPECT_FALSE(IsObserving());
 }
 
+TEST_F(ScreenAIInstallStateTest, ResetForTestingNotifiesObservers) {
+  StartObservation();
+  EXPECT_TRUE(IsObserving());
+  ScreenAIInstallState::GetInstance()->ResetForTesting();
+  EXPECT_FALSE(IsObserving());
+}
+
+TEST_F(ScreenAIInstallStateTest, RestoreDefaultInstanceAfterOverride) {
+  // Destroy the test instance created by the fixture so that GetInstance()
+  // resolves to the default process singleton.
+  DestroyInstallState();
+  ScreenAIInstallState* default_instance = ScreenAIInstallState::GetInstance();
+  ASSERT_NE(default_instance, nullptr);
+  EXPECT_EQ(ScreenAIInstallState::GetInstance(), default_instance);
+
+  {
+    TestScreenAIInstallState scoped_install_state_1;
+    EXPECT_EQ(ScreenAIInstallState::GetInstance(), &scoped_install_state_1);
+
+    {
+      TestScreenAIInstallState scoped_install_state_2;
+      EXPECT_EQ(ScreenAIInstallState::GetInstance(), &scoped_install_state_2);
+    }
+
+    EXPECT_EQ(ScreenAIInstallState::GetInstance(), &scoped_install_state_1);
+  }
+
+  EXPECT_EQ(ScreenAIInstallState::GetInstance(), default_instance);
+}
+
 TEST_F(ScreenAIInstallStateTest, DeviceCompatibility) {
   ScreenAIInstallState::SetDeviceCompatibleForTesting(true);
   EXPECT_TRUE(ScreenAIInstallState::IsDeviceCompatible());

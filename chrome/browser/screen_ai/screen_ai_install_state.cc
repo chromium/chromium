@@ -4,9 +4,7 @@
 
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 
-#include <memory>
 #include <optional>
-
 #include "base/check_is_test.h"
 #include "base/cpu.h"
 #include "base/files/file_path.h"
@@ -68,13 +66,10 @@ void ScreenAIInstallState::ResetDeviceCompatibilityForTesting() {
 
 // static
 ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
-  if (g_instance) {
-    return g_instance;
+  if (!g_instance) {
+    g_instance = ScreenAIInstallState::Create();
   }
-  // `!g_instance` only happens in unit tests in which a browser instance is
-  // not created. Assert that this code path is only taken in tests.
-  CHECK_IS_TEST();
-  return ScreenAIInstallState::CreateForTesting();
+  return g_instance;
 }
 
 // static
@@ -104,7 +99,12 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {
-  CHECK_EQ(g_instance, nullptr);
+  if (g_instance) {
+    // Only tests may override the existing `base::NoDestructor` singleton with
+    // a custom `ScreenAIInstallState` subclass.
+    CHECK_IS_TEST();
+  }
+  previous_instance_ = g_instance;
   g_instance = this;
 }
 
@@ -112,8 +112,8 @@ ScreenAIInstallState::~ScreenAIInstallState() {
   for (ScreenAIInstallState::Observer& observer : observers_) {
     observer.OnScreenAIInstallStateDestroying();
   }
-  CHECK_NE(g_instance, nullptr);
-  g_instance = nullptr;
+  CHECK_EQ(g_instance, this);
+  g_instance = previous_instance_;
   g_device_compatible_for_testing.reset();
 }
 
@@ -150,6 +150,7 @@ void ScreenAIInstallState::AddObserver(
   // Adding an observer indicates that we need the component.
   SetLastUsageTime();
   DownloadComponent();
+  OnStateOrObserversChanged();
 }
 
 void ScreenAIInstallState::DownloadComponent() {
@@ -178,6 +179,11 @@ void ScreenAIInstallState::DownloadComponent() {
 void ScreenAIInstallState::RemoveObserver(
     ScreenAIInstallState::Observer* observer) {
   observers_.RemoveObserver(observer);
+  OnStateOrObserversChanged();
+}
+
+bool ScreenAIInstallState::HasObservers() const {
+  return !observers_.empty();
 }
 
 void ScreenAIInstallState::SetComponentFolder(
@@ -209,6 +215,7 @@ void ScreenAIInstallState::SetState(State state) {
   for (ScreenAIInstallState::Observer& observer : observers_) {
     observer.StateChanged(state_);
   }
+  OnStateOrObserversChanged();
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
@@ -234,9 +241,14 @@ bool ScreenAIInstallState::MayTryDownload() {
 }
 
 void ScreenAIInstallState::ResetForTesting() {
+  for (ScreenAIInstallState::Observer& observer : observers_) {
+    observer.OnScreenAIInstallStateDestroying();
+  }
+  observers_.Clear();
   state_ = State::kNotDownloaded;
   component_binary_path_.clear();
   ResetDeviceCompatibilityForTesting();
+  OnStateOrObserversChanged();
 }
 
 void ScreenAIInstallState::SetStateForTesting(State state) {
@@ -244,6 +256,7 @@ void ScreenAIInstallState::SetStateForTesting(State state) {
   for (ScreenAIInstallState::Observer& observer : observers_) {
     observer.StateChanged(state_);
   }
+  OnStateOrObserversChanged();
 }
 
 }  // namespace screen_ai

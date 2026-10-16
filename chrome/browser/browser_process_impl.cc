@@ -267,12 +267,10 @@ void OnLocalStatePrefsLoaded();
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/chromeos_telemetry_extensions_browser_api_provider.h"
 #include "chrome/browser/hid/hid_pinned_notification.h"
-#include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 #include "chrome/browser/usb/usb_pinned_notification.h"
 #include "components/crash/core/app/crashpad.h"
 #elif !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_status_icon.h"
-#include "chrome/browser/screen_ai/screen_ai_downloader_non_chromeos.h"
 #include "chrome/browser/usb/usb_status_icon.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
@@ -1730,7 +1728,6 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-  screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
   speech_recognition_small_expert_model_installer_ =
       std::make_unique<speech::SpeechRecognitionSmallExpertModelInstaller>();
 #endif

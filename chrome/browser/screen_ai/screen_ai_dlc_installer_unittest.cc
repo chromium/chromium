@@ -26,11 +26,15 @@ class ScreenAIDlcInstallerTest
       public testing::WithParamInterface<std::string> {
  protected:
   void SetUp() override {
-    install_state_ = screen_ai::ScreenAIInstallState::Create();
+    screen_ai::ScreenAIInstallState::GetInstance()->ResetForTesting();
     base_retry_delay_in_seconds =
         screen_ai::dlc_installer::base_retry_delay_in_seconds_for_testing();
     max_install_retries =
         screen_ai::dlc_installer::max_install_retries_for_testing();
+  }
+
+  void TearDown() override {
+    screen_ai::ScreenAIInstallState::GetInstance()->ResetForTesting();
   }
 
   void InstallAndWait() {
@@ -73,7 +77,6 @@ class ScreenAIDlcInstallerTest
   FakeDlcserviceClient fake_dlcservice_client_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<screen_ai::ScreenAIInstallState> install_state_;
   base::HistogramTester histogram_tester_;
 };
 
