@@ -81,7 +81,8 @@ const char* const kNonembeddedLowEntropySourceAllowlist[] = {
     "WebViewStartupNonBlockingWebViewConstructor",
     "WebViewStaticMethodsNotTriggerStartup",
     "WebViewTestNonembeddedLowEntropySource",
-    "WebViewProfileStoreNotTriggerStartup"
+    "WebViewProfileStoreNotTriggerStartup",
+    "AvoidPerContextColorProviders"
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
