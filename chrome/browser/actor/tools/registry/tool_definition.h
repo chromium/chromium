@@ -81,7 +81,9 @@ enum class ToolId {
   kMoveMouse = 30,
   // Drags an element and drops it onto another element on the page.
   kDragAndRelease = 31,
-  kMaxValue = kDragAndRelease,
+  // Pauses execution for a specified duration in milliseconds.
+  kWait = 32,
+  kMaxValue = kWait,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

@@ -36,6 +36,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
+#include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -451,6 +452,16 @@ TEST(ToolRegistryTest, DragAndReleaseToolDefinition) {
   EXPECT_THAT(*definition,
               RequiresParam(DragAndReleaseToolRequest::kToDomNodeIdParam));
 }
+TEST(ToolRegistryTest, WaitToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      WaitToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kWait);
+  EXPECT_EQ(definition->name, WaitToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(WaitToolRequest::kWaitTimeMsParam, "integer"));
+  EXPECT_THAT(*definition, RequiresParam(WaitToolRequest::kWaitTimeMsParam));
+}
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -828,6 +839,16 @@ TEST(ToolRegistryTest, GetAllToolsContainsDragAndReleaseTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kDragAndRelease,
                                     &ToolDefinition::id));
+}
+TEST(ToolRegistryTest, GetAllToolsContainsWaitTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kWait, &ToolDefinition::id));
 }
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());

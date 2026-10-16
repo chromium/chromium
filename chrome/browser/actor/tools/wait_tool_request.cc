@@ -4,12 +4,30 @@
 
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 
+#include <optional>
+#include <string_view>
+
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `wait` tool.
+constexpr std::string_view kWaitToolDescription =
+    "Pauses execution for the specified duration in milliseconds.";
+
+// Description for the `wait_time_ms` parameter of the `wait` tool.
+constexpr std::string_view kWaitTimeMsParamDescription =
+    "The duration to wait in milliseconds.";
+
+}  // namespace
 
 WaitToolRequest::WaitToolRequest(
     base::TimeDelta wait_duration,
@@ -18,6 +36,15 @@ WaitToolRequest::WaitToolRequest(
       observe_actor_surface_handle_(observe_actor_surface_handle) {}
 
 WaitToolRequest::~WaitToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> WaitToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kWait, kModelFacingName,
+                               kWaitToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddIntegerProperty(
+          kWaitTimeMsParam, kWaitTimeMsParamDescription))
+      .Build();
+}
 
 ToolRequest::CreateToolResult WaitToolRequest::CreateTool(
     TaskId task_id,

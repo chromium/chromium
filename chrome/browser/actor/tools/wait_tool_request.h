@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_WAIT_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -18,11 +20,16 @@ class ToolRequestVisitorFunctor;
 class WaitToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "Wait";
+  static constexpr std::string_view kModelFacingName = "wait";
+  static constexpr std::string_view kWaitTimeMsParam = "wait_time_ms";
 
   explicit WaitToolRequest(base::TimeDelta wait_duration,
                            ActorSurfaceHandle observe_actor_surface_handle =
                                ActorSurfaceHandle::Null());
   ~WaitToolRequest() override;
+
+  // Returns the `ToolId::kWait` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
