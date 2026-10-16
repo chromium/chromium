@@ -3444,6 +3444,25 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.RiskBased.TimedOut"
+    enum="BooleanTimedOut" expires_after="2027-04-30">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The GetDetailsForGetRealPan call is made when card suggestions are shown.
+    When card-on-device verification is enforced, the risk-based authentication
+    of a masked server card waits for the response to this call. If the user
+    selects a card before the response is returned, latency is perceived. Given
+    that the user perceives latency, this metric logs whether the wait timed out
+    and the risk-based authentication started without the response, or whether
+    the response was received in time. See
+    Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.TimedOutCvcFallback
+    for the flows that fall back to CVC authentication instead. Not logged on
+    iOS.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.{AutofillFidoAuthenticationEnabledState}"
     enum="AutofillCreditCardPreflightCallEvent" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>

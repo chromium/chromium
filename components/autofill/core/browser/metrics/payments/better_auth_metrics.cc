@@ -89,6 +89,14 @@ void LogUserPerceivedLatencyOnCardSelectionTimedOut(bool did_time_out) {
       did_time_out);
 }
 
+void LogUserPerceivedLatencyOnCardSelectionRiskBasedTimedOut(
+    bool did_time_out) {
+  base::UmaHistogramBoolean(
+      "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.RiskBased."
+      "TimedOut",
+      did_time_out);
+}
+
 void LogUserVerifiabilityCheckDuration(base::TimeDelta duration) {
   base::UmaHistogramLongTimes(
       "Autofill.BetterAuth.UserVerifiabilityCheckDuration", duration);

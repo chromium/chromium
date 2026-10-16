@@ -196,9 +196,17 @@ void LogUserPerceivedLatencyOnCardSelection(PreflightCallEvent event,
 void LogUserPerceivedLatencyOnCardSelectionDuration(
     const base::TimeDelta duration);
 
-// Logs whether or not the verifying pending dialog timed out between
-// selecting a Google Payments server card and seeing a card unmask prompt.
+// Logs whether or not the verify pending dialog timed out between selecting a
+// Google Payments server card and seeing a card unmask prompt (falling back to
+// CVC authentication instead of continuing to FIDO) when risk-based
+// authentication is not used.
 void LogUserPerceivedLatencyOnCardSelectionTimedOut(bool did_time_out);
+
+// Logs whether or not the wait for the preflight call response timed out
+// between selecting a Google Payments server card and starting the risk-based
+// authentication. The risk-based authentication only waits when card-on-device
+// verification is enforced.
+void LogUserPerceivedLatencyOnCardSelectionRiskBasedTimedOut(bool did_time_out);
 
 // Logs the duration of WebAuthn's
 // IsUserVerifiablePlatformAuthenticatorAvailable() call. It is supposedly an

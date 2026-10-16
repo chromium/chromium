@@ -890,6 +890,11 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
                                       1);
     histogram_tester.ExpectBucketCount(timeout_cvc_fallback_histogram_name,
                                        true, 1);
+    // Only the risk-based authentication records its timeouts separately.
+    histogram_tester.ExpectTotalCount(
+        "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.RiskBased."
+        "TimedOut",
+        0);
   }
 }
 

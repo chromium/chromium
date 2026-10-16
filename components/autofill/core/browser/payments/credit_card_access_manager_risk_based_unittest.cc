@@ -891,6 +891,13 @@ TEST_P(
       1);
 }
 
+constexpr char kRiskBasedTimedOutHistogram[] =
+    "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.RiskBased."
+    "TimedOut";
+constexpr char kTimedOutCvcFallbackHistogram[] =
+    "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
+    "TimedOutCvcFallback";
+
 // Tests the preflight wait and CVC enforcement that gate the authentication of
 // a masked server card when card-on-device verification enforcement is enabled.
 class CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest
@@ -967,6 +974,22 @@ TEST_F(
   EXPECT_FALSE(autofill_progress_dialog_closed());
 }
 
+// Ensures that a preflight call response that arrives while the risk-based
+// authentication is waiting for it is recorded as not timed out.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       PreflightCallReturnsDuringWait_RecordsNoTimeout) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card = SetUpCardWithPendingPreflightCall();
+
+  FetchCreditCard(masked_server_card);
+  InvokeDelayedGetUnmaskDetailsResponse();
+
+  EXPECT_TRUE(risk_based_authentication_invoked());
+  histogram_tester.ExpectUniqueSample(kRiskBasedTimedOutHistogram, false, 1);
+  // The risk-based authentication does not fall back to CVC authentication.
+  histogram_tester.ExpectTotalCount(kTimedOutCvcFallbackHistogram, 0);
+}
+
 // Ensures that if the preflight call returns and the card is absent from
 // `verified_instrument_ids`, risk-based authentication is skipped, the progress
 // dialog is closed, and CVC authentication is immediately mandated.
@@ -1031,6 +1054,10 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
       autofill_metrics::PreflightCallEvent::
           kCardChosenBeforePreflightCallReturned,
       1);
+  // The timeout is recorded for the risk-based authentication, not as a CVC
+  // fallback.
+  histogram_tester.ExpectUniqueSample(kRiskBasedTimedOutHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kTimedOutCvcFallbackHistogram, 0);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
   EXPECT_EQ(kTestNumber16, accessor().number());
@@ -1063,6 +1090,8 @@ TEST_F(
       autofill_metrics::PreflightCallEvent::
           kPreflightCallReturnedBeforeCardChosen,
       1);
+  // There was no wait, so there is no timeout outcome to record.
+  histogram_tester.ExpectTotalCount(kRiskBasedTimedOutHistogram, 0);
 }
 
 // Ensures that when a preflight call has already returned and the card is
@@ -1203,6 +1232,9 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
   FastForwardBy(CreditCardAccessManager::kUnmaskDetailsResponseTimeout);
 
   EXPECT_FALSE(risk_based_authentication_invoked());
+  // The wait was cancelled rather than ended, so no timeout outcome is
+  // recorded.
+  histogram_tester.ExpectTotalCount(kRiskBasedTimedOutHistogram, 0);
 }
 
 // Ensures that `Autofill.ServerControlledReauth.CardVerificationStatus` logs
@@ -1307,6 +1339,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       1);
   histogram_tester.ExpectTotalCount(
       "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedOut", 0);
+  histogram_tester.ExpectTotalCount(kRiskBasedTimedOutHistogram, 0);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

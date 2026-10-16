@@ -1390,10 +1390,11 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     // `UserPerceivedLatencyOnCardSelection` records whether the user had to
     // wait for the preflight call response after choosing a card. It has to be
     // logged whenever the flow can block on that response, so that it stays
-    // paired with the `.Duration` histogram (and `.TimedOutCvcFallback` for
-    // legacy flows) that OnStopWaitingForUnmaskDetails() emits. The risk-based
-    // flow only blocks once card-on-device verification is enforced; before
-    // that it starts authenticating immediately.
+    // paired with the `.Duration` and timeout histograms
+    // (`.TimedOutCvcFallback` for legacy flows, `.RiskBased.TimedOut` for the
+    // risk-based flow) that OnStopWaitingForUnmaskDetails() emits. The
+    // risk-based flow only blocks once card-on-device verification is enforced;
+    // before that it starts authenticating immediately.
     if (!risk_based_auth_available || IsCardOnDeviceVerificationEnforced()) {
       autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
           preflight_call_event, is_user_opted_in);
@@ -1719,9 +1720,12 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
     autofill_metrics::LogUserPerceivedLatencyOnCardSelectionDuration(
         base::TimeTicks::Now() -
         card_selected_without_unmask_details_timestamp_.value());
-    // TODO(crbug.com/553156099): Add logging for risk-based flow when user
-    // perceives latency to start the risk based authentication.
-    if (!IsMaskedServerCardRiskBasedAuthAvailable()) {
+    // On a timeout, the risk-based authentication starts without the unmask
+    // details, while the other flows fall back to CVC authentication.
+    if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+      autofill_metrics::LogUserPerceivedLatencyOnCardSelectionRiskBasedTimedOut(
+          /*did_time_out=*/!get_unmask_details_returned);
+    } else {
       autofill_metrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
           /*did_time_out=*/!get_unmask_details_returned);
     }
