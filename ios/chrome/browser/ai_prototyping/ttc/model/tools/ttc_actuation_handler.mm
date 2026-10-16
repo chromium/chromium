@@ -20,7 +20,9 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
+#import "components/ttc/app/public/tool_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_validator.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
@@ -32,17 +34,6 @@
 #import "ios/web/public/web_state_id.h"
 
 namespace {
-
-// Message constants for internal actuation error reporting.
-constexpr char kActuationHandlerDisconnectedMessage[] =
-    "Actuation handler disconnected.";
-constexpr char kTaskNotActiveOrStoppedMessage[] =
-    "Task does not exist or has been stopped.";
-constexpr char kFailedToParseActionProtoMessage[] =
-    "Failed to parse action proto.";
-constexpr char kEmptyActionSequenceMessage[] = "Empty action sequence.";
-constexpr char kConcurrentActionSequenceMessage[] =
-    "An action sequence is already in progress for this task.";
 
 // Sets `tab_id` on `sub_action` if not already explicitly populated.
 template <typename SubAction>
@@ -175,9 +166,8 @@ void TtcActuationHandler::Disconnect() {
       std::exchange(active_callbacks_, {});
   for (auto& [task_id, callback] : callbacks) {
     if (callback) {
-      std::move(callback).Run(TtcActuationResponse(
-          actor::mojom::ActionResultCode::kExecutorDestroyed,
-          kActuationHandlerDisconnectedMessage));
+      std::move(callback).Run(ttc::ToolResponse::Error(
+          actor::mojom::ActionResultCode::kExecutorDestroyed));
     }
   }
   journal_.reset();
@@ -214,6 +204,25 @@ actor::ActorTaskId TtcActuationHandler::CreateTask(const std::string& title) {
   return task_id;
 }
 
+void TtcActuationHandler::ProcessToolCall(const ttc::ToolRequest& tool_request,
+                                          actor::ActorTaskId task_id,
+                                          ActuationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(callback);
+
+  auto request = TtcToolValidator::CreateActuationRequest(tool_request);
+  if (!request.has_value()) {
+    actor::mojom::ActionResultCode code =
+        request.error() == ttc::kErrorMessageUnknownTool
+            ? actor::mojom::ActionResultCode::kToolUnknown
+            : actor::mojom::ActionResultCode::kArgumentsInvalid;
+    std::move(callback).Run(ttc::ToolResponse::Error(code));
+    return;
+  }
+
+  DispatchActuationRequest(*request, task_id, std::move(callback));
+}
+
 void TtcActuationHandler::DispatchActuationRequest(
     const TtcActuationRequest& request,
     actor::ActorTaskId task_id,
@@ -223,23 +232,20 @@ void TtcActuationHandler::DispatchActuationRequest(
 
   auto task_it = task_to_web_state_id_map_.find(task_id);
   if (!actor_service_ || task_it == task_to_web_state_id_map_.end()) {
-    std::move(callback).Run(
-        TtcActuationResponse(actor::mojom::ActionResultCode::kTaskWentAway,
-                             kTaskNotActiveOrStoppedMessage));
+    std::move(callback).Run(ttc::ToolResponse::Error(
+        actor::mojom::ActionResultCode::kTaskWentAway));
     return;
   }
 
   if (request.action_protos.empty()) {
-    std::move(callback).Run(TtcActuationResponse(
-        actor::mojom::ActionResultCode::kEmptyActionSequence,
-        kEmptyActionSequenceMessage));
+    std::move(callback).Run(ttc::ToolResponse::Error(
+        actor::mojom::ActionResultCode::kEmptyActionSequence));
     return;
   }
 
   if (active_callbacks_.find(task_id) != active_callbacks_.end()) {
-    std::move(callback).Run(TtcActuationResponse(
-        actor::mojom::ActionResultCode::kExecutionEngineExistingAction,
-        kConcurrentActionSequenceMessage));
+    std::move(callback).Run(ttc::ToolResponse::Error(
+        actor::mojom::ActionResultCode::kExecutionEngineExistingAction));
     return;
   }
 
@@ -250,9 +256,8 @@ void TtcActuationHandler::DispatchActuationRequest(
   for (const std::string& proto_bytes : request.action_protos) {
     optimization_guide::proto::Action action;
     if (!action.ParseFromString(proto_bytes)) {
-      std::move(callback).Run(TtcActuationResponse(
-          actor::mojom::ActionResultCode::kArgumentsInvalid,
-          kFailedToParseActionProtoMessage));
+      std::move(callback).Run(ttc::ToolResponse::Error(
+          actor::mojom::ActionResultCode::kArgumentsInvalid));
       return;
     }
     InjectDataIntoAction(action, web_state_id,
@@ -283,9 +288,8 @@ void TtcActuationHandler::StopTask(actor::ActorTaskId task_id,
     ActuationCallback callback = std::move(callback_it->second);
     active_callbacks_.erase(callback_it);
     if (callback) {
-      std::move(callback).Run(
-          TtcActuationResponse(actor::mojom::ActionResultCode::kTaskWentAway,
-                               kTaskNotActiveOrStoppedMessage));
+      std::move(callback).Run(ttc::ToolResponse::Error(
+          actor::mojom::ActionResultCode::kTaskWentAway));
     }
   }
 
@@ -310,20 +314,18 @@ void TtcActuationHandler::OnPerformActionsFinished(
 
   actor::mojom::ActionResultCode result_code =
       actor::mojom::ActionResultCode::kOk;
-  std::string error_message;
 
   for (const auto& action_result : result.action_results) {
     if (!action_result.tool_result.IsOk()) {
       result_code = action_result.tool_result.code();
-      error_message =
-          actor::GetToolExecutionResultMessage(action_result.tool_result);
       break;
     }
   }
 
   if (callback) {
-    std::move(callback).Run(
-        TtcActuationResponse(result_code, std::move(error_message)));
+    std::move(callback).Run(result_code == actor::mojom::ActionResultCode::kOk
+                                ? ttc::ToolResponse::Success()
+                                : ttc::ToolResponse::Error(result_code));
   }
 }
 

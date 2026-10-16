@@ -8,8 +8,6 @@
 #import <string>
 #import <vector>
 
-#import "components/actor/public/mojom/actor_types.mojom.h"
-
 // Represents an incoming TTC actuation request, containing serialized action
 // protobufs to execute on controlled WebStates.
 struct TtcActuationRequest {
@@ -26,23 +24,6 @@ struct TtcActuationRequest {
 
   // Optional progress status message describing the action execution.
   std::string task_update;
-};
-
-// Encapsulates the execution response for a `TtcActuationRequest`.
-struct TtcActuationResponse {
-  TtcActuationResponse(actor::mojom::ActionResultCode result_code,
-                       std::string error_message);
-  TtcActuationResponse(const TtcActuationResponse&);
-  TtcActuationResponse& operator=(const TtcActuationResponse&);
-  TtcActuationResponse(TtcActuationResponse&&);
-  TtcActuationResponse& operator=(TtcActuationResponse&&);
-  ~TtcActuationResponse();
-
-  // Execution status code returned by Chrome's Actor Service.
-  actor::mojom::ActionResultCode result_code;
-
-  // Descriptive error message if the actuation failed, or empty on success.
-  std::string error_message;
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TOOLS_TTC_ACTUATION_DATA_TYPES_H_

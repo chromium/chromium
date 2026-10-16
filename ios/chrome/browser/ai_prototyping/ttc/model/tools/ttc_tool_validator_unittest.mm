@@ -164,21 +164,4 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
   EXPECT_TRUE(forward_action.has_forward());
 }
 
-// Tests TtcActuationResponse initialization and field access.
-TEST_F(TtcToolValidatorTest, TestTtcActuationResponse) {
-  TtcActuationResponse response(actor::mojom::ActionResultCode::kOk,
-                                std::string());
-
-  EXPECT_EQ(response.result_code, actor::mojom::ActionResultCode::kOk);
-  EXPECT_TRUE(response.error_message.empty());
-
-  TtcActuationResponse error_response(
-      actor::mojom::ActionResultCode::kArgumentsInvalid,
-      "Something went wrong");
-
-  EXPECT_EQ(error_response.result_code,
-            actor::mojom::ActionResultCode::kArgumentsInvalid);
-  EXPECT_EQ(error_response.error_message, "Something went wrong");
-}
-
 }  // namespace

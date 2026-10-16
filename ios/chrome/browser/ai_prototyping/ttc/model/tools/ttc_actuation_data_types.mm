@@ -18,17 +18,3 @@ TtcActuationRequest::TtcActuationRequest(TtcActuationRequest&&) = default;
 TtcActuationRequest& TtcActuationRequest::operator=(TtcActuationRequest&&) =
     default;
 TtcActuationRequest::~TtcActuationRequest() = default;
-
-TtcActuationResponse::TtcActuationResponse(
-    actor::mojom::ActionResultCode result_code,
-    std::string error_message)
-    : result_code(result_code), error_message(std::move(error_message)) {}
-
-TtcActuationResponse::TtcActuationResponse(const TtcActuationResponse&) =
-    default;
-TtcActuationResponse& TtcActuationResponse::operator=(
-    const TtcActuationResponse&) = default;
-TtcActuationResponse::TtcActuationResponse(TtcActuationResponse&&) = default;
-TtcActuationResponse& TtcActuationResponse::operator=(TtcActuationResponse&&) =
-    default;
-TtcActuationResponse::~TtcActuationResponse() = default;

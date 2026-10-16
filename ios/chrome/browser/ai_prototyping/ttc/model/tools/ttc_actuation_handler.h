@@ -16,6 +16,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/sessions/core/session_id.h"
+#import "components/ttc/app/public/tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -28,14 +29,12 @@ class ActorService;
 }  // namespace actor
 
 struct TtcActuationRequest;
-struct TtcActuationResponse;
 
 // The handler for TTC actuations, bridging incoming actuation
 // requests to the Chromium Actor Service orchestration layer.
 class TtcActuationHandler {
  public:
-  using ActuationCallback =
-      base::OnceCallback<void(const TtcActuationResponse&)>;
+  using ActuationCallback = ttc::ToolResponseCallback;
 
   TtcActuationHandler(actor::ActorService* actor_service,
                       WebStateList* web_state_list,
@@ -58,6 +57,12 @@ class TtcActuationHandler {
   // active WebState, if the active WebState is off-the-record, or if
   // ActorService is unavailable.
   actor::ActorTaskId CreateTask(const std::string& title);
+
+  // Validates `tool_request` via `TtcToolValidator` and dispatches the
+  // resulting actuation request under `task_id`.
+  void ProcessToolCall(const ttc::ToolRequest& tool_request,
+                       actor::ActorTaskId task_id,
+                       ActuationCallback callback);
 
   // Dispatches `request` for execution under `task_id`. The underlying Actor
   // task remains active to allow subsequent actuation requests until explicitly
