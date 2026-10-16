@@ -68,6 +68,8 @@ std::string SanitizeMetadata(std::string_view value) {
   return sanitized;
 }
 
+constexpr char kOverviewOutcomeHistogram[] = "ReadAloud.Overview.Outcome";
+
 }  // namespace
 
 ReadAloudService::ReadAloudService(
@@ -176,6 +178,7 @@ void ReadAloudService::ResetPlayback() {
   }
   overview_script_loaded_ = false;
   distillation_start_time_ = base::TimeTicks();
+  overview_generation_start_time_ = base::TimeTicks();
   article_title_.clear();
   current_publisher_.clear();
   highlight_text_length_ = 0;
@@ -398,6 +401,8 @@ void ReadAloudService::RequestOverviewGeneration(
   GURL page_url =
       web_contents() ? web_contents()->GetLastCommittedURL() : GURL();
 
+  overview_generation_start_time_ = base::TimeTicks::Now();
+
   // AI Overviews are supported in English language only.
   // Hardcoding the language code maximizes prompt/prefix cache hit rates.
   overview_generation_broker_->GenerateOverview(
@@ -415,7 +420,9 @@ void ReadAloudService::OnOverviewGenerated(mojo_base::BigBuffer response_bytes,
   }
 
   if (!success || response_bytes.size() == 0) {
-    // TODO(b/564908361): Record UMA metric for overview generation failure.
+    overview_generation_start_time_ = base::TimeTicks();
+    base::UmaHistogramEnumeration(kOverviewOutcomeHistogram,
+                                  OverviewOutcome::kGenerationFailed);
     HandlePlaybackError("Overview generation failed");
     return;
   }
@@ -439,8 +446,9 @@ void ReadAloudService::OnOverviewContentSet(bool success,
   }
 
   if (!success) {
-    // TODO(b/564908361): Record UMA metric for overview content parsing
-    // failure.
+    overview_generation_start_time_ = base::TimeTicks();
+    base::UmaHistogramEnumeration(kOverviewOutcomeHistogram,
+                                  OverviewOutcome::kContentParsingFailed);
     HandlePlaybackError("Overview content parsing failed");
     return;
   }
@@ -453,7 +461,14 @@ void ReadAloudService::OnOverviewContentSet(bool success,
         current_publisher_);
   }
 
-  // TODO(b/564908361): Record UMA metric for overview generation success.
+  if (!overview_generation_start_time_.is_null()) {
+    base::UmaHistogramMediumTimes(
+        "ReadAloud.Overview.TotalDuration",
+        base::TimeTicks::Now() - overview_generation_start_time_);
+    overview_generation_start_time_ = base::TimeTicks();
+  }
+  base::UmaHistogramEnumeration(kOverviewOutcomeHistogram,
+                                OverviewOutcome::kSuccess);
   overview_script_loaded_ = true;
 }
 

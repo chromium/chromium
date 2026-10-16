@@ -78,6 +78,18 @@ class ReadAloudService
     kNegative = 2,
   };
 
+  // Outcome of overview generation and processing in ReadAloudService.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OverviewOutcome)
+  enum class OverviewOutcome {
+    kSuccess = 0,
+    kGenerationFailed = 1,
+    kContentParsingFailed = 2,
+    kMaxValue = kContentParsingFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudOverviewOutcome)
+
   struct Voice {
     std::string id;
     std::string display_name;
@@ -290,6 +302,7 @@ class ReadAloudService
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;
   base::TimeTicks distillation_start_time_;
+  base::TimeTicks overview_generation_start_time_;
   std::string article_title_;
   std::string current_publisher_;
   // Length of the highlighter coordinate space for the current document: the

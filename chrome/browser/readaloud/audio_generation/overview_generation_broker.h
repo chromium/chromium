@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/read_aloud_generate_text.pb.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -35,6 +36,29 @@ class OverviewGenerationBroker {
   using GenerateOverviewCallback =
       base::OnceCallback<void(mojo_base::BigBuffer response_bytes,
                               bool success)>;
+
+  // Abort reasons when overview generation is aborted prior to model execution.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OverviewModelExecutionAbortReason)
+  enum class AbortReason {
+    kNullOptimizationGuideService = 0,
+    kEmptyContent = 1,
+    kMaxValue = kEmptyContent,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudOverviewModelExecutionAbortReason)
+
+  // Server result of overview generation requests to the model execution
+  // service. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  // LINT.IfChange(OverviewModelExecutionServerResult)
+  enum class ServerResult {
+    kSuccess = 0,
+    kModelExecutionError = 1,
+    kEmptyResponse = 2,
+    kMaxValue = kEmptyResponse,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudOverviewModelExecutionServerResult)
 
   OverviewGenerationBroker();
   OverviewGenerationBroker(const OverviewGenerationBroker&) = delete;

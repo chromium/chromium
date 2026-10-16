@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/strings/string_view_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -119,6 +120,7 @@ TEST_F(OverviewGenerationBrokerTest,
 }
 
 TEST_F(OverviewGenerationBrokerTest, GenerateOverviewNullOptGuideService) {
+  base::HistogramTester histograms;
   ResponseFuture future;
   broker_.GenerateOverview(/*opt_guide_service=*/nullptr,
                            /*page_title=*/"Title",
@@ -128,10 +130,14 @@ TEST_F(OverviewGenerationBrokerTest, GenerateOverviewNullOptGuideService) {
   auto [response_bytes, success] = future.Take();
   EXPECT_FALSE(success);
   EXPECT_EQ(response_bytes.size(), 0u);
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.ModelExecution.AbortReason",
+      OverviewGenerationBroker::AbortReason::kNullOptimizationGuideService, 1);
 }
 
 TEST_F(OverviewGenerationBrokerTest, GenerateOverviewEmptyContent) {
   testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
   ResponseFuture future;
   broker_.GenerateOverview(&mock_opt_guide, /*page_title=*/"Title",
                            /*page_content=*/"",
@@ -140,10 +146,14 @@ TEST_F(OverviewGenerationBrokerTest, GenerateOverviewEmptyContent) {
   auto [response_bytes, success] = future.Take();
   EXPECT_FALSE(success);
   EXPECT_EQ(response_bytes.size(), 0u);
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.ModelExecution.AbortReason",
+      OverviewGenerationBroker::AbortReason::kEmptyContent, 1);
 }
 
 TEST_F(OverviewGenerationBrokerTest, GenerateOverviewSuccess) {
   testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
 
   GenerateTextResponse expected_proto;
   expected_proto.set_generated_text("Summary text");
@@ -191,10 +201,15 @@ TEST_F(OverviewGenerationBrokerTest, GenerateOverviewSuccess) {
   EXPECT_TRUE(success);
   EXPECT_EQ(base::as_string_view(response_bytes),
             expected_proto.SerializeAsString());
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.ModelExecution.ServerResult",
+      OverviewGenerationBroker::ServerResult::kSuccess, 1);
+  histograms.ExpectTotalCount("ReadAloud.Overview.ModelExecution.Error", 0);
 }
 
 TEST_F(OverviewGenerationBrokerTest, GenerateOverviewModelExecutionFailure) {
   testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
 
   EXPECT_CALL(
       mock_opt_guide,
@@ -227,6 +242,53 @@ TEST_F(OverviewGenerationBrokerTest, GenerateOverviewModelExecutionFailure) {
   auto [response_bytes, success] = future.Take();
   EXPECT_FALSE(success);
   EXPECT_EQ(response_bytes.size(), 0u);
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.ModelExecution.ServerResult",
+      OverviewGenerationBroker::ServerResult::kModelExecutionError, 1);
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.ModelExecution.Error",
+      optimization_guide::OptimizationGuideModelExecutionError::
+          ModelExecutionError::kGenericFailure,
+      1);
+}
+
+TEST_F(OverviewGenerationBrokerTest, GenerateOverviewEmptyResponsePayload) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudGenerateText,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    // Default-constructed proto::Any has an empty payload
+                    // string (value() is empty), simulating an empty server
+                    // response.
+                    optimization_guide::proto::Any(),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr);
+          });
+
+  ResponseFuture future;
+  broker_.GenerateOverview(&mock_opt_guide, /*page_title=*/"Test Title",
+                           /*page_content=*/"Test Content",
+                           /*page_url=*/GURL("https://example.com/test"),
+                           /*language_code=*/"en", future.GetCallback());
+  auto [response_bytes, success] = future.Take();
+  EXPECT_FALSE(success);
+  EXPECT_EQ(response_bytes.size(), 0u);
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.ModelExecution.ServerResult",
+      OverviewGenerationBroker::ServerResult::kEmptyResponse, 1);
+  histograms.ExpectTotalCount("ReadAloud.Overview.ModelExecution.Error", 0);
 }
 
 TEST_F(OverviewGenerationBrokerTest, InvalidatePendingRequestsCancelsCallback) {

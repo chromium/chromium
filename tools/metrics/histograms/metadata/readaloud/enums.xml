@@ -92,6 +92,23 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Default search engine is not Google"/>
 </enum>
 
+<enum name="ReadAloudOverviewModelExecutionAbortReason">
+  <int value="0" label="Null OptimizationGuideKeyedService"/>
+  <int value="1" label="Empty page content"/>
+</enum>
+
+<enum name="ReadAloudOverviewModelExecutionServerResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model execution error"/>
+  <int value="2" label="Empty response"/>
+</enum>
+
+<enum name="ReadAloudOverviewOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Overview generation failed"/>
+  <int value="2" label="Overview content parsing failed"/>
+</enum>
+
 <enum name="ReadAloudSpeed">
   <int value="0" label="0.5x"/>
   <int value="1" label="0.8x"/>

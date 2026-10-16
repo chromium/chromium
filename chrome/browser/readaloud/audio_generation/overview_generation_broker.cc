@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/tag_converters.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -17,6 +18,13 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
 namespace readaloud {
+
+namespace {
+
+constexpr char kServerResultHistogram[] =
+    "ReadAloud.Overview.ModelExecution.ServerResult";
+
+}  // namespace
 
 OverviewGenerationBroker::OverviewGenerationBroker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -69,8 +77,10 @@ void OverviewGenerationBroker::GenerateOverview(
   InvalidatePendingRequests();
   // Preconditions check
   if (!opt_guide_service || page_content.empty()) {
-    // TODO(b/564908361): Record UMA: aborted overview generation
-    // (null service or empty content).
+    base::UmaHistogramEnumeration(
+        "ReadAloud.Overview.ModelExecution.AbortReason",
+        !opt_guide_service ? AbortReason::kNullOptimizationGuideService
+                           : AbortReason::kEmptyContent);
     std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
     return;
   }
@@ -79,8 +89,6 @@ void OverviewGenerationBroker::GenerateOverview(
   optimization_guide::proto::ReadAloudGenerateTextRequest request =
       BuildGenerateTextRequest(page_title, page_content, page_url,
                                language_code);
-
-  // TODO(b/564908361): Record UMA: overview generation requested
 
   opt_guide_service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kReadAloudGenerateText,
@@ -101,8 +109,10 @@ void OverviewGenerationBroker::OnModelExecutionResult(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.response.has_value()) {
-    // TODO(b/564908361): Record UMA: model execution errors
-    // with failure status codes.
+    base::UmaHistogramEnumeration(kServerResultHistogram,
+                                  ServerResult::kModelExecutionError);
+    base::UmaHistogramEnumeration("ReadAloud.Overview.ModelExecution.Error",
+                                  result.response.error().error());
     std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
     return;
   }
@@ -112,11 +122,14 @@ void OverviewGenerationBroker::OnModelExecutionResult(
   // privileged Browser process.
   const std::string& raw_bytes = result.response.value().value();
   if (raw_bytes.empty()) {
+    base::UmaHistogramEnumeration(kServerResultHistogram,
+                                  ServerResult::kEmptyResponse);
     std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
     return;
   }
 
-  // TODO(b/564908361): Record UMA: generation outcome
+  base::UmaHistogramEnumeration(kServerResultHistogram, ServerResult::kSuccess);
+
   mojo_base::BigBuffer buffer(base::as_byte_span(raw_bytes));
   std::move(callback).Run(std::move(buffer), /*success=*/true);
 }

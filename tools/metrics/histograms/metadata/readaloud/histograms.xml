@@ -218,6 +218,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.Overview.ModelExecution.AbortReason"
+    enum="ReadAloudOverviewModelExecutionAbortReason"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Recorded when an AI Overview generation request is aborted before
+    dispatching to the Optimization Guide model execution service due to missing
+    prerequisites (null OptimizationGuideKeyedService or empty page content).
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Overview.ModelExecution.Error"
+    enum="OptimizationGuideModelExecutionError" expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records the OptimizationGuideModelExecutionError returned by the
+    Optimization Guide model execution service when executing the
+    ReadAloudGenerateText capability fails. Emitted when a value of &quot;Model
+    execution error&quot; is emitted to
+    ReadAloud.Overview.ModelExecution.ServerResult.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Overview.ModelExecution.ServerResult"
+    enum="ReadAloudOverviewModelExecutionServerResult"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records the server result of an AI Overview generation request when
+    OverviewGenerationBroker receives a response from the Optimization Guide
+    model execution service (success, model execution error, or empty response).
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Overview.Outcome" enum="ReadAloudOverviewOutcome"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records the final outcome of preparing an AI Overview playback session in
+    ReadAloudService (success, generation failure, or sandboxed script parsing
+    failure).
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Overview.TotalDuration" units="ms"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Measures the end-to-end duration (in milliseconds) from when
+    ReadAloudService requests AI Overview generation until the generated script
+    and metadata are parsed and ready for playback. Recorded only on successful
+    overview loading (i.e., when the histogram ReadAloud.Overview.Outcome
+    reports a value of &quot;Success&quot;).
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.PlaybackModeChange" enum="PlaybackMode"
     expires_after="2027-02-14">
   <owner>shlomib@google.com</owner>

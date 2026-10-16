@@ -1621,6 +1621,7 @@ TEST_F(ReadAloudServiceTest, SetPlaybackMode) {
 
 TEST_F(ReadAloudServiceTest,
        OverviewModeDefersPlayUntilScriptLoadsAndResumesAfterPause) {
+  base::HistogramTester histograms;
   dom_distiller::ViewRequestDelegate* view_delegate = StartOverviewSession();
   ASSERT_NE(view_delegate, nullptr);
 
@@ -1632,6 +1633,10 @@ TEST_F(ReadAloudServiceTest,
   // parses the response and calls utility's Play().
   DeliverDistilledArticle(view_delegate);
   EXPECT_EQ(fake_controller()->play_count(), 1);
+
+  histograms.ExpectUniqueSample("ReadAloud.Overview.Outcome",
+                                ReadAloudService::OverviewOutcome::kSuccess, 1);
+  histograms.ExpectTotalCount("ReadAloud.Overview.TotalDuration", 1);
 
   // Once overview_script_loaded_ is true, pausing and calling Play() again
   // must immediately forward Play() to the utility process.
@@ -1911,6 +1916,7 @@ TEST_F(ReadAloudServiceTest,
 }
 
 TEST_F(ReadAloudServiceTest, OverviewModeUtilityParsingFailureTriggersError) {
+  base::HistogramTester histograms;
   MockDelegate* delegate_ptr = SetUpMockDelegate();
 
   dom_distiller::ViewRequestDelegate* view_delegate = StartOverviewSession();
@@ -1923,9 +1929,15 @@ TEST_F(ReadAloudServiceTest, OverviewModeUtilityParsingFailureTriggersError) {
       .Times(1);
 
   DeliverDistilledArticle(view_delegate);
+
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.Outcome",
+      ReadAloudService::OverviewOutcome::kContentParsingFailed, 1);
+  histograms.ExpectTotalCount("ReadAloud.Overview.TotalDuration", 0);
 }
 
 TEST_F(ReadAloudServiceTest, OverviewModeGenerationFailureTriggersError) {
+  base::HistogramTester histograms;
   MockDelegate* delegate_ptr = SetUpMockDelegate();
   MockOptimizationGuideKeyedService* mock_opt_guide =
       SetUpMockOptimizationGuide();
@@ -1965,6 +1977,11 @@ TEST_F(ReadAloudServiceTest, OverviewModeGenerationFailureTriggersError) {
   dom_distiller::DistilledArticleProto proto;
   proto.add_pages()->set_text_content("Distilled article content");
   view_delegate->OnArticleReady(&proto);
+
+  histograms.ExpectUniqueSample(
+      "ReadAloud.Overview.Outcome",
+      ReadAloudService::OverviewOutcome::kGenerationFailed, 1);
+  histograms.ExpectTotalCount("ReadAloud.Overview.TotalDuration", 0);
 }
 
 TEST_F(ReadAloudServiceTest, OverviewModeSendsPlayBeforeOverviewContent) {
