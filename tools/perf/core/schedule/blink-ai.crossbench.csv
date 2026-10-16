@@ -1,4 +1,5 @@
 bot,repeat,shard,flags
+linux-perf,1,1,
 mac-m1_mini_2020-perf,1,1,
 mac-m2-pro-perf,1,1,
 mac-m4-mini-perf,1,1,

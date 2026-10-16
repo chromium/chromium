@@ -44,6 +44,10 @@
                     "--enable-field-trials=benchmarking"
                 ]
             },
+            "blink-ai.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": []
+            },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
