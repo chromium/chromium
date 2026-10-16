@@ -52,6 +52,7 @@ source_set("actor") {
     "//components/page_content_annotations/content/renderer",
     "//components/page_content_annotations/core",
     "//third_party/blink/public:blink",
+    "//ui/events/types:headers",
   ]
 }
 

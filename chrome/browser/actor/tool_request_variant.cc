@@ -121,6 +121,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const RemoveBookmarkToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
+  void Apply(const ScrollPageToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
   void Apply(const ScriptToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }

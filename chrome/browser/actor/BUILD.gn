@@ -320,6 +320,7 @@ source_set("impl") {
     "//third_party/perfetto:libperfetto",
     "//third_party/perfetto/protos/perfetto/config:zero_gen",
     "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
+    "//ui/events/types:headers",
     "//ui/gfx/codec",
     "//url",
   ]

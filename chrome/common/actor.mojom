@@ -9,6 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom";
 import "third_party/blink/public/mojom/content_extraction/script_tools.mojom";
+import "third_party/blink/public/mojom/input/scroll_direction.mojom";
+import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This interface is meant to largely mirror the
@@ -92,29 +94,23 @@ struct TypeAction {
   bool follow_by_enter;
 };
 
-// Scroll action performs a scroll on the page's viewport or on a specified
-// target element.
-// It currently returns true even for a partial scroll to the given distance
-// and direction.
-// It will provide more precise information about how much it scrolls.
-struct ScrollAction {
-  // Corresponds to ScrollAction.ScrollDirection.
-  // This must be kept in sync with ScrollAction.ScrollDirection enum in
-  // components/optimization_guide/proto/features/actions_data.proto.
-  enum ScrollDirection {
-    // Scroll left.
-    kLeft = 1,
-    // Scroll right.
-    kRight = 2,
-    // Scroll up.
-    kUp = 3,
-    // Scroll down.
-    kDown = 4,
-  };
-
-  ScrollDirection direction;
-  // Scroll distance in DIPs, and it should always be positive.
+// How far a ScrollAction scrolls.
+union ScrollAmount {
+  // Scroll distance in DIPs. Must be positive.
   float distance;
+  // Scroll by a page, or to the start/end, of the scroller. Only
+  // kScrollByPage and kScrollByDocument are supported. For granularity-based
+  // scrolls, the scroll is animated and execution of the action waits for the
+  // animation to complete before returning.
+  ui.mojom.ScrollGranularity granularity;
+};
+
+// Scroll action performs a scroll on the page's viewport or on a specified
+// target element. Even a partial scroll for a given distance and direction is
+// considered a success.
+struct ScrollAction {
+  blink.mojom.ScrollDirectionPhysical direction;
+  ScrollAmount amount;
 };
 
 // Action for selecting an option from a <select> element.

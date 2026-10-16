@@ -84,6 +84,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const ReloadPageToolRequest&) = 0;
   virtual void Apply(const RemoveBookmarkToolRequest&) = 0;
   virtual void Apply(const ScriptToolRequest&) = 0;
+  virtual void Apply(const ScrollPageToolRequest&) = 0;
   virtual void Apply(const ScrollToolRequest&) = 0;
   virtual void Apply(const ScrollToToolRequest&) = 0;
   virtual void Apply(const SeekMediaToolRequest&) = 0;

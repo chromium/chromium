@@ -1120,6 +1120,7 @@ constexpr absl::Overload kGetCapabilityFn{
     ToUnknown<PromptGeminiPanelToolRequest>,
     ToUnknown<ReloadPageToolRequest>,
     ToUnknown<RemoveBookmarkToolRequest>,
+    ToUnknown<ScrollPageToolRequest>,
     ToUnknown<SiteBasedSearchToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     ToUnknown<EnterFullscreenToolRequest>,

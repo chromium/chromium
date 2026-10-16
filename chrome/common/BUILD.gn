@@ -693,7 +693,10 @@ mojom("mojo_bindings") {
     "trusted_vault_encryption_keys_extension.mojom",
   ]
 
-  deps = [ "//components/lens:lens_mojo" ]
+  deps = [
+    "//components/lens:lens_mojo",
+    "//ui/events/mojom",
+  ]
 
   if (is_android) {
     sources += [ "sandbox_status_extension_android.mojom" ]

@@ -33,9 +33,11 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "cc/base/region.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
@@ -61,6 +63,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
+#include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -79,6 +82,8 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
@@ -90,6 +95,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -696,6 +702,83 @@ bool WebElement::IsUserScrollableY() const {
   }
 
   return box->HasScrollableOverflowY();
+}
+
+namespace {
+
+// Completion callback for WebElement::UserScrollByGranularity(). Mirrors the
+// scrollend handling of ScrollManager::LogicalScroll() for non-key scrolls.
+void OnUserScrollByGranularityFinished(
+    WeakPersistent<ScrollableArea> area,
+    WebElement::ScrollByGranularityCallback on_finish,
+    ScrollableArea::ScrollCompletionMode completion_mode) {
+  if (area) {
+    bool enqueue_scrollend =
+        completion_mode == ScrollableArea::ScrollCompletionMode::kFinished;
+    // Viewport scrolls should only fire scrollend if the layout viewport was
+    // scrolled.
+    if (enqueue_scrollend) {
+      if (auto* root_frame_viewport =
+              DynamicTo<RootFrameViewport>(area.Get())) {
+        enqueue_scrollend = root_frame_viewport->ScrollAffectsLayoutViewport();
+      }
+    }
+    area->OnScrollFinished(enqueue_scrollend);
+  }
+  std::move(on_finish).Run(
+      completion_mode == ScrollableArea::ScrollCompletionMode::kZeroDelta
+          ? WebElement::ScrollByGranularityResult::kNoRoomToScroll
+          : WebElement::ScrollByGranularityResult::kScrolled);
+}
+
+}  // namespace
+
+void WebElement::UserScrollByGranularity(
+    mojom::blink::ScrollDirectionPhysical direction,
+    ui::ScrollGranularity granularity,
+    ScrollByGranularityCallback on_finish) {
+  Element* element = Unwrap<Element>();
+  element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
+
+  // For the document's scrolling element this is the layout view's scrollable
+  // area (or the RootFrameViewport for the global root scroller), the same one
+  // a key scroll of the viewport uses.
+  ScrollableArea* scrollable_area =
+      ScrollableArea::GetForScrolling(GetScrollingBox());
+  if (!scrollable_area) {
+    std::move(on_finish).Run(ScrollByGranularityResult::kNotScrollable);
+    return;
+  }
+
+  // This mirrors the per-scroller logic of ScrollManager::LogicalScroll() for
+  // PageUp/PageDown (page) and Home/End (document) key presses, minus chaining
+  // to ancestor scrollers. Snap points are handled first; snapping has no
+  // completion callback, so report success as soon as the snap scroll starts.
+  cc::ScrollSourceType source_type;
+  bool snapped;
+  switch (granularity) {
+    case ui::ScrollGranularity::kScrollByPage:
+      source_type = cc::ScrollSourceType::kRelativeScroll;
+      snapped = scrollable_area->SnapForPageScroll(direction);
+      break;
+    case ui::ScrollGranularity::kScrollByDocument:
+      source_type = cc::ScrollSourceType::kAbsoluteScroll;
+      snapped = scrollable_area->SnapForDocumentScroll(direction);
+      break;
+    default:
+      NOTREACHED() << "Unsupported granularity "
+                   << static_cast<int>(granularity);
+  }
+  if (snapped) {
+    std::move(on_finish).Run(ScrollByGranularityResult::kScrolled);
+    return;
+  }
+
+  ScrollableArea::ScrollCallback callback(blink::BindOnce(
+      &OnUserScrollByGranularityFinished, WrapWeakPersistent(scrollable_area),
+      std::move(on_finish)));
+  scrollable_area->UserScroll(granularity, ToScrollDelta(direction, 1),
+                              source_type, std::move(callback));
 }
 
 float WebElement::GetEffectiveZoom() const {

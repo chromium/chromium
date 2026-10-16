@@ -724,6 +724,17 @@ std::unique_ptr<ToolRequest> MakeScrollRequest(
                                              direction, distance);
 }
 
+std::unique_ptr<ToolRequest> MakeScrollPageRequest(
+    content::RenderFrameHost& rfh,
+    std::optional<int> content_node_id,
+    ScrollPageToolRequest::Granularity granularity,
+    ScrollPageToolRequest::Direction direction) {
+  return std::make_unique<ScrollPageToolRequest>(
+      GetActorSurfaceHandleForFrame(rfh),
+      MakeTarget(rfh, content_node_id.value_or(kRootElementDomNodeId)),
+      granularity, direction);
+}
+
 std::unique_ptr<ToolRequest> MakeScrollToRequest(content::RenderFrameHost& rfh,
                                                  int content_node_id) {
   return std::make_unique<ScrollToToolRequest>(

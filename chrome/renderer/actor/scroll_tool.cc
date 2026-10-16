@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
 #include "chrome/common/actor/action_result.h"
@@ -17,12 +18,14 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/blink/public/mojom/input/scroll_direction.mojom-shared.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "ui/display/screen_info.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -63,8 +66,14 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
       << "Execute tool was called before validation";
   WebElement scrolling_element =
       validated_scroller_and_distance_.value().scroller;
+
+  if (action_->amount->is_granularity()) {
+    ExecuteByGranularity(scrolling_element, std::move(callback));
+    return;
+  }
+
   gfx::Vector2dF offset_physical =
-      validated_scroller_and_distance_.value().scroll_by_offset;
+      validated_scroller_and_distance_.value().scroll_by_offset.value();
 
   float physical_to_css = 1 / scrolling_element.GetEffectiveZoom();
   gfx::Vector2dF offset_css =
@@ -87,10 +96,58 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
           : MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange));
 }
 
+void ScrollTool::ExecuteByGranularity(WebElement& scrolling_element,
+                                      ToolFinishedCallback callback) {
+  gfx::Vector2dF start_offset_css = scrolling_element.GetScrollOffset();
+  // This performs a user scroll (like PageUp/PageDown/Home/End), which may
+  // animate. The tool finishes once the scroll has completed.
+  scrolling_element.UserScrollByGranularity(
+      action_->direction, action_->amount->get_granularity(),
+      base::BindOnce(&ScrollTool::OnScrollByGranularityFinished,
+                     weak_ptr_factory_.GetWeakPtr(), scrolling_element,
+                     start_offset_css, std::move(callback)));
+}
+
+void ScrollTool::OnScrollByGranularityFinished(
+    blink::WebElement scrolling_element,
+    gfx::Vector2dF start_offset_css,
+    ToolFinishedCallback callback,
+    WebElement::ScrollByGranularityResult result) {
+  journal_->Log(task_id_, "ScrollTool::Execute",
+                JournalDetailsBuilder()
+                    .Add("element", scrolling_element)
+                    .Add("granularity",
+                         static_cast<int>(action_->amount->get_granularity()))
+                    .Add("start_offset", start_offset_css)
+                    .Add("end_offset", scrolling_element.GetScrollOffset())
+                    .Add("result", static_cast<int>(result))
+                    .Build());
+
+  switch (result) {
+    case WebElement::ScrollByGranularityResult::kScrolled:
+      std::move(callback).Run(MakeOkResult());
+      return;
+    case WebElement::ScrollByGranularityResult::kNoRoomToScroll:
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange));
+      return;
+    case WebElement::ScrollByGranularityResult::kNotScrollable:
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable));
+      return;
+  }
+}
+
 std::string ScrollTool::DebugString() const {
-  return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
+  const std::string amount =
+      action_->amount->is_distance()
+          ? absl::StrFormat("distance(%f)", action_->amount->get_distance())
+          : absl::StrFormat(
+                "granularity(%d)",
+                static_cast<int>(action_->amount->get_granularity()));
+  return absl::StrFormat("ScrollTool[%s;direction(%d);%s]",
                          ToDebugString(target_),
-                         base::ToString(action_->direction), action_->distance);
+                         static_cast<int>(action_->direction), amount);
 }
 
 ValidationResult ScrollTool::Validate() {
@@ -99,37 +156,45 @@ ValidationResult ScrollTool::Validate() {
   CHECK(web_frame->FrameWidget());
 
   // The scroll distance should always be positive.
-  if (action_->distance <= 0.0) {
+  if (action_->amount->is_distance() &&
+      action_->amount->get_distance() <= 0.0) {
     return ValidationResult(
         MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
                    /*requires_page_stabilization=*/false, "Negative Distance"));
   }
 
-  gfx::Vector2dF offset_dips;
+  // Only page and document granularity scrolls are supported.
+  if (action_->amount->is_granularity() &&
+      action_->amount->get_granularity() !=
+          ui::ScrollGranularity::kScrollByPage &&
+      action_->amount->get_granularity() !=
+          ui::ScrollGranularity::kScrollByDocument) {
+    return ValidationResult(MakeResult(
+        mojom::ActionResultCode::kArgumentsInvalid,
+        /*requires_page_stabilization=*/false, "Unsupported Granularity"));
+  }
+
+  // A unit vector in the scroll direction. Finding the scroller only depends
+  // on the direction, not on how far the scroll goes.
+  gfx::Vector2dF direction;
   switch (action_->direction) {
-    case mojom::ScrollAction::ScrollDirection::kLeft: {
-      offset_dips.set_x(-action_->distance);
+    case blink::mojom::ScrollDirectionPhysical::kLeft: {
+      direction.set_x(-1);
       break;
     }
-    case mojom::ScrollAction::ScrollDirection::kRight: {
-      offset_dips.set_x(action_->distance);
+    case blink::mojom::ScrollDirectionPhysical::kRight: {
+      direction.set_x(1);
       break;
     }
-    case mojom::ScrollAction::ScrollDirection::kUp: {
-      offset_dips.set_y(-action_->distance);
+    case blink::mojom::ScrollDirectionPhysical::kUp: {
+      direction.set_y(-1);
       break;
     }
-    case mojom::ScrollAction::ScrollDirection::kDown: {
-      offset_dips.set_y(action_->distance);
+    case blink::mojom::ScrollDirectionPhysical::kDown: {
+      direction.set_y(1);
       break;
     }
   }
-
-  // No matter what frame the scroll element is on, it must be on the same
-  // physical screen, so the device scale factor will be the same.
-  const float dsf =
-      web_frame->FrameWidget()->GetScreenInfo().device_scale_factor;
-  gfx::Vector2dF offset_physical = gfx::ScaleVector2d(offset_dips, dsf);
 
   WebElement scrolling_element;
   if (target_->is_coordinate_dip()) {
@@ -148,12 +213,12 @@ ValidationResult ScrollTool::Validate() {
     while (!node.IsNull()) {
       // If we reach the root scroller, we check if it is a scrollable target.
       if (node.IsDocumentNode() && !root_scroller.IsNull() &&
-          IsTargetUserScrollable(root_scroller, offset_physical)) {
+          IsTargetUserScrollable(root_scroller, direction)) {
         node = root_scroller;
         break;
       }
 
-      if (IsTargetUserScrollable(node, offset_physical)) {
+      if (IsTargetUserScrollable(node, direction)) {
         break;
       }
 
@@ -171,7 +236,7 @@ ValidationResult ScrollTool::Validate() {
 
     // At this point, `scrolling_element` is guaranteed to be a scrollable
     // element. Otherwise, we would have returned the error above.
-    CHECK(IsTargetUserScrollable(scrolling_element, offset_physical));
+    CHECK(IsTargetUserScrollable(scrolling_element, direction));
   } else {
     int32_t dom_node_id = target_->get_dom_node_id();
     if (dom_node_id == kRootElementDomNodeId) {
@@ -188,13 +253,25 @@ ValidationResult ScrollTool::Validate() {
       scrolling_element = resolved_target->node.DynamicTo<WebElement>();
     }
 
-    if (!IsTargetUserScrollable(scrolling_element, offset_physical)) {
+    if (!IsTargetUserScrollable(scrolling_element, direction)) {
       return ValidationResult(
           MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
                      /*requires_page_stabilization=*/false,
                      absl::StrFormat("ScrollingElement [%s]",
                                      base::ToString(scrolling_element))));
     }
+  }
+
+  // Page/document scroll amounts are determined by Blink when the scroll is
+  // performed; only pixel scrolls have an offset to compute here.
+  std::optional<gfx::Vector2dF> offset_physical;
+  if (action_->amount->is_distance()) {
+    // No matter what frame the scroll element is on, it must be on the same
+    // physical screen, so the device scale factor will be the same.
+    const float dsf =
+        web_frame->FrameWidget()->GetScreenInfo().device_scale_factor;
+    offset_physical =
+        gfx::ScaleVector2d(direction, action_->amount->get_distance() * dsf);
   }
   validated_scroller_and_distance_.emplace(
       ScrollerAndDistance{scrolling_element, offset_physical});

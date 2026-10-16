@@ -1547,6 +1547,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/web/web_element.h',
+        ],
+        'allowed': [
+            # For WebElement::UserScrollByGranularity().
+            'ui::ScrollGranularity',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/common/context_menu_data/',
         ],
         'allowed': [

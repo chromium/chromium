@@ -6,8 +6,10 @@
 #define CHROME_RENDERER_ACTOR_SCROLL_TOOL_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
@@ -39,13 +41,29 @@ class ScrollTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
+  // Executes a page/document granularity scroll of `scrolling_element`.
+  void ExecuteByGranularity(blink::WebElement& scrolling_element,
+                            ToolFinishedCallback callback);
+  // Called when the scroll started by ExecuteByGranularity() completes.
+  void OnScrollByGranularityFinished(
+      blink::WebElement scrolling_element,
+      gfx::Vector2dF start_offset_css,
+      ToolFinishedCallback callback,
+      blink::WebElement::ScrollByGranularityResult result);
+
   struct ScrollerAndDistance {
     blink::WebElement scroller;
-    gfx::Vector2dF scroll_by_offset;
+    // The offset to scroll by, in physical pixels. Only set for pixel
+    // (distance) scrolls; page/document scroll amounts are determined by Blink.
+    std::optional<gfx::Vector2dF> scroll_by_offset;
   };
 
   mojom::ScrollActionPtr action_;
   std::optional<ScrollerAndDistance> validated_scroller_and_distance_;
+
+  // Page/document scrolls may animate and complete asynchronously, after which
+  // this tool may have been destroyed.
+  base::WeakPtrFactory<ScrollTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

@@ -100,6 +100,7 @@ chromium-metrics-reviews@google.com.
   <variant name="RemoveBookmark" summary="Remove Bookmark"/>
   <variant name="ScriptTool" summary="ScriptTool"/>
   <variant name="Scroll" summary="Scroll"/>
+  <variant name="ScrollPage" summary="Scroll Page"/>
   <variant name="ScrollTo" summary="Scroll To"/>
   <variant name="SeekMedia" summary="Seek Media"/>
   <variant name="Select" summary="Select"/>
