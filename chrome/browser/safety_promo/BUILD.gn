@@ -10,6 +10,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselAdapter.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselCoordinator.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselMediator.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselProperties.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselView.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewBinder.java",
@@ -69,6 +70,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoPageIndicatorViewUnitTest.java",

@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.safety_promo;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ON_CONTINUE_CLICKED;
-import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.SUBTITLE_RES_ID;
-import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.TITLE_RES_ID;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -18,8 +15,8 @@ import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,20 +27,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.List;
 
 /**
- * Coordinator for Safety Promo Carousel.
+ * Coordinator for Safety Promo Carousel. Owns the model, the mediator and the views, and wires them
+ * together.
  *
  * <p>The portrait and landscape views are inflated lazily and cached. Each cached view is bound to
- * the model by its own change processor, so a hidden view stays up to date. {@link #getView()}
- * returns the view of the current layout, which the embedder adds to the view hierarchy. Switching
- * back to a layout that was shown before reuses its view instead of re-inflating it or recreating
- * its RecyclerView.
+ * the model by its own change processor, so a hidden view stays up to date, including the page it
+ * is scrolled to. {@link #getView()} returns the view of the current layout, which the embedder
+ * adds to the view hierarchy. Switching back to a layout that was shown before reuses its view
+ * instead of re-inflating it or recreating its RecyclerView.
  */
 @NullMarked
 public class SafetyPromoCarouselCoordinator {
     private final Context mContext;
     private final PropertyModel mModel;
-    private final NullableObservableSupplier<SafetyPromoItem> mSelectedItemSupplier;
-    private final Callback<@Nullable SafetyPromoItem> mSelectedItemObserver;
+    private SafetyPromoCarouselMediator mMediator;
     private final List<SafetyPromoItem> mItems;
     private @Nullable SafetyPromoCarouselView mPortraitView;
     private @Nullable SafetyPromoCarouselView mLandscapeView;
@@ -53,6 +50,8 @@ public class SafetyPromoCarouselCoordinator {
     private @Nullable
             PropertyModelChangeProcessor<PropertyModel, SafetyPromoCarouselView, PropertyKey>
             mLandscapeChangeProcessor;
+    private @Nullable OnScrollListener mPortraitScrollListener;
+    private @Nullable OnScrollListener mLandscapeScrollListener;
     private boolean mUseLandscapeLayout;
 
     /**
@@ -74,24 +73,20 @@ public class SafetyPromoCarouselCoordinator {
         assert !items.isEmpty();
 
         mContext = context;
-        mSelectedItemSupplier = selectedItemSupplier;
-        mSelectedItemObserver = this::onSelectedItemChanged;
         mItems = items;
         mModel =
                 new PropertyModel.Builder(SafetyPromoCarouselProperties.ALL_KEYS)
                         .with(ON_CONTINUE_CLICKED, _ -> advancePage.run())
-                        .with(SafetyPromoCarouselProperties.PAGE_COUNT, mItems.size())
                         .build();
 
         mUseLandscapeLayout = useLandscapeLayout;
+        mMediator = new SafetyPromoCarouselMediator(mModel, selectedItemSupplier, mItems);
         getOrCreateView();
-        setCurrentItem(getPositionForItem(selectedItemSupplier.get()));
-        selectedItemSupplier.addSyncObserver(mSelectedItemObserver);
     }
 
     /** Stops observing the selected item and unbinds and drops the carousel views. */
     public void destroy() {
-        mSelectedItemSupplier.removeObserver(mSelectedItemObserver);
+        mMediator.destroy();
         clearCachedViews();
     }
 
@@ -109,7 +104,6 @@ public class SafetyPromoCarouselCoordinator {
 
         mUseLandscapeLayout = useLandscapeLayout;
         getOrCreateView();
-        getView().getRecyclerView().scrollToPosition(mModel.get(ACTIVE_PAGE_INDEX));
     }
 
     /** Returns the carousel view of the current layout. */
@@ -117,7 +111,10 @@ public class SafetyPromoCarouselCoordinator {
         return assumeNonNull(mUseLandscapeLayout ? mLandscapeView : mPortraitView);
     }
 
-    /** Returns the view of the current layout, inflating and binding it if it isn't cached. */
+    /**
+     * Returns the view of the current layout, inflating and binding it if it isn't cached. Binding
+     * scrolls a new view to the active page.
+     */
     private SafetyPromoCarouselView getOrCreateView() {
         SafetyPromoCarouselView view = mUseLandscapeLayout ? mLandscapeView : mPortraitView;
         if (view != null) return view;
@@ -136,7 +133,7 @@ public class SafetyPromoCarouselCoordinator {
                 (SafetyPromoCarouselView)
                         LayoutInflater.from(mContext)
                                 .inflate(layoutId, /* root= */ null, /* attachToRoot= */ false);
-        initializeRecyclerView(view.getRecyclerView(), itemLayoutId);
+        var scrollListener = initializeRecyclerView(view.getRecyclerView(), itemLayoutId);
         var changeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, view, SafetyPromoCarouselViewBinder::bind);
@@ -144,9 +141,11 @@ public class SafetyPromoCarouselCoordinator {
         if (mUseLandscapeLayout) {
             mLandscapeView = view;
             mLandscapeChangeProcessor = changeProcessor;
+            mLandscapeScrollListener = scrollListener;
         } else {
             mPortraitView = view;
             mPortraitChangeProcessor = changeProcessor;
+            mPortraitScrollListener = scrollListener;
         }
         return view;
     }
@@ -166,9 +165,12 @@ public class SafetyPromoCarouselCoordinator {
         }
         mPortraitView = null;
         mLandscapeView = null;
+        mPortraitScrollListener = null;
+        mLandscapeScrollListener = null;
     }
 
-    private void initializeRecyclerView(RecyclerView recyclerView, @LayoutRes int itemLayoutId) {
+    private OnScrollListener initializeRecyclerView(
+            RecyclerView recyclerView, @LayoutRes int itemLayoutId) {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(
                         recyclerView.getContext(),
@@ -180,8 +182,8 @@ public class SafetyPromoCarouselCoordinator {
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
-        recyclerView.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
+        OnScrollListener scrollListener =
+                new OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                         super.onScrollStateChanged(recyclerView, newState);
@@ -193,46 +195,19 @@ public class SafetyPromoCarouselCoordinator {
                         int position = layoutManager.getPosition(centerView);
                         if (position == RecyclerView.NO_POSITION) return;
 
-                        updateSelectedItemState(position);
+                        mMediator.onPageSnapped(position);
                     }
-                });
+                };
+        recyclerView.addOnScrollListener(scrollListener);
+        return scrollListener;
     }
 
-    private void onSelectedItemChanged(@Nullable SafetyPromoItem item) {
-        if (item == null) return;
-
-        setCurrentItem(getPositionForItem(item));
+    void setMediatorForTesting(SafetyPromoCarouselMediator mediator) {
+        mMediator = mediator;
     }
 
-    private int getPositionForItem(@Nullable SafetyPromoItem item) {
-        if (item == null) return 0;
-
-        int position = mItems.indexOf(item);
-        return Math.max(0, position);
-    }
-
-    // TODO(crbug.com/534388538): Move to a mediator and bind the position via the model.
-    /**
-     * Selects the item at {@code position}. Only the shown carousel is scrolled; a hidden one is
-     * scrolled when it is shown again.
-     */
-    private void setCurrentItem(int position) {
-        updateSelectedItemState(position);
-        getView().getRecyclerView().scrollToPosition(position);
-    }
-
-    /**
-     * Updates the property model with the current item's title, subtitle, and dot indicator
-     * position.
-     *
-     * @param position The active index of the carousel item to bind.
-     */
-    private void updateSelectedItemState(int position) {
-        assert position >= 0 && position < mItems.size();
-
-        SafetyPromoItem item = mItems.get(position);
-        mModel.set(TITLE_RES_ID, item.carouselTitleResId);
-        mModel.set(SUBTITLE_RES_ID, item.carouselSubtitleResId);
-        mModel.set(ACTIVE_PAGE_INDEX, position);
+    OnScrollListener getOnScrollListenerForTesting() {
+        return assumeNonNull(
+                mUseLandscapeLayout ? mLandscapeScrollListener : mPortraitScrollListener);
     }
 }

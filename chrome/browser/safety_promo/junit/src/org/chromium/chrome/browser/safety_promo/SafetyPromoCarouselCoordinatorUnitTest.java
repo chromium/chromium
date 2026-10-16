@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -45,6 +47,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mAdvancePage;
+    @Mock private SafetyPromoCarouselMediator mMockMediator;
 
     private Context mContext;
     private SafetyPromoCarouselCoordinator mCoordinator;
@@ -67,7 +70,6 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         assertEquals(LinearLayoutManager.HORIZONTAL, layoutManager.getOrientation());
 
-        assertSelectedItemState(SafetyPromoItem.PASSWORD_MANAGER);
         assertItemLayout(R.id.carousel_illustration);
     }
 
@@ -80,7 +82,6 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         RecyclerView recyclerView = mCoordinator.getView().getRecyclerView();
         assertNotNull(recyclerView.getAdapter());
         assertEquals(TEST_ITEMS.size(), recyclerView.getAdapter().getItemCount());
-        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
         assertItemLayout(R.id.carousel_landscape_illustration_container);
 
         mCoordinator.getView().findViewById(R.id.fre_continue_button).performClick();
@@ -88,49 +89,28 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     }
 
     @Test
-    public void testSelectedItem_appliedBeforeFirstDraw() {
-        createCoordinator(
-                /* useLandscapeLayout= */ false,
-                ObservableSuppliers.createNullable(SafetyPromoItem.INCOGNITO));
-
-        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
-    }
-
-    @Test
-    public void testSelectedItemSetAfterConstruction_updatesSelectedItemState() {
-        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
-                ObservableSuppliers.createNullable();
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
-
-        assertSelectedItemState(SafetyPromoItem.PASSWORD_MANAGER);
-
-        supplier.set(SafetyPromoItem.INCOGNITO);
-
-        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
-    }
-
-    @Test
-    public void testSelectedItemChanged_updatesSelectedItemState() {
-        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
-                ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
-
-        supplier.set(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
-
-        assertSelectedItemState(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
-    }
-
-    @Test
-    public void testDestroy_stopsObservingSelectedItem() {
-        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
-                ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
-        SafetyPromoCarouselView view = mCoordinator.getView();
+    public void testDestroy() {
+        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
 
         mCoordinator.destroy();
-        supplier.set(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
 
-        assertTitle(view, SafetyPromoItem.PASSWORD_MANAGER);
+        verify(mMockMediator).destroy();
+    }
+
+    @Test
+    public void testScrollListener_reportsSnappedPageWhenIdle() {
+        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+
+        SafetyPromoCarouselView view = mCoordinator.getView();
+        layoutView(view);
+        RecyclerView recyclerView = view.getRecyclerView();
+
+        RecyclerView.OnScrollListener listener = mCoordinator.getOnScrollListenerForTesting();
+        listener.onScrollStateChanged(recyclerView, RecyclerView.SCROLL_STATE_SETTLING);
+        verify(mMockMediator, never()).onPageSnapped(anyInt());
+
+        listener.onScrollStateChanged(recyclerView, RecyclerView.SCROLL_STATE_IDLE);
+        verify(mMockMediator).onPageSnapped(0);
     }
 
     @Test
@@ -146,7 +126,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     public void testSwitchLayout_keepsCurrentItem() {
         SettableNullableObservableSupplier<SafetyPromoItem> supplier =
                 ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
+        createCoordinatorWithRealMediator(/* useLandscapeLayout= */ false, supplier);
         supplier.set(SafetyPromoItem.INCOGNITO);
         // Clear the supplier so a kept item can be told apart from one re-read from the supplier.
         supplier.set(null);
@@ -173,7 +153,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         rotate(/* useLandscapeLayout= */ false);
 
         assertSame(portraitView, mCoordinator.getView());
-        assertSame(portraitAdapter, portraitView.getRecyclerView().getAdapter());
+        assertSame(portraitAdapter, mCoordinator.getView().getRecyclerView().getAdapter());
 
         rotate(/* useLandscapeLayout= */ true);
 
@@ -184,7 +164,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     public void testSwitchLayoutBack_restoresStateChangedWhileHidden() {
         SettableNullableObservableSupplier<SafetyPromoItem> supplier =
                 ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
+        createCoordinatorWithRealMediator(/* useLandscapeLayout= */ false, supplier);
         SafetyPromoCarouselView portraitView = mCoordinator.getView();
 
         rotate(/* useLandscapeLayout= */ true);
@@ -202,31 +182,28 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     }
 
     @Test
-    public void testConfigurationChange_resourcesChanged_recreatesViews() {
-        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
-                ObservableSuppliers.createNullable(SafetyPromoItem.INCOGNITO);
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
-        SafetyPromoCarouselView oldPortraitView = mCoordinator.getView();
+    public void testSwitchLayout_inflatesNewView() {
+        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        SafetyPromoCarouselView portraitView = mCoordinator.getView();
+
         rotate(/* useLandscapeLayout= */ true);
-        SafetyPromoCarouselView oldLandscapeView = mCoordinator.getView();
 
-        changeResources(/* useLandscapeLayout= */ true);
+        assertNotSame(portraitView, mCoordinator.getView());
+    }
 
-        assertNotSame(oldLandscapeView, mCoordinator.getView());
-        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
-        assertVisibleIllustration(SafetyPromoItem.INCOGNITO);
+    @Test
+    public void testConfigurationChange_resourcesChanged_recreatesViews() {
+        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        SafetyPromoCarouselView oldPortraitView = mCoordinator.getView();
 
-        // The dropped views, including the hidden one, are no longer bound to the model.
-        supplier.set(SafetyPromoItem.PASSWORD_MANAGER);
-        assertTitle(oldLandscapeView, SafetyPromoItem.INCOGNITO);
-        assertTitle(oldPortraitView, SafetyPromoItem.INCOGNITO);
+        changeResources(/* useLandscapeLayout= */ false);
+
+        assertNotSame(oldPortraitView, mCoordinator.getView());
     }
 
     @Test
     public void testConfigurationChange_layoutSwitchAndResourcesChanged_inflatesNewView() {
-        SettableNullableObservableSupplier<SafetyPromoItem> supplier =
-                ObservableSuppliers.createNullable(SafetyPromoItem.INCOGNITO);
-        createCoordinator(/* useLandscapeLayout= */ false, supplier);
+        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
         rotate(/* useLandscapeLayout= */ true);
         SafetyPromoCarouselView oldLandscapeView = mCoordinator.getView();
         rotate(/* useLandscapeLayout= */ false);
@@ -235,8 +212,6 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         changeResources(/* useLandscapeLayout= */ true);
 
         assertNotSame(oldLandscapeView, mCoordinator.getView());
-        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
-        assertVisibleIllustration(SafetyPromoItem.INCOGNITO);
 
         rotate(/* useLandscapeLayout= */ false);
         assertNotSame(oldPortraitView, mCoordinator.getView());
@@ -253,6 +228,15 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     }
 
     private void createCoordinator(
+            boolean useLandscapeLayout,
+            SettableNullableObservableSupplier<SafetyPromoItem> supplier) {
+        mCoordinator =
+                new SafetyPromoCarouselCoordinator(
+                        mContext, useLandscapeLayout, supplier, mAdvancePage, TEST_ITEMS);
+        mCoordinator.setMediatorForTesting(mMockMediator);
+    }
+
+    private void createCoordinatorWithRealMediator(
             boolean useLandscapeLayout,
             SettableNullableObservableSupplier<SafetyPromoItem> supplier) {
         mCoordinator =
@@ -289,13 +273,17 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     /** Lays out the shown view and asserts the carousel shows the illustration for {@code item}. */
     private void assertVisibleIllustration(SafetyPromoItem item) {
         SafetyPromoCarouselView view = mCoordinator.getView();
+        layoutView(view);
+        LinearLayoutManager layoutManager =
+                (LinearLayoutManager) view.getRecyclerView().getLayoutManager();
+        assertEquals(TEST_ITEMS.indexOf(item), layoutManager.findFirstVisibleItemPosition());
+    }
+
+    private static void layoutView(SafetyPromoCarouselView view) {
         view.measure(
                 View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
         view.layout(0, 0, 1200, 800);
-        LinearLayoutManager layoutManager =
-                (LinearLayoutManager) view.getRecyclerView().getLayoutManager();
-        assertEquals(TEST_ITEMS.indexOf(item), layoutManager.findFirstVisibleItemPosition());
     }
 
     private void assertItemLayout(int rootId) {

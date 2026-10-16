@@ -28,7 +28,7 @@ class SafetyPromoCarouselViewBinder {
         } else if (propertyKey == PAGE_COUNT) {
             view.setPageIndicatorCount(model.get(PAGE_COUNT));
         } else if (propertyKey == ACTIVE_PAGE_INDEX) {
-            view.setActivePageIndicatorPosition(model.get(ACTIVE_PAGE_INDEX));
+            view.setActivePage(model.get(ACTIVE_PAGE_INDEX));
         }
     }
 }

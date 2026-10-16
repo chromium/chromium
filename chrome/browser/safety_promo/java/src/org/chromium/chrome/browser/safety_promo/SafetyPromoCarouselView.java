@@ -157,8 +157,12 @@ public class SafetyPromoCarouselView extends RelativeLayout {
         mPageIndicatorView.setPageCount(count);
     }
 
-    public void setActivePageIndicatorPosition(int position) {
+    /**
+     * Shows the page at {@code position}: moves the page indicator and scrolls the carousel to it.
+     */
+    public void setActivePage(int position) {
         mPageIndicatorView.setActivePosition(position);
+        mRecyclerView.scrollToPosition(position);
     }
 
     RecyclerView getRecyclerView() {

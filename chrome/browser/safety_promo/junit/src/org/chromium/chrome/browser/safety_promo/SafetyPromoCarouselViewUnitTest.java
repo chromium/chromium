@@ -43,6 +43,8 @@ public class SafetyPromoCarouselViewUnitTest {
     private static final long EVENT_INTERVAL_MS = 16;
     private static final int VIEW_WIDTH_PX = 1200;
     private static final int VIEW_HEIGHT_PX = 800;
+    // A page other than the initial one, so that scrolling to it is observable.
+    private static final int TEST_PAGE_INDEX = 1;
 
     private Context mContext;
     private int mTouchSlop;
@@ -110,12 +112,15 @@ public class SafetyPromoCarouselViewUnitTest {
     }
 
     @Test
-    public void testSetActivePageIndicatorPosition() {
-        mView.setActivePageIndicatorPosition(2);
+    public void testSetActivePage_movesIndicatorAndScrolls() {
+        mView.setActivePage(TEST_PAGE_INDEX);
 
         SafetyPromoPageIndicatorView indicatorView =
                 mView.findViewById(R.id.safety_promo_carousel_page_indicator);
-        assertEquals(2, indicatorView.getActivePositionForTesting());
+        assertEquals(TEST_PAGE_INDEX, indicatorView.getActivePositionForTesting());
+        // The scroll is applied on the next layout.
+        layoutView(mView);
+        assertEquals(TEST_PAGE_INDEX, getVisiblePage(mView));
     }
 
     @Test
@@ -310,11 +315,22 @@ public class SafetyPromoCarouselViewUnitTest {
                 new SafetyPromoCarouselAdapter(
                         List.of(SafetyPromoItem.PASSWORD_MANAGER, SafetyPromoItem.INCOGNITO),
                         itemLayoutId));
+        layoutView(view);
+        return view;
+    }
+
+    private static void layoutView(SafetyPromoCarouselView view) {
         view.measure(
                 View.MeasureSpec.makeMeasureSpec(VIEW_WIDTH_PX, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(VIEW_HEIGHT_PX, View.MeasureSpec.EXACTLY));
         view.layout(0, 0, VIEW_WIDTH_PX, VIEW_HEIGHT_PX);
-        return view;
+    }
+
+    /** Returns the position of the carousel page {@code view} shows. */
+    private static int getVisiblePage(SafetyPromoCarouselView view) {
+        LinearLayoutManager layoutManager =
+                (LinearLayoutManager) view.getRecyclerView().getLayoutManager();
+        return layoutManager.findFirstVisibleItemPosition();
     }
 
     private static float[] getTitleCenter(SafetyPromoCarouselView view) {
