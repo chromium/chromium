@@ -22,7 +22,7 @@ using intelligence::actor::kSpacingSmall;
   // Used for card layout.
   ActuationTaskCardView* _cardView;
 
-  // Used for row layout. Holds one button per action.
+  // Used for row and column layouts. Holds one button per action.
   UIStackView* _buttonStack;
 
   // Intervention actions, kept to map taps to the action sent to the delegate.
@@ -60,8 +60,12 @@ using intelligence::actor::kSpacingSmall;
         _cardView.hidden = NO;
         break;
       case ActuationInterventionType::kRow:
-        [self addRowButtonsForActions:data.actions];
-        _buttonStack.hidden = NO;
+        [self showButtonsForActions:data.actions
+                               axis:UILayoutConstraintAxisHorizontal];
+        break;
+      case ActuationInterventionType::kColumn:
+        [self showButtonsForActions:data.actions
+                               axis:UILayoutConstraintAxisVertical];
         break;
     }
   }
@@ -85,8 +89,9 @@ using intelligence::actor::kSpacingSmall;
   _cardView.delegate = self;
   _cardView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // TODO(crbug.com/573145076): Use a vertical axis for the column layout.
   _buttonStack = [[UIStackView alloc] init];
+  _buttonStack.accessibilityIdentifier =
+      kActuationInterventionButtonStackAccessibilityIdentifier;
   _buttonStack.distribution = UIStackViewDistributionFillEqually;
   _buttonStack.spacing = kSpacingSmall;
   _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
@@ -119,10 +124,12 @@ using intelligence::actor::kSpacingSmall;
   ]];
 }
 
-// Adds a button per action to `_buttonStack`. A lone action is primary,
-// multiple actions are tertiary.
-- (void)addRowButtonsForActions:
-    (NSArray<ActuationInterventionAction*>*)actions {
+// Shows a button per action in `_buttonStack`, laid out along `axis`. A lone
+// action is primary, multiple actions are tertiary.
+- (void)showButtonsForActions:(NSArray<ActuationInterventionAction*>*)actions
+                         axis:(UILayoutConstraintAxis)axis {
+  _buttonStack.axis = axis;
+  _buttonStack.hidden = NO;
   ChromeButtonStyle style =
       actions.count == 1 ? ChromeButtonStylePrimary : ChromeButtonStyleTertiary;
   for (NSUInteger index = 0; index < actions.count; ++index) {
@@ -145,7 +152,7 @@ using intelligence::actor::kSpacingSmall;
   }
 }
 
-// Handles taps on the row buttons, tagged with the index of their action.
+// Handles taps on the action buttons, tagged with the index of their action.
 - (void)didTapActionButton:(UIButton*)button {
   [self triggerActionAtIndex:static_cast<NSUInteger>(button.tag)];
 }

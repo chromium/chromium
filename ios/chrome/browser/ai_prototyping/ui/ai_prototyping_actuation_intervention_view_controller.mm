@@ -21,20 +21,23 @@ const CGFloat kShowcaseCornerRadius = 24.0;
 constexpr std::array kLayouts = {
     ActuationInterventionType::kCard,
     ActuationInterventionType::kRow,
+    ActuationInterventionType::kColumn,
 };
 
 // Identifiers of the showcased intervention actions.
 constexpr NSInteger kPrimaryActionIdentifier = 0;
 constexpr NSInteger kSecondaryActionIdentifier = 1;
+constexpr NSInteger kTertiaryActionIdentifier = 2;
 
 // Default intervention texts.
 NSString* const kDefaultTitle = @"Confirm purchase";
 NSString* const kDefaultSubtitle = @"3 tickets to Project Hail Mary, $45.00";
 NSString* const kDefaultPrimaryButtonText = @"Continue";
 NSString* const kDefaultSecondaryButtonText = @"Cancel";
+NSString* const kDefaultTertiaryButtonText = @"Manually enter";
 
-// Placeholder of the secondary button field, which is optional in a row.
-NSString* const kSecondaryButtonPlaceholder = @"Empty for a single button";
+// Placeholder of the optional button fields.
+NSString* const kOptionalButtonPlaceholder = @"Empty to hide the button";
 
 // Action name displayed until an action is triggered.
 NSString* const kNoActionName = @"none";
@@ -56,10 +59,10 @@ UITextField* TextField(NSString* text) {
   return textField;
 }
 
-// Returns a human readable name for `action`, based on its identifier.
+// Returns a human readable name for `action`, including its identifier.
 NSString* ActionName(ActuationInterventionAction* action) {
-  return action.identifier == kPrimaryActionIdentifier ? @"Primary"
-                                                       : @"Secondary";
+  return [NSString stringWithFormat:@"%@ (#%ld)", action.title,
+                                    static_cast<long>(action.identifier)];
 }
 
 // Returns the text reporting `actionName` as the last triggered action.
@@ -74,6 +77,8 @@ NSString* LayoutName(ActuationInterventionType layout) {
       return @"Card";
     case ActuationInterventionType::kRow:
       return @"Row";
+    case ActuationInterventionType::kColumn:
+      return @"Column";
   }
 }
 
@@ -94,11 +99,13 @@ NSString* LayoutName(ActuationInterventionType layout) {
   UITextField* _subtitleField;
   UITextField* _primaryButtonField;
   UITextField* _secondaryButtonField;
+  UITextField* _tertiaryButtonField;
 
   // Caption + field containers, toggled based on the selected layout.
   UIStackView* _titleRow;
   UIStackView* _subtitleRow;
   UIStackView* _secondaryButtonRow;
+  UIStackView* _tertiaryButtonRow;
 }
 
 - (void)viewDidLoad {
@@ -189,15 +196,21 @@ NSString* LayoutName(ActuationInterventionType layout) {
                                                titled:@"Primary button"]];
 
   _secondaryButtonField = TextField(kDefaultSecondaryButtonText);
-  _secondaryButtonField.placeholder = kSecondaryButtonPlaceholder;
+  _secondaryButtonField.placeholder = kOptionalButtonPlaceholder;
   _secondaryButtonRow = [self rowWithControl:_secondaryButtonField
                                       titled:@"Secondary button"];
   [_mainStack addArrangedSubview:_secondaryButtonRow];
 
+  _tertiaryButtonField = TextField(kDefaultTertiaryButtonText);
+  _tertiaryButtonField.placeholder = kOptionalButtonPlaceholder;
+  _tertiaryButtonRow = [self rowWithControl:_tertiaryButtonField
+                                     titled:@"Tertiary button"];
+  [_mainStack addArrangedSubview:_tertiaryButtonRow];
+
   // Any control missing here would not refresh `_interventionView`.
   NSArray<UIControl*>* controls = @[
     _layoutSegment, _titleField, _subtitleField, _primaryButtonField,
-    _secondaryButtonField
+    _secondaryButtonField, _tertiaryButtonField
   ];
   for (UIControl* control in controls) {
     [control addTarget:self
@@ -215,7 +228,8 @@ NSString* LayoutName(ActuationInterventionType layout) {
   BOOL isCard = layout == ActuationInterventionType::kCard;
   _titleRow.hidden = !isCard;
   _subtitleRow.hidden = !isCard;
-  _secondaryButtonRow.hidden = layout != ActuationInterventionType::kRow;
+  _secondaryButtonRow.hidden = isCard;
+  _tertiaryButtonRow.hidden = layout != ActuationInterventionType::kColumn;
 
   [_interventionView configureWithData:[self interventionDataForLayout:layout]];
 }
@@ -247,7 +261,33 @@ NSString* LayoutName(ActuationInterventionType layout) {
       return [ActuationInterventionData
           rowItemWithActions:@[ secondaryAction, primaryAction ]];
     }
+    case ActuationInterventionType::kColumn: {
+      NSMutableArray<ActuationInterventionAction*>* actions =
+          [NSMutableArray arrayWithObject:primaryAction];
+      [self appendActionWithIdentifier:kSecondaryActionIdentifier
+                             fromField:_secondaryButtonField
+                               toArray:actions];
+      [self appendActionWithIdentifier:kTertiaryActionIdentifier
+                             fromField:_tertiaryButtonField
+                               toArray:actions];
+      return [ActuationInterventionData columnItemWithActions:actions];
+    }
   }
+}
+
+// Appends an action with `identifier` titled with the text of `field` to
+// `actions`, unless `field` is empty.
+- (void)appendActionWithIdentifier:(NSInteger)identifier
+                         fromField:(UITextField*)field
+                           toArray:
+                               (NSMutableArray<ActuationInterventionAction*>*)
+                                   actions {
+  if (field.text.length == 0) {
+    return;
+  }
+  [actions addObject:[[ActuationInterventionAction alloc]
+                         initWithIdentifier:identifier
+                                      title:field.text]];
 }
 
 // Returns a vertical stack with a caption displaying `title` above `control`.

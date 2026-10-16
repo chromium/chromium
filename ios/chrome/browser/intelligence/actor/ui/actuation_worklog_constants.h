@@ -30,6 +30,11 @@ inline constexpr NSString* const
     kActuationInterventionCardAccessibilityIdentifier =
         @"ActuationInterventionCardAccessibilityIdentifier";
 
+// Accessibility identifier for the stack holding the intervention buttons.
+inline constexpr NSString* const
+    kActuationInterventionButtonStackAccessibilityIdentifier =
+        @"ActuationInterventionButtonStackAccessibilityIdentifier";
+
 // Returns the accessibility identifier of the button displaying the action at
 // `index` of `ActuationInterventionData.actions`.
 NSString* ActuationInterventionActionButtonAccessibilityIdentifier(

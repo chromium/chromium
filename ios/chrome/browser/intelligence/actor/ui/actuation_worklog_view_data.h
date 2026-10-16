@@ -152,6 +152,8 @@ enum class ActuationInterventionType {
   kCard,
   // Row of one or two action buttons, without `title` or `subtitle`.
   kRow,
+  // Column of one to three action buttons, without `title` or `subtitle`.
+  kColumn,
 };
 
 // View data object describing an action of an `ActuationInterventionData`.
@@ -185,7 +187,7 @@ enum class ActuationInterventionType {
 // Optional subtitle text (used if `type == kCard`).
 @property(nonatomic, copy, readonly) NSString* subtitle;
 
-// Actions of the intervention (leading to trailing). Never empty.
+// Actions of the intervention, in display order. Never empty.
 @property(nonatomic, copy, readonly)
     NSArray<ActuationInterventionAction*>* actions;
 
@@ -202,7 +204,11 @@ enum class ActuationInterventionType {
 + (instancetype)rowItemWithActions:
     (NSArray<ActuationInterventionAction*>*)actions;
 
-// TODO(crbug.com/573145076): Implement `columnItem`.
+// Creates an intervention with a column of one to three `actions`, in display
+// order.
++ (instancetype)columnItemWithActions:
+    (NSArray<ActuationInterventionAction*>*)actions;
+
 @end
 
 // View data object describing the text displayed in the actuation header.

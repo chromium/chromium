@@ -60,6 +60,12 @@ class ActuationInterventionViewTest : public PlatformTest {
         view_, ActuationInterventionActionButtonAccessibilityIdentifier(index));
   }
 
+  // Returns the stack view laying out the action buttons.
+  UIStackView* ButtonStack() {
+    return FindViewById<UIStackView>(
+        view_, kActuationInterventionButtonStackAccessibilityIdentifier);
+  }
+
   // Returns the action button owned by the card layout of `view_`.
   ChromeButton* CardActionButton() {
     return FindViewById<ChromeButton>(
@@ -133,6 +139,48 @@ TEST_F(ActuationInterventionViewTest, TestReconfigureReplacesRowButtons) {
   EXPECT_NSEQ(button.title, @"Done");
   EXPECT_EQ(button.style, ChromeButtonStylePrimary);
   EXPECT_EQ(ActionButton(1), nil);
+}
+
+// Tests that a three-action column stacks the actions vertically in order with
+// equal tertiary emphasis, and dispatches the action of the tapped button.
+TEST_F(ActuationInterventionViewTest, TestThreeActionColumnLayout) {
+  NSArray<ActuationInterventionAction*>* actions = @[
+    Action(@"Always allow"), Action(@"Allow this time"),
+    Action(@"Manually enter")
+  ];
+  [view_ configureWithData:[ActuationInterventionData
+                               columnItemWithActions:actions]];
+
+  EXPECT_TRUE(CardView().hidden);
+  UIStackView* button_stack = ButtonStack();
+  ASSERT_NE(button_stack, nil);
+  EXPECT_EQ(button_stack.axis, UILayoutConstraintAxisVertical);
+
+  for (NSUInteger index = 0; index < actions.count; ++index) {
+    SCOPED_TRACE(index);
+    ChromeButton* button = ActionButton(index);
+    ASSERT_NE(button, nil);
+    EXPECT_NSEQ(button.title, actions[index].title);
+    EXPECT_EQ(button.style, ChromeButtonStyleTertiary);
+  }
+
+  [ActionButton(1) sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(delegate_.triggeredAction, actions[1]);
+}
+
+// Tests that configuring a row after a column lays the buttons out
+// horizontally again.
+TEST_F(ActuationInterventionViewTest, TestRowAfterColumnIsHorizontal) {
+  [view_ configureWithData:[ActuationInterventionData columnItemWithActions:@[
+           Action(@"Allow"), Action(@"Deny")
+         ]]];
+  [view_ configureWithData:[ActuationInterventionData rowItemWithActions:@[
+           Action(@"Allow"), Action(@"Deny")
+         ]]];
+
+  UIStackView* button_stack = ButtonStack();
+  ASSERT_NE(button_stack, nil);
+  EXPECT_EQ(button_stack.axis, UILayoutConstraintAxisHorizontal);
 }
 
 // Tests that passing nil hides the view and collapses it to zero height.
