@@ -6,12 +6,7 @@
 // to the browser via mojo.
 
 import type {WebClientHandlerInterface} from '../../glic.mojom-webui.js';
-import type {                      //
-             ConversationInfo,     //
-             CounterAbuseVerdict,  //
-             TabContextOptions,    //
-             ZeroStateSuggestions, //
-} from '../../glic_api/glic_api.js';
+import type {TabContextOptions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import type {                         //
              GlicException,           //
@@ -20,21 +15,16 @@ import type {                         //
              TabContextResultPrivate, //
              WebClientHost,           //
 } from '../request_types.js';
-import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
+import {exceptionFromTransferable} from '../request_types.js';
 import type {ResponseExtras} from '../transport/messaging.js';
 import type {PostMessageHandler} from '../transport/post_message_transport.js';
 
-import {                          //
-  bitmapN32ToRGBAImage,           //
-  conversationInfoFromClient,     //
-  counterAbuseVerdictFromClient,  //
-  idFromClient,                   //
-  idToClient,                     //
-  imageBytesResultToClient,       //
-  optionalFromClient,             //
-  tabContextOptionsFromClient,    //
-  tabContextToClient,             //
-  urlToClient,                    //
+import {                        //
+  bitmapN32ToRGBAImage,         //
+  idFromClient,                 //
+  imageBytesResultToClient,     //
+  tabContextOptionsFromClient,  //
+  tabContextToClient,           //
 } from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 
@@ -67,48 +57,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     } else {
       this.host.webClientInitializeFailed();
     }
-  }
-
-  reportClientTransientError(request: {abslStatus: number}): void {
-    this.handler.reportClientTransientError(request.abslStatus);
-  }
-
-  processCounterAbuseVerdict(request: {
-    tabId: string,
-    verdict: CounterAbuseVerdict,
-  }): void {
-    const mojoVerdict = counterAbuseVerdictFromClient(request.verdict);
-    this.handler.processCounterAbuseVerdict(
-        idFromClient(request.tabId), mojoVerdict);
-  }
-
-
-  getModelQualityClientId(): Promise<{modelQualityClientId: string}> {
-    return this.handler.getModelQualityClientId();
-  }
-
-  async switchConversation(request: {info?: ConversationInfo}): Promise<{}> {
-    const {errorReason} = await this.handler.switchConversation(
-        conversationInfoFromClient(request.info ?? {
-          conversationId: '',
-          conversationTitle: '',
-          clientData: undefined,
-        }));
-    if (errorReason !== null) {
-      throw new ErrorWithReasonImpl(
-          'switchConversation', errorReason.valueOf());
-    }
-    return {};
-  }
-
-  async registerConversation(request: {info: ConversationInfo}): Promise<{}> {
-    const {errorReason} = await this.handler.registerConversation(
-        conversationInfoFromClient(request.info));
-    if (errorReason !== null) {
-      throw new ErrorWithReasonImpl(
-          'registerConversation', errorReason.valueOf());
-    }
-    return {};
   }
 
   async getContextFromFocusedTab(
@@ -176,33 +124,5 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
       }
     }
     return {profileInfo: replaceProperties(mojoProfileInfo, {avatarIcon})};
-  }
-
-  refreshSignInCookies(): Promise<{success: boolean}> {
-    return this.handler.syncCookies();
-  }
-
-  async getZeroStateSuggestionsForFocusedTab(request: {
-    isFirstRun?: boolean,
-  }): Promise<{suggestions?: ZeroStateSuggestions}> {
-    const zeroStateResult =
-        await this.handler.getZeroStateSuggestionsForFocusedTab(
-            optionalFromClient(request.isFirstRun));
-    const zeroStateData = zeroStateResult.suggestions;
-    if (!zeroStateData) {
-      return {};
-    } else {
-      return {
-        suggestions: {
-          tabId: idToClient(zeroStateData.tabId),
-          url: urlToClient(zeroStateData.url),
-          suggestions: zeroStateData.suggestions,
-        },
-      };
-    }
-  }
-
-  maybeRefreshUserStatus(): void {
-    this.handler.maybeRefreshUserStatus();
   }
 }

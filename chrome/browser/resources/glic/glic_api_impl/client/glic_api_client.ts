@@ -103,7 +103,9 @@ import {                              //
   additionalContextToClient,          //
   bitmapN32ToRGBAImage,               //
   captureRegionResultToClient,        //
+  conversationInfoFromClient,         //
   conversionSettings,                 //
+  counterAbuseVerdictFromClient,      //
   createTabOptionsFromClient,         //
   fileUploadPolicyStateToClient,      //
   focusedTabDataToClient,             //
@@ -113,6 +115,7 @@ import {                              //
   invokeOptionsToClient,              //
   microphoneStatusToMojo,             //
   openPinnedTabPickerOptionsToMojo,   //
+  optionalFromClient,                 //
   pageMetadataToClient,               //
   panelOpeningDataToClient,           //
   panelStateToClient,                 //
@@ -123,6 +126,7 @@ import {                              //
   timeDeltaFromClient,                //
   unpinTabsOptionsToMojo,             //
   urlFromClient,                      //
+  urlToClient,                        //
   webClientModeToMojo,                //
 } from '../host/conversions.js';
 import type {GlicApiHost} from '../host/glic_api_host.js';
@@ -744,14 +748,13 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   reportClientTransientError(abslStatus: number): void {
-    this.clientRemote.requestNoResponse(
-        'reportClientTransientError', {abslStatus});
+    this.handler.reportClientTransientError(abslStatus);
   }
 
   processCounterAbuseVerdict?
       (tabId: string, verdict: CounterAbuseVerdict): void {
-    this.clientRemote.requestNoResponse(
-        'processCounterAbuseVerdict', {tabId, verdict});
+    const mojoVerdict = counterAbuseVerdictFromClient(verdict);
+    this.handler.processCounterAbuseVerdict(idFromClient(tabId), mojoVerdict);
   }
 
   async closePanel(): Promise<void> {
@@ -778,9 +781,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   async getModelQualityClientId?(): Promise<string> {
-    const result = await this.clientRemote.requestWithResponse(
-        'getModelQualityClientId', undefined);
-    return result.modelQualityClientId;
+    const {modelQualityClientId} = await this.handler.getModelQualityClientId();
+    return modelQualityClientId;
   }
 
   // @deprecated
@@ -791,11 +793,25 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   async switchConversation(info?: ConversationInfo): Promise<void> {
-    await this.clientRemote.requestWithResponse('switchConversation', {info});
+    const {errorReason} = await this.handler.switchConversation(
+        conversationInfoFromClient(info ?? {
+          conversationId: '',
+          conversationTitle: '',
+          clientData: undefined,
+        }));
+    if (errorReason !== null) {
+      throw new ErrorWithReasonImpl(
+          'switchConversation', errorReason.valueOf());
+    }
   }
 
   async registerConversation(info: ConversationInfo): Promise<void> {
-    await this.clientRemote.requestWithResponse('registerConversation', {info});
+    const {errorReason} = await this.handler.registerConversation(
+        conversationInfoFromClient(info));
+    if (errorReason !== null) {
+      throw new ErrorWithReasonImpl(
+          'registerConversation', errorReason.valueOf());
+    }
   }
 
   async getContextFromFocusedTab(options: TabContextOptions):
@@ -1028,9 +1044,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   async refreshSignInCookies(): Promise<void> {
-    const result = await this.clientRemote.requestWithResponse(
-        'refreshSignInCookies', undefined);
-    if (!result.success) {
+    const {success} = await this.handler.syncCookies();
+    if (!success) {
       throw Error('refreshSignInCookies failed');
     }
   }
@@ -1124,22 +1139,28 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   async getZeroStateSuggestionsForFocusedTab?
       (isFirstRun?: boolean): Promise<ZeroStateSuggestions> {
-    const zeroStateResult = await this.clientRemote.requestWithResponse(
-        'getZeroStateSuggestionsForFocusedTab', {isFirstRun});
-    if (!zeroStateResult.suggestions) {
+    const zeroStateResult =
+        await this.handler.getZeroStateSuggestionsForFocusedTab(
+            optionalFromClient(isFirstRun));
+    const zeroStateData = zeroStateResult.suggestions;
+    if (!zeroStateData) {
       return {
         suggestions: [],
         tabId: '',
         url: '',
       };
     }
-    return zeroStateResult.suggestions;
+    return {
+      tabId: idToClient(zeroStateData.tabId),
+      url: urlToClient(zeroStateData.url),
+      suggestions: zeroStateData.suggestions,
+    };
   }
 
 
   maybeRefreshUserStatus?(): void {
     this.cachedUserProfile = undefined;
-    this.clientRemote.requestNoResponse('maybeRefreshUserStatus', undefined);
+    this.handler.maybeRefreshUserStatus();
   }
 
   getAdditionalContext?(): Observable<AdditionalContext> {

@@ -6,8 +6,6 @@ import type {                          //
              AdditionalContext,        //
              AdditionalContextPart,    //
              AnnotatedPageData,        //
-             ConversationInfo,         //
-             CounterAbuseVerdict,      //
              ErrorReasonTypes,         //
              ErrorWithReason,          //
              FocusedTabDataHasFocus,   //
@@ -20,7 +18,6 @@ import type {                          //
              TabContextResult,         //
              TabData,                  //
              UserProfileInfo,          //
-             ZeroStateSuggestions,     //
 } from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
@@ -47,29 +44,6 @@ export const WebClientHostDef = defInterface({
         // (success is false).
         exception?: GlicException,
       }>(),
-    },
-    {
-      name: 'getModelQualityClientId',
-      response: defMessage<{
-        modelQualityClientId: string,
-      }>(),
-      histogram: {id: 8},
-    },
-    {
-      name: 'switchConversation',
-      request: defMessage<{
-        info?: ConversationInfo,
-      }>(),
-      response: defMessage<{}>(),
-      histogram: {id: 64},
-    },
-    {
-      name: 'registerConversation',
-      request: defMessage<{
-        info: ConversationInfo,
-      }>(),
-      response: defMessage<{}>(),
-      histogram: {id: 65},
     },
     {
       name: 'getContextFromFocusedTab',
@@ -111,41 +85,6 @@ export const WebClientHostDef = defInterface({
       }>(),
       histogram: {id: 25},
     },
-    {
-      name: 'refreshSignInCookies',
-      response: defMessage<{
-        success: boolean,
-      }>(),
-      histogram: {id: 26},
-    },
-    {
-      name: 'getZeroStateSuggestionsForFocusedTab',
-      request: defMessage<{
-        isFirstRun?: boolean,
-      }>(),
-      response: defMessage<{
-        suggestions?: ZeroStateSuggestions,
-      }>(),
-      histogram: {id: 54},
-    },
-    {
-      name: 'maybeRefreshUserStatus',
-      histogram: {id: 58},
-    },
-    {
-      name: 'reportClientTransientError',
-      request: defMessage<{
-        abslStatus: number,
-      }>(),
-    },
-    {
-      name: 'processCounterAbuseVerdict',
-      request: defMessage<{
-        tabId: string,
-        verdict: CounterAbuseVerdict,
-      }>(),
-      histogram: {id: 100},
-    },
   ],
 });
 
@@ -183,7 +122,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 5,
   // Do not reuse deleted request ID: 6,
   // Do not reuse deleted request ID: 7,
-  GetModelQualityClientId: 8,
+  // Do not reuse deleted request ID: 8,
   GetContextFromFocusedTab: 9,
   GetContextFromTab: 10,
   // Do not reuse deleted request ID: 11,
@@ -201,7 +140,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 23,
   // Do not reuse deleted request ID: 24,
   GetUserProfileInfo: 25,
-  RefreshSignInCookies: 26,
+  // Do not reuse deleted request ID: 26,
   // Do not reuse deleted request ID: 27,
   // Do not reuse deleted request ID: 28,
   // Do not reuse deleted request ID: 29,
@@ -229,18 +168,18 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 51,
   // Do not reuse deleted request ID: 52,
   // Do not reuse deleted request ID: 53,
-  GetZeroStateSuggestionsForFocusedTab: 54,
+  // Do not reuse deleted request ID: 54,
   // Do not reuse deleted request ID: 55,
   // Do not reuse deleted request ID: 56,
   // Do not reuse deleted request ID: 57,
-  MaybeRefreshUserStatus: 58,
+  // Do not reuse deleted request ID: 58,
   // Do not reuse deleted request ID: 59,
   // Do not reuse deleted request ID: 60,
   // Do not reuse deleted request ID: 61,
   // Do not reuse deleted request ID: 62,
   // Do not reuse deleted request ID: 63,
-  SwitchConversation: 64,
-  RegisterConversation: 65,
+  // Do not reuse deleted request ID: 64,
+  // Do not reuse deleted request ID: 65,
   // Do not reuse deleted request ID: 66,
   // Do not reuse deleted request ID: 67,
   // Do not reuse deleted request ID: 68,
@@ -274,7 +213,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 97,
   // Do not reuse deleted request ID: 98,
   // Do not reuse deleted request ID: 99,
-  ProcessCounterAbuseVerdict: 100,
+  // Do not reuse deleted request ID: 100,
   GetImageBytesFromTab: 101,
   // Do not reuse deleted request ID: 102,
   // Do not reuse deleted request ID: 103,

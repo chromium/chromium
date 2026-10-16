@@ -439,11 +439,13 @@ class GlicWebClientHandler
   // glic::mojom::WebClientHandler implementation.
   void SwitchConversation(glic::mojom::ConversationInfoPtr info,
                           SwitchConversationCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kSwitchConversation);
     host().SwitchConversation(std::move(info), std::move(callback));
   }
 
   void RegisterConversation(glic::mojom::ConversationInfoPtr info,
                             RegisterConversationCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kRegisterConversation);
     host().instance_delegate().RegisterConversation(std::move(info),
                                                     std::move(callback));
   }
@@ -839,6 +841,7 @@ class GlicWebClientHandler
 
   void GetModelQualityClientId(
       GetModelQualityClientIdCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kGetModelQualityClientId);
     auto* local_state = g_browser_process->local_state();
     std::string client_id =
         optimization_guide::GetOrCreateGlicModelQualityClientId(local_state);
@@ -1320,6 +1323,7 @@ class GlicWebClientHandler
   }
 
   void SyncCookies(SyncCookiesCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kRefreshSignInCookies);
     if (auto* auth_controller = glic_service_->GetAuthController()) {
       auth_controller->ForceSyncCookies(GlicCookieSyncTrigger::kGlicClient,
                                         std::move(callback));
@@ -1352,6 +1356,7 @@ class GlicWebClientHandler
   void ProcessCounterAbuseVerdict(
       int32_t tab_id,
       mojom::CounterAbuseVerdictPtr verdict) override {
+    LogApiRequest(GlicHostApiRequestId::kProcessCounterAbuseVerdict);
     if (!base::FeatureList::IsEnabled(
             features::kGlicProcessCounterAbuseVerdict)) {
       return;
@@ -1677,6 +1682,7 @@ class GlicWebClientHandler
   void GetZeroStateSuggestionsForFocusedTab(
       std::optional<bool> is_fre,
       GetZeroStateSuggestionsForFocusedTabCallback callback) override {
+    LogApiRequest(GlicHostApiRequestId::kGetZeroStateSuggestionsForFocusedTab);
     if (!IsZeroStateSuggestionsEnabled()) {
       receiver_.ReportBadMessage(
           "Client should not call "
@@ -1693,6 +1699,7 @@ class GlicWebClientHandler
   }
 
   void MaybeRefreshUserStatus() override {
+    LogApiRequest(GlicHostApiRequestId::kMaybeRefreshUserStatus);
     if (!base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) ||
         !features::kGlicUserStatusRefreshApi.Get()) {
       receiver_.ReportBadMessage(
