@@ -124,6 +124,8 @@ using segmentation_platform::TipIdentifier;
           &_profilePrefChangeRegistrar);
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kIosRecentlyUsedBackgrounds, &_profilePrefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kIosUserUploadedBackground, &_profilePrefChangeRegistrar);
     }
   }
 
@@ -187,6 +189,12 @@ using segmentation_platform::TipIdentifier;
   } else if (preferenceName == prefs::kIosRecentlyUsedBackgrounds) {
     if (_actionableConfig && _presetBackgrounds.empty()) {
       [self fetchPresetBackgroundImages];
+    }
+  } else if (preferenceName == prefs::kIosUserUploadedBackground) {
+    if (_actionableConfig &&
+        !_profilePrefService->GetDict(prefs::kIosUserUploadedBackground)
+             .empty()) {
+      [self.delegate removeTipsModuleWithCompletion:nil];
     }
   }
 }

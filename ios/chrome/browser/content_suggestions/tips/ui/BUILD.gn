@@ -6,6 +6,8 @@ source_set("ui") {
   sources = [
     "ntp_theme_actionable_tip_config.h",
     "ntp_theme_actionable_tip_config.mm",
+    "ntp_theme_actionable_tip_view.h",
+    "ntp_theme_actionable_tip_view.mm",
     "save_passwords_instructional_view_controller.h",
     "save_passwords_instructional_view_controller.mm",
     "tips_module_audience.h",
