@@ -545,6 +545,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/loader/navigation_url_loader_impl.cc:OnAcceptCHFrameReceivedReturnLocation) -->
 
+<!-- LINT.IfChange(OriginAgentClusterAdExclusionResult) -->
+
+<enum name="OriginAgentClusterAdExclusionResult">
+  <int value="0" label="Ad decision true, site-keyed process"/>
+  <int value="1"
+      label="Ad decision true, origin-keyed process because of an existing
+             BrowsingInstance state"/>
+  <int value="2"
+      label="Ad decision false, ad tag arrived after the decision,
+             origin-keyed process that the ad exclusion would have prevented"/>
+  <int value="3"
+      label="Ad decision false, ad tag arrived after the decision, site-keyed
+             process because of an existing BrowsingInstance state"/>
+  <int value="4"
+      label="Not an excluded ad at the ad decision or at ReadyToCommit"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_request.h:AdExclusionResult) -->
+
 <enum name="OriginAgentClusterEndResult">
   <int value="0" label="Not requested and not origin-keyed"/>
   <int value="1" label="Not requested but origin-keyed"/>

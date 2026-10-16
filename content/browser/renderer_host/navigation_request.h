@@ -245,6 +245,32 @@ class CONTENT_EXPORT NavigationRequest
     kMaxValue = kNotExplicitlyRequestedAndOriginKeyed
   };
 
+  // The result of the ad exclusion for
+  // features::kExcludeAdsFromOriginIsolation, recorded at ReadyToCommit. This
+  // enum is used in UMA histograms, so do not reorder or remove values.
+  // LINT.IfChange(AdExclusionResult)
+  enum class AdExclusionResult {
+    // The ad decision was true, and the navigation got a site-keyed process.
+    kAdSiteKeyed = 0,
+    // The ad decision was true, but the BrowsingInstance already had an
+    // origin-keyed state for the origin. Thus, the navigation got an
+    // origin-keyed process.
+    kAdOriginKeyedByExistingState = 1,
+    // The ad decision was false, but the navigation became an ad after
+    // FreezeExcludeAdFromOriginKeyedProcess() made the decision. The navigation
+    // got an origin-keyed process, which the ad exclusion would have prevented.
+    kAdTagAfterDecisionOriginKeyed = 2,
+    // The ad decision was false, but the navigation became an ad after
+    // FreezeExcludeAdFromOriginKeyedProcess() made the decision. The navigation
+    // got a site-keyed process because of an existing BrowsingInstance state.
+    kAdTagAfterDecisionSiteKeyed = 3,
+    // The navigation was not an excluded ad at the ad decision, and it was
+    // not an excluded ad at ReadyToCommit.
+    kNotAdExcluded = 4,
+    kMaxValue = kNotAdExcluded,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:OriginAgentClusterAdExclusionResult)
+
   // If this navigation is a browser-initiated error page navigation, this enum
   // describes the scenario that triggered the navigation, and how session
   // history will be affected as a result.
@@ -2064,9 +2090,39 @@ class CONTENT_EXPORT NavigationRequest
   // or OnFencedFrameURLMappingComplete().
   void BeginNavigationImpl();
 
-  // Checks if the response requests an isolated origin via the
-  // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
-  void CheckForIsolationOptIn(const GURL& url);
+  // Calculates the ad decision one time and keeps it in
+  // `exclude_ad_from_origin_keyed_process_`. Called from OnResponseStarted()
+  // before MaybeRegisterExistingOriginAsHavingDefaultIsolation().
+  void FreezeExcludeAdFromOriginKeyedProcess();
+
+  // Records a new isolation request for the origin of `url`. A request is an
+  // opt-in or opt-out Origin-Agent-Cluster header, or an ad that gets a
+  // site-keyed process despite origin-keyed processes being the default. For a
+  // new request, it does a global walk to find any existing instances of the
+  // origin and to record that they should remain default-isolated in their
+  // existing BrowsingInstances.
+  void MaybeRegisterExistingOriginAsHavingDefaultIsolation(const GURL& url);
+
+  // Returns whether the ad exclusion from origin-keyed processes can apply. If
+  // not, no navigation is an excluded ad.
+  bool IsAdExclusionFromOriginKeyedProcessesEnabled(
+      BrowserContext* browser_context);
+
+  // Uses the current inputs to calculate if this navigation is an ad that must
+  // get a site-keyed process when origin-keyed processes are turned on by
+  // default. The ad inputs can change asynchronously. Thus, only
+  // FreezeExcludeAdFromOriginKeyedProcess() uses this function's dynamic result
+  // for isolation decisions. All other isolation code uses the frozen
+  // `exclude_ad_from_origin_keyed_process_`.
+  bool CalculateExcludeAdFromOriginKeyedProcess(
+      BrowserContext* browser_context);
+
+  // Records Navigation.OriginAgentCluster.AdExclusionResult. This function
+  // compares `exclude_ad_from_origin_keyed_process_` with the committed
+  // SiteInstance and with the current ad inputs. This must be called at
+  // ready-to-commit time, after the WillProcessResponse throttle events are
+  // processed, so that the ad host filter tag is final.
+  void RecordAdExclusionResultHistogram();
 
   // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
@@ -3758,6 +3814,17 @@ class CONTENT_EXPORT NavigationRequest
   // Tracks whether the embedder indicated this navigation is being used for
   // advertising purposes.
   AdStatus ad_status_ = AdStatus::kNone;
+
+  // This member keeps the ad decision for
+  // features::kExcludeAdsFromOriginIsolation. It has no value until
+  // FreezeExcludeAdFromOriginKeyedProcess() runs for the final response, and
+  // then it does not change. The global walk, the process selection, the
+  // site-keyed record in the BrowsingInstance, and the commit validation all
+  // use this one value.
+  // Thus, a late ad tag cannot cause a site-keyed record without a global walk.
+  // For example, the ad tag can occur while the browser defers process
+  // selection.
+  std::optional<bool> exclude_ad_from_origin_keyed_process_;
 
   // This is the origin to commit value calculated at request time for data: URL
   // navigations. It is stored so that the opaque origin nonce can be maintained

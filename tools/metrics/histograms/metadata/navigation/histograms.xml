@@ -1980,14 +1980,37 @@ chromium-metrics-reviews@google.com.
   <token key="NavigationMode" variants="NavigationMode"/>
 </histogram>
 
+<histogram name="Navigation.OriginAgentCluster.AdExclusionResult"
+    enum="OriginAgentClusterAdExclusionResult" expires_after="2027-02-07">
+  <owner>lbrady@google.com</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    Records the result of the ad exclusion from origin-keyed processes
+    (features::kExcludeAdsFromOriginIsolation) for a navigation. Recorded at
+    ReadyToCommit for each cross-document child frame navigation that is not an
+    error page and that has an ad decision from
+    NavigationRequest::FreezeExcludeAdFromOriginKeyedProcess(), when the ad
+    exclusion is enabled. The decision does not change after
+    FreezeExcludeAdFromOriginKeyedProcess() makes it. Navigations that are not
+    excluded ads at the decision or at ReadyToCommit record kNotAdExcluded.
+    Thus, the total count of this histogram is the denominator for each
+    percentage.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.OriginAgentCluster.AdTagReadyAtProcessSelection"
     enum="Boolean" expires_after="2027-02-07">
   <owner>lbrady@google.com</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>
-    Records whether the ad tag result was ready by the time process selection
-    occurred for a child frame navigation. Recorded in
-    ChildFrameNavigationFilteringThrottle::WillProcessResponse().
+    Records whether the ad tag result was ready for a child frame navigation at
+    ChildFrameNavigationFilteringThrottle::WillProcessResponse(). This occurs
+    after the final process selection. It also occurs after
+    NavigationRequest::FreezeExcludeAdFromOriginKeyedProcess() makes the ad
+    decision for process isolation. Therefore, the ad decision can miss the ad
+    tag result. The result can arrive during any deferral after the decision,
+    for example a deferral of process selection, or a WillProcessResponse()
+    deferral by this throttle or an earlier throttle.
   </summary>
 </histogram>
 

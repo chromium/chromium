@@ -3028,7 +3028,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // BrowserContext, so DetermineOriginAgentClusterIsolation will return true.
   // However, during the navigation by the OpenPopup call below that global walk
   // will be triggered before the url's isolation status is set. This walk is
-  // triggered by the call to CheckForIsolationOptIn() in
+  // triggered by the call to
+  // MaybeRegisterExistingOriginAsHavingDefaultIsolation() in
   // NavigationRequest::OnResponseStarted().
   EXPECT_TRUE(policy
                   ->DetermineOriginAgentClusterIsolation(
