@@ -137,8 +137,8 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
         item, &dangerous_callback);
     // ChromeDownloadManagerDelegate::DetermineDownloadTarget() needs to run the
     // |callback|.
-    DCHECK(run);
-    DCHECK(!dangerous_callback);
+    CHECK(run, base::NotFatalUntil::M162);
+    CHECK(!dangerous_callback, base::NotFatalUntil::M162);
     return true;
   }
 };

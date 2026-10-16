@@ -87,7 +87,7 @@ ContentSettingImageView::ContentSettingImageView(
       content_setting_image_model_(std::move(image_model)),
       bubble_view_(nullptr),
       browser_(browser) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   SetUpForInOutAnimation();
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
 
@@ -140,7 +140,7 @@ void ContentSettingImageView::Update() {
     GetViewAccessibility().SetIsIgnored(true);
     return;
   }
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   UpdateImage();
   SetVisible(true);
   GetViewAccessibility().SetIsIgnored(false);
@@ -304,7 +304,7 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  DCHECK(observation_.IsObservingSource(widget));
+  CHECK(observation_.IsObservingSource(widget), base::NotFatalUntil::M162);
   observation_.Reset();
   bubble_view_ = nullptr;
   UnpauseAnimation();

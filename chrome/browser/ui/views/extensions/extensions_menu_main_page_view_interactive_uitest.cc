@@ -226,7 +226,7 @@ void ExtensionsMenuMainPageViewInteractiveUITest::SetUpCommandLine(
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
   menu_coordinator()->Show(views::BubbleAnchor(extensions_button()),
                            GetExtensionsToolbarDesktop());
-  DCHECK(main_page());
+  CHECK(main_page(), base::NotFatalUntil::M162);
 }
 
 ExtensionsMenuEntryView*
@@ -260,7 +260,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
-  DCHECK(main_page());
+  CHECK(main_page(), base::NotFatalUntil::M162);
 
   extensions::PermissionsManagerWaiter waiter(
       PermissionsManager::Get(browser()->GetProfile()));
@@ -274,7 +274,7 @@ ExtensionsMenuMainPageView*
 ExtensionsMenuMainPageViewInteractiveUITest::main_page() {
   ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
-  DCHECK(menu_delegate);
+  CHECK(menu_delegate, base::NotFatalUntil::M162);
   return menu_delegate->GetMainPageViewForTesting();
 }
 

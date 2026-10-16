@@ -119,7 +119,7 @@ void FlyingIndicator::OnWidgetDestroyed(views::Widget* widget) {
   if (widget != widget_) {
     return;
   }
-  DCHECK(scoped_observation_.IsObserving());
+  CHECK(scoped_observation_.IsObserving(), base::NotFatalUntil::M162);
   scoped_observation_.Reset();
   widget_ = nullptr;
   animation_.Stop();
@@ -187,7 +187,7 @@ void FlyingIndicator::AnimationEnded(const gfx::Animation* animation) {
     std::move(done_callback_).Run();
   }
   if (widget_) {
-    DCHECK(scoped_observation_.IsObserving());
+    CHECK(scoped_observation_.IsObserving(), base::NotFatalUntil::M162);
     scoped_observation_.Reset();
     widget_->Close();
     widget_ = nullptr;

@@ -102,7 +102,7 @@ WebViewSidePanelView::WebViewSidePanelView(
 }
 
 WebViewSidePanelView::~WebViewSidePanelView() {
-  DCHECK(web_view_);
+  CHECK(web_view_, base::NotFatalUntil::M162);
   if (content::WebContents* web_contents = web_view_->GetWebContents()) {
     if (auto* manager =
             web_modal::WebContentsModalDialogManager::FromWebContents(
@@ -220,7 +220,7 @@ content::WebContentsDelegate* WebViewSidePanelView::outer_delegate() {
 
 void WebViewSidePanelView::OpenUrlInBrowser(
     const content::OpenURLParams& params) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (auto* browser_view = outer_browser_view()) {
     content::OpenURLParams new_params(params);
     new_params.url = CleanUpQueryParams(params.url);
@@ -248,7 +248,8 @@ void WebViewSidePanelView::SetContentVisible(bool visible) {
 web_modal::WebContentsModalDialogHost*
 WebViewSidePanelView::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
-  DCHECK_EQ(web_view_->GetWebContents(), web_contents);
+  CHECK_EQ(web_view_->GetWebContents(), web_contents,
+           base::NotFatalUntil::M162);
   if (auto* browser_view = outer_browser_view()) {
     return browser_view->GetWebContentsModalDialogHost();
   }
@@ -257,6 +258,7 @@ WebViewSidePanelView::GetWebContentsModalDialogHost(
 
 bool WebViewSidePanelView::IsWebContentsVisible(
     content::WebContents* web_contents) {
-  DCHECK_EQ(web_view_->GetWebContents(), web_contents);
+  CHECK_EQ(web_view_->GetWebContents(), web_contents,
+           base::NotFatalUntil::M162);
   return web_view_->IsDrawn();
 }

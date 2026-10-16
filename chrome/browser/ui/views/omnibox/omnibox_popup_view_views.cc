@@ -304,7 +304,7 @@ gfx::Image OmniboxPopupViewViews::GetMatchIcon(
 }
 
 void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {
-  DCHECK(HasMatchAt(index));
+  CHECK(HasMatchAt(index), base::NotFatalUntil::M162);
   if (index != controller()->edit_model()->GetPopupSelection().line) {
     OmniboxPopupSelection::LineState line_state =
         OmniboxPopupSelection::LineState::kNormal;
@@ -489,7 +489,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 }
 
 void OmniboxPopupViewViews::ProvideButtonFocusHint(size_t line) {
-  DCHECK(GetSelection().IsButtonFocused());
+  CHECK(GetSelection().IsButtonFocused(), base::NotFatalUntil::M162);
 
   views::View* active_button =
       row_views_[line]->GetActiveAuxiliaryButtonForAccessibility();
@@ -559,7 +559,7 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureTap:
     case ui::EventType::kGestureScrollEnd: {
-      DCHECK(HasMatchAt(index));
+      CHECK(HasMatchAt(index), base::NotFatalUntil::M162);
       controller()->edit_model()->OpenSelection(OmniboxPopupSelection(index),
                                                 event->time_stamp());
       break;

@@ -145,10 +145,10 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
 PriceTrackingBubbleDialogView::~PriceTrackingBubbleDialogView() = default;
 
 void PriceTrackingBubbleDialogView::ShowBookmarkEditor() {
-  DCHECK(anchor_widget());
+  CHECK(anchor_widget(), base::NotFatalUntil::M162);
 
   gfx::NativeWindow native_parent = anchor_widget()->GetNativeWindow();
-  DCHECK(native_parent);
+  CHECK(native_parent, base::NotFatalUntil::M162);
 
   GetWidget()->Close();
 
@@ -199,7 +199,8 @@ PriceTrackingBubbleCoordinator::PriceTrackingBubbleCoordinator(
 PriceTrackingBubbleCoordinator::~PriceTrackingBubbleCoordinator() = default;
 
 void PriceTrackingBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(bubble_widget_observation_.IsObservingSource(widget));
+  CHECK(bubble_widget_observation_.IsObservingSource(widget),
+        base::NotFatalUntil::M162);
   bubble_widget_observation_.Reset();
 
   std::move(on_dialog_closing_callback_).Run();
@@ -214,7 +215,7 @@ void PriceTrackingBubbleCoordinator::Show(
     base::OnceClosure on_dialog_closing_callback,
     PriceTrackingBubbleDialogView::Type type,
     std::optional<std::u16string> bookmark_folder_name) {
-  DCHECK(!tracker_.view());
+  CHECK(!tracker_.view(), base::NotFatalUntil::M162);
   on_dialog_closing_callback_ = std::move(on_dialog_closing_callback);
 
   if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {

@@ -68,7 +68,7 @@ const gfx::VectorIcon& EmbeddedPermissionPromptPolicyView::GetIcon() const {
 
 void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {
   ButtonType button = GetButtonType(button_id);
-  DCHECK_EQ(button, ButtonType::kPolicyOK);
+  CHECK_EQ(button, ButtonType::kPolicyOK, base::NotFatalUntil::M162);
 
   if (delegate()) {
     delegate()->Acknowledge();

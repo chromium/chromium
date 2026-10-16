@@ -115,7 +115,7 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
                       kToolbarAvatarBubbleElementId);
 
   auto* bubble_ptr = bubble.get();
-  DCHECK_EQ(nullptr, bubble_tracker_.view());
+  CHECK_EQ(nullptr, bubble_tracker_.view(), base::NotFatalUntil::M162);
   bubble_tracker_.SetView(bubble_ptr);
 
   views::Widget* widget =

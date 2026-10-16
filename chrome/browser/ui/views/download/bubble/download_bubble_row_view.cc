@@ -245,7 +245,7 @@ void DownloadBubbleRowView::OnFileIconLoaded(gfx::Image icon) {
 }
 
 void DownloadBubbleRowView::SetFileIconAsIcon(bool is_default_icon) {
-  DCHECK(!file_icon_.IsEmpty());
+  CHECK(!file_icon_.IsEmpty(), base::NotFatalUntil::M162);
   has_default_icon_ = is_default_icon;
   SetIconFromImage(file_icon_);
 }
@@ -955,7 +955,7 @@ bool DownloadBubbleRowView::AcceleratorPressed(
     ui::Accelerator registered_accelerator;
     if (browser_view &&
         browser_view->GetAccelerator(IDC_COPY, &registered_accelerator)) {
-      DCHECK(accelerator == registered_accelerator);
+      CHECK(accelerator == registered_accelerator, base::NotFatalUntil::M162);
     }
   }
 #endif

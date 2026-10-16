@@ -122,7 +122,7 @@ void MediaGalleriesDialogViews::AcceptDialogForTesting() {
   web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(
           controller_->WebContents());
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M162);
   web_modal::WebContentsModalDialogManager::TestApi(manager).CloseAllDialogs();
 }
 

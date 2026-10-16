@@ -64,7 +64,7 @@ SkColor IconLabelBubbleView::Delegate::GetIconLabelBubbleInkDropColor() const {
 }
 
 IconLabelBubbleView::SeparatorView::SeparatorView(IconLabelBubbleView* owner) {
-  DCHECK(owner);
+  CHECK(owner, base::NotFatalUntil::M162);
   owner_ = owner;
 
   SetPaintToLayer();
@@ -105,7 +105,7 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   }
 
   views::InkDrop* const ink_drop = views::InkDrop::Get(owner_)->GetInkDrop();
-  DCHECK(ink_drop);
+  CHECK(ink_drop, base::NotFatalUntil::M162);
 
   // If an inkdrop highlight or ripple is animating in or visible, the
   // separator should fade out.
@@ -163,7 +163,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
       separator_view_(AddChildView(std::make_unique<SeparatorView>(this))),
       animation_layout_strategy_(
           std::make_unique<StandardIconLabelBubbleAnimationLayoutStrategy>(*this)) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
 
   SetFontList(font_list);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -585,7 +585,7 @@ void IconLabelBubbleView::AnimationCanceled(const gfx::Animation* animation) {
 }
 
 void IconLabelBubbleView::SetImageModel(const ui::ImageModel& image_model) {
-  DCHECK(!image_model.IsEmpty());
+  CHECK(!image_model.IsEmpty(), base::NotFatalUntil::M162);
   LabelButton::SetImageModel(STATE_NORMAL, image_model);
 }
 

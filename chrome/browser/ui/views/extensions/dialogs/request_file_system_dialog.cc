@@ -23,7 +23,7 @@ void ShowRequestFileSystemDialog(
     const std::string& volume_label,
     bool writable,
     base::OnceCallback<void(ui::mojom::DialogButton)> callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
 
   // Split the callback for the accept and cancel actions (the later been
   // further split for cancel and close actions).

@@ -43,7 +43,7 @@ void DownloadUiContextMenuView::Run(
   using Position = views::MenuAnchorPosition;
   ui::MenuModel* menu_model = GetMenuModel();
   // Run() should not be getting called if the DownloadItem was destroyed.
-  DCHECK(menu_model);
+  CHECK(menu_model, base::NotFatalUntil::M162);
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model,

@@ -87,7 +87,7 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
       web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
           contents_wrapper_->web_contents()))),
       bubble_anchor_(anchor_rect) {
-  DCHECK(!contents_wrapper_->GetHost());
+  CHECK(!contents_wrapper_->GetHost(), base::NotFatalUntil::M162);
 
   contents_wrapper_->web_contents()->WasShown();
 
@@ -108,9 +108,11 @@ void WebUIBubbleDialogView::ClearContentsWrapper() {
     return;
   }
   if (contents_wrapper_->GetHost()) {
-    DCHECK_EQ(this, contents_wrapper_->GetHost().get());
+    CHECK_EQ(this, contents_wrapper_->GetHost().get(),
+             base::NotFatalUntil::M162);
   }
-  DCHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents());
+  CHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents(),
+           base::NotFatalUntil::M162);
   web_view_->SetWebContents(nullptr);
   contents_wrapper_->web_contents()->WasHidden();
   contents_wrapper_->SetHost(nullptr);

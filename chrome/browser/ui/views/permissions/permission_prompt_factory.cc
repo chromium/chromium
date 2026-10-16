@@ -86,7 +86,7 @@ bool IsFullScreenMode(content::WebContents* web_contents) {
 bool ShouldIgnorePermissionRequest(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   if (ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(web_contents)) {
     return false;
@@ -231,7 +231,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
 std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(!delegate->ShouldCurrentRequestUseQuietUI());
+  CHECK(!delegate->ShouldCurrentRequestUseQuietUI(), base::NotFatalUntil::M162);
   if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
     return CanCurrentRequestUseModalUI(web_contents, delegate)
                ? std::make_unique<ExclusiveAccessPermissionPrompt>(web_contents,
@@ -262,7 +262,8 @@ std::unique_ptr<permissions::PermissionPrompt> CreateQuietPrompt(
     } else {
       // If LocationBar is not displayed (Fullscreen mode), display a default
       // bubble only for non-abusive origins.
-      DCHECK(!delegate->ShouldDropCurrentRequestIfCannotShowQuietly());
+      CHECK(!delegate->ShouldDropCurrentRequestIfCannotShowQuietly(),
+            base::NotFatalUntil::M162);
       return std::make_unique<PermissionPromptBubble>(web_contents, delegate);
     }
   } else {

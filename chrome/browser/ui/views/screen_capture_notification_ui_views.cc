@@ -241,7 +241,7 @@ ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
 
 views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
     views::Widget* widget) {
-  DCHECK(!client_view_);
+  CHECK(!client_view_, base::NotFatalUntil::M162);
   client_view_ = new NotificationBarClientView(widget, this);
   // To prevent client_view_ from dangling, we observe it for deletion.
   view_observations_.AddObservation(client_view_.get());

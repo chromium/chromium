@@ -17,7 +17,7 @@ void SelectAudioOutputPickerViews::Show(
     BrowserWindowInterface* browser,
     const content::SelectAudioOutputRequest& request,
     content::SelectAudioOutputCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   content::RenderFrameHost* const rfh =
       content::RenderFrameHost::FromID(request.render_frame_host_id());

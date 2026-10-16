@@ -28,8 +28,8 @@ ExpandableContainerView::DetailsView::DetailsView(
     const std::u16string& collapsed_details)
     : visible_details_(visible_details),
       all_details_(base::StrCat({visible_details, u"\n", collapsed_details})) {
-  DCHECK(!visible_details.empty());
-  DCHECK(!collapsed_details.empty());
+  CHECK(!visible_details.empty(), base::NotFatalUntil::M162);
+  CHECK(!collapsed_details.empty(), base::NotFatalUntil::M162);
   auto* layout_provider = ChromeLayoutProvider::Get();
   // Spacing between this and the "Hide Details" link.
   const int bottom_padding = layout_provider->GetDistanceMetric(
@@ -78,8 +78,8 @@ END_METADATA
 ExpandableContainerView::ExpandableContainerView(
     const std::u16string& visible_details,
     const std::u16string& collapsed_details) {
-  DCHECK(!visible_details.empty());
-  DCHECK(!collapsed_details.empty());
+  CHECK(!visible_details.empty(), base::NotFatalUntil::M162);
+  CHECK(!collapsed_details.empty(), base::NotFatalUntil::M162);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 

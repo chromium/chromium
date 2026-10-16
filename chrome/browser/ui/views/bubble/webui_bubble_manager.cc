@@ -33,7 +33,7 @@ WebUIBubbleManager::~WebUIBubbleManager() {
   // situations. Ensure we forcefully close the managed bubble during
   // destruction to mitigate the risk of UAFs (see crbug.com/40060325).
   if (bubble_view_) {
-    DCHECK(bubble_view_->GetWidget());
+    CHECK(bubble_view_->GetWidget(), base::NotFatalUntil::M162);
     bubble_view_->GetWidget()->CloseNow();
   }
 }
@@ -86,7 +86,7 @@ void WebUIBubbleManager::CloseBubble() {
   if (!bubble_view_) {
     return;
   }
-  DCHECK(bubble_view_->GetWidget());
+  CHECK(bubble_view_->GetWidget(), base::NotFatalUntil::M162);
   bubble_view_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
 }
@@ -104,9 +104,9 @@ void WebUIBubbleManager::RemoveObserver(WebUIBubbleManagerObserver* observer) {
 }
 
 void WebUIBubbleManager::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(bubble_view_);
-  DCHECK_EQ(bubble_view_->GetWidget(), widget);
-  DCHECK(bubble_widget_observation_.IsObserving());
+  CHECK(bubble_view_, base::NotFatalUntil::M162);
+  CHECK_EQ(bubble_view_->GetWidget(), widget, base::NotFatalUntil::M162);
+  CHECK(bubble_widget_observation_.IsObserving(), base::NotFatalUntil::M162);
   bubble_widget_observation_.Reset();
   close_bubble_helper_.reset();
   cache_timer_->Reset();
@@ -129,6 +129,6 @@ void WebUIBubbleManager::ResetContentsWrapper() {
   if (bubble_view_) {
     CloseBubble();
   }
-  DCHECK(!cached_contents_wrapper_->GetHost());
+  CHECK(!cached_contents_wrapper_->GetHost(), base::NotFatalUntil::M162);
   cached_contents_wrapper_.reset();
 }

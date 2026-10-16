@@ -153,7 +153,7 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
       about_this_site_side_panel_view_) {
     auto* entry = registry->GetEntryForKey(
         SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
-    DCHECK(entry);
+    CHECK(entry, base::NotFatalUntil::M162);
     entry->ClearCachedView();
   }
 }
@@ -161,8 +161,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
 std::unique_ptr<views::View>
 AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView(
     SidePanelEntryScope& scope) {
-  DCHECK(GetBrowserView());
-  DCHECK(last_url_info_);
+  CHECK(GetBrowserView(), base::NotFatalUntil::M162);
+  CHECK(last_url_info_, base::NotFatalUntil::M162);
   if (registered_but_not_shown_) {
     page_info::AboutThisSiteService::OnOpenedDirectlyFromSidePanel();
     registered_but_not_shown_ = false;
@@ -191,9 +191,10 @@ SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
 }
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {
-  DCHECK(last_url_info_.has_value());
-  DCHECK(!last_url_info_.value().new_tab_url.query().contains(
-      page_info::AboutThisSiteRenderModeParameterName));
+  CHECK(last_url_info_.has_value(), base::NotFatalUntil::M162);
+  CHECK(!last_url_info_.value().new_tab_url.query().contains(
+            page_info::AboutThisSiteRenderModeParameterName),
+        base::NotFatalUntil::M162);
   return last_url_info_.value().new_tab_url;
 }
 

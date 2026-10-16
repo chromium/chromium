@@ -247,7 +247,8 @@ void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile());
-  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M162);
   NavigateToGoogleAccountPage(
       &profile(),
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -259,7 +260,7 @@ void ProfileMenuView::OnGuestProfileButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-  DCHECK(profiles::IsGuestModeEnabled(profile()));
+  CHECK(profiles::IsGuestModeEnabled(profile()), base::NotFatalUntil::M162);
   profiles::SwitchToGuestProfile();
 }
 

@@ -163,7 +163,7 @@ void ChipController::RestartTimersOnMouseHover() {
 }
 
 void ChipController::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(GetBubbleWidget(), widget);
+  CHECK_EQ(GetBubbleWidget(), widget, base::NotFatalUntil::M162);
   ResetTimers();
 
   disallowed_custom_cursors_scope_.RunAndReset();
@@ -537,7 +537,7 @@ void ChipController::AnimateExpand() {
 
 void ChipController::HandleConfirmation(
     permissions::PermissionAction user_decision) {
-  DCHECK(permission_prompt_model_);
+  CHECK(permission_prompt_model_, base::NotFatalUntil::M162);
   permission_prompt_model_->UpdateWithUserDecision(user_decision);
   SyncChipWithModel();
   if (active_chip_permission_request_manager_.has_value() &&
@@ -632,7 +632,7 @@ void ChipController::HideChip() {
 }
 
 void ChipController::OpenPermissionPromptBubble() {
-  DCHECK(!IsBubbleShowing());
+  CHECK(!IsBubbleShowing(), base::NotFatalUntil::M162);
   if (!permission_prompt_model_ || !permission_prompt_model_->GetDelegate() ||
       permission_prompt_model_->GetDelegate()->Requests().empty() ||
       !location_bar_->GetWebContents()) {
@@ -702,7 +702,8 @@ void ChipController::OnPromptBubbleAnchorReady() {
                       ->GetContentSettingBubbleModelDelegate(),
                   web_contents->GetPrimaryPage());
       ui::TrackedElement* anchor = location_bar_->GetAnchorOrNull();
-      DCHECK(anchor);  // We should get here only if location bar is visible.
+      CHECK(anchor, base::NotFatalUntil::M162);  // We should get here only if
+                                                 // location bar is visible.
       ContentSettingBubbleContents* quiet_request_bubble =
           new ContentSettingBubbleContents(
               std::move(content_setting_bubble_model), web_contents,
@@ -727,7 +728,7 @@ void ChipController::OnPromptBubbleAnchorReady() {
 
 void ChipController::ClosePermissionPromptBubbleWithReason(
     views::Widget::ClosedReason reason) {
-  DCHECK(IsBubbleShowing());
+  CHECK(IsBubbleShowing(), base::NotFatalUntil::M162);
   GetBubbleWidget()->CloseWithReason(reason);
 }
 
@@ -741,7 +742,7 @@ void ChipController::ObservePromptBubble() {
 }
 
 void ChipController::OnPromptBubbleDismissed() {
-  DCHECK(permission_prompt_model_);
+  CHECK(permission_prompt_model_, base::NotFatalUntil::M162);
   if (!permission_prompt_model_) {
     return;
   }

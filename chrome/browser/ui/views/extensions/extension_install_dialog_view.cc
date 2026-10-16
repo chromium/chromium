@@ -86,7 +86,7 @@ void ShowExtensionInstallDialogImpl(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<InstallPromptData> prompt) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // If the dialog has to be parented to WebContents, force activate the
   // contents. See crbug.com/40059470.
@@ -150,12 +150,12 @@ class ExtensionJustificationView : public views::BoxLayoutView {
 
   // Get the text currently present in the justification text field.
   std::u16string_view GetJustificationText() {
-    DCHECK(justification_field_);
+    CHECK(justification_field_, base::NotFatalUntil::M162);
     return justification_field_->GetText();
   }
 
   void SetJustificationTextForTesting(const std::u16string& new_text) {
-    DCHECK(justification_field_);
+    CHECK(justification_field_, base::NotFatalUntil::M162);
     // Resets the text field to an empty string so that InsertOrReplaceText()
     // below does not append to the already entered text. Does not trigger
     // UpdateAfterChange().
@@ -250,14 +250,15 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
       prompt_(std::move(prompt)),
       scroll_view_(nullptr),
       install_button_enabled_(false) {
-  DCHECK(prompt_->extension());
+  CHECK(prompt_->extension(), base::NotFatalUntil::M162);
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
   extension_registry_observation_.Observe(extension_registry);
 
   int buttons = prompt_->GetDialogButtons();
-  DCHECK(buttons & static_cast<int>(ui::mojom::DialogButton::kCancel));
+  CHECK(buttons & static_cast<int>(ui::mojom::DialogButton::kCancel),
+        base::NotFatalUntil::M162);
 
   int default_button = static_cast<int>(ui::mojom::DialogButton::kCancel);
 
@@ -326,7 +327,7 @@ bool ExtensionInstallDialogView::IsJustificationFieldVisibleForTesting() {
 
 void ExtensionInstallDialogView::SetJustificationTextForTesting(
     const std::u16string& new_text) {
-  DCHECK(justification_view_ != nullptr);
+  CHECK(justification_view_ != nullptr, base::NotFatalUntil::M162);
   justification_view_->SetJustificationTextForTesting(new_text);  // IN-TEST
 }
 
@@ -376,7 +377,7 @@ void ExtensionInstallDialogView::AddedToWidget() {
 }
 
 void ExtensionInstallDialogView::OnDialogCanceled() {
-  DCHECK(done_callback_);
+  CHECK(done_callback_, base::NotFatalUntil::M162);
 
   // The dialog will be closed, so stop observing for any extension changes
   // that could potentially crop up during that process (like the extension
@@ -390,7 +391,7 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
 }
 
 void ExtensionInstallDialogView::OnDialogAccepted() {
-  DCHECK(done_callback_);
+  CHECK(done_callback_, base::NotFatalUntil::M162);
 
   // The dialog will be closed, so stop observing for any extension changes
   // that could potentially crop up during that process (like the extension
@@ -399,7 +400,8 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
 
   bool expect_justification =
       prompt_->type() == InstallPromptData::EXTENSION_REQUEST_PROMPT;
-  DCHECK(expect_justification == !!justification_view_);
+  CHECK(expect_justification == !!justification_view_,
+        base::NotFatalUntil::M162);
 
   prompt_->OnDialogAccepted();
 
@@ -469,8 +471,9 @@ void ExtensionInstallDialogView::OnShutdown(
     extensions::ExtensionRegistry* registry) {
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
-  DCHECK_EQ(extension_registry, registry);
-  DCHECK(extension_registry_observation_.IsObservingSource(extension_registry));
+  CHECK_EQ(extension_registry, registry, base::NotFatalUntil::M162);
+  CHECK(extension_registry_observation_.IsObservingSource(extension_registry),
+        base::NotFatalUntil::M162);
   extension_registry_observation_.Reset();
   CloseDialog();
 }
@@ -482,7 +485,7 @@ void ExtensionInstallDialogView::LinkClicked() {
       store_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK);
 
-  DCHECK(show_params_);
+  CHECK(show_params_, base::NotFatalUntil::M162);
   if (show_params_->GetParentWebContents()) {
     show_params_->GetParentWebContents()->OpenURL(
         params, /*navigation_handle_callback=*/{});
@@ -734,7 +737,7 @@ void ExtensionInstallDialogView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   // This should never be triggered if justification_view_ is not initialized.
-  DCHECK(justification_view_);
+  CHECK(justification_view_, base::NotFatalUntil::M162);
 
   justification_view_->UpdateLengthLabel();
 

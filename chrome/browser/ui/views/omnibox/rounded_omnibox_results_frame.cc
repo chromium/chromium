@@ -128,7 +128,7 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
       parent_widget->GetNativeView());
 #endif
 
-  DCHECK_NE(this_widget, top_level);
+  CHECK_NE(this_widget, top_level, base::NotFatalUntil::M162);
   if (!top_level) {
     return {nullptr, std::move(event)};
   }

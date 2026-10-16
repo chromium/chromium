@@ -97,8 +97,8 @@ void ChosenObjectView::ExecuteDeleteCommand() {
   // Change the icon to reflect the selected setting.
   UpdateIconImage(/*is_deleted=*/true);
 
-  DCHECK(delete_button_->GetEnabled());
-  DCHECK(delete_button_->GetVisible());
+  CHECK(delete_button_->GetEnabled(), base::NotFatalUntil::M162);
+  CHECK(delete_button_->GetVisible(), base::NotFatalUntil::M162);
   delete_button_->SetVisible(false);
 
   // Hide the row after revoking access.

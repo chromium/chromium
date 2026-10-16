@@ -38,14 +38,16 @@ ui::ImageModel GetDownloadIconImageModel(SkColor image_foreground_color,
 // Rescales the current progress value of the animation such that the progress
 // goes from 0.0 to 1.0 within phase one.
 double GetPhaseOneProgress(double current_value) {
-  DCHECK_LE(current_value, kAnimationPhaseSwitchProgress);
+  CHECK_LE(current_value, kAnimationPhaseSwitchProgress,
+           base::NotFatalUntil::M162);
   return current_value / kAnimationPhaseSwitchProgress;
 }
 
 // Rescales the current progress value of the animation such that the progress
 // goes from 0.0 to 1.0 within phase two.
 double GetPhaseTwoProgress(double current_value) {
-  DCHECK_GE(current_value, kAnimationPhaseSwitchProgress);
+  CHECK_GE(current_value, kAnimationPhaseSwitchProgress,
+           base::NotFatalUntil::M162);
   return (current_value - kAnimationPhaseSwitchProgress) /
          (1.0 - kAnimationPhaseSwitchProgress);
 }

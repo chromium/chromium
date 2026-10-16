@@ -187,7 +187,8 @@ AnchorConfiguration GetAppMenuAnchorConfiguration(
 gfx::Rect GetPageInfoAnchorRect(BrowserWindowInterface* browser) {
   // GetPageInfoAnchorConfiguration()'s anchor should be preferred if
   // available.
-  DCHECK(GetPageInfoAnchorConfiguration(browser).anchor.IsNull());
+  CHECK(GetPageInfoAnchorConfiguration(browser).anchor.IsNull(),
+        base::NotFatalUntil::M162);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   // Get position in view (taking RTL UI into account).

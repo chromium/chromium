@@ -38,8 +38,9 @@ ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
 void ExtensionsMenuCoordinator::Show(
     views::BubbleAnchor anchor,
     ExtensionsContainerViews* extensions_container_views) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
+  CHECK(base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl),
+        base::NotFatalUntil::M162);
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
       CreateExtensionsMenuBubbleDialogDelegate(anchor,
                                                extensions_container_views);
@@ -51,8 +52,9 @@ void ExtensionsMenuCoordinator::Show(
 }
 
 void ExtensionsMenuCoordinator::Hide() {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
+  CHECK(base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl),
+        base::NotFatalUntil::M162);
   if (views::Widget* const menu = GetExtensionsMenuWidget()) {
     menu->CloseNow();
   }
@@ -78,8 +80,9 @@ std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
     views::BubbleAnchor anchor,
     ExtensionsContainerViews* extensions_container_views) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
+  CHECK(base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl),
+        base::NotFatalUntil::M162);
   views::BubbleBorder::Arrow arrow =
       extensions_container_views ? extensions_container_views->GetPopupArrow()
                                  : views::BubbleBorder::TOP_RIGHT;

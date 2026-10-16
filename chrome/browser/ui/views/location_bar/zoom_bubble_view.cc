@@ -122,7 +122,7 @@ class ZoomValue : public views::Label {
     const int border_width = GetInsets().width();
     int max_w = 0;
     auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
-    DCHECK(zoom_controller);
+    CHECK(zoom_controller, base::NotFatalUntil::M162);
     // Enumerate all zoom factors that can be used in PageZoom::Zoom.
     std::vector<double> zoom_factors =
         zoom::PageZoom::PresetZoomFactors(zoom_controller->GetZoomPercent());
@@ -326,7 +326,7 @@ void ZoomBubbleView::OnExtensionIconImageChanged(
 }
 
 void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M162);
   extension_info_.id = extension->id();
   extension_info_.name = extension->name();
 

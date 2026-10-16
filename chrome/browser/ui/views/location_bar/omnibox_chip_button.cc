@@ -166,7 +166,7 @@ ui::ColorId OmniboxChipButton::GetForegroundColorId() const {
 }
 
 ui::ColorId OmniboxChipButton::GetBackgroundColorId() const {
-  DCHECK(theme_ != OmniboxChipTheme::kIconStyle);
+  CHECK(theme_ != OmniboxChipTheme::kIconStyle, base::NotFatalUntil::M162);
   return kColorOmniboxChipBackground;
 }
 

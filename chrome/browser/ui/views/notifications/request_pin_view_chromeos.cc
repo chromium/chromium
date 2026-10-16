@@ -71,8 +71,8 @@ bool RequestPinView::Accept() {
   if (!textfield_->GetEnabled()) {
     return true;
   }
-  DCHECK(!textfield_->GetText().empty());
-  DCHECK(!locked_);
+  CHECK(!textfield_->GetText().empty(), base::NotFatalUntil::M162);
+  CHECK(!locked_, base::NotFatalUntil::M162);
 
   error_label_->SetVisible(true);
   error_label_->SetText(

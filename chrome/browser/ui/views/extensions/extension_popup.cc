@@ -69,8 +69,9 @@ void ExtensionPopup::ShowPopup(
 
   // Check that the preferred adjustment is set to mirror to match
   // the assumption in the logic to calculate max bounds.
-  DCHECK_EQ(popup->GetBubbleFrameView()->GetPreferredArrowAdjustment(),
-            views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
+  CHECK_EQ(popup->GetBubbleFrameView()->GetPreferredArrowAdjustment(),
+           views::BubbleFrameView::PreferredArrowAdjustment::kMirror,
+           base::NotFatalUntil::M162);
 
 #if defined(USE_AURA)
   gfx::NativeView native_view = popup->GetWidget()->GetNativeView();
@@ -214,7 +215,8 @@ void ExtensionPopup::OnExtensionUnloaded(
     host_.reset();
     // Stop observing the registry immediately to prevent any subsequent
     // notifications, since Widget::Close is asynchronous.
-    DCHECK(extension_registry_observation_.IsObserving());
+    CHECK(extension_registry_observation_.IsObserving(),
+          base::NotFatalUntil::M162);
     extension_registry_observation_.Reset();
 
     CloseDeferredIfNecessary();
@@ -410,7 +412,7 @@ void ExtensionPopup::CloseDeferredIfNecessary(
 }
 
 void ExtensionPopup::HandleCloseExtensionHost(extensions::ExtensionHost* host) {
-  DCHECK_EQ(host, host_.get());
+  CHECK_EQ(host, host_.get(), base::NotFatalUntil::M162);
   CloseDeferredIfNecessary();
 }
 

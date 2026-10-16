@@ -195,8 +195,8 @@ PageInfoBubbleView::PageInfoBubbleView(
                              PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
                              associated_web_contents),
       closing_callback_(std::move(closing_callback)) {
-  DCHECK(closing_callback_);
-  DCHECK(web_contents());
+  CHECK(closing_callback_, base::NotFatalUntil::M162);
+  CHECK(web_contents(), base::NotFatalUntil::M162);
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // Only set the top margin. The bottom margin is set for each subpage

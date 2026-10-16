@@ -151,7 +151,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
         contents_(std::move(contents)),
         finish_picker_section_callback_(
             std::move(finish_picker_section_callback)) {
-    DCHECK(finish_picker_section_callback_);
+    CHECK(finish_picker_section_callback_, base::NotFatalUntil::M162);
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         profile_, ProfileKeepAliveOrigin::kProfileCreationSamlFlow);
   }
@@ -179,7 +179,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   // the step instance will already be deleted.
   static void ContinueSAMLSignin(std::unique_ptr<content::WebContents> contents,
                                  BrowserWindowInterface* browser) {
-    DCHECK(browser);
+    CHECK(browser, base::NotFatalUntil::M162);
     // Make a new tab with the desired contents and close the old tab.
     browser->GetTabStripModel()->AppendWebContents(std::move(contents),
                                                    /*foreground=*/true);
@@ -190,7 +190,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   }
 
   void OnSignInContentsFreedUp(StepSwitchFinishedCallback step_shown_callback) {
-    DCHECK(finish_picker_section_callback_);
+    CHECK(finish_picker_section_callback_, base::NotFatalUntil::M162);
     CHECK(!step_shown_callback->is_null());
     std::move(step_shown_callback.value()).Run(true);
 
@@ -550,7 +550,7 @@ void ProfileManagementStepController::NavigateBackInternal(
   }
 
   if (CanPopStep()) {
-    DCHECK(pop_step_callback_);
+    CHECK(pop_step_callback_, base::NotFatalUntil::M162);
     std::move(pop_step_callback_).Run();
   }
 }

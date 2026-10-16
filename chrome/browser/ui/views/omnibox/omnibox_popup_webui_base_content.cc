@@ -467,7 +467,7 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
                    {"OmniboxPopupWebUIBaseContent::LoadContent:",
                     GetMetricPrefix()})),
                "url", content_url_.spec());
-  DCHECK(!content_url_.is_empty());
+  CHECK(!content_url_.is_empty(), base::NotFatalUntil::M162);
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
       content_url_, location_bar_->GetProfile(), IDS_TASK_MANAGER_OMNIBOX,
       EscClosesUI());

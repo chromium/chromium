@@ -440,8 +440,9 @@ void WebUIReadOnlyOmnibox::SetEmphasis(bool emphasize,
 
 void WebUIReadOnlyOmnibox::UpdateSchemeStyle(const gfx::Range& range) {
   // TODO(crbug.com/474060468): partial dupe with OmniboxViewViews
-  DCHECK(range.IsValid());
-  DCHECK(!controller()->edit_model()->user_input_in_progress());
+  CHECK(range.IsValid(), base::NotFatalUntil::M162);
+  CHECK(!controller()->edit_model()->user_input_in_progress(),
+        base::NotFatalUntil::M162);
 
   // Do not style the scheme for non-http/https URLs. For such schemes, styling
   // could be confusing or misleading. For example, the scheme isn't meaningful
@@ -768,9 +769,9 @@ WebUIReadOnlyOmnibox::OnTextInput(
     // Let the edit model unelide as well to match what we did on the
     // WebUI side.
     bool unelide_ok = controller()->edit_model()->Unelide();
-    DCHECK(unelide_ok);
+    CHECK(unelide_ok, base::NotFatalUntil::M162);
     // It should produce the same text (the 'formatted full URL').
-    DCHECK_EQ(text_, text_input.text);
+    CHECK_EQ(text_, text_input.text, base::NotFatalUntil::M162);
 
     // Unelide() calls SetWindowTextAndCaretPos() and SelectAll(), which reset
     // browser_version_ and selection_. Since this unelision was initiated by
@@ -863,7 +864,7 @@ WebUIReadOnlyOmnibox::OnKey(
       break;
 
     case ui::DomKey::DEL:
-      DCHECK(shift);
+      CHECK(shift, base::NotFatalUntil::M162);
       if (controller()->IsPopupOpen()) {
         controller()->edit_model()->TryDeletingPopupLine(
             controller()->edit_model()->GetPopupSelection().line);
@@ -871,35 +872,35 @@ WebUIReadOnlyOmnibox::OnKey(
       break;
 
     case ui::DomKey::ARROW_UP:
-      DCHECK(!control);
-      DCHECK(!alt);
-      DCHECK(!shift);
-      DCHECK(!command);
+      CHECK(!control, base::NotFatalUntil::M162);
+      CHECK(!alt, base::NotFatalUntil::M162);
+      CHECK(!shift, base::NotFatalUntil::M162);
+      CHECK(!command, base::NotFatalUntil::M162);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/false,
                                                     /*page=*/false);
       break;
 
     case ui::DomKey::ARROW_DOWN:
-      DCHECK(!control);
-      DCHECK(!alt);
-      DCHECK(!shift);
-      DCHECK(!command);
+      CHECK(!control, base::NotFatalUntil::M162);
+      CHECK(!alt, base::NotFatalUntil::M162);
+      CHECK(!shift, base::NotFatalUntil::M162);
+      CHECK(!command, base::NotFatalUntil::M162);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/true,
                                                     /*page=*/false);
       break;
 
     case ui::DomKey::PAGE_UP:
-      DCHECK(!control);
-      DCHECK(!alt);
-      DCHECK(!shift);
+      CHECK(!control, base::NotFatalUntil::M162);
+      CHECK(!alt, base::NotFatalUntil::M162);
+      CHECK(!shift, base::NotFatalUntil::M162);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/false,
                                                     /*page=*/true);
       break;
 
     case ui::DomKey::PAGE_DOWN:
-      DCHECK(!control);
-      DCHECK(!alt);
-      DCHECK(!shift);
+      CHECK(!control, base::NotFatalUntil::M162);
+      CHECK(!alt, base::NotFatalUntil::M162);
+      CHECK(!shift, base::NotFatalUntil::M162);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/true,
                                                     /*page=*/true);
       break;

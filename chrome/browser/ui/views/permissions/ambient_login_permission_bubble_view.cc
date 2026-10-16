@@ -91,7 +91,8 @@ ui::ImageModel GetFederatedCredentialIcon(
   if (!credential.icon.IsEmpty()) {
     // The picture is square (see FederatedCredential::icon), so it isn't
     // stretched when shown at `ambient_signin::kAccountPictureSize`.
-    DCHECK_EQ(credential.icon.Size().width(), credential.icon.Size().height());
+    CHECK_EQ(credential.icon.Size().width(), credential.icon.Size().height(),
+             base::NotFatalUntil::M162);
     return credential.icon;
   }
   return GetDefaultCredentialIcon();

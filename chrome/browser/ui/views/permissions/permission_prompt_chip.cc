@@ -26,7 +26,7 @@
 PermissionPromptChip::PermissionPromptChip(content::WebContents* web_contents,
                                            Delegate* delegate)
     : PermissionPromptDesktop(web_contents, delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M162);
   LocationBar* lb = GetLocationBar();
 
   // Before showing a chip make sure the LocationBar is in a valid state. That

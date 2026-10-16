@@ -195,7 +195,8 @@ PriceTrackingEmailDialogCoordinator::~PriceTrackingEmailDialogCoordinator() =
 
 void PriceTrackingEmailDialogCoordinator::OnWidgetDestroying(
     views::Widget* widget) {
-  DCHECK(bubble_widget_observation_.IsObservingSource(widget));
+  CHECK(bubble_widget_observation_.IsObservingSource(widget),
+        base::NotFatalUntil::M162);
   bubble_widget_observation_.Reset();
 
   std::move(on_dialog_closing_callback_).Run();
@@ -205,7 +206,7 @@ void PriceTrackingEmailDialogCoordinator::Show(
     content::WebContents* web_contents,
     Profile* profile,
     base::OnceClosure on_dialog_closing_callback) {
-  DCHECK(!tracker_.view());
+  CHECK(!tracker_.view(), base::NotFatalUntil::M162);
   on_dialog_closing_callback_ = std::move(on_dialog_closing_callback);
 
   base::RecordAction(base::UserMetricsAction(

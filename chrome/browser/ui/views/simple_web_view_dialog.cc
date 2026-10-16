@@ -278,7 +278,7 @@ SimpleWebViewDialog::MakeWidgetDelegate() {
 
 void SimpleWebViewDialog::StartLoad(const GURL& url) {
   WebContents* web_contents = GetWebViewWebContents();
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   // Create the password manager and autofill client that are needed.
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
@@ -295,7 +295,7 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
 
 std::unique_ptr<views::View> SimpleWebViewDialog::TakeView(
     std::unique_ptr<views::SimpleWebView> self) {
-  DCHECK_EQ(this, self.get());
+  CHECK_EQ(this, self.get(), base::NotFatalUntil::M162);
   self.release();
   return base::WrapUnique<views::View>(this);
 }

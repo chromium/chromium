@@ -115,8 +115,8 @@ void MerchantTrustSidePanelCoordinator::RegisterEntryAndShow(
 std::unique_ptr<views::View>
 MerchantTrustSidePanelCoordinator::CreateMerchantTrustWebView(
     SidePanelEntryScope& scope) {
-  DCHECK(GetBrowserView());
-  DCHECK(last_url_info_);
+  CHECK(GetBrowserView(), base::NotFatalUntil::M162);
+  CHECK(last_url_info_, base::NotFatalUntil::M162);
   if (registered_but_not_shown_) {
     registered_but_not_shown_ = false;
   }
@@ -199,7 +199,7 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
       web_view_side_panel_view_) {
     auto* entry = registry->GetEntryForKey(
         SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
-    DCHECK(entry);
+    CHECK(entry, base::NotFatalUntil::M162);
     entry->ClearCachedView();
   }
 }

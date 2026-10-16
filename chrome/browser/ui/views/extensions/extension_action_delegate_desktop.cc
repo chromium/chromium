@@ -30,7 +30,7 @@ ExtensionActionDelegateDesktop::ExtensionActionDelegateDesktop(
 
 ExtensionActionDelegateDesktop::~ExtensionActionDelegateDesktop() {
   // Should have already unregistered.
-  DCHECK(!action_keybinding_);
+  CHECK(!action_keybinding_, base::NotFatalUntil::M162);
 }
 
 ExtensionActionDelegateDesktop*
@@ -46,7 +46,7 @@ void ExtensionActionDelegateDesktop::DoTriggerPopup(
     PopupShowAction show_action,
     bool by_user,
     ShowPopupCallback callback) {
-  DCHECK_EQ(this, GetPopupOwnerDelegate());
+  CHECK_EQ(this, GetPopupOwnerDelegate(), base::NotFatalUntil::M162);
 
   // Always hide the current popup, even if it's not owned by this extension.
   // Only one popup should be visible at a time.
@@ -98,7 +98,8 @@ void ExtensionActionDelegateDesktop::ShowPopup(
 }
 
 void ExtensionActionDelegateDesktop::OnPopupClosed() {
-  DCHECK(popup_host_observation_.IsObservingSource(popup_host_.get()));
+  CHECK(popup_host_observation_.IsObservingSource(popup_host_.get()),
+        base::NotFatalUntil::M162);
   popup_host_observation_.Reset();
   popup_host_ = nullptr;
   has_opened_popup_ = false;

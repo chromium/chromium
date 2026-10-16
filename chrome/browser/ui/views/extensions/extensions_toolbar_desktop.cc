@@ -289,7 +289,7 @@ ExtensionsToolbarDesktop::~ExtensionsToolbarDesktop() {
   }
   // The widgets should close synchronously (resulting in OnWidgetClosing()),
   // so |anchored_widgets_| should now be empty.
-  DCHECK(anchored_widgets_.empty());
+  CHECK(anchored_widgets_.empty(), base::NotFatalUntil::M162);
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
@@ -604,7 +604,7 @@ bool ExtensionsToolbarDesktop::IsActionVisibleOnToolbar(
 }
 
 void ExtensionsToolbarDesktop::UndoPopOut() {
-  DCHECK(popped_out_action_);
+  CHECK(popped_out_action_, base::NotFatalUntil::M162);
   const extensions::ExtensionId popped_out_action = popped_out_action_.value();
   popped_out_action_ = std::nullopt;
   UpdateIconVisibility(popped_out_action);
@@ -615,7 +615,8 @@ void ExtensionsToolbarDesktop::SetPopupOwner(
     ToolbarActionViewModel* popup_owner) {
   // We should never be setting a popup owner when one already exists, and
   // never unsetting one when one wasn't set.
-  DCHECK((popup_owner_ != nullptr) ^ (popup_owner != nullptr));
+  CHECK((popup_owner_ != nullptr) ^ (popup_owner != nullptr),
+        base::NotFatalUntil::M162);
   popup_owner_ = popup_owner;
 
   // Container should become visible if |popup_owner_| and may lose visibility
@@ -632,7 +633,7 @@ void ExtensionsToolbarDesktop::PopOutAction(
     const extensions::ExtensionId& action_id,
     base::OnceClosure closure) {
   // TODO(pbos): Highlight popout differently.
-  DCHECK(!popped_out_action_.has_value());
+  CHECK(!popped_out_action_.has_value(), base::NotFatalUntil::M162);
   popped_out_action_ = action_id;
   UpdateIconVisibility(action_id);
   GetAnimatingLayoutManager()->PostOrQueueAction(std::move(closure));
@@ -756,12 +757,13 @@ void ExtensionsToolbarDesktop::OnContextMenuClosed(
 void ExtensionsToolbarDesktop::WriteDragDataForView(View* sender,
                                                     const gfx::Point& press_pt,
                                                     ui::OSExchangeData* data) {
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M162);
 
   auto it = std::ranges::find(
       toolbar_view_model_->GetPinnedActionIds(), sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
-  DCHECK(it != toolbar_view_model_->GetPinnedActionIds().cend());
+  CHECK(it != toolbar_view_model_->GetPinnedActionIds().cend(),
+        base::NotFatalUntil::M162);
   ToolbarActionView* extension_view = GetViewForId(*it);
 
   ui::ImageModel icon = GetExtensionIcon(extension_view);
@@ -921,7 +923,7 @@ void ExtensionsToolbarDesktop::HideActivePopup() {
   if (popup_owner_) {
     popup_owner_->HidePopup();
   }
-  DCHECK(!popup_owner_);
+  CHECK(!popup_owner_, base::NotFatalUntil::M162);
   UpdateContainerVisibilityAfterAnimation();
 }
 

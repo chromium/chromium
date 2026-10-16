@@ -258,7 +258,8 @@ bool PermissionPromptBubbleBaseView::ShouldShowCloseButton() const {
 }
 
 void PermissionPromptBubbleBaseView::ClosingPermission() {
-  DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
+  CHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly,
+           base::NotFatalUntil::M162);
 
   if (delegate_) {
     permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(

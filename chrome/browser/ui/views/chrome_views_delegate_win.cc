@@ -93,7 +93,7 @@ bool MonitorHasAutohideTaskbarForEdge(UINT edge, HMONITOR monitor) {
 }
 
 int GetAppbarAutohideEdgesOnWorkerThread(HMONITOR monitor) {
-  DCHECK(monitor);
+  CHECK(monitor, base::NotFatalUntil::M162);
 
   int edges = 0;
   if (MonitorHasAutohideTaskbarForEdge(ABE_LEFT, monitor)) {

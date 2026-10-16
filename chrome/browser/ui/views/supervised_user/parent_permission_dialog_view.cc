@@ -149,7 +149,8 @@ class ParentPermissionInputSection : public views::TextfieldController {
       const std::string& child_name,
       bool is_extension_permission_dialog)
       : main_view_(main_view) {
-    DCHECK_GT(parent_permission_email_addresses.size(), 0u);
+    CHECK_GT(parent_permission_email_addresses.size(), 0u,
+             base::NotFatalUntil::M162);
 
     auto view = views::Builder<views::BoxLayoutView>()
                     .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -456,7 +457,7 @@ void ParentPermissionDialogView::AddedToWidget() {
     message_container.AddChild(views::Builder<views::View>());
   }
 
-  DCHECK(!params_->message.empty());
+  CHECK(!params_->message.empty(), base::NotFatalUntil::M162);
   message_container.AddChild(
       views::Builder<views::View>(std::make_unique<MessageContentWrapper>(
           views::BubbleFrameView::CreateDefaultTitleLabel(params_->message))));
@@ -520,7 +521,7 @@ void ParentPermissionDialogView::CreateContents() {
                 views::DISTANCE_RELATED_CONTROL_VERTICAL)));
     // Set up the permissions header string.
     // Shouldn't be asking for permissions for theme installs.
-    DCHECK(!params_->extension->is_theme());
+    CHECK(!params_->extension->is_theme(), base::NotFatalUntil::M162);
     std::u16string extension_type;
     if (params_->extension->is_extension()) {
       extension_type = l10n_util::GetStringUTF16(
@@ -832,7 +833,7 @@ void ParentPermissionDialogView::OnReAuthProofTokenFailure(
 
 void ParentPermissionDialogView::InitializeExtensionData(
     scoped_refptr<const extensions::Extension> extension) {
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M162);
 
   // Load Permissions.
   std::unique_ptr<const extensions::PermissionSet> permissions_to_display =
@@ -943,7 +944,7 @@ ParentPermissionDialog::CreateParentPermissionDialogForExtension(
 
 TestParentPermissionDialogViewObserver::TestParentPermissionDialogViewObserver(
     TestParentPermissionDialogViewObserver* observer) {
-  DCHECK(!test_view_observer);
+  CHECK(!test_view_observer, base::NotFatalUntil::M162);
   test_view_observer = observer;
 }
 

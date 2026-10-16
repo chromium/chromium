@@ -101,7 +101,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   if (program_name.empty()) {
     // ShellExecute won't do anything. Don't bother warning the user.
@@ -213,7 +213,7 @@ void ExternalProtocolDialog::OnDialogAccepted() {
   }
 
   if (remember) {
-    DCHECK(initiating_origin_);
+    CHECK(initiating_origin_, base::NotFatalUntil::M162);
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 

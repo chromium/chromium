@@ -215,7 +215,7 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
     commerce::SetPriceTrackingStateForBookmark(
         service, model, node, is_price_track_enabled_, std::move(callback));
   } else {
-    DCHECK(!is_price_track_enabled_);
+    CHECK(!is_price_track_enabled_, base::NotFatalUntil::M162);
     if (commerce::CanTrackPrice(product_info_)) {
       commerce::SetPriceTrackingStateForClusterId(
           service, model, product_info_.product_cluster_id.value(),

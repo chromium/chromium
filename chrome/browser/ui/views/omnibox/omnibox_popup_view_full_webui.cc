@@ -212,7 +212,7 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
 }
 
 void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
-  DCHECK(tab);
+  CHECK(tab, base::NotFatalUntil::M162);
   TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::SaveStateToTab");
 
   auto* edit_model = controller()->edit_model();

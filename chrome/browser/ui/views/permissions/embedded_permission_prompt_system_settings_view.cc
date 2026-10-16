@@ -62,7 +62,7 @@ void EmbeddedPermissionPromptSystemSettingsView::RunButtonCallback(
   }
 
   ButtonType button = GetButtonType(button_id);
-  DCHECK_EQ(button, ButtonType::kSystemSettings);
+  CHECK_EQ(button, ButtonType::kSystemSettings, base::NotFatalUntil::M162);
 
   delegate()->ShowSystemSettings();
 }

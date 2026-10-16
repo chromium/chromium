@@ -192,7 +192,7 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
  public:
   explicit BrowserRemovalObserver(BrowserWindowInterface* browser)
       : browser_(browser) {
-    DCHECK(browser_);
+    CHECK(browser_, base::NotFatalUntil::M162);
     browser_collection_observation_.Observe(
         GlobalBrowserCollection::GetInstance());
   }
@@ -221,7 +221,7 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
 void SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
     BrowserWindowInterface* browser,
     bool skip_tab_checking) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (browser->GetProfile()->IsOffTheRecord()) {
     return;
   }

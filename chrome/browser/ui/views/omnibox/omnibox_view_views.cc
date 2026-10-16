@@ -311,7 +311,7 @@ void OmniboxViewViews::Init() {
 }
 
 void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
-  DCHECK(tab);
+  CHECK(tab, base::NotFatalUntil::M162);
 
   // We don't want to keep the IME status, so force quit the current
   // session here.  It may affect the selection status, so order is
@@ -374,7 +374,7 @@ void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
 void OmniboxViewViews::SetUserTextForTab(content::WebContents* web_contents,
                                          const std::u16string& text,
                                          size_t cursor_position) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   auto* existing_state = static_cast<OmniboxState*>(
       web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
   // Default to the end of the text if no position is specified.
@@ -731,7 +731,7 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
   // TODO(crbug.com/478634529): Optimize and remove if possible.
   base::ScopedSafetyChecksExclusion excluded;
   if (latency_histogram_state_ == LatencyHistogramState::kCharTyped) {
-    DCHECK(!insert_char_time_.is_null());
+    CHECK(!insert_char_time_.is_null(), base::NotFatalUntil::M162);
     const auto now = base::TimeTicks::Now();
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency.ToPaint",
                         now - insert_char_time_);
@@ -918,8 +918,9 @@ bool OmniboxViewViews::IsContextMenuTextEditingCommandEnabled(
 }
 
 void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
-  DCHECK(range.IsValid());
-  DCHECK(!controller()->edit_model()->user_input_in_progress());
+  CHECK(range.IsValid(), base::NotFatalUntil::M162);
+  CHECK(!controller()->edit_model()->user_input_in_progress(),
+        base::NotFatalUntil::M162);
 
   // Do not style the scheme for non-http/https URLs. For such schemes, styling
   // could be confusing or misleading. For example, the scheme isn't meaningful
@@ -2024,7 +2025,8 @@ void OmniboxViewViews::DoInsertChar(char16_t ch) {
   // If |insert_char_time_| is not null, there's a pending insert char operation
   // that hasn't been painted yet. Keep the earlier time.
   if (insert_char_time_.is_null()) {
-    DCHECK_EQ(latency_histogram_state_, LatencyHistogramState::kNotActive);
+    CHECK_EQ(latency_histogram_state_, LatencyHistogramState::kNotActive,
+             base::NotFatalUntil::M162);
     latency_histogram_state_ = LatencyHistogramState::kCharTyped;
     insert_char_time_ = base::TimeTicks::Now();
     controller()->edit_model()->NotifyObserversCharTyped(insert_char_time_);
@@ -2506,7 +2508,7 @@ void OmniboxViewViews::OnDidPresentCompositorFrame(
     uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
   if (latency_histogram_state_ == LatencyHistogramState::kCompositingStarted) {
-    DCHECK(!insert_char_time_.is_null());
+    CHECK(!insert_char_time_.is_null(), base::NotFatalUntil::M162);
 
     uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
     base::trace_event::HistogramScope scoped_event(event_id);

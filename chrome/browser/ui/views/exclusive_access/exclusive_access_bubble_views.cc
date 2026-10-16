@@ -129,7 +129,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   bool got_accelerator =
       bubble_view_context_->GetAcceleratorProvider()
           ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &accelerator);
-  DCHECK(got_accelerator);
+  CHECK(got_accelerator, base::NotFatalUntil::M162);
   browser_fullscreen_exit_accelerator_ = accelerator.GetShortcutText();
 #endif
 
@@ -197,8 +197,8 @@ ExclusiveAccessBubbleViews::~ExclusiveAccessBubbleViews() {
 void ExclusiveAccessBubbleViews::Update(
     const ExclusiveAccessBubbleParams& params,
     ExclusiveAccessBubbleHideCallback first_hide_callback) {
-  DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
-         params.has_download);
+  CHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type || params.has_download,
+        base::NotFatalUntil::M162);
   bool already_shown = IsShowing() || IsVisible();
   if (params_.type == params.type && params_.origin == params.origin &&
       params_.has_download == params.has_download && !params.force_update &&
@@ -307,8 +307,9 @@ std::optional<std::u16string> OriginDisplayName(Profile* profile,
 
 void ExclusiveAccessBubbleViews::UpdateViewContent(
     ExclusiveAccessBubbleType bubble_type) {
-  DCHECK(params_.has_download ||
-         EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
+  CHECK(
+      params_.has_download || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type,
+      base::NotFatalUntil::M162);
 
   std::u16string accelerator;
   bool should_show_browser_acc =
@@ -544,7 +545,7 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
   // originate from the OS or some Chrome shutdown codepaths that bypass the
   // destructor.
   views::Widget* popup_on_stack = popup_;
-  DCHECK(popup_on_stack->HasObserver(this));
+  CHECK(popup_on_stack->HasObserver(this), base::NotFatalUntil::M162);
 
   // Get ourselves destroyed. Calling ExitExclusiveAccess() won't work because
   // the parent window might be destroyed as well, so asking it to exit
@@ -553,7 +554,7 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
 
   // Note: |this| is destroyed on the line above. Check that the destructor was
   // invoked. This is safe to do since |popup_| is deleted via a posted task.
-  DCHECK(!popup_on_stack->HasObserver(this));
+  CHECK(!popup_on_stack->HasObserver(this), base::NotFatalUntil::M162);
 }
 
 void ExclusiveAccessBubbleViews::OnFirstPresentation(

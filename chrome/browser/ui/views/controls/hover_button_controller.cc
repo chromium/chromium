@@ -30,7 +30,8 @@ bool HoverButtonController::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool HoverButtonController::OnMousePressed(const ui::MouseEvent& event) {
-  DCHECK(notify_action() == views::ButtonController::NotifyAction::kOnRelease);
+  CHECK(notify_action() == views::ButtonController::NotifyAction::kOnRelease,
+        base::NotFatalUntil::M162);
   if (button()->GetRequestFocusOnPress()) {
     button()->RequestFocus();
   }

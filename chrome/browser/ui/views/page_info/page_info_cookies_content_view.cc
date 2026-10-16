@@ -81,7 +81,7 @@ class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
     const int title_width =
         title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
             .width();
-    DCHECK(available_size.width() >= title_width);
+    CHECK(available_size.width() >= title_width, base::NotFatalUntil::M162);
     const int available_width = available_size.width().is_bounded() &&
                                         available_size.width() > title_width
                                     ? available_size.width().value()
@@ -374,7 +374,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
 
 void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
     bool are_cookies_blocked) {
-  DCHECK(blocking_third_party_cookies_toggle_);
+  CHECK(blocking_third_party_cookies_toggle_, base::NotFatalUntil::M162);
   blocking_third_party_cookies_toggle_->SetIsOn(are_cookies_blocked);
 }
 

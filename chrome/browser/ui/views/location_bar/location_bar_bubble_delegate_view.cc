@@ -58,8 +58,8 @@ LocationBarBubbleDelegateView::WebContentMouseHandler::WebContentMouseHandler(
     LocationBarBubbleDelegateView* bubble,
     content::WebContents* web_contents)
     : bubble_(bubble), web_contents_(web_contents) {
-  DCHECK(bubble_);
-  DCHECK(web_contents_);
+  CHECK(bubble_, base::NotFatalUntil::M162);
+  CHECK(web_contents_, base::NotFatalUntil::M162);
   // In unittests `web_contents_` might not have a containing top-level window.
   if (web_contents_->GetTopLevelNativeWindow()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(

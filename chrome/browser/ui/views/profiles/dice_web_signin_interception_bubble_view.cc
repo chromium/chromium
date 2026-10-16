@@ -301,7 +301,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
       profile_(browser->GetProfile()),
       bubble_parameters_(bubble_parameters),
       callback_(std::move(callback)) {
-  DCHECK(browser_);
+  CHECK(browser_, base::NotFatalUntil::M162);
   CHECK(callback_);
   set_close_on_deactivate(false);
 
@@ -320,7 +320,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
                                          ->GetController()
                                          ->GetAs<DiceWebSigninInterceptUI>();
   SetInitiallyFocusedView(web_view.get());
-  DCHECK(web_ui);
+  CHECK(web_ui, base::NotFatalUntil::M162);
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(
       bubble_parameters,

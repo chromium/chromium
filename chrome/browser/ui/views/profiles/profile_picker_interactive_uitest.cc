@@ -60,7 +60,7 @@ const WebContentsInteractionTestUtil::DeepQuery kAddProfileButton = {
 class WidgetBoundsChangeWaiter : public views::WidgetObserver {
  public:
   explicit WidgetBoundsChangeWaiter(views::Widget* widget) {
-    DCHECK(widget);
+    CHECK(widget, base::NotFatalUntil::M162);
     observation_.Observe(widget);
   }
 

@@ -693,7 +693,7 @@ void ProfilePickerView::Init(Profile* picker_profile) {
 }
 
 void ProfilePickerView::FinishInit() {
-  DCHECK_EQ(kInitializing, state_);
+  CHECK_EQ(kInitializing, state_, base::NotFatalUntil::M162);
   state_ = kDisplayed;
 
   if (IsClassicProfilePickerFlow(params_)) {
@@ -742,7 +742,7 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
         std::move(profile_picked_callback));
   }
 
-  DCHECK(IsClassicProfilePickerFlow(params_));
+  CHECK(IsClassicProfilePickerFlow(params_), base::NotFatalUntil::M162);
   return std::make_unique<ProfilePickerFlowController>(
       /*host=*/this, std::move(clear_host_callback), params_.entry_point(),
       params_.on_select_profile_target_url(), params_.initial_email());
@@ -968,7 +968,7 @@ void ProfilePickerView::InitializeFeaturePromo(Profile* system_profile) {
 
 ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
     const {
-  DCHECK(IsClassicProfilePickerFlow(params_));
+  CHECK(IsClassicProfilePickerFlow(params_), base::NotFatalUntil::M162);
   return static_cast<ProfilePickerFlowController*>(flow_controller_.get());
 }
 

@@ -328,7 +328,7 @@ OmniboxResultView::~OmniboxResultView() = default;
 std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     const views::View* view,
     OmniboxPartState part_state) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M162);
 
   // TODO(tapted): Consider using background()->SetNativeControlColor() and
   // always have a background.

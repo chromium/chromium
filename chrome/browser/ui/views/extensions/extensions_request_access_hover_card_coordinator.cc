@@ -20,9 +20,9 @@ void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
     views::View* anchor_view,
     ExtensionsContainer* extensions_container,
     std::vector<extensions::ExtensionId>& extension_ids) {
-  DCHECK(web_contents);
-  DCHECK(extensions_container);
-  DCHECK(!extension_ids.empty());
+  CHECK(web_contents, base::NotFatalUntil::M162);
+  CHECK(extensions_container, base::NotFatalUntil::M162);
+  CHECK(!extension_ids.empty(), base::NotFatalUntil::M162);
 
   ui::DialogModel::Builder dialog_builder =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>());

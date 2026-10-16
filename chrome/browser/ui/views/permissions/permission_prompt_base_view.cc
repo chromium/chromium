@@ -192,7 +192,7 @@ void PermissionPromptBaseView::FilterUnintenedEventsAndRunCallbacks(
 UrlIdentity PermissionPromptBaseView::GetUrlIdentity(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate& delegate) {
-  DCHECK(!delegate.Requests().empty());
+  CHECK(!delegate.Requests().empty(), base::NotFatalUntil::M162);
 
   GURL origin_url = delegate.GetRequestingOrigin();
   // Use the full URL for Isolated Web Apps to match it with the app scope.

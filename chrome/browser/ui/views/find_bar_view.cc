@@ -532,7 +532,7 @@ bool FindBarView::HandleMouseEvent(views::Textfield* sender,
     // On macOS, clicking on the find text field should also activate the owner
     // widget (if it isn't already), so that the user can interact with the text
     // field.
-    DCHECK(find_bar_host_);
+    CHECK(find_bar_host_, base::NotFatalUntil::M162);
     find_bar_host_->ActivateOwnerWidgetIfNecessary();
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -595,9 +595,9 @@ FindBarView::CreateClipboardWriter() {
 }
 
 void FindBarView::Find(std::u16string_view search_text) {
-  DCHECK(find_bar_host_);
+  CHECK(find_bar_host_, base::NotFatalUntil::M162);
   FindBarController* controller = find_bar_host_->GetFindBarController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   content::WebContents* web_contents = controller->web_contents();
   // We must guard against a NULL web_contents, which can happen if the text
   // in the Find box is changed right after the tab is destroyed. Otherwise, it

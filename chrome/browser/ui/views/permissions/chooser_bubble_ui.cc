@@ -349,7 +349,7 @@ base::OnceClosure ShowDeviceChooserDialog(
         extensions::ExtensionRegistry::Get(browser_context)
             ->GetExtensionById(origin.host(),
                                extensions::ExtensionRegistry::EVERYTHING);
-    DCHECK(extension);
+    CHECK(extension, base::NotFatalUntil::M162);
     return ShowDeviceChooserDialogForExtension(owner, extension,
                                                std::move(controller));
   }

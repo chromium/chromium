@@ -65,7 +65,7 @@ LocationIconView::LocationIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate)
     : IconLabelBubbleView(font_list, parent_delegate), delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
 
   SetID(VIEW_ID_LOCATION_ICON);
   SetUpForAnimation();
@@ -356,7 +356,7 @@ void LocationIconView::UpdateBackground() {
 }
 
 void LocationIconView::OnIconFetched(const gfx::Image& image) {
-  DCHECK(!image.IsEmpty());
+  CHECK(!image.IsEmpty(), base::NotFatalUntil::M162);
   SetImageModel(ui::ImageModel::FromImage(image));
 }
 

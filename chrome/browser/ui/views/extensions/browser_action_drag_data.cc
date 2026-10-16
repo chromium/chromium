@@ -47,7 +47,7 @@ bool BrowserActionDragData::IsFromProfile(const Profile* profile) const {
 
 void BrowserActionDragData::Write(Profile* profile,
                                   ui::OSExchangeData* data) const {
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M162);
   base::Pickle data_pickle;
   WriteToPickle(profile, &data_pickle);
   data->SetPickledData(GetBrowserActionFormatType(), data_pickle);

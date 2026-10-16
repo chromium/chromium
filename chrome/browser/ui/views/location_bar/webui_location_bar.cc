@@ -171,8 +171,8 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
   const bool is_devtools =
       browser_ &&
       browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS;
-  DCHECK(!is_web_app);
-  DCHECK(!is_devtools);
+  CHECK(!is_web_app, base::NotFatalUntil::M162);
+  CHECK(!is_devtools, base::NotFatalUntil::M162);
 
   if (omnibox::IsAimPopupFeatureEnabled()) {
     if (!CreateOmniboxPopupAimPresenterIfEligible()) {
@@ -629,7 +629,8 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
           location_icon_ = toolbar_delegate_->GetIconTable().RegisterColorUrl(
               "chrome://theme/IDR_GOOGLE_G_GRADIENT_16_ALT");
         } else {
-          DCHECK_EQ(*maybe_resource_id, IDR_GOOGLE_G_GRADIENT_20);
+          CHECK_EQ(*maybe_resource_id, IDR_GOOGLE_G_GRADIENT_20,
+                   base::NotFatalUntil::M162);
           location_icon_ = toolbar_delegate_->GetIconTable().RegisterColorUrl(
               "chrome://theme/IDR_GOOGLE_G_GRADIENT_20");
         }

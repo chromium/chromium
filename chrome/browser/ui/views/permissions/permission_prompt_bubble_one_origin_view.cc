@@ -59,7 +59,7 @@ std::u16string GetAccessibleWindowTitleInternal(
   // format of title, to provide for accurate i18n. See
   // https://crbug.com/41143728 for more details.
 
-  DCHECK(!visible_requests.empty());
+  CHECK(!visible_requests.empty(), base::NotFatalUntil::M162);
 
   if (visible_requests.size() == 1) {
     return l10n_util::GetStringFUTF16(

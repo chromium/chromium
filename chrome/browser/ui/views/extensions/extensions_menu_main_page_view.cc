@@ -74,7 +74,8 @@ constexpr int kRequestEntryLabelIndex = 1;
 // when the view is known to be one). It is only used as an extra measure to
 // prevent bad static casts.
 ExtensionsMenuEntryView* GetAsMenuEntry(views::View* view) {
-  DCHECK(views::IsViewClass<ExtensionsMenuEntryView>(view));
+  CHECK(views::IsViewClass<ExtensionsMenuEntryView>(view),
+        base::NotFatalUntil::M162);
   return views::AsViewClass<ExtensionsMenuEntryView>(view);
 }
 

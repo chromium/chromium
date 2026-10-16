@@ -241,10 +241,10 @@ void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(browser_context);
 
-  DCHECK(download_core_service);
+  CHECK(download_core_service, base::NotFatalUntil::M162);
   ChromeDownloadManagerDelegate* delegate =
       download_core_service->GetDownloadManagerDelegate();
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M162);
 
   if (command == DownloadCommands::CANCEL) {
     LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kScanCanceled);

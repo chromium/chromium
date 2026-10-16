@@ -734,7 +734,7 @@ void OmniboxPopupPresenterBase::RegisterBlocker() {
 void OmniboxPopupPresenterBase::UnregisterBlocker() {
   deactivation_blockers_count_--;
 
-  DCHECK_GE(deactivation_blockers_count_, 0);
+  CHECK_GE(deactivation_blockers_count_, 0, base::NotFatalUntil::M162);
   if (deactivation_blockers_count_ < 0) {
     deactivation_blockers_count_ = 0;
   }
