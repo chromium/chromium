@@ -170,10 +170,18 @@ interface AiOverlayTools {
   CloseGeminiPanel() => result<mojo_base.mojom.Empty, string>;
 
   // @NON_BLOCKING
-  // Returns a snapshot of the user's open browser windows, tab groups, open
-  // tabs (including page topic summaries, memory usage, idle time, and unsaved
-  // state), and saved tab groups.
-  GetWorkspaceSnapshot() => result<mojo_base.mojom.Value, string>;
+  // Analyzes or manages the user's open browser tabs, tab groups, and windows
+  // (including page topic summaries, memory usage, idle time, and unsaved
+  // state) by delegating the request to a tab sub-agent. Use this to answer
+  // questions about open tabs or to organize tabs (such as grouping tabs by
+  // topic, adding tabs to a group, ungrouping tabs, closing specific tabs,
+  // switching to a tab, reordering tabs, or undoing the last tab change).
+  //
+  // request: The question, search criteria, or organization instruction to
+  // evaluate across all open windows, tab groups, and tabs.
+  // Returns a dictionary value containing {"facts": "...",
+  // "actions_taken": [...], "skipped": [...]}.
+  AnalyzeAndManageTabs(string request) => result<mojo_base.mojom.Value, string>;
 };
 
 // Infrastructure interface for tool manifest discovery.

@@ -63,6 +63,11 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   // structured dictionary snapshot for the workspace sub-agent.
   base::DictValue BuildWorkspaceSnapshot();
 
+  // Parses the workspace sub-agent's raw JSON (or text) output, executes any
+  // requested tab/group organization actions with safety guardrails, and
+  // returns a dictionary containing "facts", "actions_taken", and "skipped".
+  base::DictValue ExecuteWorkspaceSubAgentOutput(std::string_view raw_output);
+
   // ai_overlay_dialog::mojom::AiOverlayTools:
   // Only the platform-agnostic tools are implemented here; the rest are
   // implemented by the platform subclasses.
@@ -94,9 +99,13 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   void SelectOption(const blink::DOMNodeIdType& dom_node_id,
                     const std::string& value,
                     SelectOptionCallback callback) override;
-  // Returns a dictionary `base::Value` containing a snapshot of open browser
-  // windows, tab groups, tabs, and saved tab groups.
-  void GetWorkspaceSnapshot(GetWorkspaceSnapshotCallback callback) override;
+  // Evaluates a tab analysis or management request across open windows,
+  // tab groups, and tabs. On success, invokes `callback` with
+  // `base::ok(value)` where `value` is a dictionary `base::Value` containing
+  // either the workspace snapshot or `{"facts": "...", "actions_taken": [...],
+  // "skipped": [...]}`.
+  void AnalyzeAndManageTabs(const std::string& request,
+                            AnalyzeAndManageTabsCallback callback) override;
 
   // ai_overlay_dialog::mojom::AiOverlayToolRegistry:
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;
@@ -123,6 +132,11 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   content::WebContents* GetActiveWebContents() const;
 
  private:
+  struct WorkspaceUndoSnapshot;
+  struct WorkspaceUndoSnapshotDeleter {
+    void operator()(WorkspaceUndoSnapshot* ptr) const;
+  };
+
   class AnnotationTask : public blink::mojom::AnnotationAgentHost {
    public:
     AnnotationTask(
@@ -145,6 +159,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
 
   void OnAnnotationAgentDisconnected();
 
+  void SaveWorkspaceUndoSnapshot();
+  bool RestoreWorkspaceUndoSnapshot();
+
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver_;
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
       registry_receiver_{this};
@@ -157,6 +174,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   content::WeakDocumentPtr annotation_document_;
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
   base::CancelableTaskTracker task_tracker_;
+  std::unique_ptr<WorkspaceUndoSnapshot, WorkspaceUndoSnapshotDeleter>
+      workspace_undo_snapshot_;
 
   base::WeakPtrFactory<AiOverlayTools> weak_factory_{this};
 };

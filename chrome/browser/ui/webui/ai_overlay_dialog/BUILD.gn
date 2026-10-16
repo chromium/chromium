@@ -76,6 +76,7 @@ source_set("impl") {
     "//chrome/browser/ttc/resources",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ai_overlay_dialog/tools:generate_tool_definitions",
     "//chrome/common",
@@ -114,6 +115,7 @@ source_set("impl") {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
     ]
   } else {
     sources += [
@@ -190,6 +192,7 @@ source_set("browser_tests") {
       "//chrome/browser/translate",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/sessions",
       "//content/test:browsertest_support",
     ]
   }
