@@ -7,11 +7,15 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -140,4 +144,38 @@ TEST_F(AssistantAIMViewControllerTest,
   EXPECT_FALSE([view_controller_ shouldPauseScrollView:history_scroll_view
                                             forGesture:pan_gesture
                                      isInLargestDetent:YES]);
+}
+
+// Tests that `AssistantAIMViewController` records all header and menu actions
+// on `AssistantAIMMetricsRecorder`.
+TEST_F(AssistantAIMViewControllerTest, HeaderActionsRecordMetrics) {
+  id mock_recorder = OCMClassMock([AssistantAIMMetricsRecorder class]);
+  view_controller_.metricsRecorder = mock_recorder;
+  id<AssistantAIMHeaderViewDelegate> header_delegate =
+      static_cast<id<AssistantAIMHeaderViewDelegate>>(view_controller_);
+
+  OCMExpect([mock_recorder
+      recordHeaderAction:AssistantAimHeaderAction::kCloseButtonTapped]);
+  [header_delegate assistantAIMHeaderViewDidPressClose:nil];
+  [mock_recorder verify];
+
+  OCMExpect([mock_recorder
+      recordHeaderAction:AssistantAimHeaderAction::kNewThreadTapped]);
+  [header_delegate assistantAIMHeaderViewDidTapStartNewThread:nil];
+  [mock_recorder verify];
+
+  OCMExpect([mock_recorder
+      recordHeaderAction:AssistantAimHeaderAction::kThreadHistoryTapped]);
+  [header_delegate assistantAIMHeaderViewDidTapHistory:nil];
+  [mock_recorder verify];
+
+  OCMExpect([mock_recorder
+      recordHeaderAction:AssistantAimHeaderAction::kMyActivityTapped]);
+  [header_delegate assistantAIMHeaderViewDidTapMyActivity:nil];
+  [mock_recorder verify];
+
+  OCMExpect(
+      [mock_recorder recordHeaderAction:AssistantAimHeaderAction::kHelpTapped]);
+  [header_delegate assistantAIMHeaderViewDidTapHelp:nil];
+  [mock_recorder verify];
 }

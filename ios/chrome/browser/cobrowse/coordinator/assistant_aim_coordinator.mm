@@ -150,6 +150,7 @@ class AssistantAIMUIStateProvider
 
   _viewController = [[AssistantAIMViewController alloc] init];
   _viewController.delegate = self;
+  _viewController.metricsRecorder = _metricsRecorder;
 
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);

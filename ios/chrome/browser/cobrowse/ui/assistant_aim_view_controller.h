@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
 
 @protocol AssistantAIMMutator;
+@class AssistantAIMMetricsRecorder;
 @class AssistantAIMViewController;
 @class ComposeboxInputPlateViewController;
 
@@ -68,6 +69,9 @@
 
 // The mutator for this view controller.
 @property(nonatomic, weak) id<AssistantAIMMutator> mutator;
+
+// Metrics recorder for the Assistant AIM session.
+@property(nonatomic, strong) AssistantAIMMetricsRecorder* metricsRecorder;
 
 // Adds the input view controller to this ViewController.
 - (void)addInputViewController:
