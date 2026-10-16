@@ -117,6 +117,7 @@ _KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
             "com.apple.backupd.sandbox.xpc",
             "com.apple.bsd.dirhelper",
             "com.apple.cmio.registerassistantservice.system-extensions",
+            "com.apple.coreservices.quarantine-resolver",
             "com.apple.ctkd.token-client",
             "com.apple.diagnosticd",
             "com.apple.distributed_notifications@Uv3",
@@ -127,6 +128,11 @@ _KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
             "com.apple.tccd",
             "com.apple.tccd.system",
             "com.apple.trustd.agent",
+        )
+    ),
+    "syscall-mig": frozenset(
+        (
+            "341",  # mach_voucher_debug_info, used by MTLCompiler
         )
     ),
     "system-info": frozenset(
@@ -144,6 +150,7 @@ _KNOWN_SUBPATH_DENIALS: dict[str, tuple[str, ...]] = {
         "/System/Library/CoreServices/RawCamera.bundle/",
         "/System/Library/ExtensionKit/ExtensionPoints/",
         "/System/iOSSupport/System/Library/ExtensionKit/ExtensionPoints/",
+        "/private/var/db/cmiodalassistants/Library/Preferences/",
         f"{_HOME_DIR}/Library/Preferences/",
     ),
 }
