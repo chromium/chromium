@@ -201,8 +201,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
 // static
 std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   std::string css_string;
-  // At the time of this update, actual usage was about 3.7K.
-  css_string.reserve(5 * 1024);
+  // At the time of this update, actual usage was about 5.9KiB.
+  css_string.reserve(8 * 1024);
 
   // Add some boolean flags.
   css_string.append(
