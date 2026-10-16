@@ -200,6 +200,11 @@ std::optional<size_t> NavigationEventList::FindNavigationEvent(
               nav_event->server_redirect_urls;
           retargeting_nav_event->original_request_url =
               nav_event->original_request_url;
+          if (nav_event->navigation_initiation ==
+              ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE) {
+            retargeting_nav_event->navigation_initiation =
+                ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+          }
           result_index = retargeting_nav_event_index;
         }
       }

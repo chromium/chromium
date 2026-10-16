@@ -2316,6 +2316,14 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   auto* initial_web_contents = web_contents();
 
   ui_test_utils::UrlLoadObserver url_observer(new_window_url);
+  // ExecJs grants transient user activation by default, so the new window's
+  // navigation request has a user gesture. Although the retargeting event in
+  // RecordNewWebContents is initially recorded as
+  // RENDERER_INITIATED_WITHOUT_USER_GESTURE (because ExecJs does not dispatch a
+  // WebInputEvent to the opener's WebContents), FindNavigationEvent propagates
+  // RENDERER_INITIATED_WITH_USER_GESTURE from the new window's navigation to
+  // the retargeting event (causing `main_frame_url` to be recorded as
+  // LANDING_PAGE).
   ASSERT_TRUE(
       ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("var w = window.open($1, 'New Window');",
@@ -2391,14 +2399,14 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       GURL(),                               // referrer_main_frame_url
       true,                                 // is_retargeting
       std::vector<GURL>(),                  // server redirects
-      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
       referrer_chain.Get(2));
 
-  VerifyReferrerChainEntry(main_frame_url,  // url
-                           GURL(),          // main_frame_url
-                           ReferrerChainEntry::CLIENT_REDIRECT,  // type
-                           test_server_ip,                       // ip_address
-                           GURL(),                               // referrer_url
+  VerifyReferrerChainEntry(main_frame_url,                    // url
+                           GURL(),                            // main_frame_url
+                           ReferrerChainEntry::LANDING_PAGE,  // type
+                           test_server_ip,                    // ip_address
+                           GURL(),                            // referrer_url
                            GURL(),               // referrer_main_frame_url
                            false,                // is_retargeting
                            std::vector<GURL>(),  // server redirects
