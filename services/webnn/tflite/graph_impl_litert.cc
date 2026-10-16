@@ -265,25 +265,27 @@ class GraphImplLiteRt::ComputeResources {
     ASSIGN_OR_RETURN(self->profiler_,
                      AsBaseExpected(self->model_->GetProfiler()));
 #endif
-    // TODO(crbug.com/454732289): LiteRT currently provides no API to query
-    // runtime accelerators. As a temporary workaround we infer the target
-    // devices from the compilation options when the model is fully
-    // accelerated. Replace this inference with the official LiteRT API once
-    // it becomes available.
-    if (self->model_->IsFullyAccelerated()) {
-      ASSIGN_OR_RETURN(
-          auto hardware_accelerators,
-          AsBaseExpected(compilation_options.GetHardwareAccelerators()));
-      if (hardware_accelerators & kLiteRtHwAcceleratorGpu) {
-        self->devices.push_back(mojom::Device::kGpu);
+    ASSIGN_OR_RETURN(auto delegation_metrics,
+                     AsBaseExpected(self->model_->GetDelegationMetrics()));
+    LiteRtHwAcceleratorSet active_accelerators = kLiteRtHwAcceleratorNone;
+    int total_delegated_nodes = 0;
+    for (const auto& accelerator : delegation_metrics.accelerators) {
+      if (accelerator.delegated_node_count > 0) {
+        active_accelerators |= accelerator.hardware_type;
+        total_delegated_nodes += accelerator.delegated_node_count;
       }
-      if (hardware_accelerators & kLiteRtHwAcceleratorNpu) {
-        self->devices.push_back(mojom::Device::kNpu);
-      }
-      if (hardware_accelerators & kLiteRtHwAcceleratorCpu) {
-        self->devices.push_back(mojom::Device::kCpu);
-      }
-    } else {
+    }
+    if (total_delegated_nodes < delegation_metrics.total_node_count ||
+        active_accelerators == kLiteRtHwAcceleratorNone) {
+      active_accelerators |= kLiteRtHwAcceleratorCpu;
+    }
+    if (active_accelerators & kLiteRtHwAcceleratorGpu) {
+      self->devices.push_back(mojom::Device::kGpu);
+    }
+    if (active_accelerators & kLiteRtHwAcceleratorNpu) {
+      self->devices.push_back(mojom::Device::kNpu);
+    }
+    if (active_accelerators & kLiteRtHwAcceleratorCpu) {
       self->devices.push_back(mojom::Device::kCpu);
     }
 
