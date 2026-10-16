@@ -4265,9 +4265,6 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(
     bool ignore_keep_alive,
     bool ignore_pending_reuse,
     bool use_outermost_main_frame_check) {
-  base::UmaHistogramBoolean(
-      "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
-
   // TODO(crbug.com/463513005): When switching to checking outermost main frame
   // counts by default consider eliminating `pending_views_` - capturing these
   // in the count returned by the function instead (`pending_views_` covers

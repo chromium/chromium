@@ -1550,18 +1550,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.FastShutdownIfPossible.Total"
-    enum="Boolean" expires_after="2025-06-29">
-  <owner>mych@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Records true when an attempt is made to fast shutdown a RenderProcessHost.
-
-    Warning: this histogram was expired from 2024-04-29 to 2024-12-09; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="BrowserRenderProcessHost.LabeledInTaskManager"
     enum="BooleanLabeledRendererTask" expires_after="2024-06-30">
   <owner>creis@chromium.org</owner>
