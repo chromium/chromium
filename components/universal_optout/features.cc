@@ -19,7 +19,7 @@
 
 namespace universal_optout::features {
 
-BASE_FEATURE(kUniversalOptOut, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUniversalOptOut, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUniversalOptOutExtension, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -56,8 +56,8 @@ bool IsUniversalOptOutEnabled() {
 #endif
 }
 
-const base::FeatureParam<std::string> kTargetLocations{
-    &kUniversalOptOut, "target_locations", "us-ca"};
+const base::FeatureParam<std::string> kTargetLocations{&kUniversalOptOut,
+                                                       "target_locations", ""};
 
 const base::FeatureParam<bool> kForceEligible{&kUniversalOptOut,
                                               "force_eligible", false};
