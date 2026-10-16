@@ -4025,10 +4025,18 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
     GetElementData()->ClearClass();
     return;
   }
-  if (GetDocument().InQuirksMode()) [[unlikely]] {
-    GetElementData()->SetClassFoldingCase(new_class_string);
-  } else {
-    GetElementData()->SetClass(new_class_string);
+  // Avoid redundant work if we're using shared attribute data with already
+  // parsed class names. Mutations use unique data; uppercase values may need
+  // different quirks-mode folding.
+  const bool can_reuse_class_names =
+      IsHTMLElement() && !GetElementData()->IsUnique() &&
+      GetElementData()->HasClass() && new_class_string.ContainsNoAsciiUpper();
+  if (!can_reuse_class_names) {
+    if (GetDocument().InQuirksMode()) [[unlikely]] {
+      GetElementData()->SetClassFoldingCase(new_class_string);
+    } else {
+      GetElementData()->SetClass(new_class_string);
+    }
   }
   const SpaceSplitString& new_classes = GetElementData()->ClassNames();
   for (const AtomicString& class_name : new_classes) {

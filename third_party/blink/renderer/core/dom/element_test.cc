@@ -53,6 +53,86 @@ class ElementTest : public EditingTestBase {
   ScopedFocusgroupForTest focusgroup_enabled{true};
 };
 
+TEST_F(ElementTest, ParserClassDataReuse) {
+  GetDocument().SetParsingState(Document::kParsing);
+  Vector<Attribute, kAttributePrealloc> attributes;
+  attributes.emplace_back(html_names::kClassAttr,
+                          AtomicString("alpha beta alpha"));
+  Element* first = GetDocument().CreateElementForBinding(AtomicString("div"));
+  Element* second = GetDocument().CreateElementForBinding(AtomicString("div"));
+  first->ParserSetAttributes(attributes);
+  second->ParserSetAttributes(attributes);
+  ASSERT_TRUE(first->SharesSameElementData(*second));
+  EXPECT_EQ(2u, second->ClassNames().size());
+  EXPECT_EQ(AtomicString("alpha"), second->ClassNames()[0]);
+  EXPECT_EQ(AtomicString("beta"), second->ClassNames()[1]);
+  EXPECT_TRUE(second->CouldHaveClass(AtomicString("alpha")));
+  EXPECT_TRUE(second->CouldHaveClass(AtomicString("beta")));
+  EXPECT_TRUE(second->classList().contains(AtomicString("alpha")));
+
+  GetDocument().body()->AppendChild(first);
+  GetDocument().body()->AppendChild(second);
+  second->setAttribute(html_names::kClassAttr, AtomicString("gamma"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(first->SharesSameElementData(*second));
+  EXPECT_TRUE(second->ClassNames().Contains(AtomicString("gamma")));
+  EXPECT_FALSE(second->ClassNames().Contains(AtomicString("alpha")));
+  EXPECT_TRUE(first->ClassNames().Contains(AtomicString("alpha")));
+  EXPECT_TRUE(GetDocument().body()->CouldHaveClass(AtomicString("gamma")));
+  EXPECT_EQ(second,
+            GetDocument().body()->QuerySelector(AtomicString(".gamma")));
+}
+
+TEST_F(ElementTest, ParserClassDataAfterCompatibilityModeChange) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  GetDocument().SetParsingState(Document::kParsing);
+  Vector<Attribute, kAttributePrealloc> attributes;
+  attributes.emplace_back(html_names::kClassAttr, AtomicString("Alpha"));
+  Element* first = GetDocument().CreateElementForBinding(AtomicString("div"));
+  Element* second = GetDocument().CreateElementForBinding(AtomicString("div"));
+  first->ParserSetAttributes(attributes);
+  second->ParserSetAttributes(attributes);
+  ASSERT_TRUE(first->SharesSameElementData(*second));
+  ASSERT_TRUE(second->ClassNames().Contains(AtomicString("alpha")));
+  EXPECT_TRUE(second->classList().contains(AtomicString("Alpha")));
+
+  GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
+  GetDocument().SetParsingState(Document::kParsing);
+  Element* third = GetDocument().CreateElementForBinding(AtomicString("div"));
+  third->ParserSetAttributes(attributes);
+  ASSERT_TRUE(first->SharesSameElementData(*third));
+  EXPECT_TRUE(third->ClassNames().Contains(AtomicString("Alpha")));
+  EXPECT_FALSE(third->ClassNames().Contains(AtomicString("alpha")));
+}
+
+TEST_F(ElementTest, ClonedClassDataReuse) {
+  Element* source = GetDocument().CreateElementForBinding(AtomicString("div"));
+  source->setAttribute(html_names::kClassAttr, AtomicString("alpha beta"));
+  Element* clone = To<Element>(source->cloneNode(false));
+  ASSERT_TRUE(source->SharesSameElementData(*clone));
+  EXPECT_TRUE(clone->ClassNames().Contains(AtomicString("alpha")));
+  EXPECT_TRUE(clone->CouldHaveClass(AtomicString("alpha")));
+  EXPECT_TRUE(clone->classList().contains(AtomicString("alpha")));
+  clone->setAttribute(html_names::kClassAttr, AtomicString("gamma"));
+  EXPECT_TRUE(source->ClassNames().Contains(AtomicString("alpha")));
+  EXPECT_TRUE(clone->ClassNames().Contains(AtomicString("gamma")));
+}
+
+TEST_F(ElementTest, ClonedClassDataAfterCompatibilityModeChange) {
+  Element* source = GetDocument().CreateElementForBinding(AtomicString("div"));
+  source->setAttribute(html_names::kClassAttr, AtomicString("Alpha"));
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  Element* clone = To<Element>(source->cloneNode(false));
+  EXPECT_TRUE(clone->ClassNames().Contains(AtomicString("alpha")));
+  EXPECT_FALSE(clone->ClassNames().Contains(AtomicString("Alpha")));
+  EXPECT_TRUE(clone->CouldHaveClass(AtomicString("alpha")));
+
+  GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
+  Element* second_clone = To<Element>(clone->cloneNode(false));
+  EXPECT_TRUE(second_clone->ClassNames().Contains(AtomicString("Alpha")));
+  EXPECT_FALSE(second_clone->ClassNames().Contains(AtomicString("alpha")));
+}
+
 TEST_F(ElementTest, BloomFilterRemovalScansNonElementChildren) {
   SetBodyContent(R"HTML(
     <div>
