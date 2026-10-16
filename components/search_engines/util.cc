@@ -1075,6 +1075,7 @@ void GetSearchProvidersUsingKeywordResult(
   GetSearchProvidersUsingLoadedEngines(
       service, prefs, template_url_data_resolver, template_urls,
       default_search_provider, search_terms_data, out_updated_keywords_metadata,
+      keyword_result.had_prepopulated_decryption_failure,
       removed_keyword_guids);
 
   // If a data change happened, it should not cause a version downgrade.
@@ -1093,6 +1094,7 @@ void GetSearchProvidersUsingLoadedEngines(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     WDKeywordsResult::Metadata& in_out_keywords_metadata,
+    bool had_prepopulated_decryption_failure,
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
@@ -1105,7 +1107,10 @@ void GetSearchProvidersUsingLoadedEngines(
       ComputeMergeEnginesRequirements(template_url_data_resolver,
                                       in_out_keywords_metadata);
 
-  if (required_metadata.HasBuiltinKeywordData()) {
+  // A prepopulated row discarded after a decryption failure requires regional
+  // reconciliation independently of any version or country update.
+  if (required_metadata.HasBuiltinKeywordData() ||
+      had_prepopulated_decryption_failure) {
     MergeEnginesFromPrepopulateData(
         service, &prepopulated_urls, template_urls, default_search_provider,
         template_url_data_resolver, removed_keyword_guids);

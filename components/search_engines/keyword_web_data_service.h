@@ -32,6 +32,11 @@ struct WDKeywordsResult {
 
   KeywordTable::Keywords keywords;
 
+  // At least one row with a positive prepopulate_id was rejected because its
+  // hash could not be decrypted. Reconcile the regional built-in engine set
+  // from authoritative data, even when the keyword metadata is current.
+  bool had_prepopulated_decryption_failure = false;
+
   // Context qualifying the built-in keywords and starter pack engines data.
   struct Metadata {
     // Version number of the most recent prepopulate data that has been merged
