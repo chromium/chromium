@@ -4,10 +4,16 @@
 
 #include "chrome/browser/actor/tools/script_tool_request.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
@@ -18,6 +24,26 @@
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `script` tool.
+constexpr std::string_view kScriptToolDescription =
+    "Executes a named script tool in the target document.";
+
+// Description for the `document_identifier` parameter of the `script` tool.
+constexpr std::string_view kDocumentIdentifierParamDescription =
+    "The identifier of the document that exposes the script tool.";
+
+// Description for the `tool_name` parameter of the `script` tool.
+constexpr std::string_view kToolNameParamDescription =
+    "The name of the script tool to execute.";
+
+// Description for the `input_arguments` parameter of the `script` tool.
+constexpr std::string_view kInputArgumentsParamDescription =
+    "The input arguments string passed to the script tool.";
+
+}  // namespace
 
 using ::tabs::TabHandle;
 
@@ -32,6 +58,20 @@ ScriptToolRequest::ScriptToolRequest(
       input_arguments_(input_arguments) {}
 
 ScriptToolRequest::~ScriptToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> ScriptToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kScript, kModelFacingName,
+                               kScriptToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddStringProperty(kDocumentIdentifierParam,
+                                 kDocumentIdentifierParamDescription)
+              .AddStringProperty(kToolNameParam, kToolNameParamDescription)
+              .AddStringProperty(kInputArgumentsParam,
+                                 kInputArgumentsParamDescription))
+      .Build();
+}
 
 std::string_view ScriptToolRequest::Name() const {
   return kName;

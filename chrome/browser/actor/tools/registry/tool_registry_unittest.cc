@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
@@ -462,6 +463,26 @@ TEST(ToolRegistryTest, WaitToolDefinition) {
               HasParamOfType(WaitToolRequest::kWaitTimeMsParam, "integer"));
   EXPECT_THAT(*definition, RequiresParam(WaitToolRequest::kWaitTimeMsParam));
 }
+TEST(ToolRegistryTest, ScriptToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ScriptToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kScript);
+  EXPECT_EQ(definition->name, ScriptToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(ScriptToolRequest::kDocumentIdentifierParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(ScriptToolRequest::kDocumentIdentifierParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(ScriptToolRequest::kToolNameParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(ScriptToolRequest::kToolNameParam));
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(ScriptToolRequest::kInputArgumentsParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(ScriptToolRequest::kInputArgumentsParam));
+}
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -849,6 +870,16 @@ TEST(ToolRegistryTest, GetAllToolsContainsWaitTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kWait, &ToolDefinition::id));
+}
+TEST(ToolRegistryTest, GetAllToolsContainsScriptTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kScript, &ToolDefinition::id));
 }
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());

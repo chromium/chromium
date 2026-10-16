@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_SCRIPT_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
@@ -18,12 +20,20 @@ namespace actor {
 class ScriptToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "ScriptTool";
+  static constexpr std::string_view kModelFacingName = "script";
+  static constexpr std::string_view kDocumentIdentifierParam =
+      "document_identifier";
+  static constexpr std::string_view kToolNameParam = "tool_name";
+  static constexpr std::string_view kInputArgumentsParam = "input_arguments";
 
   ScriptToolRequest(ActorSurfaceHandle actor_surface_handle,
                     const base::UnguessableToken& target_document_id,
                     const std::string& name,
                     const std::string& input_arguments);
   ~ScriptToolRequest() override;
+
+  // Returns the `ToolId::kScript` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest
   std::string_view Name() const override;

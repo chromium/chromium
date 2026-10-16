@@ -83,7 +83,9 @@ enum class ToolId {
   kDragAndRelease = 31,
   // Pauses execution for a specified duration in milliseconds.
   kWait = 32,
-  kMaxValue = kWait,
+  // Executes a script tool in a document.
+  kScript = 33,
+  kMaxValue = kScript,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
