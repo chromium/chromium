@@ -597,6 +597,7 @@ suite('TabPickerTest', () => {
 
         // Deliberately put the active tab at position 1 rather than 0, so that
         // the two axes disagree and the test would fail if they were conflated.
+        testProxy.setRecentTabs([recentTab, activeTab]);
         app.tabSuggestions = [recentTab, activeTab];
         app.recentTabId = recentTab.tabId;
         await microtasksFinished();
@@ -849,5 +850,101 @@ suite('TabPickerTest', () => {
         assertEquals(
             'none',
             window.getComputedStyle(app.$.shareTabsTrigger).outlineStyle);
+      });
+
+  test(
+      'Refreshes tab suggestions when hovering over trigger or menu',
+      async () => {
+        const newTab = createTabInfo(4, 'Tab Four', 'https://example.com/4');
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([newTab, ...mockTabs]);
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        assertTrue(app.$.tabMenu.open);
+        assertEquals(newTab.tabId, app.recentTabId);
+        let items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        assertEquals(4, items.length);
+        assertEquals(
+            'Tab Four',
+            items[0]!.querySelector('.tab-title')!.textContent.trim());
+        assertTrue(isVisible(items[0]!.querySelector('.recent-tabs-suffix')));
+        assertFalse(isVisible(items[1]!.querySelector('.recent-tabs-suffix')));
+
+        // While the menu remains open, another tab is opened and the pointer
+        // enters the menu.
+        const newerTab = createTabInfo(5, 'Tab Five', 'https://example.com/5');
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([newerTab, newTab, ...mockTabs]);
+
+        app.$.tabMenu.dispatchEvent(new PointerEvent('pointerenter'));
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        assertEquals(newerTab.tabId, app.recentTabId);
+        items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        assertEquals(5, items.length);
+        assertEquals(
+            'Tab Five',
+            items[0]!.querySelector('.tab-title')!.textContent.trim());
+        assertTrue(isVisible(items[0]!.querySelector('.recent-tabs-suffix')));
+
+        // If all eligible tabs are closed before hovering the menu, the menu
+        // closes and clears recentTabId.
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([]);
+
+        app.$.tabMenu.dispatchEvent(new PointerEvent('pointerenter'));
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        assertFalse(app.$.tabMenu.open);
+        assertEquals(null, app.recentTabId);
+      });
+
+  test(
+      'Opens tab menu on hover when tabs are added after empty initial load',
+      async () => {
+        app.remove();
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([]);
+
+        app = document.createElement('tab-picker-app');
+        document.body.appendChild(app);
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        assertEquals(0, app.tabSuggestions.length);
+        assertEquals(null, app.recentTabId);
+
+        // Hovering when there are still no tabs does not open the menu.
+        testProxy.resetResolver('getRecentTabs');
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+
+        // A new tab is opened while the outer menu remains mounted, and the
+        // user hovers over the trigger again.
+        const newTab = createTabInfo(10, 'New Tab', 'https://example.com/new');
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([newTab]);
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        assertTrue(app.$.tabMenu.open);
+        assertEquals(newTab.tabId, app.recentTabId);
+        const items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        assertEquals(1, items.length);
+        assertEquals(
+            'New Tab',
+            items[0]!.querySelector('.tab-title')!.textContent.trim());
       });
 });
