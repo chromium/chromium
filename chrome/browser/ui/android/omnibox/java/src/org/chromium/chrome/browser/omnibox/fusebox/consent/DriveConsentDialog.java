@@ -271,6 +271,9 @@ public class DriveConsentDialog
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, this)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                .with(
+                        ModalDialogProperties.CONTENT_DESCRIPTION,
+                        mActivity.getString(R.string.accessibility_omnibox_drive_consent_dialog))
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                 .with(ModalDialogProperties.DIALOG_STYLES, DialogStyles.DIALOG_WHEN_LARGE)
                 .with(

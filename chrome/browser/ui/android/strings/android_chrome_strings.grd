@@ -5565,6 +5565,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_OMNIBOX_ADD_FROM_DRIVE" desc="Accessibility announcement when the 'Drive' option in the Omnibox 'Add context' popup is highlighted.">
         Attach files from Drive
       </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_DRIVE_CONSENT_DIALOG" is_accessibility_with_no_ui="true" desc="Accessibility description for the modal dialog that prompts the user for permission to connect Google Drive when attaching files in the Omnibox.">
+        Consent to connect Google Workspace to Search services
+      </message>
 
       <message name="IDS_ACCESSIBILITY_SHARE_SELECTED_ITEMS" desc="Content description for the button to share selected items. [ICU Syntax]">
         {NUM_SELECTED, plural,
