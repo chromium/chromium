@@ -1837,8 +1837,9 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   }
 
   auto* feature_values_rule = MakeGarbageCollected<StyleRuleFontFeatureValues>(
-      std::move(families), stylistic, styleset, character_variant, swash,
-      ornaments, annotation);
+      std::move(families), std::move(stylistic), std::move(styleset),
+      std::move(character_variant), std::move(swash), std::move(ornaments),
+      std::move(annotation));
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());

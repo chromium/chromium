@@ -44,12 +44,12 @@ FontFeatureValuesStorage::FontFeatureValuesStorage(
     FontFeatureAliases swash,
     FontFeatureAliases ornaments,
     FontFeatureAliases annotation)
-    : stylistic_(stylistic),
-      styleset_(styleset),
-      character_variant_(character_variant),
-      swash_(swash),
-      ornaments_(ornaments),
-      annotation_(annotation) {}
+    : stylistic_(std::move(stylistic)),
+      styleset_(std::move(styleset)),
+      character_variant_(std::move(character_variant)),
+      swash_(std::move(swash)),
+      ornaments_(std::move(ornaments)),
+      annotation_(std::move(annotation)) {}
 
 Vector<uint32_t> FontFeatureValuesStorage::ResolveStylistic(
     const AtomicString& alias) const {
@@ -142,12 +142,12 @@ StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
     FontFeatureAliases annotation)
     : StyleRuleBase(kFontFeatureValues),
       families_(std::move(families)),
-      feature_values_storage_(stylistic,
-                              styleset,
-                              character_variant,
-                              swash,
-                              ornaments,
-                              annotation) {}
+      feature_values_storage_(std::move(stylistic),
+                              std::move(styleset),
+                              std::move(character_variant),
+                              std::move(swash),
+                              std::move(ornaments),
+                              std::move(annotation)) {}
 
 StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
     const StyleRuleFontFeatureValues&) = default;
