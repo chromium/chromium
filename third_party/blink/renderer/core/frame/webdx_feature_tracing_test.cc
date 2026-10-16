@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -167,53 +166,6 @@ TEST(WebDXFeatureTracingTest, MaybeEmitWebDXFeatureTraceEvent_NullFrame) {
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("view-transitions", events[0]->GetKnownArgAsString("feature"));
   EXPECT_EQ("", events[0]->GetKnownArgAsString("url"));
-}
-
-TEST(WebDXFeatureTracingTest,
-     MaybeEmitWebDXFeatureTraceEvent_InspectorIsolatedWorldIgnored) {
-  test::TaskEnvironment task_environment;
-  base::test::TracingEnvironment tracing_environment;
-  V8TestingScope scope;
-
-  KURL doc_url("https://example.com/isolated-world.html");
-  scope.GetFrame().GetDocument()->SetURL(doc_url);
-
-  DOMWrapperWorld* inspector_world =
-      DOMWrapperWorld::EnsureInspectorIsolatedWorldWithName(
-          scope.GetIsolate(), "DevTools Performance Metrics");
-  ASSERT_EQ(inspector_world->GetWorldType(),
-            DOMWrapperWorld::WorldType::kInspectorIsolated);
-  ScriptState* inspector_script_state =
-      ToScriptState(&scope.GetFrame(), *inspector_world);
-
-  trace_analyzer::Start("blink.webdx_feature_usage");
-
-  // Feature usage inside an inspector isolated world should not be counted or
-  // emit trace events.
-  {
-    ScriptState::Scope inspector_scope(inspector_script_state);
-    scope.GetDocument().CountWebDXFeature(
-        mojom::blink::WebDXFeature::kAborting);
-  }
-  EXPECT_FALSE(scope.GetDocument().IsWebDXFeatureCounted(
-      mojom::blink::WebDXFeature::kAborting));
-
-  // Subsequent usage in the main world should still be counted and emit a
-  // trace event.
-  scope.GetDocument().CountWebDXFeature(mojom::blink::WebDXFeature::kAborting);
-  EXPECT_TRUE(scope.GetDocument().IsWebDXFeatureCounted(
-      mojom::blink::WebDXFeature::kAborting));
-
-  auto analyzer = trace_analyzer::Stop();
-
-  TraceEventVector events;
-  analyzer->FindEvents(Query::EventName() == Query::String("WebDXFeatureUsage"),
-                       &events);
-
-  ASSERT_EQ(1u, events.size());
-  EXPECT_EQ("aborting", events[0]->GetKnownArgAsString("feature"));
-  EXPECT_EQ("https://example.com/isolated-world.html",
-            events[0]->GetKnownArgAsString("url"));
 }
 
 }  // namespace blink

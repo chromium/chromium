@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/frame/webdx_feature_tracing.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
@@ -228,15 +227,6 @@ void UseCounterImpl::Count(const UseCounterFeature& feature,
 
   if (mute_count_)
     return;
-
-  if (DOMWrapperWorld::NonMainWorldsExistInMainThread()) {
-    if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-        isolate && isolate->InContext() &&
-        DOMWrapperWorld::Current(isolate).GetWorldType() ==
-            DOMWrapperWorld::WorldType::kInspectorIsolated) {
-      return;
-    }
-  }
 
   if (feature_tracker_.TestAndSet(feature)) {
     return;
