@@ -5,18 +5,22 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_UKM_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_UKM_TEST_HELPER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "components/ukm/test_ukm_recorder.h"
+
+class GURL;
 
 // A UKM entry consists of named metrics with int64_t values. Use a map to
 // specify expected metrics to test against an actual entry for tests.
 // A value of `nullopt` implies a value shouldn't exist for the given metric
 // name.
 using UkmMetricMap = std::map<const char*, std::optional<int64_t>>;
-using SourceUkmMetricMap =
-    std::map<ukm::SourceId, std::pair<GURL, UkmMetricMap>>;
 
 // Helper class to check entries have been logged as expected into UKM.
 // Tests use this by validating new entries after they are logged. The helper
@@ -46,12 +50,6 @@ class UkmEntryChecker {
   void ExpectNewEntries(const std::string& entry_name,
                         const std::vector<UkmMetricMap>& expected_entries);
 
-  // Like ExpectNewEntries(), but entries are keyed by source ID. For each
-  // recorded entry (as identified by its source ID), checks the values and the
-  // source's URL if the expected URL is not empty.
-  void ExpectNewEntriesBySource(const std::string& entry_name,
-                                const SourceUkmMetricMap& expected_data);
-
   // Returns number of new entries that have been recorded for `entry_name`.
   // Entries are considered new until they have been validated with
   // ExpectNewEntries() or similar.
@@ -59,13 +57,10 @@ class UkmEntryChecker {
   // the number of entries that have been validated.
   int NumNewEntriesRecorded(const std::string& entry_name) const;
 
+ private:
   // Returns number of entries for `entry_name`.
   size_t NumEntries(const std::string& entry_name) const;
 
-  // Returns the last recorded entry for `entry_name`.
-  const ukm::mojom::UkmEntry* LastUkmEntry(const std::string& entry_name) const;
-
- private:
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 
   // Keyed by entry name, and tracks the expected number of entries to ensure we

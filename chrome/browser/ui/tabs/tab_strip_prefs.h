@@ -19,9 +19,6 @@ enum class TabSearchPosition {
   kVerticalTabstrip,
 };
 
-// Returns the default behavior per platform for tab search position.
-bool GetDefaultTabSearchRightAligned();
-
 // Registers Tab Strip specific prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

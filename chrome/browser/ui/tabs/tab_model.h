@@ -99,12 +99,6 @@ class TabModel final : public TabInterface,
   // context of a tab strip.
   void DestroyTabFeatures();
 
-  // Provides access to the parent_collection_ for testing purposes. This method
-  // bypasses the PassKey mechanism, allowing tests to simulate scenarios and
-  // inspect the state without needing to replicate complex authorization
-  // mechanisms.
-  TabCollection* GetParentCollectionForTesting() { return parent_collection_; }
-
   // Called by TabStripModel when a tab is going to be hidden. Not called if
   // TabStripModel is being destroyed.
   void WillBecomeHidden(base::PassKey<TabStripModel>);

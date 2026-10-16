@@ -588,7 +588,6 @@ class TabStripModel {
   // features from showing tabstrip-modal UI.
   bool CanShowModalUI() const;
   std::unique_ptr<ScopedTabStripModalUI> ShowModalUI();
-  void ForceShowingModalUIForTesting(bool showing);
 
   // Command level API /////////////////////////////////////////////////////////
 
@@ -1219,10 +1218,6 @@ class TabStripModel {
   // single slot.
   void MoveTabRelative(TabRelativeDirection direction);
 
-  // Implementation of MoveSelectedTabsTo. Moves `length` of the selected tabs
-  // starting at `start` to `index`. See MoveSelectedTabsTo for more details.
-  void MoveSelectedTabsToImpl(int index, size_t start, size_t length);
-
   std::vector<int> GetSelectedPinnedTabs();
   std::vector<int> GetSelectedUnpinnedTabs();
 
@@ -1465,9 +1460,6 @@ class TabStripModel {
 
   // Returns the tab in selection_model_ with the lowest index.
   tabs::TabInterface* GetFirstSelectedTab() const;
-
-  // Returns the tab in selection_model_ with the highest index.
-  tabs::TabInterface* GetLastSelectedTab() const;
 
   // Returns a TabStripModelSelectionState with the same active, anchor, and
   // selected tabs as the given ListSelectionModel.

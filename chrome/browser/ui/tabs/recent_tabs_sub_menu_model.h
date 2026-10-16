@@ -97,7 +97,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   using SplitItems = std::map<int, SessionID>;
   struct SubMenuItem;
   using SubMenuItems = std::map<int, SubMenuItem>;
-  using DeviceNameItems = base::flat_set<int>;
 
   // Index of the separator that follows the history menu item. Used as a
   // reference position for inserting local entries.

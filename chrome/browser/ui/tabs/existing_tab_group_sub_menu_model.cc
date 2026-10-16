@@ -208,11 +208,6 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
   return false;
 }
 
-void ExistingTabGroupSubMenuModel::ExecuteExistingCommandForTesting(
-    size_t target_index) {
-  ExecuteExistingCommand(target_index);
-}
-
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   // The tab strip may have been modified while the context menu was open,
   // including closing the tab originally at `context_index`.

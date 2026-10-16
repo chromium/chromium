@@ -1707,10 +1707,6 @@ std::unique_ptr<ScopedTabStripModalUI> TabStripModel::ShowModalUI() {
   return std::make_unique<ScopedTabStripModalUIImpl>(this);
 }
 
-void TabStripModel::ForceShowingModalUIForTesting(bool showing) {
-  showing_modal_ui_ = showing;
-}
-
 void TabStripModel::AddWebContents(
     std::unique_ptr<WebContents> contents,
     int index,
@@ -4120,14 +4116,6 @@ tabs::TabInterface* TabStripModel::GetFirstSelectedTab() const {
   ui::ListSelectionModel::SelectedIndices selected_indices =
       selection_model_.GetListSelectionModel().selected_indices();
   CHECK(selected_indices.size() > 0);
-  return GetTabAtIndex(static_cast<int>(*selected_indices.begin()));
-}
-
-tabs::TabInterface* TabStripModel::GetLastSelectedTab() const {
-  ui::ListSelectionModel::SelectedIndices selected_indices =
-      selection_model_.GetListSelectionModel().selected_indices();
-  CHECK(selected_indices.size() > 0);
-  std::reverse(selected_indices.begin(), selected_indices.end());
   return GetTabAtIndex(static_cast<int>(*selected_indices.begin()));
 }
 

@@ -56,10 +56,6 @@ class TabAlertController
   static const TabAlertController* From(const TabInterface* tab);
   static TabAlertController* From(TabInterface* tab);
 
-  // Returns an alert state to be shown among given alert states.
-  static std::optional<TabAlert> GetAlertStateToShow(
-      const std::vector<TabAlert>& alert_states);
-
   // Returns a localized string describing the `alert_state`.
   static std::u16string GetTabAlertStateText(const TabAlert alert_state);
 

@@ -43,7 +43,6 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // Command IDs for various submenus.
   static constexpr int kMinExistingWindowCommandId = 1001;
   static constexpr int kMinExistingTabGroupCommandId = 1301;
-  static constexpr int kMinExistingComparisonTableCommandId = 1601;
   static constexpr int kMinSplitTabMenuModelCommandId = 1701;
   static constexpr int kMinSplitTabSwapMenuModelCommandId = 1801;
   static constexpr int kMinSplitViewLayoutMenuModelCommandId = 1901;

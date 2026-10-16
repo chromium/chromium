@@ -40,12 +40,6 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
                                 int context_index,
                                 TabMenuModelDelegate* tab_menu_model_delegate);
 
-  // Used for testing.
-  void ExecuteExistingCommandForTesting(size_t target_index);
-  size_t GetDisplayedGroupCount() {
-    return target_index_to_group_mapping_.size();
-  }
-
  private:
   // ExistingBaseSubMenuModel
   void ExecuteExistingCommand(size_t target_index) override;
