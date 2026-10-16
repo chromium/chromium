@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/display/types/drm_formats_and_modifiers.h"
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"

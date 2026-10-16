@@ -6,6 +6,7 @@
 #define UI_DISPLAY_MANAGER_MANAGED_DISPLAY_INFO_H_
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <map>
 #include <string>
@@ -15,6 +16,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/types/drm_formats_and_modifiers.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"

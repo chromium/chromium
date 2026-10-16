@@ -18,6 +18,7 @@
 #include "skia/ext/skcolorspace_primaries.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
+#include "ui/display/types/drm_formats_and_modifiers.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"

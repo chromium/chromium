@@ -10,6 +10,7 @@
 #include "ui/display/mojom/display_snapshot.mojom-shared.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/types/drm_formats_and_modifiers.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
