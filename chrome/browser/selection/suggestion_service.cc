@@ -118,7 +118,14 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
     base::TimeDelta client_prep;
     base::TimeDelta transmission;
     base::TimeDelta mes_overhead;
+    base::TimeDelta mes_image_prep;
+    base::TimeDelta mes_other_overhead;
     base::TimeDelta model_run;
+    base::TimeDelta model_content_proc;
+    base::TimeDelta model_queue_wait;  // The queue time before prefill starts.
+    base::TimeDelta model_prefill;
+    base::TimeDelta model_decode;
+    base::TimeDelta model_other;
   } durations = {
       .end_to_end = now - request_start_time,
       .client_mes_rpc = now - mes_request_start_time,
@@ -131,6 +138,27 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
     if (metrics.has_model_execution_ms()) {
       durations.model_run = base::Milliseconds(metrics.model_execution_ms());
       durations.mes_overhead = mes_total - durations.model_run;
+      if (metrics.has_mes_image_preprocessing_ms()) {
+        durations.mes_image_prep =
+            base::Milliseconds(metrics.mes_image_preprocessing_ms());
+        durations.mes_other_overhead =
+            durations.mes_overhead - durations.mes_image_prep;
+      }
+      if (metrics.has_model_content_processing_ms() &&
+          metrics.has_model_queue_wait_ms() && metrics.has_model_prefill_ms() &&
+          metrics.has_model_decode_ms()) {
+        durations.model_content_proc =
+            base::Milliseconds(metrics.model_content_processing_ms());
+        durations.model_queue_wait =
+            base::Milliseconds(metrics.model_queue_wait_ms());
+        durations.model_prefill =
+            base::Milliseconds(metrics.model_prefill_ms());
+        durations.model_decode = base::Milliseconds(metrics.model_decode_ms());
+        durations.model_other =
+            durations.model_run - durations.model_content_proc -
+            durations.model_queue_wait - durations.model_prefill -
+            durations.model_decode;
+      }
     }
   }
   // TODO(crbug.com/571693803): Add UKM and UMA metrics.
@@ -138,7 +166,14 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
           << " (client prep: " << durations.client_prep
           << ", transmission: " << durations.transmission
           << ", MES overhead: " << durations.mes_overhead
+          << " [image prep: " << durations.mes_image_prep
+          << ", other: " << durations.mes_other_overhead << "]"
           << ", model run: " << durations.model_run
+          << " [content proc: " << durations.model_content_proc
+          << ", queue wait: " << durations.model_queue_wait
+          << ", prefill: " << durations.model_prefill
+          << ", decode: " << durations.model_decode
+          << ", other: " << durations.model_other << "]"
           << ") (suggestions=" << num_suggestions << ")";
 }
 
