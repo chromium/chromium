@@ -64,8 +64,10 @@ SharingService::SharingService(
 
   // Only unregister if sync is disabled (not initializing).
   if (IsSyncDisabledForSharing(sync_service_)) {
-    // state_ is kept as State::DISABLED as SharingService has never registered,
-    // and only doing clean up via UnregisterDevice().
+    // Track that unregistration is in progress so `OnStateChanged()` does not
+    // start a new registration before `OnDeviceUnregistered()` completes and
+    // transitions the state to `REGISTERING` or `DISABLED`.
+    state_ = State::UNREGISTERING;
     UnregisterDevice();
   }
 
@@ -203,9 +205,11 @@ void SharingService::OnStateChanged(syncer::SyncService* sync) {
     state_ = State::REGISTERING;
     RegisterDevice();
   } else if (IsSyncDisabledForSharing(sync_service_) &&
-             state_ == State::ACTIVE) {
+             (state_ == State::ACTIVE || state_ == State::REGISTERING)) {
+    // Unregister both when already `ACTIVE` and when still `REGISTERING` (e.g.
+    // if registration is in flight or waiting for a backoff retry when sync is
+    // disabled).
     state_ = State::UNREGISTERING;
-    fcm_handler_->StopListening();
     UnregisterDevice();
   }
 }
@@ -276,6 +280,11 @@ void SharingService::OnDeviceUnregistered(
     state_ = State::REGISTERING;
     RegisterDevice();
   } else {
+    // Stop listening only after unregistration finishes deleting the FCM
+    // token. `StopListening()` removes the `GCMAppHandler` from `GCMDriver`,
+    // which would otherwise cause `GCMDriver::DeleteToken()` to fail if no app
+    // handlers remain.
+    fcm_handler_->StopListening();
     state_ = State::DISABLED;
   }
 
