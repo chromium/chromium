@@ -2006,6 +2006,10 @@ public abstract class ChromeFeatureList {
                     ANDROID_BOTTOM_BAR, "move_toolbar_settings_to_appearance", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarNtpScrollOffEnabled =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "ntp_scroll_off_enabled", true);
+    public static final BooleanCachedFeatureParam
+            sAndroidBottomBarRemoveTopPaddingForBottomOmnibox =
+                    newBooleanCachedFeatureParam(
+                            ANDROID_BOTTOM_BAR, "remove_top_padding_for_bottom_omnibox", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowBottomBarOnGts =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowGlicSettingToggle =
@@ -2393,6 +2397,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarKeepAppMenuInToolbar,
                     sAndroidBottomBarMoveToolbarSettingsToAppearance,
                     sAndroidBottomBarNtpScrollOffEnabled,
+                    sAndroidBottomBarRemoveTopPaddingForBottomOmnibox,
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomBarShowGlicSettingToggle,
                     sAndroidBottomBarShowSettingsToggle,

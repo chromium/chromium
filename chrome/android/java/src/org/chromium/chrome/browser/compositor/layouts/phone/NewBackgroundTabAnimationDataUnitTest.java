@@ -97,7 +97,8 @@ public class NewBackgroundTabAnimationDataUnitTest {
         Resources res = activity.getResources();
         mToolbarButtonWidth = res.getDimensionPixelSize(R.dimen.toolbar_button_width);
         mToolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-        mBottomBarHeight = BottomBarUtils.getBottomBarHeight(activity);
+        mBottomBarHeight =
+                BottomBarUtils.getBottomBarHeight(activity, /* isBottomOmniboxPresent= */ false);
 
         mToolbarTabSwitcherButton = new View(activity);
         mToolbarTabSwitcherButton.setId(R.id.tab_switcher_button);

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -163,6 +164,51 @@ public class BottomBarViewBinderUnitTest {
         assertEquals(4, homeButton.getPaddingStart());
         assertEquals(8, homeButton.getPaddingTop());
         assertEquals(4, homeButton.getPaddingEnd());
+        assertEquals(8, homeButton.getPaddingBottom());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testTopPaddingRemovedProperty() {
+        View newTabButton = mBottomBarView.findViewById(R.id.new_tab_button);
+        View homeButton =
+                mBottomBarView.getContainerForAction(ActionId.HOME_BUTTON).getTargetView();
+        assertNotNull(homeButton);
+
+        // Initially top padding is not removed (8px top and bottom at 56dp height).
+        assertEquals(8, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+        assertEquals(8, homeButton.getPaddingTop());
+        assertEquals(8, homeButton.getPaddingBottom());
+
+        // Remove top padding: topPad becomes 0, bottomPad stays 8.
+        mModel.set(BottomBarProperties.IS_TOP_PADDING_REMOVED, true);
+        assertEquals(0, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+        assertEquals(0, homeButton.getPaddingTop());
+        assertEquals(8, homeButton.getPaddingBottom());
+        LayerDrawable newTabBackground =
+                (LayerDrawable) mBottomBarView.getNewTabBackgroundForTesting();
+        assertEquals(0, newTabBackground.getLayerInsetTop(0));
+        assertEquals(8, newTabBackground.getLayerInsetBottom(0));
+
+        // Ensure color scheme updates preserve the removed top padding and layer insets.
+        mModel.set(BottomBarProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        assertEquals(0, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+        assertEquals(0, homeButton.getPaddingTop());
+        assertEquals(8, homeButton.getPaddingBottom());
+        assertEquals(0, mBottomBarView.getNewTabRippleNoBackgroundForTesting().getLayerInsetTop(0));
+        assertEquals(
+                8, mBottomBarView.getNewTabRippleNoBackgroundForTesting().getLayerInsetBottom(0));
+        assertEquals(0, mBottomBarView.getOtherRipplesForTesting()[0].getLayerInsetTop(0));
+        assertEquals(8, mBottomBarView.getOtherRipplesForTesting()[0].getLayerInsetBottom(0));
+
+        // Restore top padding: topPad returns to 8.
+        mModel.set(BottomBarProperties.IS_TOP_PADDING_REMOVED, false);
+        assertEquals(8, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+        assertEquals(8, homeButton.getPaddingTop());
         assertEquals(8, homeButton.getPaddingBottom());
     }
 }

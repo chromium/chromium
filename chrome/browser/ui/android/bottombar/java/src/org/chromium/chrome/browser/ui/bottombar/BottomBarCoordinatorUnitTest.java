@@ -43,6 +43,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -109,6 +110,7 @@ public class BottomBarCoordinatorUnitTest {
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private BottomBarCoordinator mCoordinator;
 
     @Before
@@ -130,6 +132,7 @@ public class BottomBarCoordinatorUnitTest {
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
+        mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mCoordinator =
                 new BottomBarCoordinator(
                         mParent,
@@ -141,7 +144,8 @@ public class BottomBarCoordinatorUnitTest {
                         mProfileSupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
@@ -480,7 +484,8 @@ public class BottomBarCoordinatorUnitTest {
                         mProfileSupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
@@ -532,7 +537,8 @@ public class BottomBarCoordinatorUnitTest {
                         mProfileSupplier,
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
 
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -548,6 +554,32 @@ public class BottomBarCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bottom_bar_height_dp/48")
     public void testBottomBarHeight() {
         assertEquals(48, mCoordinator.getView().getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testBottomBarHeight_RemoveTopPaddingForBottomOmnibox() {
+        View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertEquals(56, mCoordinator.getView().getLayoutParams().height);
+        assertEquals(8, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+
+        mToolbarPositionSupplier.set(ControlsPosition.BOTTOM);
+        assertEquals(48, mCoordinator.getView().getLayoutParams().height);
+        assertEquals(0, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+
+        // Switching to Hub host restores top padding and full height.
+        mCoordinator.setParent(Host.HUB);
+        assertEquals(56, mCoordinator.getView().getLayoutParams().height);
+        assertEquals(8, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
+
+        // Returning to Tabbed host removes top padding again.
+        mCoordinator.setParent(Host.TABBED);
+        assertEquals(48, mCoordinator.getView().getLayoutParams().height);
+        assertEquals(0, newTabButton.getPaddingTop());
+        assertEquals(8, newTabButton.getPaddingBottom());
     }
 
     @Test

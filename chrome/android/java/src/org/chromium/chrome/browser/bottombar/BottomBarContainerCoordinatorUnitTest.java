@@ -37,6 +37,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
@@ -97,6 +98,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private BottomBarContainerCoordinator mCoordinator;
 
     @Before
@@ -121,6 +123,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
                             mModalDialogManagerSupplier =
                                     ObservableSuppliers.createNonNull(mModalDialogManager);
+                            mToolbarPositionSupplier =
+                                    ObservableSuppliers.createNonNull(ControlsPosition.TOP);
                             mProfileSupplier.set(mProfile);
                             mCoordinator =
                                     new BottomBarContainerCoordinator(
@@ -134,7 +138,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                                             mOmniboxFocusStateSupplier,
                                             mModalDialogManagerSupplier,
                                             new OneshotSupplierImpl<AppMenuCoordinator>(),
-                                            mLayoutStateProvider);
+                                            mLayoutStateProvider,
+                                            mToolbarPositionSupplier);
                         });
         RobolectricUtil.runAllBackgroundAndUi();
     }
@@ -142,6 +147,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Test
     public void testInitialization() {
         mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mVisibilityController).setBottomControlsHeight(56);
         verify(mVisibilityController).setBottomControlsVisible(true);
         verify(mOnModelTokenChange).onResult(any());
         verify(mActionRegistry, times(2)).get(ActionId.NEW_TAB);
@@ -390,7 +396,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         new OneshotSupplierImpl<AppMenuCoordinator>(),
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
@@ -433,7 +440,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         new OneshotSupplierImpl<AppMenuCoordinator>(),
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
@@ -442,5 +450,14 @@ public class BottomBarContainerCoordinatorUnitTest {
                 mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button_container);
         assertNotNull(extraContainer);
         assertEquals(View.GONE, extraContainer.getVisibility());
+    }
+
+    @Test
+    public void testOnHeightChanged() {
+        mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mVisibilityController).setBottomControlsHeight(56);
+
+        mCoordinator.onHeightChanged(48);
+        verify(mVisibilityController).setBottomControlsHeight(48);
     }
 }

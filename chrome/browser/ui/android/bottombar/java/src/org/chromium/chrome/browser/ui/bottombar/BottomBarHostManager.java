@@ -71,8 +71,8 @@ public class BottomBarHostManager {
             viewGroup.removeView(view);
         }
 
-        attachCallback.onResult(view);
         mBottomBar.setParent(host);
+        attachCallback.onResult(view);
     }
 
     /** Returns whether the BottomBar promo dialog is shown. */

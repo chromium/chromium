@@ -37,7 +37,8 @@ public class BottomBarButtonContainer extends FrameLayout
     private @Nullable Drawable mTargetBackground;
     private @Nullable @BrandedColorScheme Integer mColorScheme;
     private @Px int mTargetPaddingHorizontal = -1;
-    private @Px int mTargetPaddingVertical = -1;
+    private @Px int mTargetPaddingTop = -1;
+    private @Px int mTargetPaddingBottom = -1;
 
     public BottomBarButtonContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -148,22 +149,27 @@ public class BottomBarButtonContainer extends FrameLayout
      * Sets target paddings to apply to the target child view once inflated or immediately.
      *
      * @param hPad The horizontal padding in pixels.
-     * @param vPad The vertical padding in pixels.
+     * @param topPad The top vertical padding in pixels.
+     * @param bottomPad The bottom vertical padding in pixels.
      */
-    /*package*/ void setTargetPaddings(@Px int hPad, @Px int vPad) {
+    /*package*/ void setTargetPaddings(@Px int hPad, @Px int topPad, @Px int bottomPad) {
         mTargetPaddingHorizontal = hPad;
-        mTargetPaddingVertical = vPad;
+        mTargetPaddingTop = topPad;
+        mTargetPaddingBottom = bottomPad;
         applyTargetPaddings();
     }
 
     private void applyTargetPaddings() {
-        if (mTargetView == null || mTargetPaddingHorizontal < 0 || mTargetPaddingVertical < 0) {
+        if (mTargetView == null
+                || mTargetPaddingHorizontal < 0
+                || mTargetPaddingTop < 0
+                || mTargetPaddingBottom < 0) {
             return;
         }
         mTargetView.setPaddingRelative(
                 mTargetPaddingHorizontal,
-                mTargetPaddingVertical,
+                mTargetPaddingTop,
                 mTargetPaddingHorizontal,
-                mTargetPaddingVertical);
+                mTargetPaddingBottom);
     }
 }

@@ -66,7 +66,9 @@ public class BottomBarUtilsUnitTest {
     public void testDimensions_Default56dp() {
         // Baseline 56dp. The new tab background stays at its declared 40dp, so the vertical
         // padding is (56 - 40) / 2 = 8px.
-        assertEquals(56, BottomBarUtils.getBottomBarHeight(mContext));
+        assertEquals(
+                56,
+                BottomBarUtils.getBottomBarHeight(mContext, /* isBottomOmniboxPresent= */ false));
         assertEquals(8, BottomBarUtils.getButtonPaddingVertical(mContext));
     }
 
@@ -76,8 +78,35 @@ public class BottomBarUtilsUnitTest {
     public void testDimensions_HighDensityXhdpi() {
         // At 2.0x density the bar is 48dp * 2 = 96px and the background 40dp * 2 = 80px, so the
         // vertical padding is (96 - 80) / 2 = 8px.
-        assertEquals(96, BottomBarUtils.getBottomBarHeight(mContext));
+        assertEquals(
+                96,
+                BottomBarUtils.getBottomBarHeight(mContext, /* isBottomOmniboxPresent= */ false));
         assertEquals(8, BottomBarUtils.getButtonPaddingVertical(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testGetBottomBarHeight_RemoveTopPaddingForBottomOmniboxDefaultEnabled() {
+        // When bottom omnibox is absent, height remains 56px.
+        assertEquals(
+                56,
+                BottomBarUtils.getBottomBarHeight(mContext, /* isBottomOmniboxPresent= */ false));
+        // When bottom omnibox is present, top padding (8px) is subtracted: 56 - 8 = 48px.
+        assertEquals(
+                48,
+                BottomBarUtils.getBottomBarHeight(mContext, /* isBottomOmniboxPresent= */ true));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":remove_top_padding_for_bottom_omnibox/false")
+    public void testGetBottomBarHeight_RemoveTopPaddingForBottomOmniboxDisabled() {
+        assertEquals(
+                56,
+                BottomBarUtils.getBottomBarHeight(mContext, /* isBottomOmniboxPresent= */ false));
+        assertEquals(
+                56,
+                BottomBarUtils.getBottomBarHeight(mContext, /* isBottomOmniboxPresent= */ true));
     }
 
     @Test

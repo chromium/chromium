@@ -1039,7 +1039,9 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         assertNotNull(thumbnailCallback);
 
         Size thumbnailSize = new Size(20, 85);
-        int bottomBarHeight = BottomBarUtils.getBottomBarHeight(mHubContainerView.getContext());
+        int bottomBarHeight =
+                BottomBarUtils.getBottomBarHeight(
+                        mHubContainerView.getContext(), /* isBottomOmniboxPresent= */ false);
         Rect initialRect = new Rect(0, 0, WIDTH, 10);
         Rect finalRect = new Rect(50, 10, 70, 95);
         ShrinkExpandAnimationData data =

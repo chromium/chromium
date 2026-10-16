@@ -9,11 +9,14 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -34,7 +37,7 @@ public class BottomBarView extends LinearLayout {
     private BottomBarButtonContainer mTabSwitcherContainer;
     private BottomBarButtonContainer mAppMenuContainer;
     private View mNewTabButton;
-    private Drawable mNewTabBackground;
+    private LayerDrawable mNewTabBackground;
     private RippleDrawable mNewTabRippleBackground;
     private RippleDrawable mNewTabRippleNoBackground;
     private BottomBarButtonContainer[] mOtherContainers;
@@ -53,6 +56,7 @@ public class BottomBarView extends LinearLayout {
     private @Px int mNewTabPaddingEnd;
     private @Px int mNewTabPaddingBottom;
     private float mDisabledAlpha;
+    private boolean mRemoveTopPadding;
 
     public BottomBarView(Context context, @Nullable AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -86,8 +90,9 @@ public class BottomBarView extends LinearLayout {
         mDisabledAlpha =
                 ValueUtils.getFloat(context.getResources(), R.dimen.default_disabled_alpha);
         mNewTabBackground =
-                assertNonNull(context.getDrawable(R.drawable.bottom_bar_new_tab_background))
-                        .mutate();
+                (LayerDrawable)
+                        assertNonNull(context.getDrawable(R.drawable.bottom_bar_new_tab_background))
+                                .mutate();
 
         mNewTabRippleBackground =
                 new RippleDrawable(ColorStateList.valueOf(0), mNewTabBackground, mNewTabBackground);
@@ -107,28 +112,71 @@ public class BottomBarView extends LinearLayout {
     }
 
     /**
-     * Applies dynamic button vertical padding based on the configured bar height.
+     * Sets whether the top vertical padding of the bottom bar is removed (e.g. when the bottom
+     * omnibox is present).
      *
-     * <p>Only the bar height (set on {@code LayoutParams.height} in {@link BottomBarCoordinator})
-     * and the button vertical padding depend on the configuration. The new tab background, the
-     * action icons and the hover ripples all declare a fixed size in XML and center themselves
-     * within the full bounds of their view, so they need no adjustment here. The vertical padding
-     * is what keeps the {@code boundsRespectPadding} IPH highlight aligned with that fixed-size
-     * artwork.
+     * @param removeTopPadding True if the top padding should be removed, false otherwise.
+     */
+    public void setTopPaddingRemoved(boolean removeTopPadding) {
+        if (mRemoveTopPadding == removeTopPadding) return;
+        mRemoveTopPadding = removeTopPadding;
+        applyDynamicDimensions(getContext());
+    }
+
+    /**
+     * Applies dynamic button vertical padding and bar height based on the configured bar height and
+     * whether top padding is removed.
+     *
+     * <p>The new tab background, the action icons and the hover ripples all declare a fixed size in
+     * XML and center themselves within their layer bounds. When top padding is removed, asymmetric
+     * vertical layer insets keep the fixed-size background and ripples aligned with the padded
+     * content box and the {@code boundsRespectPadding} IPH highlight.
      */
     private void applyDynamicDimensions(Context context) {
         @Px int vPad = BottomBarUtils.getButtonPaddingVertical(context);
+        @Px int topPad = mRemoveTopPadding ? 0 : vPad;
+        @Px int bottomPad = vPad;
         @Px
         int hPad =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.bottom_bar_button_padding_horizontal);
 
-        mNewTabPaddingTop = vPad;
-        mNewTabPaddingBottom = vPad;
-        mNewTabButton.setPaddingRelative(mNewTabPaddingStart, vPad, mNewTabPaddingEnd, vPad);
+        @Px
+        int height =
+                BottomBarUtils.getBottomBarHeight(context, /* isBottomOmniboxPresent= */ false)
+                        - (vPad - topPad);
+        ViewGroup.LayoutParams params = getLayoutParams();
+        if (params != null && params.height != height) {
+            params.height = height;
+            setLayoutParams(params);
+        }
+
+        mNewTabPaddingTop = topPad;
+        mNewTabPaddingBottom = bottomPad;
+        updateDrawableLayerInsets();
+
+        mNewTabButton.setPaddingRelative(mNewTabPaddingStart, topPad, mNewTabPaddingEnd, bottomPad);
 
         for (BottomBarButtonContainer container : mOtherContainers) {
-            container.setTargetPaddings(hPad, vPad);
+            container.setTargetPaddings(hPad, topPad, bottomPad);
+        }
+    }
+
+    private void updateDrawableLayerInsets() {
+        applyVerticalLayerInset(mNewTabBackground);
+        applyVerticalLayerInset(mNewTabRippleNoBackground);
+        for (RippleDrawable ripple : mOtherRipples) {
+            if (ripple != null) {
+                applyVerticalLayerInset(ripple);
+            }
+        }
+    }
+
+    private void applyVerticalLayerInset(LayerDrawable drawable) {
+        drawable.setLayerInset(0, 0, mNewTabPaddingTop, 0, mNewTabPaddingBottom);
+        Rect bounds = drawable.getBounds();
+        if (!bounds.isEmpty()) {
+            drawable.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
         }
     }
 
@@ -253,9 +301,12 @@ public class BottomBarView extends LinearLayout {
             mColorScheme = colorScheme;
             for (int i = 0; i < mOtherContainers.length; i++) {
                 mOtherRipples[i] = BottomBarUtils.createHoverableRipple(context, colorScheme);
-                mOtherContainers[i].setTargetBackground(mOtherRipples[i]);
             }
             mNewTabRippleNoBackground = BottomBarUtils.createHoverableRipple(context, colorScheme);
+            updateDrawableLayerInsets();
+            for (int i = 0; i < mOtherContainers.length; i++) {
+                mOtherContainers[i].setTargetBackground(mOtherRipples[i]);
+            }
             if (mNewTabBackgroundVisible == null || !mNewTabBackgroundVisible) {
                 setNewTabButtonBackground(mNewTabRippleNoBackground);
             }

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import org.junit.After;
@@ -42,6 +43,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -95,6 +97,7 @@ public class BottomBarMediatorUnitTest {
 
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private SettableNullableObservableSupplier<PropertyModel> mGlicActionSupplier;
     private SettableNullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
     private PropertyModel mModel;
@@ -105,6 +108,7 @@ public class BottomBarMediatorUnitTest {
     public void setUp() {
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(false);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
+        mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mProfileSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier.set(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -123,7 +127,10 @@ public class BottomBarMediatorUnitTest {
         when(mActionRegistry.get(ActionId.GLIC)).thenReturn(mGlicActionSupplier);
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mNewTabActionSupplier);
 
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        displayMetrics.density = 1.0f;
         when(mContext.getResources()).thenReturn(mResources);
+        when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
         when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_radius))
                 .thenReturn(12);
         when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_size))
@@ -413,7 +420,8 @@ public class BottomBarMediatorUnitTest {
                         mOmniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         mActionRegistry,
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
 
         // Bottom bar is visible, but startup promo flow hasn't finished. IPH should NOT be shown.
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -725,6 +733,56 @@ public class BottomBarMediatorUnitTest {
         verify(mVisibilityDelegate, never()).onModelTokenChange();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testToolbarPositionChanged_RemoveTopPaddingForBottomOmniboxDefaultEnabled() {
+        createMediator();
+        assertNotNull(mMediator);
+
+        // Initially TOP toolbar: top padding not removed, height is 56px.
+        assertFalse(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate).onHeightChanged(56);
+
+        // Switch to BOTTOM toolbar: top padding removed, height is 48px.
+        mToolbarPositionSupplier.set(ControlsPosition.BOTTOM);
+        assertTrue(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate).onHeightChanged(48);
+
+        // Switch to HUB host: top padding restored on view while in Hub. The tabbed host container
+        // height must stay at 48px since the Hub hosts the view in its own container.
+        clearInvocations(mVisibilityDelegate);
+        mMediator.setParent(Host.HUB);
+        assertFalse(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate, never()).onHeightChanged(56);
+
+        // Return to TABBED host: top padding removed again, tabbed height unchanged.
+        mMediator.setParent(Host.TABBED);
+        assertTrue(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate, never()).onHeightChanged(56);
+
+        // Switch back to TOP toolbar: top padding restored, height is 56px.
+        clearInvocations(mVisibilityDelegate);
+        mToolbarPositionSupplier.set(ControlsPosition.TOP);
+        assertFalse(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate).onHeightChanged(56);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":remove_top_padding_for_bottom_omnibox/false")
+    public void testToolbarPositionChanged_RemoveTopPaddingForBottomOmniboxDisabled() {
+        createMediator();
+        assertNotNull(mMediator);
+
+        assertFalse(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate).onHeightChanged(56);
+
+        clearInvocations(mVisibilityDelegate);
+        mToolbarPositionSupplier.set(ControlsPosition.BOTTOM);
+        assertFalse(mModel.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        verify(mVisibilityDelegate).onHeightChanged(56);
+    }
+
     private void createMediator() {
         mMediator =
                 new BottomBarMediator(
@@ -738,7 +796,8 @@ public class BottomBarMediatorUnitTest {
                         mOmniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         mActionRegistry,
-                        mLayoutStateProvider);
+                        mLayoutStateProvider,
+                        mToolbarPositionSupplier);
         mMediator.onStartupPromoFlowFinished(false);
     }
 }

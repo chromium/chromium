@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -86,9 +87,6 @@ class BottomControlsMediator
 
     private final TabObscuringHandler mTabObscuringHandler;
 
-    /** The height of the bottom bar in pixels, not including the top shadow. */
-    private final int mBottomControlsHeight;
-
     /** The height of the top shadow. */
     private final int mBottomControlsShadowHeight;
 
@@ -116,6 +114,9 @@ class BottomControlsMediator
 
     /** The bottom controls visibility. */
     private boolean mIsBottomControlsVisible;
+
+    /** The height of the bottom bar in pixels, not including the top shadow. */
+    private int mBottomControlsHeight;
 
     /** The state of the overlay panel. */
     private @PanelState int mOverlayPanelState = PanelState.CLOSED;
@@ -265,6 +266,13 @@ class BottomControlsMediator
         if (visible && visibilityChanged) {
             mBrowserControlsVisibilityDelegate.showControlsTransient();
         }
+    }
+
+    void setBottomControlsHeight(@Px int height) {
+        if (mBottomControlsHeight == height) return;
+        mBottomControlsHeight = height;
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT_NO_PADDING, height);
+        mBottomControlsStacker.requestLayerUpdate(false);
     }
 
     /** Clean up anything that needs to be when the bottom controls component is destroyed. */

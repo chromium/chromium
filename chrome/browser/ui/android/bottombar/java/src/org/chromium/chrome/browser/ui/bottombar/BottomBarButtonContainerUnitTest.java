@@ -140,10 +140,10 @@ public class BottomBarButtonContainerUnitTest {
         mContainer.addView(child);
         mContainer.onFinishInflate();
 
-        mContainer.setTargetPaddings(/* hPad= */ 6, /* vPad= */ 8);
+        mContainer.setTargetPaddings(/* hPad= */ 6, /* topPad= */ 2, /* bottomPad= */ 8);
 
         assertEquals(6, child.getPaddingStart());
-        assertEquals(8, child.getPaddingTop());
+        assertEquals(2, child.getPaddingTop());
         assertEquals(6, child.getPaddingEnd());
         assertEquals(8, child.getPaddingBottom());
     }
@@ -155,14 +155,14 @@ public class BottomBarButtonContainerUnitTest {
         mContainer.addView(stub);
         mContainer.onFinishInflate();
 
-        mContainer.setTargetPaddings(/* hPad= */ 6, /* vPad= */ 8);
+        mContainer.setTargetPaddings(/* hPad= */ 6, /* topPad= */ 2, /* bottomPad= */ 8);
 
         mContainer.inflateStub();
         View targetView = mContainer.getTargetView();
         assertNotNull(targetView);
 
         assertEquals(6, targetView.getPaddingStart());
-        assertEquals(8, targetView.getPaddingTop());
+        assertEquals(2, targetView.getPaddingTop());
         assertEquals(6, targetView.getPaddingEnd());
         assertEquals(8, targetView.getPaddingBottom());
     }

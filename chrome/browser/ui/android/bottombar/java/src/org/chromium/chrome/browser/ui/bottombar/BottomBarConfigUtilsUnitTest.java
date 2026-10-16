@@ -488,4 +488,17 @@ public class BottomBarConfigUtilsUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(true);
         assertTrue(BottomBarConfigUtils.isNtp(mTab));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldRemoveTopPaddingForBottomOmnibox_DefaultTrue() {
+        assertTrue(BottomBarConfigUtils.shouldRemoveTopPaddingForBottomOmnibox());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":remove_top_padding_for_bottom_omnibox/false")
+    public void testShouldRemoveTopPaddingForBottomOmnibox_FalseParam() {
+        assertFalse(BottomBarConfigUtils.shouldRemoveTopPaddingForBottomOmnibox());
+    }
 }

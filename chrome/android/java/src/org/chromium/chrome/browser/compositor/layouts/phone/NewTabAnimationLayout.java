@@ -498,16 +498,16 @@ public class NewTabAnimationLayout extends Layout {
 
         Context context = getContext();
         int height = 0;
-        if (mIsBottomBarEnabled) {
-            height += BottomBarUtils.getBottomBarHeight(context);
-        }
-
         boolean hasBottomToolbar = false;
         if (!ToolbarPositionController.shouldShowToolbarOnTop(tab)) {
             height +=
                     context.getResources()
                             .getDimensionPixelSize(R.dimen.control_container_height);
             hasBottomToolbar = true;
+        }
+
+        if (mIsBottomBarEnabled) {
+            height += BottomBarUtils.getBottomBarHeight(context, hasBottomToolbar);
         }
 
         // Edge-to-Edge Bottom Chin Height

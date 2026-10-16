@@ -45,6 +45,8 @@ public class BottomBarViewBinder {
         } else if (BottomBarProperties.IS_APP_MENU_BUTTON_VISIBLE == propertyKey) {
             view.setButtonVisibility(
                     ActionId.APP_MENU, model.get(BottomBarProperties.IS_APP_MENU_BUTTON_VISIBLE));
+        } else if (BottomBarProperties.IS_TOP_PADDING_REMOVED == propertyKey) {
+            view.setTopPaddingRemoved(model.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
         }
     }
 }

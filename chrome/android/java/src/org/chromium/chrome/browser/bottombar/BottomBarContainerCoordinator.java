@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -21,6 +22,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -82,6 +84,7 @@ public class BottomBarContainerCoordinator
     private @Nullable Callback<Object> mOnModelTokenChange;
     private @Nullable BottomBarAppMenuUpdateBadgeController mAppMenuUpdateBadgeController;
     private boolean mIsVisible = true;
+    private @Px int mHeight;
     // Tracking if there is a pending visibility update to avoid scanning the whole queue.
     private boolean mPendingVisibilityUpdate;
     private int mCurrentOrientation;
@@ -99,6 +102,8 @@ public class BottomBarContainerCoordinator
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
+     * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
+     * @param toolbarPositionSupplier Supplier of the current toolbar position.
      */
     public BottomBarContainerCoordinator(
             FrameLayout bottomBarContainer,
@@ -111,7 +116,8 @@ public class BottomBarContainerCoordinator
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
-            LayoutStateProvider layoutStateProvider) {
+            LayoutStateProvider layoutStateProvider,
+            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mBottomBarContainer = bottomBarContainer;
         Context context = bottomBarContainer.getContext();
         mContext = context;
@@ -134,7 +140,8 @@ public class BottomBarContainerCoordinator
                         profileSupplier,
                         omniboxFocusStateSupplier,
                         modalDialogManagerSupplier,
-                        layoutStateProvider);
+                        layoutStateProvider,
+                        toolbarPositionSupplier);
         if (BottomBarConfigUtils.shouldIncludeAppMenuButton()
                 && BottomBarConfigUtils.shouldShowAppMenuUpdateBadge()) {
             mAppMenuUpdateBadgeController =
@@ -149,6 +156,7 @@ public class BottomBarContainerCoordinator
             Callback<Object> onModelTokenChange) {
         mVisibilityController = visibilityController;
         mOnModelTokenChange = onModelTokenChange;
+        updateHeight();
         updateVisibility();
         onModelTokenChange();
     }
@@ -183,6 +191,13 @@ public class BottomBarContainerCoordinator
     }
 
     @Override
+    public void onHeightChanged(@Px int height) {
+        if (mHeight == height) return;
+        mHeight = height;
+        updateHeight();
+    }
+
+    @Override
     public @LayerScrollBehavior int getScrollBehavior() {
         return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
     }
@@ -203,6 +218,12 @@ public class BottomBarContainerCoordinator
 
         onModelTokenChange();
         mRequestLayerUpdateCallback.onResult(true);
+    }
+
+    private void updateHeight() {
+        if (mVisibilityController != null && mHeight > 0) {
+            mVisibilityController.setBottomControlsHeight(mHeight);
+        }
     }
 
     private void updateVisibility() {

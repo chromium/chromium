@@ -119,6 +119,11 @@ public class BottomBarConfigUtils {
         return ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.getValue();
     }
 
+    /** Whether to remove top padding in the bottom bar when the bottom omnibox is present. */
+    public static boolean shouldRemoveTopPaddingForBottomOmnibox() {
+        return ChromeFeatureList.sAndroidBottomBarRemoveTopPaddingForBottomOmnibox.getValue();
+    }
+
     /**
      * Whether bottom controls scroll-off is enabled for the given tab. Scroll-off is enabled for
      * regular (non-incognito) NTP when the bottom bar is enabled.

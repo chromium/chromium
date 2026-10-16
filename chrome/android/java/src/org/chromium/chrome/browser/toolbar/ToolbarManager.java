@@ -2628,7 +2628,8 @@ public class ToolbarManager
                         mOmniboxFocusStateSupplier,
                         mModalDialogManagerSupplier,
                         mAppMenuCoordinatorSupplier,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mToolbarPositionSupplier);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {
@@ -2649,7 +2650,9 @@ public class ToolbarManager
                         mActivityTabProvider.asObservable(),
                         (ScrollingBottomViewResourceFrameLayout) bottomAppBarContainer,
                         LayerType.BOTTOM_APP_BAR,
-                        BottomBarUtils.getBottomBarHeight(mActivity),
+                        BottomBarUtils.getBottomBarHeight(
+                                mActivity,
+                                mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM),
                         bottomBarContainerOneshotSupplier,
                         mTabObscuringHandler,
                         mLayoutManager.getOverlayPanelManager().getPanelStateSupplier(),

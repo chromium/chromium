@@ -194,7 +194,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mIsBottomBarEnabledOnGts =
                 BottomBarConfigUtils.isBottomBarEnabled(context)
                         && BottomBarConfigUtils.shouldShowOnGts();
-        mBottomBarHeight = BottomBarUtils.getBottomBarHeight(context);
+        mBottomBarHeight =
+                BottomBarUtils.getBottomBarHeight(context, /* isBottomOmniboxPresent= */ false);
 
         mMenuOrKeyboardActionHandler =
                 (int id, boolean _) -> {

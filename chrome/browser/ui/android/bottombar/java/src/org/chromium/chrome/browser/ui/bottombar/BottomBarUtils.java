@@ -53,10 +53,22 @@ public class BottomBarUtils {
         return IncognitoColors.getColorSurfaceContainerHigh(context, isIncognito);
     }
 
-    /** Gets the height of the bottom bar. */
-    public static @Px int getBottomBarHeight(Context context) {
+    /**
+     * Gets the height of the bottom bar, accounting for whether the bottom omnibox is present.
+     *
+     * @param context The context used to resolve dimensions.
+     * @param isBottomOmniboxPresent Whether the bottom omnibox is present right above the bottom
+     *     bar. Pass {@code false} to get the full configured bar height.
+     * @return The height of the bottom bar in pixels.
+     */
+    public static @Px int getBottomBarHeight(Context context, boolean isBottomOmniboxPresent) {
         int heightDp = BottomBarConfigUtils.getBottomBarHeightDp();
-        return ViewUtils.dpToPx(context, heightDp);
+        int heightPx = ViewUtils.dpToPx(context, heightDp);
+        if (isBottomOmniboxPresent
+                && BottomBarConfigUtils.shouldRemoveTopPaddingForBottomOmnibox()) {
+            heightPx -= getButtonPaddingVertical(context);
+        }
+        return heightPx;
     }
 
     /**
@@ -68,7 +80,7 @@ public class BottomBarUtils {
      * also what keeps the IPH highlight rectangle wrapped tightly around that background.
      */
     public static @Px int getButtonPaddingVertical(Context context) {
-        int barHeightPx = getBottomBarHeight(context);
+        int barHeightPx = getBottomBarHeight(context, /* isBottomOmniboxPresent= */ false);
         int backgroundSizePx =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_size);

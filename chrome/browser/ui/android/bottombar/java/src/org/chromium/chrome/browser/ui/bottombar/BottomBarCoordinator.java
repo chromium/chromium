@@ -15,6 +15,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -56,6 +57,8 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
      * @param profileSupplier Supplier of the current profile.
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
+     * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
+     * @param toolbarPositionSupplier Supplier of the current toolbar position.
      */
     public BottomBarCoordinator(
             ViewGroup parent,
@@ -67,13 +70,16 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             NullableObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            LayoutStateProvider layoutStateProvider) {
+            LayoutStateProvider layoutStateProvider,
+            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         Context context = parent.getContext();
         mView =
                 (BottomBarView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.bottom_bar_layout, parent, false);
-        int height = BottomBarUtils.getBottomBarHeight(context);
+        int height =
+                BottomBarUtils.getBottomBarHeight(
+                        context, toolbarPositionSupplier.get() == ControlsPosition.BOTTOM);
         ViewGroup.LayoutParams params = mView.getLayoutParams();
         if (params != null && params.height != height) {
             params.height = height;
@@ -102,7 +108,8 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         omniboxFocusStateSupplier,
                         mPromoDialogCoordinator,
                         actionRegistry,
-                        layoutStateProvider);
+                        layoutStateProvider,
+                        toolbarPositionSupplier);
         mPromoDialogCoordinator.setListener(mMediator);
 
         mTabSupplier = tabSupplier;

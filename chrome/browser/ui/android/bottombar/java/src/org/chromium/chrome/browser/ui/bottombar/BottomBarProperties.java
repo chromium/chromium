@@ -31,6 +31,8 @@ public class BottomBarProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_APP_MENU_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_TOP_PADDING_REMOVED =
+            new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -43,5 +45,6 @@ public class BottomBarProperties {
                 IS_NEW_TAB_BUTTON_VISIBLE,
                 IS_TAB_SWITCHER_BUTTON_VISIBLE,
                 IS_APP_MENU_BUTTON_VISIBLE,
+                IS_TOP_PADDING_REMOVED,
             };
 }

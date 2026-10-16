@@ -57,6 +57,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
     /** Interface for the BottomControls component to hide and show itself. */
     public interface BottomControlsVisibilityController {
         void setBottomControlsVisible(boolean isVisible);
+
+        default void setBottomControlsHeight(@Px int height) {}
     }
 
     /** The mediator that handles events from outside the bottom controls. */
@@ -187,6 +189,11 @@ public class BottomControlsCoordinator implements BackPressHandler {
                                 @Override
                                 public void setBottomControlsVisible(boolean isVisible) {
                                     mMediator.setBottomControlsVisible(isVisible);
+                                }
+
+                                @Override
+                                public void setBottomControlsHeight(@Px int height) {
+                                    mMediator.setBottomControlsHeight(height);
                                 }
                             },
                             root::onModelTokenChange);

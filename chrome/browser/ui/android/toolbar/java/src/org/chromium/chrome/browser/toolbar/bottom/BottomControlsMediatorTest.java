@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -746,5 +747,21 @@ public class BottomControlsMediatorTest {
         mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
         mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
         verify(mRequestRenderRunnable, never()).run();
+    }
+
+    @Test
+    public void testSetBottomControlsHeight() {
+        assertEquals(DEFAULT_HEIGHT, mMediator.getHeight());
+        clearInvocations(mBottomControlsStacker);
+
+        mMediator.setBottomControlsHeight(50);
+        assertEquals(50, mMediator.getHeight());
+        assertEquals(50, mModel.get(ANDROID_VIEW_HEIGHT_NO_PADDING));
+        verify(mBottomControlsStacker).requestLayerUpdate(false);
+
+        // Setting the same height again should be a no-op.
+        clearInvocations(mBottomControlsStacker);
+        mMediator.setBottomControlsHeight(50);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
     }
 }

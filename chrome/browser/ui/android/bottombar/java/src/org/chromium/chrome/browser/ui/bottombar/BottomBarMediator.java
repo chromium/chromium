@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.SystemClock;
 
+import androidx.annotation.Px;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TriState;
@@ -18,6 +20,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
@@ -64,6 +67,13 @@ public class BottomBarMediator
 
         /** Called when the background color of the bottom bar changes. */
         void onBackgroundColorChanged();
+
+        /**
+         * Called when the height of the bottom bar changes.
+         *
+         * @param height The new height of the bottom bar in pixels.
+         */
+        void onHeightChanged(@Px int height);
     }
 
     // Dependencies
@@ -75,6 +85,7 @@ public class BottomBarMediator
     private final BottomBarPromoDialogCoordinator mPromoDialogCoordinator;
     private final NonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final NullableObservableSupplier<PropertyModel> mGlicActionSupplier;
     private final NullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
@@ -82,6 +93,8 @@ public class BottomBarMediator
     // Observers and Callbacks
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
     private final Callback<Boolean> mOmniboxFocusObserver = this::onOmniboxFocusChanged;
+    private final Callback<@ControlsPosition Integer> mToolbarPositionObserver =
+            this::onToolbarPositionChanged;
     private final Callback<@Nullable Profile> mProfileObserver = this::onProfileChanged;
     private final GlicKeyedService.AllowedChangedObserver mAllowedChangedObserver =
             this::onGlicAllowedChanged;
@@ -118,6 +131,8 @@ public class BottomBarMediator
      * @param promoDialogCoordinator The {@link BottomBarPromoDialogCoordinator} for the promo
      *     dialog.
      * @param actionRegistry The {@link ActionRegistry}.
+     * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
+     * @param toolbarPositionSupplier Supplier of the current toolbar position.
      */
     public BottomBarMediator(
             Context context,
@@ -130,7 +145,8 @@ public class BottomBarMediator
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomBarPromoDialogCoordinator promoDialogCoordinator,
             ActionRegistry actionRegistry,
-            LayoutStateProvider layoutStateProvider) {
+            LayoutStateProvider layoutStateProvider,
+            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mContext = context;
         mModel = model;
         mButtonManager = buttonManager;
@@ -140,6 +156,7 @@ public class BottomBarMediator
         mProfileSupplier = profileSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mPromoDialogCoordinator = promoDialogCoordinator;
+        mToolbarPositionSupplier = toolbarPositionSupplier;
         mGlicActionSupplier = actionRegistry.get(ActionId.GLIC);
         mNewTabActionSupplier = actionRegistry.get(ActionId.NEW_TAB);
         mGlicTimeToAppearRecorded = false;
@@ -156,6 +173,7 @@ public class BottomBarMediator
         updateExtraActionVisibility();
         mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         updateVisibility();
+        mToolbarPositionSupplier.addSyncObserverAndCallIfNonNull(mToolbarPositionObserver);
         mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
 
         // Safe to set the listener after all observers are initialized to trigger the immediate
@@ -165,6 +183,24 @@ public class BottomBarMediator
 
     private void onOmniboxFocusChanged(boolean focused) {
         updateVisibility();
+    }
+
+    private void onToolbarPositionChanged(@ControlsPosition int position) {
+        updateTopPadding();
+    }
+
+    private void updateTopPadding() {
+        boolean hasBottomOmnibox = mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM;
+        boolean removeTopPadding =
+                mHost == Host.TABBED
+                        && hasBottomOmnibox
+                        && BottomBarConfigUtils.shouldRemoveTopPaddingForBottomOmnibox();
+        mModel.set(BottomBarProperties.IS_TOP_PADDING_REMOVED, removeTopPadding);
+        // The delegate only sizes the tabbed host; the Hub sizes its own container. Keying the
+        // height off the omnibox position rather than the host avoids resizing the bottom controls
+        // when entering or leaving the Hub.
+        mVisibilityDelegate.onHeightChanged(
+                BottomBarUtils.getBottomBarHeight(mContext, hasBottomOmnibox));
     }
 
     @Override
@@ -442,6 +478,7 @@ public class BottomBarMediator
     public void setParent(@Host int host) {
         if (mHost == host) return;
         mHost = host;
+        updateTopPadding();
         if (host == Host.TABBED) {
             updateColorSchemeFromThemeColorProvider();
         }
@@ -561,6 +598,7 @@ public class BottomBarMediator
         mOriginalProfile = null;
 
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
+        mToolbarPositionSupplier.removeObserver(mToolbarPositionObserver);
 
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(this);

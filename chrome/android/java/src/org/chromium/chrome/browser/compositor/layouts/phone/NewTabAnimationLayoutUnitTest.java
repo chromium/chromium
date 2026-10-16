@@ -593,7 +593,8 @@ public class NewTabAnimationLayoutUnitTest {
         when(mEdgeToEdgeController.getSystemBottomInsetPx()).thenReturn(bottomChinHeight);
 
         int bottomBarHeight =
-                BottomBarUtils.getBottomBarHeight(mNewTabAnimationLayout.getContext());
+                BottomBarUtils.getBottomBarHeight(
+                        mNewTabAnimationLayout.getContext(), /* isBottomOmniboxPresent= */ false);
 
         // Viewport of Web page excludes bottom controls and bottom chin
         mCompositorViewHolder.layout(0, 0, 1080, 1920 - bottomBarHeight - bottomChinHeight);
@@ -623,6 +624,57 @@ public class NewTabAnimationLayoutUnitTest {
         // Since both old and new tabs have bottom bar and bottom chin, no coordinate shifts are
         // applied (Diff = 0)
         assertEquals(1921 - bottomBarHeight - bottomChinHeight, initialRect.bottom);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOnTabCreated_WebPageToNtp_bottomBarAndBottomToolbar() throws Exception {
+        // Configure bottom toolbar preference
+        Field prefField =
+                ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
+        prefField.setAccessible(true);
+        prefField.set(null, false); // Bottom toolbar
+
+        // Transition: Web (has bottom bar with top padding removed + bottom toolbar) -> NTP (has
+        // bottom bar with top padding restored, no bottom toolbar)
+        when(mCurrentTab.getUrl()).thenReturn(new GURL("https://google.com"));
+        when(mCurrentTab.isIncognitoBranded()).thenReturn(false);
+
+        when(mNewTab.getUrl()).thenReturn(new GURL("chrome://newtab"));
+        when(mNewTab.isIncognitoBranded()).thenReturn(false);
+
+        int bottomBarHeightWithBottomOmnibox =
+                BottomBarUtils.getBottomBarHeight(
+                        mNewTabAnimationLayout.getContext(), /* isBottomOmniboxPresent= */ true);
+        int controlContainerHeight =
+                mNewTabAnimationLayout
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.control_container_height);
+        int totalBottomControlsHeight = bottomBarHeightWithBottomOmnibox + controlContainerHeight;
+
+        mCompositorViewHolder.layout(0, 0, 1080, 1920 - totalBottomControlsHeight);
+
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        NewForegroundTabAnimationHostView hostView =
+                findChildView(NewForegroundTabAnimationHostView.class);
+        assertNotNull(hostView);
+
+        Field initialRectField =
+                NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
+        initialRectField.setAccessible(true);
+        Rect initialRect = (Rect) initialRectField.get(hostView);
+
+        assertEquals(1921 - totalBottomControlsHeight, initialRect.bottom);
     }
 
     @Test
