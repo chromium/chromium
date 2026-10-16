@@ -18,7 +18,7 @@
 #pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
-  NTPThemeActionableTipConfig* config = [[super copyWithZone:zone] init];
+  NTPThemeActionableTipConfig* config = [super copyWithZone:zone];
   config.colorPalettes = [self.colorPalettes copyWithZone:zone];
   config.backgroundImages = [self.backgroundImages copyWithZone:zone];
   config.selectedIndex = self.selectedIndex;

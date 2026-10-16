@@ -87,6 +87,10 @@ using segmentation_platform::TipIdentifier;
   // The preset background themes and their thumbnail images displayed in the
   // actionable NTP theme tip.
   std::vector<NtpCustomBackgroundWithImage> _presetBackgrounds;
+
+  // The current actionable module configuration when an actionable tip is
+  // active.
+  NTPThemeActionableTipConfig* _actionableConfig;
 }
 
 - (instancetype)initWithIdentifier:(TipIdentifier)identifier

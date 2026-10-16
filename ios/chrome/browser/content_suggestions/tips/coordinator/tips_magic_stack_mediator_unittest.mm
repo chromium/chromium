@@ -162,12 +162,10 @@ TEST_F(TipsMagicStackMediatorTest,
         "true"}});
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
   EXPECT_EQ(TipIdentifier::kNTPTheme, mediator_.config.identifier);
-  EXPECT_NE(nil, mediator_.actionableConfig);
   EXPECT_EQ(ContentSuggestionsModuleType::kTipsNTPThemeActionable,
-            mediator_.actionableConfig.type);
-  EXPECT_EQ(mediator_.actionableConfig, mediator_.activeConfig);
+            mediator_.activeConfig.type);
+
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kLensShop];
-  EXPECT_EQ(nil, mediator_.actionableConfig);
   EXPECT_EQ(mediator_.config, mediator_.activeConfig);
 }
 
@@ -180,14 +178,17 @@ TEST_F(TipsMagicStackMediatorTest, AppliesSelectedNTPThemeAtIndex) {
       {{segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
         "true"}});
   [mediator_ reconfigureWithTipIdentifier:TipIdentifier::kNTPTheme];
-  ASSERT_NE(nil, mediator_.actionableConfig);
+  ASSERT_EQ(ContentSuggestionsModuleType::kTipsNTPThemeActionable,
+            mediator_.activeConfig.type);
+  NTPThemeActionableTipConfig* actionableConfig =
+      static_cast<NTPThemeActionableTipConfig*>(mediator_.activeConfig);
   HomeBackgroundCustomizationService* service =
       HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
 
   [(id<TipsModuleAudience>)mediator_ didSelectNTPThemeAtIndex:1];
-  EXPECT_EQ(1, mediator_.actionableConfig.selectedIndex);
+  EXPECT_EQ(1, actionableConfig.selectedIndex);
   EXPECT_TRUE(service->GetCurrentColorTheme().has_value());
   [(id<TipsModuleAudience>)mediator_ didSelectNTPThemeAtIndex:0];
-  EXPECT_EQ(0, mediator_.actionableConfig.selectedIndex);
+  EXPECT_EQ(0, actionableConfig.selectedIndex);
   EXPECT_FALSE(service->GetCurrentColorTheme().has_value());
 }

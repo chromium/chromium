@@ -766,28 +766,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
       if (tipIdentifier != TipIdentifier::kUnknown) {
-        if (tipIdentifier == TipIdentifier::kNTPTheme &&
-            segmentation_platform::features::
-                IsMagicStackTipsV2IosActionableEnabled()) {
           [_tipsMediator reconfigureWithTipIdentifier:tipIdentifier];
           card = _tipsMediator.activeConfig;
           _ephemeralCardToShow = card.type;
           break;
-        }
-        BOOL shouldShowTipsWithProductImage =
-            tipIdentifier == TipIdentifier::kLensShop &&
-            _tipsMediator.config.productImageData.length > 0;
-
-        _ephemeralCardToShow =
-            shouldShowTipsWithProductImage
-                ? ContentSuggestionsModuleType::kTipsWithProductImage
-                : ContentSuggestionsModuleType::kTips;
-
-        [_tipsMediator reconfigureWithTipIdentifier:tipIdentifier];
-
-        card = _tipsMediator.config;
-
-        break;
       }
     } else if (label == segmentation_platform::kSendTabNotificationPromo) {
       _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
