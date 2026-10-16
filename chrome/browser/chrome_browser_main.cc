@@ -349,9 +349,6 @@
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #endif
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
-#endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/chrome_for_testing/chrome_browser_main_extra_parts_cft.h"
@@ -1586,20 +1583,11 @@ void ChromeBrowserMainParts::PreProfileInit() {
 
   media_router::ChromeMediaRouterFactory::DoPlatformInit();
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   // Start up the platform auth SSO policy observer.
   if (auto* local_state = g_browser_process->local_state(); local_state) {
     platform_auth_policy_observer_ =
         std::make_unique<PlatformAuthPolicyObserver>(local_state);
-  }
-#elif BUILDFLAG(IS_ANDROID)
-  // TODO: b/484014627 - once the feature flag is cleaned-up merge this with the
-  // block above.
-  if (base::FeatureList::IsEnabled(enterprise_auth::kAndroidEntraSSO) &&
-      g_browser_process->local_state()) {
-    platform_auth_policy_observer_ =
-        std::make_unique<PlatformAuthPolicyObserver>(
-            g_browser_process->local_state());
   }
 #endif
 }

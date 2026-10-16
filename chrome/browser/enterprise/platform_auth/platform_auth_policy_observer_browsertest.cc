@@ -27,11 +27,6 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #endif  //  BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
-#endif  //  BUILDFLAG(IS_ANDROID)
-
 namespace {
 
 #if BUILDFLAG(IS_WIN)
@@ -67,10 +62,6 @@ class PlatformAuthPolicyObserverTest : public PlatformBrowserTest {
       policy::ManagementServiceFactory::GetForPlatform(),
       policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
 #endif  //  BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list_{
-      enterprise_auth::kAndroidEntraSSO};
-#endif
 };
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

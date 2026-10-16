@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/PlatformAuthEntraTokensReader_jni.h"
 #include "chrome/browser/enterprise/platform_auth/entra_provider_android.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -167,9 +166,6 @@ class EntraSsoAndroidBrowsertest : public PlatformBrowserTest {
                  nullptr);
     policy_provider_.UpdateChromePolicy(policies);
   }
-
-  base::test::ScopedFeatureList feature_list_{
-      enterprise_auth::kAndroidEntraSSO};
 
   std::vector<HeaderMap> collected_headers_;
   base::OnceClosure redirect_callback_;

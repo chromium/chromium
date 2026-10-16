@@ -151,7 +151,6 @@ if (is_android) {
     ]
 
     deps = [
-      ":features",
       ":test_utils",
       "//base",
       "//chrome/android:chrome_jni_headers",

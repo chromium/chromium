@@ -32,7 +32,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #endif
 
 PlatformAuthPolicyObserver::PlatformAuthPolicyObserver(
@@ -92,8 +91,6 @@ void PlatformAuthPolicyObserver::OnPrefChanged() {
       base::FeatureList::IsEnabled(
           enterprise_auth::kEnableExtensibleEnterpriseSSO) &&
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
-#elif BUILDFLAG(IS_ANDROID)
-      base::FeatureList::IsEnabled(enterprise_auth::kAndroidEntraSSO) &&
 #endif
       pref_change_registrar_.prefs()->GetInteger(GetPrefName()) != 0;
 
