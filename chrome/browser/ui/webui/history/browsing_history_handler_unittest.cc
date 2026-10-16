@@ -210,7 +210,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     mojom::QueryResultPtr history_query_results;
     base::RunLoop run_loop;
     handler_->QueryHistory(
-        query, 150, begin_timestamp, true, true,
+        query, 150, begin_timestamp, true, true, {},
         base::BindLambdaForTesting([&](history::mojom::QueryResultPtr result) {
           history_query_results = std::move(result);
           run_loop.Quit();
@@ -468,7 +468,8 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
 
   handler()->QueryHistory("query", 150, std::nullopt,
                           /*include_user_visits=*/false,
-                          /*include_actor_visits=*/true, base::DoNothing());
+                          /*include_actor_visits=*/true,
+                          /*client_ids=*/{}, base::DoNothing());
 }
 #endif
 
@@ -485,7 +486,8 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithActorOnly) {
 
   handler()->QueryHistory("test_query", 150, std::nullopt,
                           /*include_user_visits=*/false,
-                          /*include_actor_visits=*/true, base::DoNothing());
+                          /*include_actor_visits=*/true,
+                          /*client_ids=*/{}, base::DoNothing());
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
@@ -501,7 +503,8 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
 
   handler()->QueryHistory("test_query", 150, std::nullopt,
                           /*include_user_visits=*/true,
-                          /*include_actor_visits=*/false, base::DoNothing());
+                          /*include_actor_visits=*/false,
+                          /*client_ids=*/{}, base::DoNothing());
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
@@ -517,7 +520,24 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
 
   handler()->QueryHistory("test_query", 150, std::nullopt,
                           /*include_user_visits=*/true,
-                          /*include_actor_visits=*/true, base::DoNothing());
+                          /*include_actor_visits=*/true,
+                          /*client_ids=*/{}, base::DoNothing());
+}
+
+TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithClientIds) {
+  const std::vector<std::string> kClientIds = {"client_1", "client_2"};
+
+  EXPECT_CALL(*handler()->mock_service(),
+              QueryHistory(
+                  testing::Eq(u"test_query"),
+                  testing::Field(&history::QueryOptions::client_ids,
+                                 testing::ElementsAre("client_1", "client_2"))))
+      .Times(1);
+
+  handler()->QueryHistory("test_query", 150, std::nullopt,
+                          /*include_user_visits=*/true,
+                          /*include_actor_visits=*/true, kClientIds,
+                          base::DoNothing());
 }
 
 class BrowsingHistoryHandlerHistorySyncPromoTest
