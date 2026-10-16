@@ -10278,6 +10278,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="ContextualTasks.EphemeralToolbarButton.UserAction.RemoveByContextMenu">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user removes the ephemeral contextual tasks toolbar button
+    for the current task via its context menu.
+  </description>
+</action>
+
 <action name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

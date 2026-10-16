@@ -329,6 +329,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.EphemeralToolbarButton.UserAction.RemoveByContextMenu"
+    enum="Boolean" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user removes the ephemeral (unpinned) contextual tasks
+    toolbar button for the current task via its context menu. Always recorded as
+    true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.FileUpload.HttpStatus" enum="HttpResponseCode"
     expires_after="2027-03-07">
   <owner>hujasonx@google.com</owner>
