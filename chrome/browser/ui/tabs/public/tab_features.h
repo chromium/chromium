@@ -194,6 +194,7 @@ class ContextualSearchCueTabState;
 }  // namespace contextual_search
 
 namespace contextual_tasks {
+class ContextualTasksTabNavigationObserver;
 class ContextualTasksTabVisitTracker;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SearchAiModePromoTabHelper;
@@ -876,6 +877,8 @@ class TabFeatures {
   std::unique_ptr<wallet::ChromeWalletablePassClient> walletable_pass_client_;
 #endif
 
+  std::unique_ptr<contextual_tasks::ContextualTasksTabNavigationObserver>
+      contextual_tasks_tab_navigation_observer_;
   std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
       contextual_tasks_tab_visit_tracker_;
   std::unique_ptr<contextual_tasks::SearchJourneyTabFeature>

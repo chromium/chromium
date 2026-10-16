@@ -12,6 +12,8 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -259,6 +261,15 @@ void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
                       url.host() == chrome::kChromeUIContextualTasksHost) ||
                      (url.scheme() == content::kChromeUIScheme &&
                       url.host() == chrome::kChromeUINewTabPageHost);
+  // Post-rearchitecture, full-tab AI Mode loads the AI Mode URL directly
+  // instead of chrome://contextual-tasks. If `is_aim_page` were false, the
+  // `!is_aim_page` block below would disassociate the tab's task and clear its
+  // session on every navigation.
+  if (IsContextualTasksRearchitectureEnabled()) {
+    auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+        web_contents()->GetBrowserContext());
+    is_aim_page |= ui_service && ui_service->IsAiUrl(url);
+  }
 
   if (!is_aim_page) {
     if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
@@ -277,6 +288,9 @@ void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
       local_tab_underlines_.erase(navigating_tab_handle);
     }
 
+    // TODO(crbug.com/573687602): Move tab task/session resetting on navigation
+    // out of `ActiveTaskContextProviderImpl` into a per-tab navigation
+    // observer.
     auto* helper =
         ContextualSearchWebContentsHelper::FromWebContents(web_contents());
     if (helper && helper->task_id() && helper->session_handle()) {

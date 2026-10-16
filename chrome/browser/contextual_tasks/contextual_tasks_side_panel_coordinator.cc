@@ -1498,9 +1498,20 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrPanel() {
     if (active_tab_interface) {
       web_contents = active_tab_interface->GetContents();
       auto* ui_service = GetUiService();
+      auto* user_data =
+          web_contents ? ContextualTasksWebContentsUserData::FromWebContents(
+                             web_contents)
+                       : nullptr;
       if (web_contents) {
-        if (!ui_service ||
-            !ui_service->IsContextualTasksUrl(web_contents->GetURL())) {
+        // Pre-rearchitecture, full-tab AI Mode is at
+        // `chrome://contextual-tasks` (`IsContextualTasksUrl`).
+        // Post-rearchitecture, it is a Search AI Mode page whose thread task is
+        // set on `ContextualTasksWebContentsUserData`.
+        const bool is_full_tab_ai_mode_thread =
+            user_data && user_data->task_id().has_value();
+        if (!is_full_tab_ai_mode_thread &&
+            (!ui_service ||
+             !ui_service->IsContextualTasksUrl(web_contents->GetURL()))) {
           web_contents = nullptr;
         }
       }

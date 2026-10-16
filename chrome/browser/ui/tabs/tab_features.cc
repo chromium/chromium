@@ -219,6 +219,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_navigation_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
@@ -916,6 +917,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         GetUserDataFactory()
             .CreateInstance<contextual_tasks::ContextualTasksTabVisitTracker>(
                 tab, tab);
+  }
+
+  if (contextual_tasks::IsContextualTasksRearchitectureEnabled()) {
+    contextual_tasks_tab_navigation_observer_ = std::make_unique<
+        contextual_tasks::ContextualTasksTabNavigationObserver>(tab);
   }
 
   if (contextual_tasks::IsABASearchJourneysEnabled()) {

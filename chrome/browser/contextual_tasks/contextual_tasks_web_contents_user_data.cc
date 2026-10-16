@@ -380,10 +380,14 @@ void ContextualTasksWebContentsUserData::SubscribeToInputStateModel(
   }
 }
 
-void ContextualTasksWebContentsUserData::SetTaskId(const base::Uuid& uuid) {
-  task_id_ = uuid;
-  // Moves to `uuid`'s session. An untasked session and its tabs are adopted by
-  // `uuid` (see `GetSessionForTask()`), so do not reset its tabs. The new
+void ContextualTasksWebContentsUserData::SetTaskId(
+    std::optional<base::Uuid> task_id) {
+  task_id_ = task_id;
+  if (!task_id_) {
+    return;
+  }
+  // Moves to `task_id`'s session. An untasked session and its tabs are adopted
+  // by `task_id` (see `GetSessionForTask()`), so do not reset its tabs. The new
   // session will adopt these unassigned tabs.
   GetOrCreateInputStateModel();
 }
@@ -773,7 +777,7 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
   std::optional<lens::AddedContext> lens_added_context = GetLensAddedContext();
 
   QueryContextualizer::ContextualizeParams params;
-  // TODO(crbug.com/572869062): Full-tab AI Mode has no task, so there
+  // Without a task (e.g. full-tab AI Mode in zero state),
   // `query_contextualizer_` only uploads the delayed tabs (no
   // recontextualization).
   params.task_id = GetEffectiveTaskId();
