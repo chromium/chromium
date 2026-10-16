@@ -109,7 +109,8 @@ using ResolveHostFuture =
 TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
   auto network_context = MockNetworkContext::CreateNetworkContext(
       CreateMappingRules({{"example.test", "98.76.54.32"},
-                          {"another-example.test", "11.22.33.44"}}));
+                          {"another-example.test", "11.22.33.44"},
+                          {"unknown", "^NOTFOUND"}}));
   auto simple_resolver = SimpleHostResolver::Create(network_context.get());
 
   // Send four ResolveHost requests:
