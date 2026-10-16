@@ -47,6 +47,7 @@ component("core") {
     "//components/pref_registry",
     "//components/prefs",
     "//services/tracing/public/cpp",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 

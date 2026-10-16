@@ -9,12 +9,13 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
-#include <ranges>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 
@@ -86,41 +87,44 @@ bool DependencyGraph::GetDestructionOrder(
 
 bool DependencyGraph::BuildConstructionOrder() {
   // Step 1: Build a set of nodes with no incoming edges.
-  base::circular_deque<DependencyNode*> queue(std::from_range, all_nodes_);
-  for (const auto& pair : edges_)
-    base::Erase(queue, pair.second);
+  absl::flat_hash_map<DependencyNode*, size_t> incoming_edge_count;
+  incoming_edge_count.reserve(all_nodes_.size());
+  for (const auto& pair : edges_) {
+    ++incoming_edge_count[pair.second];
+  }
+
+  base::circular_deque<DependencyNode*> queue;
+  for (DependencyNode* node : all_nodes_) {
+    if (!incoming_edge_count.contains(node)) {
+      queue.push_back(node);
+    }
+  }
 
   // Step 2: Do the Kahn topological sort.
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> output;
-  EdgeMap edges(edges_);
+  output.reserve(all_nodes_.size());
+  size_t remaining_edges = edges_.size();
   while (!queue.empty()) {
     DependencyNode* node = queue.front();
     queue.pop_front();
     output.push_back(node);
 
-    std::pair<EdgeMap::iterator, EdgeMap::iterator> range =
-        edges.equal_range(node);
-    auto it = range.first;
-    while (it != range.second) {
+    auto [first, last] = edges_.equal_range(node);
+    for (auto it = first; it != last; ++it) {
       DependencyNode* dest = it->second;
-      auto temp = it;
-      it++;
-      edges.erase(temp);
-
-      bool has_incoming_edges = std::ranges::any_of(
-          edges, [dest](const auto& edge) { return edge.second == dest; });
-
-      if (!has_incoming_edges)
+      --remaining_edges;
+      if (--incoming_edge_count[dest] == 0) {
         queue.push_back(dest);
+      }
     }
   }
 
-  if (!edges.empty()) {
+  if (remaining_edges != 0) {
     // Dependency graph has a cycle.
     return false;
   }
 
-  construction_order_ = output;
+  construction_order_ = std::move(output);
   return true;
 }
 
