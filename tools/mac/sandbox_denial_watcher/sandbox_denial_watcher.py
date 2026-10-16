@@ -75,6 +75,43 @@ _dialog_lock = threading.Lock()
 
 _HOME_DIR = Path.home()
 
+# Placeholder representing any Chrome/Chromium flavor's Application Support
+# directory after target normalization.
+_CHROME_APP_SUPPORT_DIR = "<CHROME_APP_SUPPORT_DIR>"
+
+# Default product directory names under ~/Library/Application Support (see
+# chrome/common/chrome_paths_mac.mm and docs/user_data_dir.md).
+_CHROME_PRODUCT_DIRS = (
+    "Chromium",
+    "Google/Chrome",
+    "Google/Chrome Beta",
+    "Google/Chrome Canary",
+    "Google/Chrome Dev",
+    "Google/Chrome for Testing",
+)
+
+_CHROME_APP_SUPPORT_PREFIXES = tuple(
+    f"{_HOME_DIR}/Library/Application Support/{product}"
+    for product in _CHROME_PRODUCT_DIRS
+)
+
+# Placeholder representing any Chrome/Chromium flavor's app bundle directory
+# under /Applications after target normalization.
+_CHROME_BUNDLE_DIR = "<CHROME_BUNDLE_DIR>"
+
+_CHROME_APP_NAMES = (
+    "Chromium.app",
+    "Google Chrome.app",
+    "Google Chrome Beta.app",
+    "Google Chrome Canary.app",
+    "Google Chrome Dev.app",
+    "Google Chrome for Testing.app",
+)
+
+_CHROME_BUNDLE_PREFIXES = tuple(
+    f"/Applications/{app_name}" for app_name in _CHROME_APP_NAMES
+)
+
 # Prefixes of the process names whose denials are reported.
 _INTERESTING_PROCS = (
     "Chromium",
@@ -144,21 +181,48 @@ _KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
 }
 
 # Directory prefixes for operations that allow subpaths (e.g. file reads).
-_KNOWN_SUBPATH_DENIALS: dict[str, tuple[str, ...]] = {
-    "file-read-data": (
-        "/Library/Managed Preferences/",
-        "/System/Library/CoreServices/RawCamera.bundle/",
-        "/System/Library/ExtensionKit/ExtensionPoints/",
-        "/System/iOSSupport/System/Library/ExtensionKit/ExtensionPoints/",
-        "/private/var/db/cmiodalassistants/Library/Preferences/",
-        f"{_HOME_DIR}/Library/Preferences/",
+_KNOWN_SUBPATH_DENIALS: dict[str, frozenset[str]] = {
+    "file-issue-extension": frozenset((f"target:{_CHROME_BUNDLE_DIR}/",)),
+    "file-read-data": frozenset(
+        (
+            "/Library/Managed Preferences/",
+            "/System/Library/CoreServices/RawCamera.bundle/",
+            "/System/Library/ExtensionKit/ExtensionPoints/",
+            "/System/iOSSupport/System/Library/ExtensionKit/ExtensionPoints/",
+            "/private/var/db/cmiodalassistants/Library/Preferences/",
+            f"{_HOME_DIR}/Library/Preferences/",
+        )
+    ),
+    "file-write-times": frozenset(
+        (f"{_CHROME_APP_SUPPORT_DIR}/optimization_guide_model_store/",)
     ),
 }
 
 
+def _replace_prefix(
+    path: str, prefixes: Sequence[str], placeholder: str
+) -> str:
+    """Replaces the first matching prefix in `path` with `placeholder`."""
+    for prefix in prefixes:
+        if path == prefix or path.startswith(f"{prefix}/"):
+            return f"{placeholder}{path[len(prefix) :]}"
+    return path
+
+
 def _normalize_target(target: str) -> str:
-    """Normalizes a denial target path by stripping trailing slashes."""
-    return target.rstrip("/") if target != "/" else "/"
+    """Normalizes a denial target path for matching and suppression."""
+    normalized = target.rstrip("/") if target != "/" else "/"
+    prefix = ""
+    if normalized.startswith("target:"):
+        prefix = "target:"
+        normalized = normalized[len(prefix) :]
+    normalized = _replace_prefix(
+        normalized, _CHROME_APP_SUPPORT_PREFIXES, _CHROME_APP_SUPPORT_DIR
+    )
+    normalized = _replace_prefix(
+        normalized, _CHROME_BUNDLE_PREFIXES, _CHROME_BUNDLE_DIR
+    )
+    return f"{prefix}{normalized}"
 
 
 class DenialFilter:
@@ -195,9 +259,9 @@ class DenialFilter:
 
         for prefix in _KNOWN_SUBPATH_DENIALS.get(action, ()):
             normalized_prefix = prefix if prefix.endswith("/") else f"{prefix}/"
-            if target == normalized_prefix.rstrip(
-                "/"
-            ) or denial_event.target.startswith(normalized_prefix):
+            if target == normalized_prefix.rstrip("/") or target.startswith(
+                normalized_prefix
+            ):
                 self._logger.debug(
                     "Filtered known denial matching '%s %s': %s",
                     action,

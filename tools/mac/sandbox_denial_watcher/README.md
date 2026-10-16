@@ -76,18 +76,18 @@ If a newly observed denial is determined to be expected:
      Add the target string to the corresponding action's frozenset in
      `_KNOWN_EXACT_DENIALS`:
      ```python
-     "mach-lookup": frozenset({
+     "mach-lookup": frozenset((
          "com.apple.some.service",
-     }),
+     )),
      ```
    - **Directory subpath pattern** (matches the directory and any path beneath
      it):
-     Add the directory path string to the corresponding action's tuple in
+     Add the directory path string to the corresponding action's frozenset in
      `_KNOWN_SUBPATH_DENIALS`:
      ```python
-     "file-read-data": (
+     "file-read-data": frozenset((
          "/Library/Managed Preferences/",
-     ),
+     )),
      ```
 3. Keep entries sorted alphabetically within their respective category section.
    Entries built from `_HOME_DIR` depend on the local machine, so they are

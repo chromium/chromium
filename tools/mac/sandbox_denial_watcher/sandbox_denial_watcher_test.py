@@ -24,6 +24,8 @@ from unittest.mock import MagicMock, patch
 from bug_tracker import get_bug_url
 from log_events import SandboxDenial
 from sandbox_denial_watcher import (
+    _CHROME_APP_NAMES,
+    _CHROME_PRODUCT_DIRS,
     _DIALOG_GIVE_UP_SECONDS,
     _DIALOG_SCRIPT,
     _DISMISS_BUTTON_TITLE,
@@ -337,7 +339,7 @@ class DenialFilterTest(WatcherTestCase):
 
     @patch.dict(
         "sandbox_denial_watcher._KNOWN_SUBPATH_DENIALS",
-        {"file-read-data": ("/Library/Managed Preferences",)},
+        {"file-read-data": frozenset(("/Library/Managed Preferences",))},
         clear=True,
     )
     def test_subpaths_matching_without_trailing_slash_in_rule(self):
@@ -362,6 +364,73 @@ class DenialFilterTest(WatcherTestCase):
                 )
             )
         )
+
+    def test_chrome_app_support_subpath_matching_across_flavors(self):
+        app_support = f"{_HOME_DIR}/Library/Application Support"
+        for product in _CHROME_PRODUCT_DIRS:
+            store = f"{app_support}/{product}/optimization_guide_model_store"
+            with self.subTest(product=product):
+                self.assertTrue(
+                    self.denial_filter.should_ignore(
+                        _denial(f"file-write-times {store}")
+                    )
+                )
+                self.assertTrue(
+                    self.denial_filter.should_ignore(
+                        _denial(f"file-write-times {store}/")
+                    )
+                )
+                self.assertTrue(
+                    self.denial_filter.should_ignore(
+                        _denial(f"file-write-times {store}/model-info.pb")
+                    )
+                )
+                self.assertFalse(
+                    self.denial_filter.should_ignore(
+                        _denial(f"file-write-times {store}_other/model-info.pb")
+                    )
+                )
+                self.assertFalse(
+                    self.denial_filter.should_ignore(
+                        _denial(
+                            f"file-write-times {app_support}/{product}Backup/"
+                            "optimization_guide_model_store/model-info.pb"
+                        )
+                    )
+                )
+
+    def test_chrome_bundle_subpath_matching_across_flavors(self):
+        for app_name in _CHROME_APP_NAMES:
+            bundle = f"/Applications/{app_name}"
+            with self.subTest(app_name=app_name):
+                self.assertTrue(
+                    self.denial_filter.should_ignore(
+                        _denial(
+                            f"file-issue-extension target:{bundle}/Contents/"
+                            "Resources"
+                        )
+                    )
+                )
+                self.assertFalse(
+                    self.denial_filter.should_ignore(
+                        _denial(
+                            f"file-issue-extension target:{bundle}.bak/"
+                            "Contents/Resources"
+                        )
+                    )
+                )
+
+    def test_suppression_applies_across_chrome_flavors(self):
+        canary_denial = _denial(
+            f"file-read-data {_HOME_DIR}/Library/Application Support/"
+            "Google/Chrome Canary/Default/Cookies"
+        )
+        chromium_denial = _denial(
+            f"file-read-data {_HOME_DIR}/Library/Application Support/"
+            "Chromium/Default/Cookies"
+        )
+        self.denial_filter.suppress(canary_denial, 100)
+        self.assertTrue(self.denial_filter.should_ignore(chromium_denial))
 
     def test_non_positive_duration_does_not_suppress(self):
         denial = _denial("mach-lookup com.apple.unknown")
