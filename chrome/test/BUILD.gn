@@ -2570,8 +2570,6 @@ test("unit_tests") {
     "../browser/flag-never-expire-list.json",
   ]
 
-  sources = []
-
   # Support v8_unwinder_unittest on Android.
   if (is_android && enable_arm_cfi_table) {
     configs -= [ "//build/config/compiler:default_symbols" ]
@@ -2583,7 +2581,6 @@ test("unit_tests") {
     add_unwind_tables_in_apk = true
   }
 
-  configs += [ "//build/config:precompiled_headers" ]
   configs += [ ":disable_thinlto_cache_flags" ]
 
   data_deps = [
@@ -3551,11 +3548,6 @@ test("unit_tests") {
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
-    allow_circular_includes_from = [
-      "//chrome/browser/web_applications:web_applications_unit_tests",
-      "//chrome/browser/web_applications/extensions:unit_tests",
-    ]
-
     deps += [
       "//apps:unit_tests",
       "//chrome/browser/controlled_frame:unit_tests",
@@ -3764,14 +3756,16 @@ test("unit_tests") {
     deps += [ "//chrome/browser/chrome_for_testing:unit_tests" ]
   }
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   fuzztests = [
     "ActorProtoConversionFuzzTest.CanConvertAnyProto",
     "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash",
   ]
+
+  # This target intentionally has no sources of its own; it only aggregates
+  # test dependencies. Do NOT add sources here -- new tests belong in a
+  # dedicated, properly-scoped target. Kept last so an accidental
+  # `sources += [...]` above is reset to empty and is easy to catch in review.
+  sources = []
 }
 
 static_library("test_support_unit") {
