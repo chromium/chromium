@@ -69,8 +69,18 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 6;
     case LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding:
       return 10;
+    case LayoutConstant::kLocationBarLeadingDecorationEdgePadding:
+      return 5;
+    case LayoutConstant::kLocationBarLeadingDecorationInnerPadding:
+      return 8;
+    case LayoutConstant::kLocationBarInputIconIndent:
+      return 7;
+    case LayoutConstant::kLocationBarInputTextIndent:
+      return 6;
     case LayoutConstant::kLocationBarTrailingDecorationEdgePadding:
       return touch_ui ? 3 : 12;
+    case LayoutConstant::kLocationBarTrailingDecorationAimEdgePadding:
+      return 5;
     case LayoutConstant::kLocationBarTrailingDecorationInnerPadding:
       return touch_ui ? 3 : 8;
     case LayoutConstant::kLocationBarHeight:

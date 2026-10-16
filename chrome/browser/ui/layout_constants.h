@@ -86,18 +86,30 @@ enum class LayoutConstant {
   // it is dangerous.
   kLocationBarPageInfoIconDangerousTrailingPadding,
 
-  // The leading edge space in the omnibox from the LHS icons used in Chrome
-  // with the chrome refresh flag.
-  // TODO(manukh): See comment in `LocationBarView::Layout()`. We have too
-  // many feature permutations that would affect this and other layout
-  // constants, so instead of spreading the permutation logic here and
-  // elsewhere, it's consolidated in `Layout()` and will be moved back
-  // here once we decide on a permutation.
-  // kLocationBarLeadingDecorationEdgePadding,
+  // The leading edge space in the omnibox from the LHS icons.
+  kLocationBarLeadingDecorationEdgePadding,
 
-  // The trailing edge space in the omnibox from the RHS icons used in Chrome
-  // with the chrome refresh flag.
+  // The padding between leading edge decorations and the inner views of the
+  // omnibox.
+  kLocationBarLeadingDecorationInnerPadding,
+
+  // The extra space before the LHS icon when the omnibox input is indented to
+  // line up with the popup's suggestions.
+  // TODO(manukh): `LocationBarView::Layout()` still adds the
+  // `AdjustOmniboxIndent` offsets to this and `kLocationBarInputTextIndent`.
+  // Fold the offsets in here once that experiment settles on a permutation.
+  kLocationBarInputIconIndent,
+
+  // The extra space between the LHS icon and the text when the omnibox input is
+  // indented to line up with the popup's suggestions.
+  kLocationBarInputTextIndent,
+
+  // The trailing edge space in the omnibox from the RHS icons.
   kLocationBarTrailingDecorationEdgePadding,
+
+  // The trailing edge space in the omnibox when the AI Mode chip is the
+  // trailingmost RHS decoration.
+  kLocationBarTrailingDecorationAimEdgePadding,
 
   // The padding between trailing edge decorations and the inner views of the
   // omnibox.
