@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 
 namespace autofill {
 
@@ -41,6 +42,10 @@ struct SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams {
   // Static creator methods for the UI params in its various supported states.
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForSaveCardSuccess(bool is_for_save_and_fill);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+  CreateForSaveCardholderNameSuccess();
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForVirtualCardSuccess();
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams

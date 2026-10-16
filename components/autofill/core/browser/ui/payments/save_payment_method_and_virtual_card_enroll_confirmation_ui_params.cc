@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,6 +76,23 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
                      : IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT)
               : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// static
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForSaveCardholderNameSuccess() {
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
+      /*is_success=*/true,
+      /*should_display_wallet_logo=*/true,
+      /*title_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_TITLE_TEXT),
+      /*description_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // static
 SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams

@@ -2374,5 +2374,46 @@ TEST_F(SaveCardBubbleControllerImplTest,
             controller()->GetPaymentsBubbleType());
 }
 
+TEST_F(SaveCardBubbleControllerImplTest,
+       UploadCardholderNameUpdateOnly_OnSave_ShowConfirmationBubbleView) {
+  ShowUploadBubble(
+      /*options=*/SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
+          .with_show_prompt(true));
+  ASSERT_EQ(PaymentsBubbleType::kUploadCardholderNameUpdate,
+            controller()->GetPaymentsBubbleType());
+
+  payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = u"John Doe";
+  controller()->OnSaveButton(details);
+  EXPECT_EQ(PaymentsBubbleType::kUploadInProgress,
+            controller()->GetPaymentsBubbleType());
+  EXPECT_TRUE(IsSaveCardBubbleVisible());
+  EXPECT_FALSE(IsConfirmationBubbleVisible());
+
+  ShowConfirmationBubbleView(/*card_saved=*/true);
+  EXPECT_EQ(PaymentsBubbleType::kUploadComplete,
+            controller()->GetPaymentsBubbleType());
+  EXPECT_FALSE(IsSaveCardBubbleVisible());
+  EXPECT_TRUE(IsConfirmationBubbleVisible());
+  EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
+  EXPECT_TRUE(
+      controller()->GetConfirmationUiParams().should_display_wallet_logo);
+  EXPECT_EQ(
+      controller()->GetConfirmationUiParams().title_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_TITLE_TEXT));
+  EXPECT_EQ(
+      controller()->GetConfirmationUiParams().description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+
+  controller()->HideSaveCardBubble();
+  EXPECT_EQ(PaymentsBubbleType::kInactive,
+            controller()->GetPaymentsBubbleType());
+  EXPECT_FALSE(IsConfirmationBubbleVisible());
+  EXPECT_FALSE(controller()->IsIconVisible());
+}
+
 }  // namespace
 }  // namespace autofill
