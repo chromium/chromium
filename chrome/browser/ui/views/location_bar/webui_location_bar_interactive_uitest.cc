@@ -96,6 +96,8 @@ const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
 const WebContentsInteractionTestUtil::DeepQuery kFullPopupInputDeepQuery = {
     "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-input",
     "#input"};
+const WebContentsInteractionTestUtil::DeepQuery kAimPopupInputDeepQuery = {
+    "omnibox-aim-app", "#composebox", "#composeboxInput", "#input"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInlineAutocomplete = {
@@ -440,7 +442,8 @@ class WebUILocationBarInteractiveUiTest
             kAIMWebContentsVisible,
             [this]() {
               auto* view = GetActiveAimPopupWebView().Run();
-              if (!view || !view->GetWidget()) {
+              if (!view || !view->GetWidget() ||
+                  !view->GetWidget()->IsActive()) {
                 return false;
               }
               auto* element =
@@ -455,7 +458,12 @@ class WebUILocationBarInteractiveUiTest
         InAnyContext(InstrumentNonTabWebView(kAimPopupWebViewId,
                                              GetActiveAimPopupWebView())),
         InSameContext(WaitForWebContentsReady(
-            kAimPopupWebViewId, GURL(chrome::kChromeUIOmniboxPopupAimURL))));
+            kAimPopupWebViewId, GURL(chrome::kChromeUIOmniboxPopupAimURL))),
+        InAnyContext(WaitForJsResultAt(kAimPopupWebViewId,
+                                       kAimPopupInputDeepQuery,
+                                       "(el) => {"
+                                       "  return el.matches(':focus-visible');"
+                                       "}")));
   }
 
   auto WaitForAimPopupHide() {
