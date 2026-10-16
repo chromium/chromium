@@ -102,7 +102,7 @@ void WindowElement::SetVisible(bool visible) {
 }
 
 std::vector<std::string> WindowElement::GetAttributes() const {
-  return {"name", window_->GetName(), "active",
+  return {"name", std::string(window_->GetName()), "active",
           base::ToString(::wm::IsActiveWindow(window_))};
 }
 

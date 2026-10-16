@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <ranges>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -363,9 +364,9 @@ void Window::SetType(client::WindowType type) {
   TriggerChangedCallback(&type_);
 }
 
-const std::string& Window::GetName() const {
+std::string_view Window::GetName() const {
   std::string* name = GetProperty(client::kNameKey);
-  return name ? *name : base::EmptyString();
+  return name ? *name : std::string_view();
 }
 
 void Window::SetName(const std::string& name) {

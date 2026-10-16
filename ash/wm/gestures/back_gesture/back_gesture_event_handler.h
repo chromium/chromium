@@ -5,6 +5,8 @@
 #ifndef ASH_WM_GESTURES_BACK_GESTURE_BACK_GESTURE_EVENT_HANDLER_H_
 #define ASH_WM_GESTURES_BACK_GESTURE_BACK_GESTURE_EVENT_HANDLER_H_
 
+#include <string_view>
+
 #include "base/containers/flat_set.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
@@ -42,7 +44,7 @@ class BackGestureEventHandler : public display::DisplayObserver,
   void OnTouchEvent(ui::TouchEvent* event) override;
 
   // ui::GestureConsumer:
-  const std::string& GetName() const override;
+  std::string_view GetName() const override;
   base::WeakPtr<ui::GestureConsumer> GetWeakPtr() override;
 
   // ui::GestureProviderAuraClient:
@@ -127,7 +129,7 @@ class BackGestureEventHandler : public display::DisplayObserver,
   // whether back gesture should be shown.
   bool should_wait_for_touch_ack_ = false;
 
-  const std::string name_ = "BackGestureEventHandler";
+  static constexpr std::string_view kName = "BackGestureEventHandler";
 
   base::WeakPtrFactory<BackGestureEventHandler> weak_ptr_factory_{this};
 };

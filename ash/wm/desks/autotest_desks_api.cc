@@ -226,7 +226,7 @@ AutotestDesksApi::DesksInfo AutotestDesksApi::GetDesksInfo() const {
   aura::Window* root = Shell::GetPrimaryRootWindow();
   for (const auto& desk : controller->desks()) {
     aura::Window* container = desk->GetDeskContainerForRoot(root);
-    info.desk_containers.push_back(container->GetName());
+    info.desk_containers.emplace_back(container->GetName());
   }
 
   return info;

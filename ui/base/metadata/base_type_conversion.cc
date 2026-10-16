@@ -137,7 +137,7 @@ std::u16string TypeConverter<gfx::SizeF>::ToString(
 }
 
 std::u16string TypeConverter<std::string>::ToString(
-    const std::string& source_value) {
+    std::string_view source_value) {
   return base::UTF8ToUTF16(source_value);
 }
 

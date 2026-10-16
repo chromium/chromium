@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -76,11 +77,11 @@ void FireLocationChangesRecursively(aura::Window* window,
 }
 
 std::string GetWindowName(aura::Window* window) {
-  std::string class_name = window->GetName();
+  std::string_view class_name = window->GetName();
   if (class_name.empty()) {
-    class_name = "aura::Window";
+    return "aura::Window";
   }
-  return class_name;
+  return std::string(class_name);
 }
 
 }  // namespace

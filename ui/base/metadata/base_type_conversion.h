@@ -255,11 +255,19 @@ DECLARE_CONVERSIONS(gfx::RectF)
 DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::SizeF)
-DECLARE_CONVERSIONS(std::string)
 DECLARE_CONVERSIONS(ui::ColorVariant)
 DECLARE_CONVERSIONS(url::Component)
 
 #undef DECLARE_CONVERSIONS
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA)
+    TypeConverter<std::string> : BaseTypeConverter<true> {
+  static std::u16string ToString(std::string_view source_value);
+  static std::optional<std::string> FromString(
+      std::u16string_view source_value);
+  static ValidStrings GetValidStrings() { return {}; }
+};
 
 template <>
 struct COMPONENT_EXPORT(UI_BASE_METADATA)

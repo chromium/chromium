@@ -100,6 +100,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -4102,8 +4103,9 @@ class DesksPerDeskZOrderTest : public AshTestBase {
           [&](Desk* desk, aura::Window* root,
               const std::vector<int>& expected_windows,
               const std::string& debug_info) {
-            SCOPED_TRACE("Verify " + base::UTF16ToUTF8(desk->name()) + " " +
-                         root->GetName() + " " + debug_info);
+            SCOPED_TRACE(
+                base::StrCat({"Verify ", base::UTF16ToUTF8(desk->name()), " ",
+                              root->GetName(), " ", debug_info}));
             ToggleOverview();
 
             // Retrieves the mirrored layers `mirrored_layers` of application

@@ -6,7 +6,7 @@
 #define UI_EVENTS_GESTURES_GESTURE_TYPES_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "ui/events/events_export.h"
@@ -43,7 +43,7 @@ class EVENTS_EXPORT GestureConsumer {
   // Defaults to false.
   virtual bool RequiresDoubleTapGestureEvents() const;
 
-  virtual const std::string& GetName() const;
+  virtual std::string_view GetName() const;
 
   // This is defined as virtual to allow its subclass to provide its own
   // WeakPtr<SubType>, with single shared WeakPtrFactory.
@@ -55,6 +55,8 @@ class EVENTS_EXPORT GestureConsumer {
   GestureProviderAura* provider() const { return provider_.get(); }
 
  private:
+  static constexpr std::string_view kName = "GestureConsumer";
+
   std::unique_ptr<GestureProviderAura> provider_;
 };
 

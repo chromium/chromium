@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -219,7 +220,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void SetId(int id);
 
   // ui::GestureConsumer:
-  const std::string& GetName() const override;
+  std::string_view GetName() const override;
   void SetName(const std::string& name);
 
   const std::u16string& GetTitle() const;

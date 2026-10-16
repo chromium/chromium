@@ -1158,7 +1158,7 @@ bool NativeWidgetAura::IsDesktopNativeWidget() const {
 }
 
 std::string NativeWidgetAura::GetName() const {
-  return window_ ? window_->GetName() : std::string();
+  return window_ ? std::string(window_->GetName()) : std::string();
 }
 
 base::WeakPtr<internal::NativeWidgetPrivate> NativeWidgetAura::GetWeakPtr() {

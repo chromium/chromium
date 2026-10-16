@@ -4,6 +4,7 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -304,8 +305,8 @@ void BackGestureEventHandler::OnTouchEvent(ui::TouchEvent* event) {
   }
 }
 
-const std::string& BackGestureEventHandler::GetName() const {
-  return name_;
+std::string_view BackGestureEventHandler::GetName() const {
+  return kName;
 }
 
 base::WeakPtr<ui::GestureConsumer> BackGestureEventHandler::GetWeakPtr() {

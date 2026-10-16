@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -167,7 +168,7 @@ class ASH_EXPORT FullscreenMagnifierController
       const Continuation continuation) override;
 
   // ui::GestureConsumer:
-  const std::string& GetName() const override;
+  std::string_view GetName() const override;
   base::WeakPtr<ui::GestureConsumer> GetWeakPtr() override;
 
   // Redraws the magnification window with the given origin position and the
@@ -319,7 +320,7 @@ class ASH_EXPORT FullscreenMagnifierController
   base::RepeatingCallback<void(const gfx::Point&)>
       cursor_moved_callback_for_testing_;
 
-  const std::string name_ = "FullscreenMagnifierController";
+  static constexpr std::string_view kName = "FullscreenMagnifierController";
 
   base::WeakPtrFactory<FullscreenMagnifierController> weak_ptr_factory_{this};
 };

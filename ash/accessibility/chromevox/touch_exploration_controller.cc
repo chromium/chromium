@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -862,8 +863,8 @@ void TouchExplorationController::DispatchEvent(
 void TouchExplorationController::OnGestureEvent(ui::GestureConsumer* consumer,
                                                 ui::GestureEvent* gesture) {}
 
-const std::string& TouchExplorationController::GetName() const {
-  return name_;
+std::string_view TouchExplorationController::GetName() const {
+  return kName;
 }
 
 base::WeakPtr<ui::GestureConsumer> TouchExplorationController::GetWeakPtr() {
