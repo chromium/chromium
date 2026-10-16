@@ -14,6 +14,7 @@
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/local_hotkey_manager.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -368,6 +369,53 @@ std::unique_ptr<SessionUi> MockDictationKeyedService::CreateUi(
   auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
   mock_ui->set_show_reviewing_page_status(ConsumeShowReviewingPageStatus());
   return mock_ui;
+}
+
+FakeGlobalAcceleratorListener::FakeGlobalAcceleratorListener() = default;
+FakeGlobalAcceleratorListener::~FakeGlobalAcceleratorListener() = default;
+
+void FakeGlobalAcceleratorListener::Press(const ui::Accelerator& accelerator) {
+  NotifyKeyPressed(accelerator);
+}
+
+bool FakeGlobalAcceleratorListener::IsListeningFor(
+    const ui::Accelerator& accelerator) const {
+  return listening_.contains(accelerator);
+}
+
+bool FakeGlobalAcceleratorListener::IsRegistrationHandledExternally() const {
+  return handled_externally_;
+}
+
+void FakeGlobalAcceleratorListener::StartListening() {}
+
+void FakeGlobalAcceleratorListener::StopListening() {}
+
+bool FakeGlobalAcceleratorListener::StartListeningForAccelerator(
+    const ui::Accelerator& accelerator) {
+  if (fail_registration_) {
+    return false;
+  }
+  listening_.insert(accelerator);
+  return true;
+}
+
+void FakeGlobalAcceleratorListener::StopListeningForAccelerator(
+    const ui::Accelerator& accelerator) {
+  listening_.erase(accelerator);
+}
+
+ScopedFakeGlobalAcceleratorListener::ScopedFakeGlobalAcceleratorListener(
+    DictationKeyedService& service)
+    : service_(service),
+      listener_override_(
+          LocalHotkeyManager::SetGlobalAcceleratorListenerForTesting(
+              &listener_)) {}
+
+ScopedFakeGlobalAcceleratorListener::~ScopedFakeGlobalAcceleratorListener() {
+  // End the session first so that nothing remains registered with
+  // `listener_` once the default listener is restored.
+  service_->EndSession();
 }
 
 }  // namespace dictation

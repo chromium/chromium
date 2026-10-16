@@ -57,8 +57,24 @@ void DictationBrowserTestBase::SetUpOnMainThread() {
   // re-enable it explicitly.
   if (auto* service = DictationKeyedService::Get(profile())) {
     service->SetReviewingPageStatusEnabledForTesting(false);
+    fake_global_listener_ =
+        std::make_unique<ScopedFakeGlobalAcceleratorListener>(*service);
+    // Onboarding is marked complete after the service is created, so hotkeys
+    // must be re-evaluated for the hotkey manager to exist.
+    service->DidInstallConnector();
   }
   LoadTestExtensionInManualMode(profile());
+}
+
+void DictationBrowserTestBase::TearDownOnMainThread() {
+  fake_global_listener_.reset();
+  PlatformBrowserTest::TearDownOnMainThread();
+}
+
+FakeGlobalAcceleratorListener&
+DictationBrowserTestBase::fake_global_listener() {
+  CHECK(fake_global_listener_);
+  return fake_global_listener_->listener();
 }
 
 Profile* DictationBrowserTestBase::profile() {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DICTATION_DICTATION_BROWSER_TEST_BASE_H_
 #define CHROME_BROWSER_DICTATION_DICTATION_BROWSER_TEST_BASE_H_
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -20,7 +22,9 @@ class WebContents;
 namespace dictation {
 
 class DictationKeyedService;
+class FakeGlobalAcceleratorListener;
 class ListenerStreamProvider;
+class ScopedFakeGlobalAcceleratorListener;
 class SessionController;
 struct TargetDetails;
 
@@ -34,12 +38,17 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
   // PlatformBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
   Profile* profile();
   content::WebContents* web_contents();
   DictationKeyedService& dictation_service();
   SessionController* session_controller();
   ListenerStreamProvider* attached_stream();
+
+  // The fake OS-wide accelerator listener installed on `dictation_service()`.
+  // Use it to observe global hotkey registration and simulate presses.
+  FakeGlobalAcceleratorListener& fake_global_listener();
 
   // Starts a session for the given target.
   void StartSession(const TargetDetails& target_details);
@@ -57,6 +66,8 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Prevents tests from registering real OS-wide hotkeys.
+  std::unique_ptr<ScopedFakeGlobalAcceleratorListener> fake_global_listener_;
 };
 
 }  // namespace dictation

@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
+#include "chrome/browser/dictation/scoped_global_hotkey.h"
+#include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -104,9 +106,19 @@ class DictationLocalHotkeyManagerTest : public testing::Test {
                                     true);
   }
 
-  void CreateManager() {
+  void CreateManager(bool is_listening = false) {
+    // Create the mock service (and so its fake global listener) first.
+    CHECK(DictationKeyedService::Get(&profile_));
     manager_ = std::make_unique<LocalHotkeyManager>(
-        &profile_, std::make_unique<FakeRegistrationDelegate>(&fake_state_));
+        &profile_, std::make_unique<FakeRegistrationDelegate>(&fake_state_),
+        is_listening);
+  }
+
+  // The fake installed by MockDictationKeyedService for all managers.
+  FakeGlobalAcceleratorListener& global_listener() {
+    return static_cast<MockDictationKeyedService*>(
+               DictationKeyedService::Get(&profile_))
+        ->fake_global_listener();
   }
 
  protected:
@@ -195,6 +207,52 @@ TEST_F(DictationLocalHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
   EXPECT_CALL(*mock_service, ToggleHotkeyHandler());
 
   EXPECT_TRUE(manager_->AcceleratorPressed(accelerator));
+}
+
+TEST_F(DictationLocalHotkeyManagerTest,
+       GlobalHotkeyRegisteredOnlyWhileListening) {
+  CreateManager();
+  const ui::Accelerator accelerator = GetDictationHotkeyFromPrefs(&profile_);
+  EXPECT_FALSE(global_listener().IsListeningFor(accelerator));
+
+  manager_->OnSessionStateChanged(SessionState::kStreamInitializing);
+  EXPECT_TRUE(global_listener().IsListeningFor(accelerator));
+  ScopedGlobalHotkey* registration = manager_->global_hotkey_for_testing();
+
+  // Moving to transcribing keeps the same registration.
+  manager_->OnSessionStateChanged(SessionState::kTranscribing);
+  EXPECT_EQ(manager_->global_hotkey_for_testing(), registration);
+
+  manager_->OnSessionStateChanged(SessionState::kFinalizing);
+  EXPECT_FALSE(global_listener().IsListeningFor(accelerator));
+  EXPECT_EQ(manager_->global_hotkey_for_testing(), nullptr);
+}
+
+TEST_F(DictationLocalHotkeyManagerTest,
+       GlobalHotkeyRegisteredOnConstructionWhileListening) {
+  CreateManager(/*is_listening=*/true);
+  EXPECT_TRUE(
+      global_listener().IsListeningFor(GetDictationHotkeyFromPrefs(&profile_)));
+  EXPECT_NE(manager_->global_hotkey_for_testing(), nullptr);
+}
+
+TEST_F(DictationLocalHotkeyManagerTest, GlobalHotkeyFollowsPrefWhileListening) {
+  CreateManager();
+  manager_->OnSessionStateChanged(SessionState::kTranscribing);
+  const ui::Accelerator old_accelerator =
+      GetDictationHotkeyFromPrefs(&profile_);
+  ASSERT_TRUE(global_listener().IsListeningFor(old_accelerator));
+
+  const ui::Accelerator new_accelerator(
+      ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  profile_.GetPrefs()->SetString(
+      prefs::kVoiceTypingHotkey,
+      ui::Command::AcceleratorToString(new_accelerator));
+  EXPECT_FALSE(global_listener().IsListeningFor(old_accelerator));
+  EXPECT_TRUE(global_listener().IsListeningFor(new_accelerator));
+
+  profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey, "");
+  EXPECT_EQ(manager_->global_hotkey_for_testing(), nullptr);
 }
 
 TEST_F(DictationLocalHotkeyManagerTest, InvalidPrefDoesNotRegister) {

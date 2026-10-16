@@ -26,6 +26,7 @@ source_set("dictation") {
     "logging.h",
     "onboarding_manager.h",
     "reviewing_page_status_ui_controller.h",
+    "scoped_global_hotkey.h",
     "session_controller.h",
     "session_controller_delegate.h",
     "session_state.h",
@@ -42,6 +43,7 @@ source_set("dictation") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
+    "//ui/base/accelerators/global_accelerator_listener",
   ]
   deps = [
     ":metrics",
@@ -68,6 +70,7 @@ source_set("impl") {
     "logging.cc",
     "onboarding_manager.cc",
     "reviewing_page_status_ui_controller.cc",
+    "scoped_global_hotkey.cc",
     "session_controller.cc",
     "session_state.cc",
     "session_ui_impl.cc",
@@ -154,6 +157,7 @@ source_set("unit_tests") {
     "format_transcription_unittest.cc",
     "local_hotkey_manager_unittest.cc",
     "logging_unittest.cc",
+    "scoped_global_hotkey_unittest.cc",
     "session_controller_unittest.cc",
     "target_unittest.cc",
   ]
@@ -216,6 +220,7 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "dictation_global_hotkey_interactive_uitest.cc",
     "dictation_onboarding_interactive_uitest.cc",
     "session_ui_impl_interactive_uitest.cc",
   ]

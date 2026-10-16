@@ -8,8 +8,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dictation/dictation_keyed_service_factory.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/reviewing_page_status_ui_controller.h"
+#include "chrome/browser/dictation/scoped_global_hotkey.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/common/pref_names.h"
@@ -21,6 +23,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "url/gurl.h"
 
 namespace dictation {
@@ -42,11 +45,39 @@ class DictationKeyedServiceTest : public testing::Test,
         .WillByDefault(testing::Return(web_contents_.get()));
     profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
-    service_ = std::make_unique<MockDictationKeyedService>(&profile_);
+    // Go through the factory so that DictationKeyedService::Get() (used by
+    // LocalHotkeyManager) returns `service_`.
+    DictationKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<MockDictationKeyedService>(
+              Profile::FromBrowserContext(context));
+        }));
+    service_ = static_cast<MockDictationKeyedService*>(
+        DictationKeyedService::Get(&profile_));
+    CHECK(service_);
   }
-  ~DictationKeyedServiceTest() override = default;
+  ~DictationKeyedServiceTest() override {
+    // `service_` is owned by `profile_`, which outlives `tab_` and
+    // `web_contents_`, so end any session that may refer to them.
+    service_->EndSession();
+  }
 
  protected:
+  ui::Accelerator hotkey() { return GetDictationHotkeyFromPrefs(&profile_); }
+  FakeGlobalAcceleratorListener& global_listener() {
+    return service_->fake_global_listener();
+  }
+  // Null unless Dictation is listening and hotkeys are enabled.
+  ScopedGlobalHotkey* global_hotkey() {
+    LocalHotkeyManager* manager = service_->local_hotkey_manager_for_testing();
+    return manager ? manager->global_hotkey_for_testing() : nullptr;
+  }
+  void StartContextMenuSession() {
+    service_->StartSessionForTesting(tab_, EmptyTarget(),
+                                     DictationSessionEntryPoint::kContextMenu);
+  }
+
   bool StartSessionAndGetReviewingPageStatus(tabs::TabInterface& tab) {
     service_->StartSessionForTesting(tab, EmptyTarget(),
                                      DictationSessionEntryPoint::kContextMenu);
@@ -67,7 +98,7 @@ class DictationKeyedServiceTest : public testing::Test,
   std::unique_ptr<content::WebContents> web_contents_;
   tabs::MockTabInterface tab_;
   base::WeakPtrFactory<tabs::TabInterface> tab_weak_factory_;
-  std::unique_ptr<MockDictationKeyedService> service_;
+  raw_ptr<MockDictationKeyedService> service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, DictationKeyedServiceTest, testing::Bool());
@@ -175,6 +206,61 @@ TEST_P(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
 
   profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 0);
   EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
+}
+
+TEST_P(DictationKeyedServiceTest, GlobalHotkeyRegisteredOnlyWhileListening) {
+  EXPECT_EQ(global_hotkey(), nullptr);
+  EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
+
+  StartContextMenuSession();
+  SessionController* controller = service_->session_controller();
+  ASSERT_NE(controller, nullptr);
+  ASSERT_EQ(controller->GetState(), SessionState::kStreamInitializing);
+  ASSERT_NE(global_hotkey(), nullptr);
+  EXPECT_TRUE(global_hotkey()->is_registered());
+  EXPECT_TRUE(global_listener().IsListeningFor(hotkey()));
+
+  controller->UiRequestEndActiveStream();
+  EXPECT_EQ(controller->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(global_hotkey(), nullptr);
+  EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
+}
+
+TEST_P(DictationKeyedServiceTest, GlobalHotkeyUnregisteredOnEndSession) {
+  StartContextMenuSession();
+  ASSERT_TRUE(global_listener().IsListeningFor(hotkey()));
+
+  service_->EndSession();
+  EXPECT_EQ(global_hotkey(), nullptr);
+  EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
+}
+
+TEST_P(DictationKeyedServiceTest, GlobalHotkeyUnregisteredOnPolicyDisable) {
+  StartContextMenuSession();
+  ASSERT_TRUE(global_listener().IsListeningFor(hotkey()));
+
+  profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 2);
+  EXPECT_EQ(global_hotkey(), nullptr);
+  EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
+}
+
+TEST_P(DictationKeyedServiceTest, GlobalHotkeyPressEndsStream) {
+  StartContextMenuSession();
+  SessionController* controller = service_->session_controller();
+  ASSERT_NE(controller, nullptr);
+  ASSERT_NE(controller->attached_stream_provider(), nullptr);
+
+  // No browser window is active in this test, so the press must only stop
+  // the stream (and never start a new one).
+  EXPECT_CALL(*service_, ToggleHotkeyHandler()).Times(0);
+  global_listener().Press(hotkey());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !controller->attached_stream_provider(); }));
+
+  EXPECT_EQ(controller->attached_stream_provider(), nullptr);
+  EXPECT_EQ(controller->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(global_hotkey(), nullptr);
+  EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
 }
 
 TEST_P(DictationKeyedServiceTest, TabChangedCallbackNotified) {

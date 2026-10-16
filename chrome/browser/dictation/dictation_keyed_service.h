@@ -144,6 +144,9 @@ class DictationKeyedService : public KeyedService,
   void OnPrefChanged();
   void UpdateHotkeyManager();
 
+  // Forwards session state changes to `local_hotkey_manager_`.
+  void OnSessionStateChanged(dictation::SessionState state);
+
   // Handles triggering a session, either starting a new one
   // or updating an existing session to start a new stream, possibly in a new
   // tab.
@@ -172,6 +175,10 @@ class DictationKeyedService : public KeyedService,
 
     SessionController controller_;
     base::WeakPtr<tabs::TabInterface> tab_;
+    // Subscription to `controller_`'s SessionState changes, used to register
+    // the global hotkey only while listening. Declared after `controller_` so
+    // that it is destroyed first.
+    base::CallbackListSubscription session_state_subscription_;
   };
   std::optional<SessionState> session_;
 

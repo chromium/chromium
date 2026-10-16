@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_DICTATION_TEST_UTIL_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/dictation_context.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
@@ -21,6 +24,8 @@
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 class Profile;
 
@@ -185,6 +190,63 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
   MOCK_METHOD(void, EndSession, (), (override));
 };
 
+// A ui::GlobalAcceleratorListener that doesn't touch the OS. Use with
+// ScopedFakeGlobalAcceleratorListener or pass directly to ScopedGlobalHotkey.
+class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
+ public:
+  FakeGlobalAcceleratorListener();
+  ~FakeGlobalAcceleratorListener() override;
+
+  // Simulates the OS reporting that `accelerator` was struck. The accelerator
+  // must be registered.
+  void Press(const ui::Accelerator& accelerator);
+
+  // When true, platform registration fails (as if another app owns the
+  // accelerator).
+  void set_fail_registration(bool fail) { fail_registration_ = fail; }
+  void set_handled_externally(bool handled) { handled_externally_ = handled; }
+
+  bool IsListeningFor(const ui::Accelerator& accelerator) const;
+
+  // ui::GlobalAcceleratorListener:
+  bool IsRegistrationHandledExternally() const override;
+
+ private:
+  // ui::GlobalAcceleratorListener:
+  void StartListening() override;
+  void StopListening() override;
+  bool StartListeningForAccelerator(
+      const ui::Accelerator& accelerator) override;
+  void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
+
+  bool fail_registration_ = false;
+  bool handled_externally_ = false;
+  std::set<ui::Accelerator> listening_;
+};
+
+// Installs a FakeGlobalAcceleratorListener for all LocalHotkeyManagers for the
+// lifetime of this object, so that tests never register real OS-wide hotkeys.
+// Must be destroyed before `service` (e.g. in TearDownOnMainThread()). Ends any
+// active session on destruction so nothing remains registered with the fake.
+class ScopedFakeGlobalAcceleratorListener {
+ public:
+  explicit ScopedFakeGlobalAcceleratorListener(DictationKeyedService& service);
+  ScopedFakeGlobalAcceleratorListener(
+      const ScopedFakeGlobalAcceleratorListener&) = delete;
+  ScopedFakeGlobalAcceleratorListener& operator=(
+      const ScopedFakeGlobalAcceleratorListener&) = delete;
+  ~ScopedFakeGlobalAcceleratorListener();
+
+  FakeGlobalAcceleratorListener& listener() { return listener_; }
+
+ private:
+  const raw_ref<DictationKeyedService> service_;
+  FakeGlobalAcceleratorListener listener_;
+  base::AutoReset<ui::GlobalAcceleratorListener*> listener_override_;
+};
+
+// Uses a FakeGlobalAcceleratorListener so that tests never register real
+// OS-wide hotkeys.
 class MockDictationKeyedService : public DictationKeyedService {
  public:
   explicit MockDictationKeyedService(Profile* profile);
@@ -197,6 +259,13 @@ class MockDictationKeyedService : public DictationKeyedService {
       SessionController& controller) const override;
 
   MOCK_METHOD(void, ToggleHotkeyHandler, (), (override));
+
+  FakeGlobalAcceleratorListener& fake_global_listener() {
+    return fake_global_listener_.listener();
+  }
+
+ private:
+  ScopedFakeGlobalAcceleratorListener fake_global_listener_{*this};
 };
 
 }  // namespace dictation
