@@ -142,6 +142,10 @@ chromium-metrics-reviews@google.com.
   <int value="112" label="EditInk2TextAnnotationAborted"/>
   <int value="113" label="DeleteInk2TextAnnotationFirst"/>
   <int value="114" label="DeleteInk2TextAnnotation"/>
+  <int value="115" label="EnterInk2SignatureModeFirst"/>
+  <int value="116" label="EnterInk2SignatureMode"/>
+  <int value="117" label="ExitInk2SignatureModeFirst"/>
+  <int value="118" label="ExitInk2SignatureMode"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

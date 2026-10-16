@@ -694,8 +694,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case AnnotationMode.TEXT:
         record(UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE);
         break;
-      case AnnotationMode.OFF:
       case AnnotationMode.SIGNATURE:
+        record(UserAction.EXIT_INK2_SIGNATURE_MODE);
+        break;
+      case AnnotationMode.OFF:
         break;
       default:
         assertNotReached();
@@ -709,8 +711,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case AnnotationMode.TEXT:
         record(UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE);
         break;
-      case AnnotationMode.OFF:
       case AnnotationMode.SIGNATURE:
+        record(UserAction.ENTER_INK2_SIGNATURE_MODE);
+        break;
+      case AnnotationMode.OFF:
         break;
       default:
         assertNotReached();

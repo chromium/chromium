@@ -23,5 +23,7 @@ suite('Ink2SignatureBottomToolbarTest', () => {
         viewer.shadowRoot.querySelector('viewer-signature-bottom-toolbar')));
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 0);
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 1);
+    mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_SIGNATURE_MODE, 1);
+    mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_SIGNATURE_MODE, 0);
   });
 });

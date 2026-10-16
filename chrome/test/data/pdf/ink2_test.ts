@@ -63,8 +63,9 @@ chrome.test.runTests([
   async function testSetAnnotationMode() {
     mockMetricsPrivate.reset();
 
-    // Disable text annotations.
+    // Disable text annotations and signatures.
     await enableTextAnnotations(false);
+    await enableSignatures(false);
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     await setAnnotationMode(AnnotationMode.DRAW);
@@ -78,6 +79,8 @@ chrome.test.runTests([
   },
 
   // Test that annotation modes can be set when text annotations are enabled.
+  // TODO(crbug.com/410859904): Remove this test once signatures launches,
+  // since it will be fully covered by the test below.
   async function testSetAnnotationModeTextEnabled() {
     mockMetricsPrivate.reset();
 
@@ -145,6 +148,164 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 2, exit: 2}, text: {enter: 2, exit: 2}, sidepanel: 2});
+
+    chrome.test.succeed();
+  },
+
+  // Test that annotation modes can be set when signature mode is enabled.
+  async function testSetAnnotationModeSignaturesEnabled() {
+    mockMetricsPrivate.reset();
+
+    await enableTextAnnotations(true);
+    await enableSignatures(true);
+
+    function assertMetrics(expected: {
+      ink2: {enter: number, exit: number},
+      text: {enter: number, exit: number},
+      signatures: {enter: number, exit: number},
+      sidepanel: number,
+    }) {
+      mockMetricsPrivate.assertCount(
+          UserAction.ENTER_INK2_ANNOTATION_MODE, expected.ink2.enter);
+      mockMetricsPrivate.assertCount(
+          UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE, expected.text.enter);
+      mockMetricsPrivate.assertCount(
+          UserAction.ENTER_INK2_SIGNATURE_MODE, expected.signatures.enter);
+      mockMetricsPrivate.assertCount(
+          UserAction.EXIT_INK2_ANNOTATION_MODE, expected.ink2.exit);
+      mockMetricsPrivate.assertCount(
+          UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE, expected.text.exit);
+      mockMetricsPrivate.assertCount(
+          UserAction.EXIT_INK2_SIGNATURE_MODE, expected.signatures.exit);
+
+      // Also confirm that the side panel metrics get recorded.
+      mockMetricsPrivate.assertCount(
+          UserAction.OPEN_INK2_SIDE_PANEL, expected.sidepanel);
+      mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 0);
+    }
+
+    // Initial state, no metrics recorded.
+    assertMetrics({
+      ink2: {enter: 0, exit: 0},
+      text: {enter: 0, exit: 0},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 0,
+    });
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+
+    // NONE -> TEXT
+    await setAnnotationMode(AnnotationMode.TEXT);
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 0, exit: 0},
+      text: {enter: 1, exit: 0},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 1,
+    });
+
+    // TEXT -> NONE
+    await setAnnotationMode(AnnotationMode.OFF);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 0, exit: 0},
+      text: {enter: 1, exit: 1},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 1,
+    });
+
+    // NONE -> DRAW
+    await setAnnotationMode(AnnotationMode.DRAW);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 1, exit: 0},
+      text: {enter: 1, exit: 1},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 2,
+    });
+
+    // DRAW -> TEXT
+    await setAnnotationMode(AnnotationMode.TEXT);
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+    // Back and forth between draw and text doesn't increment sidepanel entry
+    // metric.
+    assertMetrics({
+      ink2: {enter: 1, exit: 1},
+      text: {enter: 2, exit: 1},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 2,
+    });
+
+    // TEXT -> DRAW
+    await setAnnotationMode(AnnotationMode.DRAW);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 1},
+      text: {enter: 2, exit: 2},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 2,
+    });
+
+    // DRAW -> NONE
+    await setAnnotationMode(AnnotationMode.OFF);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 2},
+      text: {enter: 2, exit: 2},
+      signatures: {enter: 0, exit: 0},
+      sidepanel: 2,
+    });
+
+    // NONE -> SIGNATURE
+    await setAnnotationMode(AnnotationMode.SIGNATURE);
+    chrome.test.assertEq(
+        AnnotationMode.SIGNATURE, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 2},
+      text: {enter: 2, exit: 2},
+      signatures: {enter: 1, exit: 0},
+      sidepanel: 3,
+    });
+
+    // SIGNATURE -> NONE
+    await setAnnotationMode(AnnotationMode.OFF);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 2},
+      text: {enter: 2, exit: 2},
+      signatures: {enter: 1, exit: 1},
+      sidepanel: 3,
+    });
+
+    // NONE -> SIGNATURE
+    await setAnnotationMode(AnnotationMode.SIGNATURE);
+    chrome.test.assertEq(
+        AnnotationMode.SIGNATURE, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 2},
+      text: {enter: 2, exit: 2},
+      signatures: {enter: 2, exit: 1},
+      sidepanel: 4,
+    });
+
+    // SIGNATURE -> TEXT
+    await setAnnotationMode(AnnotationMode.TEXT);
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 2},
+      text: {enter: 3, exit: 2},
+      signatures: {enter: 2, exit: 2},
+      sidepanel: 4,
+    });
+
+    // TEXT -> NONE
+    await setAnnotationMode(AnnotationMode.OFF);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
+    assertMetrics({
+      ink2: {enter: 2, exit: 2},
+      text: {enter: 3, exit: 3},
+      signatures: {enter: 2, exit: 2},
+      sidepanel: 4,
+    });
 
     chrome.test.succeed();
   },

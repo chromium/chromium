@@ -23,5 +23,7 @@ suite('Ink2SignatureSidePanelTest', () => {
         viewer.shadowRoot.querySelector('viewer-signature-side-panel')));
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 1);
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 0);
+    mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_SIGNATURE_MODE, 1);
+    mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_SIGNATURE_MODE, 0);
   });
 });
