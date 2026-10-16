@@ -1807,11 +1807,22 @@ void LocationBarView::OnFullWebUiOmniboxReady() {
   const bool had_focus =
       (omnibox_view_ && omnibox_view_->HasFocus()) || is_focused_in_manager;
 
+  // A partial highlight (e.g. a drag or double-click selection made before
+  // WebUI was ready) should only transfer focus and the selection to WebUI,
+  // without querying zero-prefix suggestions or opening the dropdown.
+  const gfx::Range selection = (had_focus && omnibox_view_)
+                                   ? omnibox_view_->GetSelectionBounds()
+                                   : gfx::Range::InvalidRange();
+  const bool has_partial_highlight =
+      selection.IsValid() && !selection.is_empty() &&
+      selection.length() < omnibox_view_->GetText().length();
+
   // Capture user intent before blurring `omnibox_view_`, as
   // `OmniboxView::OnBlur()` can reset `is_user_initiated_focus_`.
   const bool query_zps =
       had_focus && omnibox_view_->is_user_initiated_focus() &&
-      !GetOmniboxController()->edit_model()->user_input_in_progress();
+      !GetOmniboxController()->edit_model()->user_input_in_progress() &&
+      !has_partial_highlight;
   if (had_focus) {
     // Make `LocationBarView` focusable so `SetFocusedView()` satisfies
     // `IsFocusable()`.

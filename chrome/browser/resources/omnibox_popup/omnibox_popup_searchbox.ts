@@ -31,7 +31,7 @@ import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/se
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface, UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
+import {browserProxyFactory, MatchesUpdate, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
 import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, PageHandlerInterface as PopupPageHandlerInterface} from './omnibox_popup.mojom-webui.js';
 import type {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
 import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
@@ -351,6 +351,14 @@ export class OmniboxPopupSearchboxElement extends
   // (unless the selection changed during the press) and the elided URL will be
   // unelided, keeping the caret (or selection) on the same characters.
   private unelideOnMouseRelease_: boolean = false;
+  // If true, zero-prefix suggestions will be queried on mouse release (if no
+  // drag occurred). A drag or a multi-click (e.g. double-click) selection never
+  // queries zero-prefix suggestions.
+  private queryZpsOnMouseRelease_: boolean = false;
+  // True if the last single click queried zero-prefix suggestions. If that
+  // click turns out to be the first click of a multi-click, the query is
+  // cancelled.
+  private clickQueriedZps_: boolean = false;
   private textfieldModel_: TextfieldModel = new TextfieldModel();
   // Stores the input text prior to the latest edit or selection change event.
   // Paired with `lastInputSelection_` to compute character diffs and offsets
@@ -914,6 +922,17 @@ export class OmniboxPopupSearchboxElement extends
     // selection without being overwritten on mouseup.
     if (e.detail >= 2) {
       this.selectAllOnMouseRelease_ = false;
+      // A multi-click selection never queries zero-prefix suggestions. If the
+      // first click of this multi-click queried them, stop that query and
+      // ignore its late results so that they do not open the dropdown. Matches
+      // that have already arrived are kept rather than cleared, so that the
+      // dropdown does not flash open and closed.
+      this.queryZpsOnMouseRelease_ = false;
+      if (this.clickQueriedZps_) {
+        this.clickQueriedZps_ = false;
+        this.activeQueryId = -1;
+        this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
+      }
       // If a range is currently selected (e.g., from the first click of a
       // double click selecting all text on mouse release), Blink's
       // SelectionController ignores double-click word selection because
@@ -924,43 +943,71 @@ export class OmniboxPopupSearchboxElement extends
       }
       return;
     }
+    this.clickQueriedZps_ = false;
+
+    if (e.button === 0) {
+      this.clientXAtMouseDown_ = e.clientX;
+      this.clientYAtMouseDown_ = e.clientY;
+    }
 
     // If nothing is selected, a mouse click should select all the text
     // if the input is not already focused (i.e. focusing on omnibox).
     if (!this.dropdownIsVisible && wasUnfocused && e.button === 0) {
       if (input.selectionStart === input.selectionEnd) {
         this.selectAllOnMouseRelease_ = true;
-        this.clientXAtMouseDown_ = e.clientX;
-        this.clientYAtMouseDown_ = e.clientY;
       }
     }
-    if (e.button === 0 && e.composedPath().includes(input)) {
-      this.onInputFocusChanged(new CustomEvent('input-focus-changed', {
-        detail: {value: input.value, isOnFocus: !input.value},
-      }));
-    }
+    // Like the native omnibox, only a click that focuses the input (or one on
+    // an empty input, e.g. on the New Tab Page) queries zero-prefix
+    // suggestions. A click in the already focused input (e.g. after a drag
+    // selection was handed off from the location bar) only places the caret,
+    // showing the full URL if it was elided.
+    //
+    // Defer the query to mouse release, so that a drag selection does not
+    // query them.
+    this.queryZpsOnMouseRelease_ = e.button === 0 &&
+        e.composedPath().includes(input) && (wasUnfocused || !input.value);
   }
 
   private onMouseMove_(e: MouseEvent) {
     // Only track drag distance while the primary (left) mouse button is held.
-    if (this.selectAllOnMouseRelease_ && (e.buttons & 1) !== 0) {
+    if ((this.selectAllOnMouseRelease_ || this.queryZpsOnMouseRelease_) &&
+        (e.buttons & 1) !== 0) {
       const dx = Math.abs(e.clientX - this.clientXAtMouseDown_);
       const dy = Math.abs(e.clientY - this.clientYAtMouseDown_);
       if (dx > DRAG_THRESHOLD_PX || dy > DRAG_THRESHOLD_PX) {
         this.selectAllOnMouseRelease_ = false;
+        this.queryZpsOnMouseRelease_ = false;
       }
     }
   }
 
   private onMouseUp_(e: MouseEvent) {
+    // A click that highlighted part of the text (e.g. a drag within the drag
+    // threshold) neither selects all the text nor queries zero-prefix
+    // suggestions, like `OmniboxViewViews::OnMouseDragged()`. Check this before
+    // selecting all the text, which would replace the partial selection.
+    const hasPartialSelection = this.hasPartialSelection_();
     // Defer selecting all text to mouseup so that Blink finishes native
     // pointer/caret placement before we apply the full selection, preventing
     // the selection from being collapsed on mouse release.
     if (this.shadowRoot?.activeElement === this.$.input &&
-        this.selectAllOnMouseRelease_ && e.button === 0) {
+        this.selectAllOnMouseRelease_ && e.button === 0 &&
+        !hasPartialSelection) {
       this.getInputElement().select();
     }
+    // Query zero-prefix suggestions for a click.
+    if (this.queryZpsOnMouseRelease_ && e.button === 0 &&
+        !hasPartialSelection) {
+      const input = this.getInputElement().inputElement;
+      this.clickQueriedZps_ = !this.userInputInProgress_ &&
+          !this.isChromeScheme_() && !this.dropdownIsVisible;
+      this.onInputFocusChanged(new CustomEvent('input-focus-changed', {
+        detail: {value: input.value, isOnFocus: !input.value},
+      }));
+    }
     this.selectAllOnMouseRelease_ = false;
+    this.queryZpsOnMouseRelease_ = false;
 
     if (this.shadowRoot?.activeElement === this.$.input &&
         this.unelideOnMouseRelease_ && e.button === 0) {
@@ -1001,9 +1048,21 @@ export class OmniboxPopupSearchboxElement extends
     input.setSelectionRange(position.offset, position.offset);
   }
 
+  /**
+   * Returns true if the input has a non-empty selection that does not span all
+   * of its text.
+   */
+  private hasPartialSelection_(): boolean {
+    const input = this.getInputElement().inputElement;
+    const start = input.selectionStart ?? 0;
+    const end = input.selectionEnd ?? 0;
+    return start !== end && Math.abs(end - start) !== input.value.length;
+  }
+
   override async onInputWrapperKeydown(e: KeyboardEvent) {
     this.selectAllOnMouseRelease_ = false;
     this.unelideOnMouseRelease_ = false;
+    this.queryZpsOnMouseRelease_ = false;
 
     const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
     const key = e.key.toLowerCase();
@@ -1401,8 +1460,14 @@ export class OmniboxPopupSearchboxElement extends
 
     // Prevent stale matches from a different context from lingering.
     if (state.isTabSwitch || !state.isFocused || keywordChanged ||
-        (!state.userInputInProgress && !state.queryZps)) {
+        (!state.userInputInProgress &&
+         state.matchesUpdate === MatchesUpdate.kDefault)) {
       this.clearAutocompleteMatches();
+    } else if (state.matchesUpdate === MatchesUpdate.kPreserveMatches) {
+      // Keep the visible matches (e.g. for the second click of a double-click
+      // whose first click opened the dropdown), but stop any in-flight query so
+      // that it does not replace them after the selection changed.
+      this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
     }
 
     this.isLogicallyFocused_ = state.isFocused;
@@ -1452,7 +1517,7 @@ export class OmniboxPopupSearchboxElement extends
 
     // If zero-prefix suggestions are requested by the new state, initiate
     // an on-focus autocomplete query.
-    if (state.queryZps) {
+    if (state.matchesUpdate === MatchesUpdate.kQueryZps) {
       this.queryAutocomplete(
           text, /*preventInlineAutocomplete=*/ false,
           /*isOnFocus=*/ true);
@@ -1582,6 +1647,8 @@ export class OmniboxPopupSearchboxElement extends
   private handleFocusLost_() {
     this.hasDirectUserDomInput_ = false;
     this.selectAllOnMouseRelease_ = false;
+    this.queryZpsOnMouseRelease_ = false;
+    this.clickQueriedZps_ = false;
     this.getInputElement().setSelectionRange(0, 0);
     this.getInputElement().blur();
     // Cache the selected match before clearing autocomplete results so the
@@ -1795,6 +1862,7 @@ export class OmniboxPopupSearchboxElement extends
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.selectAllOnMouseRelease_ = false;
+    this.queryZpsOnMouseRelease_ = false;
     this.userInputInProgress_ = true;
     this.hasUserInput_ = !!e.detail.value.trim();
     this.hasDirectUserDomInput_ = true;

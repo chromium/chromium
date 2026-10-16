@@ -287,12 +287,26 @@ void WebuiOmniboxHandler::QueryAutocomplete(
     return;
   }
 
+  // Captured before starting the query, which may update the edit model.
+  const bool is_zero_prefix_query_of_permanent_text =
+      is_on_focus && !edit_model()->user_input_in_progress();
+
   SearchboxHandler::QueryAutocomplete(
       query_id, /*tab_id=*/std::nullopt, input, prevent_inline_autocomplete,
       cursor_position, suggest_inventory, is_on_focus, keyword, input_method);
 
   // Ensure the `OmniboxEditModel` reflects the current input state.
-  if (auto* view = edit_model()->view()) {
+  //
+  // The query above has been started either way. But don't write a zero-prefix
+  // query of the permanent text back into the native view: such a query
+  // doesn't change what the view should show, and because it arrives
+  // asynchronously, writing it back can clobber newer native state. E.g. the
+  // second press of a double-click on the elided URL unelides it and selects a
+  // word. If the WebUI receives the first click's state only after that press,
+  // the zero-prefix query that it then issues would re-elide the URL here and
+  // drop that selection.
+  if (auto* view = edit_model()->view();
+      view && !is_zero_prefix_query_of_permanent_text) {
     view->SetWindowTextAndCaretPos(input, cursor_position,
                                    /*update_popup=*/false,
                                    /*notify_text_changed=*/false);

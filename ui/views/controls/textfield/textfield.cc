@@ -2255,6 +2255,10 @@ gfx::Point Textfield::GetLastClickRootLocation() const {
   return selection_controller_.last_click_root_location();
 }
 
+base::TimeTicks Textfield::GetLastClickTime() const {
+  return selection_controller_.last_click_time();
+}
+
 void Textfield::ExecuteTextEditCommand(ui::TextEditCommand command) {
   DestroyTouchSelection();
 

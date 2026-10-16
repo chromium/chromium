@@ -4,6 +4,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -92,7 +93,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
@@ -243,6 +246,39 @@ class FullWebUIOmniboxInteractiveTestBase
               ->popup_state();
         },
         expected_state, "CheckPopupState");
+  }
+
+  // Waits until the (preloaded) WebUI popup's handler is connected, so that
+  // state pushed by `SyncNativeStateToWebUI()` reaches the WebUI directly.
+  auto WaitForPopupHandlerReady() {
+    return PollUntil(
+        [this]() -> bool {
+          auto* browser_window = BrowserWindow::FromBrowser(browser());
+          auto* location_bar =
+              browser_window ? browser_window->GetLocationBar() : nullptr;
+          auto* popup_view =
+              location_bar ? location_bar->GetOmniboxPopupView() : nullptr;
+          return popup_view && popup_view->IsPopupHandlerReady();
+        },
+        "WaitForPopupHandlerReady");
+  }
+
+  // Waits until the newly shown popup stops forwarding mouse events over the
+  // location bar to the native omnibox beneath it, so that a click there
+  // reaches the WebUI input.
+  auto WaitForPopupToStopForwardingMouseEvents() {
+    return PollUntil(
+        [this]() -> bool {
+          for (views::View* view = GetActivePopupWebView().Run(); view;
+               view = view->parent()) {
+            if (auto* frame =
+                    views::AsViewClass<RoundedOmniboxResultsFrame>(view)) {
+              return !frame->forward_mouse_events();
+            }
+          }
+          return false;
+        },
+        "WaitForPopupToStopForwardingMouseEvents");
   }
 
   auto CheckUserInputInProgress(bool expected) {
@@ -2135,6 +2171,333 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       }),
       WaitForPopupReady(), WaitForWebUIInputValue("chrome://version"),
       CheckWebUIInputSelection(0, 6));
+}
+
+namespace {
+
+// Sends a synthesized left mouse button event of `type` at `x` (vertically
+// centered) directly to `omnibox_view`, as if the user clicked or dragged in
+// the unfocused location bar, or as if the event was forwarded from a newly
+// opened WebUI popup. The event is stamped with `time_stamp`, or the current
+// time if null; the stamp used is returned.
+base::TimeTicks SendNativeOmniboxMouseEvent(
+    OmniboxViewViews* omnibox_view,
+    ui::EventType type,
+    int x,
+    int click_count = 1,
+    base::TimeTicks time_stamp = base::TimeTicks()) {
+  const gfx::Point point(x, omnibox_view->height() / 2);
+  int flags = ui::EF_LEFT_MOUSE_BUTTON;
+  if (click_count == 2) {
+    flags |= ui::EF_IS_DOUBLE_CLICK;
+  }
+  if (time_stamp.is_null()) {
+    time_stamp = ui::EventTimeForNow();
+  }
+  ui::MouseEvent event(
+      type, point, point, time_stamp, flags,
+      type == ui::EventType::kMouseDragged ? 0 : ui::EF_LEFT_MOUSE_BUTTON);
+  switch (type) {
+    case ui::EventType::kMousePressed:
+      omnibox_view->OnMousePressed(event);
+      break;
+    case ui::EventType::kMouseDragged:
+      omnibox_view->OnMouseDragged(event);
+      break;
+    case ui::EventType::kMouseReleased:
+      omnibox_view->OnMouseReleased(event);
+      break;
+    default:
+      NOTREACHED();
+  }
+  return time_stamp;
+}
+
+// A JS condition that holds when the WebUI input has a non-empty selection that
+// does not span all of its text.
+constexpr char kHasPartialWebUIInputSelection[] =
+    "(el) => el && el.selectionStart !== el.selectionEnd && "
+    "Math.abs(el.selectionEnd - el.selectionStart) < el.value.length";
+
+// Counts the autocomplete queries started by an `AutocompleteController`.
+class AutocompleteStartCounter : public AutocompleteController::Observer {
+ public:
+  explicit AutocompleteStartCounter(AutocompleteController* controller) {
+    observation_.Observe(controller);
+  }
+
+  int count() const { return count_; }
+
+  // AutocompleteController::Observer:
+  void OnStart(AutocompleteController* controller,
+               const AutocompleteInput& input) override {
+    ++count_;
+  }
+
+ private:
+  int count_ = 0;
+  base::ScopedObservation<AutocompleteController,
+                          AutocompleteController::Observer>
+      observation_{this};
+};
+
+}  // namespace
+
+// Verifies that drag-selecting part of the URL in the unfocused location bar
+// hands focus and the selection off to the WebUI popup without querying
+// zero-prefix suggestions.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ViewsDragHandoffDoesNotQueryZeroSuggest) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Drags are handled by the WebUI location bar.";
+  }
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      WaitForPopupHandlerReady(), Do([this]() {
+        auto* omnibox_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView()
+                                 ->omnibox_view();
+        ASSERT_TRUE(omnibox_view);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMousePressed,
+                                    1);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMouseDragged,
+                                    30);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMouseReleased,
+                                    30);
+      }),
+      WaitForPopupReady(), WaitForWebUIInputValue("chrome://version"),
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           kHasPartialWebUIInputSelection),
+      // No autocomplete query was issued, and none is pending.
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.activeQueryId", -1)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.dropdownIsVisible", false)));
+}
+
+// Verifies that double-clicking an elided URL in the unfocused location bar,
+// where the second click unelides the URL and selects only part of it, keeps
+// the dropdown opened by the first click.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ViewsDoubleClickOnElidedUrlKeepsDropdownOpen) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Double-clicks are handled by the WebUI location bar.";
+  }
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
+    GTEST_SKIP() << "Requires kWebUIOmniboxFullPopupDoubleClick.";
+  }
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+  const GURL url = https_server.GetURL("/title1.html");
+
+  base::TimeTicks first_click_time;
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      WaitForPopupHandlerReady(),
+      // The first click focuses the omnibox, selects all, and opens the
+      // zero-prefix suggestions dropdown.
+      Do([this, &first_click_time]() {
+        auto* omnibox_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView()
+                                 ->omnibox_view();
+        ASSERT_TRUE(omnibox_view);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMousePressed,
+                                    10);
+        first_click_time = SendNativeOmniboxMouseEvent(
+            omnibox_view, ui::EventType::kMouseReleased, 10);
+      }),
+      WaitForPopupReady(),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      InAnyContext(ExecuteJsAt(kPopupWebView, kPopupSearchbox,
+                               "(el) => { el.dataset.firstQueryId = "
+                               "el.activeQueryId; }")),
+      // The second click, forwarded from the newly opened popup, unelides the
+      // URL, which shifts the text so that only a word of it is selected. It
+      // is sent with a platform click count of 1, as on macOS, where the click
+      // count restarts because the click lands in the popup's window. Views
+      // still treats it as a double-click, based on its time and location.
+      Do([this, &first_click_time]() {
+        auto* omnibox_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView()
+                                 ->omnibox_view();
+        const base::TimeTicks second_click_time =
+            first_click_time + base::Milliseconds(100);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMousePressed,
+                                    10, /*click_count=*/1, second_click_time);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMouseReleased,
+                                    10, /*click_count=*/1, second_click_time);
+      }),
+      WaitForWebUIInputValue(url.spec()),
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           kHasPartialWebUIInputSelection),
+      // The dropdown stays open with the first click's matches, and no new
+      // zero-prefix query is issued.
+      InAnyContext(CheckJsResultAt(
+          kPopupWebView, kPopupSearchbox,
+          "(el) => el.activeQueryId === Number(el.dataset.firstQueryId)",
+          true)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.dropdownIsVisible", true)));
+}
+
+// Verifies that a double-click on an elided URL in the unfocused location bar
+// keeps the second click's word selection when the zero-prefix query that the
+// WebUI issues for the first click reaches the browser only after the second
+// press.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ViewsDoubleClickSurvivesLateZeroSuggestQuery) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Double-clicks are handled by the WebUI location bar.";
+  }
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
+    GTEST_SKIP() << "Requires kWebUIOmniboxFullPopupDoubleClick.";
+  }
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+  const GURL url = https_server.GetURL("/title1.html");
+
+  base::TimeTicks first_click_time;
+  std::unique_ptr<AutocompleteStartCounter> start_counter;
+  int starts_before_late_query = 0;
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      WaitForPopupHandlerReady(),
+      // The first click focuses the omnibox, selects all, and opens the
+      // zero-prefix suggestions dropdown.
+      Do([this, &first_click_time]() {
+        auto* omnibox_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView()
+                                 ->omnibox_view();
+        ASSERT_TRUE(omnibox_view);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMousePressed,
+                                    10);
+        first_click_time = SendNativeOmniboxMouseEvent(
+            omnibox_view, ui::EventType::kMouseReleased, 10);
+      }),
+      WaitForPopupReady(),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // The second press, forwarded from the popup, unelides the URL and
+      // selects a word of it.
+      Do([this, &first_click_time, &start_counter,
+          &starts_before_late_query]() {
+        auto* location_bar = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView();
+        start_counter = std::make_unique<AutocompleteStartCounter>(
+            location_bar->GetOmniboxController()->autocomplete_controller());
+        starts_before_late_query = start_counter->count();
+        SendNativeOmniboxMouseEvent(
+            location_bar->omnibox_view(), ui::EventType::kMousePressed, 10,
+            /*click_count=*/1, first_click_time + base::Milliseconds(100));
+      }),
+      // Before the second release, the browser receives the zero-prefix query
+      // of the elided URL that the WebUI issues when it receives the first
+      // click's state late.
+      InAnyContext(ExecuteJsAt(kPopupWebView, kPopupSearchbox, R"((el) => {
+        el.queryAutocomplete(
+            el.getInputElement().inputElement.value,
+            /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ true);
+      })")),
+      Do([&start_counter, &starts_before_late_query]() {
+        ASSERT_TRUE(base::test::RunUntil([&]() {
+          return start_counter->count() > starts_before_late_query;
+        }));
+        start_counter.reset();
+      }),
+      Do([this, &first_click_time]() {
+        SendNativeOmniboxMouseEvent(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView()
+                ->omnibox_view(),
+            ui::EventType::kMouseReleased, 10, /*click_count=*/1,
+            first_click_time + base::Milliseconds(100));
+      }),
+      // The second click's word selection of the unelided URL is handed off,
+      // and the dropdown stays open.
+      WaitForWebUIInputValue(url.spec()),
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           kHasPartialWebUIInputSelection),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.dropdownIsVisible", true)));
+}
+
+// Verifies that after a drag selects all of the elided URL in the unfocused
+// location bar, a click in the now focused WebUI omnibox only unelides the URL
+// and places the caret, without querying zero-prefix suggestions, as in the
+// classic omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ViewsSelectAllDragThenClickDoesNotQueryZeroSuggest) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Drags are handled by the WebUI location bar.";
+  }
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+  const GURL url = https_server.GetURL("/title1.html");
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+      WaitForPopupHandlerReady(),
+      // Drag from the start of the text past its end, selecting all of it.
+      Do([this]() {
+        auto* omnibox_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView()
+                                 ->omnibox_view();
+        ASSERT_TRUE(omnibox_view);
+        const int end_x = omnibox_view->width() + 50;
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMousePressed,
+                                    1);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMouseDragged,
+                                    end_x);
+        SendNativeOmniboxMouseEvent(omnibox_view, ui::EventType::kMouseReleased,
+                                    end_x);
+      }),
+      WaitForPopupReady(),
+      // The WebUI omnibox is focused, with all of the elided URL selected, and
+      // without a dropdown.
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           "(el) => el && el.value.length > 0 && "
+                           "el.value !== '" +
+                               url.spec() +
+                               "' && el.selectionStart === 0 && "
+                               "el.selectionEnd === el.value.length"),
+      CheckWebUIInputFocus(true),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.activeQueryId", -1)),
+      // Click in the WebUI input, and note when the click's mouseup has been
+      // handled.
+      InAnyContext(ExecuteJsAt(kPopupWebView, kPopupSearchbox, R"((el) => {
+        window.addEventListener('mouseup', () => {
+          el.dataset.mouseUpHandled = 'true';
+        }, {once: true});
+      })")),
+      WaitForPopupToStopForwardingMouseEvents(),
+      InAnyContext(MoveMouseTo(kPopupWebView, kWebUIInput)),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el.dataset.mouseUpHandled === 'true'"),
+      // The click shows the full URL and places the caret, without querying
+      // zero-prefix suggestions.
+      WaitForWebUIInputValue(url.spec()),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kWebUIInput,
+                                   "(el) => el.selectionStart === "
+                                   "el.selectionEnd",
+                                   true)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.activeQueryId", -1)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "(el) => el.dropdownIsVisible", false)));
 }
 
 // Verifies that opening the App Menu from both empty and typed Omnibox states

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isMac} from '//resources/js/platform.js';
-import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -69,7 +69,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     isFocused: false,
     permanentDisplayText: '',
     showFullUrl: false,
-    queryZps: false,
+    matchesUpdate: MatchesUpdate.kDefault,
     keywordModel: null,
     isTabSwitch: false,
     urlEmphasis: null,
@@ -159,10 +159,10 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
 
-    // Verify queryZps = true initiates autocomplete query on focus.
+    // Verify `MatchesUpdate.kQueryZps` initiates autocomplete query on focus.
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       text: 'zps query',
-      queryZps: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
     }));
     await microtasksFinished();
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
@@ -613,30 +613,393 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals('', input.value);
   });
 
-  test('MousedownTriggersZeroSuggest', async () => {
+  function dispatchMouseEvent(
+      target: EventTarget, type: string, init: MouseEventInit = {}) {
+    target.dispatchEvent(new MouseEvent(type, {
+      button: 0,
+      clientX: 20,
+      clientY: 20,
+      detail: 1,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      ...init,
+    }));
+  }
+
+  test('ClickTriggersZeroSuggestOnMouseUp', async () => {
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       sequenceNumber: 2,
       text: 'https://example.com',
       fullUrl: 'https://example.com',
       permanentDisplayText: 'example.com',
-      isFocused: true,
+      isFocused: false,
     }));
     await microtasksFinished();
     testProxy.handler.reset();
 
     const input = searchbox.$.input.inputElement;
-    input.dispatchEvent(new MouseEvent('mousedown', {
-      button: 0,
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    }));
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    // Simulate Blink focusing the input on mouse press.
+    input.focus();
+    await microtasksFinished();
+
+    // Zero-prefix suggestions are deferred to mouse release, so that a drag
+    // does not query them.
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
     await microtasksFinished();
 
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
     const args = testProxy.handler.getArgs('queryAutocomplete')[0];
     assertEquals('https://example.com', args[2]);
     assertTrue(args[6]);  // isOnFocus
+  });
+
+  // Like the native omnibox, a click on an empty input (e.g. on the New Tab
+  // Page) queries zero-prefix suggestions even if the input is focused.
+  test('FocusedClickOnEmptyInputTriggersZeroSuggest', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: '',
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    await microtasksFinished();
+
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const args = testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertTrue(args[6]);  // isOnFocus
+  });
+
+  // Like the native omnibox, a click in the already focused input (e.g. after
+  // a drag that selected all of the elided URL was handed off from the location
+  // bar) only shows the full URL and places the caret, without querying
+  // zero-prefix suggestions.
+  test('FocusedClickDoesNotTriggerZeroSuggest', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'example.com',
+      fullUrl: 'https://example.com',
+      permanentDisplayText: 'example.com',
+      selection: {start: 0, end: 11},
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    // The press leaves the elided URL selected, and the release places the
+    // caret and shows the full URL.
+    assertEquals('example.com', input.value);
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertFalse(searchbox.dropdownIsVisible);
+    assertEquals('https://example.com', input.value);
+    assertEquals(input.selectionStart, input.selectionEnd);
+  });
+
+  test('ClickWithPartialSelectionDoesNotTriggerZeroSuggest', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      isFocused: false,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    // Simulate Blink focusing the input on mouse press.
+    input.focus();
+    // Simulate Blink highlighting part of the text with a drag that stays
+    // within the drag threshold.
+    input.setSelectionRange(8, 19);
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    await microtasksFinished();
+
+    // The partial selection is kept rather than replaced by select-all.
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(8, input.selectionStart);
+    assertEquals(19, input.selectionEnd);
+  });
+
+  // A double-click in the focused input, while the dropdown is already open
+  // (e.g. from the earlier click that focused the omnibox), leaves the dropdown
+  // and its matches as they are, without querying or stopping anything.
+  test('DoubleClickPreservesVisibleDropdown', async () => {
+    const testText = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: searchbox.activeQueryId,
+          sequenceId: 1,
+          input: testText,
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1, detail: 2});
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0, detail: 2});
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertTrue(searchbox.dropdownIsVisible);
+  });
+
+  // The second press of a double-click whose first click was handled natively
+  // (e.g. it opened the dropdown from the location bar) keeps the dropdown and
+  // its matches, and lets Blink select the word.
+  test('NativeFirstClickDoubleClickPreservesMatches', async () => {
+    const testText = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: searchbox.activeQueryId,
+          sequenceId: 1,
+          input: testText,
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1, detail: 2});
+    input.setSelectionRange(8, 15);
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0, detail: 2});
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertTrue(searchbox.dropdownIsVisible);
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
+  });
+
+  // A selection sync with `MatchesUpdate.kPreserveMatches` (e.g. for the second
+  // click of a double-click from the location bar) keeps the visible matches,
+  // stops any in-flight query, and does not issue a new one.
+  test('SetInputStatePreserveMatchesKeepsDropdown', async () => {
+    const testText = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    const queryId = searchbox.activeQueryId;
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId,
+          sequenceId: 1,
+          input: testText,
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    testProxy.handler.reset();
+
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: true,
+      selection: {start: 8, end: 15},
+      matchesUpdate: MatchesUpdate.kPreserveMatches,
+    }));
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertFalse(testProxy.handler.getArgs('stopAutocomplete')[0]);
+    assertEquals(queryId, searchbox.activeQueryId);
+    assertTrue(searchbox.dropdownIsVisible);
+  });
+
+  // A drag inside the WebUI omnibox, whether or not its input has DOM focus,
+  // never queries zero-prefix suggestions.
+  [true, false].forEach(isFocused => {
+    const prefix = isFocused ? 'Focused' : 'Unfocused';
+
+    test(`${prefix}DragDoesNotTriggerZeroSuggest`, async () => {
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: 'https://example.com',
+        fullUrl: 'https://example.com',
+        isFocused,
+      }));
+      await microtasksFinished();
+      testProxy.handler.reset();
+
+      const input = searchbox.$.input.inputElement;
+      dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+      input.focus();
+      // Simulate Blink setting a partial drag selection.
+      input.setSelectionRange(8, 19);
+      // Mousemove beyond the drag threshold.
+      dispatchMouseEvent(document, 'mousemove', {buttons: 1, clientX: 80});
+      dispatchMouseEvent(document, 'mouseup', {buttons: 0, clientX: 80});
+      await microtasksFinished();
+
+      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+      assertEquals(8, input.selectionStart);
+      assertEquals(19, input.selectionEnd);
+    });
+  });
+
+  // A double-click in the already focused input never queries zero-prefix
+  // suggestions, as neither of its clicks focuses the input.
+  test('FocusedDoubleClickDoesNotTriggerZeroSuggest', async () => {
+    const testText = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1, detail: 2});
+    input.setSelectionRange(8, 15);
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0, detail: 2});
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertFalse(searchbox.dropdownIsVisible);
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
+  });
+
+  // A double-click that focuses the input never queries zero-prefix
+  // suggestions either, even though its first click does.
+  test('UnfocusedDoubleClickDoesNotTriggerZeroSuggest', async () => {
+    const testText = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: false,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+
+    // The first click looks like a single click, so it queries zero-prefix
+    // suggestions on mouse release.
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    input.focus();
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const firstClickQueryId = searchbox.activeQueryId;
+
+    // The second click turns it into a double-click, which stops that
+    // query without clearing any matches.
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1, detail: 2});
+    input.setSelectionRange(8, 15);
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0, detail: 2});
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertFalse(testProxy.handler.getArgs('stopAutocomplete')[0]);
+
+    // Late results for the stopped query don't open the dropdown.
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: firstClickQueryId,
+          sequenceId: 1,
+          input: testText,
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    assertFalse(searchbox.dropdownIsVisible);
+
+    // The word selection is preserved.
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
+  });
+
+  // If the first click's results arrive before the second press, the
+  // double-click keeps them rather than closing the dropdown (which would
+  // make it flash), but stops the query so it doesn't update them further.
+  test('UnfocusedDoubleClickKeepsAlreadyShownZeroSuggest', async () => {
+    const testText = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testText,
+      fullUrl: testText,
+      isFocused: false,
+    }));
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1});
+    input.focus();
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0});
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const firstClickQueryId = searchbox.activeQueryId;
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: firstClickQueryId,
+          sequenceId: 1,
+          input: testText,
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    dispatchMouseEvent(input, 'mousedown', {buttons: 1, detail: 2});
+    input.setSelectionRange(8, 15);
+    dispatchMouseEvent(document, 'mouseup', {buttons: 0, detail: 2});
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertFalse(testProxy.handler.getArgs('stopAutocomplete')[0]);
+    assertTrue(searchbox.dropdownIsVisible);
+
+    // Further updates for the stopped query are ignored.
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: firstClickQueryId,
+          sequenceId: 2,
+          input: testText,
+          matches: [],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
   });
 
   test('ClearsInputTextAndNotifiesHandler', async () => {
@@ -711,7 +1074,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       selection: {start: 8, end: 15},
       userInputInProgress: false,
       isFocused: true,
-      queryZps: false,
+      matchesUpdate: MatchesUpdate.kDefault,
     }));
     await microtasksFinished();
 
@@ -738,7 +1101,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       selection: {start: 8, end: 15},
       userInputInProgress: false,
       isFocused: true,
-      queryZps: false,
+      matchesUpdate: MatchesUpdate.kDefault,
     }));
     await microtasksFinished();
 
@@ -763,7 +1126,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       selection: {start: 0, end: testUrl.length},
       userInputInProgress: false,
       isFocused: true,
-      queryZps: false,
+      matchesUpdate: MatchesUpdate.kDefault,
     }));
     await microtasksFinished();
 
@@ -792,7 +1155,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       selection: {start: 0, end: draftQuery.length},
       userInputInProgress: true,
       isFocused: true,
-      queryZps: false,
+      matchesUpdate: MatchesUpdate.kDefault,
     }));
     await microtasksFinished();
 
@@ -816,7 +1179,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       selection: {start: 0, end: testUrl.length},
       userInputInProgress: false,
       isFocused: true,
-      queryZps: false,
+      matchesUpdate: MatchesUpdate.kDefault,
     }));
     await microtasksFinished();
 
@@ -840,7 +1203,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       selection: {start: 0, end: testUrl.length},
       userInputInProgress: false,
       isFocused: true,
-      queryZps: false,
+      matchesUpdate: MatchesUpdate.kDefault,
     }));
     await microtasksFinished();
 
@@ -2351,7 +2714,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        text: draftQuery,
        userInputInProgress: true,
        isFocused: true,
-       queryZps: false,
+       matchesUpdate: MatchesUpdate.kDefault,
      }));
      await microtasksFinished();
 
@@ -2379,7 +2742,7 @@ suite('OmniboxPopupSearchboxTest', function() {
            text: testUrl,
            userInputInProgress: false,
            isFocused: true,
-           queryZps: false,
+           matchesUpdate: MatchesUpdate.kDefault,
          }));
          await microtasksFinished();
 
@@ -2412,7 +2775,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        text: testUrl,
        userInputInProgress: false,
        isFocused: true,
-       queryZps: false,
+       matchesUpdate: MatchesUpdate.kDefault,
      }));
      await microtasksFinished();
 
@@ -2439,7 +2802,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        text: '',
        userInputInProgress: true,
        isFocused: true,
-       queryZps: false,
+       matchesUpdate: MatchesUpdate.kDefault,
      }));
      await microtasksFinished();
 
@@ -2502,7 +2865,7 @@ suite('OmniboxPopupSearchboxTest', function() {
            selection: {start: 0, end: displayUrl.length},
            userInputInProgress: false,
            isFocused: true,
-           queryZps: true,
+           matchesUpdate: MatchesUpdate.kQueryZps,
          }));
          await microtasksFinished();
 
@@ -2540,7 +2903,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      text: testUrl,
      userInputInProgress: false,
      isFocused: true,
-     queryZps: false,
+     matchesUpdate: MatchesUpdate.kDefault,
    }));
    await microtasksFinished();
 
@@ -2578,7 +2941,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      text: draftQuery,
      userInputInProgress: true,
      isFocused: true,
-     queryZps: false,
+     matchesUpdate: MatchesUpdate.kDefault,
    }));
    await microtasksFinished();
 
@@ -5685,7 +6048,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      showFullUrl: false,
      isFocused: true,
      isTabSwitch: true,
-     queryZps: true,
+     matchesUpdate: MatchesUpdate.kQueryZps,
    }));
    await microtasksFinished();
 
@@ -5738,7 +6101,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      showFullUrl: true,
      isFocused: true,
      isTabSwitch: true,
-     queryZps: true,
+     matchesUpdate: MatchesUpdate.kQueryZps,
    }));
    await microtasksFinished();
 
@@ -5810,7 +6173,7 @@ suite('OmniboxPopupSearchboxTest', function() {
      showFullUrl: true,
      isFocused: true,
      isTabSwitch: true,
-     queryZps: true,
+     matchesUpdate: MatchesUpdate.kQueryZps,
    }));
    await microtasksFinished();
 

@@ -60,6 +60,9 @@ class VIEWS_EXPORT SelectionController {
     return last_click_root_location_;
   }
 
+  // Returns the time stamp of the latest click.
+  base::TimeTicks last_click_time() const { return last_click_time_; }
+
   // Sets whether the SelectionController should update or paste the
   // selection clipboard on middle-click. Default is false.
   void set_handles_selection_clipboard(bool value) {

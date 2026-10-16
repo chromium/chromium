@@ -85,6 +85,12 @@ class OmniboxPopupView {
   // WebUI omnibox.
   virtual void SyncNativeStateToWebUI(bool query_zps) {}
 
+  // Like `SyncNativeStateToWebUI(/*query_zps=*/false)`, but the WebUI omnibox
+  // keeps showing its current autocomplete matches (stopping any in-flight
+  // query) instead of clearing them. Used to hand off a selection made by a
+  // later click of a multi-click gesture whose first click opened the dropdown.
+  virtual void SyncNativeStateToWebUIPreservingMatches() {}
+
   // Called when the active tab changes.
   virtual void OnTabChanged(content::WebContents* contents) {}
 
