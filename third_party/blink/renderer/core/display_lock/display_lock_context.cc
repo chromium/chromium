@@ -120,9 +120,16 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state) {
   NotifyRenderAffectingStateChanged();
 
   // Since our state changed, check if we need to create a scoped force update
-  // object.
-  element_->GetDocument().GetDisplayLockDocumentState().ForceLockIfNeeded(
-      element_.Get());
+  // object. This is only needed if a lock is requested: there is nothing to
+  // force if we are unlocking. This matters, since DetachLayoutTree() requests
+  // an unlock, and it can be called during slot assignment recalc, where flat
+  // tree traversal (as done by ForceLockIfNeeded()) is not allowed. Such a
+  // traversal could recalc the slot assignment of another shadow root, while
+  // the assigned nodes of the slots being recalculated are not up to date.
+  if (state_ != EContentVisibility::kVisible) {
+    element_->GetDocument().GetDisplayLockDocumentState().ForceLockIfNeeded(
+        element_.Get());
+  }
 }
 
 const ComputedStyle* DisplayLockContext::AdjustElementStyle(
