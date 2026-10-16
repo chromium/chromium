@@ -73,6 +73,20 @@ source_set("types") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_device_authorization_service.cc",
+    "mock_device_authorization_service.h",
+  ]
+
+  public_deps = [
+    ":device_authorization",
+    ":types",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "device_authorization_keys_fetcher_unittest.cc" ]
