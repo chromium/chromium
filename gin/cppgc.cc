@@ -4,8 +4,12 @@
 
 #include "gin/public/cppgc.h"
 
+#include "base/allocator/dispatcher/notification_data.h"
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
 #include "gin/public/v8_platform.h"
@@ -16,6 +20,38 @@ namespace gin {
 namespace {
 
 int g_init_count = 0;
+
+class CppGCSamplerAdapter final : public cppgc::AllocationSampler {
+ public:
+  static CppGCSamplerAdapter* Get() {
+    static base::NoDestructor<CppGCSamplerAdapter> instance;
+    return instance.get();
+  }
+
+  size_t GetSampleInterval() const override {
+    if (!base::PoissonAllocationSampler::IsRunning()) {
+      return 0;
+    }
+    return base::PoissonAllocationSampler::Get()->SamplingInterval();
+  }
+
+  bool OnAllocated(void* address, size_t size) override {
+    return base::PoissonAllocationSampler::Get()->OnAllocation(
+        base::allocator::dispatcher::AllocationNotificationData(
+            address, size, nullptr,
+            base::allocator::dispatcher::AllocationSubsystem::kCppGC));
+  }
+
+  void OnFreed(void* address) override {
+    base::PoissonAllocationSampler::Get()->OnFree(
+        base::allocator::dispatcher::FreeNotificationData(
+            address, base::allocator::dispatcher::AllocationSubsystem::kCppGC));
+  }
+
+  bool OnMove(void* from, void* to, size_t size) override {
+    return base::PoissonAllocationSampler::Get()->OnMove(from, to);
+  }
+};
 
 }  // namespace
 
@@ -46,6 +82,21 @@ void MaybeShutdownCppgc() {
     return;
 
   cppgc::ShutdownProcess();
+}
+
+cppgc::AllocationSampler* GetCppGCAllocationSampler() {
+  // In-process heap profiling (HeapProfilerController) starts
+  // base::SamplingHeapProfiler during early process initialization
+  // (PostEarlyInitialization), before Blink and CppHeap are initialized.
+  // Checking IsRunning() here is therefore sufficient to attach the sampler
+  // whenever startup heap profiling is enabled. For on-demand heap profiling
+  // started later (e.g. via Perfetto tracing), kV8CppGCAllocationSampler can be
+  // enabled to force-install the sampler at CppHeap creation time.
+  if (!base::PoissonAllocationSampler::IsRunning() &&
+      !base::FeatureList::IsEnabled(features::kV8CppGCAllocationSampler)) {
+    return nullptr;
+  }
+  return CppGCSamplerAdapter::Get();
 }
 
 }  // namespace gin

@@ -53,6 +53,7 @@ class DummySamplesObserver : public PoissonAllocationSampler::SamplesObserver {
                    AllocationSubsystem type,
                    const char* context) final {}
   void SampleRemoved(void* address) final {}
+  void SampleMoved(void* from, void* to) final {}
 };
 
 class AddRemoveObserversTester {

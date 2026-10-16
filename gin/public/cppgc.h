@@ -7,6 +7,10 @@
 
 #include "gin/gin_export.h"
 
+namespace cppgc {
+class AllocationSampler;
+}  // namespace cppgc
+
 namespace gin {
 
 // A wrapper around `cppgc::InitializeProcess()` which helps to guarantee that
@@ -19,6 +23,10 @@ GIN_EXPORT void InitializeCppgcFromV8Platform();
 // only after all users in the same process are done using it. Number of calls
 // cannot exceed that of `InitializeCppgcFromV8Platform()`.
 GIN_EXPORT void MaybeShutdownCppgc();
+
+// Returns the `cppgc::AllocationSampler` bridging CppGC allocations to
+// `base::PoissonAllocationSampler`, or nullptr if sampling is disabled.
+GIN_EXPORT cppgc::AllocationSampler* GetCppGCAllocationSampler();
 
 }  // namespace gin
 

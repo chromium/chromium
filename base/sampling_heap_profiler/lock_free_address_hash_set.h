@@ -78,10 +78,11 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // |Insert|, |Remove|, and |Contains| operations.
   ALWAYS_INLINE ContainsResult Contains(void* key) const;
 
-  // Removes the |key|, which must not be nullptr, from the set. The key must be
-  // present in the set before the invocation. Concurrent execution of |Insert|,
-  // |Remove|, or |Copy| is not supported.
-  void Remove(void* key);
+  // Removes the |key|, which must not be nullptr, from the set. Returns true
+  // if the key was found and removed, or false if it was not present in the
+  // set. Concurrent execution of |Insert|, |Remove|, or |Copy| is not
+  // supported.
+  bool Remove(void* key);
 
   // Inserts the |key|, which must not be nullptr, into the set. The key must
   // not be present in the set before the invocation. Also adds the key to the

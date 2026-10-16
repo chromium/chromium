@@ -335,6 +335,16 @@ void SamplingHeapProfiler::SampleRemoved(void* address) {
   }
 }
 
+void SamplingHeapProfiler::SampleMoved(void* from, void* to) {
+  DCHECK(base::PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
+  base::AutoLock lock(mutex_);
+  auto node = samples_.extract(from);
+  if (!node.empty()) {
+    node.key() = to;
+    samples_.insert(std::move(node));
+  }
+}
+
 std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(
     std::optional<Session> session) {
   // Make sure the sampler does not invoke |SampleAdded| or |SampleRemoved|

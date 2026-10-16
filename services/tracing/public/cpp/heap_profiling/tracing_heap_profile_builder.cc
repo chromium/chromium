@@ -216,6 +216,8 @@ const char* TracingHeapProfileBuilder::AllocatorName(
       return "partition_alloc";
     case base::allocator::dispatcher::AllocationSubsystem::kManualForTesting:
       return "manual";
+    case base::allocator::dispatcher::AllocationSubsystem::kCppGC:
+      return "cppgc";
   }
   NOTREACHED();
 }

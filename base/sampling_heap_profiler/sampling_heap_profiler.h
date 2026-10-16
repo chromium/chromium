@@ -143,6 +143,7 @@ class BASE_EXPORT SamplingHeapProfiler
                    base::allocator::dispatcher::AllocationSubsystem type,
                    const char* context) override;
   void SampleRemoved(void* address) override;
+  void SampleMoved(void* from, void* to) override;
 
   void CaptureNativeStack(const char* context, Sample* sample);
   const char* RecordString(const char* string) EXCLUSIVE_LOCKS_REQUIRED(mutex_);

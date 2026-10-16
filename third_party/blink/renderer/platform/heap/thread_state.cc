@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "gin/public/cppgc.h"
 #include "gin/public/v8_platform.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -182,6 +183,7 @@ std::unique_ptr<v8::CppHeap> CreateCppHeap(
     std::optional<cppgc::StackStartMarker> stack_start_marker) {
   v8::CppHeapCreateParams params(CustomSpaces::CreateCustomSpaces());
   params.stack_start_marker = std::move(stack_start_marker);
+  params.allocation_sampler = gin::GetCppGCAllocationSampler();
   return v8::CppHeap::Create(platform, params);
 }
 

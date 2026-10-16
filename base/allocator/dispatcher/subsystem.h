@@ -21,6 +21,8 @@ enum class AllocationSubsystem {
   // Included for backward compatibility, this value becomes obsolete once the
   // old allocation hooks are removed from PoissonAllocationSampler.
   kManualForTesting = 3,
+  // Allocation is handled by CppGC (Oilpan).
+  kCppGC = 4,
 };
 }  // namespace base::allocator::dispatcher
 

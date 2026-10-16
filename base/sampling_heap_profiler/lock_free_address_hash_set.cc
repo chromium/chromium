@@ -218,7 +218,7 @@ void LockFreeAddressHashSet::Insert(void* key) {
   bucket.head.store(new_node, std::memory_order_release);
 }
 
-void LockFreeAddressHashSet::Remove(void* key) {
+bool LockFreeAddressHashSet::Remove(void* key) {
   lock_->AssertAcquired();
   Bucket& bucket = buckets_[Hash(key) & bucket_mask_];
 
@@ -242,7 +242,9 @@ void LockFreeAddressHashSet::Remove(void* key) {
       bits |= bucket.filter.GetBitsForKey(node_key);
     }
   }
-  DCHECK_NE(node, nullptr);
+  if (node == nullptr) {
+    return false;
+  }
 
   // We can never delete the node, nor detach it from the current bucket as
   // there may always be another thread currently iterating over it. Instead we
@@ -260,6 +262,7 @@ void LockFreeAddressHashSet::Remove(void* key) {
   }
 
   bucket.filter.AtomicSetBits(bits);
+  return true;
 }
 
 void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
