@@ -1084,9 +1084,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
-            Select password
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS" desc="This is a context menu entry. It opens chrome://password-manager. It can be either in the context menu (for non-syncing users) or in the passwords submenu (for syncing users).">
             Import passwords
           </message>
@@ -1444,9 +1441,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
             Autocomplete
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
-            Select Password
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS" desc="In Title Case: This is a context menu entry. It opens chrome://password-manager. It can be either in the context menu (for non-syncing users) or in the passwords submenu (for syncing users).">
             Import Passwords
           </message>
@@ -1487,6 +1481,9 @@ are declared in tools/grit/grit_args.gni.
           Hide This Plugin
         </message>
       </if>
+      <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
+        Select password
+      </message>
       <!-- Since Flash is a proper noun we don't have to distinguish between title and non-title case. -->
       <message name="IDS_CONTENT_CONTEXT_ENABLE_FLASH" desc="The name of the Enable Flash command on the blocked plugin context menu. 'Flash' is the name of a plugin and should not be translated.">
         Enable Flash

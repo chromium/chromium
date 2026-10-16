@@ -12,7 +12,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,6 +52,10 @@ namespace {
 // The display order for the At Memory menu item in the selection dropdown menu.
 // Placed at the very beginning of the selection dropdown menu.
 constexpr int kAtMemoryMenuItemOrder = 5;
+
+// The display order for the Select Password menu item in the selection
+// dropdown menu. Placed at the beginning of the selection dropdown menu.
+constexpr int kSelectPasswordMenuItemOrder = 6;
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // The display order for the Print menu item in the selection dropdown menu.
@@ -127,6 +133,10 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
       return kAtMemoryMenuItemOrder;
     }
+    if (command_id ==
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
+      return kSelectPasswordMenuItemOrder;
+    }
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     int base_order = BaseSelectionDropdownMenuModel::GetDisplayOrderAt(index);
     if (base_order >= 0) {
@@ -179,6 +189,21 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
       return;
     }
 
+    if (command_id ==
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
+      auto* rfh = content::RenderFrameHost::FromID(rfh_id_);
+      if (rfh && rfh->IsRenderFrameLive()) {
+        content::WebContents* web_contents =
+            content::WebContents::FromRenderFrameHost(rfh);
+        if (PasswordAccessoryController* accessory =
+                PasswordAccessoryController::GetIfExisting(web_contents)) {
+          accessory->OnOptionSelected(
+              autofill::AccessoryAction::USE_OTHER_PASSWORD);
+        }
+      }
+      return;
+    }
+
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     BaseSelectionDropdownMenuModel::ExecuteCommand(command_id, event_flags);
 #endif
@@ -194,6 +219,10 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     }
 #endif
     if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      return true;
+    }
+    if (command_id ==
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
       return true;
     }
     return false;
@@ -232,6 +261,10 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     }
 #endif
     if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
+      return true;
+    }
+    if (command_id ==
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
       return true;
     }
 
@@ -296,9 +329,23 @@ ChromeSelectionDropdownMenuDelegate::GetSelectionPopupExtraItems(
                                IDS_INSPECT_ELEMENT_ANDROID);
   }
 
-  if (autofill::ShouldShowAtMemoryContextMenuItem(render_frame_host, params)) {
+  const bool add_at_memory =
+      autofill::ShouldShowAtMemoryContextMenuItem(render_frame_host, params);
+  if (add_at_memory) {
     model->AddItemWithStringId(IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
                                IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
+  }
+
+  const bool add_select_password =
+      autofill::ShouldShowSelectPasswordContextMenuItem(render_frame_host,
+                                                        params);
+  if (add_select_password) {
+    model->AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
+  }
+
+  if (add_at_memory || add_select_password) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
