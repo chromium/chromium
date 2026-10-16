@@ -6,10 +6,11 @@
 
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 
 namespace enterprise_reporting {
 
@@ -41,8 +42,14 @@ bool CloudProfileReportingServiceFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 CloudProfileReportingServiceFactory::CloudProfileReportingServiceFactory()
-    : ProfileKeyedServiceFactory("CloudProfileReporting",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "CloudProfileReporting",
+              enterprise_isolated_mode::IsCaaEnabledInIsolatedMode()
+              ? ProfileSelections::Builder()
+                    .WithRegular(ProfileSelection::kOriginalOnly)
+                    .WithIsolatedMode(ProfileSelection::kOwnInstance)
+                    .Build()
+              : ProfileSelections::BuildForRegularProfile()) {
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
   // Depends on this service because
   // `CloudProfileReportingService.profile_request_generator_` has a dependency
