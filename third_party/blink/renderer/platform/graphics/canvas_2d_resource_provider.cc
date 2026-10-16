@@ -706,12 +706,18 @@ Canvas2DResourceProvider::CreateWithClear(
   if (!provider->IsValid()) {
     return nullptr;
   }
-  if (!is_accelerated &&
-      (!provider->resource_ || !provider->CreateSkSurface())) {
+
+  if (is_accelerated) {
+    MemoryManagedPaintRecorder recorder(size, nullptr);
+    if (alpha_type == kOpaque_SkAlphaType) {
+      recorder.getRecordingCanvas().clear(SkColors::kBlack);
+    } else {
+      recorder.getRecordingCanvas().clear(SkColors::kTransparent);
+    }
+    provider->RasterRecord(recorder.ReleaseMainRecording(), {});
+  } else if (!provider->resource_ || !provider->CreateSkSurface()) {
     return nullptr;
   }
-
-  provider->ClearAtCreation();
 
   // An error might have occurred while clearing.
   return provider->IsValid() ? std::move(provider) : nullptr;
@@ -751,9 +757,6 @@ Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
       size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, std::move(context_lost_callback)));
   if (provider->IsValid() && provider->CreateSkSurface()) {
-    provider->ClearAtCreation();
-    // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
-    CHECK(provider->IsValid());
     return provider;
   }
 
@@ -1009,26 +1012,14 @@ bool Canvas2DResourceProvider::CreateSkSurface() {
       size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
       alpha_type_, color_space_.ToSkColorSpace());
   surface_ = SkSurfaces::Raster(info, &props);
-  return surface_ != nullptr;
-}
-
-void Canvas2DResourceProvider::ClearAtCreation() {
-  DCHECK(IsValid());
-  if (!is_accelerated_) {
-    GetSkSurface()->getCanvas()->clear(GetAlphaType() == kOpaque_SkAlphaType
-                                           ? SkColors::kBlack
-                                           : SkColors::kTransparent);
-    return;
+  if (!surface_) {
+    return false;
   }
 
-  MemoryManagedPaintRecorder recorder(Size(), nullptr);
-  if (GetAlphaType() == kOpaque_SkAlphaType) {
-    recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  } else {
-    recorder.getRecordingCanvas().clear(SkColors::kTransparent);
-  }
-
-  RasterRecord(recorder.ReleaseMainRecording(), {});
+  surface_->getCanvas()->clear(alpha_type_ == kOpaque_SkAlphaType
+                                   ? SkColors::kBlack
+                                   : SkColors::kTransparent);
+  return true;
 }
 
 }  // namespace blink

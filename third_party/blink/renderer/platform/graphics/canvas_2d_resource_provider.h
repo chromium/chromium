@@ -248,11 +248,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
     return context_provider_wrapper_;
   }
 
-  // Should only be called from static Create*() methods.
-  // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
-  // callsites.
-  void ClearAtCreation();
-
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
 
