@@ -1179,7 +1179,11 @@ WritableStream* Node::streamBeforeHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(script_state, parentNode(), this,
+  ContainerNode* parent = parentNode();
+  if (parent && !parent->CheckValidParentForPartialInsertion(exception_state)) {
+    return nullptr;
+  }
+  return HTMLStream::Create(script_state, parent, this,
                             Sanitizer::Mode::kUnsafe, *resolved_options,
                             exception_state);
 }
@@ -1187,8 +1191,11 @@ WritableStream* Node::streamBeforeHTMLUnsafe(
 WritableStream* Node::streamBeforeHTML(ScriptState* script_state,
                                        SetHTMLOptions* options,
                                        ExceptionState& exception_state) {
-  return HTMLStream::Create(script_state, parentNode(), this,
-                            Sanitizer::Mode::kSafe,
+  ContainerNode* parent = parentNode();
+  if (parent && !parent->CheckValidParentForPartialInsertion(exception_state)) {
+    return nullptr;
+  }
+  return HTMLStream::Create(script_state, parent, this, Sanitizer::Mode::kSafe,
                             FragmentParserOptions(options), exception_state);
 }
 
@@ -1204,7 +1211,11 @@ WritableStream* Node::streamAfterHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+  ContainerNode* parent = parentNode();
+  if (parent && !parent->CheckValidParentForPartialInsertion(exception_state)) {
+    return nullptr;
+  }
+  return HTMLStream::Create(script_state, parent, nextSibling(),
                             Sanitizer::Mode::kUnsafe, *resolved_options,
                             exception_state);
 }
@@ -1212,7 +1223,11 @@ WritableStream* Node::streamAfterHTMLUnsafe(
 WritableStream* Node::streamAfterHTML(ScriptState* script_state,
                                       SetHTMLOptions* options,
                                       ExceptionState& exception_state) {
-  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+  ContainerNode* parent = parentNode();
+  if (parent && !parent->CheckValidParentForPartialInsertion(exception_state)) {
+    return nullptr;
+  }
+  return HTMLStream::Create(script_state, parent, nextSibling(),
                             Sanitizer::Mode::kSafe,
                             FragmentParserOptions(options), exception_state);
 }
@@ -1229,7 +1244,11 @@ WritableStream* Node::streamReplaceWithHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+  ContainerNode* parent = parentNode();
+  if (parent && !parent->CheckValidParentForPartialInsertion(exception_state)) {
+    return nullptr;
+  }
+  return HTMLStream::Create(script_state, parent, nextSibling(),
                             Sanitizer::Mode::kUnsafe, *resolved_options,
 
                             exception_state, [&]() { remove(); });
@@ -1238,8 +1257,12 @@ WritableStream* Node::streamReplaceWithHTMLUnsafe(
 WritableStream* Node::streamReplaceWithHTML(ScriptState* script_state,
                                             SetHTMLOptions* options,
                                             ExceptionState& exception_state) {
+  ContainerNode* parent = parentNode();
+  if (parent && !parent->CheckValidParentForPartialInsertion(exception_state)) {
+    return nullptr;
+  }
   return HTMLStream::Create(
-      script_state, parentNode(), nextSibling(), Sanitizer::Mode::kSafe,
+      script_state, parent, nextSibling(), Sanitizer::Mode::kSafe,
       FragmentParserOptions(options), exception_state, [&]() { remove(); });
 }
 

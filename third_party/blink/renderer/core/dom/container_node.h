@@ -450,6 +450,12 @@ class CORE_EXPORT ContainerNode : public Node {
                             const FragmentParserOptions&,
                             ExceptionState&);
 
+  // Throws a "HierarchyRequestError" DOMException and returns false if this
+  // cannot be the parent for an HTML insertion that does not replace all
+  // children (every HTML insertion and streaming method except setHTML* and
+  // streamHTML*), i.e. if this is an <html> element.
+  bool CheckValidParentForPartialInsertion(ExceptionState&);
+
   // DocumentOrElementEventHandlers:
   // These event listeners are only actually web-exposed on interfaces that
   // include the DocumentOrElementEventHandlers mixin in their idl.
