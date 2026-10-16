@@ -176,6 +176,9 @@ def main():
         chromedriver_bin=chromedriver_bin,
         verbose=False,
         log_file=log_file,
+        # Without --log-path or --verbose, ChromeDriver defaults to WARNING and
+        # omits INFO browser startup logs from log_file.
+        extra_args=["--log-level=INFO"],
     )
 
     server.start()
