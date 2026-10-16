@@ -260,7 +260,6 @@ void TaskGraph::Sequence::FinishTask() {
     last_task_concurrency_ratio_ = 0;
   }
 
-  SyncToken release = current_task_release_;
   current_task_release_.Clear();
   UpdateValidationTimer();
 }

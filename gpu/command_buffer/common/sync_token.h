@@ -50,9 +50,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT SyncToken {
             CommandBufferId command_buffer_id,
             uint64_t release_count);
 
-  SyncToken(const SyncToken& other);
-  SyncToken& operator=(const SyncToken& other);
-
   void Set(CommandBufferNamespace namespace_id,
            CommandBufferId command_buffer_id,
            uint64_t release_count) {

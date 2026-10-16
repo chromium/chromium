@@ -26,9 +26,6 @@ SyncToken::SyncToken(CommandBufferNamespace namespace_id,
       command_buffer_id_(command_buffer_id),
       release_count_(release_count) {}
 
-SyncToken::SyncToken(const SyncToken& other) = default;
-SyncToken& SyncToken::operator=(const SyncToken& other) = default;
-
 std::string SyncToken::ToDebugString() const {
   // At the level of the generic command buffer code, the command buffer ID is
   // an arbitrary 64-bit number. For the debug output, print its upper and lower
