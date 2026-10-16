@@ -46,6 +46,10 @@ enum class TipIdentifier;
 // NTP Theme tip.
 - (void)didSelectNTPThemePhotoPicker;
 
+// Notifies the audience that a user-uploaded background photo was saved from
+// the actionable NTP Theme tip.
+- (void)didSaveNTPThemeBackgroundPhoto;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_

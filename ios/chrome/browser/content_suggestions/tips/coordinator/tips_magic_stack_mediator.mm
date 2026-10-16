@@ -198,7 +198,10 @@ using segmentation_platform::TipIdentifier;
     if (_actionableConfig &&
         !_profilePrefService->GetDict(prefs::kIosUserUploadedBackground)
              .empty()) {
-      [self.delegate removeTipsModuleWithCompletion:nil];
+      __weak TipsMagicStackMediator* weakSelf = self;
+      [self.delegate removeTipsModuleWithCompletion:^{
+        [weakSelf.presentationAudience didSaveNTPThemeBackgroundPhoto];
+      }];
     }
   }
 }

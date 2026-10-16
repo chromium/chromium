@@ -1486,6 +1486,21 @@ using ntp_tiles::AimButtonRefactorArm;
   [_customizationCoordinator presentPhotoPicker];
 }
 
+- (void)presentCustomizationButtonBubble {
+  if (!self.isScrolledToTop) {
+    __weak __typeof(self) weakSelf = self;
+    [UIView animateWithDuration:kMaterialDuration1
+        animations:^{
+          [weakSelf setContentOffsetToTop];
+        }
+        completion:^(BOOL finished) {
+          [weakSelf presentCustomizationButtonBubbleNow];
+        }];
+    return;
+  }
+  [self presentCustomizationButtonBubbleNow];
+}
+
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {
@@ -2429,23 +2444,6 @@ using ntp_tiles::AimButtonRefactorArm;
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
       return YES;
   }
-}
-
-// Scrolls the NTP to the top if needed and presents the Home customization
-// menu button IPH bubble.
-- (void)presentCustomizationButtonBubble {
-  if (!self.isScrolledToTop) {
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kMaterialDuration1
-        animations:^{
-          [weakSelf setContentOffsetToTop];
-        }
-        completion:^(BOOL finished) {
-          [weakSelf presentCustomizationButtonBubbleNow];
-        }];
-    return;
-  }
-  [self presentCustomizationButtonBubbleNow];
 }
 
 // Presents the Home customization menu button IPH bubble without checking

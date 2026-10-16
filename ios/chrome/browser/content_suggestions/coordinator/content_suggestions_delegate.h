@@ -36,6 +36,9 @@ class GURL;
 // device's photo library.
 - (void)openNTPBackgroundPhotoPicker;
 
+// Presents the IPH bubble pointing to the Home customization menu button.
+- (void)presentCustomizationButtonBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_COORDINATOR_CONTENT_SUGGESTIONS_DELEGATE_H_

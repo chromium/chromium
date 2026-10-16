@@ -878,6 +878,10 @@ using segmentation_platform::TipIdentifier;
       segmentation_platform::kNTPThemeEphemeralModule);
 }
 
+- (void)didSaveNTPThemeBackgroundPhoto {
+  [self.delegate presentCustomizationButtonBubble];
+}
+
 #pragma mark - MagicStackCollectionViewAudience
 
 - (void)didTapMagicStackEditButton {
