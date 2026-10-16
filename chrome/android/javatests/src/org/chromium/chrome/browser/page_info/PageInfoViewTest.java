@@ -71,6 +71,7 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -1417,6 +1418,7 @@ public class PageInfoViewTest {
     /** Tests clicking on a history item from the history page of the PageInfo UI. */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testHistorySubpageItemClick() throws Exception {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
         historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, TIMESTAMP_JUNE_4));

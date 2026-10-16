@@ -353,6 +353,7 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testSignOutConfirmDialogPrimaryButtonClick_withExtensions_checkboxUnchecked() {
         setUpMocks();
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;

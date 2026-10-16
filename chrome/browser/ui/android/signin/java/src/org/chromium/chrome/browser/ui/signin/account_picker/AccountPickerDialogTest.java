@@ -38,6 +38,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -48,6 +49,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -147,6 +149,7 @@ public class AccountPickerDialogTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testSelectDefaultAccount() {
         verifyOptionsDisplayed();
         onView(withText(TestAccounts.ACCOUNT1.getFullName())).inRoot(isDialog()).perform(click());
@@ -156,6 +159,7 @@ public class AccountPickerDialogTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testSelectNonDefaultAccount() {
         verifyOptionsDisplayed();
         onView(withText(TestAccounts.ACCOUNT2.getFullName())).inRoot(isDialog()).perform(click());

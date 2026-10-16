@@ -1741,6 +1741,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testSearchHistoryAndTabs_signedOut() {
         mSettingsSearchTestRule.startSettingsActivity();
 

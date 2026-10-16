@@ -751,6 +751,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 

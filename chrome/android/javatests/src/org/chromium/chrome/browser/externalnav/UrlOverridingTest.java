@@ -2261,6 +2261,7 @@ public class UrlOverridingTest {
     @Test
     @LargeTest
     @RequiresRestart // Avoid having multiple windows mess up the other tests
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testRedirectFromLinkCreatingNewWindow() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         GURL redirectTargetUrl = new GURL(mTestServer.getURL(HELLO_PAGE));

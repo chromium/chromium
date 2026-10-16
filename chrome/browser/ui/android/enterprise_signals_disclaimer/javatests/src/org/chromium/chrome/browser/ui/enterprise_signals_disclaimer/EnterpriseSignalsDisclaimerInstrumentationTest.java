@@ -794,6 +794,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void acknowledgmentPersistsAcrossSignouts() {
         acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
 
