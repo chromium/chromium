@@ -125,6 +125,14 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarning) {
             },
             {}
           ])"},
+      {"A sized icon path that isn't a string.",
+       "'icon_variants' invalid file path.",
+       R"([
+            {
+              "16": 16,
+              "32": "32.png",
+            }
+          ])"},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
@@ -159,6 +167,14 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
           "color_schemes": ["warning"]
         }
       ])"},
+      {"An \"any\" icon path that isn't a string.",
+       "'icon_variants' invalid file path.",
+       R"([
+            {
+              "any": ["any.svg"],
+              "16": "16.png"
+            }
+          ])"},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));

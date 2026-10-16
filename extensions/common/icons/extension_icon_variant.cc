@@ -111,7 +111,15 @@ void ExtensionIconVariant::MaybeAddSizeEntry(
     return;
   }
 
-  ExtensionResource icon_path = extension.GetResource(entry.second.GetString());
+  const std::string* path = entry.second.GetIfString();
+  if (!path) {
+    diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+        diagnostics::icon_variants::Feature::kIconVariants,
+        diagnostics::icon_variants::Id::kIconVariantPathInvalid));
+    return;
+  }
+
+  ExtensionResource icon_path = extension.GetResource(*path);
   if (!ValidateIconPath(icon_path)) {
     return;
   }
@@ -132,8 +140,15 @@ std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
   for (const auto entry : dict) {
     // `any`. Optional string.
     if (entry.first == "any") {
-      ExtensionResource icon_path =
-          extension.GetResource(entry.second.GetString());
+      const std::string* path = entry.second.GetIfString();
+      if (!path) {
+        icon_variant->diagnostics_.emplace_back(
+            diagnostics::icon_variants::GetDiagnostic(
+                diagnostics::icon_variants::Feature::kIconVariants,
+                diagnostics::icon_variants::Id::kIconVariantPathInvalid));
+        continue;
+      }
+      ExtensionResource icon_path = extension.GetResource(*path);
       if (icon_variant->ValidateIconPath(icon_path)) {
         icon_variant->any_ = std::make_optional(std::move(icon_path));
       }
