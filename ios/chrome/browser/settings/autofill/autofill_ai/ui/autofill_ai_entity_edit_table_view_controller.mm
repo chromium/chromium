@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
@@ -50,6 +51,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFooter = kItemTypeEnumZero,
 };
+
+// Returns whether `urls` contains an entry matching `target_url`.
+bool ContainsURL(NSArray<CrURL*>* urls, const GURL& target_url) {
+  for (CrURL* url in urls) {
+    if (url.gurl == target_url) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace
 
 @interface AutofillAIEntityEditTableViewController () <
@@ -72,6 +83,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Legal message lines to display in the footer.
   NSArray<AutofillLegalMessageLine*>* _legalMessages;
+
+  // URLs from the legal message lines displayed in the footer.
+  NSArray<CrURL*>* _legalMessageURLs;
+
+  // Whether `kLegalMessageShown` has already been logged for this presentation.
+  BOOL _hasLoggedLegalMessageShown;
 
   // The bottom save button displayed when creating a new entity.
   ChromeButton* _saveButton;
@@ -609,6 +626,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  if (ContainsURL(_legalMessageURLs, URL.gurl)) {
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked,
+        /*in_settings=*/true);
+  }
   [self.delegate didTapLinkWithURL:URL];
 }
 
@@ -887,15 +909,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSMutableArray<CrURL*>* urls = [NSMutableArray array];
   NSString* storageNoticeText = [self textForStorageNoticeAppendingURLsTo:urls];
 
+  NSMutableArray<CrURL*>* legalMessageURLs = [NSMutableArray array];
   NSMutableArray<NSString*>* disclosureLegalMessageTexts =
       [NSMutableArray array];
   for (AutofillLegalMessageLine* disclosureLegalMessage in _legalMessages) {
     NSString* lineText = autofill::TextForDisclosureLegalMessageAppendingURLsTo(
-        disclosureLegalMessage, urls);
+        disclosureLegalMessage, legalMessageURLs);
     if (lineText.length > 0) {
       [disclosureLegalMessageTexts addObject:lineText];
     }
   }
+  [urls addObjectsFromArray:legalMessageURLs];
+  _legalMessageURLs = legalMessageURLs;
 
   // The disclosure legal messages form a single block, separated from the
   // storage notice by a blank line.
@@ -914,6 +939,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   footer.text = text;
   footer.urls = urls;
   if (hasLegalMessages) {
+    if (!_hasLoggedLegalMessageShown) {
+      _hasLoggedLegalMessageShown = YES;
+      autofill::LogWalletNoticeFunnelEvent(
+          autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown,
+          /*in_settings=*/true);
+    }
     footer.accessibilityIdentifier = kAutofillAISaveEntityLegalDisclosureId;
   }
   return footer;

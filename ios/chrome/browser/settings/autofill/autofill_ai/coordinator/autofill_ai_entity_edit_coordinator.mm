@@ -74,7 +74,8 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 @interface AutofillAIEntityEditCoordinator () <
     AutofillAIEntityEditMediatorDelegate,
     AutofillAIEntityEditTableViewControllerDelegate,
-    AutofillCountrySelectionTableViewControllerDelegate>
+    AutofillCountrySelectionTableViewControllerDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, strong) AutofillAIEntityEditMediator* mediator;
 
@@ -177,6 +178,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
     // Present modally for creating a new entity.
     UINavigationController* navController = [[UINavigationController alloc]
         initWithRootViewController:_viewController];
+    navController.presentationController.delegate = self;
     [_baseNavigationController presentViewController:navController
                                             animated:YES
                                           completion:nil];
@@ -187,6 +189,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
 
   if (_viewController) {
@@ -280,6 +283,13 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 - (void)dismissCountryViewController {
   [_viewController.navigationController popViewControllerAnimated:YES];
   _countryItemBeingEdited = nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate autofillAIEntityEditCoordinatorDidFinish:self];
 }
 
 #pragma mark - Private
