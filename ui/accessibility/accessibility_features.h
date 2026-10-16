@@ -359,6 +359,10 @@ AX_BASE_EXPORT bool IsReadAnythingDistillerRefactorEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImmersiveReadAnythingPrint);
 AX_BASE_EXPORT bool IsImmersiveReadAnythingPrintEnabled();
 
+// Enables the send feedback entry point for Reading Mode.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingSendFeedback);
+AX_BASE_EXPORT bool IsReadAnythingSendFeedbackEnabled();
+
 // ScreenAI library's Main Content Extraction service is enabled.
 AX_BASE_EXPORT bool IsScreenAIMainContentExtractionEnabled();
 

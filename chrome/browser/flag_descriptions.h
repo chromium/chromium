@@ -6975,6 +6975,11 @@ inline constexpr char
     kReadAnythingReadAloudExperimentalPlaybackUiDescription[] =
         "Enables the experimental playback UI for Reading Mode Read Aloud.";
 
+inline constexpr char kReadAnythingSendFeedbackName[] =
+    "Reading Mode Send Feedback";
+inline constexpr char kReadAnythingSendFeedbackDescription[] =
+    "Enables the send feedback entry point in the Reading Mode settings menu.";
+
 inline constexpr char kReauthSkipIdentifierPageName[] =
     "Skip identifier page on reauth";
 inline constexpr char kReauthSkipIdentifierPageDescription[] =

@@ -452,6 +452,11 @@ bool IsImmersiveReadAnythingPrintEnabled() {
   return base::FeatureList::IsEnabled(::features::kImmersiveReadAnythingPrint);
 }
 
+BASE_FEATURE(kReadAnythingSendFeedback, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingSendFeedbackEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingSendFeedback);
+}
+
 // This feature is only used in tests and must not be enabled by default.
 BASE_FEATURE(kScreenAITestMode, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsScreenAITestModeEnabled() {

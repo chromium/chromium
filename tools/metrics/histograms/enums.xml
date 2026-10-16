@@ -8158,6 +8158,7 @@ from previous Chrome versions.
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
   <int value="-2046010475"
       label="TabStripEmptySpaceContextMenuAndroid:enabled"/>
+  <int value="-2045977274" label="ReadAnythingSendFeedback:disabled"/>
   <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
   <int value="-2044917076" label="WebXRDepthPerformance:enabled"/>
   <int value="-2044252895"
@@ -15050,6 +15051,7 @@ from previous Chrome versions.
       label="PropagateDeviceContentFiltersToSupervisedUser:enabled"/>
   <int value="17432142" label="CastStreamingMaxVideoBitrate:50 Mbps"/>
   <int value="18929598" label="FedCmIdPRegistration:disabled"/>
+  <int value="19112931" label="ReadAnythingSendFeedback:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
   <int value="20023271" label="AllowApnModificationPolicy:disabled"/>
   <int value="20095909" label="ImeManifestV3:enabled"/>
