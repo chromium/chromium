@@ -28,10 +28,9 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the success rate of favicon requests that have host fallback
-    disabled. (e.g. by the FaviconDisableHostFallback experiment). Used to
-    measure regression in find rates compared to the Enabled group. Recorded
-    immediately when the favicon lookup completion callback executes and returns
-    a result.
+    disabled (e.g. for tab switcher and tab strip favicons). Used to measure
+    regression in find rates compared to the Enabled group. Recorded immediately
+    when the favicon lookup completion callback executes and returns a result.
   </summary>
 </histogram>
 
@@ -41,10 +40,10 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the success rate of favicon requests that have host fallback
-    disabled in incognito tabs. (e.g. by the FaviconDisableHostFallback
-    experiment). Used to measure regression in find rates compared to the
-    Enabled group. Recorded immediately when the favicon lookup completion
-    callback executes and returns a result.
+    disabled in incognito tabs (e.g. for tab switcher and tab strip favicons).
+    Used to measure regression in find rates compared to the Enabled group.
+    Recorded immediately when the favicon lookup completion callback executes
+    and returns a result.
   </summary>
 </histogram>
 

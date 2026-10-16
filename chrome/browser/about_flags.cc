@@ -13300,10 +13300,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnforceIncognitoIsolationName,
      flag_descriptions::kEnforceIncognitoIsolationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnforceIncognitoIsolation)},
-    {"favicon-disable-host-fallback",
-     flag_descriptions::kFaviconDisableHostFallbackName,
-     flag_descriptions::kFaviconDisableHostFallbackDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kFaviconDisableHostFallback)},
 #endif
 
     {"migrate-enhanced-sb-user-to-enhanced-bundle",

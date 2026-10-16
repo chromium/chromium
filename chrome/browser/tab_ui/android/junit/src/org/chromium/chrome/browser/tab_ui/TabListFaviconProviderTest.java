@@ -209,7 +209,7 @@ public class TabListFaviconProviderTest {
                                                     eq(mProfile),
                                                     eq(mUrl1),
                                                     anyInt(),
-                                                    anyBoolean(),
+                                                    eq(false),
                                                     mFaviconImageCallbackCaptor.capture());
                                     verify(mMockFaviconHelper, never())
                                             .getLocalFaviconImageForURL(
@@ -243,7 +243,7 @@ public class TabListFaviconProviderTest {
                                                     eq(mOtrProfile),
                                                     eq(mUrl1),
                                                     anyInt(),
-                                                    anyBoolean(),
+                                                    eq(false),
                                                     mFaviconImageCallbackCaptor.capture());
                                     mFaviconImageCallbackCaptor
                                             .getValue()
@@ -272,7 +272,7 @@ public class TabListFaviconProviderTest {
                                                     eq(mProfile),
                                                     eq(mUrl1),
                                                     anyInt(),
-                                                    anyBoolean(),
+                                                    eq(false),
                                                     mFaviconImageCallbackCaptor.capture());
                                     mFaviconImageCallbackCaptor
                                             .getValue()
