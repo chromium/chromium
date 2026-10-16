@@ -141,6 +141,12 @@ void WebRtcAudioDeviceImpl::RenderData(
   }
 }
 
+scoped_refptr<blink::WebRtcAudioRenderer> WebRtcAudioDeviceImpl::renderer()
+    const {
+  base::AutoLock auto_lock(lock_);
+  return renderer_;
+}
+
 void WebRtcAudioDeviceImpl::RemoveAudioRenderer(
     blink::WebRtcAudioRenderer* renderer) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
@@ -198,6 +204,7 @@ int32_t WebRtcAudioDeviceImpl::Init() {
   // We need to return a success to continue the initialization of WebRtc VoE
   // because failure on the capturer_ initialization should not prevent WebRTC
   // from working. See issue http://crbug.com/144421 for details.
+  base::AutoLock auto_lock(lock_);
   initialized_ = true;
 
   return 0;
@@ -208,8 +215,12 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
   DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
 
   // Calling Terminate() multiple times in a row is OK.
-  if (!initialized_)
-    return 0;
+  {
+    base::AutoLock auto_lock(lock_);
+    if (!initialized_) {
+      return 0;
+    }
+  }
 
   StopRecording();
   StopPlayout();
@@ -221,6 +232,7 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
     base::AutoLock auto_lock(lock_);
     renderer_to_disconnect = std::move(renderer_);
     capturers_.clear();
+    initialized_ = false;
   }
 
   if (renderer_to_disconnect) {
@@ -239,23 +251,25 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
     }
   }
 
-  initialized_ = false;
   return 0;
 }
 
 bool WebRtcAudioDeviceImpl::Initialized() const {
   DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
+  base::AutoLock auto_lock(lock_);
   return initialized_;
 }
 
 int32_t WebRtcAudioDeviceImpl::PlayoutIsAvailable(bool* available) {
   DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
+  base::AutoLock auto_lock(lock_);
   *available = initialized_;
   return 0;
 }
 
 bool WebRtcAudioDeviceImpl::PlayoutIsInitialized() const {
   DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
+  base::AutoLock auto_lock(lock_);
   return initialized_;
 }
 
@@ -291,7 +305,6 @@ int32_t WebRtcAudioDeviceImpl::StartPlayout() {
 
 int32_t WebRtcAudioDeviceImpl::StopPlayout() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::StopPlayout()";
-  DCHECK(initialized_);
   // Can be called both from the worker thread (e.g. when called from webrtc)
   // or the signaling thread (e.g. when we call it ourselves internally).
   // The order in this check is important so that we won't incorrectly
@@ -301,6 +314,7 @@ int32_t WebRtcAudioDeviceImpl::StopPlayout() {
          worker_thread_checker_.CalledOnValidThread());
 #endif
   base::AutoLock auto_lock(lock_);
+  DCHECK(initialized_);
   // webrtc::VoiceEngine assumes that it is OK to call Stop() multiple times.
   playing_ = false;
   return 0;
@@ -314,9 +328,9 @@ bool WebRtcAudioDeviceImpl::Playing() const {
 
 int32_t WebRtcAudioDeviceImpl::StartRecording() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(initialized_);
   SendLogMessage(base::StringPrintf("%s()", __func__));
   base::AutoLock auto_lock(lock_);
+  DCHECK(initialized_);
   base::AutoLock callback_lock(audio_transport_callback_lock_);
   if (!audio_transport_callback_) {
     LOG(ERROR) << "Audio transport is missing";
@@ -329,7 +343,6 @@ int32_t WebRtcAudioDeviceImpl::StartRecording() {
 }
 
 int32_t WebRtcAudioDeviceImpl::StopRecording() {
-  DCHECK(initialized_);
   // Can be called both from the worker thread (e.g. when called from webrtc)
   // or the signaling thread (e.g. when we call it ourselves internally).
   // The order in this check is important so that we won't incorrectly
@@ -340,6 +353,7 @@ int32_t WebRtcAudioDeviceImpl::StopRecording() {
 #endif
   SendLogMessage(base::StringPrintf("%s()", __func__));
   base::AutoLock auto_lock(lock_);
+  DCHECK(initialized_);
   recording_ = false;
   return 0;
 }
@@ -365,11 +379,17 @@ bool WebRtcAudioDeviceImpl::SetAudioRenderer(
   DCHECK(renderer);
   SendLogMessage(base::StringPrintf("%s()", __func__));
 
+  // Defense-in-depth: retain |this| across the unlocked initialization interval
+  // in case a caller does not keep an external reference alive for the duration
+  // of the call.
+  scoped_refptr<WebRtcAudioDeviceImpl> self(this);
+
   // Here we acquire |lock_| in order to protect the internal state.
   {
     base::AutoLock auto_lock(lock_);
-    if (renderer_)
+    if (!initialized_ || renderer_) {
       return false;
+    }
   }
 
   // We release |lock_| here because invoking |renderer|->Initialize while
@@ -390,12 +410,28 @@ bool WebRtcAudioDeviceImpl::SetAudioRenderer(
   // it attach later to the new thread.
   DETACH_FROM_THREAD(audio_renderer_thread_checker_);
 
-  // We acquire |lock_| again and assert our precondition, since we are
-  // accessing the internal state again.
-  base::AutoLock auto_lock(lock_);
-  DCHECK(!renderer_);
-  renderer_ = renderer;
-  return true;
+  // We acquire |lock_| again and recheck |initialized_| in case Terminate()
+  // ran while |lock_| was released.
+  {
+    base::AutoLock auto_lock(lock_);
+    if (initialized_ && !renderer_) {
+      renderer_ = renderer;
+      return true;
+    }
+  }
+
+  // Terminate() ran while |lock_| was released. Disconnect the renderer from
+  // |this| and tear it down: after a successful Initialize() the renderer is
+  // paused with a started sink, and it must be back in the uninitialized state
+  // before it can be destroyed. Start()/Stop() are private on
+  // WebRtcAudioRenderer, so go via the MediaStreamAudioRenderer interface.
+  // DisconnectSource() must come first so that Stop() does not call back into
+  // RemoveAudioRenderer() on |this|.
+  renderer->DisconnectSource();
+  MediaStreamAudioRenderer* media_stream_renderer = renderer;
+  media_stream_renderer->Start();
+  media_stream_renderer->Stop();
+  return false;
 }
 
 void WebRtcAudioDeviceImpl::AddAudioCapturer(

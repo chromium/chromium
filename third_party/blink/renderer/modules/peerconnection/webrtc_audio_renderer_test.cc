@@ -129,11 +129,19 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
     if (params.device_id != kInvalidOutputDeviceId) {
       EXPECT_CALL(*mock_sink_.get(), Start());
       EXPECT_CALL(*mock_sink_.get(), Play());
+      if (expect_stop_on_next_sink_) {
+        EXPECT_CALL(*mock_sink_.get(), Stop());
+        expect_stop_on_next_sink_ = false;
+      }
     } else {
       EXPECT_CALL(*mock_sink_.get(), Stop());
     }
 
     return mock_sink_;
+  }
+
+  void set_expect_stop_on_next_sink(bool expect_stop) {
+    expect_stop_on_next_sink_ = expect_stop;
   }
 
   MOCK_METHOD3(MockNewAudioRendererSink,
@@ -154,6 +162,7 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
 
  private:
   scoped_refptr<media::MockAudioRendererSink> mock_sink_;
+  bool expect_stop_on_next_sink_ = false;
 };
 
 class MockAudioSourceInterface : public webrtc::AudioSourceInterface {
@@ -617,6 +626,70 @@ TEST_F(WebRtcAudioRendererTest, SourceDisconnectedOnDeviceTerminate) {
   // Clean up.
   renderer_proxy->Start();
   renderer_proxy->Stop();
+}
+
+TEST_F(WebRtcAudioRendererTest, SetAudioRendererRejectedAfterDeviceTerminate) {
+  scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device(
+      new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>());
+  webrtc::AudioDeviceModule* adm = audio_device.get();
+
+  auto renderer = base::MakeRefCounted<WebRtcAudioRenderer>(
+      scheduler::GetSingleThreadTaskRunnerForTesting(), stream_descriptor_,
+      *web_local_frame_, base::UnguessableToken::Create(),
+      kDefaultOutputDeviceId, base::RepeatingCallback<void()>());
+
+  EXPECT_CALL(*audio_device_factory_platform_,
+              MockNewAudioRendererSink(_, _, _))
+      .Times(0);
+
+  // Rejects attachment before Init().
+  EXPECT_FALSE(audio_device->SetAudioRenderer(renderer.get()));
+  EXPECT_EQ(audio_device->renderer(), nullptr);
+
+  adm->Init();
+  adm->Terminate();
+
+  // Rejects attachment after Terminate().
+  EXPECT_FALSE(audio_device->SetAudioRenderer(renderer.get()));
+  EXPECT_EQ(audio_device->renderer(), nullptr);
+}
+
+TEST_F(WebRtcAudioRendererTest,
+       SetAudioRendererDisconnectedIfDeviceTerminatesDuringInitialize) {
+  scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device(
+      new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>());
+  webrtc::AudioDeviceModule* adm = audio_device.get();
+  adm->Init();
+
+  auto renderer = base::MakeRefCounted<WebRtcAudioRenderer>(
+      scheduler::GetSingleThreadTaskRunnerForTesting(), stream_descriptor_,
+      *web_local_frame_, base::UnguessableToken::Create(),
+      kDefaultOutputDeviceId, base::RepeatingCallback<void()>());
+
+  audio_device_factory_platform_->set_expect_stop_on_next_sink(true);
+  EXPECT_CALL(*audio_device_factory_platform_,
+              MockNewAudioRendererSink(blink::WebAudioDeviceSourceType::kWebRtc,
+                                       web_local_frame_.get(), _))
+      .WillOnce(InvokeWithoutArgs([&]() {
+        // Simulate Terminate() and dropping the last external reference while
+        // SetAudioRenderer() has released its lock to run Initialize().
+        adm->Terminate();
+        adm = nullptr;
+        audio_device = nullptr;
+      }));
+
+  // Hold a raw pointer only for the call; SetAudioRenderer() must keep `this`
+  // alive across Initialize(), detect that Terminate() intervened, and
+  // disconnect and stop the renderer.
+  blink::WebRtcAudioDeviceImpl* raw_audio_device = audio_device.get();
+  EXPECT_FALSE(raw_audio_device->SetAudioRenderer(renderer.get()));
+
+  auto renderer_proxy =
+      renderer->CreateSharedAudioRendererProxy(stream_descriptor_);
+  base::test::TestFuture<media::OutputDeviceStatus> future;
+  renderer_proxy->SwitchOutputDevice(kOtherOutputDeviceId,
+                                     future.GetCallback());
+  EXPECT_EQ(future.Get(), media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 }
 
 class WebRtcAudioRendererTrackSourceTest : public WebRtcAudioRendererTest {
