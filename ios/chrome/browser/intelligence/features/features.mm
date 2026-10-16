@@ -482,6 +482,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Seconds(1));
 // LINT.ThenChange(//components/actor/core/actor_features.cc:kActorObservationDelayAutofillPredictionsTimeout)
 
+const char kActorToolsDisableInputDuringActuationParam[] =
+    "DisableInputDuringActuation";
+
+// Enabled by default since suppressing input views during actuation is a bug
+// fix; kept on a feature parameter so it can be used as a killswitch if needed.
+BASE_FEATURE_PARAM(bool,
+                   kActorDisableInputDuringActuation,
+                   &kActorTools,
+                   kActorToolsDisableInputDuringActuationParam,
+                   true);
+
 bool IsActorEnabled() {
   return base::FeatureList::IsEnabled(kActorTools);
 }
@@ -554,6 +565,10 @@ bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
   }
 
   return false;
+}
+
+bool ActorDisablesInputDuringActuation() {
+  return IsActorEnabled() && kActorDisableInputDuringActuation.Get();
 }
 
 BASE_FEATURE(kActorOriginGating, base::FEATURE_DISABLED_BY_DEFAULT);

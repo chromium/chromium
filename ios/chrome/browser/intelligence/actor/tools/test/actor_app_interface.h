@@ -56,6 +56,9 @@ typedef NS_ENUM(NSInteger, ActorAppInterfaceErrorCode) {
 // `AutofillManager` to unblock `FormPredictionsTracker`.
 + (void)resolveInFlightAutofillPredictions;
 
+// Stops all active tasks in the `ActorService`.
++ (void)stopAllTasks;
+
 // Returns the current window ID.
 + (int32_t)currentWindowID;
 @end

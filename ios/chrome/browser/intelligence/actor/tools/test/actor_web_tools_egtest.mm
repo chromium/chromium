@@ -12,7 +12,9 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_tools_base_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "url/gurl.h"
@@ -22,7 +24,111 @@
 
 @implementation ActorWebToolsTestCase
 
+- (void)tearDownHelper {
+  [ActorAppInterface stopAllTasks];
+  [super tearDownHelper];
+}
+
 #pragma mark - ClickTool Tests
+
+// Tests that the software keyboard is dismissed when actuation begins, remains
+// suppressed while the actor clicks into an `<input>`, and reappears once
+// actuation ends.
+- (void)testClickTool_suppressesKeyboardDuringActuation {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/multi_field_form.html")];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithElementID:"username"]];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#otherstuff"];
+
+  // Tap into the text input so the software keyboard appears.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("username")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Execute a click action on another `<input>` in the active tab. Starting
+  // actuation transitions the tab to `kActorControlled`, and the tab remains
+  // in that state while the task enters `kReflecting` after the action
+  // finishes.
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  // Verify that the keyboard was dismissed and remains suppressed after
+  // clicking into the input.
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+
+  // Stop all tasks so actuation ends and the tab returns to `kInactive`.
+  [ActorAppInterface stopAllTasks];
+
+  // Verify that the keyboard reappears.
+  [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
+// Tests that actuating on a background tab does not suppress the software
+// keyboard in the foreground tab.
+- (void)testClickTool_backgroundTabActuationDoesNotSuppressForegroundKeyboard {
+  const GURL formURL = self.testServer->GetURL("/multi_field_form.html");
+  [ChromeEarlGrey loadURL:formURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithElementID:"username"]];
+
+  // Build the click action targeting the initial tab before moving it to the
+  // background.
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#otherstuff"];
+
+  // Open a new foreground tab and focus an `<input>` so the software keyboard
+  // appears.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:formURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithElementID:"username"]];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("username")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Actuate on the background tab and verify the foreground keyboard remains
+  // visible throughout actuation.
+  std::string serializedAction;
+  action.SerializeToString(&serializedAction);
+  NSData* actionData = [NSData dataWithBytes:serializedAction.data()
+                                      length:serializedAction.length()];
+  __block NSError* executionError = nil;
+  __block BOOL actionCompleted = NO;
+  __block BOOL keyboardHiddenDuringActuation = NO;
+  [ActorAppInterface executeActionWithProto:actionData
+                                 completion:^(NSError* error) {
+                                   executionError = error;
+                                   actionCompleted = YES;
+                                 }];
+  BOOL success = [[GREYCondition
+      conditionWithName:@"Wait for action completion"
+                  block:^BOOL {
+                    if (![EarlGrey isKeyboardShownWithError:nil]) {
+                      keyboardHiddenDuringActuation = YES;
+                    }
+                    return actionCompleted;
+                  }]
+      waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()];
+  GREYAssertTrue(success, @"Action timed out.");
+  GREYAssertNil(executionError, @"Action execution failed.");
+  GREYAssertFalse(keyboardHiddenDuringActuation,
+                  @"Keyboard was hidden during background actuation.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
+}
 
 // Tests that the click tool successfully clicks an element using its
 // coordinates.

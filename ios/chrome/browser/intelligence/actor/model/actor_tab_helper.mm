@@ -8,6 +8,8 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
 ActorTabHelper::ActorTabHelper(web::WebState* web_state)
@@ -15,7 +17,15 @@ ActorTabHelper::ActorTabHelper(web::WebState* web_state)
   web_state_observation_.Observe(web_state);
 }
 
-ActorTabHelper::~ActorTabHelper() = default;
+ActorTabHelper::~ActorTabHelper() {
+  // Clear suppression if the tab helper is torn down mid-actuation, so that a
+  // surviving web view proxy is not left with input views permanently
+  // suppressed. Messaging a `nil` proxy is a no-op.
+  if (control_state_ == actor::ActorControlState::kActorControlled &&
+      web_state_ && ActorDisablesInputDuringActuation()) {
+    web_state_->GetWebViewProxy().shouldSuppressInputViews = NO;
+  }
+}
 
 void ActorTabHelper::SetControlState(actor::ActorControlState control_state) {
   if (control_state_ == control_state) {
@@ -25,12 +35,20 @@ void ActorTabHelper::SetControlState(actor::ActorControlState control_state) {
   control_state_ = control_state;
   ApplyKeepRenderProcessAlive();
 
-  control_state_callbacks_.Notify(previous_control_state, control_state);
-
   const bool previous_active =
       previous_control_state == actor::ActorControlState::kActorControlled;
   const bool new_active =
       control_state == actor::ActorControlState::kActorControlled;
+  if (previous_active != new_active && web_state_ &&
+      ActorDisablesInputDuringActuation()) {
+    // Suppress the software keyboard and input accessory views while actuating
+    // to prevent viewport shifts and keyboard occlusion, and restore them when
+    // actuation ends.
+    web_state_->GetWebViewProxy().shouldSuppressInputViews = new_active;
+  }
+
+  control_state_callbacks_.Notify(previous_control_state, control_state);
+
   if (previous_active != new_active) {
     actuation_state_callbacks_.Notify(new_active);
   }
@@ -87,6 +105,10 @@ void ActorTabHelper::WasHidden(web::WebState* web_state) {
 }
 
 void ActorTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  if (control_state_ == actor::ActorControlState::kActorControlled &&
+      web_state_ && ActorDisablesInputDuringActuation()) {
+    web_state_->GetWebViewProxy().shouldSuppressInputViews = NO;
+  }
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }

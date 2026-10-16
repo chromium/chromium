@@ -249,6 +249,14 @@ base::TimeDelta GetActorPageStabilityAutofillPredictionsTimeout();
 // feature parameter of the `kActorTools` feature.
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool);
 
+// Feature parameter for `kActorTools` controlling whether input views are
+// suppressed during Actor actuation.
+extern const char kActorToolsDisableInputDuringActuationParam[];
+
+// Returns true if input views (the software keyboard, input accessory views,
+// and tablet shortcut bar) should be suppressed during Actor actuation.
+bool ActorDisablesInputDuringActuation();
+
 // Feature flag controlling Actor origin gating.
 BASE_DECLARE_FEATURE(kActorOriginGating);
 

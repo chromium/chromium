@@ -338,6 +338,17 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
       forms);
 }
 
++ (void)stopAllTasks {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  if (!profile) {
+    return;
+  }
+  if (actor::ActorService* service =
+          actor::ActorServiceFactory::GetForProfile(profile)) {
+    service->StopAllTasks();
+  }
+}
+
 + (int32_t)currentWindowID {
   Browser* browser = chrome_test_util::GetCurrentBrowser();
   if (!browser) {

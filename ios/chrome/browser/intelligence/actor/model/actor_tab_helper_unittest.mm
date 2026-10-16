@@ -10,14 +10,19 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/test/run_until.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -111,6 +116,9 @@ void ActorTabHelperTest::SetUp() {
 
 void ActorTabHelperTest::TearDown() {
   tab_helper_ = nullptr;
+  if (web_state_) {
+    web_state_->SetWebViewProxy(nil);
+  }
   PlatformTest::TearDown();
 }
 
@@ -389,4 +397,86 @@ TEST_F(ActorTabHelperTest, WebStateDestroyedBeforeReapplyTaskRuns) {
   actor::FlushCurrentSequence();
 }
 
+// Tests that setting control state updates `shouldSuppressInputViews` on the
+// web view proxy when `ActorDisablesInputDuringActuation()` is enabled.
+TEST_F(ActorTabHelperTest,
+       SetControlStateSuppressesInputViewsWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+
+  // Duplicate call should be a no-op and not re-trigger the proxy setter.
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO]);
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+}
+
+// Tests that setting control state does not update `shouldSuppressInputViews`
+// on the web view proxy when `kActorToolsDisableInputDuringActuationParam` is
+// disabled.
+TEST_F(ActorTabHelperTest,
+       SetControlStateDoesNotSuppressInputViewsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorTools, {{kActorToolsDisableInputDuringActuationParam, "false"}});
+
+  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+}
+
+// Tests that destroying `ActorTabHelper` while in `kActorControlled` resets
+// `shouldSuppressInputViews` to `NO` on the web view proxy when
+// `ActorDisablesInputDuringActuation()` is enabled.
+TEST_F(ActorTabHelperTest, DestructorClearsInputViewSuppressionWhenActuating) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO]);
+  tab_helper_ = nullptr;
+  ActorTabHelper::RemoveFromWebState(web_state_.get());
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+}
+
+// Tests that destroying the `WebState` while in `kActorControlled` resets
+// `shouldSuppressInputViews` to `NO` on the web view proxy when
+// `ActorDisablesInputDuringActuation()` is enabled.
+TEST_F(ActorTabHelperTest,
+       WebStateDestroyedClearsInputViewSuppressionWhenActuating) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  id mock_web_view_proxy = OCMStrictProtocolMock(@protocol(CRWWebViewProxy));
+  web_state_->SetWebViewProxy(mock_web_view_proxy);
+
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:YES]);
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+
+  OCMExpect([mock_web_view_proxy setShouldSuppressInputViews:NO]);
+  tab_helper_ = nullptr;
+  web_state_.reset();
+  EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
+}
 }  // namespace

@@ -78,6 +78,7 @@ source_set("tab_helper") {
       [ "//ios/chrome/browser/intelligence/actor/public:actor_control_state" ]
   deps = [
     "//base",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
   ]
 }

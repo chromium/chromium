@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_glow_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_glow_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_scrim_view.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/ui/util/layout_constants.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -122,7 +123,13 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  [self.view.window endEditing:YES];
+  // TODO(crbug.com/556733164): Remove once the
+  // `kActorToolsDisableInputDuringActuationParam` killswitch is no longer
+  // needed. `endEditing:YES` resigns first responder and prevents the keyboard
+  // from reappearing when actuation ends.
+  if (!ActorDisablesInputDuringActuation()) {
+    [self.view.window endEditing:YES];
+  }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size

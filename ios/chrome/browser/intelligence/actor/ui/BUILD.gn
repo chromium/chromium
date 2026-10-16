@@ -44,6 +44,7 @@ source_set("ui") {
     "//base",
     "//components/strings:components_strings",
     "//ios/chrome/browser/app_bar/ui:constants",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/elements/gradient",

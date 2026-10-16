@@ -65,6 +65,31 @@ TEST_F(ActorFeaturesTest, TabObservationPageContextTimeout_ParamOverride) {
   EXPECT_EQ(base::Seconds(7), GetActorTabObservationPageContextTimeout());
 }
 
+// Tests that `ActorDisablesInputDuringActuation()` returns false when
+// `kActorTools` is disabled.
+TEST_F(ActorFeaturesTest, ActorDisablesInputDuringActuation_ActorDisabled) {
+  EXPECT_FALSE(ActorDisablesInputDuringActuation());
+}
+
+// Tests that `ActorDisablesInputDuringActuation()` returns true by default when
+// `kActorTools` is enabled.
+TEST_F(ActorFeaturesTest, ActorDisablesInputDuringActuation_Default) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+  EXPECT_TRUE(ActorDisablesInputDuringActuation());
+}
+
+// Tests that `ActorDisablesInputDuringActuation()` returns false when
+// `kActorToolsDisableInputDuringActuationParam` is set to "false".
+TEST_F(ActorFeaturesTest, ActorDisablesInputDuringActuation_DisabledViaParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorTools, {{kActorToolsDisableInputDuringActuationParam, "false"}});
+  EXPECT_FALSE(ActorDisablesInputDuringActuation());
+}
+
 TEST_F(ActorFeaturesTest, IsPageActionMenuEnabled_Default) {
   EXPECT_FALSE(IsPageActionMenuEnabled());
 }
