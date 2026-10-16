@@ -197,23 +197,14 @@ class MediaClientImpl implements MediaClientInterface {
     }
   }
 
-  static shutdown() {
-    if (clientInstance) {
-      clientInstance.receiver_.$.close();
-      clientInstance = null;
-    }
+  private receiver_: MediaClientReceiver = new MediaClientReceiver(this);
+
+  constructor() {
+    getProvider().setMediaClient(this.receiver_.$.bindNewPipeAndPassRemote());
   }
 
   startPlay(track: TrackDefinition): void {
     postPlayRequest(track);
-  }
-
-  private receiver_: MediaClientReceiver = this.initReceiver_();
-
-  private initReceiver_(): MediaClientReceiver {
-    const receiver = new MediaClientReceiver(this);
-    getProvider().setMediaClient(receiver.$.bindNewPipeAndPassRemote());
-    return receiver;
   }
 }
 
