@@ -154,9 +154,18 @@ public class LocationBarFocusScrimHandler {
                     default -> throw new IllegalStateException("Unhandled scrim state");
                 };
         mScrimModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
-        mScrimModel.set(
-                ScrimProperties.BOTTOM_MARGIN,
-                mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN));
+
+        // With the toolbar at the bottom, stop the scrim at the top of the toolbar so it doesn't
+        // tint the bottom controls beneath it, e.g. the bottom chin (crbug.com/452336254). With
+        // the toolbar at the top, the bottom inset is covered by the keyboard or the suggestions
+        // list, and cropping the scrim would only reveal an unscrimmed band above the keyboard
+        // when the scrim's container is resized to end at the keyboard.
+        int bottomMargin =
+                mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_TOOLBAR)
+                        ? mBottomControlsStacker.getHeightFromLayerToBottom(
+                                LayerType.BOTTOM_TOOLBAR)
+                        : 0;
+        mScrimModel.set(ScrimProperties.BOTTOM_MARGIN, bottomMargin);
     }
 
     /** Returns the {@link ScrimState} the scrim should currently be drawn in. */

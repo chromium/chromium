@@ -8,8 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.view.View;
@@ -41,7 +41,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 /** Unit tests for {@link LocationBarFocusScrimHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LocationBarFocusScrimHandlerUnitTest {
-    private static final int BOTTOM_CHIN_HEIGHT = 37;
+    private static final int HEIGHT_FROM_BOTTOM_TOOLBAR_TO_BOTTOM = 184;
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -59,11 +59,6 @@ public class LocationBarFocusScrimHandlerUnitTest {
 
     @Before
     public void setUp() {
-        lenient()
-                .doReturn(BOTTOM_CHIN_HEIGHT)
-                .when(mBottomControlsStacker)
-                .getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN);
-
         mScrimHandler =
                 new LocationBarFocusScrimHandler(
                         mScrimManager,
@@ -113,11 +108,28 @@ public class LocationBarFocusScrimHandlerUnitTest {
     }
 
     @Test
-    public void testUpdateScrimVisualState_setsBottomMargin() {
+    public void testUpdateScrimVisualState_bottomToolbar_stopsAtToolbarTop() {
+        when(mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_TOOLBAR)).thenReturn(true);
+        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR))
+                .thenReturn(HEIGHT_FROM_BOTTOM_TOOLBAR_TO_BOTTOM);
+
         mScrimHandler.updateScrimVisualState();
         assertEquals(
-                BOTTOM_CHIN_HEIGHT,
+                HEIGHT_FROM_BOTTOM_TOOLBAR_TO_BOTTOM,
                 mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BOTTOM_MARGIN));
+    }
+
+    @Test
+    public void testUpdateScrimVisualState_topToolbar_clearsBottomMargin() {
+        when(mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_TOOLBAR))
+                .thenReturn(true, false);
+        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR))
+                .thenReturn(HEIGHT_FROM_BOTTOM_TOOLBAR_TO_BOTTOM);
+        mScrimHandler.updateScrimVisualState();
+
+        // Toolbar moved to the top; the scrim should no longer be cropped.
+        mScrimHandler.updateScrimVisualState();
+        assertEquals(0, mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BOTTOM_MARGIN));
     }
 
     @Test
