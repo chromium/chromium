@@ -62,6 +62,10 @@ permission-dashboard {
   margin-inline-end: 8px;
 }
 
+permission-dashboard[hidden] {
+  display: none;
+}
+
 .top-toolbar-logo-container {
   flex: 0;
   height: 18px;
