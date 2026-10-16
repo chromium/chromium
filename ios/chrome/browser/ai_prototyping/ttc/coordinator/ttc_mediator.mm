@@ -205,6 +205,13 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 
 - (void)sessionController:(TtcSessionController*)controller
        didChangeLifecycle:(TTCSessionLifecycle)lifecycle {
+  if (lifecycle == TTCSessionLifecycle::kFinished) {
+    [self stopObservingSessionControllerIfNeeded];
+    if (_currentState == TTCSessionUIState::kError) {
+      [self.consumer setMicEnergyLevel:0.0f];
+      return;
+    }
+  }
   [self updateConsumerForLifecycle:lifecycle];
 }
 
