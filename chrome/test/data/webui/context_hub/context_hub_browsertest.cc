@@ -26,3 +26,7 @@ class ContextHubBrowserTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, Topics) {
   RunTestWithoutTestLoader("context_hub/topics_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextHubBrowserTest, TabGroups) {
+  RunTestWithoutTestLoader("context_hub/tab_groups_test.js", "mocha.run()");
+}

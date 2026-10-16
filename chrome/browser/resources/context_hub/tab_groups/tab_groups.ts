@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -33,10 +34,23 @@ export const DEFECT_CATEGORIES = [
   'Completely wrong',
 ] as const;
 
+// Shown when generating tab group suggestions fails.
+export const GROUPING_FAILED_MESSAGE = 'Couldn\'t group your tabs. Try again.';
+export const NOT_ENOUGH_TABS_MESSAGE =
+    'Open at least 2 tabs to get suggestions.';
+// Shown when creating/confirming the proposed tab groups fails.
+export const CREATE_GROUPS_FAILED_MESSAGE = 'Couldn\'t create groups.';
+
 interface TabGroup {
   label: string;
   tabs: TabInfo[];
-  expanded: boolean;
+}
+
+// The suggestion state restored by Undo.
+interface SuggestionSnapshot {
+  groups: TabGroup[];
+  ungroupedTabs: TabInfo[];
+  responseText: string;
 }
 
 export class TabGroupsElement extends CrLitElement {
@@ -54,54 +68,67 @@ export class TabGroupsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      tabs_: {type: Array},
       groups_: {type: Array},
       ungroupedTabs_: {type: Array},
-      chatHistory_: {type: Array},
       confirmedGroupSummaries_: {type: Array},
+      tabs_: {type: Array},
       expandedConfirmedGroups_: {type: Object},
       isGrouped_: {type: Boolean},
       isGrouping_: {type: Boolean},
-      autoTabGroupsEnabled_: {type: Boolean},
+      isRegrouping_: {type: Boolean},
       inputValue_: {type: String},
+      statusMessage_: {type: String},
+      responseText_: {type: String},
+      canUndo_: {type: Boolean},
+      editingGroupIndex_: {type: Number},
+      editingLabel_: {type: String},
+      ungroupedExpanded_: {type: Boolean},
+      confirmedExpanded_: {type: Boolean},
       canvasFeedbackLiked_: {type: Boolean},
-      chatFeedbackLiked_: {type: Boolean},
       feedbackDialogOpen_: {type: Boolean},
       feedbackRating_: {type: Number},
       feedbackDefect_: {type: String},
       feedbackComments_: {type: String},
       feedbackLiked_: {type: Boolean},
-      feedbackSource_: {type: String},
       raterName_: {type: String},
       copiedRowSuccess_: {type: Boolean},
     };
   }
 
-  protected accessor tabs_: TabInfo[] = [];
   protected accessor groups_: TabGroup[] = [];
   protected accessor ungroupedTabs_: TabInfo[] = [];
-  protected accessor chatHistory_: ChatMessage[] = [];
+  protected chatHistory_: ChatMessage[] = [];
   protected accessor confirmedGroupSummaries_: TabGroupMojom[] = [];
+  // Open ungrouped tabs, listed on the landing card.
+  protected accessor tabs_: TabInfo[] = [];
   protected accessor expandedConfirmedGroups_: Set<string> = new Set();
   protected accessor isGrouped_: boolean = false;
   protected accessor isGrouping_: boolean = false;
-  protected accessor autoTabGroupsEnabled_: boolean =
+  protected accessor isRegrouping_: boolean = false;
+  protected autoTabGroupsEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTabGroups');
   protected maxTabGroupChatHistoryTurns_: number = this.autoTabGroupsEnabled_ ?
       loadTimeData.getInteger('kMaxTabGroupChatHistoryTurns') :
       10;
   protected accessor inputValue_: string = '';
+  protected accessor statusMessage_: string = '';
+  // The model's note about the current suggestions, if any.
+  protected accessor responseText_: string = '';
+  protected accessor canUndo_: boolean = false;
+  protected accessor editingGroupIndex_: number = -1;
+  protected accessor editingLabel_: string = '';
+  protected accessor ungroupedExpanded_: boolean = false;
+  protected accessor confirmedExpanded_: boolean = false;
   protected accessor canvasFeedbackLiked_: boolean|null = null;
-  protected accessor chatFeedbackLiked_: boolean|null = null;
   protected accessor feedbackDialogOpen_: boolean = false;
   protected accessor feedbackRating_: number|null = null;
   protected accessor feedbackDefect_: string = '';
   protected accessor feedbackComments_: string = '';
   protected accessor feedbackLiked_: boolean = true;
-  protected accessor feedbackSource_: 'canvas'|'chat' = 'canvas';
   protected accessor raterName_: string = '';
   protected accessor copiedRowSuccess_: boolean = false;
   protected lastGroupPrompt_: string = 'Default';
+  private undoStack_: SuggestionSnapshot[] = [];
 
   private trimChatHistory_(history: ChatMessage[]): ChatMessage[] {
     if (this.maxTabGroupChatHistoryTurns_ > 0 &&
@@ -131,13 +158,21 @@ export class TabGroupsElement extends CrLitElement {
     }
   }
 
+  // Refreshes the confirmed groups and the open ungrouped tabs shown on the
+  // landing card. Both change whenever groups are created or ungrouped.
   private async fetchConfirmedTabGroupSummaries_() {
     if (!this.autoTabGroupsEnabled_) {
       return;
     }
-    const {groups} =
-        await browserProxyFactory.getInstance().handler.getConfirmedTabGroups();
-    this.confirmedGroupSummaries_ = groups;
+    try {
+      const handler = browserProxyFactory.getInstance().handler;
+      const [{groups}, {tabs}] = await Promise.all(
+          [handler.getConfirmedTabGroups(), handler.getTabs()]);
+      this.confirmedGroupSummaries_ = groups;
+      this.tabs_ = tabs;
+    } catch (e) {
+      console.error('Failed to fetch confirmed tab groups:', e);
+    }
   }
 
   private async fetchExistingTabGroupsAndChats_() {
@@ -153,12 +188,9 @@ export class TabGroupsElement extends CrLitElement {
         this.groups_ = groups.map(group => ({
                                     label: group.label,
                                     tabs: group.tabs,
-                                    expanded: false,
                                   }));
         this.ungroupedTabs_ = ungroupedTabs;
         this.isGrouped_ = true;
-      } else {
-        await this.fetchTabs_();
       }
 
       if (history && history.length > 0) {
@@ -172,45 +204,88 @@ export class TabGroupsElement extends CrLitElement {
           ];
         }
         this.chatHistory_ = this.trimChatHistory_(processedHistory);
-        this.scrollToBottom_();
       }
     } catch (e) {
-      await this.fetchTabs_();
+      console.error('Failed to fetch existing tab groups:', e);
     }
   }
 
-  private async fetchTabs_() {
-    if (!this.autoTabGroupsEnabled_) {
-      return;
-    }
-    const {tabs} = await browserProxyFactory.getInstance().handler.getTabs();
-    this.tabs_ = tabs;
+  // Returns the view to the landing state.
+  private resetSuggestions_() {
     this.groups_ = [];
-    this.isGrouped_ = false;
     this.ungroupedTabs_ = [];
-    this.isGrouping_ = false;
+    this.isGrouped_ = false;
+    this.statusMessage_ = '';
+    this.responseText_ = '';
+    this.editingGroupIndex_ = -1;
     this.canvasFeedbackLiked_ = null;
-    this.chatFeedbackLiked_ = null;
   }
 
+  protected hasPendingPrompt_(): boolean {
+    return this.inputValue_.trim().length > 0;
+  }
+
+  protected isBusy_(): boolean {
+    return !this.autoTabGroupsEnabled_ || this.isGrouping_;
+  }
+
+  private pushUndoSnapshot_() {
+    this.undoStack_.push({
+      groups: this.groups_,
+      ungroupedTabs: this.ungroupedTabs_,
+      responseText: this.responseText_,
+    });
+    this.canUndo_ = true;
+  }
+
+  private popUndoSnapshot_(): SuggestionSnapshot|undefined {
+    const snapshot = this.undoStack_.pop();
+    this.canUndo_ = this.undoStack_.length > 0;
+    return snapshot;
+  }
+
+  private clearUndoStack_() {
+    this.undoStack_ = [];
+    this.canUndo_ = false;
+  }
+
+  // Shows `groups` / `ungroupedTabs` and stores them in the browser so that
+  // "Create groups" applies what is on screen.
+  private async applySuggestions_(
+      groups: TabGroup[], ungroupedTabs: TabInfo[]) {
+    this.groups_ = groups;
+    this.ungroupedTabs_ = ungroupedTabs;
+    await browserProxyFactory.getInstance().handler.replaceTabGroups(
+        groups.map(g => ({label: g.label, tabs: g.tabs, savedGuid: null})));
+  }
+
+  // Sends a grouping request: the default request from the landing card, or
+  // the typed prompt as a follow-up to the current suggestions.
   protected async onGroupTabsClick_() {
     if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
     }
 
     const command = this.inputValue_.trim();
+    const hadSuggestions = this.isGrouped_;
+    if (hadSuggestions) {
+      this.pushUndoSnapshot_();
+    } else {
+      this.clearUndoStack_();
+    }
+    this.isRegrouping_ = hadSuggestions;
     this.isGrouping_ = true;
+    this.statusMessage_ = '';
+    this.editingGroupIndex_ = -1;
     this.lastGroupPrompt_ = command || 'Default';
     this.inputValue_ = '';
     this.canvasFeedbackLiked_ = null;
-    this.chatFeedbackLiked_ = null;
 
     if (command) {
       this.chatHistory_ = this.trimChatHistory_([
         ...this.chatHistory_,
         {role: ChatRole.kUser, content: command},
       ]);
-      this.scrollToBottom_();
     }
 
     try {
@@ -218,28 +293,40 @@ export class TabGroupsElement extends CrLitElement {
           await browserProxyFactory.getInstance().handler.retrieveAndGroupTabs(
               command);
 
-      this.groups_ = groups
-                         .map(group => ({
-                                label: group.label,
-                                tabs: group.tabs,
-                                expanded: false,
-                              }))
-                         .filter(group => group.tabs.length > 0);
-
-      this.ungroupedTabs_ = ungroupedTabs;
-
-      const assistantContent = llmResponse?.content.trim() ||
-          (this.groups_.length > 0 ?
-               `Grouped tabs into ${this.groups_.length} group(s).` :
-               'Failed to group tabs.');
+      const suggestions = groups
+                              .map(group => ({
+                                     label: group.label,
+                                     tabs: group.tabs,
+                                   }))
+                              .filter(group => group.tabs.length > 0);
+      const responseText = llmResponse?.content.trim() || '';
 
       this.chatHistory_ = this.trimChatHistory_([
         ...this.chatHistory_,
-        {role: ChatRole.kAssistant, content: assistantContent},
+        {
+          role: ChatRole.kAssistant,
+          content: responseText ||
+              (suggestions.length > 0 ?
+                   `Grouped tabs into ${suggestions.length} group(s).` :
+                   'Failed to group tabs.'),
+        },
       ]);
-      this.isGrouped_ = this.groups_.length > 0;
-      if (!this.isGrouped_) {
-        this.tabs_ = ungroupedTabs;
+
+      if (suggestions.length > 0) {
+        this.groups_ = suggestions;
+        this.ungroupedTabs_ = ungroupedTabs;
+        this.responseText_ = responseText;
+        this.isGrouped_ = true;
+      } else if (hadSuggestions) {
+        // Keep the previous suggestions on screen.
+        this.popUndoSnapshot_();
+        this.statusMessage_ = responseText || GROUPING_FAILED_MESSAGE;
+      } else if (responseText) {
+        this.statusMessage_ = responseText;
+      } else {
+        this.statusMessage_ = ungroupedTabs.length < 2 ?
+            NOT_ENOUGH_TABS_MESSAGE :
+            GROUPING_FAILED_MESSAGE;
       }
     } catch (e) {
       console.error('Failed to retrieve and group tabs:', e);
@@ -247,9 +334,12 @@ export class TabGroupsElement extends CrLitElement {
         ...this.chatHistory_,
         {role: ChatRole.kAssistant, content: 'Failed to group tabs.'},
       ]);
+      if (hadSuggestions) {
+        this.popUndoSnapshot_();
+      }
+      this.statusMessage_ = GROUPING_FAILED_MESSAGE;
     } finally {
       this.isGrouping_ = false;
-      this.scrollToBottom_();
     }
   }
 
@@ -257,41 +347,112 @@ export class TabGroupsElement extends CrLitElement {
     if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
     }
-    const {success} =
-        await browserProxyFactory.getInstance().handler.confirmAllTabGroups();
-    if (success) {
-      this.groups_ = [];
-      this.isGrouped_ = false;
-      await this.fetchTabs_();
-      await this.fetchConfirmedTabGroupSummaries_();
+    try {
+      const {success} =
+          await browserProxyFactory.getInstance().handler.confirmAllTabGroups();
+      if (success) {
+        this.resetSuggestions_();
+        this.clearUndoStack_();
+        await this.fetchConfirmedTabGroupSummaries_();
+      } else {
+        this.statusMessage_ = CREATE_GROUPS_FAILED_MESSAGE;
+      }
+    } catch (e) {
+      console.error('Failed to confirm tab groups:', e);
+      this.statusMessage_ = CREATE_GROUPS_FAILED_MESSAGE;
     }
   }
 
-  protected async onUngroupTabsClick_() {
-    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
-      return;
+  protected onPrimaryActionClick_() {
+    if (this.hasPendingPrompt_()) {
+      this.onGroupTabsClick_();
+    } else {
+      this.onConfirmAllGroupsClick_();
     }
-    await browserProxyFactory.getInstance().handler.clearTabGroups();
-    this.inputValue_ = '';
-    await this.fetchTabs_();
-    await this.fetchConfirmedTabGroupSummaries_();
   }
 
-  protected async onClearChatHistoryClick_() {
+  // Discards the suggestions and the chat context. Confirmed groups are not
+  // affected.
+  protected async onClearClick_() {
     if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
     }
-    await browserProxyFactory.getInstance().handler.clearTabGroupChatHistory();
+    const handler = browserProxyFactory.getInstance().handler;
+    await handler.clearTabGroups();
+    await handler.clearTabGroupChatHistory();
     this.chatHistory_ = [];
-    this.chatFeedbackLiked_ = null;
+    this.inputValue_ = '';
+    this.clearUndoStack_();
+    this.resetSuggestions_();
   }
 
-  protected async onDefaultGroupingClick_() {
-    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+  protected async onUndoClick_() {
+    if (this.isGrouping_) {
       return;
     }
-    this.inputValue_ = '';
-    await this.onGroupTabsClick_();
+    const snapshot = this.popUndoSnapshot_();
+    if (!snapshot) {
+      return;
+    }
+    this.editingGroupIndex_ = -1;
+    this.responseText_ = snapshot.responseText;
+    await this.applySuggestions_(snapshot.groups, snapshot.ungroupedTabs);
+  }
+
+  protected async onEditGroupClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const group = this.groups_[index];
+    if (!group || this.isGrouping_) {
+      return;
+    }
+    this.editingLabel_ = group.label;
+    this.editingGroupIndex_ = index;
+    await this.updateComplete;
+    this.shadowRoot.querySelector<CrInputElement>('#rename-input')?.focus();
+  }
+
+  protected onRenameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.editingLabel_ = e.detail.value;
+  }
+
+  protected onRenameKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.commitRename_();
+    } else if (e.key === 'Escape') {
+      this.editingGroupIndex_ = -1;
+    }
+  }
+
+  protected onRenameBlur_() {
+    this.commitRename_();
+  }
+
+  private async commitRename_() {
+    const index = this.editingGroupIndex_;
+    const label = this.editingLabel_.trim();
+    this.editingGroupIndex_ = -1;
+    const group = this.groups_[index];
+    if (!group || !label || label === group.label) {
+      return;
+    }
+    this.pushUndoSnapshot_();
+    await this.applySuggestions_(
+        this.groups_.map((g, i) => i === index ? {...g, label} : g),
+        this.ungroupedTabs_);
+  }
+
+  protected async onDismissGroupClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const group = this.groups_[index];
+    if (!group || this.isGrouping_) {
+      return;
+    }
+    this.editingGroupIndex_ = -1;
+    this.pushUndoSnapshot_();
+    await this.applySuggestions_(
+        this.groups_.filter((_, i) => i !== index),
+        [...this.ungroupedTabs_, ...group.tabs]);
   }
 
   protected onTabClick_(e: Event) {
@@ -302,33 +463,31 @@ export class TabGroupsElement extends CrLitElement {
     }
   }
 
-  protected onGroupExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    const target = e.currentTarget as HTMLElement;
-    const indexStr = target.dataset['index'];
-    if (indexStr === undefined) {
-      return;
-    }
-    const index = parseInt(indexStr, 10);
-
-    this.groups_ = this.groups_.map((g, i) => {
-      if (i === index) {
-        return {...g, expanded: e.detail.value};
-      }
-      return g;
-    });
-  }
-
   protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
     this.inputValue_ = e.detail.value;
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Enter' && this.inputValue_.trim().length > 0) {
+    if (e.key === 'Enter' && !e.shiftKey && this.hasPendingPrompt_()) {
+      e.preventDefault();
       this.onGroupTabsClick_();
     }
   }
 
-  protected onConfirmedGroupExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onUngroupedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.ungroupedExpanded_ = e.detail.value;
+  }
+
+  protected onConfirmedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.confirmedExpanded_ = e.detail.value;
+  }
+
+  protected isConfirmedGroupExpanded_(group: TabGroupMojom): boolean {
+    return !!group.savedGuid &&
+        this.expandedConfirmedGroups_.has(group.savedGuid.value);
+  }
+
+  protected onGroupExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     const target = e.currentTarget as HTMLElement;
     const indexStr = target.dataset['index'];
     if (indexStr === undefined) {
@@ -355,7 +514,6 @@ export class TabGroupsElement extends CrLitElement {
     await browserProxyFactory.getInstance()
         .handler.removeAllConfirmedTabGroups();
     await this.fetchConfirmedTabGroupSummaries_();
-    await this.fetchTabs_();
   }
 
   protected async onUngroupConfirmedGroupClick_(e: Event) {
@@ -370,7 +528,6 @@ export class TabGroupsElement extends CrLitElement {
     await browserProxyFactory.getInstance().handler.removeConfirmedTabGroup(
         {value: savedGuid});
     await this.fetchConfirmedTabGroupSummaries_();
-    await this.fetchTabs_();
   }
 
   protected async onCloseConfirmedGroupClick_(e: Event) {
@@ -385,7 +542,6 @@ export class TabGroupsElement extends CrLitElement {
     await browserProxyFactory.getInstance().handler.closeConfirmedTabGroup(
         {value: savedGuid});
     await this.fetchConfirmedTabGroupSummaries_();
-    await this.fetchTabs_();
   }
 
   protected getCanvasThumbsUpIcon_(): string {
@@ -398,18 +554,7 @@ export class TabGroupsElement extends CrLitElement {
                                                  'cr:thumb-down';
   }
 
-  protected getChatThumbsUpIcon_(): string {
-    return this.chatFeedbackLiked_ === true ? 'cr:thumb-up-filled' :
-                                              'cr:thumb-up';
-  }
-
-  protected getChatThumbsDownIcon_(): string {
-    return this.chatFeedbackLiked_ === false ? 'cr:thumb-down-filled' :
-                                               'cr:thumb-down';
-  }
-
-  protected cleanUrl_(rawUrl: string|{url: string}|null|undefined): string {
-    const urlStr = typeof rawUrl === 'string' ? rawUrl : (rawUrl?.url || '');
+  protected cleanUrl_(urlStr: string): string {
     if (!urlStr) {
       return '';
     }
@@ -422,19 +567,11 @@ export class TabGroupsElement extends CrLitElement {
   }
 
   protected onCanvasThumbsUpClick_() {
-    this.openFeedbackDialog_('canvas', true);
+    this.openFeedbackDialog_(true);
   }
 
   protected onCanvasThumbsDownClick_() {
-    this.openFeedbackDialog_('canvas', false);
-  }
-
-  protected onChatThumbsUpClick_() {
-    this.openFeedbackDialog_('chat', true);
-  }
-
-  protected onChatThumbsDownClick_() {
-    this.openFeedbackDialog_('chat', false);
+    this.openFeedbackDialog_(false);
   }
 
   protected canSubmitFeedback_(): boolean {
@@ -461,22 +598,24 @@ export class TabGroupsElement extends CrLitElement {
 
   protected getRatingBucket_(rating: number): string {
     return rating >= 9 ? 'Very Good (9-10)' :
-        rating >= 7 ? 'Good (7-8)' :
-        rating >= 4 ? 'Bad (4-6)' : 'Very Bad (1-3)';
+        rating >= 7    ? 'Good (7-8)' :
+        rating >= 4    ? 'Bad (4-6)' :
+                         'Very Bad (1-3)';
   }
 
   protected getRatingTierClass_(rating: number): string {
     return rating >= 9 ? 'tier-very-good' :
-        rating >= 7 ? 'tier-good' :
-        rating >= 4 ? 'tier-bad' : 'tier-very-bad';
+        rating >= 7    ? 'tier-good' :
+        rating >= 4    ? 'tier-bad' :
+                         'tier-very-bad';
   }
 
   protected getRatingTierLabel_(rating: number): string {
     return rating >= 9 ? 'Very Good' :
-        rating >= 7 ? 'Good' :
-        rating >= 4 ? 'Bad' : 'Very Bad';
+        rating >= 7    ? 'Good' :
+        rating >= 4    ? 'Bad' :
+                         'Very Bad';
   }
-
 
   protected onRatingChipClick_(e: Event) {
     const btn = e.currentTarget as HTMLElement;
@@ -492,28 +631,18 @@ export class TabGroupsElement extends CrLitElement {
     this.feedbackComments_ = e.detail.value;
   }
 
-  protected openFeedbackDialog_(source: 'canvas'|'chat', liked: boolean) {
-    this.feedbackSource_ = source;
+  protected openFeedbackDialog_(liked: boolean) {
     this.feedbackLiked_ = liked;
     this.feedbackComments_ = '';
     this.copiedRowSuccess_ = false;
+    this.canvasFeedbackLiked_ = liked;
 
     if (liked) {
       this.feedbackRating_ = 10;
       this.feedbackDefect_ = 'All good';
-      if (source === 'canvas') {
-        this.canvasFeedbackLiked_ = true;
-      } else {
-        this.chatFeedbackLiked_ = true;
-      }
     } else {
       this.feedbackRating_ = 3;
       this.feedbackDefect_ = '';
-      if (source === 'canvas') {
-        this.canvasFeedbackLiked_ = false;
-      } else {
-        this.chatFeedbackLiked_ = false;
-      }
     }
 
     this.feedbackDialogOpen_ = true;
@@ -535,7 +664,6 @@ export class TabGroupsElement extends CrLitElement {
     }
 
     const totalTurns = Math.ceil(this.chatHistory_.length / 2);
-    const sourceLabel = this.feedbackSource_ === 'canvas' ? 'Canvas' : 'Chat';
     const userPrompt = this.lastGroupPrompt_ || 'Default';
     const rating = this.feedbackRating_ ?? 10;
     const ratingBucket = this.getRatingBucket_(rating);
@@ -544,10 +672,10 @@ export class TabGroupsElement extends CrLitElement {
         this.feedbackDefect_ || (sentiment === 'Liked' ? 'All good' : '');
     const comments = (this.feedbackComments_ || '').trim();
 
-    const activeGroups = this.groups_.length > 0 ?
+    const activeGroups: TabGroup[] = this.groups_.length > 0 ?
         this.groups_ :
         this.confirmedGroupSummaries_.map(
-            g => ({label: g.label, tabs: g.tabs, expanded: false}));
+            g => ({label: g.label, tabs: g.tabs}));
 
     const groupCount = activeGroups.length;
     const tabCount = activeGroups.reduce((acc, g) => acc + g.tabs.length, 0);
@@ -562,10 +690,12 @@ export class TabGroupsElement extends CrLitElement {
     }
 
     const exportedData = JSON.stringify({
-      groups: activeGroups.map(g => ({
-        label: g.label,
-        tabs: g.tabs.map(t => ({title: t.title, url: this.cleanUrl_(t.url)})),
-      })),
+      groups: activeGroups.map(
+          g => ({
+            label: g.label,
+            tabs:
+                g.tabs.map(t => ({title: t.title, url: this.cleanUrl_(t.url)})),
+          })),
       ungrouped: this.ungroupedTabs_.map(
           t => ({title: t.title, url: this.cleanUrl_(t.url)})),
     });
@@ -578,7 +708,7 @@ export class TabGroupsElement extends CrLitElement {
     const columns: Array<string|number> = [
       this.formatTimestamp_(),
       this.raterName_.trim(),
-      sourceLabel,
+      'Canvas',
       totalTurns > 0 ? `Turn ${totalTurns}` : 'Turn 1/1',
       userPrompt,
       rating,
@@ -600,16 +730,6 @@ export class TabGroupsElement extends CrLitElement {
     } catch (err) {
       console.error('Failed to copy TSV row to clipboard:', err);
     }
-  }
-
-  private scrollToBottom_() {
-    this.updateComplete.then(() => {
-      const chatMessages =
-          this.shadowRoot?.querySelector<HTMLElement>('#chat-messages');
-      if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-    });
   }
 }
 
