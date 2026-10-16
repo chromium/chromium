@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_FORMATTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_MARKUP_FORMATTER_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -69,7 +68,7 @@ enum EntityMask {
 
 enum class SerializationType { kHtml, kXml };
 
-class CORE_EXPORT MarkupFormatter final {
+class MarkupFormatter final {
   STACK_ALLOCATED();
 
  public:
