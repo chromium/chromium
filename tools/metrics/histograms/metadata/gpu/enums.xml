@@ -1404,10 +1404,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="EGLImageBacking"/>
   <int value="4" label="AHardwareBufferImageBacking"/>
   <int value="5" label="AngleVulkanImageBacking"/>
-  <int value="6" label="GLImageBacking"/>
+  <int value="6" label="(Obsolete) GLImageBacking. Removed in 2023/07."/>
   <int value="7" label="GLTextureImageBacking"/>
   <int value="8" label="OzoneImageBacking"/>
-  <int value="9" label="RawDrawImageBacking"/>
+  <int value="9" label="(Obsolete) RawDrawImageBacking. Removed in 2026/10."/>
   <int value="10" label="SharedMemoryImageBacking"/>
   <int value="11" label="VideoImageBacking"/>
   <int value="12" label="WrappedSkImageBacking"/>
