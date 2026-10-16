@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
@@ -532,12 +533,42 @@ Node* NearestScrollContainer(const Node& node) {
 // This function follows:
 // https://drafts.csswg.org/css-overflow-5/#example-d2ca6884.
 Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
-  if (focus_group_.empty()) {
+  // This runs after layout, and must not modify the DOM. However, the flat
+  // tree walks below (see NearestScrollContainer()) recalculate dirty slot
+  // assignments, which may remove nodes from the flat tree, detach their
+  // layout trees, and dispose of their pseudo-elements. That includes the
+  // ::scroll-marker-group pseudo-element which owns this group, which would
+  // clear `focus_group_`.
+  //
+  // At this point, slot assignments are up to date for all connected shadow
+  // roots, but not necessarily for shadow roots in disconnected trees. So,
+  // leave out scroll markers whose scroll targets are not connected. Those are
+  // not part of the document, and cannot be scrolled to anyway. Note that the
+  // scroll target needs to be checked rather than the scroll marker itself,
+  // since a ::scroll-marker may still be marked as connected while its
+  // originating element is not, if it hasn't been disposed of yet.
+  //
+  // The scroll markers are collected up front, without calling into code that
+  // could modify `focus_group_`, so that the algorithm below operates on a
+  // stable list.
+  HeapVector<Member<Element>> scroll_markers;
+  for (Element* scroll_marker : focus_group_) {
+    Element* scroll_target = ScrollTargetElement(scroll_marker);
+    if (scroll_target && !scroll_target->isConnected()) {
+      continue;
+    }
+    scroll_markers.push_back(scroll_marker);
+  }
+  if (scroll_markers.empty()) {
     return nullptr;
   }
+  // Verify that the flat tree walks below do not recalculate slot assignments.
+  SlotAssignmentRecalcForbiddenScope forbid_slot_assignment_recalc(
+      scroll_markers.front()->GetDocument());
+
   HeapVector<Member<Element>> scroll_marker_targets;
   HeapVector<Member<Node>> nearest_ancestor_scroll_container;
-  for (Element* scroll_marker : focus_group_) {
+  for (Element* scroll_marker : scroll_markers) {
     Element* target = scroll_marker->IsScrollMarkerPseudoElement()
                           ? scroll_marker
                           : ScrollTargetElement(scroll_marker);
@@ -561,8 +592,8 @@ Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
     // which contain scroll target elements targeted by the scroll marker group
     // whose nearest ancestor scroll container is scroller.
     HeapVector<Member<Element>> targets;
-    for (wtf_size_t i = 0; i < focus_group_.size(); ++i) {
-      Element* scroll_marker = focus_group_[i];
+    for (wtf_size_t i = 0; i < scroll_markers.size(); ++i) {
+      Element* scroll_marker = scroll_markers[i];
       Element* target = scroll_marker_targets[i];
       Node* target_scroller = nearest_ancestor_scroll_container[i];
       // 3.2.a. Let targets be the set of the scroll target elements whose
